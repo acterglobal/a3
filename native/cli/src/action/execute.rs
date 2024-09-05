@@ -34,7 +34,7 @@ impl ExecuteOpts {
 
         if !self.ignore_sync {
             let mut is_synced = sync_state.first_synced_rx();
-            while is_synced.next().await != Some(true) {} // let's wait for it to have synced
+            while is_synced.next().await != Some(true) {} // let’s wait for it to have synced
         }
 
         for tmpl_path in self.templates.iter() {

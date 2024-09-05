@@ -15,7 +15,7 @@ pub extern "C" fn __hello_world() {
 }
 
 lazy_static! {
-    pub static ref RUNTIME: Runtime = Runtime::new().expect("Can't start Tokio runtime");
+    pub static ref RUNTIME: Runtime = Runtime::new().expect("Can’t start Tokio runtime");
 }
 
 mod account;
@@ -142,7 +142,7 @@ ffi_gen_macro::ffi_gen!("native/acter/api.rsh");
 #[cfg(not(all(not(doctest), feature = "dart")))]
 #[allow(clippy::module_inception)]
 mod api {
-    /// helpers for doctests, as ffigen for some reason can't find the path
+    /// helpers for doctests, as ffigen for some reason can’t find the path
     pub struct FfiBuffer<T>(Vec<T>);
     impl<T> FfiBuffer<T> {
         pub fn new(inner: Vec<T>) -> FfiBuffer<T> {

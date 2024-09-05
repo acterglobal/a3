@@ -583,7 +583,7 @@ where
     ///
     /// # Arguments
     ///
-    /// * `room_id` - The `RoomId` of the send queue's room.
+    /// * `room_id` - The `RoomId` of the send queue’s room.
     /// * `transaction_id` - The unique key identifying the event to be sent
     ///   (and its transaction). Note: this is expected to be randomly generated
     ///   and thus unique.
@@ -606,7 +606,7 @@ where
     ///
     /// # Arguments
     ///
-    /// * `room_id` - The `RoomId` of the send queue's room.
+    /// * `room_id` - The `RoomId` of the send queue’s room.
     /// * `transaction_id` - The unique key identifying the event to be sent
     ///   (and its transaction).
     /// * `content` - Serializable event content to replace the original one.

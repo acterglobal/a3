@@ -37,7 +37,7 @@ use crate::{
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Toml couldn't be parsed: {0:?}")]
+    #[error("Toml couldn’t be parsed: {0:?}")]
     TomlDeserializationFailed(#[from] toml::de::Error),
 
     #[error("Missing inputs: {0:?} are required")]
@@ -64,7 +64,7 @@ pub enum Error {
     #[error("Referenced {0} '{1}' on {2} not found.")]
     UnknownReference(String, String, String),
 
-    #[error("{1} doesn't have '{0}' set but no default has been defined.")]
+    #[error("{1} doesn’t have '{0}' set but no default has been defined.")]
     NoDefaultSet(String, String),
 
     #[error("{0} already found in context.")]
@@ -561,7 +561,7 @@ main = { type = "user", is-default = true, required = true, description = "The s
 space = { type = "space", required = true, description = "The acter space" }
 
 [objects]
-start_list = { type = "task-list", name = "{{ user.display_name() }}'s Acter onboarding list" }
+start_list = { type = "task-list", name = "{{ user.display_name() }}’s Acter onboarding list" }
 
 [objects.task_1]
 type = "task"

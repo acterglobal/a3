@@ -212,7 +212,7 @@ impl PartialEq for Icon {
             (Icon::Emoji { key: a }, Icon::Emoji { key: b }) => a == b,
             (Icon::BrandLogo { icon: a }, Icon::BrandLogo { icon: b }) => a == b,
             (Icon::ActerIcon { icon: a }, Icon::ActerIcon { icon: b }) => a == b,
-            _ => false, // we can't match images unfortunately
+            _ => false, // we can’t match images unfortunately
         }
     }
 }

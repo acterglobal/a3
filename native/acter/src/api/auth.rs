@@ -32,7 +32,7 @@ lazy_static! {
 }
 
 pub fn set_proxy(new_proxy: Option<String>) {
-    *PROXY_URL.write().expect("Proxy URL couldn't be unlocked") = new_proxy;
+    *PROXY_URL.write().expect("Proxy URL couldn’t be unlocked") = new_proxy;
 }
 
 pub async fn sanitize_user(
@@ -344,7 +344,7 @@ pub async fn register_under_config(
                     .build()?;
                 Client::new(client, state).await
             } else {
-                // we didn't receive the login details yet, do a full login attempt
+                // we didn’t receive the login details yet, do a full login attempt
                 login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
             }
         })
@@ -437,7 +437,7 @@ pub async fn register_with_token_under_config(
                     .build()?;
                 Client::new(client, state).await
             } else {
-                // we didn't receive the login details yet, do a full login attempt
+                // we didn’t receive the login details yet, do a full login attempt
                 login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
             }
         })
