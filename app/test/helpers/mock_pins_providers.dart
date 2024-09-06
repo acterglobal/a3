@@ -59,4 +59,7 @@ class MockActerPin extends Fake implements ActerPin {
 
   @override
   MsgContent? content() => null;
+
+  @override
+  Display? display() => null;
 }

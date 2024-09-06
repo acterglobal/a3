@@ -1,19 +1,22 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/features/pins/Utils/pins_utils.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
+import 'package:acter/features/pins/actions/pin_update_actions.dart';
 import 'package:acter/features/pins/actions/reduct_pin_action.dart';
 import 'package:acter/features/pins/actions/report_pin_action.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/fake_link_attachment_item.dart';
-import 'package:acter/features/pins/widgets/pin_icon.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -218,6 +221,10 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   }
 
   Widget _buildPinHeaderUI(ActerPin pin) {
+    //Get my membership details
+    final membership =
+        ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+    bool canPost = membership?.canString('CanPostPin') == true;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -226,7 +233,21 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         children: [
           Row(
             children: [
-              const PinIcon(),
+              ActerIconWidget(
+                iconSize: 50,
+                color: convertColor(
+                  pin.display()?.color(),
+                  iconPickerColors[0],
+                ),
+                icon: ActerIcon.iconForPin(
+                  pin.display()?.iconStr(),
+                ),
+                onIconSelection: canPost
+                    ? (color, acterIcon) {
+                        updatePinIcon(context, ref, pin, color, acterIcon);
+                      }
+                    : null,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -260,7 +281,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
               onSave: (newTitle) async {
                 final pinEditNotifier = ref.read(pinEditProvider(pin).notifier);
                 pinEditNotifier.setTitle(newTitle);
-                savePinTitle(context, pin, newTitle);
+                updatePinTitle(context, pin, newTitle);
               },
             );
           }
@@ -302,7 +323,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
                 descriptionHtmlValue: description.formattedBody(),
                 descriptionMarkdownValue: plainBody,
                 onSave: (htmlBodyDescription, plainDescription) async {
-                  saveDescription(
+                  updatePinDescription(
                     context,
                     htmlBodyDescription,
                     plainDescription,

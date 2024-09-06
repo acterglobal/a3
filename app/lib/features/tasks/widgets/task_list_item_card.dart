@@ -1,7 +1,11 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -33,6 +37,14 @@ class TaskListItemCard extends ConsumerWidget {
         key: Key('task-list-card-$taskListId'),
         child: ExpansionTile(
           initiallyExpanded: initiallyExpanded,
+          leading: ActerIconWidget(
+            iconSize: 30,
+            color: convertColor(
+              taskList.display()?.color(),
+              iconPickerColors[0],
+            ),
+            icon: ActerIcon.iconForTask(taskList.display()?.iconStr()),
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
