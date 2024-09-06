@@ -79,6 +79,7 @@ void main() {
         overrides: [
           taskListItemProvider.overrideWith(() => mockedNotifier),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
+          roomMembershipProvider.overrideWith((a, b) => null),
         ],
         child: const TaskListDetailPage(taskListId: 'taskListId'),
       );

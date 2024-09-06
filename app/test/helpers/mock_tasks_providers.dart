@@ -59,7 +59,13 @@ class MockTaskList extends Fake implements TaskList {
   String name() => 'Test';
 
   @override
+  String spaceIdStr() => 'spaceId';
+
+  @override
   MsgContent? description() => null;
+
+  @override
+  Display? display() => null;
 
   @override
   Future<AttachmentsManager> attachments() =>
