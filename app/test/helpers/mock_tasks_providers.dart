@@ -54,10 +54,18 @@ class MockTaskItemNotifier extends FamilyAsyncNotifier<Task, Task>
 
 class MockTaskList extends Fake implements TaskList {
   bool shouldFail = true;
+
   @override
   String name() => 'Test';
+
+  @override
+  String spaceIdStr() => 'spaceId';
+
   @override
   MsgContent? description() => null;
+
+  @override
+  Display? display() => null;
 
   @override
   Future<AttachmentsManager> attachments() =>
@@ -81,10 +89,13 @@ class MockTaskList extends Fake implements TaskList {
 class MockTask extends Fake implements Task {
   @override
   String title() => 'Test';
+
   @override
   MsgContent? description() => null;
+
   @override
   String? dueDate() => null;
+
   @override
   bool isAssignedToMe() => false;
 
@@ -94,4 +105,7 @@ class MockTask extends Fake implements Task {
 
   @override
   Future<CommentsManager> comments() => Completer<CommentsManager>().future;
+
+  @override
+  Display? display() => null;
 }
