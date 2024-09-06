@@ -5,7 +5,7 @@ List<Color> iconPickerColors = [
   Colors.greenAccent,
   Colors.redAccent,
   Colors.lightBlueAccent,
-  Colors.purpleAccent,
+  Colors.orangeAccent,
   Colors.amberAccent,
   Colors.deepOrangeAccent,
   Colors.lightGreenAccent,
