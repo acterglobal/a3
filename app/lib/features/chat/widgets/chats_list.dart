@@ -144,7 +144,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
     super.didUpdateWidget(oldWidget);
     if (_listKey.currentState == null) {
       _log.fine('no state, hard reset');
-      // we can ignore the diffing as we aren't live, just reset
+      // we can ignore the diffing as we aren’t live, just reset
       setState(() {
         _reset();
       });

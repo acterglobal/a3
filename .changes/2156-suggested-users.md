@@ -1,0 +1,2 @@
+- We are now suggesting you users you already know when you start the process to invite individual users or start a new chat conversation.
+- [Fix] Showing the DisplayName and Avatar for users not yet in the room in to-invite screen

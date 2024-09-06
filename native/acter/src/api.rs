@@ -15,7 +15,7 @@ pub extern "C" fn __hello_world() {
 }
 
 lazy_static! {
-    pub static ref RUNTIME: Runtime = Runtime::new().expect("Can't start Tokio runtime");
+    pub static ref RUNTIME: Runtime = Runtime::new().expect("Can’t start Tokio runtime");
 }
 
 mod account;
@@ -112,8 +112,9 @@ pub use rsvp::{Rsvp, RsvpDraft, RsvpManager, RsvpStatus};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use settings::{
     ActerAppSettings, ActerAppSettingsBuilder, ActerUserAppSettings, ActerUserAppSettingsBuilder,
-    EventsSettings, NewsSettings, PinsSettings, RoomPowerLevels, SimpleSettingWithTurnOn,
-    SimpleSettingWithTurnOnBuilder, TasksSettings,
+    EventsSettings, NewsSettings, PinsSettings, RoomPowerLevels, SimpleOnOffSetting,
+    SimpleOnOffSettingBuilder, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
+    TasksSettings,
 };
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
@@ -130,11 +131,11 @@ pub use typing::TypingEvent;
 pub use utils::parse_markdown;
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
-pub type DeviceId = ruma_common::OwnedDeviceId;
-pub type EventId = ruma_common::OwnedEventId;
-pub type MxcUri = ruma_common::OwnedMxcUri;
-pub type RoomId = ruma_common::OwnedRoomId;
-pub type UserId = ruma_common::OwnedUserId;
+pub type DeviceId = matrix_sdk_base::ruma::OwnedDeviceId;
+pub type EventId = matrix_sdk_base::ruma::OwnedEventId;
+pub type MxcUri = matrix_sdk_base::ruma::OwnedMxcUri;
+pub type RoomId = matrix_sdk_base::ruma::OwnedRoomId;
+pub type UserId = matrix_sdk_base::ruma::OwnedUserId;
 
 #[cfg(all(not(doctest), feature = "dart"))]
 ffi_gen_macro::ffi_gen!("native/acter/api.rsh");
@@ -142,7 +143,7 @@ ffi_gen_macro::ffi_gen!("native/acter/api.rsh");
 #[cfg(not(all(not(doctest), feature = "dart")))]
 #[allow(clippy::module_inception)]
 mod api {
-    /// helpers for doctests, as ffigen for some reason can't find the path
+    /// helpers for doctests, as ffigen for some reason can’t find the path
     pub struct FfiBuffer<T>(Vec<T>);
     impl<T> FfiBuffer<T> {
         pub fn new(inner: Vec<T>) -> FfiBuffer<T> {

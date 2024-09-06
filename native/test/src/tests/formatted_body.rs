@@ -1,4 +1,4 @@
-use acter::{api::RoomMessage, ruma_common::OwnedEventId};
+use acter::api::RoomMessage;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -122,7 +122,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     Ok(())
 }
 
-fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
+fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
@@ -130,7 +130,7 @@ fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
             if let Some(formatted) = msg_content.formatted_body() {
                 if formatted == body {
                     // exclude the pending msg
-                    if let Some(event_id) = event_item.evt_id() {
+                    if let Some(event_id) = event_item.event_id() {
                         return Some(event_id);
                     }
                 }

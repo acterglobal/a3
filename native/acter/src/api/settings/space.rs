@@ -1,6 +1,7 @@
 pub use acter_core::events::settings::{
-    ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleSettingWithTurnOn,
-    SimpleSettingWithTurnOnBuilder, TasksSettings,
+    ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleOnOffSetting,
+    SimpleOnOffSettingBuilder, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
+    TasksSettings,
 };
 use acter_core::events::{
     calendar::CalendarEventEventContent,
@@ -10,10 +11,13 @@ use acter_core::events::{
     tasks::{TaskEventContent, TaskListEventContent},
 };
 use anyhow::{bail, Context, Result};
-use matrix_sdk::{deserialized_responses::SyncOrStrippedState, ruma::Int};
-use ruma_events::{
-    room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
-    StateEventType, StaticEventContent, SyncStateEvent, TimelineEventType,
+use matrix_sdk::deserialized_responses::SyncOrStrippedState;
+use matrix_sdk_base::ruma::{
+    events::{
+        room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
+        StateEventType, StaticEventContent, SyncStateEvent, TimelineEventType,
+    },
+    Int,
 };
 use std::{collections::btree_map, ops::Deref};
 
@@ -30,13 +34,13 @@ impl From<ActerAppSettingsContentBuilder> for ActerAppSettingsBuilder {
     }
 }
 impl ActerAppSettingsBuilder {
-    pub fn news(&mut self, value: Option<Box<SimpleSettingWithTurnOn>>) {
+    pub fn news(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.news(value.map(|i| *i));
     }
-    pub fn pins(&mut self, value: Option<Box<SimpleSettingWithTurnOn>>) {
+    pub fn pins(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.pins(value.map(|i| *i));
     }
-    pub fn events(&mut self, value: Option<Box<SimpleSettingWithTurnOn>>) {
+    pub fn events(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.events(value.map(|i| *i));
     }
     pub fn tasks(&mut self, value: Option<Box<TasksSettings>>) {
@@ -146,7 +150,7 @@ impl Room {
         power_level: Option<i32>,
     ) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Unable to update a space you aren't part of");
+            bail!("Unable to update a space you aren’t part of");
         }
         let mut current_power_levels = self.power_levels_content().await?;
         let mut updated = false;
@@ -233,7 +237,7 @@ impl Room {
         }
 
         if !self.is_joined() {
-            bail!("Unable to update a space you aren't part of");
+            bail!("Unable to update a space you aren’t part of");
         }
         let room = self.room.clone();
 

@@ -9,6 +9,7 @@ class MenuItemWidget extends StatelessWidget {
   final VoidCallback? onTap;
   final bool enabled;
   final bool withMenu;
+  final Widget? trailing;
   final Key? innerKey;
   final VisualDensity? visualDensity;
 
@@ -17,6 +18,7 @@ class MenuItemWidget extends StatelessWidget {
     this.innerKey,
     this.iconData,
     this.iconColor,
+    this.trailing,
     required this.title,
     this.visualDensity,
     this.titleStyles,
@@ -53,11 +55,12 @@ class MenuItemWidget extends StatelessWidget {
                 ),
               )
             : null,
-        trailing: withMenu
-            ? const Icon(
-                Icons.keyboard_arrow_right_outlined,
-              )
-            : null,
+        trailing: trailing ??
+            (withMenu
+                ? const Icon(
+                    Icons.keyboard_arrow_right_outlined,
+                  )
+                : null),
       ),
     );
   }

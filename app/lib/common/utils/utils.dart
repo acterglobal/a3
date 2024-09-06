@@ -178,19 +178,19 @@ String getHumanReadableFileSize(int bytes) {
 
 String documentTypeFromFileExtension(String fileExtension) {
   switch (fileExtension) {
-    case 'png':
-    case 'jpg':
-    case 'jpeg':
+    case '.png':
+    case '.jpg':
+    case '.jpeg':
       return 'Image';
-    case 'mov':
-    case 'mp4':
+    case '.mov':
+    case '.mp4':
       return 'Video';
-    case 'mp3':
-    case 'wav':
+    case '.mp3':
+    case '.wav':
       return 'Audio';
-    case 'pdf':
+    case '.pdf':
       return 'PDF';
-    case 'txt':
+    case '.txt':
       return 'Text File';
     default:
       return '';

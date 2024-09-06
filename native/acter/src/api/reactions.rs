@@ -2,8 +2,8 @@ use acter_core::models::{self, ActerModel, AnyActerModel};
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;
-use ruma_common::{OwnedEventId, OwnedTransactionId, OwnedUserId, UserId};
-use ruma_events::{reaction::ReactionEvent, MessageLikeEventType};
+use matrix_sdk_base::ruma::events::{reaction::ReactionEvent, MessageLikeEventType};
+use matrix_sdk_base::ruma::{OwnedEventId, OwnedTransactionId, OwnedUserId, UserId};
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -152,13 +152,13 @@ impl ReactionManager {
         let my_id = self.client.user_id()?;
         let stats = self.inner.stats();
         let Some(event_id) = stats.user_likes.last().cloned() else {
-            bail!("User hasn't liked")
+            bail!("User hasn’t liked")
         };
         let txn_id = txn_id.map(OwnedTransactionId::from);
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&event_id).await?;
+                let evt = room.event(&event_id, None).await?;
                 let event_content = evt.event.deserialize_as::<ReactionEvent>()?;
                 let permitted = if event_content.sender() == my_id {
                     room.can_user_redact_own(&my_id).await?
@@ -205,7 +205,7 @@ impl ReactionManager {
                         return Ok(response.event_id);
                     }
                 }
-                bail!("User hasn't reacted")
+                bail!("User hasn’t reacted")
             })
             .await?
     }

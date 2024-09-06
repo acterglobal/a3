@@ -255,7 +255,10 @@ object UserProfile {
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Option<string>;
+    fn display_name() -> Option<string>;
+
+    /// which rooms you are sharing with that profile
+    fn shared_rooms() -> Vec<string>;
 }
 
 
@@ -752,7 +755,7 @@ object RsvpManager {
     /// get rsvp entries
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
-    /// get Yes/Maybe/No or None for the user's own status
+    /// get Yes/Maybe/No or None for the user’s own status
     fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
 
     /// get the count of Yes/Maybe/No
@@ -873,9 +876,6 @@ object EventSendState {
 
 /// A room Message metadata and content
 object RoomEventItem {
-    /// Unique ID of this event
-    fn unique_id() -> string;
-
     /// The User, who sent that event
     fn sender() -> string;
 
@@ -888,6 +888,9 @@ object RoomEventItem {
 
     /// one of Message/Redaction/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
     fn event_type() -> string;
+
+    /// ID of this event
+    fn event_id() -> Option<string>;
 
     /// the type of massage, like text, image, audio, video, file etc
     fn msg_type() -> Option<string>;
@@ -929,6 +932,9 @@ object RoomVirtualItem {
 object RoomMessage {
     /// one of event/virtual
     fn item_type() -> string;
+
+    /// Unique ID of this event
+    fn unique_id() -> string;
 
     /// valid only if item_type is "event"
     fn event_item() -> Option<RoomEventItem>;
@@ -1382,7 +1388,7 @@ object Convo {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
-    /// it's the callers job to ensure the person has the privileges to
+    /// it’s the callers job to ensure the person has the privileges to
     /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
@@ -1424,7 +1430,7 @@ object Comment {
     fn sender() -> UserId;
     /// When was this comment acknowledged by the server
     fn origin_server_ts() -> u64;
-    /// what is the comment's content
+    /// what is the comment’s content
     fn msg_content() -> MsgContent;
     /// create a draft builder to reply to this comment
     fn reply_builder() -> CommentDraft;
@@ -1972,33 +1978,44 @@ object RoomPowerLevels {
     fn task_lists_key() -> string;
 }
 
-object SimpleSettingWithTurnOn {
-
+object SimpleOnOffSetting {
+    fn active() -> bool;
 }
 
-object SimpleSettingWithTurnOnBuilder {
+object SimpleOnOffSettingBuilder {
     fn active(active: bool);
-    fn build() -> Result<SimpleSettingWithTurnOn>;
+    fn build() -> Result<SimpleOnOffSetting>;
 }
+
+
+object SimpleSettingWithTurnOff {
+    fn active() -> bool;
+}
+
+object SimpleSettingWithTurnOffBuilder {
+    fn active(active: bool);
+    fn build() -> Result<SimpleSettingWithTurnOff>;
+}
+
 
 object NewsSettings {
     fn active() -> bool;
-    fn updater() -> SimpleSettingWithTurnOnBuilder;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
 }
 
 object TasksSettings {
     fn active() -> bool;
-    fn updater() -> SimpleSettingWithTurnOnBuilder;
+    fn updater() -> SimpleOnOffSettingBuilder;
 }
 
 object EventsSettings {
     fn active() -> bool;
-    fn updater() -> SimpleSettingWithTurnOnBuilder;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
 }
 
 object PinsSettings {
     fn active() -> bool;
-    fn updater() -> SimpleSettingWithTurnOnBuilder;
+    fn updater() -> SimpleSettingWithTurnOffBuilder;
 }
 
 object ActerAppSettings {
@@ -2010,10 +2027,10 @@ object ActerAppSettings {
 }
 
 object ActerAppSettingsBuilder {
-    fn news(news: Option<SimpleSettingWithTurnOn>);
-    fn pins(pins: Option<SimpleSettingWithTurnOn>);
-    fn events(events: Option<SimpleSettingWithTurnOn>);
-    fn tasks(tasks: Option<SimpleSettingWithTurnOn>);
+    fn news(news: Option<SimpleSettingWithTurnOff>);
+    fn pins(pins: Option<SimpleSettingWithTurnOff>);
+    fn events(events: Option<SimpleSettingWithTurnOff>);
+    fn tasks(tasks: Option<SimpleOnOffSetting>);
 }
 
 
@@ -2224,7 +2241,7 @@ object Space {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
-    /// it's the callers job to ensure the person has the privileges to
+    /// it’s the callers job to ensure the person has the privileges to
     /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
@@ -2635,7 +2652,7 @@ object CreateSpaceSettingsBuilder {
     /// set the name of convo
     fn set_name(value: string);
 
-    /// set the space's visibility to either Public or Private
+    /// set the space’s visibility to either Public or Private
     fn set_visibility(value: string);
 
     /// append user id that will be invited to this space
@@ -2742,7 +2759,7 @@ object Client {
     fn invitations_rx() -> Stream<Vec<Invitation>>;
 
     /// the users out of room
-    fn suggested_users_to_invite(room_name: string) -> Future<Result<Vec<UserProfile>>>;
+    fn suggested_users(room_name: Option<string>) -> Future<Result<Vec<UserProfile>>>;
 
     /// search the user directory
     fn search_users(search_term: string) -> Future<Result<Vec<UserProfile>>>;
@@ -3089,7 +3106,7 @@ object VerificationEvent {
     /// Alice says to Bob that SAS verification matches and vice versa
     fn confirm_sas_verification() -> Future<Result<bool>>;
 
-    /// Alice says to Bob that SAS verification doesn't match and vice versa
+    /// Alice says to Bob that SAS verification doesn’t match and vice versa
     fn mismatch_sas_verification() -> Future<Result<bool>>;
 }
 

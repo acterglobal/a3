@@ -24,7 +24,8 @@ class VideoMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ChatMessageInfo messageInfo = (messageId: message.id, roomId: roomId);
+    final ChatMessageInfo messageInfo =
+        (messageId: message.remoteId ?? message.id, roomId: roomId);
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     if (mediaState.mediaChatLoadingState.isLoading ||
         mediaState.isDownloading) {
@@ -66,7 +67,7 @@ class VideoMessageBuilder extends ConsumerWidget {
           await ref
               .read(
                 mediaChatStateProvider(
-                  (messageId: message.id, roomId: roomId),
+                  (messageId: message.remoteId ?? message.id, roomId: roomId),
                 ).notifier,
               )
               .downloadMedia();

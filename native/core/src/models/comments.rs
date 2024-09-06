@@ -1,7 +1,7 @@
 use derive_getters::Getters;
-use ruma::RoomId;
-use ruma_common::{EventId, OwnedEventId, UserId};
-use ruma_events::OriginalMessageLikeEvent;
+use matrix_sdk_base::ruma::events::OriginalMessageLikeEvent;
+use matrix_sdk_base::ruma::RoomId;
+use matrix_sdk_base::ruma::{EventId, OwnedEventId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use tracing::{error, info, trace};
@@ -188,7 +188,7 @@ impl ActerModel for Comment {
         for p in belongs_to {
             let parent = store.get(&p).await?;
             if !parent.capabilities().contains(&Capability::Commentable) {
-                error!(?parent, comment = ?self, "doesn't support comments. can't apply");
+                error!(?parent, comment = ?self, "doesn’t support comments. can’t apply");
                 continue;
             }
 

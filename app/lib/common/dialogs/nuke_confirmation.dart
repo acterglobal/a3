@@ -1,6 +1,5 @@
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
-
 import 'package:acter/features/auth/providers/auth_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -45,9 +44,7 @@ void nukeConfirmationDialog(BuildContext context, WidgetRef ref) {
         actions: <Widget>[
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'No',
-            ),
+            child: const Text('No'),
           ),
           ActerDangerActionButton(
             onPressed: () async {
@@ -57,9 +54,7 @@ void nukeConfirmationDialog(BuildContext context, WidgetRef ref) {
                 context.goNamed(Routes.main.name);
               }
             },
-            child: const Text(
-              'Yihaaaa',
-            ),
+            child: const Text('Yihaaaa'),
           ),
         ],
       );

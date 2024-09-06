@@ -12,11 +12,11 @@ use matrix_sdk::{
     config::SyncSettings, event_handler::EventHandlerHandle, room::Room as SdkRoom, RoomState,
     RumaApiError,
 };
-use ruma_client_api::{
+use matrix_sdk_base::ruma::api::client::{
     error::{ErrorBody, ErrorKind},
     Error,
 };
-use ruma_common::OwnedRoomId;
+use matrix_sdk_base::ruma::OwnedRoomId;
 use std::{
     collections::{BTreeMap, HashMap},
     io::Write,
@@ -248,7 +248,7 @@ impl Client {
                     .set_loading(space.room_id().to_owned(), false);
             }))
             .await;
-            // once done, let's reset the first_sync_task to clear it from memory
+            // once done, let’s reset the first_sync_task to clear it from memory
             first_sync_task_inner.set(None);
             Ok(())
         }));
@@ -322,7 +322,7 @@ impl Client {
 
                 if !matches!(room.state(), RoomState::Joined) {
                     trace!(?r_id, "room gone");
-                    // remove rooms we aren't in (anymore)
+                    // remove rooms we aren’t in (anymore)
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
                     if let Err(error) = self.executor().clear_room(r_id).await {
@@ -560,7 +560,7 @@ impl Client {
         sync_state
     }
 
-    /// Indication whether we've received a first sync response since
+    /// Indication whether we’ve received a first sync response since
     /// establishing the client (in memory)
     pub fn has_first_synced(&self) -> bool {
         match self.state.try_read() {

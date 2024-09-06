@@ -1,5 +1,5 @@
 use super::color::Color;
-use ruma_events::room::ImageInfo;
+use matrix_sdk_base::ruma::events::room::ImageInfo;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use strum::{Display, EnumString};
@@ -218,7 +218,7 @@ impl PartialEq for Icon {
             (Icon::Emoji { key: a }, Icon::Emoji { key: b }) => a == b,
             (Icon::BrandLogo { icon: a }, Icon::BrandLogo { icon: b }) => a == b,
             (Icon::ActerIcon { icon: a }, Icon::ActerIcon { icon: b }) => a == b,
-            _ => false, // we can"t match images unfortunately
+            _ => false, // we can’t match images unfortunately
         }
     }
 }

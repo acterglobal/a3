@@ -24,7 +24,7 @@ Future<void> removeNotificationsForRoom(String roomId) async {
 }
 
 Future<void> cancelInThread(String threadId) async {
-  if (!useLocal) {
+  if (Platform.isLinux || !useLocal) {
     return; // nothing for us to do here.
   }
 

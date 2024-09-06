@@ -7,9 +7,9 @@ import 'package:acter/config/env.g.dart';
 import 'package:acter/config/notifications/firebase_options.dart';
 import 'package:acter/config/notifications/util.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter_notifify/acter_notifify.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_notifify/acter_notifify.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
@@ -64,7 +64,7 @@ Future<bool> setupPushNotifications(
 
   final deviceId = client.deviceId().toString();
   if (!forced && await wasRejected(deviceId)) {
-    // If the user rejected and we aren't asked to force, don't bother them again.
+    // If the user rejected and we aren’t asked to force, don’t bother them again.
     return false;
   }
 
@@ -77,7 +77,7 @@ Future<bool> setupPushNotifications(
     ntfyServer: ntfyServer,
   );
   if (requested == false) {
-    // we were bluntly rejected, save and don't bother them again:
+    // we were bluntly rejected, save and don’t bother them again:
     await setRejected(deviceId, true);
   }
   return requested != null;

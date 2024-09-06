@@ -205,30 +205,47 @@ class MultiTriggerAutocompleteState extends State<MultiTriggerAutocomplete> {
     final trigger = _currentTrigger;
     if (query == null || trigger == null) return;
 
-    final querySelection = query.selection;
     final text = _textEditingController.text;
+    final currentSelection = _textEditingController.selection;
 
-    var start = querySelection.baseOffset;
-    if (!keepTrigger) start -= 1;
+    // Find the start of the current word (where the trigger character is)
+    var start = currentSelection.baseOffset;
+    while (start > 0 && text[start - 1] != ' ' && text[start - 1] != '\n') {
+      start--;
+    }
 
-    final end = querySelection.extentOffset;
+    final end = currentSelection.extentOffset;
 
-    final alreadyContainsSpace = text.substring(end).startsWith(' ');
-    // Having extra space helps dismissing the auto-completion view.
-    if (!alreadyContainsSpace) option += ' ';
+    // Determine if we need to add the trigger character
+    String finalOption = option;
+    if (keepTrigger && !option.startsWith(trigger.trigger)) {
+      finalOption = trigger.trigger + option;
+    }
 
-    var selectionOffset = start + option.length;
-    // In case the extra space is already there, we need to move the cursor
-    // after the space.
-    if (alreadyContainsSpace) selectionOffset += 1;
+    final alreadyContainsSpace = end < text.length && text[end] == ' ';
+    if (!alreadyContainsSpace) finalOption += ' ';
 
-    final newText = text.replaceRange(start, end, option);
+    var selectionOffset = start + finalOption.length;
+    if (alreadyContainsSpace) selectionOffset++;
+
+    final newText = text.replaceRange(start, end, finalOption);
     final newSelection = TextSelection.collapsed(offset: selectionOffset);
 
     _textEditingController.value = TextEditingValue(
       text: newText,
       selection: newSelection,
     );
+
+    final tagStart = keepTrigger ? start : start + 1;
+    final tagEnd = start + finalOption.trimRight().length;
+    final tag = TaggedText(
+      trigger: trigger.trigger,
+      displayText: finalOption.trim(),
+      start: tagStart,
+      end: tagEnd,
+    );
+
+    _textEditingController.addTag(tag);
 
     return closeOptions();
   }

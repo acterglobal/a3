@@ -81,7 +81,7 @@ jobs:
             flutter_build_args: "build linux"
             artifact_prefix: acter-${{inputs.artifacts_prefix}}linux-x64
             artifact_path: app/build/linux/x64/release/bundle/
-            tar_files: lib/ data/ acter logo.png *.desktop  LICENSE*
+            tar_files: lib/ data/ acter *.png *.svg *.desktop  LICENSE*
           - name: iOS
             os: macos-14
             target: ios
@@ -370,8 +370,9 @@ jobs:
       - name: Copy further assets
         if: matrix.target == 'linux'
         run: |
-          cp app/flatpak/global.acter.a3.desktop ${{ matrix.artifact_path }}
-          cp app/assets/icon/logo.png ${{ matrix.artifact_path }}
+          cp app/linux/packaging/global.acter.a3.desktop ${{ matrix.artifact_path }}
+          cp app/assets/icon/logo.png ${{ matrix.artifact_path }}/acter.png
+          cp app/assets/icon/acter-logo.svg ${{ matrix.artifact_path }}/acter.svg
           cp LICENSE* ${{ matrix.artifact_path }}
 
       - name: Rename file
@@ -399,7 +400,7 @@ jobs:
     ##     ## ##        ##       ##     ## ##     ## ##     ## 
      #######  ##        ########  #######  ##     ## ########  
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: "Upload artifacts"
         if: matrix.specific_upload_artifacts
         with:
@@ -411,14 +412,14 @@ jobs:
         if: ${{!matrix.specific_upload_artifacts}}
         run: mv ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ inputs.version }}.* .
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: "Upload artifacts"
         if: ${{!matrix.specific_upload_artifacts}}
         with:
           name: ${{ matrix.name }}
           path: ${{ matrix.artifact_prefix }}-${{ inputs.version }}.*
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: "Upload debug artifacts"
         if: ${{ matrix.with_debug_symbols }}
         with:
@@ -453,10 +454,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ inputs.version }}
           NAME: ${{matrix.name}}
-          FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
-          ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          FAILED_RUN_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+          ARTIFACT_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{env.GITHUB_RUN_ID}}
         with:
           assignees: gnunicorn
           filename: .github/templates/failure-report-template.md.tmpl
           update_existing: false
-

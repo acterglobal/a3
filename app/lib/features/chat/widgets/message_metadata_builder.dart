@@ -21,12 +21,12 @@ class MessageMetadataBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final receipts = message.metadata?['receipts'];
+    Map<String, int>? receipts = message.metadata?['receipts'];
     EventSendState? sendState = message.metadata?['eventState'];
     if (receipts != null && receipts.isNotEmpty == true) {
       return _UserReceiptsWidget(
         roomId: roomId,
-        seenList: (receipts as Map<String, int>).keys.toList(),
+        seenList: receipts.keys.toList(),
       );
     } else {
       if (sendState != null) {
@@ -59,9 +59,10 @@ class MessageMetadataBuilder extends ConsumerWidget {
 }
 
 class _UserReceiptsWidget extends ConsumerWidget {
+  static int limit = 5;
+
   final String roomId;
   final List<String> seenList;
-  static int limit = 5;
 
   const _UserReceiptsWidget({
     required this.roomId,

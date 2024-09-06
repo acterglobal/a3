@@ -41,7 +41,7 @@ bool navigateOnRightBranch(
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       // We need the UI branch to actually switch first
       // and on first switching to it, it might even need to create the
-      // BuildContext, thus we can't optimized based on that either :(
+      // BuildContext, thus we can’t optimized based on that either :(
       navigationCallback(targetBranch.key.currentContext ?? context);
     });
     return true;

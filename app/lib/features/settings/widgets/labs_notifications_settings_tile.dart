@@ -61,7 +61,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
         return;
       }
       // second attempt, even sending the user to the settings, they do not
-      // approve. Let's kick it back off
+      // approve. Let’s kick it back off
       await updateFeatureState(ref, LabsFeature.mobilePushNotifications, false);
       if (!context.mounted) {
         EasyLoading.dismiss();

@@ -49,7 +49,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
       );
 
       if (selectedToken != null) {
-        // we had a token selected, let's try to find it again
+        // we had a token selected, let’s try to find it again
         final tokenCode = selectedToken!.token();
         newToken = tokens.firstWhere(
           (t) => t.token() == tokenCode, // replace with teh updated one

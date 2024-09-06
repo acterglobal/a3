@@ -40,7 +40,7 @@ fn main() {
         std::fs::write(crate_dir.join("src").join(API_RUST_FILENAME), rst)
             .expect("Writing rust file failed.");
 
-        // then let's build the dart API
+        // then let’s build the dart API
         ffigen
             .generate_dart(dart, "acter", "acter")
             .expect("Failure generating dart side of ffigen");
@@ -51,7 +51,7 @@ fn main() {
     }
 
     if std::env::var("SKIP_CBINDGEN").is_err() {
-        // once the setup is ready, let's create the c-headers
+        // once the setup is ready, let’s create the c-headers
         // this needs the rust API to be generated first, as it
         // imports that via the `cbindings`-feature to scan an build the headers
         let config = cbindgen::Config::from_file(crate_dir.join(API_CBINDGEN_CONFIG_FILENAME))
