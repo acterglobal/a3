@@ -69,7 +69,9 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
             onPressed: () {
               if (widget.onIconSelection != null) {
                 widget.onIconSelection!(
-                    selectedColor.value, selectedIcon.value);
+                  selectedColor.value,
+                  selectedIcon.value,
+                );
               }
               Navigator.pop(context);
             },
