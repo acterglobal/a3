@@ -100,7 +100,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                     children: <Widget>[
                       Center(
                         child: ActerIconWidget(
-                          icon: ActerIcon.pin,
+                          icon: pinIcon ?? ActerIcon.pin,
                           onIconSelection: (pinIconColor, pinIcon) {
                             this.pinIcon = pinIcon;
                             this.pinIconColor = pinIconColor;
@@ -310,6 +310,8 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   Future<void> _createPin() async {
+    //Close keyboard
+    FocusManager.instance.primaryFocus?.unfocus();
     if (!_formKey.currentState!.validate()) return;
     EasyLoading.show(status: L10n.of(context).creatingPin);
     try {
