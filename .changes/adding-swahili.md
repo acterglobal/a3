@@ -1,0 +1,1 @@
+- Acter is now available in Swahili (sw). If your system is in Swahili and you've never changed the language, Acter will automatically switch to Swahili for you.
