@@ -148,7 +148,8 @@ final shellBranches = [
 final goRouter = GoRouter(
   errorBuilder: (context, state) => NotFoundPage(routerState: state),
   navigatorKey: rootNavKey,
-  initialLocation: '/',
+  initialLocation: Routes.main.route,
+  restorationScopeId: 'acter-routes',
   routes: [
     ...generalRoutes,
     StatefulShellRoute.indexedStack(
