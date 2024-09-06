@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 List<Color> iconPickerColors = [
-  Colors.blueGrey,
-  Colors.green,
-  Colors.red,
-  Colors.blue,
-  Colors.purple,
-  Colors.amber,
+  Colors.grey,
+  Colors.greenAccent,
+  Colors.redAccent,
+  Colors.lightBlueAccent,
+  Colors.purpleAccent,
+  Colors.amberAccent,
   Colors.deepOrangeAccent,
-  Colors.brown,
-  Colors.teal,
+  Colors.lightGreenAccent,
+  Colors.tealAccent,
   Colors.purpleAccent,
   Colors.indigoAccent,
   Colors.pinkAccent,

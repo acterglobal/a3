@@ -90,11 +90,11 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
             return Center(
               child: Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
+                child: Icon(
+                  acterIcon.data,
+                  size: 100,
                   color: color,
-                  borderRadius: const BorderRadius.all(Radius.circular(100)),
                 ),
-                child: Icon(acterIcon.data, size: 70),
               ),
             );
           },

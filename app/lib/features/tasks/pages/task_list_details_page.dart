@@ -4,6 +4,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -60,10 +61,10 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               ActerIconWidget(
-                iconSize: 20,
+                iconSize: 40,
                 color: convertColor(
                   tasklist.display()?.color(),
-                  Theme.of(context).unselectedWidgetColor,
+                  iconPickerColors[0],
                 ),
                 icon: ActerIcon.iconForTask(
                   tasklist.display()?.iconStr(),

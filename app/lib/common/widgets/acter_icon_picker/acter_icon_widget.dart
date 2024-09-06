@@ -21,7 +21,7 @@ class ActerIconWidget extends StatefulWidget {
 }
 
 class _ActerIconWidgetState extends State<ActerIconWidget> {
-  final ValueNotifier<Color> color = ValueNotifier(Colors.blueGrey);
+  final ValueNotifier<Color> color = ValueNotifier(Colors.grey);
   final ValueNotifier<ActerIcon> icon = ValueNotifier(ActerIcon.list);
 
   @override
@@ -59,13 +59,10 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
         return ValueListenableBuilder<ActerIcon>(
           valueListenable: icon,
           builder: (context, acterIcon, child) {
-            return Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: colorData,
-                borderRadius: const BorderRadius.all(Radius.circular(100)),
-              ),
-              child: Icon(acterIcon.data, size: widget.iconSize ?? 70),
+            return Icon(
+              acterIcon.data,
+              size: widget.iconSize ?? 100,
+              color: colorData,
             );
           },
         );

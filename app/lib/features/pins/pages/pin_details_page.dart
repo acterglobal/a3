@@ -3,6 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -233,10 +234,10 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           Row(
             children: [
               ActerIconWidget(
-                iconSize: 30,
+                iconSize: 50,
                 color: convertColor(
                   pin.display()?.color(),
-                  Theme.of(context).unselectedWidgetColor,
+                  iconPickerColors[0],
                 ),
                 icon: ActerIcon.iconForPin(
                   pin.display()?.iconStr(),
