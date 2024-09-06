@@ -47,13 +47,17 @@ impl PublicProfile {
 
 #[derive(Clone)]
 pub enum UserProfile {
-    Member(RoomMember),
+    Member((RoomMember, Vec<String>)),
     PublicProfile(PublicProfile),
 }
 
 impl UserProfile {
     pub(crate) fn from_member(member: RoomMember) -> Self {
-        UserProfile::Member(member)
+        UserProfile::with_shared_rooms(member, Default::default())
+    }
+
+    pub(crate) fn with_shared_rooms(member: RoomMember, shared_rooms: Vec<String>) -> Self {
+        UserProfile::Member((member, shared_rooms))
     }
 
     pub(crate) fn from_search(public_profile: PublicProfile) -> Self {
@@ -62,14 +66,14 @@ impl UserProfile {
 
     pub fn user_id(&self) -> OwnedUserId {
         match self {
-            UserProfile::Member(m) => m.user_id().to_owned(),
+            UserProfile::Member((m, _v)) => m.user_id().to_owned(),
             UserProfile::PublicProfile(p) => p.user_id(),
         }
     }
 
     pub fn has_avatar(&self) -> bool {
         match self {
-            UserProfile::Member(member) => member.avatar_url().is_some(),
+            UserProfile::Member((member, _v)) => member.avatar_url().is_some(),
             UserProfile::PublicProfile(public_profile) => public_profile.inner.avatar_url.is_some(),
         }
     }
@@ -78,7 +82,7 @@ impl UserProfile {
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
 
         Ok(OptionBuffer::new(match self {
-            UserProfile::Member(member) => {
+            UserProfile::Member((member, _v)) => {
                 let member = member.clone();
                 RUNTIME
                     .spawn(async move { member.avatar(format).await })
@@ -93,9 +97,16 @@ impl UserProfile {
         }))
     }
 
-    pub fn get_display_name(&self) -> Option<String> {
+    pub fn shared_rooms(&self) -> Vec<String> {
         match self {
-            UserProfile::Member(member) => member.display_name().map(|x| x.to_string()),
+            UserProfile::Member((_, rooms)) => rooms.clone(),
+            _ => vec![],
+        }
+    }
+
+    pub fn display_name(&self) -> Option<String> {
+        match self {
+            UserProfile::Member((member, _v)) => member.display_name().map(|x| x.to_string()),
             UserProfile::PublicProfile(public_profile) => public_profile.inner.display_name.clone(),
         }
     }
