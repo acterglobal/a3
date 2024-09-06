@@ -90,3 +90,7 @@ void goToSpace(BuildContext localContext, String spaceId) {
         .pushNamed(Routes.space.name, pathParameters: {'spaceId': spaceId}),
   );
 }
+
+Future<String?> getLastRoute(BuildContext context) async {
+  return Routes.chat.route;
+}

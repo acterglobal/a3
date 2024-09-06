@@ -22,7 +22,6 @@ enum Routes {
   myProfile('/profile'),
 
   // --- generic nav
-  main('/'),
   dashboard('/dashboard'),
   search('/search'),
   activities('/activities'),
@@ -104,6 +103,8 @@ enum Routes {
   // -- super invites
   settingsSuperInvites('/settings/super_invites'),
   // -- utils
+  main('/'),
+  initial('/__init__'),
   bugReport('/bug-report'),
   quickJump('/quick-jump'),
   // -- coming in from a push notification

@@ -22,10 +22,31 @@ import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
 import 'package:acter/router/router.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+bool justStarted = true;
+final initialRoute = GoRoute(
+  parentNavigatorKey: rootNavKey,
+  name: Routes.initial.name,
+  path: Routes.initial.route,
+  redirect: (BuildContext context, GoRouterState state) async {
+    // we first check if there is a client available for us to use
+    final authGuarded = await authGuardRedirect(context, state);
+    if (authGuarded != null) {
+      return authGuarded;
+    }
+    if (justStarted && context.mounted) {
+      justStarted = false;
+      final latestRoute = await getLastRoute(context);
+      return latestRoute ?? Routes.main.route;
+    }
+    return Routes.main.route;
+  },
+);
 
 final generalRoutes = [
   GoRoute(
@@ -308,4 +329,5 @@ final generalRoutes = [
       }
     },
   ),
+  initialRoute,
 ];
