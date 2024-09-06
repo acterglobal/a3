@@ -51,7 +51,7 @@ class LocationStateNotifier extends StateNotifier<String> {
                   .pathSegments
                   .join('/')
               : newRoute,
-          '/' => homeTabNavKey.currentContext != null
+          'dashboard' => homeTabNavKey.currentContext != null
               ? StatefulNavigationShell.of(homeTabNavKey.currentContext!)
                   .widget
                   .shellRouteContext

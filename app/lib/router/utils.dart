@@ -4,8 +4,12 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/config/app_shell.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::router');
 
 enum ShellBranch {
   homeShell,
@@ -92,5 +96,17 @@ void goToSpace(BuildContext localContext, String spaceId) {
 }
 
 Future<String?> getLastRoute(BuildContext context) async {
-  return Routes.chat.route;
+  try {
+    final acterSdk = await ActerSdk.instance;
+    final deviceId = acterSdk.currentClient?.deviceId().toString();
+    if (deviceId == null) {
+      // we are all fine, we have a client, do go on.
+      return null;
+    }
+    final prefs = await sharedPrefs();
+    return prefs.getString('last_route:$deviceId');
+  } catch (error, stack) {
+    _log.severe('Getting Latest Route failed', error, stack);
+    return null;
+  }
 }

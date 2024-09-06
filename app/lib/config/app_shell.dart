@@ -15,6 +15,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,18 +53,33 @@ class AppShellState extends ConsumerState<AppShell> {
   }
 
   Future<void> _init() async {
-    // no wait goes there
-    Future.delayed(
-      const Duration(seconds: 1),
-      // ignore: use_build_context_synchronously
-      () => bottomNavigationTutorials(context: context),
-    );
+    // fire and forget: no wait goes there
     initShake();
 
     // these want to be sure to execute in order
     await initNotifications();
     // calendar sync
     await initCalendarSync();
+
+    // no awaiting necessary
+    _initTutorial();
+    _initLocationListener();
+  }
+
+  void _initLocationListener() {
+    ref.listenManual(currentRoutingLocation, (old, location) async {
+      final deviceId = ref.read(deviceIdProvider);
+      print('setting $location');
+      (await sharedPrefs()).setString('last_route:$deviceId', location);
+    });
+  }
+
+  void _initTutorial() {
+    Future.delayed(
+      const Duration(seconds: 1),
+      // ignore: use_build_context_synchronously
+      () => bottomNavigationTutorials(context: context),
+    );
   }
 
   Future<void> initShake() async {
