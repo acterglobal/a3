@@ -7,9 +7,6 @@ import 'package:acter/features/home/widgets/chats_icon.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger('a3::home::navigation');
 
 const fallbackBottomBarIdx = 0;
 
