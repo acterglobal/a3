@@ -36,6 +36,8 @@ class SpacesBuilder extends ConsumerWidget {
         if (spaces.isEmpty) return renderEmpty(context, ref);
         return renderItems(context, ref, spaces);
       },
+      skipLoadingOnRefresh: true,
+      skipLoadingOnReload: true,
     );
   }
 
