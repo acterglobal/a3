@@ -11,10 +11,12 @@ class NewsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canPostLoader = ref.watch(
-      hasSpaceWithPermissionProvider('CanPostNews'),
-    );
-    final canPostNews = canPostLoader.valueOrNull ?? false;
+    final canPostNews = ref
+            .watch(
+              hasSpaceWithPermissionProvider('CanPostNews'),
+            )
+            .valueOrNull ==
+        true;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
