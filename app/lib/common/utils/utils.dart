@@ -36,8 +36,10 @@ final idMatrixRegexp = RegExp(
   r'matrix:roomid/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
 );
 
-final urlValidatorRegexp = RegExp(
-  r'^[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b[-a-zA-Z0-9()@:%_+.~#?&/=]*$',
+final urlValidatorRegexp =  RegExp(
+  r'^[a-zA-Z][a-zA-Z\d+\-.]*:\/\/(?:[^\s:@]+:[^\s:@]*@)?(?:[^\s:@]+(?::[0-9]{1,5})?\/?)?(?:[^\s?]*)?(?:\?[^\s#]*)?(?:#[^\s]*)?$',
+  caseSensitive: false,
+  multiLine: false,
 );
 
 /// Get provider right from the context no matter where we are
