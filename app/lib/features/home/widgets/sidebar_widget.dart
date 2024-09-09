@@ -295,9 +295,10 @@ class SidebarWidget extends ConsumerWidget {
   }
 
   List<_SidebarItem> _spacesList(BuildContext context, WidgetRef ref) {
-    final spaces = ref.watch(spacesProvider);
+    final bookmarkedSpaces = ref.watch(bookmarkedSpacesProvider);
+    final otherSpaces = ref.watch(unbookmarkedSpacesProvider);
 
-    return spaces.map((space) {
+    return [].followedBy(bookmarkedSpaces).followedBy(otherSpaces).map((space) {
       final roomId = space.getRoomIdStr();
       final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
       final parentBadges =
