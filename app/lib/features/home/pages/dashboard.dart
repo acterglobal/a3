@@ -25,7 +25,7 @@ class Dashboard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(alwaysClientProvider);
-    final spaces = ref.watch(spacesProvider);
+    final hasSpaces = ref.watch(hasSpacesProvider);
     return InDashboard(
       child: SafeArea(
         child: Scaffold(
@@ -33,9 +33,8 @@ class Dashboard extends ConsumerWidget {
           body: Padding(
             padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
             child: SingleChildScrollView(
-              child: spaces.isEmpty
-                  ? emptyState(context)
-                  : Column(
+              child: hasSpaces
+                  ? Column(
                       children: [
                         searchWidget(context),
                         featuresNav(context),
@@ -52,7 +51,8 @@ class Dashboard extends ConsumerWidget {
                         ),
                         const MySpacesSection(limit: 5),
                       ],
-                    ),
+                    )
+                  : emptyState(context),
             ),
           ),
         ),

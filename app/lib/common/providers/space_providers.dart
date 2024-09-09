@@ -16,6 +16,9 @@ final spacesProvider =
   return SpaceListNotifier(ref: ref, client: client);
 });
 
+final hasSpacesProvider =
+    Provider((ref) => ref.watch(spacesProvider).isNotEmpty);
+
 final bookmarkedSpacesProvider = Provider(
   (ref) => ref.watch(spacesProvider).where((s) => s.isBookmarked()).toList(),
 );
