@@ -34,13 +34,7 @@ impl CategoriesBuilder {
         self.entries.clear();
     }
     pub fn add(&mut self, cat: Box<Category>) {
-        let id = cat.id();
-        let idx = self.entries.iter().position(|p| p.id == id);
         self.entries.push(*cat);
-        if let Some(index) = idx {
-            // remove the existing entry and replace it with the freshly added one
-            self.entries.swap_remove(index);
-        }
     }
     pub(crate) fn build(self) -> CategoriesStateEventContent {
         CategoriesStateEventContent {
