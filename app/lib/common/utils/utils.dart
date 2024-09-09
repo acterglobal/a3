@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:acter/common/providers/room_providers.dart';
@@ -9,7 +8,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,17 +75,6 @@ const largeScreenBreakPoint = 770;
 extension ActerContextUtils on BuildContext {
   bool get isLargeScreen =>
       MediaQuery.of(this).size.width >= largeScreenBreakPoint;
-}
-
-DateTime kFirstDay = DateTime.utc(2010, 10, 16);
-DateTime kLastDay = DateTime.utc(2050, 12, 31);
-
-List<DateTime> daysInRange(DateTime first, DateTime last) {
-  final dayCount = last.difference(first).inDays + 1;
-  return List.generate(
-    dayCount,
-    (index) => DateTime.utc(first.year, first.month, first.day + index),
-  );
 }
 
 String formatDate(CalendarEvent e) {
@@ -214,12 +201,6 @@ Future<void> mailTo({required String toAddress, String? subject}) async {
   await launchUrl(emailLaunchUri);
 }
 
-String randomString() {
-  final random = Random.secure();
-  final values = List<int>.generate(16, (i) => random.nextInt(255));
-  return base64UrlEncode(values);
-}
-
 Future<void> openAvatar(
   BuildContext context,
   WidgetRef ref,
@@ -277,22 +258,6 @@ T getRandomElement<T>(List<T> list) {
   return list[i];
 }
 
-int hexOfRGBA(int r, int g, int b, {double opacity = 1}) {
-  r = (r < 0) ? -r : r;
-  g = (g < 0) ? -g : g;
-  b = (b < 0) ? -b : b;
-  opacity = (opacity < 0) ? -opacity : opacity;
-  opacity = (opacity > 1) ? 255 : opacity * 255;
-  r = (r > 255) ? 255 : r;
-  g = (g > 255) ? 255 : g;
-  b = (b > 255) ? 255 : b;
-  int a = opacity.toInt();
-  return int.parse(
-    '${a.toRadixString(16)}${r.toRadixString(16)}${g.toRadixString(16)}${b.toRadixString(16)}',
-    radix: 16,
-  );
-}
-
 bool isOnlyEmojis(String text) {
   final emojisRegExp = RegExp(
     r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])',
@@ -342,38 +307,10 @@ String? simplifyUserId(String name) {
   return null;
 }
 
-String? simplifyRoomId(String name) {
-  // example - !qporfwt:matrix.org
-  RegExp re = RegExp(r'^!(\w+([\.-]?\w+)*):\w+([\.-]?\w+)*(\.\w+)+$');
-  RegExpMatch? match = re.firstMatch(name);
-  if (match != null) {
-    return match.group(1);
-  }
-  return name;
-}
-
 String simplifyBody(String formattedBody) {
   // strip out parent msg from reply msg
   RegExp re = RegExp(r'^<mx-reply>[\s\S]+</mx-reply>');
   return formattedBody.replaceAll(re, '');
-}
-
-Color getUserAvatarNameColor(types.User user, List<Color> colors) {
-  return colors[user.id.hashCode % colors.length];
-}
-
-String getUserInitials(types.User user) {
-  var initials = '';
-
-  if ((user.firstName ?? '').isNotEmpty) {
-    initials += user.firstName![0].toUpperCase();
-  }
-
-  if ((user.lastName ?? '').isNotEmpty) {
-    initials += user.lastName![0].toUpperCase();
-  }
-
-  return initials.trim();
 }
 
 String? getIssueId(String url) {

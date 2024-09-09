@@ -41,9 +41,7 @@ class MessageActions extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       constraints: const BoxConstraints(maxWidth: 200),
-      margin: !isAuthor
-          ? const EdgeInsets.only(top: 4)
-          : const EdgeInsets.only(top: 4),
+      margin: const EdgeInsets.only(top: 4),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(5)),
         color: Theme.of(context).colorScheme.surface,

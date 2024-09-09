@@ -8,10 +8,10 @@ import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:html/parser.dart';
 
 //Check for mentioned user link
@@ -79,18 +79,6 @@ class UserMentionMessageData {
     required this.userName,
     required this.displayName,
   });
-}
-
-String? extractUserIdFromUri(String link) {
-  final mentionedUserLink = mentionedUserLinkRegex.firstMatch(link);
-
-  if (mentionedUserLink != null) {
-    //Get Username from mentioned user link
-    final alias = mentionedUserLink.namedGroup('alias') ?? '';
-    final server = mentionedUserLink.namedGroup('server') ?? '';
-    return '$alias:$server';
-  }
-  return null;
 }
 
 UserMentionMessageData parseUserMentionMessage(

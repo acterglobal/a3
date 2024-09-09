@@ -26,7 +26,7 @@ final AutoDisposeFutureProvider<List<PinDetails>> pinsFoundProvider =
     final pinId = pin.eventIdStr();
     final isLink = pin.isLink();
     if (searchValue.isNotEmpty) {
-      if (!(pinTitle.toLowerCase()).contains(searchValue)) {
+      if (!pinTitle.toLowerCase().contains(searchValue)) {
         continue;
       }
     }
@@ -34,9 +34,10 @@ final AutoDisposeFutureProvider<List<PinDetails>> pinsFoundProvider =
       PinDetails(
         pinTitle,
         pinId,
-        icon: isLink
-            ? const Icon(Atlas.link_chain_thin, size: 12)
-            : const Icon(Atlas.document_thin, size: 12),
+        icon: Icon(
+          isLink ? Atlas.link_chain_thin : Atlas.document_thin,
+          size: 12,
+        ),
       ),
     );
   }

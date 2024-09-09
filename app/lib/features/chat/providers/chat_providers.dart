@@ -17,7 +17,6 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:riverpod/riverpod.dart';
 
@@ -64,8 +63,8 @@ bool msgFilter(types.Message m) {
       !(m is types.CustomMessage && !renderCustomMessageBubble(m));
 }
 
-final renderableChatMessagesProvider =
-    StateProvider.autoDispose.family<List<Message>, String>((ref, roomId) {
+final renderableChatMessagesProvider = StateProvider.autoDispose
+    .family<List<types.Message>, String>((ref, roomId) {
   return ref
       .watch(chatStateProvider(roomId).select((value) => value.messages))
       .where(
@@ -88,8 +87,8 @@ final latestTrackableMessageId =
   );
 });
 
-final chatMessagesProvider =
-    StateProvider.autoDispose.family<List<Message>, String>((ref, roomId) {
+final chatMessagesProvider = StateProvider.autoDispose
+    .family<List<types.Message>, String>((ref, roomId) {
   final moreMessages = [];
   if (ref.watch(chatStateProvider(roomId).select((value) => !value.hasMore))) {
     moreMessages.add(
