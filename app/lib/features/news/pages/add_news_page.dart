@@ -28,7 +28,8 @@ final _log = Logger('a3::news::add_page');
 const addNewsKey = Key('add-news');
 
 class AddNewsPage extends ConsumerStatefulWidget {
-  const AddNewsPage({super.key = addNewsKey});
+  final String? initialSelectedSpace;
+  const AddNewsPage({super.key = addNewsKey, this.initialSelectedSpace});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => AddNewsState();
@@ -41,6 +42,13 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialSelectedSpace != null) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        ref
+            .read(newsStateProvider.notifier)
+            .setSpaceId(widget.initialSelectedSpace);
+      });
+    }
     ref.listenManual(newsStateProvider, fireImmediately: true,
         (prevState, nextState) async {
       final isText = nextState.currentNewsSlide?.type == NewsSlideType.text;
