@@ -20,7 +20,10 @@ class SpaceDetails extends SearchTermDelegate {
 }
 
 List<SpaceDetails> _filterSpaces(
-    Ref ref, String searchValue, List<Space> spaces) {
+  Ref ref,
+  String searchValue,
+  List<Space> spaces,
+) {
   final List<SpaceDetails> finalSpaces = [];
 
   for (final space in spaces) {
