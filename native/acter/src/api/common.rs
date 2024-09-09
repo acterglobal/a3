@@ -753,7 +753,6 @@ pub fn new_link_ref_builder(title: String, uri: String) -> Result<RefDetailsBuil
     Ok(builder)
 }
 
-#[allow(clippy::boxed_local)]
 pub fn new_obj_ref_builder(
     position: Option<String>,
     reference: Box<RefDetails>,

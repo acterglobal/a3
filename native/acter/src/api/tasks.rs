@@ -261,7 +261,6 @@ impl TaskListDraft {
         self
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn display(&mut self, display: Box<Display>) -> &mut Self {
         self.content.display(Some(*display));
         self
@@ -853,7 +852,6 @@ impl TaskDraft {
         self
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn display(&mut self, display: Box<Display>) -> &mut Self {
         self.content.display(Some(*display));
         self
@@ -935,7 +933,6 @@ impl TaskUpdateBuilder {
         self
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn display(&mut self, display: Box<Display>) -> &mut Self {
         self.content.display(Some(Some(*display)));
         self
@@ -1166,7 +1163,6 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn display(&mut self, display: Box<Display>) -> &mut Self {
         self.content.display(Some(Some(*display)));
         self
