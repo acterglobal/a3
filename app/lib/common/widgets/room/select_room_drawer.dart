@@ -127,8 +127,11 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
 
   List<String> allRooms() {
     return switch (widget.roomType) {
-      RoomType.space =>
-        ref.watch(spacesProvider).map((space) => space.getRoomIdStr()).toList(),
+      RoomType.space => ref
+          .watch(bookmarkedSpacesProvider)
+          .followedBy(ref.watch(unbookmarkedSpacesProvider))
+          .map((space) => space.getRoomIdStr())
+          .toList(),
       RoomType.groupChat => ref
           .watch(chatsProvider.select((v) => v.where((d) => !d.isDm())))
           .map((room) => room.getRoomIdStr())
