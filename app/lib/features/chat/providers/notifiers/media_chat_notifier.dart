@@ -5,6 +5,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
@@ -76,39 +77,40 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
   }
 
   Future<void> downloadMedia() async {
-    if (_convo != null) {
-      state = state.copyWith(isDownloading: true);
-      try {
-        //Download media if media path is not available
-        final tempDir = await getTemporaryDirectory();
-        final result = await _convo!.downloadMedia(
-          messageInfo.messageId,
-          null,
-          tempDir.path,
-        );
-        final mediaPath = result.text();
-        if (mediaPath != null) {
-          state = state.copyWith(
-            mediaFile: File(mediaPath),
-            videoThumbnailFile: null,
-            isDownloading: false,
-          );
-          final videoThumbnailFile = await getThumbnailData(mediaPath);
-          if (videoThumbnailFile != null) {
-            if (state.mediaFile?.path == mediaPath) {
-              state = state.copyWith(videoThumbnailFile: videoThumbnailFile);
-            }
-          }
-        }
-      } catch (e, s) {
-        _log.severe('Error downloading media:', e, s);
-        state = state.copyWith(
-          isDownloading: false,
-          mediaChatLoadingState: MediaChatLoadingState.error(
-            'Some error occurred ${e.toString()}',
-          ),
-        );
+    if (_convo == null) return;
+    state = state.copyWith(isDownloading: true);
+    try {
+      //Download media if media path is not available
+      final tempDir = await getTemporaryDirectory();
+      final result = await _convo!.downloadMedia(
+        messageInfo.messageId,
+        null,
+        tempDir.path,
+      );
+      final mediaPath = result.text();
+      if (mediaPath == null) {
+        state = state.copyWith(isDownloading: false);
+        return;
       }
+      state = state.copyWith(
+        mediaFile: File(mediaPath),
+        videoThumbnailFile: null,
+        isDownloading: false,
+      );
+      final videoThumbnailFile = await getThumbnailData(mediaPath);
+      videoThumbnailFile.map((p0) {
+        if (state.mediaFile?.path == mediaPath) {
+          state = state.copyWith(videoThumbnailFile: p0);
+        }
+      });
+    } catch (e, s) {
+      _log.severe('Error downloading media:', e, s);
+      state = state.copyWith(
+        isDownloading: false,
+        mediaChatLoadingState: MediaChatLoadingState.error(
+          'Some error occurred ${e.toString()}',
+        ),
+      );
     }
   }
 

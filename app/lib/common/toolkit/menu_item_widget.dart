@@ -1,3 +1,4 @@
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 
 class MenuItemWidget extends StatelessWidget {
@@ -35,32 +36,28 @@ class MenuItemWidget extends StatelessWidget {
         key: innerKey,
         onTap: onTap,
         visualDensity: visualDensity,
-        leading: iconData != null
-            ? Icon(
-                iconData,
-                color: enabled ? iconColor : Theme.of(context).disabledColor,
-              )
-            : null,
+        leading: iconData.map(
+          (p0) => Icon(
+            p0,
+            color: enabled ? iconColor : Theme.of(context).disabledColor,
+          ),
+        ),
         title: Text(
           title,
           style: titleStyles?.copyWith(
             color: enabled ? null : Theme.of(context).disabledColor,
           ),
         ),
-        subtitle: subTitle != null
-            ? Text(
-                subTitle!,
-                style: titleStyles?.copyWith(
-                  color: enabled ? null : Theme.of(context).disabledColor,
-                ),
-              )
-            : null,
+        subtitle: subTitle.map(
+          (p0) => Text(
+            p0,
+            style: titleStyles?.copyWith(
+              color: enabled ? null : Theme.of(context).disabledColor,
+            ),
+          ),
+        ),
         trailing: trailing ??
-            (withMenu
-                ? const Icon(
-                    Icons.keyboard_arrow_right_outlined,
-                  )
-                : null),
+            (withMenu ? const Icon(Icons.keyboard_arrow_right_outlined) : null),
       ),
     );
   }

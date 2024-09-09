@@ -6,6 +6,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
@@ -89,11 +90,9 @@ final _accountAvatarProvider =
   final avatar = await account.avatar(thumbSize);
   // Only call data() once as it will consume the value and any subsequent
   // call will come back with `null`.
-  final avatarData = avatar.data();
-  if (avatarData != null) {
-    return MemoryImage(Uint8List.fromList(avatarData.asTypedList()));
-  }
-  return null;
+  return avatar
+      .data()
+      .map((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
 });
 
 final notificationSettingsProvider = AsyncNotifierProvider<

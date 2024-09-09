@@ -1,4 +1,5 @@
 import 'package:acter/router/router.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,51 +25,56 @@ class LocationStateNotifier extends StateNotifier<String> {
         // read it up from the specific StatefulNavigationShell.
         // see https://github.com/flutter/flutter/issues/146610
         final actualRoute = switch (newRoute) {
-          'chat' => chatTabNavKey.currentContext != null
-              ? StatefulNavigationShell.of(chatTabNavKey.currentContext!)
-                  .widget
-                  .shellRouteContext
-                  .routerState
-                  .uri
-                  .pathSegments
-                  .join('/')
-              : newRoute,
-          'activities' => activitiesTabNavKey.currentContext != null
-              ? StatefulNavigationShell.of(activitiesTabNavKey.currentContext!)
-                  .widget
-                  .shellRouteContext
-                  .routerState
-                  .uri
-                  .pathSegments
-                  .join('/')
-              : newRoute,
-          'updates' => updateTabNavKey.currentContext != null
-              ? StatefulNavigationShell.of(updateTabNavKey.currentContext!)
-                  .widget
-                  .shellRouteContext
-                  .routerState
-                  .uri
-                  .pathSegments
-                  .join('/')
-              : newRoute,
-          '/' => homeTabNavKey.currentContext != null
-              ? StatefulNavigationShell.of(homeTabNavKey.currentContext!)
-                  .widget
-                  .shellRouteContext
-                  .routerState
-                  .uri
-                  .pathSegments
-                  .join('/')
-              : newRoute,
-          'search' => searchTabNavKey.currentContext != null
-              ? StatefulNavigationShell.of(searchTabNavKey.currentContext!)
-                  .widget
-                  .shellRouteContext
-                  .routerState
-                  .uri
-                  .pathSegments
-                  .join('/')
-              : newRoute,
+          'chat' => chatTabNavKey.currentContext.map(
+                (p0) => StatefulNavigationShell.of(p0)
+                    .widget
+                    .shellRouteContext
+                    .routerState
+                    .uri
+                    .pathSegments
+                    .join('/'),
+              ) ??
+              newRoute,
+          'activities' => activitiesTabNavKey.currentContext.map(
+                (p0) => StatefulNavigationShell.of(p0)
+                    .widget
+                    .shellRouteContext
+                    .routerState
+                    .uri
+                    .pathSegments
+                    .join('/'),
+              ) ??
+              newRoute,
+          'updates' => updateTabNavKey.currentContext.map(
+                (p0) => StatefulNavigationShell.of(p0)
+                    .widget
+                    .shellRouteContext
+                    .routerState
+                    .uri
+                    .pathSegments
+                    .join('/'),
+              ) ??
+              newRoute,
+          '/' => homeTabNavKey.currentContext.map(
+                (p0) => StatefulNavigationShell.of(p0)
+                    .widget
+                    .shellRouteContext
+                    .routerState
+                    .uri
+                    .pathSegments
+                    .join('/'),
+              ) ??
+              newRoute,
+          'search' => searchTabNavKey.currentContext.map(
+                (p0) => StatefulNavigationShell.of(p0)
+                    .widget
+                    .shellRouteContext
+                    .routerState
+                    .uri
+                    .pathSegments
+                    .join('/'),
+              ) ??
+              newRoute,
           _ => newRoute,
         };
         state = '/$actualRoute';

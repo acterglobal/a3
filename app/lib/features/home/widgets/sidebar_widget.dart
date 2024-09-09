@@ -13,6 +13,7 @@ import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -116,21 +117,22 @@ class _SidebarItem extends StatelessWidget {
       onTap: onTap,
       child: icon,
     );
-
-    if (indicator != null) {
+    indicator.map((p0) {
       inner = Stack(
         children: [
-          Center(child: indicator!),
+          Center(child: p0),
           Center(child: inner),
         ],
       );
-    }
-
+    });
     return Container(
       height: 40,
       width: 40,
       key: tutorialGlobalKey,
-      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
+      ),
       child: inner,
     );
   }

@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -35,20 +36,23 @@ class BriefRoomEntry extends ConsumerWidget {
     );
     final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
-    Widget? trailing;
-    if (trailingBuilder != null) {
-      trailing = trailingBuilder!(canLink);
-    } else if (selectedValue == roomId) {
+    var trailing = trailingBuilder.map((p0) => p0(canLink));
+    if (trailing == null && selectedValue == roomId) {
       trailing = const Icon(Icons.check_circle_outline);
     }
     return ListTile(
       key: Key('$keyPrefix-$roomId'),
       enabled: canLink,
-      leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
+      leading: RoomAvatarBuilder(
+        roomId: roomId,
+        avatarSize: 24,
+      ),
       title: Text(roomName),
       subtitle: subtitle,
       trailing: trailing,
-      onTap: canLink && onSelect != null ? () => onSelect!(roomId) : null,
+      onTap: () {
+        if (canLink) onSelect.map((p0) => p0(roomId));
+      },
     );
   }
 }

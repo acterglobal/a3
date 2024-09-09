@@ -1,6 +1,7 @@
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:dart_date/dart_date.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -73,26 +74,26 @@ class _DueQuickPickerDrawer extends StatelessWidget {
   }
 
   List<Widget> renderPostponing(BuildContext context) {
-    if (currentDue == null) {
-      return [];
-    }
-    return [
-      const SizedBox(height: 10),
-      MenuItemWidget(
-        visualDensity: VisualDensity.compact,
-        title: L10n.of(context).postpone,
-        iconData: Icons.plus_one_rounded,
-        withMenu: false,
-        onTap: () => _submit(context, currentDue! + const Duration(days: 1)),
-      ),
-      MenuItemWidget(
-        visualDensity: VisualDensity.compact,
-        title: L10n.of(context).postponeN(2),
-        iconData: Atlas.plus_thin,
-        withMenu: false,
-        onTap: () => _submit(context, currentDue! + const Duration(days: 2)),
-      ),
-    ];
+    return currentDue.map(
+          (p0) => [
+            const SizedBox(height: 10),
+            MenuItemWidget(
+              visualDensity: VisualDensity.compact,
+              title: L10n.of(context).postpone,
+              iconData: Icons.plus_one_rounded,
+              withMenu: false,
+              onTap: () => _submit(context, p0 + const Duration(days: 1)),
+            ),
+            MenuItemWidget(
+              visualDensity: VisualDensity.compact,
+              title: L10n.of(context).postponeN(2),
+              iconData: Atlas.plus_thin,
+              withMenu: false,
+              onTap: () => _submit(context, p0 + const Duration(days: 2)),
+            ),
+          ],
+        ) ??
+        [];
   }
 
   void _submit(
@@ -102,7 +103,7 @@ class _DueQuickPickerDrawer extends StatelessWidget {
   }) {
     Navigator.pop<PickedDue?>(
       context,
-      newValue != null ? PickedDue(newValue, includeTime) : null,
+      newValue.map((p0) => PickedDue(p0, includeTime)),
     );
   }
 

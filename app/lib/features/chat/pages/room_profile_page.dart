@@ -16,6 +16,7 @@ import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -297,16 +298,19 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         // Invite
         membershipLoader.when(
           data: (membership) {
-            if (membership == null || isDirectChat) return const SizedBox();
-            return _actionItem(
-              context: context,
-              iconData: Atlas.user_plus_thin,
-              actionName: L10n.of(context).invite,
-              actionItemColor: membership.canString('CanInvite')
-                  ? null
-                  : Theme.of(context).colorScheme.onSurface,
-              onTap: () => _handleInvite(membership),
-            );
+            if (isDirectChat) return const SizedBox();
+            return membership.map(
+                  (p0) => _actionItem(
+                    context: context,
+                    iconData: Atlas.user_plus_thin,
+                    actionName: L10n.of(context).invite,
+                    actionItemColor: p0.canString('CanInvite')
+                        ? null
+                        : Theme.of(context).colorScheme.onSurface,
+                    onTap: () => _handleInvite(p0),
+                  ),
+                ) ??
+                const SizedBox();
           },
           error: (e, s) {
             _log.severe('Failed to load room membership', e, s);

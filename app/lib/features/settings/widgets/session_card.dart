@@ -6,6 +6,7 @@ import 'package:acter/features/settings/providers/session_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:breadcrumbs/breadcrumbs.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,18 +22,11 @@ class SessionCard extends ConsumerWidget {
     final fields = [
       isVerified ? L10n.of(context).verified : L10n.of(context).unverified,
     ];
-    final lastSeenTs = deviceRecord.lastSeenTs();
-    if (lastSeenTs != null) {
-      final dateTime = DateTime.fromMillisecondsSinceEpoch(
-        lastSeenTs,
-        isUtc: true,
-      );
+    deviceRecord.lastSeenTs().map((p0) {
+      final dateTime = DateTime.fromMillisecondsSinceEpoch(p0, isUtc: true);
       fields.add(dateTime.toLocal().toString());
-    }
-    final lastSeenIp = deviceRecord.lastSeenIp();
-    if (lastSeenIp != null) {
-      fields.add(lastSeenIp);
-    }
+    });
+    deviceRecord.lastSeenIp().map((p0) => fields.add(p0));
     fields.add(deviceRecord.deviceId().toString());
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),

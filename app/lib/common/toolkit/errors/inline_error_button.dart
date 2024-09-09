@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/errors/error_dialog.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -33,29 +34,44 @@ class ActerInlineErrorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (icon != null) {
-      return _buildWithIcon(context);
-    }
-    return TextButton(
-      onPressed: () async {
-        await ActerErrorDialog.show(
-          context: context,
-          error: error,
-          stack: stack,
-          title: dialogTitle,
-          text: text,
-          textBuilder: textBuilder,
-          onRetryTap: onRetryTap != null
-              ? () {
-                  onRetryTap!();
+    return icon.map(
+          (p0) => IconButton(
+            icon: p0,
+            onPressed: () async {
+              await ActerErrorDialog.show(
+                context: context,
+                error: error,
+                stack: stack,
+                title: dialogTitle,
+                text: text,
+                textBuilder: textBuilder,
+                onRetryTap: () => onRetryTap.map((p0) {
+                  p0();
                   Navigator.pop(context);
-                }
-              : null,
-          includeBugReportButton: includeBugReportButton,
+                }),
+                includeBugReportButton: includeBugReportButton,
+              );
+            },
+          ),
+        ) ??
+        TextButton(
+          onPressed: () async {
+            await ActerErrorDialog.show(
+              context: context,
+              error: error,
+              stack: stack,
+              title: dialogTitle,
+              text: text,
+              textBuilder: textBuilder,
+              onRetryTap: () => onRetryTap.map((p0) {
+                p0();
+                Navigator.pop(context);
+              }),
+              includeBugReportButton: includeBugReportButton,
+            );
+          },
+          child: Text(L10n.of(context).fatalError),
         );
-      },
-      child: Text(L10n.of(context).fatalError),
-    );
   }
 
   const ActerInlineErrorButton.icon({
@@ -69,27 +85,4 @@ class ActerInlineErrorButton extends StatelessWidget {
     this.onRetryTap,
     this.includeBugReportButton = true,
   });
-
-  Widget _buildWithIcon(BuildContext context) {
-    return IconButton(
-      icon: icon!,
-      onPressed: () async {
-        await ActerErrorDialog.show(
-          context: context,
-          error: error,
-          stack: stack,
-          title: dialogTitle,
-          text: text,
-          textBuilder: textBuilder,
-          onRetryTap: onRetryTap != null
-              ? () {
-                  onRetryTap!();
-                  Navigator.pop(context);
-                }
-              : null,
-          includeBugReportButton: includeBugReportButton,
-        );
-      },
-    );
-  }
 }

@@ -4,6 +4,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
@@ -65,12 +66,10 @@ extension ActerDocumentHelpers on Document {
   }
 
   static Document fromMsgContent(MsgContent msgContent) {
-    final formattedBody = msgContent.formattedBody();
-    if (formattedBody != null) {
-      return ActerDocumentHelpers.fromHtml(formattedBody);
-    } else {
-      return ActerDocumentHelpers.fromMarkdown(msgContent.body());
-    }
+    return msgContent
+            .formattedBody()
+            .map((p0) => ActerDocumentHelpers.fromHtml(p0)) ??
+        ActerDocumentHelpers.fromMarkdown(msgContent.body());
   }
 }
 
@@ -143,10 +142,10 @@ class HtmlEditorState extends State<HtmlEditor> {
       );
 
       _changeListener?.cancel();
-      if (widget.onChanged != null) {
+      widget.onChanged.map((p0) {
         _changeListener = editorState.transactionStream.listen(
           (data) {
-            _triggerExport(widget.onChanged!);
+            _triggerExport(p0);
           },
           onError: (e, s) {
             _log.severe('tx stream errored', e, s);
@@ -155,7 +154,7 @@ class HtmlEditorState extends State<HtmlEditor> {
             _log.info('tx stream ended');
           },
         );
-      }
+      });
     });
   }
 
@@ -186,45 +185,35 @@ class HtmlEditorState extends State<HtmlEditor> {
   }
 
   Widget? generateFooter() {
-    if (widget.footer != null) {
-      return widget.footer;
-    }
+    if (widget.footer != null) return widget.footer;
     final List<Widget> children = [];
-
-    if (widget.onCancel != null) {
+    widget.onCancel.map((p0) {
       children.add(
         OutlinedButton(
           key: HtmlEditor.cancelEditKey,
-          onPressed: widget.onCancel,
+          onPressed: p0,
           child: const Text('Cancel'),
         ),
       );
-    }
-    children.add(
-      const SizedBox(
-        width: 10,
-      ),
-    );
-    if (widget.onSave != null) {
+    });
+    children.add(const SizedBox(width: 10));
+    widget.onSave.map((p0) {
       children.add(
         ActerPrimaryActionButton(
           key: HtmlEditor.saveEditKey,
-          onPressed: () => _triggerExport(widget.onSave!),
+          onPressed: () => _triggerExport(p0),
           child: const Text('Save'),
         ),
       );
-    }
-
-    if (children.isNotEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: children,
-        ),
-      );
-    }
-    return null;
+    });
+    if (children.isEmpty) return null;
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: children,
+      ),
+    );
   }
 
   Widget desktopEditor() {

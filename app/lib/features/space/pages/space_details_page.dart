@@ -12,6 +12,7 @@ import 'package:acter/features/space/widgets/space_sections/pins_section.dart';
 import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -202,13 +203,18 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceAvatar() {
     final avatarData =
         ref.watch(roomAvatarProvider(widget.spaceId)).valueOrNull;
-    if (avatarData == null) return Container(height: 200, color: Colors.red);
-    return Image.memory(
-      avatarData.bytes,
-      height: 300,
-      width: MediaQuery.of(context).size.width,
-      fit: BoxFit.cover,
-    );
+    return avatarData.map(
+          (p0) => Image.memory(
+            p0.bytes,
+            height: 300,
+            width: MediaQuery.of(context).size.width,
+            fit: BoxFit.cover,
+          ),
+        ) ??
+        Container(
+          height: 200,
+          color: Colors.red,
+        );
   }
 
   Widget spaceTabMenuUI(BuildContext context, TabEntry tabItem, bool active) {

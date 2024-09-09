@@ -7,6 +7,7 @@ import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/features/space/actions/has_seen_suggested.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -189,14 +190,12 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
           final roomId = item.roomIdStr();
           return SpaceHierarchyCard(
             onTap: () => _toggle(roomId),
-            roomInfo: item,
             parentId: widget.spaceId,
+            roomInfo: item,
             contentPadding: EdgeInsets.zero,
             trailing: Switch(
               onChanged: (value) => _toggle(roomId),
-              value: selectedRooms == null
-                  ? true
-                  : selectedRooms!.contains(roomId),
+              value: selectedRooms.map((p0) => p0.contains(roomId)) ?? true,
             ),
           );
         },
@@ -223,9 +222,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
             contentPadding: EdgeInsets.zero,
             trailing: Switch(
               onChanged: (value) => _toggle(roomId),
-              value: selectedRooms == null
-                  ? true
-                  : selectedRooms!.contains(roomId),
+              value: selectedRooms.map((p0) => p0.contains(roomId)) ?? true,
             ),
           );
         },

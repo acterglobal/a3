@@ -1,11 +1,11 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/config/notifications/init.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/auth/pages/logged_out_screen.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
@@ -16,6 +16,7 @@ import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -79,10 +80,7 @@ class AppShellState extends ConsumerState<AppShell> {
   }
 
   Future<void> initNotifications() async {
-    final client = ref.read(clientProvider);
-    if (client != null) {
-      _initPushForClient(client);
-    }
+    ref.read(clientProvider).map((p0) => _initPushForClient(p0));
     ref.listenManual(clientProvider, (previous, next) {
       if (next != null) {
         _initPushForClient(next);

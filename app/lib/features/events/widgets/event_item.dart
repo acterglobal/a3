@@ -7,6 +7,7 @@ import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent, RsvpStatusTag;
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,14 +36,12 @@ class EventItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (onTapEventItem != null) {
-          onTapEventItem!(event.eventId().toString());
-          return;
-        }
-        context.pushNamed(
-          Routes.calendarEvent.name,
-          pathParameters: {'calendarId': event.eventId().toString()},
-        );
+        final calEventId = event.eventId().toString();
+        onTapEventItem.map((p0) => p0(calEventId)) ??
+            context.pushNamed(
+              Routes.calendarEvent.name,
+              pathParameters: {'calendarId': calEventId},
+            );
       },
       child: Stack(
         alignment: Alignment.topLeft,
@@ -132,18 +131,19 @@ class EventItem extends StatelessWidget {
   }
 
   Widget? _getRsvpStatus(BuildContext context, RsvpStatusTag? status) {
-    return switch (status) {
-      RsvpStatusTag.Yes => Icon(
-          Icons.check_circle,
-          color: Theme.of(context).colorScheme.secondary,
-        ),
-      RsvpStatusTag.No => Icon(
-          Icons.cancel,
-          color: Theme.of(context).colorScheme.error,
-        ),
-      RsvpStatusTag.Maybe => const Icon(Icons.question_mark_rounded),
-      null => null,
-    };
+    return status.map(
+      (p0) => switch (p0) {
+        RsvpStatusTag.Yes => Icon(
+            Icons.check_circle,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+        RsvpStatusTag.No => Icon(
+            Icons.cancel,
+            color: Theme.of(context).colorScheme.error,
+          ),
+        RsvpStatusTag.Maybe => const Icon(Icons.question_mark_rounded),
+      },
+    );
   }
 
   Widget _buildHappeningIndication(BuildContext context) {

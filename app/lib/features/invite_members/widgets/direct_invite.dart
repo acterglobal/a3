@@ -1,9 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/user_builder.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class DirectInvite extends ConsumerWidget {
   final String userId;
@@ -27,12 +28,15 @@ class DirectInvite extends ConsumerWidget {
         title: !isInvited(userId, invited) && !isJoined(userId, joined)
             ? Text(L10n.of(context).directInviteUser(userId))
             : Text(userId),
-        trailing: room != null
-            ? UserStateButton(
+        trailing: room.map(
+              (p0) => UserStateButton(
                 userId: userId,
-                room: room,
-              )
-            : const Skeletonizer(child: Text('Loading room')),
+                room: p0,
+              ),
+            ) ??
+            const Skeletonizer(
+              child: Text('Loading room'),
+            ),
       ),
     );
   }

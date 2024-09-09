@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/utils.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 
 class RoomVisibilityItem extends StatelessWidget {
@@ -36,9 +37,7 @@ class RoomVisibilityItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
-        key: spaceVisibilityValue != null
-            ? generateKey(spaceVisibilityValue!)
-            : null,
+        key: spaceVisibilityValue.map((p0) => generateKey(p0)),
         leading: Icon(iconData),
         title: Text(
           title,
@@ -48,23 +47,21 @@ class RoomVisibilityItem extends StatelessWidget {
           subtitle,
           style: Theme.of(context).textTheme.labelMedium,
         ),
-        onTap: isShowRadio && spaceVisibilityValue != null && onChanged != null
-            ? () => onChange(spaceVisibilityValue, context)
-            : null,
-        trailing: isShowRadio && spaceVisibilityValue != null
-            ? Radio<RoomVisibility>(
-                value: spaceVisibilityValue!,
-                groupValue: selectedVisibilityValue,
-                onChanged: onChanged != null
-                    ? (value) => onChange(value, context)
-                    : null,
-              )
-            : const Icon(Icons.keyboard_arrow_down_sharp),
+        onTap: () {
+          if (!isShowRadio) return;
+          spaceVisibilityValue.map((p0) => onChanged.map((p1) => p1(p0)));
+        },
+        trailing: spaceVisibilityValue.map(
+              (p0) => isShowRadio
+                  ? Radio<RoomVisibility>(
+                      value: p0,
+                      groupValue: selectedVisibilityValue,
+                      onChanged: onChanged,
+                    )
+                  : const Icon(Icons.keyboard_arrow_down_sharp),
+            ) ??
+            const Icon(Icons.keyboard_arrow_down_sharp),
       ),
     );
-  }
-
-  void onChange(RoomVisibility? value, BuildContext context) {
-    if (onChanged != null) onChanged!(value);
   }
 }

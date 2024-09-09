@@ -13,6 +13,7 @@ import 'package:acter/features/settings/providers/session_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/session_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,11 +29,6 @@ class ActivitiesPage extends ConsumerWidget {
   const ActivitiesPage({super.key});
 
   Widget? renderSyncingState(BuildContext context, WidgetRef ref) {
-    final syncState = ref.watch(syncStateProvider);
-    final errorMsg = syncState.errorMsg;
-    final retryDuration = syncState.countDown != null
-        ? Duration(seconds: syncState.countDown!)
-        : null;
     if (!ref.watch(hasFirstSyncedProvider)) {
       return SliverToBoxAdapter(
         child: Card(
@@ -43,31 +39,36 @@ class ActivitiesPage extends ConsumerWidget {
           ),
         ),
       );
-    } else if (errorMsg != null) {
-      return SliverToBoxAdapter(
+    }
+    final syncState = ref.watch(syncStateProvider);
+    return syncState.errorMsg.map(
+      (p0) => SliverToBoxAdapter(
         child: Card(
           child: ListTile(
             leading: const Icon(Atlas.warning),
-            title: Text(L10n.of(context).errorSyncing(errorMsg)),
+            title: Text(L10n.of(context).errorSyncing(p0)),
             subtitle: Text(
-              retryDuration == null
-                  ? L10n.of(context).retrying
-                  : L10n.of(context).retryIn(
-                      retryDuration.inMinutes
-                          .remainder(60)
-                          .toString()
-                          .padLeft(2, '0'),
-                      retryDuration.inSeconds
-                          .remainder(60)
-                          .toString()
-                          .padLeft(2, '0'),
-                    ),
+              syncState.countDown.map(
+                    (p1) {
+                      final retryDuration = Duration(seconds: p1);
+                      return L10n.of(context).retryIn(
+                        retryDuration.inMinutes
+                            .remainder(60)
+                            .toString()
+                            .padLeft(2, '0'),
+                        retryDuration.inSeconds
+                            .remainder(60)
+                            .toString()
+                            .padLeft(2, '0'),
+                      );
+                    },
+                  ) ??
+                  L10n.of(context).retrying,
             ),
           ),
         ),
-      );
-    }
-    return null;
+      ),
+    );
   }
 
   List<Widget>? renderInvitations(BuildContext context, WidgetRef ref) {
@@ -180,24 +181,17 @@ class ActivitiesPage extends ConsumerWidget {
     final syncStateWidget = renderSyncingState(context, ref);
 
     if (ref.watch(featuresProvider).isActive(LabsFeature.encryptionBackup)) {
-      final backups = renderBackupSection(context, ref);
-      if (backups != null) {
-        children.add(backups);
-      }
+      renderBackupSection(context, ref).map((p0) => children.add(p0));
     }
     final hasUnconfirmedEmails = ref.watch(hasUnconfirmedEmailAddresses);
     if (hasUnconfirmedEmails) {
       children.add(renderUnconfirmedEmailAddrs(context));
     }
 
-    final sessions = renderSessions(context, ref);
-    if (sessions != null) {
-      children.add(sessions);
-    }
-    final invitations = renderInvitations(context, ref);
-    if (invitations != null && invitations.isNotEmpty) {
-      children.addAll(invitations);
-    }
+    renderSessions(context, ref).map((p0) => children.add(p0));
+    renderInvitations(context, ref).map((p0) {
+      if (p0.isNotEmpty) children.addAll(p0);
+    });
 
     return Scaffold(
       body: CustomScrollView(

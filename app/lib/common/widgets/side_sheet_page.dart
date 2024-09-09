@@ -1,3 +1,4 @@
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -44,15 +45,15 @@ class SideSheetPage<T> extends CustomTransitionPage<T> {
           stepWidth: 56,
           child: child,
         );
-        if (label != null) {
+        label.map((p0) {
           dialogChild = Semantics(
             scopesRoute: true,
             explicitChildNodes: true,
             namesRoute: true,
-            label: label,
+            label: p0,
             child: dialogChild,
           );
-        }
+        });
         return Align(
           alignment: Alignment.centerRight,
           child: SizedBox(

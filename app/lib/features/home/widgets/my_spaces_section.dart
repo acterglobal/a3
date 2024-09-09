@@ -9,6 +9,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,7 +45,7 @@ class MySpacesSection extends ConsumerWidget {
       return const _NoSpacesWidget();
     }
 
-    final count = limit == null ? spaces.length : min(spaces.length, limit!);
+    final count = limit.map((p0) => min(spaces.length, p0)) ?? spaces.length;
     return _RenderSpacesSection(
       spaces: spaces,
       limit: count,

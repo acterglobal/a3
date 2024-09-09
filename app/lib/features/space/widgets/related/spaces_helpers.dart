@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,10 +69,8 @@ Widget renderMoreSubspaces(
         return const SizedBox.shrink();
       }
 
-      int itemCount = spaces.length;
-      if (maxLength != null && maxLength < itemCount) {
-        itemCount = maxLength;
-      }
+      int itemCount =
+          maxLength.map((p0) => min(spaces.length, p0)) ?? spaces.length;
 
       return GridView.builder(
         padding: padding,
@@ -144,12 +145,9 @@ Widget? renderSubSpaces(
   ];
 
   if (items.isEmpty) return null;
-  if (titleBuilder != null) {
-    final title = titleBuilder();
-    if (title != null) {
-      items.insert(0, title);
-    }
-  }
+  titleBuilder.map((p0) {
+    p0().map((p1) => items.insert(0, p1));
+  });
   return SingleChildScrollView(
     child: Column(children: items),
   );

@@ -1,4 +1,5 @@
 import 'dart:core';
+
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/errors/error_dialog.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -15,6 +16,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:carousel_indicator/carousel_indicator.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -190,44 +192,42 @@ class _NewsItemState extends ConsumerState<NewsItem> {
       // malformatted
       return renderNotSupportedAction();
     }
-    if (referenceDetails.title() == 'shareEvent' && uri.startsWith('\$')) {
+    final title = referenceDetails.title();
+    if (title == 'shareEvent' && uri.startsWith('\$')) {
       // fallback support for older, badly formatted calendar events.
       return renderCalendarEventAction(targetEventId: uri);
     }
-
-    final title = referenceDetails.title();
-    if (title != null) {
-      return Card(
-        child: ListTile(
-          leading: const Icon(Atlas.link),
-          onTap: () => openLink(uri, context),
-          title: Text(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium,
+    return title.map(
+          (p0) => Card(
+            child: ListTile(
+              leading: const Icon(Atlas.link),
+              onTap: () => openLink(uri, context),
+              title: Text(
+                p0,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+              subtitle: Text(
+                uri,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ),
-          subtitle: Text(
-            uri,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+        ) ??
+        Card(
+          child: ListTile(
+            leading: const Icon(Atlas.link),
+            onTap: () => openLink(uri, context),
+            title: Text(
+              uri,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
           ),
-        ),
-      );
-    } else {
-      return Card(
-        child: ListTile(
-          leading: const Icon(Atlas.link),
-          onTap: () => openLink(uri, context),
-          title: Text(
-            uri,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
-        ),
-      );
-    }
+        );
   }
 
   Widget renderCalendarEventAction({required String targetEventId}) {

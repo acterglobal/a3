@@ -5,6 +5,7 @@ import 'package:acter/common/widgets/chat/convo_with_avatar_card.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -184,11 +185,9 @@ class _SubtitleWidget extends ConsumerWidget {
             if (msgContent == null) {
               return const SizedBox.shrink();
             }
-            String body = msgContent.body();
-            String? formattedBody = msgContent.formattedBody();
-            if (formattedBody != null) {
-              body = simplifyBody(formattedBody);
-            }
+            String body =
+                msgContent.formattedBody().map((p0) => simplifyBody(p0)) ??
+                    msgContent.body();
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -222,11 +221,9 @@ class _SubtitleWidget extends ConsumerWidget {
         if (msgContent == null) {
           return const SizedBox();
         }
-        String body = msgContent.body();
-        String? formattedBody = msgContent.formattedBody();
-        if (formattedBody != null) {
-          body = simplifyBody(formattedBody);
-        }
+        String body =
+            msgContent.formattedBody().map((p0) => simplifyBody(p0)) ??
+                msgContent.body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -333,11 +330,9 @@ class _SubtitleWidget extends ConsumerWidget {
         if (msgContent == null) {
           return const SizedBox();
         }
-        String body = msgContent.body();
-        String? formattedBody = msgContent.formattedBody();
-        if (formattedBody != null) {
-          body = simplifyBody(formattedBody);
-        }
+        String body =
+            msgContent.formattedBody().map((p0) => simplifyBody(p0)) ??
+                msgContent.body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [

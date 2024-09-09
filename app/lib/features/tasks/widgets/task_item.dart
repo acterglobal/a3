@@ -7,6 +7,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:dart_date/dart_date.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -97,15 +98,13 @@ class TaskItem extends ConsumerWidget {
           updater.markUndone();
         }
         await updater.send();
-        if (onDone != null) {
-          onDone!();
-        }
+        onDone.map((p0) => p0());
       },
     );
   }
 
   Widget takeItemSubTitle(WidgetRef ref, BuildContext context, Task task) {
-    final description = task.description();
+    final body = task.description()?.body();
     final tasklistId = task.taskListIdStr();
     final tasklistLoader = ref.watch(taskListItemProvider(tasklistId));
     return Padding(
@@ -137,9 +136,9 @@ class TaskItem extends ConsumerWidget {
                 child: Text(L10n.of(context).loading),
               ),
             ),
-          if (description?.body() != null && !showBreadCrumb)
+          if (body != null && !showBreadCrumb)
             Text(
-              description!.body(),
+              body,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelMedium,
@@ -152,9 +151,7 @@ class TaskItem extends ConsumerWidget {
 
   Widget dueDateWidget(BuildContext context, Task task) {
     TextStyle? textStyle = Theme.of(context).textTheme.labelMedium;
-    DateTime? dueDate =
-        task.dueDate() == null ? null : DateTime.parse(task.dueDate()!);
-
+    DateTime? dueDate = task.dueDate().map((p0) => DateTime.parse(p0));
     if (dueDate == null) return const SizedBox.shrink();
 
     String? label;

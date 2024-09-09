@@ -3,6 +3,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -71,16 +72,14 @@ class _CreateUpdateItemListConsumerState
   }
 
   void setUpdateData() {
-    if (widget.task == null) return;
-    if (widget.task!.description() != null) {
-      _taskDescriptionController.text = widget.task!.description()!.body();
-    }
-    if (widget.task!.dueDate() != null) {
-      selectedDate = DateTime.parse(widget.task!.dueDate()!);
-      if (selectedDate != null) {
-        _taskDueDateController.text = taskDueDateFormat(selectedDate!);
-      }
-    }
+    final task = widget.task;
+    if (task == null) return;
+    task.description().map((p0) => _taskDescriptionController.text = p0.body());
+    task.dueDate().map((p0) {
+      selectedDate = DateTime.parse(p0);
+      selectedDate
+          .map((p1) => _taskDueDateController.text = taskDueDateFormat(p1));
+    });
   }
 
   @override
@@ -144,7 +143,7 @@ class _CreateUpdateItemListConsumerState
           ),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _taskNameController,
-          validator: (value) => (value?.isNotEmpty == true)
+          validator: (val) => (val?.isNotEmpty == true)
               ? null
               : L10n.of(context).pleaseEnterAName,
         ),
@@ -249,18 +248,12 @@ class _CreateUpdateItemListConsumerState
     if (_taskDescriptionController.text.isNotEmpty) {
       taskDraft.descriptionText(_taskDescriptionController.text);
     }
-    if (selectedDate != null) {
-      taskDraft.dueDate(
-        selectedDate!.year,
-        selectedDate!.month,
-        selectedDate!.day,
-      );
-    }
+    selectedDate.map((p0) => taskDraft.dueDate(p0.year, p0.month, p0.day));
     try {
       await taskDraft.send();
       EasyLoading.dismiss();
       if (!mounted) return;
-      if (widget.cancel != null) widget.cancel!();
+      widget.cancel.map((p0) => p0());
       Navigator.pop(context);
     } catch (e, s) {
       _log.severe('Failed to create task', e, s);
@@ -276,20 +269,16 @@ class _CreateUpdateItemListConsumerState
   }
 
   Future<void> updateTask() async {
-    if (!_formKey.currentState!.validate() || widget.task == null) return;
+    if (!_formKey.currentState!.validate()) return;
+    final task = widget.task;
+    if (task == null) return;
     EasyLoading.show(status: L10n.of(context).updatingTask);
-    final updater = widget.task!.updateBuilder();
+    final updater = task.updateBuilder();
     updater.title(_taskNameController.text);
     if (_taskDescriptionController.text.isNotEmpty) {
       updater.descriptionText(_taskDescriptionController.text);
     }
-    if (selectedDate != null) {
-      updater.dueDate(
-        selectedDate!.year,
-        selectedDate!.month,
-        selectedDate!.day,
-      );
-    }
+    selectedDate.map((p0) => updater.dueDate(p0.year, p0.month, p0.day));
     try {
       await updater.send();
       EasyLoading.dismiss();

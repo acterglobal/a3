@@ -1,6 +1,7 @@
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -35,12 +36,7 @@ class _DueChipState extends State<DueChip> {
   @override
   void initState() {
     super.initState();
-    final dueDateStr = widget.task.dueDate();
-    if (dueDateStr != null) {
-      dueDate = DateTime.parse(dueDateStr);
-    } else {
-      dueDate = null;
-    }
+    dueDate = widget.task.dueDate().map((p0) => DateTime.parse(p0));
   }
 
   @override

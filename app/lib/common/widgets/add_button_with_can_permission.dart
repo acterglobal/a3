@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,10 +15,13 @@ class AddButtonWithCanPermission extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (canString == null) return _buildIconButton(context);
-    final canDoLoader = ref.watch(hasSpaceWithPermissionProvider(canString!));
-    final canAdd = canDoLoader.valueOrNull ?? false;
-    return canAdd ? _buildIconButton(context) : const SizedBox.shrink();
+    return canString.map((p0) {
+          final canDoLoader = ref.watch(hasSpaceWithPermissionProvider(p0));
+          return canDoLoader.valueOrNull == true
+              ? _buildIconButton(context)
+              : const SizedBox.shrink();
+        }) ??
+        _buildIconButton(context);
   }
 
   Widget _buildIconButton(BuildContext context) {

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
@@ -56,18 +57,16 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
     try {
       //Get media path if already downloaded
       final mediaPath = await attachment.mediaPath(false);
-      if (mediaPath.text() != null) {
-        state = state.copyWith(
-          mediaFile: File(mediaPath.text()!),
-          mediaLoadingState: const AttachmentMediaLoadingState.loaded(),
-        );
-      } else {
-        state = state.copyWith(
-          mediaLoadingState: const AttachmentMediaLoadingState.error(
-            'Media not found',
-          ),
-        );
-      }
+      state = mediaPath.text().map(
+                (p0) => state.copyWith(
+                  mediaFile: File(p0),
+                  mediaLoadingState: const AttachmentMediaLoadingState.loaded(),
+                ),
+              ) ??
+          state.copyWith(
+            mediaLoadingState:
+                const AttachmentMediaLoadingState.error('Media not found'),
+          );
     } catch (e) {
       state = state.copyWith(
         mediaLoadingState: AttachmentMediaLoadingState.error(
@@ -81,16 +80,12 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
     state = state.copyWith(isDownloading: true);
     //Download media if media path is not available
     final tempDir = await getTemporaryDirectory();
-    final result = await attachment.downloadMedia(
-      null,
-      tempDir.path,
-    );
-    String? mediaPath = result.text();
-    if (mediaPath != null) {
+    final result = await attachment.downloadMedia(null, tempDir.path);
+    result.text().map((p0) {
       state = state.copyWith(
-        mediaFile: File(mediaPath),
+        mediaFile: File(p0),
         isDownloading: false,
       );
-    }
+    });
   }
 }

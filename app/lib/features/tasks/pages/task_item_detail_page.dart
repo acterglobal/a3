@@ -16,6 +16,7 @@ import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter/features/tasks/widgets/skeleton/task_item_detail_page_skeleton.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -230,7 +231,6 @@ class TaskItemDetailPage extends ConsumerWidget {
   Widget _widgetDescription(BuildContext context, Task task, WidgetRef ref) {
     final description = task.description();
     if (description == null) return const SizedBox.shrink();
-    final formattedBody = description.formattedBody();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,15 +240,17 @@ class TaskItemDetailPage extends ConsumerWidget {
             onTap: () {
               showEditDescriptionSheet(context, ref, task);
             },
-            child: formattedBody != null
-                ? RenderHtml(
-                    text: formattedBody,
-                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
-                  )
-                : Text(
-                    description.body(),
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
+            child: description.formattedBody().map(
+                      (p0) => RenderHtml(
+                        text: p0,
+                        defaultTextStyle:
+                            Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ) ??
+                Text(
+                  description.body(),
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
           ),
         ),
         const SizedBox(height: 10),
@@ -315,9 +317,8 @@ class TaskItemDetailPage extends ConsumerWidget {
       trailing: Padding(
         padding: const EdgeInsets.only(right: 12),
         child: Text(
-          task.dueDate() != null
-              ? taskDueDateFormat(DateTime.parse(task.dueDate()!))
-              : L10n.of(context).noDueDate,
+          task.dueDate().map((p0) => taskDueDateFormat(DateTime.parse(p0))) ??
+              L10n.of(context).noDueDate,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
@@ -328,9 +329,8 @@ class TaskItemDetailPage extends ConsumerWidget {
   Future<void> duePickerAction(BuildContext context, Task task) async {
     final newDue = await showDuePicker(
       context: context,
-      initialDate: task.dueDate() != null
-          ? DateTime.parse(task.dueDate()!)
-          : DateTime.now(),
+      initialDate:
+          task.dueDate().map((p0) => DateTime.parse(p0)) ?? DateTime.now(),
     );
     if (!context.mounted) return;
     if (newDue == null) return;

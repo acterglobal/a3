@@ -6,6 +6,7 @@ import 'package:acter/common/utils/validation_utils.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -44,15 +45,16 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
         ),
       );
     }
-    if (tokenResponse != null) {
-      return _NewPassword(tokenResponse: tokenResponse!, sdk: sdk);
-    }
-    return _AskForEmail(
-      sdk: sdk,
-      onSubmit: (tokenResp) => setState(() {
-        tokenResponse = tokenResp;
-      }),
-    );
+    return tokenResponse.map(
+          (p0) => _NewPassword(
+            tokenResponse: p0,
+            sdk: sdk,
+          ),
+        ) ??
+        _AskForEmail(
+          sdk: sdk,
+          onSubmit: (resp) => setState(() => tokenResponse = resp),
+        );
   }
 }
 
@@ -60,7 +62,10 @@ class _AskForEmail extends StatelessWidget {
   final void Function(PasswordChangeEmailTokenResponse) onSubmit;
   final ActerSdk sdk;
 
-  _AskForEmail({required this.onSubmit, required this.sdk});
+  _AskForEmail({
+    required this.onSubmit,
+    required this.sdk,
+  });
 
   final formKey = GlobalKey<FormState>(debugLabel: 'ask for email form');
   final TextEditingController emailController = TextEditingController();

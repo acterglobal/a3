@@ -1,9 +1,9 @@
-import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
-
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -64,13 +64,13 @@ class MemberListEntry extends ConsumerWidget {
         style: Theme.of(context).textTheme.bodyMedium,
         overflow: TextOverflow.ellipsis,
       ),
-      subtitle: avatarInfo.displayName != null
-          ? Text(
-              memberId,
-              style: Theme.of(context).textTheme.labelLarge,
-              overflow: TextOverflow.ellipsis,
-            )
-          : null,
+      subtitle: avatarInfo.displayName.map(
+        (p0) => Text(
+          memberId,
+          style: Theme.of(context).textTheme.labelLarge,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
       trailing: trailing,
     );
   }

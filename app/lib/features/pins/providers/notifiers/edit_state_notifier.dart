@@ -1,5 +1,6 @@
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -12,22 +13,16 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
   final ActerPin pin;
   final Ref ref;
 
-  PinEditNotifier({required this.pin, required this.ref})
-      : super(const PinEditState(title: '', link: '')) {
+  PinEditNotifier({
+    required this.pin,
+    required this.ref,
+  }) : super(const PinEditState(title: '', link: '')) {
     _init();
   }
 
   void _init() {
-    final content = pin.content();
-    String markdown = '';
-    String? formattedBody;
-    if (content != null) {
-      if (content.formattedBody() != null) {
-        formattedBody = content.formattedBody();
-      } else {
-        markdown = content.body();
-      }
-    }
+    final formattedBody = pin.content().map((p0) => p0.formattedBody());
+    final markdown = pin.content().map((p0) => p0.body()) ?? '';
     state = state.copyWith(
       title: pin.title(),
       link: pin.isLink() ? pin.url() ?? '' : '',
@@ -63,20 +58,18 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
           hasChanges = true;
         }
       }
-      final content = pin.content();
-      if (content != null) {
-        if (content.body() != state.markdown) {
+      pin.content().map((p0) {
+        if (p0.body() != state.markdown) {
           updateBuilder.contentMarkdown(state.markdown);
           hasChanges = true;
         }
-
-        if (state.html != null) {
-          if (content.formattedBody() != state.html) {
-            updateBuilder.contentHtml(state.markdown, state.html!);
+        state.html.map((p1) {
+          if (p0.formattedBody() != p1) {
+            updateBuilder.contentHtml(state.markdown, p1);
             hasChanges = true;
           }
-        }
-      }
+        });
+      });
 
       if (hasChanges) {
         await updateBuilder.send();

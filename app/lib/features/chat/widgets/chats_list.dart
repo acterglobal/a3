@@ -7,6 +7,7 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:diffutil_dart/diffutil.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -213,8 +214,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       key: Key('convo-card-$roomId-removed'),
       roomId: roomId,
       onTap: () {
-        final onSelected = widget.onSelected;
-        if (onSelected != null) onSelected(roomId);
+        widget.onSelected.map((p0) => p0(roomId));
       },
     );
   }
@@ -236,8 +236,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       key: Key('convo-card-$roomId'),
       roomId: roomId,
       onTap: () {
-        final onSelected = widget.onSelected;
-        if (onSelected != null) onSelected(roomId);
+        widget.onSelected.map((p0) => p0(roomId));
       },
     );
   }

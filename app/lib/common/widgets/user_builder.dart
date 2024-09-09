@@ -5,6 +5,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -18,10 +19,10 @@ final userAvatarProvider =
     FutureProvider.family<MemoryImage?, UserProfile>((ref, user) async {
   if (user.hasAvatar()) {
     try {
-      final data = (await user.getAvatar(null)).data();
-      if (data != null) {
-        return MemoryImage(Uint8List.fromList(data.asTypedList()));
-      }
+      final avatar = await user.getAvatar(null);
+      return avatar
+          .data()
+          .map((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
     } catch (e, s) {
       _log.severe('failure fetching avatar', e, s);
     }
@@ -75,14 +76,15 @@ class UserBuilder extends ConsumerWidget {
             size: 18,
           ),
         ),
-        trailing: room != null
-            ? UserStateButton(
+        trailing: room.map(
+              (p0) => UserStateButton(
                 userId: userId,
-                room: room,
-              )
-            : const Skeletonizer(
-                child: Text('Loading user'),
+                room: p0,
               ),
+            ) ??
+            const Skeletonizer(
+              child: Text('Loading user'),
+            ),
       ),
     );
   }

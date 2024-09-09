@@ -6,6 +6,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -33,23 +34,23 @@ Future<String?> createSpace(
   EasyLoading.show(status: L10n.of(context).creatingSpace);
   try {
     final sdk = await ref.read(sdkProvider.future);
+
     final config = sdk.api.newSpaceSettingsBuilder();
     config.setName(name);
-    if (description != null && description.isNotEmpty) {
-      config.setTopic(description.trim());
-    }
-    if (spaceAvatar != null && spaceAvatar.path.isNotEmpty) {
+    description.map((p0) {
+      final p1 = p0.trim();
+      if (p1.isNotEmpty) config.setTopic(p1);
+    });
+    spaceAvatar.map((p0) {
       // space creation will upload it
-      config.setAvatarUri(spaceAvatar.path);
-    }
-    if (parentRoomId != null) {
-      config.setParent(parentRoomId);
-    }
-    if (roomVisibility != null) {
-      config.setVisibility(roomVisibility.name);
-    }
+      if (p0.path.isNotEmpty) config.setAvatarUri(p0.path);
+    });
+    parentRoomId.map((p0) => config.setParent(p0));
+    roomVisibility.map((p0) => config.setVisibility(p0.name));
+
     final client = ref.read(alwaysClientProvider);
-    final roomId = (await client.createActerSpace(config.build())).toString();
+    final settings = config.build();
+    final roomId = (await client.createActerSpace(settings)).toString();
     if (parentRoomId != null) {
       final space = await ref.read(spaceProvider(parentRoomId).future);
       await space.addChildRoom(roomId, false);

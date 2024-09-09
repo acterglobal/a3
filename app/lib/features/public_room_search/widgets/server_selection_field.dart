@@ -1,7 +1,8 @@
 import 'package:acter/common/utils/constants.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class ServerSelectionField extends StatefulWidget {
   final List<ServerEntry> options;
@@ -79,15 +80,16 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
           ),
         );
       },
-      itemBuilder: (context, entry) {
-        if (entry.name != null) {
-          return ListTile(
-            title: Text(entry.name!),
-            subtitle: Text(entry.value),
-          );
-        }
-        return ListTile(title: Text(entry.value));
-      },
+      itemBuilder: (context, entry) =>
+          entry.name.map(
+            (p0) => ListTile(
+              title: Text(p0),
+              subtitle: Text(entry.value),
+            ),
+          ) ??
+          ListTile(
+            title: Text(entry.value),
+          ),
       onSelected: (entry) => onSubmit(entry.value),
     );
   }

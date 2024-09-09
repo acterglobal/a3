@@ -7,10 +7,11 @@ import 'package:acter/features/public_room_search/widgets/public_room_item.dart'
 import 'package:acter/features/public_room_search/widgets/server_selection_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -40,9 +41,7 @@ class __SearchFieldState extends ConsumerState<_SearchField> {
   }
 
   void _checkInitialQuery() {
-    if (widget.initialQuery != null) {
-      searchTextController.text = widget.initialQuery!;
-    }
+    widget.initialQuery.map((p0) => searchTextController.text = p0);
   }
 
   @override
@@ -115,13 +114,11 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
   }
 
   void _checkInitialQuery() {
-    if (widget.initialQuery != null) {
+    widget.initialQuery.map((p0) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        ref
-            .read(searchFilterProvider.notifier)
-            .updateSearchTerm(widget.initialQuery!);
+        ref.read(searchFilterProvider.notifier).updateSearchTerm(p0);
       });
-    }
+    });
   }
 
   Widget _searchBar(BuildContext context) {
@@ -307,9 +304,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
     String? currentSelection = ref.watch(searchFilterProvider).server;
     if (currentSelection != null) {
       final foundEntry = defaultServers
-          .where(
-            (element) => element.value == currentSelection,
-          )
+          .where((element) => element.value == currentSelection)
           .firstOrNull;
       if (foundEntry != null) {
         currentSelection = foundEntry.name ?? foundEntry.value;

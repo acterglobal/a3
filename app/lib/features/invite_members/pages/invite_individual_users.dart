@@ -5,6 +5,7 @@ import 'package:acter/features/invite_members/providers/invite_providers.dart';
 import 'package:acter/features/invite_members/widgets/direct_invite.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -129,19 +130,16 @@ class InviteIndividualUsers extends ConsumerWidget {
     return Card(
       child: ListTile(
         title: Text(user.avatarInfo.displayName ?? user.userId),
-        subtitle:
-            user.avatarInfo.displayName != null ? Text(user.userId) : null,
+        subtitle: user.avatarInfo.displayName.map((p0) => Text(user.userId)),
         leading: ActerAvatar(
-          options: AvatarOptions.DM(
-            user.avatarInfo,
+          options: AvatarOptions.DM(user.avatarInfo),
+        ),
+        trailing: room.map(
+          (p0) => UserStateButton(
+            userId: user.userId,
+            room: p0,
           ),
         ),
-        trailing: room != null
-            ? UserStateButton(
-                userId: user.userId,
-                room: room,
-              )
-            : null,
       ),
     );
   }

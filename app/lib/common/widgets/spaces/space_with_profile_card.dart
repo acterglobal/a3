@@ -1,5 +1,6 @@
 import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
@@ -161,10 +162,10 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
       subtitles.add(suggestedWidget);
 
       //ADD CUSTOM SUBTITLE IF AVAILABLE
-      if (subtitle != null) {
+      subtitle.map((p0) {
         subtitles.add(const Text(' - '));
-        subtitles.add(subtitle!);
-      }
+        subtitles.add(p0);
+      });
     }
 
     return Row(children: subtitles);

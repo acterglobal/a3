@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -44,11 +45,8 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
   void _newCustomLevel(String? value) {
     if (mounted) {
       setState(() {
-        if (value != null) {
-          customValue = max(int.tryParse(value) ?? 0, widget.maxPowerLevel);
-        } else {
-          customValue = null;
-        }
+        customValue =
+            value.map((p0) => max(int.tryParse(p0) ?? 0, widget.maxPowerLevel));
       });
     }
   }

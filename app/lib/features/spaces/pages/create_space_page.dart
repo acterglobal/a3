@@ -11,6 +11,7 @@ import 'package:acter/common/widgets/visibility/visibility_selector_drawer.dart'
 import 'package:acter/features/spaces/actions/create_space.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -133,12 +134,13 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
             color: Theme.of(context).colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(5),
           ),
-          child: spaceAvatar != null
-              ? Image.file(
-                  File(spaceAvatar!.path),
+          child: spaceAvatar.map(
+                (p0) => Image.file(
+                  File(p0.path),
                   fit: BoxFit.cover,
-                )
-              : const Icon(Atlas.up_arrow_from_bracket_thin),
+                ),
+              ) ??
+              const Icon(Atlas.up_arrow_from_bracket_thin),
         ),
       ),
     );

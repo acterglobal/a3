@@ -3,6 +3,7 @@ import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,7 +22,6 @@ class CommentWidget extends ConsumerWidget {
     final roomID = manager.roomIdStr();
     final userId = comment.sender().toString();
     final msgContent = comment.msgContent();
-    final formatted = msgContent.formattedBody();
     final commentTime = DateTime.fromMillisecondsSinceEpoch(
       comment.originServerTs(),
       isUtc: true,
@@ -30,7 +30,6 @@ class CommentWidget extends ConsumerWidget {
     final avatarInfo = ref.watch(
       memberAvatarInfoProvider((roomId: roomID, userId: userId)),
     );
-
     final displayName = avatarInfo.displayName;
     return Card(
       child: Column(
@@ -51,11 +50,9 @@ class CommentWidget extends ConsumerWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: formatted != null
-                ? RenderHtml(
-                    text: formatted,
-                  )
-                : Text(msgContent.body()),
+            child:
+                msgContent.formattedBody().map((p0) => RenderHtml(text: p0)) ??
+                    Text(msgContent.body()),
           ),
           const SizedBox(height: 12),
           Padding(

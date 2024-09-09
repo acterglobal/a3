@@ -2,6 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -24,33 +25,31 @@ Future<String?> createChat(
   EasyLoading.show(status: L10n.of(context).creatingChat);
   try {
     final sdk = await ref.read(sdkProvider.future);
+
     final config = sdk.api.newConvoSettingsBuilder();
-    if (selectedUsers != null) {
-      // add the users
-      for (final userId in selectedUsers) {
+    // add the users
+    selectedUsers.map((p0) {
+      for (final userId in p0) {
         config.addInvitee(userId);
       }
-    }
+    });
+    // set the name
+    name.map((p0) {
+      if (p0.isNotEmpty) config.setName(p0);
+    });
+    // and an optional description
+    description.map((p0) {
+      if (p0.isNotEmpty) config.setTopic(p0);
+    });
+    avatarUri.map((p0) {
+      // convo creation will upload it
+      if (p0.isNotEmpty) config.setAvatarUri(p0);
+    });
+    parentId.map((p0) => config.setParent(p0));
 
-    if (name != null && name.isNotEmpty) {
-      // set the name
-      config.setName(name);
-    }
-
-    if (description != null && description.isNotEmpty) {
-      // and an optional description
-      config.setTopic(description);
-    }
-
-    if (avatarUri != null && avatarUri.isNotEmpty) {
-      config.setAvatarUri(avatarUri); // convo creation will upload it
-    }
-
-    if (parentId != null) {
-      config.setParent(parentId);
-    }
     final client = ref.read(alwaysClientProvider);
-    final roomIdStr = (await client.createConvo(config.build())).toString();
+    final settings = config.build();
+    final roomIdStr = (await client.createConvo(settings)).toString();
     // add room to child of space (if given)
     if (parentId != null) {
       final space = await ref.read(spaceProvider(parentId).future);

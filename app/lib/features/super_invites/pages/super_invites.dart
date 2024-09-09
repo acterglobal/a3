@@ -4,6 +4,7 @@ import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/super_invites/widgets/redeem_token.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -83,18 +84,18 @@ class SuperInvitesPage extends ConsumerWidget {
                             extra: token,
                           );
                         },
-                        trailing: firstRoom != null
-                            ? OutlinedButton(
-                                onPressed: () => context.pushNamed(
-                                  Routes.shareInviteCode.name,
-                                  queryParameters: {
-                                    'inviteCode': tokenStr,
-                                    'roomId': firstRoom,
-                                  },
-                                ),
-                                child: Text(L10n.of(context).share),
-                              )
-                            : null,
+                        trailing: firstRoom.map(
+                          (p0) => OutlinedButton(
+                            onPressed: () => context.pushNamed(
+                              Routes.shareInviteCode.name,
+                              queryParameters: {
+                                'inviteCode': tokenStr,
+                                'roomId': p0,
+                              },
+                            ),
+                            child: Text(L10n.of(context).share),
+                          ),
+                        ),
                       ),
                     );
                   },

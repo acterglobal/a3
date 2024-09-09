@@ -9,6 +9,7 @@ import 'package:acter/features/super_invites/providers/super_invites_providers.d
 import 'package:acter/features/super_invites/widgets/to_join_room.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -27,9 +28,13 @@ class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
   static Key submitBtn = const Key('super-invites-create-submitBtn');
   static Key deleteBtn = const Key('super-invites-create-delete');
   static Key deleteConfirm = const Key('super-invites-create-delete-confirm');
+
   final SuperInviteToken? token;
 
-  const CreateSuperInviteTokenPage({super.key, this.token});
+  const CreateSuperInviteTokenPage({
+    super.key,
+    this.token,
+  });
 
   @override
   ConsumerState<CreateSuperInviteTokenPage> createState() =>
@@ -51,19 +56,16 @@ class _CreateSuperInviteTokenPageConsumerState
   void initState() {
     super.initState();
     final provider = ref.read(superInvitesProvider);
-    if (widget.token != null) {
-      // given an update builder we are in an edit mode
-
-      isEdit = true;
-      final token = widget.token!;
-      _tokenController.text = token.token();
-      _roomIds = token.rooms().map((e) => e.toDartString()).toList();
-      _acceptedCount = token.acceptedCount();
-      _initialDmCheck = token.createDm();
-      tokenUpdater = token.updateBuilder();
-    } else {
-      tokenUpdater = provider.newTokenUpdater();
-    }
+    tokenUpdater = widget.token.map((p0) {
+          // given an update builder we are in an edit mode
+          isEdit = true;
+          _tokenController.text = p0.token();
+          _roomIds = p0.rooms().map((e) => e.toDartString()).toList();
+          _acceptedCount = p0.acceptedCount();
+          _initialDmCheck = p0.createDm();
+          return p0.updateBuilder();
+        }) ??
+        provider.newTokenUpdater();
   }
 
   @override
@@ -96,8 +98,9 @@ class _CreateSuperInviteTokenPageConsumerState
                         key: CreateSuperInviteTokenPage.tokenFieldKey,
                         textInputType: TextInputType.text,
                         controller: _tokenController,
-                        validator: (String? val) => (val?.isNotEmpty == true &&
-                                val!.length < 6)
+                        validator: (val) => (val != null &&
+                                val.isNotEmpty &&
+                                val.length < 6)
                             ? L10n.of(context).codeMustBeAtLeast6CharactersLong
                             : null,
                       ),

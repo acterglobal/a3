@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -44,11 +45,11 @@ class LoadingConvoCard extends ConsumerWidget {
     final avatar = ActerAvatar(
       options: AvatarOptions(
         AvatarInfo(uniqueId: roomId),
-        parentBadges: showParent && parentRoomId != null
-            ? [
-                AvatarInfo(uniqueId: parentRoomId!, displayName: parentRoomId!),
-              ]
-            : [],
+        parentBadges: parentRoomId.map(
+              (p0) =>
+                  showParent ? [AvatarInfo(uniqueId: p0, displayName: p0)] : [],
+            ) ??
+            [],
       ),
     );
 
@@ -78,9 +79,7 @@ class LoadingConvoCard extends ConsumerWidget {
                 ),
                 subtitle: constraints.maxWidth < 300
                     ? null
-                    : subtitle != null
-                        ? Skeletonizer(child: subtitle!)
-                        : null,
+                    : subtitle.map((p0) => Skeletonizer(child: p0)),
                 trailing: constraints.maxWidth < 300 ? null : trailing,
               ),
             ),

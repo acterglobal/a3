@@ -2,6 +2,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -97,17 +98,18 @@ class SelectSpaceFormField extends ConsumerWidget {
     final spaceLoader = ref.watch(selectedSpaceDetailsProvider);
     final currentId = ref.watch(selectedSpaceIdProvider);
     return spaceLoader.when(
-      data: (space) {
-        if (space == null) return Text(currentId!);
-        return SpaceChip(
-          spaceId: space.roomId,
-          onTapOpenSpaceDetail: false,
-          useCompatView: useCompatView,
-          onTapSelectSpace: () {
-            if (useCompatView) selectSpace(context, ref);
-          },
-        );
-      },
+      data: (space) =>
+          space.map(
+            (p0) => SpaceChip(
+              spaceId: p0.roomId,
+              onTapOpenSpaceDetail: false,
+              useCompatView: useCompatView,
+              onTapSelectSpace: () {
+                if (useCompatView) selectSpace(context, ref);
+              },
+            ),
+          ) ??
+          Text(currentId!),
       error: (e, s) {
         _log.severe('Failed to load the details of selected space', e, s);
         return Text(L10n.of(context).loadingFailed(e));

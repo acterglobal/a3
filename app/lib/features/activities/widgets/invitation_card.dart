@@ -5,6 +5,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -117,24 +118,21 @@ class InvitationCard extends ConsumerWidget {
   ListTile renderDmChatTile(BuildContext context, WidgetRef ref) {
     final profile =
         ref.watch(invitationUserProfileProvider(invitation)).valueOrNull;
-
     final senderId = invitation.senderIdStr();
-
-    final roomId = invitation.roomIdStr();
+    final title =
+        profile?.displayName.map((p0) => '$p0 ($senderId)') ?? senderId;
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions.DM(
           AvatarInfo(
-            uniqueId: roomId,
+            uniqueId: invitation.roomIdStr(),
             displayName: profile?.displayName,
             avatar: profile?.avatar,
           ),
           size: 48,
         ),
       ),
-      title: (profile?.displayName) != null
-          ? Text('${profile?.displayName} ($senderId)')
-          : Text(senderId),
+      title: Text(title),
       subtitle: Text(L10n.of(context).invitationToDM),
     );
   }

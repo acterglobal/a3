@@ -38,8 +38,7 @@ class _InputTextFieldState extends State<InputTextField> {
       keyboardType: widget.textInputType,
       textInputAction: widget.textInputAction,
       validator: widget.validator ??
-          (value) =>
-              (value == null || value.isEmpty) ? 'Field can’t be empty' : null,
+          (val) => (val == null || val.isEmpty) ? 'Field can’t be empty' : null,
       onChanged: widget.onInputChanged ?? (value) {},
       onFieldSubmitted: (value) {
         FocusNode().unfocus();

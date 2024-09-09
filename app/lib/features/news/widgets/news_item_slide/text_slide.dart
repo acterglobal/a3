@@ -1,6 +1,7 @@
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -59,7 +60,6 @@ class _TextSlideState extends ConsumerState<TextSlide> {
   @override
   Widget build(BuildContext context) {
     final slideContent = widget.slide.msgContent();
-    final formattedText = slideContent.formattedBody();
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 70),
@@ -69,25 +69,26 @@ class _TextSlideState extends ConsumerState<TextSlide> {
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 100),
-        child: formattedText != null
-            // SelectionArea and SelectableText for select text
-            ? SelectionArea(
-                child: RenderHtml(
-                  key: NewsUpdateKeys.textUpdateContent,
-                  text: formattedText,
-                  defaultTextStyle:
-                      Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: widget.fgColor,
-                          ),
-                ),
-              )
-            : SelectableText(
-                key: NewsUpdateKeys.textUpdateContent,
-                slideContent.body(),
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: widget.fgColor,
+        // SelectionArea and SelectableText for select text
+        child: slideContent.formattedBody().map(
+                  (p0) => SelectionArea(
+                    child: RenderHtml(
+                      key: NewsUpdateKeys.textUpdateContent,
+                      text: p0,
+                      defaultTextStyle:
+                          Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                color: widget.fgColor,
+                              ),
                     ),
-              ),
+                  ),
+                ) ??
+            SelectableText(
+              key: NewsUpdateKeys.textUpdateContent,
+              slideContent.body(),
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    color: widget.fgColor,
+                  ),
+            ),
       ),
     );
   }

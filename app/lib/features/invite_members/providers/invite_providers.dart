@@ -4,6 +4,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -60,28 +61,29 @@ final suggestedUsersProvider = FutureProvider.family<List<FoundUser>, String>(
   (ref, roomId) async {
     final client = ref.watch(alwaysClientProvider);
     final suggested = (await client.suggestedUsersToInvite(roomId)).toList();
-    final List<FoundUser> ret = [];
+    List<FoundUser> ret = [];
     for (final user in suggested) {
       String? displayName = user.getDisplayName();
-      MemoryImage? avatar;
+      MemoryImage? avatarData;
       if (user.hasAvatar()) {
         try {
-          avatar = await user.getAvatar(null).then(
-                (val) => MemoryImage(
-                  Uint8List.fromList(val.data()!.asTypedList()),
-                ),
-              );
+          final avatar = await user.getAvatar(null);
+          avatarData = avatar
+              .data()
+              .map((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
         } catch (e, s) {
           _log.severe('failure fetching avatar', e, s);
         }
       }
-      final avatarInfo = AvatarInfo(
-        uniqueId: user.userId().toString(),
-        displayName: displayName,
-        avatar: avatar,
-      );
       ret.add(
-        FoundUser(userId: user.userId().toString(), avatarInfo: avatarInfo),
+        FoundUser(
+          userId: user.userId().toString(),
+          avatarInfo: AvatarInfo(
+            uniqueId: user.userId().toString(),
+            displayName: displayName,
+            avatar: avatarData,
+          ),
+        ),
       );
     }
     return ret;

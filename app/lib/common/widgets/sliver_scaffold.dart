@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 
 class SliverScaffold extends StatelessWidget {
@@ -195,11 +196,10 @@ class _SliverFooter extends StatelessWidget {
                   if (cancelActionTitle != null)
                     OutlinedButton(
                       onPressed: () {
-                        if (cancelActionOnPressed == null) {
-                          Navigator.pop(context);
-                        } else {
-                          cancelActionOnPressed!();
-                        }
+                        cancelActionOnPressed.map((p0) {
+                              p0();
+                            }) ??
+                            Navigator.pop(context);
                       },
                       child: Text(cancelActionTitle!),
                     ),

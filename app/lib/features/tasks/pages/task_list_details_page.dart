@@ -9,6 +9,7 @@ import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -166,7 +167,6 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   Widget _widgetDescription(TaskList taskListData) {
     final description = taskListData.description();
     if (description == null) return const SizedBox.shrink();
-    final formattedBody = description.formattedBody();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,15 +176,17 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             onTap: () {
               showEditDescriptionSheet(taskListData);
             },
-            child: formattedBody != null
-                ? RenderHtml(
-                    text: formattedBody,
-                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
-                  )
-                : Text(
-                    description.body(),
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
+            child: description.formattedBody().map(
+                      (p0) => RenderHtml(
+                        text: p0,
+                        defaultTextStyle:
+                            Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ) ??
+                Text(
+                  description.body(),
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
           ),
         ),
         const SizedBox(height: 10),

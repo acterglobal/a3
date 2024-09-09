@@ -565,6 +565,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
+  extension_nullable:
+    dependency: "direct main"
+    description:
+      name: extension_nullable
+      sha256: "5e2ce628f3fb7abd0877b37e09b6042a1db42b43d43dc9a0e33eb37220bd2127"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   fake_async:
     dependency: transitive
     description:

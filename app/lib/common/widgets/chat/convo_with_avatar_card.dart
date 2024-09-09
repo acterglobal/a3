@@ -3,9 +3,10 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ConvoWithAvatarInfoCard extends ConsumerWidget {
   final String roomId;
@@ -57,13 +58,14 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (animation != null) {
-      return SizeTransition(
-        sizeFactor: animation!,
-        child: buildInner(context, ref),
-      );
-    }
-    return buildInner(context, ref);
+    final inner = buildInner(context, ref);
+    return animation.map(
+          (p0) => SizeTransition(
+            sizeFactor: p0,
+            child: inner,
+          ),
+        ) ??
+        inner;
   }
 
   Widget buildInner(BuildContext context, WidgetRef ref) {
@@ -106,24 +108,22 @@ class ConvoWithAvatarInfoCard extends ConsumerWidget {
     if (!showSuggestedMark) {
       return constraints.maxWidth < 300 ? null : subtitle;
     }
-
-    if (subtitle != null) {
-      return Row(
-        children: [
-          Text(
-            L10n.of(context).suggested,
-            style: Theme.of(context).textTheme.labelSmall,
+    return subtitle.map(
+          (p0) => Row(
+            children: [
+              Text(
+                L10n.of(context).suggested,
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+              const SizedBox(width: 2),
+              Expanded(child: p0),
+            ],
           ),
-          const SizedBox(width: 2),
-          Expanded(child: subtitle!),
-        ],
-      );
-    }
-
-    return Text(
-      L10n.of(context).suggested,
-      style: Theme.of(context).textTheme.labelSmall,
-    );
+        ) ??
+        Text(
+          L10n.of(context).suggested,
+          style: Theme.of(context).textTheme.labelSmall,
+        );
   }
 
   Widget avatarWithIndicator(BuildContext context, WidgetRef ref) {
