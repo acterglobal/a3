@@ -310,10 +310,16 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
   // Selecting date
   Future<void> _selectDate({required bool isStartDate}) async {
+    DateTime initialDate = isStartDate ? _selectedStartDate : _selectedEndDate;
+    DateTime firstDate = DateTime.now();
+    if (initialDate < firstDate) {
+      initialDate = firstDate;
+    }
+
     final date = await showDatePicker(
       context: context,
-      initialDate: isStartDate ? _selectedStartDate : _selectedEndDate,
-      firstDate: DateTime.now(),
+      initialDate: initialDate,
+      firstDate: firstDate,
       lastDate: DateTime.now().addYears(1),
     );
     if (date == null || !mounted) return;
