@@ -36,7 +36,6 @@ async fn categories_e2e() -> Result<()> {
     new_cat_builder.add_entry("a".to_owned());
     new_cat_builder.add_entry("b".to_owned());
     new_cat_builder.add_entry("c".to_owned());
-    new_cat_builder.id("campaigns".to_owned());
     new_cat_builder.title("Campaigns".to_owned());
     let new_cat = new_cat_builder.build()?;
 
@@ -78,6 +77,7 @@ async fn categories_e2e() -> Result<()> {
     let updated = updater.build()?;
 
     let mut space_cat_updater = new_space_categories.update_builder();
+    space_cat_updater.clear();
     space_cat_updater.add(Box::new(updated.clone()));
 
     // and we add a second now.
@@ -85,7 +85,6 @@ async fn categories_e2e() -> Result<()> {
     new_cat_builder.add_entry("c".to_owned());
     new_cat_builder.add_entry("b".to_owned());
     new_cat_builder.add_entry("a".to_owned());
-    new_cat_builder.id("new-campaign".to_owned());
     new_cat_builder.title("Campaigns".to_owned());
     let new_cat = new_cat_builder.build()?;
     space_cat_updater.add(Box::new(new_cat.clone()));

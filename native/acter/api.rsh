@@ -2044,7 +2044,6 @@ object ActerAppSettingsBuilder {
 
 
 object Category {
-    fn id() -> string;
     fn title() -> string;
     fn entries() -> string;
     fn display() -> Option<Display>;
