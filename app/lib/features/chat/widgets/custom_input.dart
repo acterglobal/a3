@@ -21,6 +21,7 @@ import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
@@ -685,9 +686,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     ref.read(chatInputProvider.notifier).startSending();
     try {
       // end the typing notification
-      if (widget.onTyping != null) {
-        widget.onTyping!(false);
-      }
+      widget.onTyping.map((p0) => p0(false));
 
       final mentions = ref.read(chatInputProvider).mentions;
       String markdownText = textController.text;
@@ -776,10 +775,10 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
               next.selectedMessage != prev?.selectedMessage)) {
         // a new message has been selected to be edited or switched from reply
         // to edit, force refresh the inner text controller to reflect that
-        if (next.selectedMessage != null) {
-          widget.controller.text = parseEditMsg(next.selectedMessage!);
+        next.selectedMessage.map((p0) {
+          widget.controller.text = parseEditMsg(p0);
           // frame delay to keep focus connected with keyboard.
-        }
+        });
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();
         });
@@ -892,9 +891,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         enabled: ref.watch(_allowEdit(widget.roomId)),
         onChanged: (String val) {
           // send typing notice
-          if (widget.onTyping != null) {
-            widget.onTyping!(val.isNotEmpty);
-          }
+          widget.onTyping.map((p0) => p0(val.isNotEmpty));
         },
         onSubmitted: (_) => widget.onSendButtonPressed(),
         style: Theme.of(context).textTheme.bodyMedium,
