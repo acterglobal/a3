@@ -30,9 +30,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
       description:
           !canPush ? Text(L10n.of(context).noPushServerConfigured) : null,
       initialValue: canPush &&
-          ref.watch(
-            isActiveProvider(LabsFeature.mobilePushNotifications),
-          ),
+          ref.watch(isActiveProvider(LabsFeature.mobilePushNotifications)),
       enabled: canPush,
       onToggle: (newVal) => onToggle(context, ref, newVal),
     );

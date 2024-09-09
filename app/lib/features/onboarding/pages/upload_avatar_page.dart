@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -62,8 +63,8 @@ class UploadAvatarPage extends ConsumerWidget {
     );
   }
 
-  Future<void> pickAvtar(BuildContext context, WidgetRef ref) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+  Future<void> pickAvatar(BuildContext context, WidgetRef ref) async {
+    final result = await FilePicker.platform.pickFiles(
       dialogTitle: L10n.of(context).uploadAvatar,
       type: FileType.image,
     );
@@ -79,7 +80,7 @@ class UploadAvatarPage extends ConsumerWidget {
   Widget _buildAvatarUI(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       key: UploadAvatarPage.selectUserAvatar,
-      onTap: () => pickAvtar(context, ref),
+      onTap: () => pickAvatar(context, ref),
       child: Center(
         child: Container(
           height: 150,
@@ -96,15 +97,17 @@ class UploadAvatarPage extends ConsumerWidget {
             children: [
               ValueListenableBuilder(
                 valueListenable: selectedUserAvatar,
-                builder: (context, userAvatar, child) {
-                  if (userAvatar == null && userAvatar?.path == null) {
-                    return const Icon(Atlas.account, size: 50);
-                  }
-                  return CircleAvatar(
-                    radius: 100,
-                    backgroundImage: FileImage(File(userAvatar!.path!)),
-                  );
-                },
+                builder: (context, userAvatar, child) =>
+                    userAvatar?.path.map(
+                      (p0) => CircleAvatar(
+                        radius: 100,
+                        backgroundImage: FileImage(File(p0)),
+                      ),
+                    ) ??
+                    const Icon(
+                      Atlas.account,
+                      size: 50,
+                    ),
               ),
               Positioned.fill(
                 right: 5,
@@ -135,8 +138,8 @@ class UploadAvatarPage extends ConsumerWidget {
   Future<void> uploadAvatar(BuildContext context, WidgetRef ref) async {
     try {
       final account = ref.watch(accountProvider);
-      if (selectedUserAvatar.value == null ||
-          selectedUserAvatar.value?.path == null) {
+      final avatarPath = selectedUserAvatar.value?.path;
+      if (avatarPath == null) {
         if (context.mounted) {
           EasyLoading.showToast(L10n.of(context).avatarEmpty);
         }
@@ -145,7 +148,7 @@ class UploadAvatarPage extends ConsumerWidget {
       if (context.mounted) {
         EasyLoading.show(status: L10n.of(context).avatarUploading);
       }
-      await account.uploadAvatar(selectedUserAvatar.value!.path!);
+      await account.uploadAvatar(avatarPath);
       ref.invalidate(accountProvider);
       EasyLoading.dismiss(); // close loading
       if (context.mounted) context.goNamed(Routes.main.name);

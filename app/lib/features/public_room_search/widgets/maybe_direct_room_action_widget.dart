@@ -1,9 +1,9 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +16,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
   final bool canMatchAlias;
   final bool canMatchId;
   final String searchVal;
+
   const MaybeDirectRoomActionWidget({
     super.key,
     required this.searchVal,
@@ -53,8 +54,8 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String roomId,
     List<String> servers,
   ) {
-    final roomWatch = ref.watch(maybeRoomProvider(roomId));
-    if (roomWatch.valueOrNull == null) {
+    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    if (room == null) {
       return Card(
         child: ListTile(
           onTap: () => onSelectedMatch(
@@ -80,41 +81,33 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
         ),
       );
     }
-    final room = roomWatch.value!;
 
     if (room.isJoined()) {
-      if (room.isSpace()) {
-        return renderSpaceCard(
-          context,
-          ref,
-          roomId,
-          onTap: () => context.pushNamed(
-            Routes.space.name,
-            pathParameters: {
-              'spaceId': roomId,
-            },
-          ),
-        );
-      }
-      return renderConvoCard(
-        context,
-        ref,
-        roomId,
-        onTap: () => context.pushNamed(
-          Routes.chatroom.name,
-          pathParameters: {
-            'roomId': roomId,
-          },
-        ),
-      );
+      return room.isSpace()
+          ? renderSpaceCard(
+              context,
+              ref,
+              roomId,
+              onTap: () => context.pushNamed(
+                Routes.space.name,
+                pathParameters: {'spaceId': roomId},
+              ),
+            )
+          : renderConvoCard(
+              context,
+              ref,
+              roomId,
+              onTap: () => context.pushNamed(
+                Routes.chatroom.name,
+                pathParameters: {'roomId': roomId},
+              ),
+            );
     }
 
     final trailing = noMemberButton(context, ref, room, roomId, servers);
-
-    if (room.isSpace()) {
-      return renderSpaceCard(context, ref, roomId, trailing: trailing);
-    }
-    return renderConvoCard(context, ref, roomId, trailing: trailing);
+    return room.isSpace()
+        ? renderSpaceCard(context, ref, roomId, trailing: trailing)
+        : renderConvoCard(context, ref, roomId, trailing: trailing);
   }
 
   Widget noMemberButton(
@@ -124,34 +117,30 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String roomId,
     List<String> servers,
   ) {
-    if (room.joinRuleStr() == 'Public') {
-      return OutlinedButton(
-        onPressed: () => onSelectedMatch(
-          context,
-          ref,
-          servers,
-          roomId: roomId,
-        ),
-        child: Text(L10n.of(context).join),
-      );
-    } else {
-      return OutlinedButton(
-        onPressed: () => onSelectedMatch(
-          context,
-          ref,
-          servers,
-          roomId: roomId,
-        ),
-        child: Text(L10n.of(context).requestToJoin),
-      );
-    }
+    return OutlinedButton(
+      onPressed: () => onSelectedMatch(
+        context,
+        ref,
+        servers,
+        roomId: roomId,
+      ),
+      child: Text(
+        room.joinRuleStr() == 'Public'
+            ? L10n.of(context).join
+            : L10n.of(context).requestToJoin,
+      ),
+    );
   }
 
   Widget loadingCard() {
     return const Card(
       child: ListTile(
-        title: Skeletonizer(child: Text('something random ...')),
-        subtitle: Skeletonizer(child: Text('another random thing')),
+        title: Skeletonizer(
+          child: Text('something random ...'),
+        ),
+        subtitle: Skeletonizer(
+          child: Text('another random thing'),
+        ),
       ),
     );
   }
@@ -207,7 +196,10 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
         id.namedGroup('server_name3') ?? '',
       ].where((e) => e.isNotEmpty).toList();
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 10,
+        ),
         child: renderForRoomId(context, ref, '!$roomId', servers),
       );
     }
@@ -215,7 +207,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     return const SizedBox.shrink();
   }
 
-  void onSelectedMatch(
+  Future<void> onSelectedMatch(
     BuildContext context,
     WidgetRef ref,
     List<String> serverNames, {

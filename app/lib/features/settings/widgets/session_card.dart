@@ -29,7 +29,10 @@ class SessionCard extends ConsumerWidget {
     deviceRecord.lastSeenIp().map((p0) => fields.add(p0));
     fields.add(deviceRecord.deviceId().toString());
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
+      margin: const EdgeInsets.symmetric(
+        vertical: 2,
+        horizontal: 15,
+      ),
       child: ListTile(
         leading: isVerified
             ? Icon(
@@ -129,9 +132,7 @@ class SessionCard extends ConsumerWidget {
         );
       },
     );
-    if (result != true) {
-      return;
-    }
+    if (result != true) return;
     final client = ref.read(alwaysClientProvider);
     final manager = client.sessionManager();
     await manager.deleteDevice(

@@ -46,10 +46,9 @@ final chatStateProvider =
 final chatComposerDraftProvider = FutureProvider.autoDispose
     .family<ComposeDraft?, String>((ref, roomId) async {
   final chat = await ref.watch(chatProvider(roomId).future);
-  if (chat == null) {
-    return null;
-  }
-  return (await chat.msgDraft().then((val) => val.draft()));
+  if (chat == null) return null;
+  final result = await chat.msgDraft();
+  return result.draft();
 });
 
 final chatTopic =
@@ -90,14 +89,14 @@ final latestTrackableMessageId =
 final chatMessagesProvider = StateProvider.autoDispose
     .family<List<types.Message>, String>((ref, roomId) {
   final moreMessages = [];
-  if (ref.watch(chatStateProvider(roomId).select((value) => !value.hasMore))) {
+  final endReached =
+      ref.watch(chatStateProvider(roomId).select((value) => !value.hasMore));
+  if (endReached) {
     moreMessages.add(
       const types.SystemMessage(
         id: 'chat-invite',
         text: 'invite',
-        metadata: {
-          'type': '_invite',
-        },
+        metadata: {'type': '_invite'},
       ),
     );
 
@@ -108,22 +107,19 @@ final chatMessagesProvider = StateProvider.autoDispose
         types.SystemMessage(
           id: 'chat-topic',
           text: topic,
-          metadata: const {
-            'type': '_topic',
-          },
+          metadata: const {'type': '_topic'},
         ),
       );
     }
 
     // and encryption information block
-    if (ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull == true) {
+    final isEncrypted = ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull;
+    if (isEncrypted == true) {
       moreMessages.add(
         const types.SystemMessage(
           id: 'encrypted-information',
           text: '',
-          metadata: {
-            'type': '_encryptedInfo',
-          },
+          metadata: {'type': '_encryptedInfo'},
         ),
       );
     }
@@ -150,9 +146,7 @@ final mediaChatStateProvider = StateNotifierProvider.family<MediaChatNotifier,
 final timelineStreamProvider =
     FutureProvider.family<TimelineStream, String>((ref, roomId) async {
   final chat = await ref.watch(chatProvider(roomId).future);
-  if (chat == null) {
-    throw RoomNotFound();
-  }
+  if (chat == null) throw RoomNotFound();
   return chat.timelineStream();
 });
 
@@ -209,18 +203,13 @@ typedef UnreadCounters = (int, int, int);
 
 final unreadCountersProvider =
     FutureProvider.family<UnreadCounters, String>((ref, roomId) async {
-  final convo = await ref.watch(
-    chatProvider(roomId).future,
-  );
-  if (convo == null) {
-    return (0, 0, 0);
-  }
-  final ret = (
+  final convo = await ref.watch(chatProvider(roomId).future);
+  if (convo == null) return (0, 0, 0);
+  return (
     convo.numUnreadNotificationCount(),
     convo.numUnreadMentions(),
     convo.numUnreadMessages()
   );
-  return ret;
 });
 
 final hasUnreadChatsProvider = FutureProvider.autoDispose((ref) async {

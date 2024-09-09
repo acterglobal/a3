@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_svg/svg.dart';
 
 class EmptyState extends StatelessWidget {
   final String? title;
@@ -34,30 +34,22 @@ class EmptyState extends StatelessWidget {
               height: imageSize,
               width: imageSize,
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             if (title != null)
               Text(
                 title!,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             if (subtitle != null)
               Text(
                 subtitle!,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             if (primaryButton != null) primaryButton!,
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             if (secondaryButton != null) secondaryButton!,
           ],
         ),

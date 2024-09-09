@@ -8,6 +8,7 @@ import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:device_calendar/device_calendar.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -114,39 +115,29 @@ Future<void> _refreshCalendar(
     currentLinks[parts.first] = parts.sublist(1).join('=');
   }
 
-  final currentLinkKeys = currentLinks.values;
   List<Event> foundEvents = [];
-  if (currentLinkKeys.isNotEmpty) {
+  if (currentLinks.isNotEmpty) {
     final foundEventsResult = await deviceCalendar.retrieveEvents(
       calendarId,
       RetrieveEventsParams(eventIds: currentLinks.values.toList()),
     );
-
     foundEvents = List.of(
       _logError(foundEventsResult, 'Failed to load calendar events') ?? [],
     );
   }
 
-  final newLinks = {};
-  final foundEventIds = [];
+  Map<String, String> newLinks = {};
+  List<String> foundEventIds = [];
   for (final eventAndRsvp in events) {
     final calEvent = eventAndRsvp.event;
     final rsvp = eventAndRsvp.rsvp;
     final calEventId = calEvent.eventId().toString();
-    final localId = currentLinks[calEventId];
-    Event? localEvent;
-    if (localId != null) {
-      localEvent = foundEvents.cast<Event?>().firstWhere(
-            (e) => e?.eventId == localId,
-            orElse: () => null,
-          );
-    }
-
-    if (localEvent == null) {
-      localEvent = Event(calendarId);
-    } else {
-      foundEventIds.add(localEvent.eventId);
-    }
+    var localEvent = currentLinks[calEventId].map((p0) {
+      final ret = foundEvents.where((e) => e.eventId == p0).firstOrNull;
+      if (ret != null) foundEventIds.add(p0);
+      return ret;
+    });
+    localEvent ??= Event(calendarId);
 
     localEvent = await _updateEventDetails(calEvent, rsvp, localEvent);
     final localRequest = await deviceCalendar.createOrUpdateEvent(localEvent);
@@ -159,10 +150,11 @@ Future<void> _refreshCalendar(
       newLinks[calEventId] = resultData;
     } else {
       _log.warning('Updating $calEventId failed. no new id given');
-      if (localEvent.eventId != null) {
+      final evtId = localEvent.eventId;
+      if (evtId != null) {
         // assuming that all went fine...
         // maybe this is usual?
-        newLinks[calEventId] = localEvent.eventId;
+        newLinks[calEventId] = evtId;
       }
     }
   }
@@ -170,14 +162,12 @@ Future<void> _refreshCalendar(
       newLinks.entries.map((m) => '${m.key}=${m.value}').toList();
   _log.info('Storing new mapping: $newMapping');
   // set our new mapping
-  await preferences.setStringList(
-    calendarSyncIdsKey,
-    newMapping,
-  );
+  await preferences.setStringList(calendarSyncIdsKey, newMapping);
 
   // time to clean up events that we aren’t tracking anymore
-  for (final toDelete in foundEvents
-      .where((e) => e.eventId != null && !foundEventIds.contains(e.eventId))) {
+  final uselessEvents = foundEvents
+      .where((e) => e.eventId != null && !foundEventIds.contains(e.eventId));
+  for (final toDelete in uselessEvents) {
     _log.info('Deleting event ${toDelete.eventId}');
     _logError(
       await deviceCalendar.deleteEvent(calendarId, toDelete.eventId),

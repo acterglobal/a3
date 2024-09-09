@@ -78,10 +78,8 @@ class _InviteSpaceMembersConsumerState
   }
 
   Widget _buildParentSpaces() {
-    final parentSpaceIds =
-        ref.watch(parentIdsProvider(widget.roomId)).valueOrNull;
-
-    if (parentSpaceIds == null && parentSpaceIds!.isEmpty) {
+    final parents = ref.watch(parentIdsProvider(widget.roomId)).valueOrNull;
+    if (parents == null || parents.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -90,11 +88,11 @@ class _InviteSpaceMembersConsumerState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          parentSpaceIds.length > 1
+          parents.length > 1
               ? L10n.of(context).parentSpaces
               : L10n.of(context).parentSpace,
         ),
-        for (final roomId in parentSpaceIds)
+        for (final roomId in parents)
           SpaceMemberInviteCard(
             roomId: roomId,
             isSelected: selectedSpaces.contains(roomId),
@@ -197,18 +195,15 @@ class _InviteSpaceMembersConsumerState
         );
         return;
       }
-      final invited =
-          (ref.read(roomInvitedMembersProvider(widget.roomId)).valueOrNull ??
-                  [])
-              .map((e) => e.userId().toString())
-              .toList();
+      final invitedMembers =
+          ref.read(roomInvitedMembersProvider(widget.roomId)).valueOrNull ?? [];
+      final invited = invitedMembers.map((e) => e.userId().toString()).toList();
       final joined =
           ref.read(membersIdsProvider(widget.roomId)).valueOrNull ?? [];
       var total = 0;
       var inviteCount = 0;
       for (final roomId in selectedSpaces) {
-        final members =
-            (await ref.read(membersIdsProvider(roomId).future)).toList();
+        final members = await ref.read(membersIdsProvider(roomId).future);
         total += members.length;
 
         for (final member in members) {

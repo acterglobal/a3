@@ -67,18 +67,14 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
               if (selectedRooms != [])
                 ActerInlineTextButton(
                   onPressed: () {
-                    setState(() {
-                      selectedRooms = [];
-                    });
+                    setState(() => selectedRooms = []);
                   },
                   child: Text(L10n.of(context).unselectAll),
                 ),
               if (selectedRooms != null)
                 ActerInlineTextButton(
                   onPressed: () {
-                    setState(() {
-                      selectedRooms = null;
-                    });
+                    setState(() => selectedRooms = null);
                   },
                   child: Text(L10n.of(context).selectAll),
                 ),
@@ -122,12 +118,10 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
       // was not in, add it new
       newSelectedRooms.add(roomId);
     }
-    setState(() {
-      selectedRooms = newSelectedRooms;
-    });
+    setState(() => selectedRooms = newSelectedRooms);
   }
 
-  void _joinSelected(BuildContext context) async {
+  Future<void> _joinSelected(BuildContext context) async {
     final allRooms = chatsFound.followedBy(spacesFound).toList();
     List<SpaceHierarchyRoomInfo> roomsToJoin = [];
     bool hadFailures = false;

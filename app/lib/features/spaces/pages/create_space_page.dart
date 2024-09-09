@@ -55,18 +55,18 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       //Set default visibility based on the parent space selection
       // PRIVATE : If no parent is selected
       // SPACE VISIBLE : If parent space is selected
-      ref.read(_selectedVisibilityProvider.notifier).update(
-            (state) => widget.initialParentsSpaceId != null
-                ? RoomVisibility.SpaceVisible
-                : RoomVisibility.Private,
-          );
+      ref.read(_selectedVisibilityProvider.notifier).update((state) {
+        return widget.initialParentsSpaceId != null
+            ? RoomVisibility.SpaceVisible
+            : RoomVisibility.Private;
+      });
       //LISTEN for changes on parent space selection
       ref.listenManual(selectedSpaceIdProvider, (previous, next) {
-        ref.read(_selectedVisibilityProvider.notifier).update(
-              (state) => next != null
-                  ? RoomVisibility.SpaceVisible
-                  : RoomVisibility.Private,
-            );
+        ref.read(_selectedVisibilityProvider.notifier).update((state) {
+          return next != null
+              ? RoomVisibility.SpaceVisible
+              : RoomVisibility.Private;
+        });
       });
     });
   }
@@ -81,10 +81,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
 
   AppBar _buildAppbar() {
     final currentParentSpace = ref.watch(selectedSpaceIdProvider);
-    final parentSelected = currentParentSpace != null;
     return AppBar(
       title: Text(
-        parentSelected
+        currentParentSpace != null
             ? L10n.of(context).createSubspace
             : L10n.of(context).createSpace,
       ),
@@ -147,14 +146,12 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   void _handleAvatarUpload() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       dialogTitle: L10n.of(context).uploadAvatar,
       type: FileType.image,
     );
     if (result != null) {
-      setState(() {
-        spaceAvatar = File(result.files.single.path!);
-      });
+      setState(() => spaceAvatar = File(result.files.single.path!));
     } else {
       // user cancelled the picker
     }

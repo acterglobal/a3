@@ -20,10 +20,7 @@ List<Widget>? _renderKnownSubspaces(
   String spaceIdOrAlias,
   SpaceRelationsOverview spaces,
 ) {
-  if (spaces.knownSubspaces.isEmpty) {
-    return null;
-  }
-
+  if (spaces.knownSubspaces.isEmpty) return null;
   return [
     GridView.builder(
       itemCount: spaces.knownSubspaces.length,

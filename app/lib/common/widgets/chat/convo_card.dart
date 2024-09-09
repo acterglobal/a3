@@ -132,9 +132,9 @@ class _SubtitleWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userIds = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
-    if (userIds != null && userIds.isNotEmpty) {
-      return renderTypingState(context, userIds, ref);
+    final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
+    if (users != null && users.isNotEmpty) {
+      return renderTypingState(context, users, ref);
     }
 
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
@@ -388,27 +388,30 @@ class _SubtitleWidget extends ConsumerWidget {
 
   Widget renderTypingState(
     BuildContext context,
-    List<User> userIds,
+    List<User> users,
     WidgetRef ref,
   ) {
     final textStyle = Theme.of(context).textTheme.bodySmall!;
-    if (userIds.length == 1) {
-      final userName = simplifyUserId(userIds[0].id.toString());
-      return Text(L10n.of(context).typingUser1(userName!), style: textStyle);
-    } else if (userIds.length == 2) {
-      final u1 = simplifyUserId(userIds[0].id.toString());
-      final u2 = simplifyUserId(userIds[1].id.toString());
+    if (users.length == 1) {
+      final user1 = simplifyUserId(users[0].id)!;
       return Text(
-        L10n.of(context).typingUser2(u1!, u2!),
-        style: textStyle,
-      );
-    } else {
-      final u1 = simplifyUserId(userIds[0].id.toString());
-      return Text(
-        L10n.of(context).typingUser3(u1!, {userIds.length - 1}),
+        L10n.of(context).typingUser1(user1),
         style: textStyle,
       );
     }
+    if (users.length == 2) {
+      final user1 = simplifyUserId(users[0].id)!;
+      final user2 = simplifyUserId(users[1].id)!;
+      return Text(
+        L10n.of(context).typingUser2(user1, user2),
+        style: textStyle,
+      );
+    }
+    final user1 = simplifyUserId(users[0].id)!;
+    return Text(
+      L10n.of(context).typingUser3(user1, {users.length - 1}),
+      style: textStyle,
+    );
   }
 }
 

@@ -178,8 +178,9 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         if (scrollController.offset == 0) {
           final message = ref.read(latestTrackableMessageId(roomId));
           if (message != null) {
-            await (await ref.read(timelineStreamProvider(roomId).future))
-                .sendSingleReceipt('Read', 'Main', message);
+            final timeline =
+                await ref.read(timelineStreamProvider(roomId).future);
+            await timeline.sendSingleReceipt('Read', 'Main', message);
           }
 
           // FIXME: this is the proper API, but it doesn’t seem to

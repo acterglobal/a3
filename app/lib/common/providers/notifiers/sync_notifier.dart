@@ -31,13 +31,12 @@ class SyncNotifier extends StateNotifier<SyncState> {
   }
 
   void _tickSyncState() {
-    if (state.countDown == null || state.countDown == 0) {
+    final countDown = state.countDown;
+    if (countDown == null || countDown == 0) {
       _restartSync();
     } else {
       // just count down.
-      state = state.copyWith(
-        countDown: (state.countDown ?? 0) > 0 ? (state.countDown! - 1) : null,
-      );
+      state = state.copyWith(countDown: countDown > 0 ? (countDown - 1) : null);
     }
   }
 
@@ -65,8 +64,9 @@ class SyncNotifier extends StateNotifier<SyncState> {
           // regular logout, we do nothing here
           state = SyncState(initialSync: false, errorMsg: msg);
         } else {
+          final nextRetry = state.nextRetry;
           final retry = min(
-            (state.nextRetry == null ? 5 : state.nextRetry! * 2),
+            (nextRetry == null ? 5 : nextRetry * 2),
             300,
           ); // we double this to a max of 5min.
           state = state.copyWith(

@@ -123,13 +123,8 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       final videoName = p.basenameWithoutExtension(mediaPath);
       final destPath = p.join(tempDir.path, '$videoName.jpg');
       final destFile = File(destPath);
-
-      if (await destFile.exists()) {
-        return destFile;
-      }
-
-      final thumbnailGenerated =
-          await FcNativeVideoThumbnail().getVideoThumbnail(
+      if (await destFile.exists()) return destFile;
+      final generated = await FcNativeVideoThumbnail().getVideoThumbnail(
         srcFile: mediaPath,
         destFile: destPath,
         width: 300,
@@ -137,10 +132,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
         format: 'jpeg',
         quality: 90,
       );
-
-      if (thumbnailGenerated) {
-        return destFile;
-      }
+      if (generated) return destFile;
     } catch (e, s) {
       // Handle platform errors.
       _log.severe('Failed to extract video thumbnail', e, s);

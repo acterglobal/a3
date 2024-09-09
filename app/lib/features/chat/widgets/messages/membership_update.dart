@@ -7,44 +7,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class MembershipUpdateWidget extends ConsumerWidget {
   final CustomMessage message;
 
-  const MembershipUpdateWidget({super.key, required this.message});
+  const MembershipUpdateWidget({
+    super.key,
+    required this.message,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final myUserId = ref.watch(myUserIdStrProvider);
-    String? textMsg;
-    final msgType = message.metadata?['msgType'];
-    if (msgType == 'Joined') {
-      if (message.author.id == myUserId) {
-        textMsg = L10n.of(context).chatYouJoined;
-      } else if (message.author.firstName != null) {
-        textMsg =
-            L10n.of(context).chatJoinedDisplayName(message.author.firstName!);
-      } else {
-        textMsg = L10n.of(context).chatJoinedUserId(message.author.id);
-      }
-    } else if (msgType == 'InvitationAccepted') {
-      if (message.author.id == myUserId) {
-        textMsg = L10n.of(context).chatYouAcceptedInvite;
-      } else if (message.author.firstName != null) {
-        textMsg = L10n.of(context)
-            .chatInvitationAcceptedDisplayName(message.author.firstName!);
-      } else {
-        textMsg =
-            L10n.of(context).chatInvitationAcceptedUserId(message.author.id);
-      }
-    } else if (msgType == 'Invited') {
-      if (message.author.id == myUserId) {
-        textMsg = L10n.of(context).chatYouInvited;
-      } else if (message.author.firstName != null) {
-        textMsg =
-            L10n.of(context).chatInvitedDisplayName(message.author.firstName!);
-      } else {
-        textMsg = L10n.of(context).chatInvitedUserId(message.author.id);
-      }
-    } else {
-      textMsg = message.metadata?['body'] ?? '';
-    }
+    final firstName = message.author.firstName;
+    String textMsg = switch (message.metadata?['msgType']) {
+      'Joined' => message.author.id == myUserId
+          ? L10n.of(context).chatYouJoined
+          : firstName != null
+              ? L10n.of(context).chatJoinedDisplayName(firstName)
+              : L10n.of(context).chatJoinedUserId(message.author.id),
+      'InvitationAccepted' => message.author.id == myUserId
+          ? L10n.of(context).chatYouAcceptedInvite
+          : firstName != null
+              ? L10n.of(context).chatInvitationAcceptedDisplayName(firstName)
+              : L10n.of(context)
+                  .chatInvitationAcceptedUserId(message.author.id),
+      'Invited' => message.author.id == myUserId
+          ? L10n.of(context).chatYouInvited
+          : firstName != null
+              ? L10n.of(context).chatInvitedDisplayName(firstName)
+              : L10n.of(context).chatInvitedUserId(message.author.id),
+      _ => message.metadata?['body'] ?? '',
+    };
     return Container(
       padding: const EdgeInsets.only(left: 10, bottom: 5),
       child: RichText(

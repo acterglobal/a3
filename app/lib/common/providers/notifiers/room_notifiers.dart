@@ -48,6 +48,7 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
 class RoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String> {
   late ProviderSubscription<AsyncValue<String?>> _displayNameListener;
   late ProviderSubscription<AsyncValue<MemoryImage?>> _avatarListener;
+
   @override
   AvatarInfo build(arg) {
     final roomId = arg;

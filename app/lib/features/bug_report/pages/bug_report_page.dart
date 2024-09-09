@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/bug_report/actions/submit_bug_report.dart';
@@ -52,12 +53,10 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       loadingNotifier.update((state) => true);
       final Map<String, String> extraFields = {};
       if (submitErrorAndStackTrace) {
-        if (widget.error != null) {
-          extraFields['error'] = widget.error.toString();
-        }
-        if (widget.stack != null) {
-          extraFields['stack'] = widget.stack.toString();
-        }
+        final error = widget.error;
+        if (error != null) extraFields['error'] = error;
+        final stack = widget.stack;
+        if (stack != null) extraFields['stack'] = stack;
       }
       if (descController.text.isNotEmpty) {
         extraFields['description'] = descController.text;
@@ -113,7 +112,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                   decoration: InputDecoration(
                     hintText: L10n.of(context).bugReportDescription,
                   ),
-                  validator: (newValue) => newValue == null || newValue.isEmpty
+                  validator: (val) => val == null || val.isEmpty
                       ? L10n.of(context).emptyDescription
                       : null,
                 ),
@@ -205,29 +204,24 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   }
 
   List<Widget> renderForScreenShot() {
-    if (widget.imagePath == null) return [];
+    final imagePath = widget.imagePath;
+    if (imagePath == null) return [];
     return [
       const SizedBox(height: 10),
       CheckboxListTile(
         key: BugReportPage.includeScreenshot,
         title: Text(L10n.of(context).includeScreenshot),
         value: withScreenshot,
-        onChanged: (bool? value) => setState(() {
-          withScreenshot = value ?? true;
-        }),
+        onChanged: (val) => setState(() => withScreenshot = (val != false)),
         controlAffinity: ListTileControlAffinity.leading,
       ),
       const SizedBox(height: 10),
       if (withScreenshot)
         Image.file(
-          File(widget.imagePath!),
+          File(imagePath),
           key: BugReportPage.screenshot,
           width: MediaQuery.of(context).size.width * 0.8,
-          errorBuilder: (
-            BuildContext context,
-            Object error,
-            StackTrace? stackTrace,
-          ) {
+          errorBuilder: (context, error, stackTrace) {
             return Text(L10n.of(context).couldNotLoadImage(error));
           },
         ),

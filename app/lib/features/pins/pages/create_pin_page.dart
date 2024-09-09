@@ -20,6 +20,7 @@ import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_attachment_options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -54,10 +55,9 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      if (widget.initialSelectedSpace != null &&
-          widget.initialSelectedSpace!.isNotEmpty) {
-        final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
-        parentNotifier.state = widget.initialSelectedSpace;
+      final initialSpace = widget.initialSelectedSpace;
+      if (initialSpace != null && initialSpace.isNotEmpty) {
+        ref.read(selectedSpaceIdProvider.notifier).state = initialSpace;
       }
     });
   }
@@ -138,7 +138,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
           onInputChanged: (text) => ref
               .read(createPinStateProvider.notifier)
               .setPinTitleValue(text ?? ''),
-          validator: (value) => (value != null && value.trim().isNotEmpty)
+          validator: (val) => (val != null && val.trim().isNotEmpty)
               ? null
               : L10n.of(context).pleaseEnterATitle,
         ),
@@ -249,9 +249,10 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   Widget _pinDescription(CreatePinState pinState) {
-    if (pinState.pinDescriptionParams == null ||
-        pinState.pinDescriptionParams!.htmlBodyDescription.trim().isEmpty ||
-        pinState.pinDescriptionParams!.plainDescription.trim().isEmpty) {
+    final params = pinState.pinDescriptionParams;
+    if (params == null) return const SizedBox.shrink();
+    if (params.htmlBodyDescription.trim().isEmpty ||
+        params.plainDescription.trim().isEmpty) {
       return const SizedBox.shrink();
     }
     return Column(
@@ -265,19 +266,17 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
               showEditPinDescriptionBottomSheet(
                 context: context,
                 ref: ref,
-                htmlBodyDescription:
-                    pinState.pinDescriptionParams?.htmlBodyDescription,
-                plainDescription:
-                    pinState.pinDescriptionParams?.plainDescription,
+                htmlBodyDescription: params.htmlBodyDescription,
+                plainDescription: params.plainDescription,
               );
             },
-            child: pinState.pinDescriptionParams!.htmlBodyDescription.isNotEmpty
+            child: params.htmlBodyDescription.isNotEmpty
                 ? RenderHtml(
-                    text: pinState.pinDescriptionParams!.htmlBodyDescription,
+                    text: params.htmlBodyDescription,
                     defaultTextStyle: Theme.of(context).textTheme.labelLarge,
                   )
                 : Text(
-                    pinState.pinDescriptionParams!.plainDescription,
+                    params.plainDescription,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
           ),
@@ -305,21 +304,21 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       final pinState = ref.read(createPinStateProvider);
 
       // Pin Title
-      if (pinState.pinTitle != null && pinState.pinTitle!.isNotEmpty) {
-        pinDraft.title(pinState.pinTitle!);
+      final pinTitle = pinState.pinTitle;
+      if (pinTitle != null && pinTitle.isNotEmpty) {
+        pinDraft.title(pinTitle);
       }
 
       // Pin Description
-      if (pinState.pinDescriptionParams != null) {
-        if (pinState.pinDescriptionParams!.htmlBodyDescription.isNotEmpty) {
+      final params = pinState.pinDescriptionParams;
+      if (params != null) {
+        if (params.htmlBodyDescription.isNotEmpty) {
           pinDraft.contentHtml(
-            pinState.pinDescriptionParams!.plainDescription,
-            pinState.pinDescriptionParams!.htmlBodyDescription,
+            params.plainDescription,
+            params.htmlBodyDescription,
           );
         } else {
-          pinDraft.contentMarkdown(
-            pinState.pinDescriptionParams!.plainDescription,
-          );
+          pinDraft.contentMarkdown(params.plainDescription);
         }
       }
       final pinId = await pinDraft.send();
@@ -356,7 +355,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
         context: context,
         ref: ref,
         manager: manager,
-        attachments: attachment.path != null ? [File(attachment.path!)] : [],
+        attachments: attachment.path.map((p0) => [File(p0)]) ?? [],
         title: attachment.title,
         link: attachment.link,
         attachmentType: attachment.attachmentType,

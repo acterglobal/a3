@@ -26,14 +26,14 @@ class ShowCommand extends Command {
   Future<void> run() async {
     if (argResults != null) {
       if (argResults!['all']) {
-        for (final key in supportedKeys.keys) {
-          await printSetting(supportedKeys[key]!, key);
+        for (final entry in supportedKeys.entries) {
+          await printSetting(entry.value, entry.key);
         }
         return;
       }
-      final key = argResults!['key'];
+      String? key = argResults!['key'];
       if (key != null) {
-        return await printSetting(supportedKeys[key!]!, key);
+        return await printSetting(supportedKeys[key]!, key);
       }
     }
 
@@ -74,10 +74,11 @@ class SetCommand extends Command {
   @override
   Future<void> run() async {
     if (argResults != null) {
-      final key = argResults!['key'];
-      final value = argResults!['value'];
+      String? key = argResults!['key'];
+      String? value = argResults!['value'];
       if (key != null && value != null) {
-        return await setSetting(supportedKeys[key!]!, key, value);
+        await setSetting(supportedKeys[key]!, key, value);
+        return;
       }
     }
 
@@ -110,14 +111,15 @@ class ResetCommand extends Command {
   Future<void> run() async {
     if (argResults != null) {
       if (argResults!['all']) {
-        for (final key in supportedKeys.keys) {
-          await resetSetting(supportedKeys[key]!, key);
+        for (final entry in supportedKeys.entries) {
+          await resetSetting(entry.value, entry.key);
         }
         return;
       }
-      final key = argResults!['key'];
+      String? key = argResults!['key'];
       if (key != null) {
-        return await resetSetting(supportedKeys[key!]!, key);
+        await resetSetting(supportedKeys[key]!, key);
+        return;
       }
     }
 

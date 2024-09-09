@@ -21,12 +21,9 @@ class NewsUtils {
       final destPath = p.join(tempDir.path, '$videoName.jpg');
       final destFile = File(destPath);
 
-      if (await destFile.exists()) {
-        return destFile;
-      }
+      if (await destFile.exists()) return destFile;
 
-      final thumbnailGenerated =
-          await FcNativeVideoThumbnail().getVideoThumbnail(
+      final generated = await FcNativeVideoThumbnail().getVideoThumbnail(
         srcFile: videoFile.path,
         destFile: destPath,
         width: 128,
@@ -35,9 +32,7 @@ class NewsUtils {
         quality: 90,
       );
 
-      if (thumbnailGenerated) {
-        return destFile;
-      }
+      if (generated) return destFile;
     } catch (e, s) {
       // Handle platform errors.
       _log.severe('Failed to extract video thumbnail', e, s);
@@ -59,9 +54,8 @@ class NewsUtils {
   //Add image slide
   static Future<void> addImageSlide(WidgetRef ref) async {
     final clr = getRandomElement(Colors.primaries);
-    XFile? imageFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
+    final imageFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (imageFile != null) {
       final slide = NewsSlideItem(
         type: NewsSlideType.image,
@@ -75,9 +69,8 @@ class NewsUtils {
   //Add video slide
   static Future<void> addVideoSlide(WidgetRef ref) async {
     final clr = getRandomElement(Colors.primaries);
-    XFile? videoFile = await ImagePicker().pickVideo(
-      source: ImageSource.gallery,
-    );
+    final videoFile =
+        await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (videoFile != null) {
       final slide = NewsSlideItem(
         type: NewsSlideType.video,

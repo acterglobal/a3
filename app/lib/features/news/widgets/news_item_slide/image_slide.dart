@@ -24,20 +24,21 @@ class ImageSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<FfiBufferUint8>(
       future: slide.sourceBinary(null),
-      builder: (BuildContext context, AsyncSnapshot<FfiBufferUint8> snapshot) {
-        if (snapshot.hasError) {
+      builder: (context, snapshot) {
+        final error = snapshot.error;
+        if (error != null) {
           _log.severe(
             'Failed to load image of slide',
-            snapshot.error,
+            error,
             snapshot.stackTrace,
           );
           return Center(
-            child: Text(L10n.of(context).errorLoadingImage(snapshot.error!)),
+            child: Text(L10n.of(context).errorLoadingImage(error)),
           );
         }
 
-        if (snapshot.hasData &&
-            snapshot.connectionState == ConnectionState.done) {
+        final data = snapshot.data;
+        if (data != null && snapshot.connectionState == ConnectionState.done) {
           return Container(
             color: bgColor,
             alignment: Alignment.center,
@@ -45,15 +46,15 @@ class ImageSlide extends StatelessWidget {
             foregroundDecoration: BoxDecoration(
               image: DecorationImage(
                 fit: BoxFit.contain,
-                image: MemoryImage(
-                  Uint8List.fromList(snapshot.data!.asTypedList()),
-                ),
+                image: MemoryImage(Uint8List.fromList(data.asTypedList())),
               ),
             ),
           );
         }
 
-        return Center(child: Text(L10n.of(context).loadingImage));
+        return Center(
+          child: Text(L10n.of(context).loadingImage),
+        );
       },
     );
   }

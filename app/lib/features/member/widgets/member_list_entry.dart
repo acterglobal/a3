@@ -26,21 +26,20 @@ class MemberListEntry extends ConsumerWidget {
     final memberStatus = ref
         .watch(membershipStatusStr((roomId: roomId, userId: memberId)))
         .valueOrNull;
-    Widget? trailing;
-    if (memberStatus == 'Admin') {
-      trailing = const Tooltip(
-        message: 'Admin',
-        child: Icon(Atlas.crown_winner_thin),
-      );
-    } else if (memberStatus == 'Mod') {
-      trailing = const Tooltip(
-        message: 'Moderator',
-        child: Icon(Atlas.shield_star_win_thin),
-      );
-    }
-
-    final avatarInfo =
-        ref.watch(memberAvatarInfoProvider((userId: memberId, roomId: roomId)));
+    final trailing = switch (memberStatus) {
+      'Admin' => const Tooltip(
+          message: 'Admin',
+          child: Icon(Atlas.crown_winner_thin),
+        ),
+      'Mod' => const Tooltip(
+          message: 'Moderator',
+          child: Icon(Atlas.shield_star_win_thin),
+        ),
+      _ => null,
+    };
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider((userId: memberId, roomId: roomId)),
+    );
 
     return ListTile(
       onTap: () async {

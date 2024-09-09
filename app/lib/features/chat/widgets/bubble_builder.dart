@@ -54,19 +54,17 @@ class BubbleBuilder extends ConsumerWidget {
         isMemberEvent
             ? child
             : SwipeTo(
-                onRightSwipe: redactedOrEncrypted
-                    ? null
-                    : (DragUpdateDetails details) {
-                        inputNotifier.setReplyToMessage(message);
-                      },
+                onRightSwipe: (details) {
+                  if (!redactedOrEncrypted) {
+                    inputNotifier.setReplyToMessage(message);
+                  }
+                },
                 iconOnRightSwipe: Icons.reply_rounded,
-                onLeftSwipe: redactedOrEncrypted
-                    ? null
-                    : isAuthor
-                        ? (DragUpdateDetails details) {
-                            inputNotifier.setEditMessage(message);
-                          }
-                        : null,
+                onLeftSwipe: (details) {
+                  if (!redactedOrEncrypted && isAuthor) {
+                    inputNotifier.setEditMessage(message);
+                  }
+                },
                 iconOnLeftSwipe: Atlas.pencil_edit_thin,
                 child: _ChatBubble(
                   roomId: roomId,

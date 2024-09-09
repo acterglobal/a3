@@ -195,24 +195,20 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
     final selectedUsers = ref.watch(createChatSelectedUsersProvider).toList();
     if (selectedUsers.isEmpty) {
       return L10n.of(context).createGroupChat;
-    } else if (selectedUsers.length > 1) {
-      return L10n.of(context).startGroupDM;
-    } else {
-      final client = ref.watch(alwaysClientProvider);
-      if (checkUserDMExists(selectedUsers[0].userId().toString(), client) !=
-          null) {
-        return L10n.of(context).goToDM;
-      } else {
-        return L10n.of(context).startDM;
-      }
     }
+    if (selectedUsers.length == 1) {
+      final client = ref.watch(alwaysClientProvider);
+      final userId = selectedUsers[0].userId().toString();
+      return checkUserDMExists(userId, client) != null
+          ? L10n.of(context).goToDM
+          : L10n.of(context).startDM;
+    }
+    return L10n.of(context).startGroupDM;
   }
 
   // checks whether user DM already exists or needs created
   String? checkUserDMExists(String userId, ffi.Client client) {
-    final id = client.dmWithUser(userId).text();
-    if (id != null) return id;
-    return null;
+    return client.dmWithUser(userId).text();
   }
 
   Widget renderSelectedUsers(BuildContext context) {
@@ -491,11 +487,11 @@ class _CreateRoomFormWidgetConsumerState
   @override
   void initState() {
     super.initState();
-    if (widget.initialSelectedSpaceId != null) {
+    final initialSpaceId = widget.initialSelectedSpaceId;
+    if (initialSpaceId != null) {
       isSpaceRoom = true;
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        final notifier = ref.read(selectedSpaceIdProvider.notifier);
-        notifier.state = widget.initialSelectedSpaceId;
+        ref.read(selectedSpaceIdProvider.notifier).state = initialSpaceId;
       });
     }
   }
@@ -628,15 +624,15 @@ class _CreateRoomFormWidgetConsumerState
     ref.read(_titleProvider.notifier).update((state) => value!);
   }
 
-  void _handleAvatarUpload() async {
+  Future<void> _handleAvatarUpload() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       dialogTitle: L10n.of(context).uploadAvatar,
       type: FileType.image,
     );
     if (result != null) {
-      File file = File(result.files.single.path!);
-      String filepath = file.path;
-      ref.read(_avatarProvider.notifier).update((state) => filepath);
+      ref
+          .read(_avatarProvider.notifier)
+          .update((state) => result.files.single.path!);
     } else {
       // user cancelled the picker
     }
@@ -686,7 +682,10 @@ class _UserWidget extends ConsumerWidget {
   final ffi.UserProfile profile;
   final void Function() onUp;
 
-  const _UserWidget({required this.profile, required this.onUp});
+  const _UserWidget({
+    required this.profile,
+    required this.onUp,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

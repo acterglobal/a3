@@ -32,17 +32,10 @@ class SettingsMenu extends ConsumerWidget {
     super.key = defaultSettingsMenuKey,
   });
 
-  Color? routedColor(
-    BuildContext context,
-    WidgetRef ref,
-    Routes route,
-  ) {
+  Color? routedColor(BuildContext context, WidgetRef ref, Routes route) {
     final currentRoute = ref.watch(currentRoutingLocation);
-    if (currentRoute == route.route) {
-      return Theme.of(context).colorScheme.secondary;
-    } else {
-      return null;
-    }
+    if (currentRoute != route.route) return null;
+    return Theme.of(context).colorScheme.secondary;
   }
 
   @override
@@ -65,11 +58,7 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).notifications,
               subTitle: L10n.of(context).notificationsSettingsAndTargets,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingNotifications,
-                ),
+                color: routedColor(context, ref, Routes.settingNotifications),
               ),
               onTap: () => replacementRouting
                   ? context
@@ -83,11 +72,7 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).emailAddresses,
               subTitle: L10n.of(context).connectedToYourAccount,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.emailAddresses,
-                ),
+                color: routedColor(context, ref, Routes.emailAddresses),
               ),
               onTap: () => replacementRouting
                   ? context.pushReplacementNamed(Routes.emailAddresses.name)
@@ -105,11 +90,7 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).sessions,
               subTitle: L10n.of(context).yourActiveDevices,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingSessions,
-                ),
+                color: routedColor(context, ref, Routes.settingSessions),
               ),
               onTap: () => replacementRouting
                   ? context.pushReplacementNamed(Routes.settingSessions.name)
@@ -124,11 +105,7 @@ class SettingsMenu extends ConsumerWidget {
                 title: L10n.of(context).settingsKeyBackUpTitle,
                 subTitle: L10n.of(context).settingsKeyBackUpDesc,
                 titleStyles: TextStyle(
-                  color: routedColor(
-                    context,
-                    ref,
-                    Routes.settingBackup,
-                  ),
+                  color: routedColor(context, ref, Routes.settingBackup),
                 ),
                 onTap: () => replacementRouting
                     ? context.pushReplacementNamed(Routes.settingBackup.name)
@@ -140,11 +117,7 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).blockedUsers,
               subTitle: L10n.of(context).usersYouBlocked,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.blockedUsers,
-                ),
+                color: routedColor(context, ref, Routes.blockedUsers),
               ),
               onTap: () => replacementRouting
                   ? context.pushReplacementNamed(Routes.blockedUsers.name)
@@ -156,11 +129,7 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).changePassword,
               subTitle: L10n.of(context).changePasswordDescription,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.changePassword,
-                ),
+                color: routedColor(context, ref, Routes.changePassword),
               ),
               onTap: () => replacementRouting
                   ? context.pushReplacementNamed(Routes.changePassword.name)
@@ -180,19 +149,17 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).superInvitations,
               subTitle: L10n.of(context).manageYourInvitationCodes,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingsSuperInvites,
-                ),
+                color: routedColor(context, ref, Routes.settingsSuperInvites),
               ),
-              onTap: isSuperInviteEnable
-                  ? () => replacementRouting
-                      ? context.pushReplacementNamed(
-                          Routes.settingsSuperInvites.name,
-                        )
-                      : context.pushNamed(Routes.settingsSuperInvites.name)
-                  : null,
+              onTap: () {
+                if (!isSuperInviteEnable) return;
+                if (replacementRouting) {
+                  context
+                      .pushReplacementNamed(Routes.settingsSuperInvites.name);
+                } else {
+                  context.pushNamed(Routes.settingsSuperInvites.name);
+                }
+              },
             ),
           ],
         ),
@@ -207,11 +174,7 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).chat,
               subTitle: L10n.of(context).chatSettingsExplainer,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingsChat,
-                ),
+                color: routedColor(context, ref, Routes.settingsChat),
               ),
               onTap: () => replacementRouting
                   ? context.pushReplacementNamed(Routes.settingsChat.name)
@@ -223,11 +186,7 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).language,
               subTitle: L10n.of(context).changeAppLanguage,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingLanguage,
-                ),
+                color: routedColor(context, ref, Routes.settingLanguage),
               ),
               onTap: () => replacementRouting
                   ? context.pushReplacementNamed(Routes.settingLanguage.name)
@@ -240,11 +199,7 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).labs,
               subTitle: L10n.of(context).experimentalActerFeatures,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingsLabs,
-                ),
+                color: routedColor(context, ref, Routes.settingsLabs),
               ),
               onTap: () => replacementRouting
                   ? context.pushReplacementNamed(Routes.settingsLabs.name)
@@ -255,11 +210,7 @@ class SettingsMenu extends ConsumerWidget {
               iconColor: routedColor(context, ref, Routes.info),
               title: L10n.of(context).info,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.info,
-                ),
+                color: routedColor(context, ref, Routes.info),
               ),
               onTap: () => replacementRouting
                   ? context.pushReplacementNamed(Routes.info.name)
@@ -333,9 +284,7 @@ class SettingsMenu extends ConsumerWidget {
                   ),
             ),
           ),
-          Column(
-            children: children,
-          ),
+          Column(children: children),
         ],
       ),
     );

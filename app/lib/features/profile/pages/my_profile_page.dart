@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/common_providers.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -109,20 +108,19 @@ class MyProfilePage extends StatelessWidget {
     EasyLoading.showToast(L10n.of(context).displayNameUpdateSubmitted);
   }
 
-  Future<void> updateAvatar(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+  Future<void> updateAvatar(BuildContext context, WidgetRef ref) async {
+    final result = await FilePicker.platform.pickFiles(
       dialogTitle: L10n.of(context).uploadAvatar,
       type: FileType.image,
     );
     if (!context.mounted) return;
     if (result != null) {
       EasyLoading.show(status: L10n.of(context).updatingProfileImage);
-      final file = result.files.first;
-      await ref.read(accountProvider).uploadAvatar(file.path!);
-      ref.invalidate(accountProvider);
+      final filePath = result.files.first.path;
+      if (filePath != null) {
+        await ref.read(accountProvider).uploadAvatar(filePath);
+        ref.invalidate(accountProvider);
+      }
       // close loading
       EasyLoading.dismiss();
     } else {

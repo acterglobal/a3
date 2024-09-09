@@ -161,41 +161,50 @@ class AttachmentItem extends ConsumerWidget {
   ) async {
     // Open attachment link
     if (attachmentType == AttachmentType.link) {
-      openLink(attachment.link() ?? '', context);
-    } else if (mediaState.mediaFile == null) {
+      await openLink(attachment.link() ?? '', context);
+      return;
+    }
+    final mediaFile = mediaState.mediaFile;
+    if (mediaFile == null) {
       // If attachment is media then check media is downloaded
       // If attachment not downloaded
-      ref
-          .read(attachmentMediaStateProvider(attachment).notifier)
-          .downloadMedia();
-    } else {
-      // If attachment is downloaded and image or video
-      if (attachmentType == AttachmentType.image ||
-          attachmentType == AttachmentType.video) {
-        final msgContent = attachment.msgContent();
-        showAdaptiveDialog(
+      final notifier =
+          ref.read(attachmentMediaStateProvider(attachment).notifier);
+      await notifier.downloadMedia();
+      return;
+    }
+    switch (attachmentType) {
+      case AttachmentType.image:
+        // If attachment is downloaded and image or video
+        await showAdaptiveDialog(
           context: context,
           barrierDismissible: false,
           useRootNavigator: false,
-          builder: (context) {
-            if (attachmentType == AttachmentType.image) {
-              return ImageDialog(
-                title: msgContent.body(),
-                imageFile: mediaState.mediaFile!,
-              );
-            } else {
-              return VideoDialog(
-                title: msgContent.body(),
-                videoFile: mediaState.mediaFile!,
-              );
-            }
-          },
+          builder: (context) => ImageDialog(
+            title: attachment.msgContent().body(),
+            imageFile: mediaFile,
+          ),
         );
-      }
-      // If attachment is downloaded and file or others
-      else {
-        openFileShareDialog(context: context, file: mediaState.mediaFile!);
-      }
+        break;
+      case AttachmentType.video:
+        // If attachment is downloaded and image or video
+        await showAdaptiveDialog(
+          context: context,
+          barrierDismissible: false,
+          useRootNavigator: false,
+          builder: (context) => VideoDialog(
+            title: attachment.msgContent().body(),
+            videoFile: mediaFile,
+          ),
+        );
+        break;
+      default:
+        // If attachment is downloaded and file or others
+        await openFileShareDialog(
+          context: context,
+          file: mediaFile,
+        );
+        break;
     }
   }
 

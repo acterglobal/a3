@@ -51,10 +51,9 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       // if calendarId is null that means Create Event
-      if (widget.initialSelectedSpace != null &&
-          widget.initialSelectedSpace!.isNotEmpty) {
-        final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
-        parentNotifier.state = widget.initialSelectedSpace;
+      final initialSpace = widget.initialSelectedSpace;
+      if (initialSpace != null && initialSpace.isNotEmpty) {
+        ref.read(selectedSpaceIdProvider.notifier).state = initialSpace;
       }
     });
   }

@@ -10,14 +10,9 @@ final _log = Logger('a3::space::providers::suggested');
 final shouldShowSuggestedProvider =
     FutureProvider.family<bool, String>((ref, spaceId) async {
   final room = await ref.watch(maybeRoomProvider(spaceId).future);
-  if (room == null) {
-    return false;
-  }
+  if (room == null) return false;
   try {
-    if (await room.userHasSeenSuggested()) {
-      return false;
-    }
-
+    if (await room.userHasSeenSuggested()) return false;
     final suggestedRooms =
         await ref.watch(suggestedRoomsProvider(spaceId).future);
     // only if we really have some remote rooms that the user is suggested and not yet in

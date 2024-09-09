@@ -34,10 +34,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     );
     //Clear object reference if news post id gets changes
     state.currentNewsSlide?.newsReferencesModel = null;
-
-    state = state.copyWith(
-      newsPostSpaceId: spaceId,
-    );
+    state = state.copyWith(newsPostSpaceId: spaceId);
   }
 
   Future<void> selectEventToShare(BuildContext context) async {
@@ -82,8 +79,10 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     List<NewsSlideItem> newsSlideList = [...state.newsSlideList];
     newsSlideList.removeAt(index);
     if (newsSlideList.isEmpty) {
-      state =
-          state.copyWith(newsSlideList: newsSlideList, currentNewsSlide: null);
+      state = state.copyWith(
+        newsSlideList: newsSlideList,
+        currentNewsSlide: null,
+      );
     } else if (index == newsSlideList.length) {
       state = state.copyWith(
         newsSlideList: newsSlideList,

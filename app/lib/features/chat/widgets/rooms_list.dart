@@ -96,26 +96,20 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget searchTerms(BuildContext context) {
-    String searchFilterText = '';
-
     final searchTerm =
         ref.watch(roomListFilterProvider.select((value) => value.searchTerm));
-    if (searchTerm != null && searchTerm.isNotEmpty) {
-      searchFilterText = L10n.of(context).searchResultFor(searchTerm);
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Text(searchFilterText),
-      );
-    } else {
+    if (searchTerm == null || searchTerm.isEmpty) {
       return const SizedBox.shrink();
     }
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Text(L10n.of(context).searchResultFor(searchTerm)),
+    );
   }
 
   Widget filterBox(BuildContext context) {
-    final hasSearchTerm = ref
-            .watch(roomListFilterProvider.select((value) => value.searchTerm))
-            ?.isNotEmpty ==
-        true;
+    final searchTerm =
+        ref.watch(roomListFilterProvider.select((value) => value.searchTerm));
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,7 +129,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             child: Icon(Atlas.magnifying_glass),
           ),
           hintText: L10n.of(context).searchChats,
-          trailing: hasSearchTerm
+          trailing: searchTerm?.isNotEmpty == true
               ? [
                   InkWell(
                     key: RoomsListWidget.clearSearchActionButtonKey,

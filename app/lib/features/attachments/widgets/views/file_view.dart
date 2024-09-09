@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/features/files/actions/file_share.dart';
@@ -9,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class FileView extends ConsumerWidget {
   final Attachment attachment;
   final bool? openView;
+
   const FileView({
     super.key,
     required this.attachment,
@@ -20,11 +23,10 @@ class FileView extends ConsumerWidget {
     final mediaState = ref.watch(attachmentMediaStateProvider(attachment));
     if (mediaState.mediaLoadingState.isLoading || mediaState.isDownloading) {
       return loadingIndication(context);
-    } else if (mediaState.mediaFile == null) {
-      return filePlaceholder(context, attachment, mediaState, ref);
-    } else {
-      return fileUI(context, mediaState);
     }
+    final mediaFile = mediaState.mediaFile;
+    if (mediaFile != null) return fileUI(context, mediaFile);
+    return filePlaceholder(context, attachment, mediaState, ref);
   }
 
   Widget loadingIndication(BuildContext context) {
@@ -44,12 +46,16 @@ class FileView extends ConsumerWidget {
     final msgContent = attachment.msgContent();
     return InkWell(
       onTap: () async {
-        if (mediaState.mediaFile != null) {
-          openFileShareDialog(context: context, file: mediaState.mediaFile!);
+        final mediaFile = mediaState.mediaFile;
+        if (mediaFile != null) {
+          await openFileShareDialog(
+            context: context,
+            file: mediaFile,
+          );
         } else {
-          ref
-              .read(attachmentMediaStateProvider(attachment).notifier)
-              .downloadMedia();
+          final notifier =
+              ref.read(attachmentMediaStateProvider(attachment).notifier);
+          await notifier.downloadMedia();
         }
       },
       child: Column(
@@ -87,16 +93,16 @@ class FileView extends ConsumerWidget {
     );
   }
 
-  Widget fileUI(BuildContext context, AttachmentMediaState mediaState) {
+  Widget fileUI(BuildContext context, File mediaFile) {
     return InkWell(
-      onTap: openView!
-          ? () async {
-              openFileShareDialog(
-                context: context,
-                file: mediaState.mediaFile!,
-              );
-            }
-          : null,
+      onTap: () async {
+        if (openView == true) {
+          await openFileShareDialog(
+            context: context,
+            file: mediaFile,
+          );
+        }
+      },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
         child: const Icon(Icons.description, size: 22),

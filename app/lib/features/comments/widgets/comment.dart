@@ -19,7 +19,7 @@ class CommentWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomID = manager.roomIdStr();
+    final roomId = manager.roomIdStr();
     final userId = comment.sender().toString();
     final msgContent = comment.msgContent();
     final commentTime = DateTime.fromMillisecondsSinceEpoch(
@@ -28,9 +28,8 @@ class CommentWidget extends ConsumerWidget {
     );
     final time = commentTime.toLocal().timeago();
     final avatarInfo = ref.watch(
-      memberAvatarInfoProvider((roomId: roomID, userId: userId)),
+      memberAvatarInfoProvider((roomId: roomId, userId: userId)),
     );
-    final displayName = avatarInfo.displayName;
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -43,10 +42,10 @@ class CommentWidget extends ConsumerWidget {
               ),
             ),
             title: Text(
-              displayName ?? userId,
+              avatarInfo.displayName ?? userId,
               style: Theme.of(context).textTheme.titleSmall,
             ),
-            subtitle: displayName == null ? null : Text(userId),
+            subtitle: avatarInfo.displayName.map((p0) => Text(userId)),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),

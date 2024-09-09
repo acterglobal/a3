@@ -104,8 +104,8 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayName = avatarInfo.displayName;
-    final title = displayName?.isNotEmpty == true ? displayName! : roomId;
+    final dispName = avatarInfo.displayName;
+    final title = (dispName != null && dispName.isNotEmpty) ? dispName : roomId;
 
     final avatar = ActerAvatar(
       options: AvatarOptions(

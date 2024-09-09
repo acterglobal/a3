@@ -210,15 +210,19 @@ Future<void> openAvatar(
   final canUpdateAvatar = membership?.canString('CanUpdateAvatar') == true;
   final avatarInfo = ref.read(roomAvatarInfoProvider(roomId));
 
-  if (avatarInfo.avatar != null && context.mounted) {
-    //Open avatar in full screen if avatar data available
-    context.pushNamed(
-      Routes.fullScreenAvatar.name,
-      queryParameters: {'roomId': roomId},
-    );
-  } else if (avatarInfo.avatar == null && canUpdateAvatar && context.mounted) {
-    //Change avatar if avatar is null and have relevant permission
-    uploadAvatar(ref, context, roomId);
+  if (avatarInfo.avatar != null) {
+    if (context.mounted) {
+      //Open avatar in full screen if avatar data available
+      context.pushNamed(
+        Routes.fullScreenAvatar.name,
+        queryParameters: {'roomId': roomId},
+      );
+    }
+  } else {
+    if (canUpdateAvatar && context.mounted) {
+      //Change avatar if avatar is null and have relevant permission
+      uploadAvatar(ref, context, roomId);
+    }
   }
 }
 
@@ -236,8 +240,8 @@ Future<void> uploadAvatar(
   try {
     if (!context.mounted) return;
     EasyLoading.show(status: L10n.of(context).avatarUploading);
-    final file = result.files.first;
-    if (file.path != null) await room.uploadAvatar(file.path!);
+    final filePath = result.files.first.path;
+    if (filePath != null) await room.uploadAvatar(filePath);
     // close loading
     EasyLoading.dismiss();
   } catch (e, s) {

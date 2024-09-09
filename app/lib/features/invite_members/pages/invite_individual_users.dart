@@ -13,7 +13,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class InviteIndividualUsers extends ConsumerWidget {
   final String roomId;
 
-  const InviteIndividualUsers({super.key, required this.roomId});
+  const InviteIndividualUsers({
+    super.key,
+    required this.roomId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,6 +34,7 @@ class InviteIndividualUsers extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
+    final searchValue = ref.watch(searchValueProvider);
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
@@ -45,8 +49,7 @@ class InviteIndividualUsers extends ConsumerWidget {
             _buildSearchTextField(context, ref),
             const SizedBox(height: 10),
             _buildUserDirectInvite(ref),
-            if (ref.watch(searchValueProvider) == null ||
-                ref.watch(searchValueProvider)?.isEmpty == true)
+            if (searchValue == null || searchValue.isEmpty)
               _buildSuggestedUserList(context, ref)
             else
               _buildFoundUserList(context, ref),
@@ -114,10 +117,10 @@ class InviteIndividualUsers extends ConsumerWidget {
             child: ListView.builder(
               itemCount: suggestedUsers.length,
               shrinkWrap: true,
-              itemBuilder: (context, index) {
-                final user = suggestedUsers[index];
-                return _buildSuggestedUserItem(ref, user);
-              },
+              itemBuilder: (context, index) => _buildSuggestedUserItem(
+                ref,
+                suggestedUsers[index],
+              ),
             ),
           ),
         ],
@@ -147,35 +150,33 @@ class InviteIndividualUsers extends ConsumerWidget {
   Widget _buildFoundUserList(BuildContext context, WidgetRef ref) {
     final usersLoader = ref.watch(searchResultProvider);
     if (usersLoader.hasValue) {
-      final value = usersLoader.value;
-      if (value != null) {
-        if (value.isNotEmpty) {
-          return Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(
-                    L10n.of(context).usersfoundDirectory,
-                    style: Theme.of(context).textTheme.titleSmall,
+      final users = usersLoader.value;
+      if (users != null && users.isNotEmpty) {
+        return Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  L10n.of(context).usersfoundDirectory,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: users.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) => UserBuilder(
+                    userId: users[index].userId().toString(),
+                    roomId: roomId,
                   ),
                 ),
-                const SizedBox(height: 5),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: value.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) => UserBuilder(
-                      userId: value[index].userId().toString(),
-                      roomId: roomId,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
+              ),
+            ],
+          ),
+        );
       }
     }
     return EmptyState(

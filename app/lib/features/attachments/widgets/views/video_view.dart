@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
-import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
+import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -18,11 +20,10 @@ class VideoView extends ConsumerWidget {
     final mediaState = ref.watch(attachmentMediaStateProvider(attachment));
     if (mediaState.mediaLoadingState.isLoading || mediaState.isDownloading) {
       return loadingIndication(context);
-    } else if (mediaState.mediaFile == null) {
-      return videoPlaceholder(context, attachment, mediaState, ref);
-    } else {
-      return videoUI(context, mediaState);
     }
+    final mediaFile = mediaState.mediaFile;
+    if (mediaFile != null) return videoUI(context, mediaFile);
+    return videoPlaceholder(context, attachment, mediaState, ref);
   }
 
   Widget loadingIndication(BuildContext context) {
@@ -42,20 +43,21 @@ class VideoView extends ConsumerWidget {
     final msgContent = attachment.msgContent();
     return InkWell(
       onTap: () async {
-        if (mediaState.mediaFile != null) {
-          showAdaptiveDialog(
+        final mediaFile = mediaState.mediaFile;
+        if (mediaFile != null) {
+          await showAdaptiveDialog(
             context: context,
             barrierDismissible: false,
             useRootNavigator: false,
             builder: (context) => VideoDialog(
               title: msgContent.body(),
-              videoFile: mediaState.mediaFile!,
+              videoFile: mediaFile,
             ),
           );
         } else {
-          ref
-              .read(attachmentMediaStateProvider(attachment).notifier)
-              .downloadMedia();
+          final notifier =
+              ref.read(attachmentMediaStateProvider(attachment).notifier);
+          await notifier.downloadMedia();
         }
       },
       child: Column(
@@ -93,25 +95,27 @@ class VideoView extends ConsumerWidget {
     );
   }
 
-  Widget videoUI(BuildContext context, AttachmentMediaState mediaState) {
+  Widget videoUI(BuildContext context, File mediaFile) {
     final msgContent = attachment.msgContent();
     return InkWell(
-      onTap: openView!
-          ? () => showAdaptiveDialog(
-                context: context,
-                barrierDismissible: false,
-                useRootNavigator: false,
-                builder: (context) => VideoDialog(
-                  title: msgContent.body(),
-                  videoFile: mediaState.mediaFile!,
-                ),
-              )
-          : null,
+      onTap: () async {
+        if (openView == true) {
+          await showAdaptiveDialog(
+            context: context,
+            barrierDismissible: false,
+            useRootNavigator: false,
+            builder: (context) => VideoDialog(
+              title: msgContent.body(),
+              videoFile: mediaFile,
+            ),
+          );
+        }
+      },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
         child: ActerVideoPlayer(
           hasPlayerControls: false,
-          videoFile: mediaState.mediaFile!,
+          videoFile: mediaFile,
         ),
       ),
     );

@@ -168,11 +168,11 @@ Future<void> navigateToRoomOrAskToJoin(
 
   /// Ask to join room if not yet joined
   else {
-    askToJoinRoom(context, ref, roomId);
+    await askToJoinRoom(context, ref, roomId);
   }
 }
 
-void askToJoinRoom(
+Future<void> askToJoinRoom(
   BuildContext context,
   WidgetRef ref,
   String roomId,
@@ -329,11 +329,7 @@ Future<void> parseUserMentionText(
 }
 
 // save composer draft object handler
-Future<void> saveDraft(
-  String text,
-  String roomId,
-  WidgetRef ref,
-) async {
+Future<void> saveDraft(String text, String roomId, WidgetRef ref) async {
   // get the convo object to initiate draft
   final chat = await ref.read(chatProvider(roomId).future);
   final messageId = ref.read(chatInputProvider).selectedMessage?.id;
@@ -350,17 +346,19 @@ Future<void> saveDraft(
     });
   }
 
-  if (chat != null) {
-    if (messageId != null) {
-      final selectedMessageState =
-          ref.read(chatInputProvider).selectedMessageState;
-      if (selectedMessageState == SelectedMessageState.edit) {
-        await chat.saveMsgDraft(text, htmlText, 'edit', messageId);
-      } else if (selectedMessageState == SelectedMessageState.replyTo) {
-        await chat.saveMsgDraft(text, htmlText, 'reply', messageId);
-      }
-    } else {
-      await chat.saveMsgDraft(text, htmlText, 'new', null);
-    }
+  if (chat == null) return;
+  if (messageId == null) {
+    await chat.saveMsgDraft(text, htmlText, 'new', null);
+    return;
+  }
+  switch (ref.read(chatInputProvider).selectedMessageState) {
+    case SelectedMessageState.edit:
+      await chat.saveMsgDraft(text, htmlText, 'edit', messageId);
+      break;
+    case SelectedMessageState.replyTo:
+      await chat.saveMsgDraft(text, htmlText, 'reply', messageId);
+      break;
+    default:
+      break;
   }
 }

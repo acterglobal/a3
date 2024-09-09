@@ -1,7 +1,8 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:video_player/video_player.dart';
 
 class ActerVideoPlayer extends StatefulWidget {
   final File videoFile;
@@ -77,7 +78,7 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
     return Stack(
       children: <Widget>[
         playButtonUI(),
-        if (widget.hasPlayerControls!) playPauseControls(),
+        if (widget.hasPlayerControls == true) playPauseControls(),
         playbackSpeedMenu(),
         if (widget.onTapFullScreen != null) fullScreenActionButton(),
       ],

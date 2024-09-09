@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:expandable_text/expandable_text.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -106,17 +107,17 @@ class SpaceHierarchyCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = roomInfo.roomIdStr();
     final avatarInfo = ref.watch(roomHierarchyAvatarInfoProvider(roomInfo));
-    final topic = roomInfo.topic();
+    final subtitle = roomInfo.topic().map((p0) {
+      if (p0.isEmpty) return null;
+      return ExpandableText(
+        p0,
+        maxLines: 2,
+        expandText: L10n.of(context).showMore,
+        collapseText: L10n.of(context).showLess,
+        linkColor: Theme.of(context).colorScheme.primary,
+      );
+    });
     bool showSuggested = showIconIfSuggested && roomInfo.suggested();
-    final Widget? subtitle = topic?.isNotEmpty == true
-        ? ExpandableText(
-            topic!,
-            maxLines: 2,
-            expandText: L10n.of(context).showMore,
-            collapseText: L10n.of(context).showLess,
-            linkColor: Theme.of(context).colorScheme.primary,
-          )
-        : null;
 
     return SpaceWithAvatarInfoCard(
       roomId: roomId,
@@ -134,8 +135,8 @@ class SpaceHierarchyCard extends ConsumerWidget {
             children: [
               RoomHierarchyJoinButton(
                 joinRule: roomInfo.joinRuleStr().toLowerCase(),
-                roomId: roomInfo.roomIdStr(),
-                roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
+                roomId: roomId,
+                roomName: roomInfo.name() ?? roomId,
                 viaServerName: roomInfo.viaServerName(),
                 forward: (spaceId) {
                   goToSpace(context, spaceId);

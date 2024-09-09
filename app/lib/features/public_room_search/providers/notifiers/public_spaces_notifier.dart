@@ -52,9 +52,7 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
 
   @override
   Future<List<PublicSearchResultItem>?> load(Next? page, int limit) async {
-    if (page == null) {
-      return null;
-    }
+    if (page == null) return null;
 
     final pageReq = page.next ?? '';
     final client = ref.read(alwaysClientProvider);
@@ -62,9 +60,7 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
     final server = state.filter.server;
     final roomFilter = state.filter.filterBy.name;
     try {
-      state = state.copyWith(
-        loading: true,
-      );
+      state = state.copyWith(loading: true);
       final res = await client.searchPublicRoom(
         searchValue,
         server,
@@ -84,7 +80,10 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
         loading: false,
       );
     } catch (e) {
-      state = state.copyWith(error: e.toString(), loading: false);
+      state = state.copyWith(
+        error: e.toString(),
+        loading: false,
+      );
     }
 
     return null;

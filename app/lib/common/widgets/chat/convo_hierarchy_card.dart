@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -105,8 +106,10 @@ class ConvoHierarchyCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = roomInfo.roomIdStr();
     final avatarInfo = ref.watch(roomHierarchyAvatarInfoProvider(roomInfo));
-    final topic = roomInfo.topic();
-    final subtitle = topic?.isNotEmpty == true ? Text(topic!) : null;
+    final subtitle = roomInfo.topic().map((p0) {
+      if (p0.isEmpty) return null;
+      return Text(p0);
+    });
     bool showSuggested = showIconIfSuggested && roomInfo.suggested();
 
     return ConvoWithAvatarInfoCard(

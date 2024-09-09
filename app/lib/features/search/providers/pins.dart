@@ -42,8 +42,6 @@ final AutoDisposeFutureProvider<List<PinDetails>> pinsFoundProvider =
     );
   }
 
-  finalPins.sort((a, b) {
-    return a.name.compareTo(b.name);
-  });
+  finalPins.sort((a, b) => a.name.compareTo(b.name));
   return finalPins;
 });

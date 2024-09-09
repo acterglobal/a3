@@ -54,7 +54,10 @@ class FoundUser {
   final String userId;
   final AvatarInfo avatarInfo;
 
-  const FoundUser({required this.userId, required this.avatarInfo});
+  const FoundUser({
+    required this.userId,
+    required this.avatarInfo,
+  });
 }
 
 final suggestedUsersProvider = FutureProvider.family<List<FoundUser>, String>(
@@ -98,15 +101,10 @@ final filteredSuggestedUsersProvider =
     if (searchTerm == null || searchTerm.isEmpty) {
       return fullList;
     }
-
     final lowered = searchTerm.toLowerCase();
-
-    return fullList.where((element) {
-      if (element.userId.toLowerCase().contains(lowered)) {
-        return true;
-      }
-      return element.avatarInfo.displayName?.toLowerCase().contains(lowered) ==
-          true;
+    return fullList.where((el) {
+      if (el.userId.toLowerCase().contains(lowered)) return true;
+      return el.avatarInfo.displayName?.toLowerCase().contains(lowered) == true;
     }).toList();
   },
 );

@@ -126,7 +126,9 @@ class LinkEmailPage extends ConsumerWidget {
         final isValidEmail = validateEmail(context, emailValue.text) == null;
         return OutlinedButton(
           key: LinkEmailPage.linkEmailBtn,
-          onPressed: isValidEmail ? () => linkEmail(context, ref) : null,
+          onPressed: () {
+            if (isValidEmail) linkEmail(context, ref);
+          },
           style: OutlinedButton.styleFrom(
             side: BorderSide(
               color:

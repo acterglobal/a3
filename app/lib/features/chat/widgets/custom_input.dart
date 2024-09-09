@@ -54,10 +54,15 @@ class CustomChatInput extends ConsumerWidget {
   static const noAccessKey = Key('custom-chat-no-access');
   static const loadingKey = Key('custom-chat-loading');
   static const sendBtnKey = Key('custom-chat-send-button');
+
   final String roomId;
   final void Function(bool)? onTyping;
 
-  const CustomChatInput({required this.roomId, this.onTyping, super.key});
+  const CustomChatInput({
+    required this.roomId,
+    this.onTyping,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -67,9 +72,11 @@ class CustomChatInput extends ConsumerWidget {
       return loadingState(context);
     }
     if (canSend) {
-      return _ChatInput(roomId: roomId, onTyping: onTyping);
+      return _ChatInput(
+        roomId: roomId,
+        onTyping: onTyping,
+      );
     }
-
     return FrostEffect(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -90,7 +97,10 @@ class CustomChatInput extends ConsumerWidget {
               Text(
                 key: noAccessKey,
                 L10n.of(context).chatMissingPermissionsToSend,
-                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
@@ -242,36 +252,35 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   Future<void> loadDraft() async {
     final draft =
         await ref.read(chatComposerDraftProvider(widget.roomId).future);
+    if (draft == null) return;
 
-    if (draft != null) {
-      final inputNotifier = ref.read(chatInputProvider.notifier);
-      inputNotifier.unsetSelectedMessage();
-      if (draft.eventId() != null) {
-        final eventId = draft.eventId()!;
-        final draftType = draft.draftType();
-
-        final m = ref
-            .read(chatMessagesProvider(widget.roomId))
-            .firstWhere((x) => x.id == eventId);
-        if (draftType == 'edit') {
-          inputNotifier.setEditMessage(m);
-        } else if (draftType == 'reply') {
-          inputNotifier.setReplyToMessage(m);
-        }
+    final inputNotifier = ref.read(chatInputProvider.notifier);
+    inputNotifier.unsetSelectedMessage();
+    final eventId = draft.eventId();
+    if (eventId != null) {
+      final draftType = draft.draftType();
+      final m = ref
+          .read(chatMessagesProvider(widget.roomId))
+          .firstWhere((x) => x.id == eventId);
+      if (draftType == 'edit') {
+        inputNotifier.setEditMessage(m);
+      } else if (draftType == 'reply') {
+        inputNotifier.setReplyToMessage(m);
       }
-      if (draft.htmlText() != null) {
-        await parseUserMentionText(
-          draft.htmlText()!,
-          widget.roomId,
-          textController,
-          ref,
-        );
-      } else {
-        textController.text = draft.plainText();
-      }
-
-      _log.info('compose draft loaded for room: ${widget.roomId}');
     }
+    final htmlText = draft.htmlText();
+    if (htmlText != null) {
+      await parseUserMentionText(
+        htmlText,
+        widget.roomId,
+        textController,
+        ref,
+      );
+    } else {
+      textController.text = draft.plainText();
+    }
+
+    _log.info('compose draft loaded for room: ${widget.roomId}');
   }
 
   // listener for handling send state
@@ -342,10 +351,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     final selectedMessage = ref.watch(
       chatInputProvider.select((value) => value.selectedMessage),
     );
-
-    if (selectedMessage == null) {
-      return renderMain(context);
-    }
+    if (selectedMessage == null) return renderMain(context);
 
     final selectedMsgState = ref.watch(
       chatInputProvider.select((value) => value.selectedMessageState),

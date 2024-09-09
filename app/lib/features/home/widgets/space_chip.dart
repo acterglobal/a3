@@ -43,8 +43,7 @@ class SpaceChip extends ConsumerWidget {
   }
 
   Widget renderCompactView(BuildContext context, WidgetRef ref) {
-    final displayName =
-        ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull ?? spaceId;
+    final dispName = ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull;
     return Row(
       children: [
         Text(L10n.of(context).inSpaceLabelInline),
@@ -60,7 +59,7 @@ class SpaceChip extends ConsumerWidget {
             goToSpace(context, spaceId);
           },
           child: Text(
-            displayName,
+            dispName ?? spaceId,
             style: Theme.of(context).textTheme.labelLarge!.copyWith(
                   decoration: TextDecoration.underline,
                 ),

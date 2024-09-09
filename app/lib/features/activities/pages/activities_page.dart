@@ -104,49 +104,43 @@ class ActivitiesPage extends ConsumerWidget {
 
   Widget? renderSessions(BuildContext context, WidgetRef ref) {
     final allSessions = ref.watch(unknownSessionsProvider);
-    if (allSessions.error != null) {
+    final err = allSessions.error;
+    if (err != null) {
       return SliverToBoxAdapter(
-        child: Text(
-          L10n.of(context)
-              .errorUnverifiedSessions(allSessions.error.toString()),
-        ),
+        child: Text(L10n.of(context).errorUnverifiedSessions(err.toString())),
       );
-    } else if (!allSessions.hasValue) {
-      // we can ignore
-      return null;
     }
+    if (!allSessions.hasValue) return null; // we can ignore
 
     final sessions =
         allSessions.value!.where((session) => !session.isVerified()).toList();
-    if (sessions.isEmpty) {
-      return null;
-    } else if (sessions.length == 1) {
+    if (sessions.isEmpty) return null;
+    if (sessions.length == 1) {
       return SliverToBoxAdapter(
         child: SessionCard(
           key: oneUnverifiedSessionsCard,
           deviceRecord: sessions[0],
         ),
       );
-    } else {
-      return SliverToBoxAdapter(
-        child: Card(
-          key: unverifiedSessionsCard,
-          child: ListTile(
-            leading: const Icon(Atlas.warning_bold),
-            title: Text(
-              L10n.of(context).unverifiedSessionsTitle(sessions.length),
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            trailing: OutlinedButton(
-              onPressed: () {
-                context.pushNamed(Routes.settingSessions.name);
-              },
-              child: Text(L10n.of(context).review),
-            ),
+    }
+    return SliverToBoxAdapter(
+      child: Card(
+        key: unverifiedSessionsCard,
+        child: ListTile(
+          leading: const Icon(Atlas.warning_bold),
+          title: Text(
+            L10n.of(context).unverifiedSessionsTitle(sessions.length),
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          trailing: OutlinedButton(
+            onPressed: () {
+              context.pushNamed(Routes.settingSessions.name);
+            },
+            child: Text(L10n.of(context).review),
           ),
         ),
-      );
-    }
+      ),
+    );
   }
 
   Widget? renderBackupSection(BuildContext context, WidgetRef ref) {
@@ -205,7 +199,6 @@ class ActivitiesPage extends ConsumerWidget {
             ),
           ),
           if (syncStateWidget != null) syncStateWidget,
-          if (children.isNotEmpty) ...children,
           if (children.isEmpty)
             SliverToBoxAdapter(
               child: Center(
@@ -216,7 +209,9 @@ class ActivitiesPage extends ConsumerWidget {
                   image: 'assets/images/empty_activity.svg',
                 ),
               ),
-            ),
+            )
+          else
+            ...children,
         ],
       ),
     );

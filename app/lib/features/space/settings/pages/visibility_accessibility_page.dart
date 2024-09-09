@@ -218,7 +218,9 @@ class _VisibilityAccessibilityPageState
         return _spaceItemCard(
           spaceId,
           subtitle: Text(L10n.of(context).failedToLoadSpace(e)),
-          removeAction: canEdit ? () => removeSpace(spaceId) : null,
+          removeAction: () {
+            if (canEdit) removeSpace(spaceId);
+          },
         );
       },
       loading: _loadingSpaceItem,
@@ -258,18 +260,16 @@ class _VisibilityAccessibilityPageState
   Future<void> selectSpace(String roomId) async {
     try {
       final spaceId = await selectSpaceDrawer(context: context);
-      if (spaceId != null) {
-        final spaceList =
-            await ref.read(joinRulesAllowedRoomsProvider(spaceId).future);
-        final isAlreadyAdded = spaceList.any((roomId) => roomId == spaceId);
-        if (!isAlreadyAdded) {
-          spaceList.add(spaceId);
-          await updateSpaceVisibility(
-            RoomVisibility.SpaceVisible,
-            spaceIds: spaceList,
-          );
-        }
-      }
+      if (spaceId == null) return;
+      final spaceList =
+          await ref.read(joinRulesAllowedRoomsProvider(spaceId).future);
+      final isAlreadyAdded = spaceList.any((roomId) => roomId == spaceId);
+      if (isAlreadyAdded) return;
+      spaceList.add(spaceId);
+      await updateSpaceVisibility(
+        RoomVisibility.SpaceVisible,
+        spaceIds: spaceList,
+      );
     } catch (e, s) {
       _log.severe('Failed to select space', e, s);
       if (!mounted) return;

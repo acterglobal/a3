@@ -118,96 +118,71 @@ class AttachmentSelectionOptions extends StatelessWidget {
   }
 
   Future<void> onTapCamera(BuildContext context) async {
-    XFile? imageFile =
-        await ImagePicker().pickImage(source: ImageSource.camera);
-    if (imageFile != null) {
-      List<File> files = [File(imageFile.path)];
-
-      if (context.mounted) {
-        Navigator.pop(context);
-        _attachmentConfirmation(
-          context,
-          files,
-          AttachmentType.camera,
-          onSelected,
-        );
-      }
-    }
+    final file = await ImagePicker().pickImage(source: ImageSource.camera);
+    if (file == null) return;
+    if (!context.mounted) return;
+    Navigator.pop(context);
+    _attachmentConfirmation(
+      context,
+      [File(file.path)],
+      AttachmentType.camera,
+      onSelected,
+    );
   }
 
   Future<void> onTapImage(BuildContext context) async {
-    XFile? imageFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (imageFile != null) {
-      List<File> files = [File(imageFile.path)];
-
-      if (context.mounted) {
-        Navigator.pop(context);
-        _attachmentConfirmation(
-          context,
-          files,
-          AttachmentType.image,
-          onSelected,
-        );
-      }
-    }
+    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (file == null) return;
+    if (!context.mounted) return;
+    Navigator.pop(context);
+    _attachmentConfirmation(
+      context,
+      [File(file.path)],
+      AttachmentType.image,
+      onSelected,
+    );
   }
 
   Future<void> onTapVideo(BuildContext context) async {
-    XFile? imageFile =
-        await ImagePicker().pickVideo(source: ImageSource.gallery);
-    if (imageFile != null) {
-      List<File> files = [File(imageFile.path)];
-
-      if (context.mounted) {
-        Navigator.pop(context);
-        _attachmentConfirmation(
-          context,
-          files,
-          AttachmentType.video,
-          onSelected,
-        );
-      }
-    }
+    final file = await ImagePicker().pickVideo(source: ImageSource.gallery);
+    if (file == null) return;
+    if (!context.mounted) return;
+    Navigator.pop(context);
+    _attachmentConfirmation(
+      context,
+      [File(file.path)],
+      AttachmentType.video,
+      onSelected,
+    );
   }
 
   Future<void> onTapAudio(BuildContext context) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.audio,
+    final result = await FilePicker.platform.pickFiles(type: FileType.audio);
+    if (result == null) return;
+    if (!context.mounted) return;
+    Navigator.pop(context);
+    _attachmentConfirmation(
+      context,
+      result.paths.map((path) => File(path!)).toList(),
+      AttachmentType.audio,
+      onSelected,
     );
-    if (result != null) {
-      final selectedFiles = result.paths.map((path) => File(path!)).toList();
-
-      if (context.mounted) {
-        Navigator.pop(context);
-        _attachmentConfirmation(
-          context,
-          selectedFiles,
-          AttachmentType.audio,
-          onSelected,
-        );
-      }
-    }
   }
 
   Future<void> onTapFile(BuildContext context) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       type: FileType.any,
       allowMultiple: true,
     );
-    if (result != null) {
-      final selectedFiles = result.paths.map((path) => File(path!)).toList();
-
-      if (context.mounted) {
-        Navigator.pop(context);
-        _attachmentConfirmation(
-          context,
-          selectedFiles,
-          AttachmentType.file,
-          onSelected,
-        );
-      }
-    }
+    if (result == null) return;
+    if (!context.mounted) return;
+    Navigator.pop(context);
+    _attachmentConfirmation(
+      context,
+      result.paths.map((path) => File(path!)).toList(),
+      AttachmentType.file,
+      onSelected,
+    );
   }
 
   void _attachmentConfirmation(
@@ -216,29 +191,31 @@ class AttachmentSelectionOptions extends StatelessWidget {
     AttachmentType type,
     OnAttachmentSelected handleFileUpload,
   ) {
-    final size = MediaQuery.of(context).size;
-    if (selectedFiles != null && selectedFiles.isNotEmpty) {
-      context.isLargeScreen
-          ? showAdaptiveDialog(
-              context: context,
-              builder: (context) => Dialog(
-                insetPadding: const EdgeInsets.all(8),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: size.width * 0.5,
-                    maxHeight: size.height * 0.5,
-                  ),
-                  child: _FileWidget(selectedFiles, type, handleFileUpload),
-                ),
-              ),
-            )
-          : showModalBottomSheet(
-              context: context,
-              builder: (context) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: _FileWidget(selectedFiles, type, handleFileUpload),
-              ),
-            );
+    if (selectedFiles == null || selectedFiles.isEmpty) return;
+    if (context.isLargeScreen) {
+      final size = MediaQuery.of(context).size;
+      showAdaptiveDialog(
+        context: context,
+        builder: (context) => Dialog(
+          insetPadding: const EdgeInsets.all(8),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: size.width * 0.5,
+              maxHeight: size.height * 0.5,
+            ),
+            child: _FileWidget(selectedFiles, type, handleFileUpload),
+          ),
+        ),
+      );
+      return;
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _FileWidget(selectedFiles, type, handleFileUpload),
+        ),
+      );
     }
   }
 }

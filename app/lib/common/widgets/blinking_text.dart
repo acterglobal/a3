@@ -151,8 +151,9 @@ class BlinkTextState extends State<BlinkText>
     if (widget.beginColor != null) {
       beginColor = widget.beginColor;
     } else {
-      if (widget.style != null && widget.style!.inherit) {
-        beginColor = widget.style!.color;
+      final style = widget.style;
+      if (style != null && style.inherit) {
+        beginColor = style.color;
       }
     }
 

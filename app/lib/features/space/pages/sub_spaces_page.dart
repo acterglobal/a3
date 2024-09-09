@@ -23,7 +23,10 @@ class SubSpacesPage extends ConsumerWidget {
 
   final String spaceIdOrAlias;
 
-  const SubSpacesPage({super.key, required this.spaceIdOrAlias});
+  const SubSpacesPage({
+    super.key,
+    required this.spaceIdOrAlias,
+  });
 
   Widget _renderTools(BuildContext context) {
     return PopupMenuButton(
@@ -133,17 +136,15 @@ class SubSpacesPage extends ConsumerWidget {
         child: Column(
           children: [
             spacesLoader.when(
-              data: (spaces) {
-                final subspaces = renderSubSpaces(
-                  context,
-                  ref,
-                  spaceIdOrAlias,
-                  spaces,
-                  crossAxisCount: crossAxisCount,
-                );
-                if (subspaces != null) return subspaces;
-                return renderFallback(context, canLinkSpace);
-              },
+              data: (spaces) =>
+                  renderSubSpaces(
+                    context,
+                    ref,
+                    spaceIdOrAlias,
+                    spaces,
+                    crossAxisCount: crossAxisCount,
+                  ) ??
+                  renderFallback(context, canLinkSpace),
               error: (e, s) {
                 _log.severe('Failed to load the related spaces', e, s);
                 return Center(

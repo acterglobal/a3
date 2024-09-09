@@ -215,27 +215,27 @@ class EmailAddressesPage extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) => const AddEmailAddr(),
     );
-    if (newValue != null && context.mounted) {
-      EasyLoading.show(status: L10n.of(context).addingEmailAddress);
-      try {
-        await account.request3pidManagementTokenViaEmail(newValue);
-        ref.invalidate(emailAddressesProvider);
-        if (!context.mounted) {
-          EasyLoading.dismiss();
-          return;
-        }
-        EasyLoading.showToast(L10n.of(context).pleaseCheckYourInbox);
-      } catch (e, s) {
-        _log.severe('Failed to submit email address', e, s);
-        if (!context.mounted) {
-          EasyLoading.dismiss();
-          return;
-        }
-        EasyLoading.showError(
-          L10n.of(context).failedToSubmitEmail(e),
-          duration: const Duration(seconds: 3),
-        );
+    if (newValue == null) return;
+    if (!context.mounted) return;
+    EasyLoading.show(status: L10n.of(context).addingEmailAddress);
+    try {
+      await account.request3pidManagementTokenViaEmail(newValue);
+      ref.invalidate(emailAddressesProvider);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
       }
+      EasyLoading.showToast(L10n.of(context).pleaseCheckYourInbox);
+    } catch (e, s) {
+      _log.severe('Failed to submit email address', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        L10n.of(context).failedToSubmitEmail(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

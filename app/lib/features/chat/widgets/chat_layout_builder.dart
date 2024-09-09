@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 class ChatLayoutBuilder extends StatelessWidget {
   final Widget? centerChild;
   final Widget? expandedChild;
+
   const ChatLayoutBuilder({
     this.centerChild,
     this.expandedChild,
@@ -18,19 +19,15 @@ class ChatLayoutBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!context.isLargeScreen) {
       // we only have space to show the deepest child:
-      if (expandedChild != null) {
-        return expandedChild!;
-      } else if (centerChild != null) {
-        return centerChild!;
-      } else {
-        // no children, show the room list
-        return RoomsListWidget(
-          onSelected: (String roomId) => context.pushNamed(
-            Routes.chatroom.name,
-            pathParameters: {'roomId': roomId},
-          ),
-        );
-      }
+      return expandedChild ??
+          centerChild ??
+          // no children, show the room list
+          RoomsListWidget(
+            onSelected: (String roomId) => context.pushNamed(
+              Routes.chatroom.name,
+              pathParameters: {'roomId': roomId},
+            ),
+          );
     }
 
     final pushReplacementRouting = centerChild != null;

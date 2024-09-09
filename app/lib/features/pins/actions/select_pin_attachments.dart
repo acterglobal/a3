@@ -28,9 +28,7 @@ Future<void> selectAttachment(
 ) async {
   try {
     final fileType = attachmentFileType(attachmentType);
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: fileType,
-    );
+    final result = await FilePicker.platform.pickFiles(type: fileType);
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.first;
       String fileSize = getHumanReadableFileSize(file.size);

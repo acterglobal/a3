@@ -213,15 +213,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     // races between the async tasks and the diff
     if (postProcessing.isNotEmpty) {
       for (final p in postProcessing) {
-        final message = p.message;
-        final m = p.event;
-        final repliedTo = getRepliedTo(message);
+        final repliedTo = getRepliedTo(p.message);
         if (repliedTo != null) {
-          await fetchOriginalContent(repliedTo, message.id);
+          await fetchOriginalContent(repliedTo, p.message.id);
         }
-        RoomEventItem? eventItem = m.eventItem();
+        final eventItem = p.event.eventItem();
         if (eventItem != null) {
-          await fetchMediaBinary(eventItem.msgType(), message.id);
+          await fetchMediaBinary(eventItem.msgType(), p.message.id);
         }
       }
     }
@@ -394,9 +392,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
     }
 
+    if (repliedTo == null) return;
     final messages = state.messages;
     int index = messages.indexWhere((x) => x.id == replyId);
-    if (index != -1 && repliedTo != null) {
+    if (index != -1) {
       replaceMessageAt(
         index,
         messages[index].copyWith(repliedMessage: repliedTo),

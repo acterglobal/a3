@@ -299,14 +299,10 @@ final generalRoutes = [
     redirect: (BuildContext context, GoRouterState state) async {
       // we first check if there is a client available for us to use
       final authGuarded = await authGuardRedirect(context, state);
-      if (authGuarded != null) {
-        return authGuarded;
-      }
-      if (context.mounted && isDesktop) {
-        return Routes.dashboard.route;
-      } else {
-        return Routes.updates.route;
-      }
+      if (authGuarded != null) return authGuarded;
+      return (context.mounted && isDesktop)
+          ? Routes.dashboard.route
+          : Routes.updates.route;
     },
   ),
 ];

@@ -84,7 +84,7 @@ typedef _RoomIdAndName = (String, String?);
 final _briefGroupChatsWithName =
     FutureProvider.autoDispose<List<_RoomIdAndName>>((ref) async {
   final chatList =
-      ref.watch(chatsProvider).where((element) => (!element.isDm())).toList();
+      ref.watch(chatsProvider).where((convo) => !convo.isDm()).toList();
 
   List<_RoomIdAndName> items = [];
   for (final convo in chatList) {
@@ -102,17 +102,15 @@ final roomSearchedChatsProvider =
   final searchValue = ref.watch(roomSearchValueProvider);
 
   if (searchValue == null || searchValue.isEmpty) {
-    return allRoomList.map((i) {
-      return i.$1;
-    }).toList();
+    return allRoomList.map((i) => i.$1).toList();
   }
 
   final loweredSearchValue = searchValue.toLowerCase();
 
-  for (final item in allRoomList) {
-    if (item.$1.toLowerCase().contains(loweredSearchValue) ||
-        (item.$2 ?? '').toLowerCase().contains(loweredSearchValue)) {
-      foundRooms.add(item.$1);
+  for (final (roomId, dispName) in allRoomList) {
+    if (roomId.toLowerCase().contains(loweredSearchValue) ||
+        dispName?.toLowerCase().contains(loweredSearchValue) == true) {
+      foundRooms.add(roomId);
     }
   }
 

@@ -8,6 +8,7 @@ import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/post_attachment_options.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cross_file_image/cross_file_image.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,10 +32,10 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideOptionsUI(BuildContext context) {
+    final curSlide = ref.watch(newsStateProvider).currentNewsSlide;
     final keyboardVisibility = ref.watch(keyboardVisibleProvider);
     return Visibility(
-      visible: ref.watch(newsStateProvider).currentNewsSlide != null &&
-          !(keyboardVisibility.value ?? false),
+      visible: curSlide != null && !(keyboardVisibility.value == true),
       child: Container(
         color: Theme.of(context).colorScheme.primary,
         child: newsSlideListUI(context),
@@ -43,6 +44,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideListUI(BuildContext context) {
+    final curSlide = ref.watch(newsStateProvider).currentNewsSlide;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -77,10 +79,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(5),
-                          border: ref
-                                      .watch(newsStateProvider)
-                                      .currentNewsSlide ==
-                                  slidePost
+                          border: curSlide == slidePost
                               ? Border.all(
                                   color:
                                       Theme.of(context).colorScheme.textColor,
@@ -215,22 +214,24 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           children: [
             FutureBuilder(
               future: NewsUtils.getThumbnailData(mediaFile!),
-              builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(5.0),
-                    child: Image.file(
-                      snapshot.data!,
-                      fit: BoxFit.cover,
+              builder: (context, snapshot) =>
+                  snapshot.data.map(
+                    (p0) => ClipRRect(
+                      borderRadius: BorderRadius.circular(5.0),
+                      child: Image.file(
+                        p0,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
+                  ) ??
+                  const SizedBox.shrink(),
             ),
             Container(
               color: Colors.black38,
-              child: const Icon(Icons.play_arrow_outlined, size: 32),
+              child: const Icon(
+                Icons.play_arrow_outlined,
+                size: 32,
+              ),
             ),
           ],
         ),

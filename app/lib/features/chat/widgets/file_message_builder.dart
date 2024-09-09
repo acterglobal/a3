@@ -28,12 +28,16 @@ class FileMessageBuilder extends ConsumerWidget {
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     return InkWell(
       onTap: () async {
-        if (mediaState.mediaFile != null) {
-          openFileShareDialog(context: context, file: mediaState.mediaFile!);
+        final mediaFile = mediaState.mediaFile;
+        if (mediaFile != null) {
+          await openFileShareDialog(
+            context: context,
+            file: mediaFile,
+          );
         } else {
-          await ref
-              .read(mediaChatStateProvider(messageInfo).notifier)
-              .downloadMedia();
+          final notifier =
+              ref.read(mediaChatStateProvider(messageInfo).notifier);
+          await notifier.downloadMedia();
         }
       },
       child: Container(

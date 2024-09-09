@@ -15,6 +15,7 @@ import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -47,11 +48,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       final changed = prevState?.currentNewsSlide != nextState.currentNewsSlide;
       if (isText && changed) {
         final next = nextState.currentNewsSlide!;
-        final document = next.html != null
-            ? ActerDocumentHelpers.fromHtml(next.html!)
-            : ActerDocumentHelpers.fromMarkdown(next.text ?? '');
+        final document =
+            next.html.map((p0) => ActerDocumentHelpers.fromHtml(p0)) ??
+                ActerDocumentHelpers.fromMarkdown(next.text ?? '');
         final autoFocus =
-            (next.html?.isEmpty ?? true) && (next.text?.isEmpty ?? true);
+            (next.html?.isEmpty != false) && (next.text?.isEmpty != false);
 
         setState(() {
           selectedNewsPost = next;
