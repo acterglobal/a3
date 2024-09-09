@@ -293,7 +293,6 @@ impl NewsSlideDraft {
         }
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn color(&mut self, colors: Box<ColorizeBuilder>) {
         self.colorize_builder = *colors;
     }
@@ -320,7 +319,6 @@ impl NewsSlideDraft {
             .build()?)
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn add_reference(&mut self, reference: Box<ObjRef>) -> &Self {
         self.references.push(*reference);
         self
