@@ -363,7 +363,6 @@ impl PinDraft {
         self
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn display(&mut self, display: Box<Display>) -> &mut Self {
         self.content.display(Some(*display));
         self
@@ -456,7 +455,6 @@ impl PinUpdateBuilder {
         self
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn display(&mut self, display: Box<Display>) -> &mut Self {
         self.content.display(Some(Some(*display)));
         self

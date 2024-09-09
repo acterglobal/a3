@@ -56,7 +56,6 @@ impl CategoryBuilder {
         self.display_typed(None);
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn display(&mut self, display: Box<Display>) {
         self.display_typed(Some(*display));
     }

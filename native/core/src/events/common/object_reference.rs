@@ -595,7 +595,6 @@ impl ObjRefBuilder {
         self
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn reference(&mut self, reference: Box<RefDetails>) -> &mut Self {
         let ObjRef { position, .. } = self.obj_ref.clone();
         self.obj_ref = ObjRef::new(position, *reference);
