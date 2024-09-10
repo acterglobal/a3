@@ -2187,6 +2187,7 @@
   "updatingIcon": "Updating Icon",
   "selectColor": "Select color",
   "selectIcon": "Select icon",
+  "organized": "Organized",
   "action": "Action",
   "@action": {}
 }
