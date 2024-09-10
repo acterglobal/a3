@@ -1,11 +1,16 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+final _log = Logger('a3::space::sub_spaces');
 
 class SubSpaces extends ConsumerWidget {
   static const moreOptionKey = Key('sub-spaces-more-actions');
@@ -20,12 +25,13 @@ class SubSpaces extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: _buildAppBarUI(context, ref),
-      body: const Placeholder(),
+      body: _buildSubSpacesUI(context, ref),
     );
   }
 
   AppBar _buildAppBarUI(BuildContext context, WidgetRef ref) {
-    final spaceName = ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull;
+    final spaceName =
+        ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull;
     final membership = ref.watch(roomMembershipProvider(spaceId));
     bool canLinkSpace =
         membership.valueOrNull?.canString('CanLinkSpaces') == true;
@@ -44,7 +50,9 @@ class SubSpaces extends ConsumerWidget {
       actions: [
         IconButton(
           icon: Icon(PhosphorIcons.arrowsClockwise()),
-          onPressed: () => ref.invalidate(spaceRelationsProvider),
+          onPressed: () {
+            ref.read(addDummySpaceCategoriesProvider(spaceId));
+          },
         ),
         if (canLinkSpace) _buildMenuOptions(context),
       ],
@@ -58,7 +66,7 @@ class SubSpaces extends ConsumerWidget {
       color: Theme.of(context).colorScheme.surface,
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
         PopupMenuItem(
-          key: createSubspaceKey,
+          key: SubSpaces.createSubspaceKey,
           onTap: () => context.pushNamed(
             Routes.createSpace.name,
             queryParameters: {'parentSpaceId': spaceId},
@@ -72,7 +80,7 @@ class SubSpaces extends ConsumerWidget {
           ),
         ),
         PopupMenuItem(
-          key: linkSubspaceKey,
+          key: SubSpaces.linkSubspaceKey,
           onTap: () => context.pushNamed(
             Routes.linkSubspace.name,
             pathParameters: {'spaceId': spaceId},
@@ -109,6 +117,22 @@ class SubSpaces extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSubSpacesUI(BuildContext context, WidgetRef ref) {
+    final spaceCategories = ref.watch(spaceCategoriesProvider(spaceId));
+    return spaceCategories.when(
+      data: (categories) {
+        FfiListCategory categoryList = categories.categories();
+        print('Categories ${categoryList.length}');
+        return const Placeholder();
+      },
+      error: (e, s) {
+        _log.severe('Failed to load the space categories', e, s);
+        return Center(child: Text(L10n.of(context).loadingFailed(e)));
+      },
+      loading: () => Center(child: Text(L10n.of(context).loading)),
     );
   }
 }
