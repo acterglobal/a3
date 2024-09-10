@@ -64,6 +64,8 @@ class PinsBuilder extends ConsumerWidget {
           ],
         ),
       ),
+      skipLoadingOnRefresh: true,
+      skipLoadingOnReload: true,
     );
   }
 }

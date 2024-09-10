@@ -16,8 +16,15 @@ final spacesProvider =
   return SpaceListNotifier(ref: ref, client: client);
 });
 
+final hasSpacesProvider =
+    Provider((ref) => ref.watch(spacesProvider).isNotEmpty);
+
 final bookmarkedSpacesProvider = Provider(
   (ref) => ref.watch(spacesProvider).where((s) => s.isBookmarked()).toList(),
+);
+
+final unbookmarkedSpacesProvider = Provider(
+  (ref) => ref.watch(spacesProvider).where((s) => !s.isBookmarked()).toList(),
 );
 
 /// List of spaces other than current space and it’s parent space
@@ -153,7 +160,9 @@ final hasSpaceWithPermissionProvider =
 /// Stays up to date with underlying client info
 final _spaceIdAndNames =
     FutureProvider.autoDispose<List<_SpaceIdAndName>>((ref) async {
-  final spaces = ref.watch(spacesProvider);
+  final spaces = ref
+      .watch(bookmarkedSpacesProvider)
+      .followedBy(ref.watch(unbookmarkedSpacesProvider));
   List<_SpaceIdAndName> items = [];
   for (final space in spaces) {
     final roomId = space.getRoomIdStr();
