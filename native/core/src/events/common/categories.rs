@@ -11,7 +11,6 @@ pub struct CategoriesStateEventContent {
 
 #[derive(Debug, Clone, Serialize, Eq, PartialEq, Deserialize, Builder)]
 pub struct Category {
-    pub id: String,
     pub title: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[builder(default, setter(name = "display_typed"))]
@@ -22,9 +21,6 @@ pub struct Category {
 }
 
 impl Category {
-    pub fn id(&self) -> String {
-        self.id.clone()
-    }
     pub fn title(&self) -> String {
         self.title.clone()
     }
@@ -38,7 +34,6 @@ impl Category {
     pub fn update_builder(&self) -> CategoryBuilder {
         CategoryBuilder::default()
             .entries(self.entries())
-            .id(self.id.clone())
             .title(self.title.clone())
             .display_typed(self.display.clone())
             .to_owned()

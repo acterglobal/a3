@@ -23919,16 +23919,6 @@ class Api {
             int,
             int,
           )>();
-  late final _categoryIdPtr = _lookup<
-      ffi.NativeFunction<
-          _CategoryIdReturn Function(
-            ffi.IntPtr,
-          )>>("__Category_id");
-
-  late final _categoryId = _categoryIdPtr.asFunction<
-      _CategoryIdReturn Function(
-        int,
-      )>();
   late final _categoryTitlePtr = _lookup<
       ffi.NativeFunction<
           _CategoryTitleReturn Function(
@@ -49093,35 +49083,6 @@ class Category {
 
   Category._(this._api, this._box);
 
-  String id() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._categoryId(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
   String title() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -60340,15 +60301,6 @@ class _SimpleSettingWithTurnOffBuilderBuildReturn extends ffi.Struct {
   external int arg3;
   @ffi.IntPtr()
   external int arg4;
-}
-
-class _CategoryIdReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
 }
 
 class _CategoryTitleReturn extends ffi.Struct {

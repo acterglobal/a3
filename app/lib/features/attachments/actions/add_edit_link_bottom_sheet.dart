@@ -50,13 +50,11 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _linkController = TextEditingController();
-  final prefixText = 'https://';
 
   @override
   void initState() {
     super.initState();
     _titleController.text = widget.pinTitle ?? '';
-    _linkController.text = (widget.pinLink ?? '').replaceAll(prefixText, '');
   }
 
   @override
@@ -105,7 +103,7 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
                       // Need to update change of tile
                       widget.onSave(
                         _titleController.text.trim(),
-                        '$prefixText${_linkController.text.trim()}',
+                        _linkController.text.trim(),
                       );
                     },
                     child: Text(L10n.of(context).save),
@@ -150,11 +148,10 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
           controller: _linkController,
           minLines: 1,
           maxLines: 1,
-          decoration: InputDecoration(prefixText: prefixText),
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
               return L10n.of(context).pleaseEnterALink;
-            } else if (!urlValidatorRegexp.hasMatch(value)) {
+            } else if (!isValidUrl(value)) {
               return L10n.of(context).pleaseEnterAValidLink;
             }
             return null;
