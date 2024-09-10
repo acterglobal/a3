@@ -214,7 +214,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       key: Key('convo-card-$roomId-removed'),
       roomId: roomId,
       onTap: () {
-        widget.onSelected.map((p0) => p0(roomId));
+        widget.onSelected.map((cb) => cb(roomId));
       },
     );
   }
@@ -236,7 +236,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       key: Key('convo-card-$roomId'),
       roomId: roomId,
       onTap: () {
-        widget.onSelected.map((p0) => p0(roomId));
+        widget.onSelected.map((cb) => cb(roomId));
       },
     );
   }

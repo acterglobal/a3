@@ -196,8 +196,8 @@ class _SliverFooter extends StatelessWidget {
                   if (cancelActionTitle != null)
                     OutlinedButton(
                       onPressed: () {
-                        cancelActionOnPressed.map((p0) {
-                              p0();
+                        cancelActionOnPressed.map((cb) {
+                              cb();
                             }) ??
                             Navigator.pop(context);
                       },

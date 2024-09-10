@@ -289,15 +289,13 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
           child: Builder(
             builder: (context) {
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                context.size.map((p0) {
-                  _currentPositionedListSize = p0;
-                });
+                context.size.map((p0) => _currentPositionedListSize = p0);
               });
               return ScrollsToTop(
                 onScrollsToTop: _onScrollsToTop,
                 child: widget.onRefresh.map(
-                      (p0) => RefreshIndicator(
-                        onRefresh: p0,
+                      (cb) => RefreshIndicator(
+                        onRefresh: cb,
                         child: buildScrollabelPositionedList(),
                       ),
                     ) ??

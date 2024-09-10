@@ -98,7 +98,7 @@ class TaskItem extends ConsumerWidget {
           updater.markUndone();
         }
         await updater.send();
-        onDone.map((p0) => p0());
+        onDone.map((cb) => cb());
       },
     );
   }

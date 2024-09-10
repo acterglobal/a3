@@ -36,7 +36,7 @@ class BriefRoomEntry extends ConsumerWidget {
     );
     final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
-    var trailing = trailingBuilder.map((p0) => p0(canLink));
+    var trailing = trailingBuilder.map((cb) => cb(canLink));
     if (trailing == null && selectedValue == roomId) {
       trailing = const Icon(Icons.check_circle_outline);
     }
@@ -51,7 +51,7 @@ class BriefRoomEntry extends ConsumerWidget {
       subtitle: subtitle,
       trailing: trailing,
       onTap: () {
-        if (canLink) onSelect.map((p0) => p0(roomId));
+        if (canLink) onSelect.map((cb) => cb(roomId));
       },
     );
   }

@@ -90,7 +90,7 @@ class ActerErrorDialog extends StatelessWidget {
             ErrorCode.notFound => lang.notFound,
             _ => lang.fatalError,
           },
-      text: text ?? textBuilder.map((p0) => p0(error)),
+      text: text ?? textBuilder.map((cb) => cb(error)),
       type: switch (err) {
         ErrorCode.notFound => QuickAlertType.warning,
         _ => QuickAlertType.error,

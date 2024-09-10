@@ -18,7 +18,7 @@ class CheckboxFormField extends FormField<bool> {
               value: state.value,
               onChanged: (value) {
                 state.didChange(value);
-                onChanged.map((p0) => p0(value));
+                onChanged.map((cb) => cb(value));
               },
               subtitle: state.hasError
                   ? Builder(

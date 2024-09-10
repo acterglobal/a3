@@ -49,7 +49,7 @@ class RoomVisibilityItem extends StatelessWidget {
         ),
         onTap: () {
           if (!isShowRadio) return;
-          spaceVisibilityValue.map((p0) => onChanged.map((p1) => p1(p0)));
+          spaceVisibilityValue.map((p0) => onChanged.map((cb) => cb(p0)));
         },
         trailing: spaceVisibilityValue.map(
               (p0) => isShowRadio

@@ -45,8 +45,8 @@ class ActerInlineErrorButton extends StatelessWidget {
                 title: dialogTitle,
                 text: text,
                 textBuilder: textBuilder,
-                onRetryTap: () => onRetryTap.map((p0) {
-                  p0();
+                onRetryTap: () => onRetryTap.map((cb) {
+                  cb();
                   Navigator.pop(context);
                 }),
                 includeBugReportButton: includeBugReportButton,
@@ -63,8 +63,8 @@ class ActerInlineErrorButton extends StatelessWidget {
               title: dialogTitle,
               text: text,
               textBuilder: textBuilder,
-              onRetryTap: () => onRetryTap.map((p0) {
-                p0();
+              onRetryTap: () => onRetryTap.map((cb) {
+                cb();
                 Navigator.pop(context);
               }),
               includeBugReportButton: includeBugReportButton,

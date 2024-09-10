@@ -142,8 +142,8 @@ Widget? renderSubSpaces(
   ];
 
   if (items.isEmpty) return null;
-  titleBuilder.map((p0) {
-    p0().map((p1) => items.insert(0, p1));
+  titleBuilder.map((cb) {
+    cb().map((p0) => items.insert(0, p0));
   });
   return SingleChildScrollView(
     child: Column(children: items),

@@ -31,7 +31,7 @@ Future<String?> joinRoom(
     ref.invalidate(maybeRoomProvider(roomId));
     ref.invalidate(chatProvider(roomId));
     ref.invalidate(spaceProvider(roomId));
-    forward.map((p0) => p0(roomId));
+    forward.map((cb) => cb(roomId));
     return roomId;
   } catch (e, s) {
     _log.severe('Failed to join room', e, s);

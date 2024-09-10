@@ -29,7 +29,7 @@ class PostAttachmentOptions extends StatelessWidget {
           key: NewsUpdateKeys.addTextSlide,
           onTap: () {
             Navigator.pop(context);
-            onTapAddText.map((p0) => p0());
+            onTapAddText.map((cb) => cb());
           },
           leading: const Icon(Atlas.size_text),
           title: Text(L10n.of(context).addTextSlide),
@@ -38,7 +38,7 @@ class PostAttachmentOptions extends StatelessWidget {
           key: NewsUpdateKeys.addImageSlide,
           onTap: () {
             Navigator.pop(context);
-            onTapImage.map((p0) => p0());
+            onTapImage.map((cb) => cb());
           },
           leading: const Icon(Atlas.file_image),
           title: Text(L10n.of(context).selectPicture),
@@ -47,7 +47,7 @@ class PostAttachmentOptions extends StatelessWidget {
           key: NewsUpdateKeys.addVideoSlide,
           onTap: () {
             Navigator.pop(context);
-            onTapVideo.map((p0) => p0());
+            onTapVideo.map((cb) => cb());
           },
           leading: const Icon(Atlas.file_video),
           title: Text(L10n.of(context).selectVideo),

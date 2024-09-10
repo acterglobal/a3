@@ -689,7 +689,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     ref.read(chatInputProvider.notifier).startSending();
     try {
       // end the typing notification
-      widget.onTyping.map((p0) => p0(false));
+      widget.onTyping.map((cb) => cb(false));
 
       final mentions = ref.read(chatInputProvider).mentions;
       String markdownText = textController.text;
@@ -894,7 +894,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         enabled: ref.watch(_allowEdit(widget.roomId)),
         onChanged: (String val) {
           // send typing notice
-          widget.onTyping.map((p0) => p0(val.isNotEmpty));
+          widget.onTyping.map((cb) => cb(val.isNotEmpty));
         },
         onSubmitted: (_) => widget.onSendButtonPressed(),
         style: Theme.of(context).textTheme.bodyMedium,

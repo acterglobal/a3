@@ -253,7 +253,7 @@ class _CreateUpdateItemListConsumerState
       await taskDraft.send();
       EasyLoading.dismiss();
       if (!mounted) return;
-      widget.cancel.map((p0) => p0());
+      widget.cancel.map((cb) => cb());
       Navigator.pop(context);
     } catch (e, s) {
       _log.severe('Failed to create task', e, s);
