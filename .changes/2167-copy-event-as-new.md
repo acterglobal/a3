@@ -1,0 +1,1 @@
+- You can now take any Event you see and use it as a template to create any other similar event. Clicking Actions -> `Copy as New` will open the create event dialog with all fields filled in with the content from the current event for you to edit and submit.
