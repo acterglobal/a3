@@ -34,9 +34,14 @@ final idMatrixRegexp = RegExp(
   r'matrix:roomid/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
 );
 
-final urlValidatorRegexp = RegExp(
-  r'^[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b[-a-zA-Z0-9()@:%_+.~#?&/=]*$',
-);
+bool isValidUrl(String url) {
+// Regular expression to validate URLs
+  final RegExp urlPattern = RegExp(
+    r"^([a-zA-Z][a-zA-Z\d+\-.]*):\/\/([\w\-])+\.{1}([a-zA-Z]{2,63})([\w\-\._~:/?#[\]@!\$&'()*+,;=.]+)?$",
+    caseSensitive: false,
+  );
+  return urlPattern.hasMatch(url);
+}
 
 /// Get provider right from the context no matter where we are
 extension Context on BuildContext {
