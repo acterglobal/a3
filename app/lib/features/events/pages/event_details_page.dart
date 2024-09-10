@@ -5,6 +5,7 @@ import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
@@ -33,6 +34,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' show join;
@@ -176,6 +178,22 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             ),
           );
         }
+
+        // Copy as New
+        actions.add(
+          PopupMenuItem(
+            onTap: () {
+              context.pushNamed(Routes.createEvent.name, extra: event);
+            },
+            child: Row(
+              children: <Widget>[
+                Icon(PhosphorIcons.calendarPlus()),
+                const SizedBox(width: 10),
+                Text(L10n.of(context).createAcopy),
+              ],
+            ),
+          ),
+        );
       }
     }
 

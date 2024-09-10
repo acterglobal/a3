@@ -7,6 +7,8 @@ import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +24,12 @@ const createEditEventKey = Key('create-edit-event');
 
 class CreateEventPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
+  final CalendarEvent? templateEvent;
 
   const CreateEventPage({
     super.key = createEditEventKey,
     this.initialSelectedSpace,
+    this.templateEvent,
   });
 
   @override
@@ -46,17 +50,67 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   TimeOfDay _selectedEndTime = TimeOfDay.now();
   EditorState textEditorState = EditorState.blank();
 
+  void _setFromTemplate() {
+    if (widget.templateEvent == null) {
+      return;
+    }
+    final event = widget.templateEvent!;
+    // title
+    _eventNameController.text = event.title();
+    // description
+    final desc = event.description();
+    if (desc != null) {
+      final formatted = desc.formatted();
+      if (formatted != null) {
+        textEditorState =
+            EditorState(document: ActerDocumentHelpers.fromHtml(formatted));
+      } else {
+        textEditorState = EditorState(
+          document: ActerDocumentHelpers.fromMarkdown(
+            desc.body(),
+          ),
+        );
+      }
+    }
+
+    // Getting start and end date time
+    final dartStartTime = toDartDatetime(event.utcStart());
+    final dartEndTime = toDartDatetime(event.utcEnd());
+
+    // Setting data to variables for start date
+    _selectedStartDate = dartStartTime.toLocal();
+    _selectedStartTime = TimeOfDay.fromDateTime(_selectedStartDate);
+    _startDateController.text = eventDateFormat(_selectedStartDate);
+    _startTimeController.text = _selectedStartTime.format(context);
+
+    // Setting data to variables for end date
+    _selectedEndDate = dartEndTime.toLocal();
+    _selectedEndTime = TimeOfDay.fromDateTime(_selectedEndDate);
+    _endDateController.text = eventDateFormat(_selectedEndDate);
+    _endTimeController.text = _selectedEndTime.format(context);
+    _setSpaceId(event.roomIdStr());
+    setState(() {});
+  }
+
+  void _setSpaceId(String spaceId) {
+    ref.read(selectedSpaceIdProvider.notifier).state = spaceId;
+  }
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      // if calendarId is null that means Create Event
-      if (widget.initialSelectedSpace != null &&
-          widget.initialSelectedSpace!.isNotEmpty) {
-        final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
-        parentNotifier.state = widget.initialSelectedSpace;
-      }
-    });
+    if (widget.templateEvent != null) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (Duration duration) => _setFromTemplate(),
+      );
+    } else if (widget.initialSelectedSpace != null &&
+        widget.initialSelectedSpace!.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (Duration duration) => widget.initialSelectedSpace != null
+            ? _setSpaceId(widget.initialSelectedSpace!)
+            : null,
+      );
+    }
   }
 
   @override
@@ -256,10 +310,16 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
   // Selecting date
   Future<void> _selectDate({required bool isStartDate}) async {
+    DateTime initialDate = isStartDate ? _selectedStartDate : _selectedEndDate;
+    DateTime firstDate = DateTime.now();
+    if (initialDate < firstDate) {
+      initialDate = firstDate;
+    }
+
     final date = await showDatePicker(
       context: context,
-      initialDate: isStartDate ? _selectedStartDate : _selectedEndDate,
-      firstDate: DateTime.now(),
+      initialDate: initialDate,
+      firstDate: firstDate,
       lastDate: DateTime.now().addYears(1),
     );
     if (date == null || !mounted) return;
