@@ -40,7 +40,7 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
         );
 
   @override
-  Future<void> fetchMediaBinary(String? msgType, String eventId) {
+  Future<void> fetchMediaBinary(String? msgType, String eventId, String msgId) {
     // TODO: implement fetchMediaBinary
     throw UnimplementedError();
   }

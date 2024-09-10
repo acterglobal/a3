@@ -1,10 +1,12 @@
 use acter::{
-    matrix_sdk::config::StoreConfig, ruma_common::OwnedRoomId, testing::ensure_user, Client, Convo,
-    CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder, SyncState,
+    testing::ensure_user, Client, Convo, CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder,
+    SyncState,
 };
 use acter_core::templates::Engine;
 use anyhow::Result;
 use futures::{pin_mut, stream::StreamExt};
+use matrix_sdk::config::StoreConfig;
+use matrix_sdk_base::ruma::OwnedRoomId;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,

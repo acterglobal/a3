@@ -169,7 +169,7 @@ class AppShellState extends ConsumerState<AppShell> {
   SlotLayout primaryNavigationLayout() {
     return SlotLayout(
       config: <Breakpoint, SlotLayoutConfig?>{
-        Breakpoints.large: SlotLayout.from(
+        Breakpoints.mediumLargeAndUp: SlotLayout.from(
           key: const Key('primaryNavigation'),
           builder: (BuildContext context) => SidebarWidget(
             navigationShell: widget.navigationShell,

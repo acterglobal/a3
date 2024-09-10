@@ -10,12 +10,8 @@ use matrix_sdk::{
     media::{MediaFormat, MediaThumbnailSettings, MediaThumbnailSize},
     ComposerDraft, ComposerDraftType,
 };
-use ruma::UInt;
-use ruma_client_api::media::get_content_thumbnail;
-use ruma_common::{
-    EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedEventId, OwnedMxcUri, OwnedUserId,
-};
-use ruma_events::room::{
+use matrix_sdk_base::ruma::api::client::media::get_content_thumbnail;
+use matrix_sdk_base::ruma::events::room::{
     message::{
         AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
         FileMessageEventContent, ImageMessageEventContent, LocationInfo,
@@ -23,6 +19,10 @@ use ruma_events::room::{
         VideoInfo, VideoMessageEventContent,
     },
     ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
+};
+use matrix_sdk_base::ruma::UInt;
+use matrix_sdk_base::ruma::{
+    EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedEventId, OwnedMxcUri, OwnedUserId,
 };
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
@@ -753,7 +753,6 @@ pub fn new_link_ref_builder(title: String, uri: String) -> Result<RefDetailsBuil
     Ok(builder)
 }
 
-#[allow(clippy::boxed_local)]
 pub fn new_obj_ref_builder(
     position: Option<String>,
     reference: Box<RefDetails>,

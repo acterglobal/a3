@@ -12,11 +12,11 @@ use matrix_sdk::{
     config::SyncSettings, event_handler::EventHandlerHandle, room::Room as SdkRoom, RoomState,
     RumaApiError,
 };
-use ruma_client_api::{
+use matrix_sdk_base::ruma::api::client::{
     error::{ErrorBody, ErrorKind},
     Error,
 };
-use ruma_common::OwnedRoomId;
+use matrix_sdk_base::ruma::OwnedRoomId;
 use std::{
     collections::{BTreeMap, HashMap},
     io::Write,

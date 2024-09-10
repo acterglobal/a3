@@ -1,13 +1,13 @@
 use anyhow::Result;
 use matrix_sdk::media::MediaRequest;
-use ruma::assign;
-use ruma_client_api::directory::get_public_rooms_filtered;
-use ruma_common::{
+use matrix_sdk_base::ruma::api::client::directory::get_public_rooms_filtered;
+use matrix_sdk_base::ruma::assign;
+use matrix_sdk_base::ruma::events::room::MediaSource;
+use matrix_sdk_base::ruma::{
     directory::{Filter, PublicRoomJoinRule, PublicRoomsChunk, RoomNetwork, RoomTypeFilter},
     room::RoomType,
     OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, ServerName,
 };
-use ruma_events::room::MediaSource;
 
 use super::{client::Client, RUNTIME};
 

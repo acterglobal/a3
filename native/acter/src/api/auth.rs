@@ -6,14 +6,14 @@ use matrix_sdk::{
     reqwest::{ClientBuilder as ReqClientBuilder, StatusCode},
     Client as SdkClient, ClientBuilder as SdkClientBuilder, SessionMeta,
 };
-use ruma::{assign, uint};
-use ruma_client_api::{
+use matrix_sdk_base::ruma::api::client::{
     account::{
         register, request_password_change_token_via_email, request_registration_token_via_email,
     },
     uiaa::{AuthData, Dummy, Password, RegistrationToken},
 };
-use ruma_common::{ClientSecret, OwnedClientSecret, OwnedUserId, UserId};
+use matrix_sdk_base::ruma::{assign, uint};
+use matrix_sdk_base::ruma::{ClientSecret, OwnedClientSecret, OwnedUserId, UserId};
 use serde::Deserialize;
 use std::{ops::Deref, sync::RwLock};
 use tracing::{error, info};

@@ -1,6 +1,6 @@
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/features/pins/Utils/pins_utils.dart';
+import 'package:acter/features/pins/actions/pin_update_actions.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +19,7 @@ void showEditPintTitleDialog(
     onSave: (newTitle) async {
       final pinEditNotifier = ref.read(pinEditProvider(pin).notifier);
       pinEditNotifier.setTitle(newTitle);
-      savePinTitle(context, pin, newTitle);
+      updatePinTitle(context, pin, newTitle);
     },
   );
 }
@@ -34,7 +34,7 @@ void showEditPintDescriptionDialog(
     descriptionHtmlValue: pin.content()?.formattedBody(),
     descriptionMarkdownValue: pin.content()?.body(),
     onSave: (htmlBodyDescription, plainDescription) async {
-      saveDescription(
+      updatePinDescription(
         context,
         htmlBodyDescription,
         plainDescription,

@@ -17,7 +17,7 @@ final invitationUserProfileProvider = FutureProvider.autoDispose
   UserProfile? user = invitation.senderProfile();
   if (user == null) return null;
   final userId = user.userId().toString();
-  final displayName = user.getDisplayName();
+  final displayName = user.displayName();
   final fallback = AvatarInfo(
     uniqueId: userId,
     displayName: displayName,

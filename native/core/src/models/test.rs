@@ -1,6 +1,6 @@
 use derive_builder::Builder;
-use ruma::{OwnedRoomId, RoomId};
-use ruma_common::{user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, UserId};
+use matrix_sdk_base::ruma::{user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, UserId};
+use matrix_sdk_base::ruma::{OwnedRoomId, RoomId};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 

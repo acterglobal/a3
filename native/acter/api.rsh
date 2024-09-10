@@ -255,7 +255,10 @@ object UserProfile {
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Option<string>;
+    fn display_name() -> Option<string>;
+
+    /// which rooms you are sharing with that profile
+    fn shared_rooms() -> Vec<string>;
 }
 
 
@@ -873,9 +876,6 @@ object EventSendState {
 
 /// A room Message metadata and content
 object RoomEventItem {
-    /// Unique ID of this event
-    fn unique_id() -> string;
-
     /// The User, who sent that event
     fn sender() -> string;
 
@@ -888,6 +888,9 @@ object RoomEventItem {
 
     /// one of Message/Redaction/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
     fn event_type() -> string;
+
+    /// ID of this event
+    fn event_id() -> Option<string>;
 
     /// the type of massage, like text, image, audio, video, file etc
     fn msg_type() -> Option<string>;
@@ -929,6 +932,9 @@ object RoomVirtualItem {
 object RoomMessage {
     /// one of event/virtual
     fn item_type() -> string;
+
+    /// Unique ID of this event
+    fn unique_id() -> string;
 
     /// valid only if item_type is "event"
     fn event_item() -> Option<RoomEventItem>;
@@ -2038,7 +2044,6 @@ object ActerAppSettingsBuilder {
 
 
 object Category {
-    fn id() -> string;
     fn title() -> string;
     fn entries() -> string;
     fn display() -> Option<Display>;
@@ -2753,7 +2758,7 @@ object Client {
     fn invitations_rx() -> Stream<Vec<Invitation>>;
 
     /// the users out of room
-    fn suggested_users_to_invite(room_name: string) -> Future<Result<Vec<UserProfile>>>;
+    fn suggested_users(room_name: Option<string>) -> Future<Result<Vec<UserProfile>>>;
 
     /// search the user directory
     fn search_users(search_term: string) -> Future<Result<Vec<UserProfile>>>;

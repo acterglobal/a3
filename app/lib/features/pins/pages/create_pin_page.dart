@@ -1,11 +1,14 @@
 import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -50,6 +53,8 @@ class CreatePinPage extends ConsumerStatefulWidget {
 class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
+  ActerIcon? pinIcon;
+  Color? pinIconColor;
 
   @override
   void initState() {
@@ -93,6 +98,15 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
+                      Center(
+                        child: ActerIconWidget(
+                          icon: pinIcon ?? ActerIcon.pin,
+                          onIconSelection: (pinIconColor, pinIcon) {
+                            this.pinIcon = pinIcon;
+                            this.pinIconColor = pinIconColor;
+                          },
+                        ),
+                      ),
                       const SizedBox(height: 14),
                       _buildTitleField(),
                       const SizedBox(height: 14),
@@ -295,6 +309,8 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   Future<void> _createPin() async {
+    //Close keyboard
+    FocusManager.instance.primaryFocus?.unfocus();
     if (!_formKey.currentState!.validate()) return;
     EasyLoading.show(status: L10n.of(context).creatingPin);
     try {
@@ -302,6 +318,19 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       final space = await ref.read(spaceProvider(spaceId!).future);
       final pinDraft = space.pinDraft();
       final pinState = ref.read(createPinStateProvider);
+
+      // Pin IconData
+      if (pinIconColor != null || pinIcon != null) {
+        final sdk = await ref.watch(sdkProvider.future);
+        final displayBuilder = sdk.api.newDisplayBuilder();
+        if (pinIconColor != null) {
+          displayBuilder.color(pinIconColor!.value);
+        }
+        if (pinIcon != null) {
+          displayBuilder.icon('acter-icon', pinIcon!.name);
+        }
+        pinDraft.display(displayBuilder.build());
+      }
 
       // Pin Title
       final pinTitle = pinState.pinTitle;
@@ -321,6 +350,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
           pinDraft.contentMarkdown(params.plainDescription);
         }
       }
+
       final pinId = await pinDraft.send();
 
       // Add Attachments

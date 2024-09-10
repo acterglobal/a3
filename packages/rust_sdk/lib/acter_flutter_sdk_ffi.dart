@@ -12159,7 +12159,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListUserProfile? __clientSuggestedUsersToInviteFuturePoll(
+  FfiListUserProfile? __clientSuggestedUsersFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -12173,7 +12173,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientSuggestedUsersToInviteFuturePoll(
+    final tmp6 = _clientSuggestedUsersFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -17074,17 +17074,26 @@ class Api {
         int,
         int,
       )>();
-  late final _userProfileGetDisplayNamePtr = _lookup<
+  late final _userProfileDisplayNamePtr = _lookup<
       ffi.NativeFunction<
-          _UserProfileGetDisplayNameReturn Function(
+          _UserProfileDisplayNameReturn Function(
             ffi.IntPtr,
-          )>>("__UserProfile_get_display_name");
+          )>>("__UserProfile_display_name");
 
-  late final _userProfileGetDisplayName =
-      _userProfileGetDisplayNamePtr.asFunction<
-          _UserProfileGetDisplayNameReturn Function(
-            int,
-          )>();
+  late final _userProfileDisplayName = _userProfileDisplayNamePtr.asFunction<
+      _UserProfileDisplayNameReturn Function(
+        int,
+      )>();
+  late final _userProfileSharedRoomsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__UserProfile_shared_rooms");
+
+  late final _userProfileSharedRooms = _userProfileSharedRoomsPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _receiptEventRoomIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -19362,16 +19371,6 @@ class Api {
       _EventSendStateEventIdReturn Function(
         int,
       )>();
-  late final _roomEventItemUniqueIdPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomEventItemUniqueIdReturn Function(
-            ffi.IntPtr,
-          )>>("__RoomEventItem_unique_id");
-
-  late final _roomEventItemUniqueId = _roomEventItemUniqueIdPtr.asFunction<
-      _RoomEventItemUniqueIdReturn Function(
-        int,
-      )>();
   late final _roomEventItemSenderPtr = _lookup<
       ffi.NativeFunction<
           _RoomEventItemSenderReturn Function(
@@ -19411,6 +19410,16 @@ class Api {
 
   late final _roomEventItemEventType = _roomEventItemEventTypePtr.asFunction<
       _RoomEventItemEventTypeReturn Function(
+        int,
+      )>();
+  late final _roomEventItemEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemEventIdReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomEventItem_event_id");
+
+  late final _roomEventItemEventId = _roomEventItemEventIdPtr.asFunction<
+      _RoomEventItemEventIdReturn Function(
         int,
       )>();
   late final _roomEventItemMsgTypePtr = _lookup<
@@ -19546,6 +19555,16 @@ class Api {
 
   late final _roomMessageItemType = _roomMessageItemTypePtr.asFunction<
       _RoomMessageItemTypeReturn Function(
+        int,
+      )>();
+  late final _roomMessageUniqueIdPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMessageUniqueIdReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomMessage_unique_id");
+
+  late final _roomMessageUniqueId = _roomMessageUniqueIdPtr.asFunction<
+      _RoomMessageUniqueIdReturn Function(
         int,
       )>();
   late final _roomMessageEventItemPtr = _lookup<
@@ -23900,16 +23919,6 @@ class Api {
             int,
             int,
           )>();
-  late final _categoryIdPtr = _lookup<
-      ffi.NativeFunction<
-          _CategoryIdReturn Function(
-            ffi.IntPtr,
-          )>>("__Category_id");
-
-  late final _categoryId = _categoryIdPtr.asFunction<
-      _CategoryIdReturn Function(
-        int,
-      )>();
   late final _categoryTitlePtr = _lookup<
       ffi.NativeFunction<
           _CategoryTitleReturn Function(
@@ -26464,23 +26473,24 @@ class Api {
       int Function(
         int,
       )>();
-  late final _clientSuggestedUsersToInvitePtr = _lookup<
+  late final _clientSuggestedUsersPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
             ffi.IntPtr,
+            ffi.Uint8,
             ffi.IntPtr,
             ffi.UintPtr,
             ffi.UintPtr,
-          )>>("__Client_suggested_users_to_invite");
+          )>>("__Client_suggested_users");
 
-  late final _clientSuggestedUsersToInvite =
-      _clientSuggestedUsersToInvitePtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+  late final _clientSuggestedUsers = _clientSuggestedUsersPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _clientSearchUsersPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -31369,17 +31379,17 @@ class Api {
             int,
             int,
           )>();
-  late final _clientSuggestedUsersToInviteFuturePollPtr = _lookup<
+  late final _clientSuggestedUsersFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientSuggestedUsersToInviteFuturePollReturn Function(
+          _ClientSuggestedUsersFuturePollReturn Function(
             ffi.IntPtr,
             ffi.IntPtr,
             ffi.Int64,
-          )>>("__Client_suggested_users_to_invite_future_poll");
+          )>>("__Client_suggested_users_future_poll");
 
-  late final _clientSuggestedUsersToInviteFuturePoll =
-      _clientSuggestedUsersToInviteFuturePollPtr.asFunction<
-          _ClientSuggestedUsersToInviteFuturePollReturn Function(
+  late final _clientSuggestedUsersFuturePoll =
+      _clientSuggestedUsersFuturePollPtr.asFunction<
+          _ClientSuggestedUsersFuturePollReturn Function(
             int,
             int,
             int,
@@ -35388,10 +35398,10 @@ class UserProfile {
   }
 
   /// get the display name
-  String? getDisplayName() {
+  String? displayName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._userProfileGetDisplayName(
+    final tmp1 = _api._userProfileDisplayName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -35418,6 +35428,22 @@ class UserProfile {
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// which rooms you are sharing with that profile
+  FfiListFfiString sharedRooms() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._userProfileSharedRooms(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -40333,36 +40359,6 @@ class RoomEventItem {
 
   RoomEventItem._(this._api, this._box);
 
-  /// Unique ID of this event
-  String uniqueId() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemUniqueId(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
   /// The User, who sent that event
   String sender() {
     var tmp0 = 0;
@@ -40451,6 +40447,40 @@ class RoomEventItem {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// ID of this event
+  String? eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
     return tmp2;
   }
@@ -40762,6 +40792,36 @@ class RoomMessage {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomMessageItemType(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Unique ID of this event
+  String uniqueId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMessageUniqueId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -49023,35 +49083,6 @@ class Category {
 
   Category._(this._api, this._box);
 
-  String id() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._categoryId(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
   String title() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -54370,37 +54401,43 @@ class Client {
   }
 
   /// the users out of room
-  Future<FfiListUserProfile> suggestedUsersToInvite(
-    String roomName,
+  Future<FfiListUserProfile> suggestedUsers(
+    String? roomName,
   ) {
     final tmp1 = roomName;
     var tmp0 = 0;
     var tmp2 = 0;
-    var tmp3 = 0;
     var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
     tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
 
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._clientSuggestedUsersToInvite(
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    final tmp7 = _api._clientSuggestedUsers(
       tmp0,
       tmp2,
-      tmp3,
       tmp4,
+      tmp5,
+      tmp6,
     );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 =
-        _Box(_api, tmp7_0, "__Client_suggested_users_to_invite_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 =
-        _nativeFuture(tmp7_1, _api.__clientSuggestedUsersToInviteFuturePoll);
-    return tmp6;
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Client_suggested_users_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__clientSuggestedUsersFuturePoll);
+    return tmp8;
   }
 
   /// search the user directory
@@ -58626,7 +58663,7 @@ class _OptionComposeDraftDraftReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _UserProfileGetDisplayNameReturn extends ffi.Struct {
+class _UserProfileDisplayNameReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -59302,15 +59339,6 @@ class _EventSendStateEventIdReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _RoomEventItemUniqueIdReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-}
-
 class _RoomEventItemSenderReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
@@ -59334,6 +59362,17 @@ class _RoomEventItemEventTypeReturn extends ffi.Struct {
   external int arg1;
   @ffi.UintPtr()
   external int arg2;
+}
+
+class _RoomEventItemEventIdReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
 }
 
 class _RoomEventItemMsgTypeReturn extends ffi.Struct {
@@ -59400,6 +59439,15 @@ class _RoomVirtualItemDescReturn extends ffi.Struct {
 }
 
 class _RoomMessageItemTypeReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomMessageUniqueIdReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
@@ -60253,15 +60301,6 @@ class _SimpleSettingWithTurnOffBuilderBuildReturn extends ffi.Struct {
   external int arg3;
   @ffi.IntPtr()
   external int arg4;
-}
-
-class _CategoryIdReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
 }
 
 class _CategoryTitleReturn extends ffi.Struct {
@@ -64225,7 +64264,7 @@ class _ClientPinnedLinksFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientSuggestedUsersToInviteFuturePollReturn extends ffi.Struct {
+class _ClientSuggestedUsersFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

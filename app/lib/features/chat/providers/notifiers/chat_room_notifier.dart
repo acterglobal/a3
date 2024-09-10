@@ -218,21 +218,22 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           await fetchOriginalContent(repliedTo, p.message.id);
         }
         final eventItem = p.event.eventItem();
-        if (eventItem != null) {
-          await fetchMediaBinary(eventItem.msgType(), p.message.id);
+        final remoteId = p.message.remoteId;
+        if (eventItem != null && remoteId != null) {
+          await fetchMediaBinary(eventItem.msgType(), remoteId, p.message.id);
         }
       }
     }
   }
 
   // fetch original content media for reply msg, i.e. text/image/file etc.
-  Future<void> fetchOriginalContent(String originalId, String replyId) async {
+  Future<void> fetchOriginalContent(String originalId, String msgId) async {
     RoomMessage roomMsg;
     try {
       roomMsg = await timeline.getMessage(originalId);
     } catch (e, s) {
       _log.severe(
-        'Failing to load reference $replyId (from $originalId)',
+        'Failing to load reference $msgId (from $originalId)',
         e,
         s,
       );
@@ -272,7 +273,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),
           createdAt: orgEventItem.originServerTs(),
-          id: orgEventItem.uniqueId(),
+          id: roomMsg.uniqueId(),
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
@@ -283,7 +284,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),
           createdAt: orgEventItem.originServerTs(),
-          id: orgEventItem.uniqueId(),
+          id: roomMsg.uniqueId(),
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
@@ -394,8 +395,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
     if (repliedTo == null) return;
     final messages = state.messages;
-    int index = messages.indexWhere((x) => x.id == replyId);
-    if (index != -1) {
+    int index = messages.indexWhere((x) => x.id == msgId);
+    if (index != -1 && repliedTo != null) {
       replaceMessageAt(
         index,
         messages[index].copyWith(repliedMessage: repliedTo),
@@ -438,7 +439,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       firstName: simplifyUserId(sender),
     );
     int createdAt = eventItem.originServerTs(); // in milliseconds
-    String eventId = eventItem.uniqueId();
+    String uniqueId = message.uniqueId();
+    String? eventId = eventItem.eventId();
 
     String? inReplyTo = eventItem.inReplyTo();
 
@@ -474,8 +476,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         return types.CustomMessage(
           author: author,
           createdAt: createdAt,
-          id: eventId,
-          remoteId: eventItem.uniqueId(),
+          id: uniqueId,
+          remoteId: eventId,
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
@@ -503,10 +505,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         };
         inReplyTo.map((p0) => metadata['repliedTo'] = p0);
         return types.CustomMessage(
-          remoteId: eventItem.uniqueId(),
+          remoteId: eventId,
           author: author,
           createdAt: createdAt,
-          id: eventId,
+          id: uniqueId,
           metadata: metadata,
         );
       case 'm.room.redaction':
@@ -518,10 +520,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         };
         inReplyTo.map((p0) => metadata['repliedTo'] = p0);
         return types.CustomMessage(
-          remoteId: eventItem.uniqueId(),
+          remoteId: eventId,
           author: author,
           createdAt: createdAt,
-          id: eventId,
+          id: uniqueId,
           metadata: metadata,
         );
       case 'm.room.member':
@@ -530,8 +532,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           return types.CustomMessage(
             author: author,
             createdAt: createdAt,
-            id: eventId,
-            remoteId: eventItem.uniqueId(),
+            id: uniqueId,
+            remoteId: eventId,
             metadata: {
               'itemType': 'event',
               'eventType': eventType,
@@ -565,9 +567,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               return types.AudioMessage(
                 author: author,
                 createdAt: createdAt,
-                remoteId: eventItem.uniqueId(),
+                remoteId: eventId,
                 duration: Duration(seconds: msgContent.duration() ?? 0),
-                id: eventId,
+                id: uniqueId,
                 metadata: metadata,
                 mimeType: msgContent.mimetype(),
                 name: msgContent.body(),
@@ -593,9 +595,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               return types.TextMessage(
                 author: author,
-                remoteId: eventItem.uniqueId(),
+                remoteId: eventId,
                 createdAt: createdAt,
-                id: eventId,
+                id: uniqueId,
                 metadata: metadata,
                 text: formattedBody ?? body,
               );
@@ -614,9 +616,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               return types.FileMessage(
                 author: author,
-                remoteId: eventItem.uniqueId(),
+                remoteId: eventId,
                 createdAt: createdAt,
-                id: eventId,
+                id: uniqueId,
                 metadata: metadata,
                 mimeType: msgContent.mimetype(),
                 name: msgContent.body(),
@@ -638,10 +640,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               return types.ImageMessage(
                 author: author,
-                remoteId: eventItem.uniqueId(),
+                remoteId: eventId,
                 createdAt: createdAt,
                 height: msgContent.height()?.toDouble(),
-                id: eventId,
+                id: uniqueId,
                 metadata: metadata,
                 name: msgContent.body(),
                 size: msgContent.size() ?? 0,
@@ -684,9 +686,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               });
               return types.CustomMessage(
                 author: author,
-                remoteId: eventItem.uniqueId(),
+                remoteId: eventId,
                 createdAt: createdAt,
-                id: eventId,
+                id: uniqueId,
                 metadata: metadata,
               );
             }
@@ -707,9 +709,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             if (reactions.isNotEmpty) metadata['reactions'] = reactions;
             return types.TextMessage(
               author: author,
-              remoteId: eventItem.uniqueId(),
+              remoteId: eventId,
               createdAt: createdAt,
-              id: eventId,
+              id: uniqueId,
               metadata: metadata,
               text: body,
             );
@@ -727,9 +729,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               return types.VideoMessage(
                 author: author,
-                remoteId: eventItem.uniqueId(),
+                remoteId: eventId,
                 createdAt: createdAt,
-                id: eventId,
+                id: uniqueId,
                 metadata: metadata,
                 name: msgContent.body(),
                 size: msgContent.size() ?? 0,
@@ -771,9 +773,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           if (reactions.isNotEmpty) metadata['reactions'] = reactions;
           return types.CustomMessage(
             author: author,
-            remoteId: eventItem.uniqueId(),
+            remoteId: eventId,
             createdAt: createdAt,
-            id: eventId,
+            id: uniqueId,
             metadata: metadata,
           );
         }
@@ -783,9 +785,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (msgContent != null) {
           return types.CustomMessage(
             author: author,
-            remoteId: eventItem.uniqueId(),
+            remoteId: eventId,
             createdAt: createdAt,
-            id: eventId,
+            id: uniqueId,
             metadata: {
               'itemType': 'event',
               'eventType': eventType,
@@ -802,14 +804,18 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
     return types.UnsupportedMessage(
       author: const types.User(id: 'virtual'),
-      remoteId: eventItem.uniqueId(),
+      remoteId: eventId,
       id: UniqueKey().toString(),
       metadata: const {'itemType': 'virtual'},
     );
   }
 
   // fetch event media binary for message.
-  Future<void> fetchMediaBinary(String? msgType, String eventId) async {
+  Future<void> fetchMediaBinary(
+    String? msgType,
+    String eventId,
+    String msgId,
+  ) async {
     switch (msgType) {
       case 'm.audio':
       case 'm.video':
@@ -820,7 +826,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           throw RoomNotFound();
         }
         final data = await convo.mediaBinary(eventId, null);
-        int index = messages.indexWhere((x) => x.id == eventId);
+        int index = messages.indexWhere((x) => x.id == msgId);
         if (index != -1) {
           final metadata = {...messages[index].metadata ?? {}};
           metadata['base64'] = base64Encode(data.asTypedList());

@@ -11,11 +11,12 @@ class LanguageModel {
     return switch (locale) {
       'ar' => const LanguageModel.arabic(),
       'de' => const LanguageModel.german(),
+      'en' => const LanguageModel.english(),
       'es' => const LanguageModel.spanish(),
       'pl' => const LanguageModel.polish(),
       'fr' => const LanguageModel.french(),
-      'en' => const LanguageModel.english(),
-      _ => const LanguageModel.english(),
+      'sw' => const LanguageModel.swahili(),
+      _ => const LanguageModel.english(), // english is fallback
     };
   }
 
@@ -44,6 +45,10 @@ class LanguageModel {
       : languageName = 'اَلْعَرَبِيَّةُ',
         languageCode = 'ar';
 
+  const LanguageModel.swahili()
+      : languageName = 'Swahili',
+        languageCode = 'sw';
+
   static const allLanguagesList = [
     // we show them in ehm... alphabetical order of the name in their own language
     LanguageModel.german(),
@@ -52,5 +57,6 @@ class LanguageModel {
     LanguageModel.french(),
     LanguageModel.polish(),
     LanguageModel.arabic(),
+    LanguageModel.swahili(),
   ];
 }

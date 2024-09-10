@@ -263,7 +263,7 @@ final memberDisplayNameProvider =
     return ref
         .watch(_memberProfileProvider(query))
         .valueOrNull
-        ?.getDisplayName();
+        ?.displayName();
   } on RoomNotFound {
     return null;
   }

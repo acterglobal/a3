@@ -88,7 +88,7 @@ class MessageActions extends ConsumerWidget {
               pressed: () => onDeleteOwnMessage(
                 context,
                 ref,
-                message.id,
+                message.remoteId ?? message.id,
                 roomId,
               ),
               text: Text(
@@ -142,7 +142,7 @@ class MessageActions extends ConsumerWidget {
       description: L10n.of(context).reportMessageContent,
       senderId: message.author.id,
       roomId: roomId,
-      eventId: message.id,
+      eventId: message.remoteId ?? message.id,
     );
   }
 

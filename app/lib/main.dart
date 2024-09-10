@@ -129,6 +129,7 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
       child: MaterialApp.router(
         routerConfig: goRouter,
         theme: ActerTheme.theme,
+        restorationScopeId: 'acter',
         title: 'Acter',
         builder: builder,
         locale: Locale(language),

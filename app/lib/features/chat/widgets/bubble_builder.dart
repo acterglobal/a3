@@ -111,9 +111,9 @@ class _ChatBubble extends ConsumerWidget {
         EmojiRow(
           roomId: roomId,
           isAuthor: isAuthor,
-          onEmojiTap: (String eventId, String emoji) {
+          onEmojiTap: (String uniqueId, String emoji) {
             ref.read(chatInputProvider.notifier).unsetSelectedMessage();
-            toggleReaction(ref, eventId, emoji);
+            toggleReaction(ref, uniqueId, emoji);
           },
           message: message,
         ),
@@ -128,7 +128,7 @@ class _ChatBubble extends ConsumerWidget {
         enlargeEmoji ? child : renderBubble(context, isAuthor),
         EmojiContainer(
           roomId: roomId,
-          onToggle: (eventId, emoji) => toggleReaction(ref, eventId, emoji),
+          onToggle: (uniqueId, emoji) => toggleReaction(ref, uniqueId, emoji),
           isAuthor: isAuthor,
           message: message,
           nextMessageInGroup: nextMessageInGroup,
@@ -246,12 +246,12 @@ class _ChatBubble extends ConsumerWidget {
   // send emoji reaction to message event
   Future<void> toggleReaction(
     WidgetRef ref,
-    String eventId,
+    String uniqueId,
     String emoji,
   ) async {
     try {
       final stream = await ref.read(timelineStreamProvider(roomId).future);
-      await stream.toggleReaction(eventId, emoji);
+      await stream.toggleReaction(uniqueId, emoji);
     } catch (e, s) {
       _log.severe('Reaction toggle failed', e, s);
     }

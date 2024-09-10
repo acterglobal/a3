@@ -1,11 +1,10 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/toolkit/buttons/room_chip.dart';
-import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -135,7 +134,7 @@ class _TextWidget extends ConsumerWidget {
                   maxLines: isReply ? 3 : null,
                 )
               : Html(
-                  onLinkTap: (url) => onLinkTap(url, context, ref),
+                  onLinkTap: (url) => onMessageLinkTap(url, context),
                   backgroundColor: Colors.transparent,
                   data: message.text,
                   pillBuilder: ({
@@ -143,7 +142,11 @@ class _TextWidget extends ConsumerWidget {
                     required String url,
                     OnPillTap? onTap,
                   }) =>
-                      _pillBuilder(context, ref, identifier, url),
+                      ActerPillBuilder(
+                    identifier: identifier,
+                    uri: url,
+                    roomId: roomId,
+                  ),
                   shrinkToFit: true,
                   defaultTextStyle:
                       Theme.of(context).textTheme.bodySmall!.copyWith(
@@ -170,38 +173,5 @@ class _TextWidget extends ConsumerWidget {
         ),
       ],
     );
-  }
-
-  Widget _pillBuilder(
-    BuildContext context,
-    WidgetRef ref,
-    String identifier,
-    String uri,
-  ) {
-    return switch (identifier.characters.first) {
-      '@' => UserChip(
-          roomId: roomId,
-          memberId: identifier,
-        ),
-      '!' => RoomChip(roomId: identifier),
-      _ => InkWell(
-          child: Text(identifier),
-          onTap: () => onLinkTap(Uri.parse(uri), context, ref),
-        ),
-    };
-  }
-
-  Future<void> onLinkTap(Uri uri, BuildContext context, WidgetRef ref) async {
-    final roomId = getRoomIdFromLink(uri);
-
-    ///If link is type of matrix room link
-    if (roomId != null) {
-    }
-
-    ///If link is other than matrix room link
-    ///Then open it on browser
-    else {
-      await openLink(uri.toString(), context);
-    }
   }
 }

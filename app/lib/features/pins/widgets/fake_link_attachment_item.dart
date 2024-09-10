@@ -4,7 +4,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
-import 'package:acter/features/pins/Utils/pins_utils.dart';
+import 'package:acter/features/pins/actions/pin_update_actions.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -106,7 +106,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
         ),
         PopupMenuItem<String>(
           key: const Key('fake-pink-link-delete'),
-          onTap: () => savePinLink(context, pin, ''),
+          onTap: () => updatePinLink(context, pin, ''),
           child: Text(
             L10n.of(context).delete,
             style: TextStyle(
@@ -129,7 +129,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
         await ref.read(attachmentsManagerProvider(pin.attachments()).future);
     if (!context.mounted) return;
     //Make link empty on Pin Data
-    await savePinLink(context, pin, '');
+    await updatePinLink(context, pin, '');
     if (!context.mounted) return;
     //Add pin link to attachments
     await handleAttachmentSelected(

@@ -2,11 +2,13 @@ use acter_core::events::settings::{ActerUserAppSettingsContent, APP_USER_SETTING
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{media::MediaRequest, Account as SdkAccount};
+use matrix_sdk_base::ruma::api::client::uiaa::{AuthData, Password};
+use matrix_sdk_base::ruma::assign;
+use matrix_sdk_base::ruma::events::{
+    ignored_user_list::IgnoredUserListEventContent, room::MediaSource,
+};
+use matrix_sdk_base::ruma::{OwnedMxcUri, OwnedUserId, UserId};
 use matrix_sdk_base::{StateStoreDataKey, StateStoreDataValue};
-use ruma::assign;
-use ruma_client_api::uiaa::{AuthData, Password};
-use ruma_common::{OwnedMxcUri, OwnedUserId, UserId};
-use ruma_events::{ignored_user_list::IgnoredUserListEventContent, room::MediaSource};
 use std::{ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};

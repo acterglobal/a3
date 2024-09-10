@@ -11,22 +11,22 @@ use futures::stream::StreamExt;
 use matrix_sdk::notification_settings::{
     IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings, RoomNotificationMode,
 };
-use matrix_sdk_ui::notification_client::{
-    NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
-    NotificationProcessSetup, RawNotificationEvent,
-};
-use ruma::{assign, push::HttpPusherData};
-use ruma_client_api::{
+use matrix_sdk_base::ruma::api::client::{
     device,
     push::{
         get_pushers, get_pushrules_all, set_pusher, set_pushrule, EmailPusherData,
         Pusher as RumaPusher, PusherIds, PusherInit, PusherKind, RuleScope,
     },
 };
-use ruma_common::{EventId, OwnedMxcUri, OwnedRoomId, RoomId};
-use ruma_events::{
+use matrix_sdk_base::ruma::events::{
     room::{message::MessageType, MediaSource},
     AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
+};
+use matrix_sdk_base::ruma::{assign, push::HttpPusherData};
+use matrix_sdk_base::ruma::{EventId, OwnedMxcUri, OwnedRoomId, RoomId};
+use matrix_sdk_ui::notification_client::{
+    NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
+    NotificationProcessSetup, RawNotificationEvent,
 };
 use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -541,7 +541,7 @@ impl Client {
             .await?
     }
 
-    pub async fn push_rules(&self) -> Result<ruma::push::Ruleset> {
+    pub async fn push_rules(&self) -> Result<matrix_sdk_base::ruma::push::Ruleset> {
         let client = self.core.client().clone();
         RUNTIME
             .spawn(async move {
@@ -616,7 +616,10 @@ impl NotificationSettings {
         Ok(RUNTIME
             .spawn(async move {
                 inner
-                    .is_push_rule_enabled(ruma_common::push::RuleKind::Underride, content_key)
+                    .is_push_rule_enabled(
+                        matrix_sdk_base::ruma::push::RuleKind::Underride,
+                        content_key,
+                    )
                     .await
             })
             .await??)
@@ -632,7 +635,7 @@ impl NotificationSettings {
             .spawn(async move {
                 inner
                     .set_push_rule_enabled(
-                        ruma_common::push::RuleKind::Underride,
+                        matrix_sdk_base::ruma::push::RuleKind::Underride,
                         content_key,
                         enabled,
                     )
