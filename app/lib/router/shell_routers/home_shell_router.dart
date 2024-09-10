@@ -27,6 +27,7 @@ import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/space/pages/space_details_page.dart';
 import 'package:acter/features/space/settings/pages/visibility_accessibility_page.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
+import 'package:acter/features/spaces/pages/sub_spaces.dart';
 import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';
@@ -220,6 +221,19 @@ final homeShellRoutes = [
         key: state.pageKey,
         child: SubSpacesPage(
           spaceIdOrAlias: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.subSpaces.name,
+    path: Routes.subSpaces.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: SubSpaces(
+          spaceId: state.pathParameters['spaceId']!,
         ),
       );
     },
