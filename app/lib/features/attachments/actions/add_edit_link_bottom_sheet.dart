@@ -151,7 +151,7 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
               return L10n.of(context).pleaseEnterALink;
-            } else if (!urlValidatorRegexp.hasMatch(value)) {
+            } else if (!isValidUrl(value)) {
               return L10n.of(context).pleaseEnterAValidLink;
             }
             return null;
