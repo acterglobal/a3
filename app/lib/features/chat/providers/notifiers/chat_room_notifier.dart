@@ -275,7 +275,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           createdAt: orgEventItem.originServerTs(),
           id: roomMsg.uniqueId(),
           metadata: {
-            'itemType': 'event',
             'eventType': eventType,
           },
         );
@@ -286,7 +285,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           createdAt: orgEventItem.originServerTs(),
           id: roomMsg.uniqueId(),
           metadata: {
-            'itemType': 'event',
             'eventType': eventType,
           },
         );
@@ -302,10 +300,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.text':
             orgEventItem.msgContent().map((p0) {
               String body = p0.body();
-              repliedToContent = {
-                'content': body,
-                'messageLength': body.length,
-              };
+              repliedToContent['content'] = body;
+              repliedToContent['messageLength'] = body.length;
               repliedTo = types.TextMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
@@ -373,9 +369,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             break;
           case 'm.file':
             orgEventItem.msgContent().map((p0) {
-              repliedToContent = {
-                'content': p0.body(),
-              };
+              repliedToContent['content'] = p0.body();
               repliedTo = types.FileMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
@@ -408,7 +402,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   types.Message parseMessage(RoomMessage message) {
     RoomVirtualItem? virtualItem = message.virtualItem();
     if (virtualItem != null) {
-      return switch (virtualItem.eventType()) {
+      final eventType = virtualItem.eventType();
+      return switch (eventType) {
         'ReadMarker' => const types.SystemMessage(
             metadata: {'type': '_read_marker'},
             id: 'read-marker',
@@ -419,8 +414,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             author: const types.User(id: 'virtual'),
             id: UniqueKey().toString(),
             metadata: {
-              'itemType': 'virtual',
-              'eventType': virtualItem.eventType(),
+              'eventType': eventType,
             },
           ),
       };
@@ -479,7 +473,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           id: uniqueId,
           remoteId: eventId,
           metadata: {
-            'itemType': 'event',
             'eventType': eventType,
             'body': eventItem.msgContent()?.body(),
             'eventState': eventItem.sendState(),
@@ -498,7 +491,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.reaction':
       case 'm.room.encrypted':
         final metadata = {
-          'itemType': 'event',
           'eventType': eventType,
           'eventState': eventState,
           'receipts': receipts,
@@ -513,7 +505,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         );
       case 'm.room.redaction':
         final metadata = {
-          'itemType': 'event',
           'eventType': eventType,
           'eventState': eventState,
           'receipts': receipts,
@@ -535,7 +526,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             id: uniqueId,
             remoteId: eventId,
             metadata: {
-              'itemType': 'event',
               'eventType': eventType,
               'msgType': eventItem.msgType(),
               'body': msgContent.formattedBody() ?? msgContent.body(),
@@ -656,7 +646,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
               Map<String, dynamic> metadata = {
-                'itemType': 'event',
                 'eventType': eventType,
                 'msgType': 'm.location',
                 'body': msgContent.body(),
@@ -757,7 +746,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         MsgContent? msgContent = eventItem.msgContent();
         if (msgContent != null) {
           Map<String, dynamic> metadata = {
-            'itemType': 'event',
             'eventType': eventType,
             'name': msgContent.body(),
             'size': msgContent.size() ?? 0,
@@ -789,7 +777,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             createdAt: createdAt,
             id: uniqueId,
             metadata: {
-              'itemType': 'event',
               'eventType': eventType,
               'msgType': eventItem.msgType(),
               'body': msgContent.body(),
@@ -806,7 +793,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       author: const types.User(id: 'virtual'),
       remoteId: eventId,
       id: UniqueKey().toString(),
-      metadata: const {'itemType': 'virtual'},
     );
   }
 
