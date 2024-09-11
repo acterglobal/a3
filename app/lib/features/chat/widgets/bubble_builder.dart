@@ -305,7 +305,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
       return Padding(
         padding: const EdgeInsets.all(12),
         child: Text(
-          repliedMessage.metadata!['content'],
+          repliedMessage.name,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       );

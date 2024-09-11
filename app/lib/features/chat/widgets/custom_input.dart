@@ -980,10 +980,11 @@ class _ReplyContentWidget extends StatelessWidget {
         ),
       );
     } else if (msg is FileMessage) {
+      final fileMsg = msg as FileMessage;
       return Padding(
         padding: const EdgeInsets.all(12),
         child: Text(
-          msg.metadata?['content'],
+          fileMsg.name,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       );

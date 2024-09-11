@@ -270,15 +270,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.space.parent':
         break;
       case 'm.room.encrypted':
-        repliedTo = types.CustomMessage(
-          author: types.User(id: orgEventItem.sender()),
-          createdAt: orgEventItem.originServerTs(),
-          id: roomMsg.uniqueId(),
-          metadata: {
-            'eventType': eventType,
-          },
-        );
-        break;
       case 'm.room.redaction':
         repliedTo = types.CustomMessage(
           author: types.User(id: orgEventItem.sender()),
@@ -335,7 +326,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             if (convo == null) throw RoomNotFound();
             orgEventItem.msgContent().map((p0) {
               convo.mediaBinary(originalId, null).then((data) {
-                repliedToContent['content'] = base64Encode(data.asTypedList());
+                repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
               repliedTo = types.AudioMessage(
                 author: types.User(id: orgEventItem.sender()),
@@ -354,7 +345,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             if (convo == null) throw RoomNotFound();
             orgEventItem.msgContent().map((p0) {
               convo.mediaBinary(originalId, null).then((data) {
-                repliedToContent['content'] = base64Encode(data.asTypedList());
+                repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
               repliedTo = types.VideoMessage(
                 author: types.User(id: orgEventItem.sender()),
@@ -369,7 +360,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             break;
           case 'm.file':
             orgEventItem.msgContent().map((p0) {
-              repliedToContent['content'] = p0.body();
+              // preview is not needed for past file msg, so we don't load file binary
               repliedTo = types.FileMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
@@ -490,19 +481,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'm.reaction':
       case 'm.room.encrypted':
-        final metadata = {
-          'eventType': eventType,
-          'eventState': eventState,
-          'receipts': receipts,
-        };
-        inReplyTo.map((p0) => metadata['repliedTo'] = p0);
-        return types.CustomMessage(
-          remoteId: eventId,
-          author: author,
-          createdAt: createdAt,
-          id: uniqueId,
-          metadata: metadata,
-        );
       case 'm.room.redaction':
         final metadata = {
           'eventType': eventType,
@@ -536,6 +514,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'm.room.message':
+        Map<String, dynamic> metadata = {
+          'eventState': eventState,
+          'receipts': receipts,
+          'was_edited': wasEdited,
+          'isEditable': isEditable,
+        };
         Map<String, dynamic> reactions = {};
         for (var key in eventItem.reactionKeys()) {
           String k = key.toDartString();
@@ -545,13 +529,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.audio':
             MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
-              Map<String, dynamic> metadata = {
-                'base64': '',
-                'eventState': eventState,
-                'receipts': receipts,
-                'was_edited': wasEdited,
-                'isEditable': isEditable,
-              };
+              metadata['base64'] = '';
               inReplyTo.map((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               return types.AudioMessage(
@@ -571,16 +549,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.emote':
             MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
-              String? formattedBody = msgContent.formattedBody();
               String body = msgContent.body(); // always exists
-              Map<String, dynamic> metadata = {
-                'eventState': eventState,
-                'receipts': receipts,
-                'was_edited': wasEdited,
-                'isEditable': isEditable,
-                // check whether string only contains emoji(s).
-                'enlargeEmoji': isOnlyEmojis(body),
-              };
+              // check whether string only contains emoji(s).
+              metadata['enlargeEmoji'] = isOnlyEmojis(body);
               inReplyTo.map((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               return types.TextMessage(
@@ -589,19 +560,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 createdAt: createdAt,
                 id: uniqueId,
                 metadata: metadata,
-                text: formattedBody ?? body,
+                text: msgContent.formattedBody() ?? body,
               );
             }
             break;
           case 'm.file':
             MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
-              Map<String, dynamic> metadata = {
-                'eventState': eventState,
-                'receipts': receipts,
-                'was_edited': wasEdited,
-                'isEditable': isEditable,
-              };
+              metadata['base64'] = '';
               inReplyTo.map((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               return types.FileMessage(
@@ -620,12 +586,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.image':
             MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
-              Map<String, dynamic> metadata = {
-                'eventState': eventState,
-                'receipts': receipts,
-                'was_edited': wasEdited,
-                'isEditable': isEditable,
-              };
               inReplyTo.map((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               return types.ImageMessage(
@@ -645,16 +605,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.location':
             MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
-              Map<String, dynamic> metadata = {
-                'eventType': eventType,
-                'msgType': 'm.location',
-                'body': msgContent.body(),
-                'geoUri': msgContent.geoUri(),
-                'eventState': eventState,
-                'receipts': receipts,
-                'was_edited': wasEdited,
-                'isEditable': isEditable,
-              };
+              metadata['eventType'] = 'm.room.message';
+              metadata['msgType'] = 'm.location';
+              metadata['body'] = msgContent.body();
+              metadata['geoUri'] = msgContent.geoUri();
               inReplyTo.map((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               msgContent.thumbnailSource().map((p0) {
@@ -686,14 +640,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.server_notice':
           case 'm.text':
             final body = prepareMsg(eventItem.msgContent());
-            Map<String, dynamic> metadata = {
-              'eventState': eventState,
-              'receipts': receipts,
-              'was_edited': wasEdited,
-              'isEditable': isEditable,
-              // check whether string only contains emoji(s).
-              'enlargeEmoji': isOnlyEmojis(body),
-            };
+            // check whether string only contains emoji(s).
+            metadata['enlargeEmoji'] = isOnlyEmojis(body);
             inReplyTo.map((p0) => metadata['repliedTo'] = p0);
             if (reactions.isNotEmpty) metadata['reactions'] = reactions;
             return types.TextMessage(
@@ -707,13 +655,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.video':
             MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
-              Map<String, dynamic> metadata = {
-                'base64': '',
-                'eventState': eventState,
-                'receipts': receipts,
-                'was_edited': wasEdited,
-                'isEditable': isEditable,
-              };
+              metadata['base64'] = '';
               inReplyTo.map((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               return types.VideoMessage(
