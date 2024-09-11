@@ -1,6 +1,3 @@
-use matrix_sdk_base::ruma::{
-    room::message::MessageType, AnySyncMessageLikeEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
-};
 use matrix_sdk_ui::notification_client::{
     NotificationEvent, NotificationItem as SdkNotificationItem,
 };
