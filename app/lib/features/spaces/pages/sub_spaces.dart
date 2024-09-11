@@ -124,7 +124,7 @@ class SubSpaces extends ConsumerWidget {
     final spaceCategories = ref.watch(spaceCategoriesProvider(spaceId));
     return spaceCategories.when(
       data: (categories) {
-        FfiListCategory categoryList = categories.categories();
+        List<Category> categoryList = categories.categories().toList();
         print('Categories ${categoryList.length}');
         return const Placeholder();
       },

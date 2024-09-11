@@ -70,16 +70,20 @@ final addDummySpaceCategoriesProvider =
     //NEW CATEGORY-1
     final newCat1 = categoriesManager.newCategoryBuilder();
     newCat1.title('Test Cat - 1');
+    newCat1.addEntry('!ECGEsoitdTwuBFQlWq:m-1.acter.global');
+    newCat1.addEntry('!ETVXYJQaiONyZgsjNE:m-1.acter.global');
     newCats.add(newCat1.build());
 
     //NEW CATEGORY-2
     final newCat2 = categoriesManager.newCategoryBuilder();
     newCat2.title('Test Cat - 2');
+    newCat2.addEntry('!QttcPDfFpCKjwjDLgg:m-1.acter.global');
     newCats.add(newCat2.build());
 
     //NEW CATEGORY-3
     final newCat3 = categoriesManager.newCategoryBuilder();
     newCat3.title('Test Cat - 3');
+    newCat3.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
     newCats.add(newCat3.build());
     maybeSpace.setCategories('spaces', newCats);
 
