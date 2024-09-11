@@ -151,6 +151,9 @@ class _SubSpacesState extends ConsumerState<SubSpaces> {
   }
 
   Widget _buildCategoriesList(Category category) {
+    final entries = category.entries().map((s) => s.toDartString()).toList();
+    final display = category.display();
+
     return Card(
       child: ExpansionTile(
         title: Row(
@@ -158,19 +161,19 @@ class _SubSpacesState extends ConsumerState<SubSpaces> {
             ActerIconWidget(
               iconSize: 24,
               color: convertColor(
-                category.display()?.color(),
+                display?.color(),
                 iconPickerColors[0],
               ),
-              icon: ActerIcon.iconForCategories(category.display()?.iconStr()),
+              icon: ActerIcon.iconForCategories(display?.iconStr()),
             ),
             const SizedBox(width: 6),
             Text(category.title()),
           ],
         ),
         children: List<Widget>.generate(
-          category.entries().length,
+          entries.length,
           (index) => ListTile(
-            title: Text(category.entries()[index]),
+            title: Text(entries[index]),
           ),
         ),
       ),
