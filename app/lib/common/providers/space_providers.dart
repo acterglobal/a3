@@ -1,12 +1,9 @@
 import 'package:acter/common/providers/notifiers/relations_notifier.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -56,69 +53,6 @@ final spaceCategoriesProvider =
     FutureProvider.family<Categories, String>((ref, spaceId) async {
   final maybeSpace = await ref.watch(maybeSpaceProvider(spaceId).future);
   if (maybeSpace != null) {
-    return maybeSpace.categories('spaces');
-  }
-  throw 'Space not found';
-});
-
-final addDummySpaceCategoriesProvider =
-    FutureProvider.family<Categories, String>((ref, spaceId) async {
-  final maybeSpace = await ref.watch(maybeSpaceProvider(spaceId).future);
-  if (maybeSpace != null) {
-    final categoriesManager = await maybeSpace.categories('spaces');
-
-    final newCats = categoriesManager.updateBuilder();
-    newCats.clear();
-    final sdk = await ref.watch(sdkProvider.future);
-    final displayBuilder = sdk.api.newDisplayBuilder();
-
-    /// --------(NEW CATEGORY-1)--------
-    final newCat1 = categoriesManager.newCategoryBuilder();
-    //ADD TITLE
-    newCat1.title('Test Cat - 1');
-
-    //ADD COLOR AND ICON
-    displayBuilder.color(Colors.red.value);
-    displayBuilder.icon('acter-icon', ActerIcon.addressBook.name);
-    newCat1.display(displayBuilder.build());
-
-    //ADD ENTRIES
-    newCat1.addEntry('!ECGEsoitdTwuBFQlWq:m-1.acter.global');
-    newCat1.addEntry('!ETVXYJQaiONyZgsjNE:m-1.acter.global');
-    newCats.add(newCat1.build());
-
-    /// --------(NEW CATEGORY-2)--------
-    final newCat2 = categoriesManager.newCategoryBuilder();
-
-    //ADD TITLE
-    newCat2.title('Test Cat - 2');
-
-    //ADD COLOR AND ICON
-    displayBuilder.color(Colors.green.value);
-    displayBuilder.icon('acter-icon', ActerIcon.airplay.name);
-    newCat2.display(displayBuilder.build());
-
-    //ADD ENTRIES
-    newCat2.addEntry('!QttcPDfFpCKjwjDLgg:m-1.acter.global');
-    newCats.add(newCat2.build());
-
-    /// --------(NEW CATEGORY-3)--------
-    final newCat3 = categoriesManager.newCategoryBuilder();
-
-    //ADD TITLE
-    newCat3.title('Test Cat - 3');
-
-    //ADD COLOR AND ICON
-    displayBuilder.color(Colors.blue.value);
-    displayBuilder.icon('acter-icon', ActerIcon.appleLogo.name);
-    newCat3.display(displayBuilder.build());
-
-    //ADD ENTRIES
-    newCat3.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
-    newCats.add(newCat3.build());
-    maybeSpace.setCategories('spaces', newCats);
-
-    ref.invalidate(spaceCategoriesProvider);
     return maybeSpace.categories('spaces');
   }
   throw 'Space not found';

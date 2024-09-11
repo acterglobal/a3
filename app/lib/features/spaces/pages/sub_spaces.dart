@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
@@ -59,9 +60,7 @@ class _SubSpacesState extends ConsumerState<SubSpaces> {
       actions: [
         IconButton(
           icon: Icon(PhosphorIcons.arrowsClockwise()),
-          onPressed: () {
-            ref.read(addDummySpaceCategoriesProvider(widget.spaceId));
-          },
+          onPressed: () => addDummyData(),
         ),
         if (canLinkSpace) _buildMenuOptions(context),
       ],
@@ -176,5 +175,64 @@ class _SubSpacesState extends ConsumerState<SubSpaces> {
         ),
       ),
     );
+  }
+
+  Future<void> addDummyData() async {
+    final maybeSpace =
+        await ref.watch(maybeSpaceProvider(widget.spaceId).future);
+    if (maybeSpace != null) {
+      final categoriesManager = await maybeSpace.categories('spaces');
+
+      final newCats = categoriesManager.updateBuilder();
+      newCats.clear();
+      final sdk = await ref.watch(sdkProvider.future);
+      final displayBuilder = sdk.api.newDisplayBuilder();
+
+      /// --------(NEW CATEGORY-1)--------
+      final newCat1 = categoriesManager.newCategoryBuilder();
+      //ADD TITLE
+      newCat1.title('Test Cat - 1');
+
+      //ADD COLOR AND ICON
+      displayBuilder.color(Colors.red.value);
+      displayBuilder.icon('acter-icon', ActerIcon.addressBook.name);
+      newCat1.display(displayBuilder.build());
+
+      //ADD ENTRIES
+      newCat1.addEntry('!ECGEsoitdTwuBFQlWq:m-1.acter.global');
+      newCat1.addEntry('!ETVXYJQaiONyZgsjNE:m-1.acter.global');
+      newCats.add(newCat1.build());
+
+      /// --------(NEW CATEGORY-2)--------
+      final newCat2 = categoriesManager.newCategoryBuilder();
+
+      //ADD TITLE
+      newCat2.title('Test Cat - 2');
+
+      //ADD COLOR AND ICON
+      displayBuilder.color(Colors.green.value);
+      displayBuilder.icon('acter-icon', ActerIcon.airplay.name);
+      newCat2.display(displayBuilder.build());
+
+      //ADD ENTRIES
+      newCat2.addEntry('!QttcPDfFpCKjwjDLgg:m-1.acter.global');
+      newCats.add(newCat2.build());
+
+      /// --------(NEW CATEGORY-3)--------
+      final newCat3 = categoriesManager.newCategoryBuilder();
+
+      //ADD TITLE
+      newCat3.title('Test Cat - 3');
+
+      //ADD COLOR AND ICON
+      displayBuilder.color(Colors.blue.value);
+      displayBuilder.icon('acter-icon', ActerIcon.appleLogo.name);
+      newCat3.display(displayBuilder.build());
+
+      //ADD ENTRIES
+      newCat3.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
+      newCats.add(newCat3.build());
+      maybeSpace.setCategories('spaces', newCats);
+    }
   }
 }
