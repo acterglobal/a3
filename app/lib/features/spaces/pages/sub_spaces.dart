@@ -1,6 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -150,7 +154,20 @@ class _SubSpacesState extends ConsumerState<SubSpaces> {
   Widget _buildCategoriesList(Category category) {
     return Card(
       child: ExpansionTile(
-        title: Text(category.title()),
+        title: Row(
+          children: [
+            ActerIconWidget(
+              iconSize: 24,
+              color: convertColor(
+                category.display()?.color(),
+                iconPickerColors[0],
+              ),
+              icon: ActerIcon.iconForCategories(category.display()?.iconStr()),
+            ),
+            const SizedBox(width: 6),
+            Text(category.title()),
+          ],
+        ),
         children: List<Widget>.generate(
           category.entries().length,
           (index) => ListTile(
