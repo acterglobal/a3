@@ -1,6 +1,11 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +17,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 final _log = Logger('a3::space::sub_spaces');
 
-class SubSpaces extends ConsumerWidget {
+class SubSpaces extends ConsumerStatefulWidget {
   static const moreOptionKey = Key('sub-spaces-more-actions');
   static const createSubspaceKey = Key('sub-spaces-more-create-subspace');
   static const linkSubspaceKey = Key('sub-spaces-more-link-subspace');
@@ -22,17 +27,22 @@ class SubSpaces extends ConsumerWidget {
   const SubSpaces({super.key, required this.spaceId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SubSpaces> createState() => _SubSpacesState();
+}
+
+class _SubSpacesState extends ConsumerState<SubSpaces> {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBarUI(context, ref),
-      body: _buildSubSpacesUI(context, ref),
+      appBar: _buildAppBarUI(),
+      body: _buildSubSpacesUI(),
     );
   }
 
-  AppBar _buildAppBarUI(BuildContext context, WidgetRef ref) {
+  AppBar _buildAppBarUI() {
     final spaceName =
-        ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull;
-    final membership = ref.watch(roomMembershipProvider(spaceId));
+        ref.watch(roomDisplayNameProvider(widget.spaceId)).valueOrNull;
+    final membership = ref.watch(roomMembershipProvider(widget.spaceId));
     bool canLinkSpace =
         membership.valueOrNull?.canString('CanLinkSpaces') == true;
     return AppBar(
@@ -50,9 +60,7 @@ class SubSpaces extends ConsumerWidget {
       actions: [
         IconButton(
           icon: Icon(PhosphorIcons.arrowsClockwise()),
-          onPressed: () {
-            ref.read(addDummySpaceCategoriesProvider(spaceId));
-          },
+          onPressed: () => addDummyData(),
         ),
         if (canLinkSpace) _buildMenuOptions(context),
       ],
@@ -69,7 +77,7 @@ class SubSpaces extends ConsumerWidget {
           key: SubSpaces.createSubspaceKey,
           onTap: () => context.pushNamed(
             Routes.createSpace.name,
-            queryParameters: {'parentSpaceId': spaceId},
+            queryParameters: {'parentSpaceId': widget.spaceId},
           ),
           child: Row(
             children: <Widget>[
@@ -83,7 +91,7 @@ class SubSpaces extends ConsumerWidget {
           key: SubSpaces.linkSubspaceKey,
           onTap: () => context.pushNamed(
             Routes.linkSubspace.name,
-            pathParameters: {'spaceId': spaceId},
+            pathParameters: {'spaceId': widget.spaceId},
           ),
           child: Row(
             children: <Widget>[
@@ -96,7 +104,7 @@ class SubSpaces extends ConsumerWidget {
         PopupMenuItem(
           onTap: () => context.pushNamed(
             Routes.linkRecommended.name,
-            pathParameters: {'spaceId': spaceId},
+            pathParameters: {'spaceId': widget.spaceId},
           ),
           child: Row(
             children: [
@@ -120,13 +128,19 @@ class SubSpaces extends ConsumerWidget {
     );
   }
 
-  Widget _buildSubSpacesUI(BuildContext context, WidgetRef ref) {
-    final spaceCategories = ref.watch(spaceCategoriesProvider(spaceId));
+  Widget _buildSubSpacesUI() {
+    final spaceCategories = ref.watch(spaceCategoriesProvider(widget.spaceId));
     return spaceCategories.when(
       data: (categories) {
-        FfiListCategory categoryList = categories.categories();
-        print('Categories ${categoryList.length}');
-        return const Placeholder();
+        final List<Category> categoryList = categories.categories().toList();
+        return ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: categoryList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return _buildCategoriesList(categoryList[index]);
+          },
+        );
       },
       error: (e, s) {
         _log.severe('Failed to load the space categories', e, s);
@@ -134,5 +148,91 @@ class SubSpaces extends ConsumerWidget {
       },
       loading: () => Center(child: Text(L10n.of(context).loading)),
     );
+  }
+
+  Widget _buildCategoriesList(Category category) {
+    return Card(
+      child: ExpansionTile(
+        title: Row(
+          children: [
+            ActerIconWidget(
+              iconSize: 24,
+              color: convertColor(
+                category.display()?.color(),
+                iconPickerColors[0],
+              ),
+              icon: ActerIcon.iconForCategories(category.display()?.iconStr()),
+            ),
+            const SizedBox(width: 6),
+            Text(category.title()),
+          ],
+        ),
+        children: List<Widget>.generate(
+          category.entries().length,
+          (index) => ListTile(
+            title: Text(category.entries()[index]),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> addDummyData() async {
+    final maybeSpace =
+        await ref.watch(maybeSpaceProvider(widget.spaceId).future);
+    if (maybeSpace != null) {
+      final categoriesManager = await maybeSpace.categories('spaces');
+
+      final newCats = categoriesManager.updateBuilder();
+      newCats.clear();
+      final sdk = await ref.watch(sdkProvider.future);
+      final displayBuilder = sdk.api.newDisplayBuilder();
+
+      /// --------(NEW CATEGORY-1)--------
+      final newCat1 = categoriesManager.newCategoryBuilder();
+      //ADD TITLE
+      newCat1.title('Test Cat - 1');
+
+      //ADD COLOR AND ICON
+      displayBuilder.color(Colors.red.value);
+      displayBuilder.icon('acter-icon', ActerIcon.addressBook.name);
+      newCat1.display(displayBuilder.build());
+
+      //ADD ENTRIES
+      newCat1.addEntry('!ECGEsoitdTwuBFQlWq:m-1.acter.global');
+      newCat1.addEntry('!ETVXYJQaiONyZgsjNE:m-1.acter.global');
+      newCats.add(newCat1.build());
+
+      /// --------(NEW CATEGORY-2)--------
+      final newCat2 = categoriesManager.newCategoryBuilder();
+
+      //ADD TITLE
+      newCat2.title('Test Cat - 2');
+
+      //ADD COLOR AND ICON
+      displayBuilder.color(Colors.green.value);
+      displayBuilder.icon('acter-icon', ActerIcon.airplay.name);
+      newCat2.display(displayBuilder.build());
+
+      //ADD ENTRIES
+      newCat2.addEntry('!QttcPDfFpCKjwjDLgg:m-1.acter.global');
+      newCats.add(newCat2.build());
+
+      /// --------(NEW CATEGORY-3)--------
+      final newCat3 = categoriesManager.newCategoryBuilder();
+
+      //ADD TITLE
+      newCat3.title('Test Cat - 3');
+
+      //ADD COLOR AND ICON
+      displayBuilder.color(Colors.blue.value);
+      displayBuilder.icon('acter-icon', ActerIcon.appleLogo.name);
+      newCat3.display(displayBuilder.build());
+
+      //ADD ENTRIES
+      newCat3.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
+      newCats.add(newCat3.build());
+      maybeSpace.setCategories('spaces', newCats);
+    }
   }
 }

@@ -58,36 +58,6 @@ final spaceCategoriesProvider =
   throw 'Space not found';
 });
 
-final addDummySpaceCategoriesProvider =
-    FutureProvider.family<Categories, String>((ref, spaceId) async {
-  final maybeSpace = await ref.watch(maybeSpaceProvider(spaceId).future);
-  if (maybeSpace != null) {
-    final categoriesManager = await maybeSpace.categories('spaces');
-
-    final newCats = categoriesManager.updateBuilder();
-    newCats.clear();
-
-    //NEW CATEGORY-1
-    final newCat1 = categoriesManager.newCategoryBuilder();
-    newCat1.title('Test Cat - 1');
-    newCats.add(newCat1.build());
-
-    //NEW CATEGORY-2
-    final newCat2 = categoriesManager.newCategoryBuilder();
-    newCat2.title('Test Cat - 2');
-    newCats.add(newCat2.build());
-
-    //NEW CATEGORY-3
-    final newCat3 = categoriesManager.newCategoryBuilder();
-    newCat3.title('Test Cat - 3');
-    newCats.add(newCat3.build());
-    maybeSpace.setCategories('spaces', newCats);
-
-    return maybeSpace.categories('spaces');
-  }
-  throw 'Space not found';
-});
-
 final spaceIsBookmarkedProvider =
     FutureProvider.family<bool, String>((ref, spaceId) async {
   final space = await ref.watch(spaceProvider(spaceId).future);
