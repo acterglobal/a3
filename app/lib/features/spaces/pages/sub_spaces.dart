@@ -12,7 +12,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 final _log = Logger('a3::space::sub_spaces');
 
-class SubSpaces extends ConsumerWidget {
+class SubSpaces extends ConsumerStatefulWidget {
   static const moreOptionKey = Key('sub-spaces-more-actions');
   static const createSubspaceKey = Key('sub-spaces-more-create-subspace');
   static const linkSubspaceKey = Key('sub-spaces-more-link-subspace');
@@ -22,17 +22,22 @@ class SubSpaces extends ConsumerWidget {
   const SubSpaces({super.key, required this.spaceId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SubSpaces> createState() => _SubSpacesState();
+}
+
+class _SubSpacesState extends ConsumerState<SubSpaces> {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBarUI(context, ref),
-      body: _buildSubSpacesUI(context, ref),
+      appBar: _buildAppBarUI(),
+      body: _buildSubSpacesUI(),
     );
   }
 
-  AppBar _buildAppBarUI(BuildContext context, WidgetRef ref) {
+  AppBar _buildAppBarUI() {
     final spaceName =
-        ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull;
-    final membership = ref.watch(roomMembershipProvider(spaceId));
+        ref.watch(roomDisplayNameProvider(widget.spaceId)).valueOrNull;
+    final membership = ref.watch(roomMembershipProvider(widget.spaceId));
     bool canLinkSpace =
         membership.valueOrNull?.canString('CanLinkSpaces') == true;
     return AppBar(
@@ -51,7 +56,7 @@ class SubSpaces extends ConsumerWidget {
         IconButton(
           icon: Icon(PhosphorIcons.arrowsClockwise()),
           onPressed: () {
-            ref.read(addDummySpaceCategoriesProvider(spaceId));
+            ref.read(addDummySpaceCategoriesProvider(widget.spaceId));
           },
         ),
         if (canLinkSpace) _buildMenuOptions(context),
@@ -69,7 +74,7 @@ class SubSpaces extends ConsumerWidget {
           key: SubSpaces.createSubspaceKey,
           onTap: () => context.pushNamed(
             Routes.createSpace.name,
-            queryParameters: {'parentSpaceId': spaceId},
+            queryParameters: {'parentSpaceId': widget.spaceId},
           ),
           child: Row(
             children: <Widget>[
@@ -83,7 +88,7 @@ class SubSpaces extends ConsumerWidget {
           key: SubSpaces.linkSubspaceKey,
           onTap: () => context.pushNamed(
             Routes.linkSubspace.name,
-            pathParameters: {'spaceId': spaceId},
+            pathParameters: {'spaceId': widget.spaceId},
           ),
           child: Row(
             children: <Widget>[
@@ -96,7 +101,7 @@ class SubSpaces extends ConsumerWidget {
         PopupMenuItem(
           onTap: () => context.pushNamed(
             Routes.linkRecommended.name,
-            pathParameters: {'spaceId': spaceId},
+            pathParameters: {'spaceId': widget.spaceId},
           ),
           child: Row(
             children: [
@@ -120,19 +125,39 @@ class SubSpaces extends ConsumerWidget {
     );
   }
 
-  Widget _buildSubSpacesUI(BuildContext context, WidgetRef ref) {
-    final spaceCategories = ref.watch(spaceCategoriesProvider(spaceId));
+  Widget _buildSubSpacesUI() {
+    final spaceCategories = ref.watch(spaceCategoriesProvider(widget.spaceId));
     return spaceCategories.when(
       data: (categories) {
-        List<Category> categoryList = categories.categories().toList();
-        print('Categories ${categoryList.length}');
-        return const Placeholder();
+        final List<Category> categoryList = categories.categories().toList();
+        return ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: categoryList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return _buildCategoriesList(categoryList[index]);
+          },
+        );
       },
       error: (e, s) {
         _log.severe('Failed to load the space categories', e, s);
         return Center(child: Text(L10n.of(context).loadingFailed(e)));
       },
       loading: () => Center(child: Text(L10n.of(context).loading)),
+    );
+  }
+
+  Widget _buildCategoriesList(Category category) {
+    return Card(
+      child: ExpansionTile(
+        title: Text(category.title()),
+        children: List<Widget>.generate(
+          category.entries().length,
+          (index) => ListTile(
+            title: Text(category.entries()[index]),
+          ),
+        ),
+      ),
     );
   }
 }
