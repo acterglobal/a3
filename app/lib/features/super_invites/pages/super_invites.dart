@@ -71,30 +71,36 @@ class SuperInvitesPage extends ConsumerWidget {
                     return Card(
                       key: Key('edit-token-$tokenStr'),
                       margin: const EdgeInsets.all(5),
-                      child: ListTile(
-                        title: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Text(tokenStr),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: ListTile(
+                          title: Text(
+                            tokenStr,
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          subtitle: Text(
+                            acceptedCount,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          onTap: () {
+                            context.pushNamed(
+                              Routes.actionCreateSuperInvite.name,
+                              extra: token,
+                            );
+                          },
+                          trailing: firstRoom != null
+                              ? OutlinedButton(
+                                  onPressed: () => context.pushNamed(
+                                    Routes.shareInviteCode.name,
+                                    queryParameters: {
+                                      'inviteCode': tokenStr,
+                                      'roomId': firstRoom,
+                                    },
+                                  ),
+                                  child: Text(L10n.of(context).share),
+                                )
+                              : null,
                         ),
-                        subtitle: Text(acceptedCount),
-                        onTap: () {
-                          context.pushNamed(
-                            Routes.actionCreateSuperInvite.name,
-                            extra: token,
-                          );
-                        },
-                        trailing: firstRoom != null
-                            ? OutlinedButton(
-                                onPressed: () => context.pushNamed(
-                                  Routes.shareInviteCode.name,
-                                  queryParameters: {
-                                    'inviteCode': tokenStr,
-                                    'roomId': firstRoom,
-                                  },
-                                ),
-                                child: Text(L10n.of(context).share),
-                              )
-                            : null,
                       ),
                     );
                   },

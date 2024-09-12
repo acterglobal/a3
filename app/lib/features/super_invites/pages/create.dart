@@ -208,6 +208,7 @@ class _CreateSuperInviteTokenPageConsumerState
 
   Widget _actionBar(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         OutlinedButton(
           onPressed: () async {
@@ -222,6 +223,7 @@ class _CreateSuperInviteTokenPageConsumerState
             L10n.of(context).cancel,
           ),
         ),
+        const SizedBox(width: 10),
         ActerPrimaryActionButton(
           key: CreateSuperInviteTokenPage.submitBtn,
           onPressed: _submit,
