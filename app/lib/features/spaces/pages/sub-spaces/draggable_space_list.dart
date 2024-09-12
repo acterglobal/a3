@@ -3,6 +3,7 @@ import 'package:acter/features/spaces/pages/sub-spaces/category_header_view.dart
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class DraggableSpaceList extends StatefulWidget {
   final List<Category> categoryList;
@@ -33,8 +34,12 @@ class _DraggableSpaceListState extends State<DraggableSpaceList> {
             .map((s) => s.toDartString())
             .toList();
         return DragAndDropList(
-          header: CategoryHeaderView(
-            category: widget.categoryList[index],
+          header: Padding(
+            padding: const EdgeInsets.all(14),
+            child: CategoryHeaderView(
+              category: widget.categoryList[index],
+              isShowDragHandle: true,
+            ),
           ),
           children: List<DragAndDropItem>.generate(
             spaceEntries.length,
@@ -42,6 +47,7 @@ class _DraggableSpaceListState extends State<DraggableSpaceList> {
               child: SpaceCard(
                 roomId: spaceEntries[index].toString(),
                 margin: const EdgeInsets.symmetric(vertical: 6),
+                trailing: Icon(PhosphorIcons.dotsSixVertical()),
               ),
             ),
           ),
@@ -59,7 +65,7 @@ class _DraggableSpaceListState extends State<DraggableSpaceList> {
     return dragAndDropList == null
         ? const SizedBox.shrink()
         : Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(18),
             child: DragAndDropLists(
               children: dragAndDropList!,
               onItemReorder: _onItemReorder,

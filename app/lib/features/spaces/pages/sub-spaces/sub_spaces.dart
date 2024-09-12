@@ -31,33 +31,74 @@ class SubSpaces extends ConsumerStatefulWidget {
 }
 
 class _SubSpacesState extends ConsumerState<SubSpaces> {
+  final ValueNotifier<bool> showOrganizedView = ValueNotifier(false);
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBarUI(),
-      body: _buildSubSpacesUI(),
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildAppBarUI(),
+          Expanded(child: _buildSubSpacesUI()),
+        ],
+      ),
     );
   }
 
-  AppBar _buildAppBarUI() {
+  Widget _buildAppBarUI() {
+    return ValueListenableBuilder(
+      valueListenable: showOrganizedView,
+      builder: (context, value, child) {
+        return value ? organizedAppBarUI() : normalAppBarUI();
+      },
+    );
+  }
+
+  Widget organizedAppBarUI() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Text(
+            L10n.of(context).organized,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const Spacer(),
+          IconButton(
+            icon: Icon(PhosphorIcons.x()),
+            onPressed: () => showOrganizedView.value = false,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget normalAppBarUI() {
     final spaceName =
         ref.watch(roomDisplayNameProvider(widget.spaceId)).valueOrNull;
     final membership = ref.watch(roomMembershipProvider(widget.spaceId));
     bool canLinkSpace =
         membership.valueOrNull?.canString('CanLinkSpaces') == true;
-    return AppBar(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(L10n.of(context).spaces),
-          Text(
-            '($spaceName)',
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
-        ],
-      ),
-      actions: [
+    return Row(
+      children: [
+        IconButton(
+          icon: Icon(PhosphorIcons.arrowLeft()),
+          onPressed: () => Navigator.pop(context),
+        ),
+        const SizedBox(width: 4),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(L10n.of(context).spaces),
+            Text(
+              '($spaceName)',
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ],
+        ),
+        const Spacer(),
         IconButton(
           icon: Icon(PhosphorIcons.arrowsClockwise()),
           onPressed: () => addDummyData(),
@@ -115,7 +156,7 @@ class _SubSpacesState extends ConsumerState<SubSpaces> {
           ),
         ),
         PopupMenuItem(
-          onTap: () {},
+          onTap: () => showOrganizedView.value = !showOrganizedView.value,
           child: Row(
             children: [
               Icon(PhosphorIcons.dotsSixVertical()),
@@ -133,16 +174,21 @@ class _SubSpacesState extends ConsumerState<SubSpaces> {
     return spaceCategories.when(
       data: (categories) {
         final List<Category> categoryList = categories.categories().toList();
-        return true
-            ? DraggableSpaceList(categoryList: categoryList)
-            : ListView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: categoryList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return _buildCategoriesList(categoryList[index]);
-                },
-              );
+        return ValueListenableBuilder(
+          valueListenable: showOrganizedView,
+          builder: (context, value, child) {
+            return value
+                ? DraggableSpaceList(categoryList: categoryList)
+                : ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: categoryList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return _buildCategoriesList(categoryList[index]);
+                    },
+                  );
+          },
+        );
       },
       error: (e, s) {
         _log.severe('Failed to load the space categories', e, s);
@@ -226,6 +272,36 @@ class _SubSpacesState extends ConsumerState<SubSpaces> {
       //ADD ENTRIES
       newCat3.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
       newCats.add(newCat3.build());
+
+      /// --------(NEW CATEGORY-4)--------
+      final newCat4 = categoriesManager.newCategoryBuilder();
+
+      //ADD TITLE
+      newCat4.title('Test Cat - 4');
+
+      //ADD COLOR AND ICON
+      displayBuilder.color(Colors.pinkAccent.value);
+      displayBuilder.icon('acter-icon', ActerIcon.camera.name);
+      newCat4.display(displayBuilder.build());
+
+      //ADD ENTRIES
+      newCat4.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
+      newCats.add(newCat4.build());
+
+      /// --------(NEW CATEGORY-5)--------
+      final newCat5 = categoriesManager.newCategoryBuilder();
+
+      //ADD TITLE
+      newCat5.title('Test Cat - 5');
+
+      //ADD COLOR AND ICON
+      displayBuilder.color(Colors.orange.value);
+      displayBuilder.icon('acter-icon', ActerIcon.backpack.name);
+      newCat5.display(displayBuilder.build());
+
+      //ADD ENTRIES
+      newCat5.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
+      newCats.add(newCat5.build());
       maybeSpace.setCategories('spaces', newCats);
     }
   }
