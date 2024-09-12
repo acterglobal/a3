@@ -177,32 +177,70 @@ class _DraggableCategoriesListState
           dragAndDropList![oldListIndex].children.removeAt(oldItemIndex);
       dragAndDropList![newListIndex].children.insert(newItemIndex, movedItem);
 
-      //GET OLDER CATEGORY ITEM
-      final oldCategoryItem = categoryList[oldListIndex];
+      ///MOVE ENTRY ITEM ON SAME CATEGORY
+      if (oldListIndex == newListIndex) {
+        //GET OLDER CATEGORY ITEM
+        final oldCategoryItem = categoryList[oldListIndex];
 
-      //GET OLDER CATEGORY ITEM DATA IN LOCAL
-      final spaceEntries =
-          oldCategoryItem.entries().map((s) => s.toDartString()).toList();
+        //GET OLDER CATEGORY ITEM DATA IN LOCAL
+        final spaceEntries =
+            oldCategoryItem.entries().map((s) => s.toDartString()).toList();
 
-      //REMOVE SPACE ENTRY FROM SPECIFIED POSITION
-      var movedCategoryEntry = spaceEntries.removeAt(oldItemIndex);
+        //REMOVE SPACE ENTRY FROM SPECIFIED POSITION
+        var movedEntryItem = spaceEntries.removeAt(oldItemIndex);
 
-      //ADD SPACE ENTRY FROM SPECIFIED POSITION
-      spaceEntries.insert(newItemIndex, movedCategoryEntry);
+        //ADD SPACE ENTRY FROM SPECIFIED POSITION
+        spaceEntries.insert(newItemIndex, movedEntryItem);
 
-      //UPDATE CATEGORY ITEM
-      final categoryItemBuilder = oldCategoryItem.updateBuilder();
-      categoryItemBuilder.clearEntries();
-      for (int j = 0; j < spaceEntries.length; j++) {
-        categoryItemBuilder.addEntry(spaceEntries[j]);
+        //UPDATE CATEGORY ITEM
+        final categoryItemBuilder = oldCategoryItem.updateBuilder();
+        categoryItemBuilder.clearEntries();
+        for (int j = 0; j < spaceEntries.length; j++) {
+          categoryItemBuilder.addEntry(spaceEntries[j]);
+        }
+
+        //REMOVE OLDER CATEGORY ITEM FROM SPECIFIED POSITION
+        categoryList.removeAt(oldListIndex);
+
+        //SAVE NEW CATEGORY ITEM AT SPECIFIED POSITION
+        final newCategoryItem = categoryItemBuilder.build();
+        categoryList.insert(newListIndex, newCategoryItem);
+      } else {
+        ///MOVE ENTRY ITEM NOT ON SAME CATEGORY
+        final oldCategoryItem = categoryList[oldListIndex];
+
+        //GET OLDER CATEGORY ITEM DATA IN LOCAL
+        final oldCategoryItemSpaceEntries =
+            oldCategoryItem.entries().map((s) => s.toDartString()).toList();
+
+        //REMOVE SPACE ENTRY FROM SPECIFIED POSITION
+        var movedEntryItem = oldCategoryItemSpaceEntries.removeAt(oldItemIndex);
+
+        //UPDATE OLD CATEGORY ITEM
+        final oldCategoryItemBuilder = oldCategoryItem.updateBuilder();
+        oldCategoryItemBuilder.clearEntries();
+        for (int j = 0; j < oldCategoryItemSpaceEntries.length; j++) {
+          oldCategoryItemBuilder.addEntry(oldCategoryItemSpaceEntries[j]);
+        }
+        categoryList[oldListIndex] = oldCategoryItemBuilder.build();
+
+        final newCategoryItem = categoryList[newListIndex];
+
+        //GET NEW CATEGORY ITEM DATA IN LOCAL
+        final newCategoryItemSpaceEntries =
+            newCategoryItem.entries().map((s) => s.toDartString()).toList();
+
+        //REMOVE SPACE ENTRY FROM SPECIFIED POSITION
+        newCategoryItemSpaceEntries.insert(newItemIndex, movedEntryItem);
+
+        //UPDATE OLD CATEGORY ITEM
+        final newCategoryItemBuilder = newCategoryItem.updateBuilder();
+        newCategoryItemBuilder.clearEntries();
+        for (int j = 0; j < newCategoryItemSpaceEntries.length; j++) {
+          newCategoryItemBuilder.addEntry(newCategoryItemSpaceEntries[j]);
+        }
+        categoryList[newListIndex] = newCategoryItemBuilder.build();
       }
-
-      //REMOVE OLDER CATEGORY ITEM FROM SPECIFIED POSITION
-      categoryList.removeAt(oldListIndex);
-
-      //SAVE NEW CATEGORY ITEM AT SPECIFIED POSITION
-      final newCategoryItem = categoryItemBuilder.build();
-      categoryList.insert(newListIndex, newCategoryItem);
     });
   }
 
