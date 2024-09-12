@@ -93,7 +93,6 @@ class _EmojiContainerState extends State<EmojiContainer>
 
   //Emoji reaction info bottom sheet.
   void showEmojiReactionsSheet(Map<String, dynamic> reactions, String roomId) {
-    List<String> keys = reactions.keys.toList();
     Map<String, List<String>> reactionsByUsers = {};
     Map<String, List<String>> usersByReaction = {};
     reactions.forEach((key, value) {
@@ -163,6 +162,24 @@ class _EmojiContainerState extends State<EmojiContainer>
       ),
       isDismissible: true,
       builder: (BuildContext context) {
+        final tabs = [
+          _ReactionListing(
+            roomId: roomId,
+            users: allUsers,
+            usersMap: reactionsByUsers,
+          ),
+        ];
+        for (final key in reactions.keys.toList()) {
+          final users = usersByReaction[key];
+          if (users == null) throw 'Users for reaction not found';
+          tabs.add(
+            _ReactionListing(
+              roomId: roomId,
+              users: users,
+              usersMap: reactionsByUsers,
+            ),
+          );
+        }
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -190,19 +207,7 @@ class _EmojiContainerState extends State<EmojiContainer>
                 child: TabBarView(
                   viewportFraction: 1.0,
                   controller: tabBarController,
-                  children: [
-                    _ReactionListing(
-                      roomId: roomId,
-                      users: allUsers,
-                      usersMap: reactionsByUsers,
-                    ),
-                    for (var key in keys)
-                      _ReactionListing(
-                        roomId: roomId,
-                        users: usersByReaction[key]!,
-                        usersMap: reactionsByUsers,
-                      ),
-                  ],
+                  children: tabs,
                 ),
               ),
             ),
