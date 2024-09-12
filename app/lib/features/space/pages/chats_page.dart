@@ -21,6 +21,7 @@ class SpaceChatsPage extends ConsumerWidget {
 
   Widget _renderLoading(BuildContext context) {
     return ListView.builder(
+      shrinkWrap: true,
       itemCount: 3,
       itemBuilder: (context, idx) => const LoadingConvoCard(roomId: 'fake'),
     );
