@@ -1,11 +1,10 @@
-- [Fix] we were not correctly referencing News Calendar Events, we now have support to render external links, too.
+- A new 'Create new update' action button on the bottom of each space makes it easier to activate this feature and create an update for that space
 
-- Rename process from app to acter in task manager on windows
-
-- [New] : Space Details : Now you can see list of parent spaces when you click on the parent spaces badge
-- Fixes of bugs and the UX of the emoji picker: you can now close it easily with the x on the top right, even from the search.
-
-- Chat: fix bug where text disappears when try to tap on field in edit/reply state.
-
-- Now Chat supports storing unsent composed message in improved way .i.e. can persist between app restarts and reply/edit views.
-
+- [Fix] restores the proper pages and routing upon start of the app on supported devices
+- [New] : All new ActerIcon support for Pins and TaskList 
+- [New] : You can can select custom icon and color based on the Pin and TaskList details.
+- You can now take any Event you see and use it as a template to create any other similar event. Clicking Actions -> `Copy as New` will open the create event dialog with all fields filled in with the content from the current event for you to edit and submit.
+- Acter is now available in Swahili (sw). If your system is in Swahili and you've never changed the language, Acter will automatically switch to Swahili for you.
+- You will find your bookmarked spaces shown first in all spaces lists now, from the quick jumper, over the spaces listing to any place you have to select a spaces - making it easier and more convenient to use.
+- We are now suggesting you users you already know when you start the process to invite individual users or start a new chat conversation.
+- [Fix] Showing the DisplayName and Avatar for users not yet in the room in to-invite screen
