@@ -145,7 +145,13 @@ class SpaceChatsPage extends ConsumerWidget {
         child: Column(
           children: [
             if (chatList.isNotEmpty)
-              chatsListUI(ref, chatList, chatList.length),
+              chatsListUI(
+                ref,
+                spaceIdOrAlias,
+                chatList,
+                chatList.length,
+                showOptions: true,
+              ),
             if (isLoading) _renderLoading(context),
             if (remoteChats.isNotEmpty)
               renderFurther(context, ref, spaceIdOrAlias, null),

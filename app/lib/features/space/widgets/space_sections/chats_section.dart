@@ -69,7 +69,13 @@ class ChatsSection extends ConsumerWidget {
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        chatsListUI(ref, chats, config.listingLimit),
+        chatsListUI(
+          ref,
+          spaceId,
+          chats,
+          config.listingLimit,
+          showOptions: false,
+        ),
         if (config.renderRemote)
           renderFurther(
             context,
