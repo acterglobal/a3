@@ -131,14 +131,14 @@ class SubSpaces extends ConsumerWidget {
   }
 
   Widget _buildSubSpacesUI(BuildContext context, WidgetRef ref) {
-    final spaceCategories = ref.watch(
-      categoriesProvider(
+    final categoryManager = ref.watch(
+      categoryManagerProvider(
         (spaceId: spaceId, categoriesFor: CategoriesFor.spaces),
       ),
     );
-    return spaceCategories.when(
-      data: (categories) {
-        final List<Category> categoryList = categories.categories().toList();
+    return categoryManager.when(
+      data: (categoryManagerData) {
+        final List<Category> categoryList = categoryManagerData.categories().toList();
         return ListView.builder(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,

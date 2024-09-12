@@ -1,4 +1,5 @@
 import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/features/categories/actions/save_categories.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -26,6 +27,7 @@ class DraggableCategoryList extends ConsumerStatefulWidget {
 class _DraggableCategoriesListState
     extends ConsumerState<DraggableCategoryList> {
   List<DragAndDropList>? dragAndDropList;
+  late List<Category> categoryList;
 
   @override
   void initState() {
@@ -34,16 +36,16 @@ class _DraggableCategoriesListState
   }
 
   void setDragAndDropList() async {
-    final spaceCategories = await ref.read(
-      categoriesProvider(
+    final categoriesManager = await ref.read(
+      categoryManagerProvider(
         (spaceId: widget.spaceId, categoriesFor: widget.categoriesFor),
       ).future,
     );
-    final List<Category> categoryList = spaceCategories.categories().toList();
-    setDragAndDropListData(categoryList);
+    categoryList = categoriesManager.categories().toList();
+    setDragAndDropListData();
   }
 
-  void setDragAndDropListData(List<Category> categoryList) {
+  void setDragAndDropListData() {
     dragAndDropList = List.generate(categoryList.length, (index) {
       final spaceEntries =
           categoryList[index].entries().map((s) => s.toDartString()).toList();
@@ -136,7 +138,13 @@ class _DraggableCategoriesListState
             Expanded(
               child: OutlinedButton(
                 style: buttonStyle,
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => saveCategories(
+                  context,
+                  ref,
+                  widget.spaceId,
+                  widget.categoriesFor,
+                  categoryList,
+                ),
                 child: Text(L10n.of(context).save),
               ),
             ),
@@ -167,6 +175,12 @@ class _DraggableCategoriesListState
       var movedItem =
           dragAndDropList![oldListIndex].children.removeAt(oldItemIndex);
       dragAndDropList![newListIndex].children.insert(newItemIndex, movedItem);
+
+      var movedCategoryEntry =
+          categoryList[oldListIndex].entries().remove(oldItemIndex);
+      categoryList[newListIndex]
+          .entries()
+          .insert(newItemIndex, movedCategoryEntry);
     });
   }
 
@@ -178,6 +192,9 @@ class _DraggableCategoriesListState
     setState(() {
       var movedList = dragAndDropList!.removeAt(oldListIndex);
       dragAndDropList!.insert(newListIndex, movedList);
+
+      var movedCategoryList = categoryList.removeAt(oldListIndex);
+      categoryList.insert(newListIndex, movedCategoryList);
     });
   }
 }

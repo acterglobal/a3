@@ -6,8 +6,9 @@ enum CategoriesFor { spaces, chats, pins }
 
 typedef CategoriesInfo = ({String spaceId, CategoriesFor categoriesFor});
 
-final categoriesProvider = FutureProvider.family<Categories, CategoriesInfo>(
-    (ref, categoryInfo) async {
+final categoryManagerProvider =
+    FutureProvider.family<Categories, CategoriesInfo>(
+        (ref, categoryInfo) async {
   final maybeSpace =
       await ref.watch(maybeSpaceProvider(categoryInfo.spaceId).future);
   if (maybeSpace != null) {

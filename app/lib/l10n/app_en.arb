@@ -2189,6 +2189,8 @@
   "selectIcon": "Select icon",
   "createCategory": "Create Category",
   "organized": "Organized",
+  "updatingCategories": "Updating categories",
+  "updatingCategoriesFailed": "Updating categories failed {error}",
   "action": "Action",
   "@action": {}
 }
