@@ -40,6 +40,7 @@ class SubSpaces extends ConsumerWidget {
     bool canLinkSpace =
         membership.valueOrNull?.canString('CanLinkSpaces') == true;
     return AppBar(
+      centerTitle: false,
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
