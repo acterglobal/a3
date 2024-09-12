@@ -43,25 +43,26 @@ class _EmojiContainerState extends State<EmojiContainer>
   Widget build(BuildContext context) {
     Map<String, dynamic>? reactions = widget.message.metadata?['reactions'];
     if (reactions == null) return const SizedBox();
-    List<String> keys = reactions.keys.toList();
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       color: Theme.of(context).colorScheme.surface,
       child: Wrap(
         direction: Axis.horizontal,
         runSpacing: 3,
-        children: List.generate(keys.length, (int index) {
-          String key = keys[index];
-          final records = reactions[key]! as List<ReactionRecord>;
+        children: reactions.entries.map((entry) {
+          final records = entry.value as List<ReactionRecord>;
           final sentByMe = records.any((x) => x.sentByMe());
-          final emoji = Text(key, style: EmojiConfig.emojiTextStyle);
+          final emoji = Text(
+            entry.key,
+            style: EmojiConfig.emojiTextStyle,
+          );
           final moreThanOne = records.length > 1;
           return InkWell(
             onLongPress: () {
               showEmojiReactionsSheet(reactions, widget.roomId);
             },
             onTap: () {
-              widget.onToggle(widget.message.id, key);
+              widget.onToggle(widget.message.id, entry.key);
             },
             child: Chip(
               padding: moreThanOne
@@ -86,43 +87,44 @@ class _EmojiContainerState extends State<EmojiContainer>
                   : emoji,
             ),
           );
-        }),
+        }).toList(),
       ),
     );
   }
 
   //Emoji reaction info bottom sheet.
   void showEmojiReactionsSheet(Map<String, dynamic> reactions, String roomId) {
-    Map<String, List<String>> reactionsByUsers = {};
+    Map<String, List<String>> reactionsByUser = {};
     Map<String, List<String>> usersByReaction = {};
     reactions.forEach((key, value) {
-      usersByReaction.putIfAbsent(
-        key,
-        () => List<String>.empty(growable: true),
-      );
-      for (final reaction in value) {
+      final records = value as List<ReactionRecord>;
+      for (final reaction in records) {
         final userId = reaction.senderId().toString();
-        reactionsByUsers.putIfAbsent(
-          userId,
-          () => List<String>.empty(growable: true),
+        usersByReaction.update(
+          key,
+          (v) => v.contains(userId) ? v : [...v, userId],
+          ifAbsent: () => [userId],
         );
-        usersByReaction[key]!.add(userId);
-        reactionsByUsers[userId]!.add(key);
+        reactionsByUser.update(
+          userId,
+          (v) => v.contains(key) ? v : [...v, key],
+          ifAbsent: () => [key],
+        );
       }
     });
     // sort the users per item on the number of emojis sent - highest first
     usersByReaction.forEach((key, users) {
       users.sort(
-        (userIdA, userIdB) => reactionsByUsers[userIdB]!
+        (user1, user2) => reactionsByUser[user2]!
             .length
-            .compareTo(reactionsByUsers[userIdA]!.length),
+            .compareTo(reactionsByUser[user1]!.length),
       );
     });
-    final allUsers = reactionsByUsers.keys.toList();
+    final allUsers = reactionsByUser.keys.toList();
     allUsers.sort(
-      (userIdA, userIdB) => reactionsByUsers[userIdB]!
+      (user1, user2) => reactionsByUser[user2]!
           .length
-          .compareTo(reactionsByUsers[userIdA]!.length),
+          .compareTo(reactionsByUser[user1]!.length),
     );
 
     num total = 0;
@@ -166,7 +168,7 @@ class _EmojiContainerState extends State<EmojiContainer>
           _ReactionListing(
             roomId: roomId,
             users: allUsers,
-            usersMap: reactionsByUsers,
+            usersMap: reactionsByUser,
           ),
         ];
         for (final key in reactions.keys.toList()) {
@@ -176,7 +178,7 @@ class _EmojiContainerState extends State<EmojiContainer>
             _ReactionListing(
               roomId: roomId,
               users: users,
-              usersMap: reactionsByUsers,
+              usersMap: reactionsByUser,
             ),
           );
         }
