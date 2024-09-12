@@ -49,15 +49,6 @@ final spaceProvider =
   throw 'Space not found';
 });
 
-final spaceCategoriesProvider =
-    FutureProvider.family<Categories, String>((ref, spaceId) async {
-  final maybeSpace = await ref.watch(maybeSpaceProvider(spaceId).future);
-  if (maybeSpace != null) {
-    return maybeSpace.categories('spaces');
-  }
-  throw 'Space not found';
-});
-
 final spaceIsBookmarkedProvider =
     FutureProvider.family<bool, String>((ref, spaceId) async {
   final space = await ref.watch(spaceProvider(spaceId).future);
