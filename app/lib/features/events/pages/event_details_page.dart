@@ -199,7 +199,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
     //Delete Event Action
     if (canRedact.valueOrNull == true) {
-      final roomId = event.roomIdStr();
       actions.addAll([
         PopupMenuItem(
           key: EventsKeys.eventDeleteBtn,
@@ -211,7 +210,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             onSuccess: () {
               Navigator.pop(context);
             },
-            roomId: roomId,
+            roomId: spaceId,
             isSpace: true,
           ),
           child: Row(
@@ -236,7 +235,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           title: L10n.of(context).reportThisEvent,
           description: L10n.of(context).reportThisContent,
           eventId: widget.calendarId,
-          roomId: event.roomIdStr(),
+          roomId: spaceId,
           senderId: event.sender().toString(),
           isSpace: true,
         ),
@@ -284,9 +283,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventBasicDetails(CalendarEvent calendarEvent) {
-    final membership = ref
-        .watch(roomMembershipProvider(calendarEvent.roomIdStr()))
-        .valueOrNull;
+    final spaceId = calendarEvent.roomIdStr();
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final canPostEvent = membership?.canString('CanPostEvent') == true;
 
     return Row(
@@ -314,7 +312,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                   ),
                 ),
               ),
-              SpaceChip(spaceId: calendarEvent.roomIdStr()),
+              SpaceChip(spaceId: spaceId),
               const SizedBox(height: 5),
               Row(
                 children: [

@@ -67,10 +67,8 @@ class InvitationCard extends ConsumerWidget {
   }
 
   ListTile renderSpaceTile(BuildContext context, WidgetRef ref) {
-    final roomAvatarInfo =
-        ref.watch(roomAvatarInfoProvider(invitation.roomIdStr()));
-
     final roomId = invitation.roomIdStr();
+    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions(
@@ -92,9 +90,8 @@ class InvitationCard extends ConsumerWidget {
   }
 
   ListTile renderGroupChatTile(BuildContext context, WidgetRef ref) {
-    final roomAvatarInfo =
-        ref.watch(roomAvatarInfoProvider(invitation.roomIdStr()));
-
+    final roomId = invitation.roomIdStr();
+    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions(
@@ -117,9 +114,7 @@ class InvitationCard extends ConsumerWidget {
   ListTile renderDmChatTile(BuildContext context, WidgetRef ref) {
     final profile =
         ref.watch(invitationUserProfileProvider(invitation)).valueOrNull;
-
     final senderId = invitation.senderIdStr();
-
     final roomId = invitation.roomIdStr();
     return ListTile(
       leading: ActerAvatar(

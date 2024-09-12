@@ -134,8 +134,8 @@ class SpaceHierarchyCard extends ConsumerWidget {
             children: [
               RoomHierarchyJoinButton(
                 joinRule: roomInfo.joinRuleStr().toLowerCase(),
-                roomId: roomInfo.roomIdStr(),
-                roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
+                roomId: roomId,
+                roomName: roomInfo.name() ?? roomId,
                 viaServerName: roomInfo.viaServerName(),
                 forward: (spaceId) {
                   goToSpace(context, spaceId);

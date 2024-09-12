@@ -151,8 +151,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     }
     final roomId = pin.roomIdStr();
     //Get my membership details
-    final membership =
-        ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+    final membership = ref.watch(roomMembershipProvider(roomId)).valueOrNull;
     final canRedactData = ref.watch(canRedactProvider(pin));
     bool canPost = membership?.canString('CanPostPin') == true;
     bool canRedact = canRedactData.valueOrNull == true;
