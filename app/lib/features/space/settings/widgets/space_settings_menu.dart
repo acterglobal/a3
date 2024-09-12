@@ -38,6 +38,15 @@ class SpaceSettingsMenu extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: isFullPage,
+        leading: !isFullPage
+            ? InkWell(
+                child: const Icon(Icons.close),
+                onTap: () {
+                  context.pop();
+                  context.pop();
+                },
+              )
+            : null,
         title: FittedBox(
           fit: BoxFit.fitWidth,
           child: Row(
@@ -89,7 +98,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
                         : const Icon(Atlas.bell_thin, size: 18),
                     onPressed: (context) {
                       replaceRoute
-                          ? context.pushReplacementNamed(
+                          ? context.replaceNamed(
                               Routes.spaceSettingsNotifications.name,
                               pathParameters: {'spaceId': spaceId},
                             )
