@@ -169,6 +169,32 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.room.topic':
       case 'm.space.child':
       case 'm.space.parent':
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent == null) {
+          return const SizedBox();
+        }
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                '${simplifyUserId(sender)}: ',
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium!
+                    .copyWith(fontWeight: FontWeight.w700),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Flexible(
+              child: Text(
+                msgContent.body(),
+                style: Theme.of(context).textTheme.labelMedium,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
       case 'm.room.message':
         switch (eventItem.msgType()) {
           case 'm.audio':
@@ -252,6 +278,10 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.sticker':
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent == null) {
+          return const SizedBox();
+        }
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -267,7 +297,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                eventItem.msgContent()!.body(),
+                msgContent.body(),
                 style: Theme.of(context).textTheme.labelMedium,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -360,6 +390,10 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.poll.start':
+        MsgContent? msgContent = eventItem.msgContent();
+        if (msgContent == null) {
+          return const SizedBox();
+        }
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -375,7 +409,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                eventItem.msgContent()!.body(),
+                msgContent.body(),
                 style: Theme.of(context).textTheme.labelMedium,
                 overflow: TextOverflow.ellipsis,
               ),
