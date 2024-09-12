@@ -1,8 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
-import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
+import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -82,12 +84,34 @@ Widget renderMoreSubspaces(
         ),
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          final space = spaces[index];
-          return SpaceHierarchyCard(
-            key: Key('subspace-list-item-${space.roomIdStr()}'),
-            roomInfo: space,
-            parentId: spaceIdOrAlias,
+          final roomInfo = spaces[index];
+          final parentId = spaceIdOrAlias;
+          final roomId = roomInfo.roomIdStr();
+          return RoomHierarchyCard(
+            key: Key('subspace-list-item-$roomId'),
+            roomInfo: roomInfo,
+            parentId: parentId,
             showIconIfSuggested: true,
+            trailing: Wrap(
+              children: [
+                RoomHierarchyJoinButton(
+                  joinRule: roomInfo.joinRuleStr().toLowerCase(),
+                  roomId: roomId,
+                  roomName: roomInfo.name() ?? roomId,
+                  viaServerName: roomInfo.viaServerName(),
+                  forward: (spaceId) {
+                    goToSpace(context, spaceId);
+                    ref.invalidate(spaceRelationsProvider(parentId));
+                    ref.invalidate(spaceRemoteRelationsProvider(parentId));
+                  },
+                ),
+                RoomHierarchyOptionsMenu(
+                  isSuggested: roomInfo.suggested(),
+                  childId: roomId,
+                  parentId: parentId,
+                ),
+              ],
+            ),
           );
         },
       );

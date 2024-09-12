@@ -1,15 +1,12 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/chat/convo_with_avatar_card.dart';
-import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
-import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
-import 'package:acter/router/utils.dart';
-import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter/common/widgets/room/room_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ConvoHierarchyCard extends ConsumerWidget {
+class RoomHierarchyCard extends ConsumerWidget {
   /// The room info to display
   final SpaceHierarchyRoomInfo roomInfo;
 
@@ -80,10 +77,10 @@ class ConvoHierarchyCard extends ConsumerWidget {
   /// Custom trailing widget.
   final Widget? trailing;
 
-  /// Whether to show the suggested icon if this is a suggested chat
+  /// Whether to show the suggested icon if this is a suggested space
   final bool showIconIfSuggested;
 
-  const ConvoHierarchyCard({
+  const RoomHierarchyCard({
     super.key,
     required this.roomInfo,
     required this.parentId,
@@ -106,46 +103,29 @@ class ConvoHierarchyCard extends ConsumerWidget {
     final roomId = roomInfo.roomIdStr();
     final avatarInfo = ref.watch(roomHierarchyAvatarInfoProvider(roomInfo));
     final topic = roomInfo.topic();
-    final subtitle = topic?.isNotEmpty == true ? Text(topic!) : null;
     bool showSuggested = showIconIfSuggested && roomInfo.suggested();
+    final Widget? subtitle = topic?.isNotEmpty == true
+        ? ExpandableText(
+            topic!,
+            maxLines: 2,
+            expandText: L10n.of(context).showMore,
+            collapseText: L10n.of(context).showLess,
+            linkColor: Theme.of(context).colorScheme.primary,
+          )
+        : null;
 
-    return ConvoWithAvatarInfoCard(
-      avatar: ActerAvatar(
-        options: AvatarOptions(
-          avatarInfo,
-          size: avatarSize,
-          badgesSize: avatarSize / 2,
-        ),
-      ),
+    return RoomWithAvatarInfoCard(
       roomId: roomId,
       avatarInfo: avatarInfo,
-      showSuggestedMark: showSuggested,
       subtitle: subtitle,
-      trailing: trailing ??
-          Wrap(
-            children: [
-              RoomHierarchyJoinButton(
-                joinRule: roomInfo.joinRuleStr().toLowerCase(),
-                roomId: roomId,
-                roomName: roomInfo.name() ?? roomId,
-                viaServerName: roomInfo.viaServerName(),
-                forward: (roomId) {
-                  goToChat(context, roomId);
-                  // make sure the UI refreshes when the user comes back here
-                  ref.invalidate(spaceRelationsProvider(parentId));
-                  ref.invalidate(spaceRemoteRelationsProvider(parentId));
-                },
-              ),
-              RoomHierarchyOptionsMenu(
-                isSuggested: roomInfo.suggested(),
-                childId: roomId,
-                parentId: parentId,
-              ),
-            ],
-          ),
-      onTap: onTap,
+      onTap: onTap ?? () {},
       onFocusChange: onFocusChange,
       onLongPress: onLongPress,
+      avatarSize: avatarSize,
+      contentPadding: contentPadding,
+      shape: shape,
+      showSuggestedMark: showSuggested,
+      trailing: trailing,
     );
   }
 }

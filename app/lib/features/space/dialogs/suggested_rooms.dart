@@ -2,7 +2,7 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
-import 'package:acter/common/widgets/spaces/space_hierarchy_card.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/features/space/actions/has_seen_suggested.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
@@ -187,7 +187,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
         itemBuilder: (context, idx) {
           final item = spacesFound[idx];
           final roomId = item.roomIdStr();
-          return SpaceHierarchyCard(
+          return RoomHierarchyCard(
             onTap: () => _toggle(roomId),
             roomInfo: item,
             parentId: widget.spaceId,
@@ -216,7 +216,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
         itemBuilder: (context, idx) {
           final item = chatsFound[idx];
           final roomId = item.roomIdStr();
-          return ConvoHierarchyCard(
+          return RoomHierarchyCard(
             onTap: () => _toggle(roomId),
             parentId: widget.spaceId,
             roomInfo: item,
