@@ -114,7 +114,8 @@ class _DraggableCategoriesListState
 
   Widget _buildActionButtons() {
     final buttonStyle = OutlinedButton.styleFrom(
-        backgroundColor: Theme.of(context).primaryColor);
+      backgroundColor: Theme.of(context).primaryColor,
+    );
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
@@ -176,11 +177,18 @@ class _DraggableCategoriesListState
           dragAndDropList![oldListIndex].children.removeAt(oldItemIndex);
       dragAndDropList![newListIndex].children.insert(newItemIndex, movedItem);
 
-      var movedCategoryEntry =
-          categoryList[oldListIndex].entries().remove(oldItemIndex);
-      categoryList[newListIndex]
-          .entries()
-          .insert(newItemIndex, movedCategoryEntry);
+      final oldCategoryItem = categoryList[oldListIndex];
+      final spaceEntries =
+      oldCategoryItem.entries().map((s) => s.toDartString()).toList();
+      var movedCategoryEntry = spaceEntries.removeAt(oldItemIndex);
+      spaceEntries.insert(newItemIndex, movedCategoryEntry);
+      final categoryItemBuilder = oldCategoryItem.updateBuilder();
+      categoryItemBuilder.clearEntries();
+      for (int j = 0; j < spaceEntries.length; j++) {
+        categoryItemBuilder.addEntry(spaceEntries[j]);
+      }
+      final newCategoryItem = categoryItemBuilder.build();
+      categoryList[oldListIndex] = newCategoryItem;
     });
   }
 
