@@ -206,7 +206,8 @@ class _CreateUpdateTaskListConsumerState
     EasyLoading.show(status: L10n.of(context).postingTaskList);
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);
-      final space = await ref.read(spaceProvider(spaceId!).future);
+      if (spaceId == null) throw 'Space not selected';
+      final space = await ref.read(spaceProvider(spaceId).future);
       final taskListDraft = space.taskListDraft();
 
       // TaskList IconData

@@ -309,13 +309,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
+              final src = p0.source();
+              if (src == null) throw 'Image source not found';
               repliedTo = types.ImageMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
                 name: p0.body(),
                 size: p0.size() ?? 0,
-                uri: p0.source()!.url(),
+                uri: src.url(),
                 width: p0.width()?.toDouble() ?? 0,
                 metadata: repliedToContent,
               );
@@ -328,6 +330,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
+              final src = p0.source();
+              if (src == null) throw 'Audio source not found';
               repliedTo = types.AudioMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
@@ -335,7 +339,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 name: p0.body(),
                 duration: Duration(seconds: p0.duration() ?? 0),
                 size: p0.size() ?? 0,
-                uri: p0.source()!.url(),
+                uri: src.url(),
                 metadata: repliedToContent,
               );
             });
@@ -347,19 +351,23 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
+              final src = p0.source();
+              if (src == null) throw 'Video source not found';
               repliedTo = types.VideoMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
                 createdAt: orgEventItem.originServerTs(),
                 name: p0.body(),
                 size: p0.size() ?? 0,
-                uri: p0.source()!.url(),
+                uri: src.url(),
                 metadata: repliedToContent,
               );
             });
             break;
           case 'm.file':
             orgEventItem.msgContent().map((p0) {
+              final src = p0.source();
+              if (src == null) throw 'File source not found';
               // preview is not needed for past file msg, so we don't load file binary
               repliedTo = types.FileMessage(
                 author: types.User(id: orgEventItem.sender()),
@@ -367,7 +375,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 createdAt: orgEventItem.originServerTs(),
                 name: p0.body(),
                 size: p0.size() ?? 0,
-                uri: p0.source()!.url(),
+                uri: src.url(),
                 metadata: repliedToContent,
               );
             });
@@ -532,6 +540,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               metadata['base64'] = '';
               inReplyTo.map((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
+              final src = msgContent.source();
+              if (src == null) throw 'Audio source not found';
               return types.AudioMessage(
                 author: author,
                 createdAt: createdAt,
@@ -542,7 +552,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 mimeType: msgContent.mimetype(),
                 name: msgContent.body(),
                 size: msgContent.size() ?? 0,
-                uri: msgContent.source()!.url(),
+                uri: src.url(),
               );
             }
             break;
@@ -570,6 +580,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               metadata['base64'] = '';
               inReplyTo.map((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
+              final src = msgContent.source();
+              if (src == null) throw 'File source not found';
               return types.FileMessage(
                 author: author,
                 remoteId: eventId,
@@ -579,7 +591,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 mimeType: msgContent.mimetype(),
                 name: msgContent.body(),
                 size: msgContent.size() ?? 0,
-                uri: msgContent.source()!.url(),
+                uri: src.url(),
               );
             }
             break;
@@ -588,6 +600,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             if (msgContent != null) {
               inReplyTo.map((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
+              final src = msgContent.source();
+              if (src == null) throw 'Image source not found';
               return types.ImageMessage(
                 author: author,
                 remoteId: eventId,
@@ -597,7 +611,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 metadata: metadata,
                 name: msgContent.body(),
                 size: msgContent.size() ?? 0,
-                uri: msgContent.source()!.url(),
+                uri: src.url(),
                 width: msgContent.width()?.toDouble(),
               );
             }
@@ -658,6 +672,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               metadata['base64'] = '';
               inReplyTo.map((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
+              final src = msgContent.source();
+              if (src == null) throw 'Video source not found';
               return types.VideoMessage(
                 author: author,
                 remoteId: eventId,
@@ -666,7 +682,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 metadata: metadata,
                 name: msgContent.body(),
                 size: msgContent.size() ?? 0,
-                uri: msgContent.source()!.url(),
+                uri: src.url(),
               );
             }
             break;

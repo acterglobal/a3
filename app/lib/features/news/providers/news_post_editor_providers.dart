@@ -38,9 +38,11 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   }
 
   Future<void> selectEventToShare(BuildContext context) async {
+    final spaceId = state.newsPostSpaceId;
+    if (spaceId == null) throw 'Selected space id not found';
     final eventId = await selectEventDrawer(
       context: context,
-      spaceId: state.newsPostSpaceId!,
+      spaceId: spaceId,
     );
     final newsSpaceReference = NewsReferencesModel(
       type: NewsReferencesType.calendarEvent,

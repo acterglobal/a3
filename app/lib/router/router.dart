@@ -67,7 +67,8 @@ Future<String?> forwardRedirect(
     Client client;
     try {
       final deviceId = state.uri.queryParameters['deviceId'];
-      client = await acterSdk.getClientWithDeviceId(deviceId!, true);
+      if (deviceId == null) throw 'Device id for route query not found';
+      client = await acterSdk.getClientWithDeviceId(deviceId, true);
       // ignore: use_build_context_synchronously
       final ref = ProviderScope.containerOf(context);
       // ensure we have selected the right client
@@ -77,7 +78,8 @@ Future<String?> forwardRedirect(
       return null;
     }
     final roomId = state.uri.queryParameters['roomId'];
-    if (await client.hasConvo(roomId!)) {
+    if (roomId == null) throw 'Room id for route query not found';
+    if (await client.hasConvo(roomId)) {
       // this is a chat
       return state.namedLocation(
         Routes.chatroom.name,

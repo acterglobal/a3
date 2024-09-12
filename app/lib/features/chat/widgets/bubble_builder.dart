@@ -272,8 +272,10 @@ class _OriginalMessageBuilder extends ConsumerWidget {
     final repliedMessage = message.repliedMessage;
     if (repliedMessage == null) return const SizedBox();
     if (repliedMessage is types.TextMessage) {
+      final metadata = repliedMessage.metadata;
+      if (metadata == null) throw 'Replied metadata not available';
       // when original msg is text msg, messageLength should be initialized
-      int len = repliedMessage.metadata!['messageLength'];
+      final len = metadata['messageLength'] as int;
       return TextMessageBuilder(
         roomId: roomId,
         message: message.repliedMessage as types.TextMessage,

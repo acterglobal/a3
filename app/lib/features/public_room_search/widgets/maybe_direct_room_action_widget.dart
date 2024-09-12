@@ -180,8 +180,10 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     final aliased = aliasedHttpRegexp.firstMatch(searchVal) ??
         idAliasRegexp.firstMatch(searchVal);
     if (canMatchAlias && aliased != null) {
-      final alias = aliased.namedGroup('alias')!;
-      final server = aliased.namedGroup('server')!;
+      final alias = aliased.namedGroup('alias');
+      if (alias == null) throw 'Alias not found';
+      final server = aliased.namedGroup('server');
+      if (server == null) throw 'Server not found';
       return renderAliased(context, ref, alias, server);
     }
 
@@ -189,7 +191,8 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
         idMatrixRegexp.firstMatch(searchVal);
 
     if (canMatchId && id != null) {
-      final roomId = id.namedGroup('id')!;
+      final roomId = id.namedGroup('id');
+      if (roomId == null) throw 'Room id not found';
       final List<String> servers = [
         id.namedGroup('server_name') ?? '',
         id.namedGroup('server_name2') ?? '',
@@ -214,11 +217,13 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String? roomId,
     String? alias,
   }) async {
+    final roomIdOrAlias = alias ?? roomId;
+    if (roomIdOrAlias == null) throw 'Room id or alias not found';
     await joinRoom(
       context,
       ref,
-      L10n.of(context).tryingToJoin('${alias ?? roomId}'),
-      (alias ?? roomId)!,
+      L10n.of(context).tryingToJoin(roomIdOrAlias),
+      roomIdOrAlias,
       serverNames.first,
       (roomId) => context.pushNamed(
         Routes.forward.name,

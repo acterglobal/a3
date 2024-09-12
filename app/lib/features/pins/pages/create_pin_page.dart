@@ -315,7 +315,8 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
     EasyLoading.show(status: L10n.of(context).creatingPin);
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);
-      final space = await ref.read(spaceProvider(spaceId!).future);
+      if (spaceId == null) throw 'Space for pin not selected';
+      final space = await ref.read(spaceProvider(spaceId).future);
       final pinDraft = space.pinDraft();
       final pinState = ref.read(createPinStateProvider);
 

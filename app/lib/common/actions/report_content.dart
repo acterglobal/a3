@@ -101,10 +101,10 @@ class _ReportContentWidget extends ConsumerWidget {
                   style: Theme.of(context).textTheme.labelMedium,
                 ),
                 value: ref.watch(_ignoreUserProvider),
-                onChanged: (value) =>
-                    ref.read(_ignoreUserProvider.notifier).update(
-                          (state) => value!,
-                        ),
+                onChanged: (val) {
+                  if (val == null) throw 'Changed value not available';
+                  ref.read(_ignoreUserProvider.notifier).update((state) => val);
+                },
               );
             },
           ),

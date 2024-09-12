@@ -60,6 +60,8 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 final slidePost = newsSlideList[index];
+                final mediaFile = slidePost.mediaFile;
+                if (mediaFile == null) throw 'Media file for slide not found';
                 return Stack(
                   fit: StackFit.passthrough,
                   children: [
@@ -86,10 +88,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                                 )
                               : null,
                         ),
-                        child: getIconAsPerSlideType(
-                          slidePost.type,
-                          slidePost.mediaFile,
-                        ),
+                        child: getIconAsPerSlideType(slidePost.type, mediaFile),
                       ),
                     ),
                     Positioned(
@@ -200,13 +199,13 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     );
   }
 
-  Widget getIconAsPerSlideType(NewsSlideType slidePostType, XFile? mediaFile) {
+  Widget getIconAsPerSlideType(NewsSlideType slidePostType, XFile mediaFile) {
     return switch (slidePostType) {
       NewsSlideType.text => const Icon(Atlas.size_text),
       NewsSlideType.image => ClipRRect(
           borderRadius: BorderRadius.circular(5.0),
           child: Image(
-            image: XFileImage(mediaFile!),
+            image: XFileImage(mediaFile),
             fit: BoxFit.cover,
           ),
         ),
@@ -214,7 +213,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           fit: StackFit.expand,
           children: [
             FutureBuilder(
-              future: NewsUtils.getThumbnailData(mediaFile!),
+              future: NewsUtils.getThumbnailData(mediaFile),
               builder: (context, snapshot) =>
                   snapshot.data.map(
                     (p0) => ClipRRect(

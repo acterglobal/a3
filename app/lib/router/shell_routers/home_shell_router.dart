@@ -216,10 +216,12 @@ final homeShellRoutes = [
     path: Routes.spaceRelatedSpaces.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: SubSpacesPage(
-          spaceIdOrAlias: state.pathParameters['spaceId']!,
+          spaceIdOrAlias: spaceId,
         ),
       );
     },
@@ -229,10 +231,12 @@ final homeShellRoutes = [
     path: Routes.spaceMembers.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: SpaceMembersPage(
-          spaceIdOrAlias: state.pathParameters['spaceId']!,
+          spaceIdOrAlias: spaceId,
         ),
       );
     },
@@ -255,10 +259,12 @@ final homeShellRoutes = [
     path: Routes.spaceEvents.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: EventListPage(
-          spaceId: state.pathParameters['spaceId']!,
+          spaceId: spaceId,
         ),
       );
     },
@@ -268,10 +274,12 @@ final homeShellRoutes = [
     path: Routes.spaceChats.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: SpaceChatsPage(
-          spaceIdOrAlias: state.pathParameters['spaceId']!,
+          spaceIdOrAlias: spaceId,
         ),
       );
     },
@@ -281,10 +289,12 @@ final homeShellRoutes = [
     path: Routes.spaceTasks.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: TasksListPage(
-          spaceId: state.pathParameters['spaceId']!,
+          spaceId: spaceId,
         ),
       );
     },
@@ -307,10 +317,12 @@ final homeShellRoutes = [
     path: Routes.space.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: SpaceDetailsPage(
-          spaceId: state.pathParameters['spaceId']!,
+          spaceId: spaceId,
         ),
       );
     },
@@ -332,10 +344,12 @@ final homeShellRoutes = [
     path: Routes.spaceSettings.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: SpaceSettingsMenuIndexPage(
-          spaceId: state.pathParameters['spaceId']!,
+          spaceId: spaceId,
         ),
       );
     },
@@ -345,10 +359,12 @@ final homeShellRoutes = [
     path: Routes.spaceSettingsApps.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: SpaceAppsSettingsPage(
-          spaceId: state.pathParameters['spaceId']!,
+          spaceId: spaceId,
         ),
       );
     },
@@ -358,15 +374,16 @@ final homeShellRoutes = [
     path: Routes.spaceSettingsVisibility.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['spaceId']!;
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: WithSidebar(
           sidebar: SpaceSettingsMenu(
-            spaceId: roomId,
+            spaceId: spaceId,
           ),
           child: VisibilityAccessibilityPage(
-            roomId: roomId,
+            roomId: spaceId,
           ),
         ),
       );
@@ -377,10 +394,12 @@ final homeShellRoutes = [
     path: Routes.spaceSettingsNotifications.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: SpaceNotificationConfigurationPage(
-          spaceId: state.pathParameters['spaceId']!,
+          spaceId: spaceId,
         ),
       );
     },
@@ -401,11 +420,15 @@ final homeShellRoutes = [
     path: Routes.taskItemDetails.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final taskListId = state.pathParameters['taskListId'];
+      if (taskListId == null) throw 'Tasklist id for route path not found';
+      final taskId = state.pathParameters['taskId'];
+      if (taskId == null) throw 'Task id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: TaskItemDetailPage(
-          taskListId: state.pathParameters['taskListId']!,
-          taskId: state.pathParameters['taskId']!,
+          taskListId: taskListId,
+          taskId: taskId,
         ),
       );
     },
@@ -415,10 +438,12 @@ final homeShellRoutes = [
     path: Routes.taskListDetails.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final taskListId = state.pathParameters['taskListId'];
+      if (taskListId == null) throw 'Tasklist id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: TaskListDetailPage(
-          taskListId: state.pathParameters['taskListId']!,
+          taskListId: taskListId,
         ),
       );
     },
@@ -439,9 +464,11 @@ final homeShellRoutes = [
     path: Routes.pin.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final pinId = state.pathParameters['pinId'];
+      if (pinId == null) throw 'Pin id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
-        child: PinDetailsPage(pinId: state.pathParameters['pinId']!),
+        child: PinDetailsPage(pinId: pinId),
       );
     },
   ),
@@ -473,10 +500,12 @@ final homeShellRoutes = [
     path: Routes.calendarEvent.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final calendarId = state.pathParameters['calendarId'];
+      if (calendarId == null) throw 'Calendar id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: EventDetailPage(
-          calendarId: state.pathParameters['calendarId']!,
+          calendarId: calendarId,
         ),
       );
     },
@@ -499,10 +528,12 @@ final homeShellRoutes = [
     path: Routes.spaceInvite.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: InvitePage(
-          roomId: state.pathParameters['spaceId']!,
+          roomId: spaceId,
         ),
       );
     },
@@ -512,10 +543,12 @@ final homeShellRoutes = [
     path: Routes.inviteIndividual.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final roomId = state.uri.queryParameters['roomId'];
+      if (roomId == null) throw 'Room id for route query not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: InviteIndividualUsers(
-          roomId: state.uri.queryParameters['roomId']!,
+          roomId: roomId,
         ),
       );
     },
@@ -525,10 +558,12 @@ final homeShellRoutes = [
     path: Routes.inviteSpaceMembers.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final roomId = state.uri.queryParameters['roomId'];
+      if (roomId == null) throw 'Room id for route query not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: InviteSpaceMembers(
-          roomId: state.uri.queryParameters['roomId']!,
+          roomId: roomId,
         ),
       );
     },
@@ -538,11 +573,15 @@ final homeShellRoutes = [
     path: Routes.shareInviteCode.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final inviteCode = state.uri.queryParameters['inviteCode'];
+      if (inviteCode == null) throw 'Invite code for route query not found';
+      final roomId = state.uri.queryParameters['roomId'];
+      if (roomId == null) throw 'Room id for route query not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: ShareInviteCode(
-          inviteCode: state.uri.queryParameters['inviteCode']!,
-          roomId: state.uri.queryParameters['roomId']!,
+          inviteCode: inviteCode,
+          roomId: roomId,
         ),
       );
     },
@@ -552,10 +591,12 @@ final homeShellRoutes = [
     path: Routes.invitePending.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final roomId = state.uri.queryParameters['roomId'];
+      if (roomId == null) throw 'Room id for route query not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: InvitePending(
-          roomId: state.uri.queryParameters['roomId']!,
+          roomId: roomId,
         ),
       );
     },

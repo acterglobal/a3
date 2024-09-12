@@ -47,15 +47,14 @@ class __AddEmailState extends State<_AddEmail> {
       title: Text(L10n.of(context).emailAddressToAdd),
       content: DropdownMenu<String>(
         initialSelection: widget.emails.first,
-        onSelected: (String? value) {
+        onSelected: (String? val) {
+          if (val == null) throw 'Selected value not found';
           // This is called when the user selects an item.
-          setState(() {
-            emailAddr = value!;
-          });
+          setState(() => emailAddr = val);
         },
         dropdownMenuEntries:
-            widget.emails.map<DropdownMenuEntry<String>>((String value) {
-          return DropdownMenuEntry<String>(value: value, label: value);
+            widget.emails.map<DropdownMenuEntry<String>>((String val) {
+          return DropdownMenuEntry<String>(value: val, label: val);
         }).toList(),
       ),
       actionsAlignment: MainAxisAlignment.spaceEvenly,

@@ -145,13 +145,15 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
   }
 
-  void _handleAvatarUpload() async {
+  Future<void> _handleAvatarUpload() async {
     final result = await FilePicker.platform.pickFiles(
       dialogTitle: L10n.of(context).uploadAvatar,
       type: FileType.image,
     );
     if (result != null) {
-      setState(() => spaceAvatar = File(result.files.single.path!));
+      final imagePath = result.files.single.path;
+      if (imagePath == null) throw 'Picked image not found';
+      setState(() => spaceAvatar = File(imagePath));
     } else {
       // user cancelled the picker
     }

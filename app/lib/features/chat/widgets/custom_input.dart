@@ -552,6 +552,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         String? mimeType = lookupMimeType(file.path);
         if (mimeType == null) throw lang.failedToDetectMimeType;
         final fileLen = file.lengthSync();
+        final repliedId = inputState.selectedMessage?.remoteId;
         if (mimeType.startsWith('image/') &&
             attachmentType == AttachmentType.image) {
           final bytes = file.readAsBytesSync();
@@ -562,10 +563,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               .width(image.width)
               .height(image.height);
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            await stream.replyMessage(
-              inputState.selectedMessage!.remoteId!,
-              imageDraft,
-            );
+            if (repliedId == null) throw 'Replied id not found';
+            await stream.replyMessage(repliedId, imageDraft);
           } else {
             await stream.sendMessage(imageDraft);
           }
@@ -574,10 +573,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           final audioDraft =
               client.audioDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            await stream.replyMessage(
-              inputState.selectedMessage!.remoteId!,
-              audioDraft,
-            );
+            if (repliedId == null) throw 'Replied id not found';
+            await stream.replyMessage(repliedId, audioDraft);
           } else {
             await stream.sendMessage(audioDraft);
           }
@@ -585,24 +582,18 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             attachmentType == AttachmentType.video) {
           final videoDraft =
               client.videoDraft(file.path, mimeType).size(file.lengthSync());
-
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            await stream.replyMessage(
-              inputState.selectedMessage!.remoteId!,
-              videoDraft,
-            );
+            if (repliedId == null) throw 'Replied id not found';
+            await stream.replyMessage(repliedId, videoDraft);
           } else {
             await stream.sendMessage(videoDraft);
           }
         } else {
           final fileDraft =
               client.fileDraft(file.path, mimeType).size(file.lengthSync());
-
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            await stream.replyMessage(
-              inputState.selectedMessage!.remoteId!,
-              fileDraft,
-            );
+            if (repliedId == null) throw 'Replied id not found';
+            await stream.replyMessage(repliedId, fileDraft);
           } else {
             await stream.sendMessage(fileDraft);
           }
@@ -717,9 +708,13 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       );
 
       if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-        await stream.replyMessage(inputState.selectedMessage!.remoteId!, draft);
+        final repliedId = inputState.selectedMessage?.remoteId;
+        if (repliedId == null) throw 'Replied id not found';
+        await stream.replyMessage(repliedId, draft);
       } else if (inputState.selectedMessageState == SelectedMessageState.edit) {
-        await stream.editMessage(inputState.selectedMessage!.remoteId!, draft);
+        final editedId = inputState.selectedMessage?.remoteId;
+        if (editedId == null) throw 'Edited id not found';
+        await stream.editMessage(editedId, draft);
       } else {
         await stream.sendMessage(draft);
       }
@@ -729,7 +724,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       textController.clear();
       // also clear composed state
       final convo = await ref.read(chatProvider(widget.roomId).future);
-      await convo?.saveMsgDraft(textController.text, null, 'new', null);
+      if (convo == null) throw 'Convo not found';
+      await convo.saveMsgDraft(textController.text, null, 'new', null);
     } catch (e, s) {
       _log.severe('Sending chat message failed', e, s);
       EasyLoading.showError(

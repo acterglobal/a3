@@ -575,7 +575,8 @@ class _CreateRoomFormWidgetConsumerState
   }
 
   void _handleTitleChange(String? value) {
-    ref.read(_titleProvider.notifier).update((state) => value!);
+    if (value == null) throw 'Changed value not available';
+    ref.read(_titleProvider.notifier).update((state) => value);
   }
 
   Future<void> _handleAvatarUpload() async {
@@ -584,9 +585,9 @@ class _CreateRoomFormWidgetConsumerState
       type: FileType.image,
     );
     if (result != null) {
-      ref
-          .read(_avatarProvider.notifier)
-          .update((state) => result.files.single.path!);
+      final avatarPath = result.files.single.path;
+      if (avatarPath == null) throw 'Selected avatar not found';
+      ref.read(_avatarProvider.notifier).update((state) => avatarPath);
     } else {
       // user cancelled the picker
     }

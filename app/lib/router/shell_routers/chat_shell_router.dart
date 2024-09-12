@@ -29,10 +29,10 @@ final chatShellRoutes = [
     path: Routes.chatroom.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['roomId']!;
-
-      rootNavKey.currentContext
-          ?.read(selectedChatIdProvider.notifier)
+      final roomId = state.pathParameters['roomId'];
+      if (roomId == null) throw 'Room id for route path not found';
+      rootNavKey.currentContext!
+          .read(selectedChatIdProvider.notifier)
           .select(roomId);
       return NoTransitionPage(
         key: state.pageKey,
@@ -49,10 +49,10 @@ final chatShellRoutes = [
     path: Routes.chatProfile.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['roomId']!;
-
-      rootNavKey.currentContext
-          ?.read(selectedChatIdProvider.notifier)
+      final roomId = state.pathParameters['roomId'];
+      if (roomId == null) throw 'Room id for route path not found';
+      rootNavKey.currentContext!
+          .read(selectedChatIdProvider.notifier)
           .select(roomId);
       return NoTransitionPage(
         key: state.pageKey,
@@ -72,10 +72,10 @@ final chatShellRoutes = [
     path: Routes.chatSettingsVisibility.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['roomId']!;
-
-      rootNavKey.currentContext
-          ?.read(selectedChatIdProvider.notifier)
+      final roomId = state.pathParameters['roomId'];
+      if (roomId == null) throw 'Room id for route path not found';
+      rootNavKey.currentContext!
+          .read(selectedChatIdProvider.notifier)
           .select(roomId);
       return NoTransitionPage(
         key: state.pageKey,
@@ -96,10 +96,12 @@ final chatShellRoutes = [
     path: Routes.chatInvite.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final roomId = state.pathParameters['roomId'];
+      if (roomId == null) throw 'Room id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: InvitePage(
-          roomId: state.pathParameters['roomId']!,
+          roomId: roomId,
         ),
       );
     },

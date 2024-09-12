@@ -47,7 +47,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       final isText = nextState.currentNewsSlide?.type == NewsSlideType.text;
       final changed = prevState?.currentNewsSlide != nextState.currentNewsSlide;
       if (isText && changed) {
-        final next = nextState.currentNewsSlide!;
+        final next = nextState.currentNewsSlide;
+        if (next == null) throw 'Current news slide not available';
         final document =
             next.html.map((p0) => ActerDocumentHelpers.fromHtml(p0)) ??
                 ActerDocumentHelpers.fromMarkdown(next.text ?? '');
@@ -314,22 +315,28 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   }
 
   Widget slideImagePostUI(BuildContext context) {
-    final imageFile = selectedNewsPost!.mediaFile;
+    final selected = selectedNewsPost;
+    if (selected == null) throw 'Selected slide not found';
+    final imageFile = selected.mediaFile;
+    if (imageFile == null) throw 'Image file for slide not found';
     return Container(
       alignment: Alignment.center,
-      color: selectedNewsPost!.backgroundColor,
+      color: selected.backgroundColor,
       child: Image.file(
-        File(imageFile!.path),
+        File(imageFile.path),
         fit: BoxFit.contain,
       ),
     );
   }
 
   Widget slideVideoPostUI(BuildContext context) {
-    final videoFile = selectedNewsPost!.mediaFile!;
+    final selected = selectedNewsPost;
+    if (selected == null) throw 'Selected slide not found';
+    final videoFile = selected.mediaFile;
+    if (videoFile == null) throw 'Video file for slide not found';
     return Container(
       alignment: Alignment.center,
-      color: selectedNewsPost!.backgroundColor,
+      color: selected.backgroundColor,
       child: ActerVideoPlayer(
         key: Key('add-news-slide-video-${videoFile.name}'),
         videoFile: File(videoFile.path),
