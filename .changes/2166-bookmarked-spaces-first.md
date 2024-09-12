@@ -1,1 +1,0 @@
-- You will find your bookmarked spaces shown first in all spaces lists now, from the quick jumper, over the spaces listing to any place you have to select a spaces - making it easier and more convenient to use.
