@@ -5,6 +5,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
+import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -152,31 +153,39 @@ class _SubSpacesState extends ConsumerState<SubSpaces> {
 
   Widget _buildCategoriesList(Category category) {
     final entries = category.entries().map((s) => s.toDartString()).toList();
-    final display = category.display();
 
     return Card(
       child: ExpansionTile(
-        title: Row(
-          children: [
-            ActerIconWidget(
-              iconSize: 24,
-              color: convertColor(
-                display?.color(),
-                iconPickerColors[0],
-              ),
-              icon: ActerIcon.iconForCategories(display?.iconStr()),
-            ),
-            const SizedBox(width: 6),
-            Text(category.title()),
-          ],
-        ),
+        initiallyExpanded: true,
+        shape: const Border(),
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        title: _buildCategoryHeader(category),
         children: List<Widget>.generate(
           entries.length,
-          (index) => ListTile(
-            title: Text(entries[index]),
+          (index) => SpaceCard(
+            roomId: entries[index],
+            margin: const EdgeInsets.symmetric(vertical: 6),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCategoryHeader(Category category) {
+    final display = category.display();
+    return Row(
+      children: [
+        ActerIconWidget(
+          iconSize: 24,
+          color: convertColor(
+            display?.color(),
+            iconPickerColors[0],
+          ),
+          icon: ActerIcon.iconForCategories(display?.iconStr()),
+        ),
+        const SizedBox(width: 6),
+        Text(category.title()),
+      ],
     );
   }
 
