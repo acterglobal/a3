@@ -1,0 +1,2 @@
+- Unified the way chats and spaces are shown in various lists for a cleaner UI and improved layout
+- Spaces and Chats are now separated on the invites editing page for easier and cleaner access 
