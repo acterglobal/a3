@@ -2,16 +2,15 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
-import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter/features/spaces/pages/sub-spaces/category_header_view.dart';
+import 'package:acter/features/spaces/pages/sub-spaces/draggable_space_list.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -134,14 +133,16 @@ class _SubSpacesState extends ConsumerState<SubSpaces> {
     return spaceCategories.when(
       data: (categories) {
         final List<Category> categoryList = categories.categories().toList();
-        return ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: categoryList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return _buildCategoriesList(categoryList[index]);
-          },
-        );
+        return true
+            ? DraggableSpaceList(categoryList: categoryList)
+            : ListView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: categoryList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return _buildCategoriesList(categoryList[index]);
+                },
+              );
       },
       error: (e, s) {
         _log.severe('Failed to load the space categories', e, s);
@@ -153,13 +154,12 @@ class _SubSpacesState extends ConsumerState<SubSpaces> {
 
   Widget _buildCategoriesList(Category category) {
     final entries = category.entries().map((s) => s.toDartString()).toList();
-
     return Card(
       child: ExpansionTile(
         initiallyExpanded: true,
         shape: const Border(),
         backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-        title: _buildCategoryHeader(category),
+        title: CategoryHeaderView(category: category),
         children: List<Widget>.generate(
           entries.length,
           (index) => SpaceCard(
@@ -168,24 +168,6 @@ class _SubSpacesState extends ConsumerState<SubSpaces> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildCategoryHeader(Category category) {
-    final display = category.display();
-    return Row(
-      children: [
-        ActerIconWidget(
-          iconSize: 24,
-          color: convertColor(
-            display?.color(),
-            iconPickerColors[0],
-          ),
-          icon: ActerIcon.iconForCategories(display?.iconStr()),
-        ),
-        const SizedBox(width: 6),
-        Text(category.title()),
-      ],
     );
   }
 
