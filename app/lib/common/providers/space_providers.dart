@@ -315,6 +315,12 @@ final spaceRelationsOverviewProvider =
   );
 });
 
+final suggestedIdsProvider =
+    FutureProvider.family<List<String>, String>((ref, spaceId) async {
+  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
+      .suggestedIds;
+});
+
 final hasSubChatsProvider =
     AsyncNotifierProvider.family<HasSubChatsNotifier, bool, String>(
   () => HasSubChatsNotifier(),
