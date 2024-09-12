@@ -27,62 +27,64 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
   }
 
   void _init() async {
-    _convo = await ref.read(chatProvider(messageInfo.roomId).future);
-    if (_convo != null) {
-      state = state.copyWith(
-        mediaChatLoadingState: const MediaChatLoadingState.notYetStarted(),
-      );
-      try {
-        //Get media path if already downloaded
-        final mediaPath =
-            (await _convo!.mediaPath(messageInfo.messageId, false)).text();
-
-        if (mediaPath != null) {
-          state = state.copyWith(
-            mediaFile: File(mediaPath),
-            videoThumbnailFile: null,
-            mediaChatLoadingState: const MediaChatLoadingState.loaded(),
-          );
-          final videoThumbnailFile = await getThumbnailData(mediaPath);
-          if (videoThumbnailFile != null) {
-            if (state.mediaFile?.path == mediaPath) {
-              state = state.copyWith(videoThumbnailFile: videoThumbnailFile);
-            }
-          }
-        } else {
-          // FIXME: this does not react if yet if we switched the network ...
-          if (await ref
-              .read(autoDownloadMediaProvider(messageInfo.roomId).future)) {
-            await downloadMedia();
-          } else {
-            state = state.copyWith(
-              mediaChatLoadingState:
-                  const MediaChatLoadingState.notYetStarted(),
-            );
-          }
-        }
-      } catch (e) {
-        state = state.copyWith(
-          mediaChatLoadingState: MediaChatLoadingState.error(
-            'Some error occurred ${e.toString()}',
-          ),
-        );
-      }
-    } else {
+    final convo = await ref.read(chatProvider(messageInfo.roomId).future);
+    if (convo == null) {
       state = state.copyWith(
         mediaChatLoadingState:
             const MediaChatLoadingState.error('Unable to load convo'),
+      );
+      return;
+    }
+    _convo = convo;
+    state = state.copyWith(
+      mediaChatLoadingState: const MediaChatLoadingState.notYetStarted(),
+    );
+    try {
+      //Get media path if already downloaded
+      final mediaPath =
+          (await convo.mediaPath(messageInfo.messageId, false)).text();
+
+      if (mediaPath != null) {
+        state = state.copyWith(
+          mediaFile: File(mediaPath),
+          videoThumbnailFile: null,
+          mediaChatLoadingState: const MediaChatLoadingState.loaded(),
+        );
+        final videoThumbnailFile = await getThumbnailData(mediaPath);
+        if (videoThumbnailFile != null) {
+          if (state.mediaFile?.path == mediaPath) {
+            state = state.copyWith(videoThumbnailFile: videoThumbnailFile);
+          }
+        }
+      } else {
+        // FIXME: this does not react if yet if we switched the network ...
+        final isAutoDownload = await ref
+            .read(autoDownloadMediaProvider(messageInfo.roomId).future);
+        if (isAutoDownload) {
+          await downloadMedia();
+        } else {
+          state = state.copyWith(
+            mediaChatLoadingState: const MediaChatLoadingState.notYetStarted(),
+          );
+        }
+      }
+    } catch (e) {
+      state = state.copyWith(
+        mediaChatLoadingState: MediaChatLoadingState.error(
+          'Some error occurred ${e.toString()}',
+        ),
       );
     }
   }
 
   Future<void> downloadMedia() async {
-    if (_convo == null) return;
+    final convo = _convo;
+    if (convo == null) return;
     state = state.copyWith(isDownloading: true);
     try {
       //Download media if media path is not available
       final tempDir = await getTemporaryDirectory();
-      final result = await _convo!.downloadMedia(
+      final result = await convo.downloadMedia(
         messageInfo.messageId,
         null,
         tempDir.path,
@@ -97,12 +99,12 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
         videoThumbnailFile: null,
         isDownloading: false,
       );
-      final videoThumbnailFile = await getThumbnailData(mediaPath);
-      videoThumbnailFile.map((p0) {
-        if (state.mediaFile?.path == mediaPath) {
+      if (state.mediaFile?.path == mediaPath) {
+        final videoThumbnailFile = await getThumbnailData(mediaPath);
+        videoThumbnailFile.map((p0) {
           state = state.copyWith(videoThumbnailFile: p0);
-        }
-      });
+        });
+      }
     } catch (e, s) {
       _log.severe('Error downloading media:', e, s);
       state = state.copyWith(

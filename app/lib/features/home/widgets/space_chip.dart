@@ -51,8 +51,9 @@ class SpaceChip extends ConsumerWidget {
         InkWell(
           onTap: () {
             if (!onTapOpenSpaceDetail) {
-              if (onTapSelectSpace != null) {
-                onTapSelectSpace!();
+              final cb = onTapSelectSpace;
+              if (cb != null) {
+                cb();
                 return;
               }
             }

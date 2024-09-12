@@ -210,14 +210,15 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
     _log.info('emitter verification.request');
 
     // starting of verifiee’s flow
+    final fId = event.flowId();
     setState(() {
       isVerifier = false;
-      flowId = event.flowId();
+      flowId = fId;
     });
 
     // start request event loop
     final client = ref.read(alwaysClientProvider);
-    client.installRequestEventHandler(flowId!);
+    client.installRequestEventHandler(fId);
 
     // open verification.request dialog
     showModalBottomSheet(

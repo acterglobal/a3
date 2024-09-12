@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
@@ -9,12 +10,13 @@ class EventListNotifier
 
   Future<List<ffi.CalendarEvent>> _getEventList() async {
     final client = ref.watch(alwaysClientProvider);
+    final spaceId = arg;
     //GET ALL EVENTS
-    if (arg == null) {
+    if (spaceId == null) {
       return (await client.calendarEvents()).toList();
     } else {
       //GET SPACE EVENTS
-      final space = await client.space(arg!);
+      final space = await client.space(spaceId);
       return (await space.calendarEvents()).toList();
     }
   }

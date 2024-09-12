@@ -75,12 +75,23 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
   }
 
   Widget controlsOverlay() {
+    final onTapFullScreen = widget.onTapFullScreen;
     return Stack(
       children: <Widget>[
         playButtonUI(),
         if (widget.hasPlayerControls == true) playPauseControls(),
         playbackSpeedMenu(),
-        if (widget.onTapFullScreen != null) fullScreenActionButton(),
+        if (onTapFullScreen != null)
+          Align(
+            alignment: Alignment.bottomRight,
+            child: IconButton(
+              onPressed: onTapFullScreen,
+              icon: const Icon(
+                Icons.square_outlined,
+                size: 22.0,
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -136,19 +147,6 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
             horizontal: 16,
           ),
           child: Text('${_controller.value.playbackSpeed}x'),
-        ),
-      ),
-    );
-  }
-
-  Widget fullScreenActionButton() {
-    return Align(
-      alignment: Alignment.bottomRight,
-      child: IconButton(
-        onPressed: () => widget.onTapFullScreen!(),
-        icon: const Icon(
-          Icons.square_outlined,
-          size: 22.0,
         ),
       ),
     );

@@ -198,15 +198,17 @@ class _CreateUpdateItemListConsumerState
           children: [
             ActerInlineTextButton(
               onPressed: () => setState(() {
-                selectedDate = DateTime.now();
-                _taskDueDateController.text = taskDueDateFormat(selectedDate!);
+                final today = DateTime.now();
+                selectedDate = today;
+                _taskDueDateController.text = taskDueDateFormat(today);
               }),
               child: Text(L10n.of(context).today),
             ),
             ActerInlineTextButton(
               onPressed: () => setState(() {
-                selectedDate = DateTime.now().addDays(1);
-                _taskDueDateController.text = taskDueDateFormat(selectedDate!);
+                final tomorrow = DateTime.now().addDays(1);
+                selectedDate = tomorrow;
+                _taskDueDateController.text = taskDueDateFormat(tomorrow);
               }),
               child: Text(L10n.of(context).tomorrow),
             ),

@@ -56,25 +56,25 @@ class _DueChipState extends State<DueChip> {
   Widget inner(BuildContext context) {
     final textStyle =
         widget.baseTextStyle ?? Theme.of(context).textTheme.bodySmall!;
-    if (dueDate == null) {
+    final date = dueDate;
+    if (date == null) {
       return widget.noneChild ?? const SizedBox.shrink();
     }
 
     String? label;
     TextStyle? dueTheme;
 
-    if (dueDate!.isToday) {
+    if (date.isToday) {
       label = L10n.of(context).dueToday;
-    } else if (dueDate!.isTomorrow) {
+    } else if (date.isTomorrow) {
       label = L10n.of(context).dueTomorrow;
-    } else if (dueDate!.isPast) {
-      label = dueDate!.timeago();
+    } else if (date.isPast) {
+      label = date.timeago();
       dueTheme = textStyle.copyWith(
         color: Theme.of(context).colorScheme.error,
       );
     }
-    final dateText =
-        DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!);
+    final dateText = DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(date);
 
     return Chip(
       visualDensity: widget.visualDensity,

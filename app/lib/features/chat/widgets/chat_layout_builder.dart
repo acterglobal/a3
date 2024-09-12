@@ -31,6 +31,8 @@ class ChatLayoutBuilder extends StatelessWidget {
     }
 
     final pushReplacementRouting = centerChild != null;
+    final center = centerChild;
+    final expanded = expandedChild;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -51,16 +53,16 @@ class ChatLayoutBuilder extends StatelessWidget {
           ),
         ),
         // we have a room selected
-        if (centerChild != null)
+        if (center != null)
           Flexible(
             flex: 3,
-            child: centerChild!,
+            child: center,
           ),
         // we have an expanded as well
-        if (expandedChild != null)
+        if (expanded != null)
           Flexible(
             flex: 2,
-            child: expandedChild!,
+            child: expanded,
           ),
         // Fallback if neither is in our route
         if (centerChild == null && expandedChild == null)

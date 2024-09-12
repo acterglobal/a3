@@ -24,14 +24,12 @@ Future<bool> roomListFilterStateAppliesToRoom(
     default: // all other case just continue
       break;
   }
-  if (state.searchTerm?.isNotEmpty == true) {
-    final searchTerm = state.searchTerm!.toLowerCase();
-    if (convoId.toLowerCase().contains(searchTerm)) {
-      return true;
-    }
-    final displayName = await ref.read(roomDisplayNameProvider(convoId).future);
-    return (displayName != null &&
-        displayName.toLowerCase().contains(searchTerm));
+  final searchTerm = state.searchTerm;
+  if (searchTerm != null && searchTerm.isNotEmpty) {
+    final search = searchTerm.toLowerCase();
+    if (convoId.toLowerCase().contains(search)) return true;
+    final dispName = await ref.read(roomDisplayNameProvider(convoId).future);
+    return dispName?.toLowerCase().contains(search) == true;
   }
   return true;
 }

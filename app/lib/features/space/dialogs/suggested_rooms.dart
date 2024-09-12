@@ -64,7 +64,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              if (selectedRooms != [])
+              if (selectedRooms?.isNotEmpty == true)
                 ActerInlineTextButton(
                   onPressed: () {
                     setState(() => selectedRooms = []);
@@ -98,7 +98,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
           },
           child: Text(L10n.of(context).skip),
         ),
-        if (selectedRooms != [])
+        if (selectedRooms?.isNotEmpty == true)
           ActerPrimaryActionButton(
             onPressed: () => _joinSelected(context),
             child: Text(L10n.of(context).join),
@@ -126,15 +126,13 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
     List<SpaceHierarchyRoomInfo> roomsToJoin = [];
     bool hadFailures = false;
 
-    if (selectedRooms == null) {
+    final selected = selectedRooms;
+    if (selected == null) {
       roomsToJoin = allRooms;
     } else {
-      final casted = allRooms.cast<SpaceHierarchyRoomInfo?>();
-      for (final roomId in selectedRooms!) {
-        final room = casted.firstWhere(
-          (s) => s!.roomIdStr() == roomId,
-          orElse: () => null,
-        );
+      for (final roomId in selected) {
+        final room =
+            allRooms.where((el) => el.roomIdStr() == roomId).firstOrNull;
         if (room != null) {
           // it was found
           roomsToJoin.add(room);

@@ -133,13 +133,10 @@ String? getRoomIdFromLink(Uri uri) {
     var server = matches.namedGroup('server');
 
     //Check & remove if string contains "?via=<server> pattern"
-    server = server!.split('?via=').first;
+    server = server?.split('?via=').first;
 
     //Create complete roomId with home server information
-    var roomIdWithServer = '$roomId:$server';
-
-    //Return roomId
-    return roomIdWithServer;
+    return server == null ? roomId : '$roomId:$server';
   }
 
   //Link is other than matrix room link
@@ -282,24 +279,16 @@ Future<void> parseUserMentionText(
 
   int offset = 0;
   for (final match in matches) {
-    final linkedName = match.group(1);
+    final displayName = match.group(1);
     final userId = match.group(2);
+    if (userId == null) continue;
 
-    String? displayName;
-    bool isValidMention = false;
-
-    if (linkedName != null && userId != null) {
-      displayName = linkedName;
-      isValidMention = roomMentions.any(
-        (uId) => uId == userId,
-      );
-    }
-    if (isValidMention && displayName != null) {
+    if (displayName != null && roomMentions.contains(userId)) {
       final simpleMention = '@$displayName';
       final startIndex = match.start - offset;
       final endIndex = startIndex + simpleMention.length;
       // restore mention state of input
-      inputNotifier.addMention(displayName, userId!);
+      inputNotifier.addMention(displayName, userId);
       // restore tags
       tags.add(
         TaggedText(
@@ -309,7 +298,6 @@ Future<void> parseUserMentionText(
           end: endIndex,
         ),
       );
-
       // Replace the mention in parsed text
       parsedText = parsedText.replaceRange(
         startIndex,

@@ -49,6 +49,8 @@ class _FileOptionsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
+    final before = beforeOptions;
+    final after = afterOptions;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       constraints: const BoxConstraints(
@@ -60,7 +62,7 @@ class _FileOptionsDialog extends StatelessWidget {
         children: [
           header ?? const SizedBox.shrink(),
           if (header != null) const SizedBox(height: 16.0),
-          if (beforeOptions?.isNotEmpty == true) ...beforeOptions!,
+          if (before != null && before.isNotEmpty) ...before,
           TextButton.icon(
             onPressed: () async {
               final result = await OpenFilex.open(file.absolute.path);
@@ -77,7 +79,8 @@ class _FileOptionsDialog extends StatelessWidget {
           TextButton.icon(
             onPressed: () async {
               final result = await Share.shareXFiles(
-                  [XFile(file.path, mimeType: mimeType)],);
+                [XFile(file.path, mimeType: mimeType)],
+              );
               if (result.status == ShareResultStatus.success) {
                 // done, close this dialog
                 if (context.mounted) {
@@ -101,7 +104,7 @@ class _FileOptionsDialog extends StatelessWidget {
               label: Text(lang.saveFileAs),
               icon: PhosphorIcon(PhosphorIcons.downloadSimple()),
             ),
-          if (afterOptions?.isNotEmpty == true) ...afterOptions!,
+          if (after != null && after.isNotEmpty) ...after,
         ],
       ),
     );

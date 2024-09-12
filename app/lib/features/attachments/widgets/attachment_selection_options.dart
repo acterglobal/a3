@@ -4,9 +4,9 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_container.dart';
-import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +27,7 @@ class AttachmentSelectionOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final onLinkTap = onLinkSelected;
     return ListView(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -34,12 +35,19 @@ class AttachmentSelectionOptions extends StatelessWidget {
         Wrap(
           alignment: WrapAlignment.center,
           children: [
-            if (onLinkSelected != null)
+            if (onLinkTap != null)
               _attachmentOptionItem(
                 context: context,
                 title: L10n.of(context).link,
                 iconData: Atlas.link,
-                onTap: () => onTapLink(context),
+                onTap: () => showAddEditLinkBottomSheet(
+                  context: context,
+                  bottomSheetTitle: L10n.of(context).addLink,
+                  onSave: (title, link) {
+                    Navigator.pop(context);
+                    onLinkTap(title, link);
+                  },
+                ),
               ),
             if (!isDesktop)
               _attachmentOptionItem(
@@ -103,17 +111,6 @@ class AttachmentSelectionOptions extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Future<void> onTapLink(BuildContext context) async {
-    showAddEditLinkBottomSheet(
-      context: context,
-      bottomSheetTitle: L10n.of(context).addLink,
-      onSave: (title, link) {
-        Navigator.pop(context);
-        onLinkSelected!(title, link);
-      },
     );
   }
 
