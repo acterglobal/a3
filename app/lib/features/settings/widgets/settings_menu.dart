@@ -44,6 +44,7 @@ class SettingsMenu extends ConsumerWidget {
 
     final isSuperInviteEnable =
         ref.watch(hasSuperTokensAccess).valueOrNull == true;
+    final helpMenuUrl = helpUrl;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -216,13 +217,13 @@ class SettingsMenu extends ConsumerWidget {
                   ? context.pushReplacementNamed(Routes.info.name)
                   : context.pushNamed(Routes.info.name),
             ),
-            if (helpUrl != null)
+            if (helpMenuUrl != null)
               MenuItemWidget(
                 iconData: PhosphorIcons.question(),
                 title: L10n.of(context).helpCenterTitle,
                 subTitle: L10n.of(context).helpCenterDesc,
                 trailing: Icon(PhosphorIcons.arrowSquareOut()),
-                onTap: () => launchUrl(helpUrl!),
+                onTap: () => launchUrl(helpMenuUrl),
               ),
           ],
         ),
