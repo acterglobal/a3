@@ -10,6 +10,7 @@ class SharedPrefFeaturesNotifier extends StateNotifier<Features<LabsFeature>> {
   late ProviderSubscription<AsyncValue<Features<LabsFeature>>> listener;
   final String instanceKey;
   final Ref ref;
+
   SharedPrefFeaturesNotifier(this.instanceKey, this.ref)
       : super(
           Features<LabsFeature>(
@@ -21,12 +22,13 @@ class SharedPrefFeaturesNotifier extends StateNotifier<Features<LabsFeature>> {
   }
 
   void _init() {
-    listener = ref.listen(asyncFeaturesProvider, (prev, newValue) {
-      if (!newValue.hasValue) {
+    listener = ref.listen(asyncFeaturesProvider, (prev, next) {
+      final val = next.value;
+      if (val == null) {
         // ignore and wait until it has loaded, debounce in-between
         return;
       }
-      state = newValue.value!;
+      state = val;
     });
   }
 
