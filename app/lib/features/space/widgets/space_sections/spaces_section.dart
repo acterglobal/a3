@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/space/widgets/related/spaces_helpers.dart';
 import 'package:acter/features/space/widgets/related/util.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
@@ -87,7 +87,7 @@ class SpacesSection extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         final roomId = spaces[index];
-        return SpaceCard(
+        return RoomCard(
           key: Key('subspace-list-item-$roomId'),
           roomId: roomId,
           showParents: false,

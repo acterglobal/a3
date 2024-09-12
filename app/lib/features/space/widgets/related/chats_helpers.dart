@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/chat/convo_card.dart';
-import 'package:acter/common/widgets/chat/convo_hierarchy_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
@@ -30,11 +29,10 @@ Widget chatsListUI(
     physics: const NeverScrollableScrollPhysics(),
     itemBuilder: (context, index) {
       final roomId = chats[index];
-      return ConvoCard(
+      return RoomCard(
         roomId: roomId,
         showParents: false,
         showSuggestedMark: suggestedId.contains(roomId),
-        showSelectedIndication: false,
         onTap: () => goToChat(context, roomId),
         trailing: showOptions
             ? RoomHierarchyOptionsMenu(

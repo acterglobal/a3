@@ -2,8 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/chat/convo_card.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -84,7 +83,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
 
     if (room.isJoined()) {
       if (room.isSpace()) {
-        return renderSpaceCard(
+        return renderRoomCard(
           context,
           ref,
           roomId,
@@ -96,7 +95,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
           ),
         );
       }
-      return renderConvoCard(
+      return renderRoomCard(
         context,
         ref,
         roomId,
@@ -112,9 +111,9 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     final trailing = noMemberButton(context, ref, room, roomId, servers);
 
     if (room.isSpace()) {
-      return renderSpaceCard(context, ref, roomId, trailing: trailing);
+      return renderRoomCard(context, ref, roomId, trailing: trailing);
     }
-    return renderConvoCard(context, ref, roomId, trailing: trailing);
+    return renderRoomCard(context, ref, roomId, trailing: trailing);
   }
 
   Widget noMemberButton(
@@ -156,29 +155,14 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     );
   }
 
-  Widget renderSpaceCard(
+  Widget renderRoomCard(
     BuildContext context,
     WidgetRef ref,
     String roomId, {
     void Function()? onTap,
     Widget? trailing,
   }) {
-    return SpaceCard(
-      roomId: roomId,
-      showParents: true,
-      onTap: onTap,
-      trailing: trailing,
-    );
-  }
-
-  Widget renderConvoCard(
-    BuildContext context,
-    WidgetRef ref,
-    String roomId, {
-    void Function()? onTap,
-    Widget? trailing,
-  }) {
-    return ConvoCard(
+    return RoomCard(
       roomId: roomId,
       showParents: true,
       onTap: onTap,

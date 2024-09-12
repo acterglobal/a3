@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/widgets/chat/convo_card.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -23,7 +22,7 @@ class RoomToInviteTo extends ConsumerWidget {
     String subtitle = L10n.of(context).unknownRoom;
     if (room != null) {
       if (room.isSpace()) {
-        return SpaceCard(
+        return RoomCard(
           roomId: roomId,
           showParents: true,
           trailing: removeWidget(),
@@ -31,7 +30,7 @@ class RoomToInviteTo extends ConsumerWidget {
       } else {
         final chat = ref.watch(chatProvider(roomId)).valueOrNull;
         if (chat != null) {
-          return ConvoCard(
+          return RoomCard(
             roomId: roomId,
             showParents: true,
             trailing: removeWidget(),

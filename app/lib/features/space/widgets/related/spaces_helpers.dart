@@ -2,7 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +36,7 @@ List<Widget>? _renderKnownSubspaces(
       itemBuilder: (context, index) {
         final roomId = spaces.knownSubspaces[index];
         final isSuggested = spaces.suggestedIds.contains(roomId);
-        return SpaceCard(
+        return RoomCard(
           key: Key('subspace-list-item-$roomId'),
           roomId: roomId,
           showParents: false,
