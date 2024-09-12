@@ -5,6 +5,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -18,10 +19,10 @@ final userAvatarProvider =
     FutureProvider.family<MemoryImage?, UserProfile>((ref, user) async {
   if (user.hasAvatar()) {
     try {
-      final data = (await user.getAvatar(null)).data();
-      if (data != null) {
-        return MemoryImage(Uint8List.fromList(data.asTypedList()));
-      }
+      final avatar = await user.getAvatar(null);
+      return avatar
+          .data()
+          .map((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
     } catch (e, s) {
       _log.severe('failure fetching avatar', e, s);
     }
@@ -128,18 +129,19 @@ class UserBuilder extends ConsumerWidget {
   }
 
   Widget? _renderTrailing(BuildContext context, WidgetRef ref) {
-    if (!includeUserJoinState || roomId == null) {
-      return null;
-    }
-    final room = ref.watch(maybeRoomProvider(roomId!)).valueOrNull;
-    return room != null
-        ? UserStateButton(
-            userId: userId,
-            room: room,
-          )
-        : const Skeletonizer(
+    if (!includeUserJoinState) return null;
+    return roomId.map((p0) {
+      final room = ref.watch(maybeRoomProvider(p0)).valueOrNull;
+      return room.map(
+            (p1) => UserStateButton(
+              userId: userId,
+              room: p1,
+            ),
+          ) ??
+          const Skeletonizer(
             child: Text('user'),
           );
+    });
   }
 
   Widget _buildSharedRooms(BuildContext context, Widget tile) {
@@ -226,23 +228,27 @@ class UserBuilder extends ConsumerWidget {
     );
   }
 
-  AvatarInfo _avatarInfo(WidgetRef ref) => (userProfile != null)
-      ? ref.watch(userAvatarInfoProvider(userProfile!))
-      : roomId != null
-          ? ref.watch(
-              memberAvatarInfoProvider((roomId: roomId!, userId: userId)),
-            )
-          : AvatarInfo(uniqueId: userId);
+  AvatarInfo _avatarInfo(WidgetRef ref) {
+    return userProfile.map((p0) => ref.watch(userAvatarInfoProvider(p0))) ??
+        roomId.map(
+          (p0) => ref.watch(
+            memberAvatarInfoProvider((roomId: p0, userId: userId)),
+          ),
+        ) ??
+        AvatarInfo(uniqueId: userId);
+  }
 
-  String? _displayName(WidgetRef ref) =>
-      userProfile?.displayName() ??
-      (roomId != null
-          ? ref
-              .watch(
-                memberDisplayNameProvider((roomId: roomId!, userId: userId)),
-              )
-              .valueOrNull
-          : null);
+  String? _displayName(WidgetRef ref) {
+    final res = userProfile?.displayName();
+    if (res != null) return res;
+    final rId = roomId;
+    if (rId != null) {
+      return ref
+          .watch(memberDisplayNameProvider((roomId: rId, userId: userId)))
+          .valueOrNull;
+    }
+    return null;
+  }
 }
 
 class UserStateButton extends ConsumerWidget {

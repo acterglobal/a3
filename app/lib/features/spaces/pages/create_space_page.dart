@@ -320,11 +320,11 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       roomVisibility: ref.read(_selectedVisibilityProvider),
     );
     if (!mounted) return;
-    if (newRoomId != null) {
+    newRoomId.map((p0) {
       context.replaceNamed(
         Routes.spaceInvite.name,
-        pathParameters: {'spaceId': newRoomId},
+        pathParameters: {'spaceId': p0},
       );
-    }
+    });
   }
 }

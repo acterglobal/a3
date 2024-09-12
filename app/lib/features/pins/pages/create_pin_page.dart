@@ -323,12 +323,8 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       if (pinIconColor != null || pinIcon != null) {
         final sdk = await ref.watch(sdkProvider.future);
         final displayBuilder = sdk.api.newDisplayBuilder();
-        if (pinIconColor != null) {
-          displayBuilder.color(pinIconColor!.value);
-        }
-        if (pinIcon != null) {
-          displayBuilder.icon('acter-icon', pinIcon!.name);
-        }
+        pinIconColor.map((p0) => displayBuilder.color(p0.value));
+        pinIcon.map((p0) => displayBuilder.icon('acter-icon', p0.name));
         pinDraft.display(displayBuilder.build());
       }
 

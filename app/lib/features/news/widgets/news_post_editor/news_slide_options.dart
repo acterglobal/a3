@@ -124,11 +124,11 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget parentSpaceSelector() {
-    final newsPostSpaceId = ref.watch(newsStateProvider).newsPostSpaceId;
+    final spaceId = ref.watch(newsStateProvider).newsPostSpaceId;
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: (newsPostSpaceId != null)
-          ? InkWell(
+      child: spaceId.map(
+            (p0) => InkWell(
               key: NewsUpdateKeys.selectSpace,
               onTap: () async {
                 await ref
@@ -140,7 +140,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                 alignment: Alignment.topRight,
                 children: [
                   RoomAvatarBuilder(
-                    roomId: newsPostSpaceId,
+                    roomId: p0,
                     avatarSize: 42,
                   ),
                   Positioned(
@@ -160,16 +160,17 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                   ),
                 ],
               ),
-            )
-          : OutlinedButton(
-              key: NewsUpdateKeys.selectSpace,
-              onPressed: () async {
-                await ref
-                    .read(newsStateProvider.notifier)
-                    .changeNewsPostSpaceId(context);
-              },
-              child: Text(L10n.of(context).selectSpace),
             ),
+          ) ??
+          OutlinedButton(
+            key: NewsUpdateKeys.selectSpace,
+            onPressed: () async {
+              await ref
+                  .read(newsStateProvider.notifier)
+                  .changeNewsPostSpaceId(context);
+            },
+            child: Text(L10n.of(context).selectSpace),
+          ),
     );
   }
 
