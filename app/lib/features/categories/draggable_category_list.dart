@@ -177,18 +177,32 @@ class _DraggableCategoriesListState
           dragAndDropList![oldListIndex].children.removeAt(oldItemIndex);
       dragAndDropList![newListIndex].children.insert(newItemIndex, movedItem);
 
+      //GET OLDER CATEGORY ITEM
       final oldCategoryItem = categoryList[oldListIndex];
+
+      //GET OLDER CATEGORY ITEM DATA IN LOCAL
       final spaceEntries =
-      oldCategoryItem.entries().map((s) => s.toDartString()).toList();
+          oldCategoryItem.entries().map((s) => s.toDartString()).toList();
+
+      //REMOVE SPACE ENTRY FROM SPECIFIED POSITION
       var movedCategoryEntry = spaceEntries.removeAt(oldItemIndex);
+
+      //ADD SPACE ENTRY FROM SPECIFIED POSITION
       spaceEntries.insert(newItemIndex, movedCategoryEntry);
+
+      //UPDATE CATEGORY ITEM
       final categoryItemBuilder = oldCategoryItem.updateBuilder();
       categoryItemBuilder.clearEntries();
       for (int j = 0; j < spaceEntries.length; j++) {
         categoryItemBuilder.addEntry(spaceEntries[j]);
       }
+
+      //REMOVE OLDER CATEGORY ITEM FROM SPECIFIED POSITION
+      categoryList.removeAt(oldListIndex);
+
+      //SAVE NEW CATEGORY ITEM AT SPECIFIED POSITION
       final newCategoryItem = categoryItemBuilder.build();
-      categoryList[oldListIndex] = newCategoryItem;
+      categoryList.insert(newListIndex, newCategoryItem);
     });
   }
 

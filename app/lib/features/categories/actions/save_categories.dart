@@ -113,6 +113,7 @@ Future<void> addDummyData(
 
       //ADD ENTRIES
       newCat2.addEntry('!QttcPDfFpCKjwjDLgg:m-1.acter.global');
+      newCat2.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
       newCats.add(newCat2.build());
 
       /// --------(NEW CATEGORY-3)--------
@@ -130,35 +131,6 @@ Future<void> addDummyData(
       newCat3.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
       newCats.add(newCat3.build());
 
-      /// --------(NEW CATEGORY-4)--------
-      final newCat4 = categoriesManager.newCategoryBuilder();
-
-      //ADD TITLE
-      newCat4.title('Test Cat - 4');
-
-      //ADD COLOR AND ICON
-      displayBuilder.color(Colors.pinkAccent.value);
-      displayBuilder.icon('acter-icon', ActerIcon.camera.name);
-      newCat4.display(displayBuilder.build());
-
-      //ADD ENTRIES
-      newCat4.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
-      newCats.add(newCat4.build());
-
-      /// --------(NEW CATEGORY-5)--------
-      final newCat5 = categoriesManager.newCategoryBuilder();
-
-      //ADD TITLE
-      newCat5.title('Test Cat - 5');
-
-      //ADD COLOR AND ICON
-      displayBuilder.color(Colors.orange.value);
-      displayBuilder.icon('acter-icon', ActerIcon.backpack.name);
-      newCat5.display(displayBuilder.build());
-
-      //ADD ENTRIES
-      newCat5.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
-      newCats.add(newCat5.build());
       maybeSpace.setCategories('spaces', newCats);
     }
     if (context.mounted) {
