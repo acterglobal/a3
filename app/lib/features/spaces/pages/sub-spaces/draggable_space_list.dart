@@ -4,6 +4,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class DraggableSpaceList extends StatefulWidget {
   final List<Category> categoryList;
@@ -58,7 +59,48 @@ class _DraggableSpaceListState extends State<DraggableSpaceList> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildSubSpacesUIWithDrag();
+    return Stack(
+      children: [
+        _buildSubSpacesUIWithDrag(),
+        Positioned.fill(child: _buildActionButtons()),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons() {
+    final buttonStyle = OutlinedButton.styleFrom(
+        backgroundColor: Theme.of(context).primaryColor);
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 30),
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor.withOpacity(0.5),
+          borderRadius: const BorderRadius.all(Radius.circular(12)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                style: buttonStyle,
+                onPressed: () {},
+                child: Text(L10n.of(context).createCategory),
+              ),
+            ),
+            const SizedBox(width: 30),
+            Expanded(
+              child: OutlinedButton(
+                style: buttonStyle,
+                onPressed: () {},
+                child: Text(L10n.of(context).save),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildSubSpacesUIWithDrag() {

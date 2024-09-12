@@ -2187,6 +2187,7 @@
   "updatingIcon": "Updating Icon",
   "selectColor": "Select color",
   "selectIcon": "Select icon",
+  "createCategory": "Create Category",
   "organized": "Organized",
   "action": "Action",
   "@action": {}
