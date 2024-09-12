@@ -295,6 +295,8 @@
   "@createTaskList": {},
   "createNewUpdate": "Create New Update",
   "@createNewUpdate": {},
+  "createAcopy": "Copy as new",
+  "@createAcopy": {},
   "creatingCalendarEvent": "Creating Calendar Event",
   "@creatingCalendarEvent": {},
   "creatingChat": "Creating Chat",

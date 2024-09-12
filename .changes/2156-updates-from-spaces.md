@@ -1,0 +1,1 @@
+- A new 'Create new update' action button on the bottom of each space makes it easier to activate this feature and create an update for that space
