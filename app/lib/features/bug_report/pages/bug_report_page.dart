@@ -112,6 +112,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                   decoration: InputDecoration(
                     hintText: L10n.of(context).bugReportDescription,
                   ),
+                  // required field, space allowed
                   validator: (val) => val == null || val.isEmpty
                       ? L10n.of(context).emptyDescription
                       : null,

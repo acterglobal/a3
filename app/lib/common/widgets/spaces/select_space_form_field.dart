@@ -87,8 +87,8 @@ class SelectSpaceFormField extends ConsumerWidget {
                     )
                   : emptyButton,
             ),
-      validator: (x) =>
-          (!mandatory || ref.read(selectedSpaceIdProvider) != null)
+      validator: (val) =>
+          !mandatory || ref.read(selectedSpaceIdProvider) != null
               ? null
               : L10n.of(context).youMustSelectSpace,
     );

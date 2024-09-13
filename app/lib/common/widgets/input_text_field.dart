@@ -37,8 +37,9 @@ class _InputTextFieldState extends State<InputTextField> {
       maxLines: widget.maxLines ?? 1,
       keyboardType: widget.textInputType,
       textInputAction: widget.textInputAction,
+      // required field, space allowed
       validator: widget.validator ??
-          (val) => (val == null || val.isEmpty) ? 'Field can’t be empty' : null,
+          (val) => val == null || val.isEmpty ? 'Field can’t be empty' : null,
       onChanged: widget.onInputChanged ?? (value) {},
       onFieldSubmitted: (value) {
         FocusNode().unfocus();

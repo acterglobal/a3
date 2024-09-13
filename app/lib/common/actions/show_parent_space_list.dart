@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -61,7 +61,7 @@ class ParentSpaceList extends ConsumerWidget {
             itemCount: spaceList.length,
             itemBuilder: (context, index) {
               final roomId = spaceList[index];
-              return SpaceCard(
+              return RoomCard(
                 key: Key('limited-space-list-item-$roomId'),
                 roomId: roomId,
                 showParents: true,

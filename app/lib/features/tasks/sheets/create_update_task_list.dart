@@ -132,9 +132,10 @@ class _CreateUpdateTaskListConsumerState
           ),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _titleController,
-          validator: (value) => (value?.isNotEmpty == true)
-              ? null
-              : L10n.of(context).pleaseEnterAName,
+          // required field, space not allowed
+          validator: (val) => val == null || val.trim().isEmpty
+              ? L10n.of(context).pleaseEnterAName
+              : null,
         ),
       ],
     );

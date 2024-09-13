@@ -110,17 +110,23 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                   initialValue: currentPowerLevel.toString(),
                   keyboardType:
                       const TextInputType.numberWithOptions(signed: true),
+                  // Only numbers
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly,
                   ],
-                  // Only numbers
-                  validator: (String? value) {
+                  // required field under custom
+                  validator: (val) {
                     if (currentMemberStatus == 'Custom') {
-                      if (value == null || int.tryParse(value) == null) {
+                      if (val == null) {
                         return L10n.of(context)
                             .youNeedToEnterCustomValueAsNumber;
                       }
-                      if ((int.tryParse(value) ?? 0) > widget.maxPowerLevel) {
+                      final level = int.tryParse(val);
+                      if (level == null) {
+                        return L10n.of(context)
+                            .youNeedToEnterCustomValueAsNumber;
+                      }
+                      if (level > widget.maxPowerLevel) {
                         return L10n.of(context)
                             .youCantExceedPowerLevel(widget.maxPowerLevel);
                       }

@@ -1,24 +1,14 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
-import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
-import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
-import 'package:acter/router/utils.dart';
+import 'package:acter/common/widgets/room/room_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:expandable_text/expandable_text.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SpaceHierarchyCard extends ConsumerWidget {
-  /// The room info to display
-  final SpaceHierarchyRoomInfo roomInfo;
+typedef SubtitleFn = Widget? Function(Space);
 
-  /// The parent roomId this is rendered for
-  final String parentId;
-
-  /// the Size of the Avatar to render
+class RoomCard extends ConsumerWidget {
+  final String roomId;
+  final SubtitleFn? subtitleFn;
   final double avatarSize;
 
   /// Called when the user taps this list tile.
@@ -64,6 +54,9 @@ class SpaceHierarchyCard extends ConsumerWidget {
   /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
   final EdgeInsetsGeometry? contentPadding;
 
+  /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
+  final EdgeInsetsGeometry? margin;
+
   /// The shape of the card’s [Material].
   ///
   /// Defines the card’s [Material.shape].
@@ -79,16 +72,25 @@ class SpaceHierarchyCard extends ConsumerWidget {
   /// the default border.
   final bool withBorder;
 
-  /// Custom trailing widget.
+  /// Custom Trailing Widget
   final Widget? trailing;
 
-  /// Whether to show the suggested icon if this is a suggested space
-  final bool showIconIfSuggested;
+  /// Whether or not to render the parent Icon
+  ///
+  final bool showParents;
 
-  const SpaceHierarchyCard({
+  /// Whether or not to render the suggested Icon
+  ///
+  final bool showSuggestedMark;
+
+  /// Whether or not to render the visibility icon
+  ///
+  final bool showVisibilityMark;
+
+  const RoomCard({
     super.key,
-    required this.roomInfo,
-    required this.parentId,
+    required this.roomId,
+    this.subtitleFn,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
@@ -96,61 +98,58 @@ class SpaceHierarchyCard extends ConsumerWidget {
     this.subtitleTextStyle,
     this.leadingAndTrailingTextStyle,
     this.avatarSize = 48,
-    this.contentPadding = const EdgeInsets.all(15),
+    this.contentPadding =
+        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    this.margin,
     this.shape,
     this.withBorder = true,
-    this.showIconIfSuggested = false,
+    this.showParents = true,
+    this.showSuggestedMark = false,
+    this.showVisibilityMark = false,
+    this.trailing,
+  });
+
+  const RoomCard.small({
+    super.key,
+    required this.roomId,
+    this.subtitleFn,
+    this.onTap,
+    this.onLongPress,
+    this.onFocusChange,
+    this.titleTextStyle,
+    this.subtitleTextStyle,
+    this.leadingAndTrailingTextStyle,
+    this.avatarSize = 24,
+    this.contentPadding = const EdgeInsets.all(5),
+    this.margin,
+    this.shape,
+    this.withBorder = false,
+    this.showParents = false,
+    this.showSuggestedMark = false,
+    this.showVisibilityMark = false,
     this.trailing,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = roomInfo.roomIdStr();
-    final avatarInfo = ref.watch(roomHierarchyAvatarInfoProvider(roomInfo));
-    final subtitle = roomInfo.topic().map((p0) {
-      if (p0.isEmpty) return null;
-      return ExpandableText(
-        p0,
-        maxLines: 2,
-        expandText: L10n.of(context).showMore,
-        collapseText: L10n.of(context).showLess,
-        linkColor: Theme.of(context).colorScheme.primary,
-      );
-    });
-    bool showSuggested = showIconIfSuggested && roomInfo.suggested();
+    final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
+    final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
 
-    return SpaceWithAvatarInfoCard(
+    return RoomWithAvatarInfoCard(
+      margin: margin,
       roomId: roomId,
       avatarInfo: avatarInfo,
-      subtitle: subtitle,
-      onTap: onTap ?? () {},
+      parents: parents,
+      onTap: onTap,
       onFocusChange: onFocusChange,
       onLongPress: onLongPress,
       avatarSize: avatarSize,
       contentPadding: contentPadding,
       shape: shape,
-      showSuggestedMark: showSuggested,
-      trailing: trailing ??
-          Wrap(
-            children: [
-              RoomHierarchyJoinButton(
-                joinRule: roomInfo.joinRuleStr().toLowerCase(),
-                roomId: roomId,
-                roomName: roomInfo.name() ?? roomId,
-                viaServerName: roomInfo.viaServerName(),
-                forward: (spaceId) {
-                  goToSpace(context, spaceId);
-                  ref.invalidate(spaceRelationsProvider(parentId));
-                  ref.invalidate(spaceRemoteRelationsProvider(parentId));
-                },
-              ),
-              RoomHierarchyOptionsMenu(
-                isSuggested: roomInfo.suggested(),
-                childId: roomId,
-                parentId: parentId,
-              ),
-            ],
-          ),
+      showParents: showParents,
+      showSuggestedMark: showSuggestedMark,
+      showVisibilityMark: showVisibilityMark,
+      trailing: trailing,
     );
   }
 }

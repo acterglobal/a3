@@ -148,15 +148,12 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
           controller: _linkController,
           minLines: 1,
           maxLines: 1,
-          validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return L10n.of(context).pleaseEnterALink;
-            }
-            if (!isValidUrl(value)) {
-              return L10n.of(context).pleaseEnterAValidLink;
-            }
-            return null;
-          },
+          // required field, space not allowed, custom format
+          validator: (val) => val == null || val.trim().isEmpty
+              ? L10n.of(context).pleaseEnterALink
+              : !isValidUrl(val)
+                  ? L10n.of(context).pleaseEnterAValidLink
+                  : null,
         ),
       ],
     );

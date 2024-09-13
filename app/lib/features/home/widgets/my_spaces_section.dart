@@ -6,7 +6,7 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:extension_nullable/extension_nullable.dart';
@@ -103,7 +103,7 @@ class _RenderSpacesSection extends ConsumerWidget {
           itemCount: limit,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
-            return SpaceCard(
+            return RoomCard(
               roomId: spaces[index].getRoomIdStr(),
               margin: const EdgeInsets.only(bottom: 14),
             );

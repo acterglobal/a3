@@ -296,11 +296,10 @@ class UserStateButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final roomId = room.roomIdStr();
     final invited =
-        ref.watch(roomInvitedMembersProvider(room.roomIdStr())).valueOrNull ??
-            [];
-    final joined =
-        ref.watch(membersIdsProvider(room.roomIdStr())).valueOrNull ?? [];
+        ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
+    final joined = ref.watch(membersIdsProvider(roomId)).valueOrNull ?? [];
     if (isInvited(userId, invited)) {
       return InkWell(
         onTap: () => _cancelInvite(context, ref),

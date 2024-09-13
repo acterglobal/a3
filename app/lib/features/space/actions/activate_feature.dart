@@ -216,13 +216,22 @@ class __ActivateFeatureDialogState extends State<_ActivateFeatureDialog> {
                   initialValue: currentPowerLevel.toString(),
                   keyboardType:
                       const TextInputType.numberWithOptions(signed: true),
+                  // Only numbers
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly,
-                  ], // Only numbers
-                  validator: (val) => currentMemberStatus == 'Custom' &&
-                          (val == null || int.tryParse(val) == null)
-                      ? lang.customValueMustBeNumber
-                      : null,
+                  ],
+                  // required field under custom
+                  validator: (val) {
+                    if (currentMemberStatus == 'Custom') {
+                      if (val == null) {
+                        return lang.youNeedToEnterCustomValueAsNumber;
+                      }
+                      if (int.tryParse(val) == null) {
+                        return lang.customValueMustBeNumber;
+                      }
+                    }
+                    return null;
+                  },
                 ),
               ),
             ),

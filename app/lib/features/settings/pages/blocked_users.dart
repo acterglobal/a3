@@ -38,12 +38,11 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
               padding: const EdgeInsets.all(5),
               child: TextFormField(
                 controller: userName,
-                validator: (val) {
-                  if (val != null && val.startsWith('@') && val.contains(':')) {
-                    return null;
-                  }
-                  return L10n.of(context).formatMustBe;
-                },
+                // required field, custom format
+                validator: (val) =>
+                    val == null || !val.startsWith('@') || !val.contains(':')
+                        ? L10n.of(context).formatMustBe
+                        : null,
               ),
             ),
           ],

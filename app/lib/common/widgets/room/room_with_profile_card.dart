@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
-class SpaceWithAvatarInfoCard extends StatelessWidget {
+class RoomWithAvatarInfoCard extends StatelessWidget {
   final String roomId;
   final AvatarInfo avatarInfo;
   final List<AvatarInfo>? parents;
@@ -80,7 +80,7 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
   ///
   final bool showVisibilityMark;
 
-  const SpaceWithAvatarInfoCard({
+  const RoomWithAvatarInfoCard({
     super.key,
     required this.roomId,
     required this.avatarInfo,
