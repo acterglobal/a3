@@ -174,12 +174,10 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
           decoration: InputDecoration(
             hintText: L10n.of(context).nameOfTheEvent,
           ),
-          validator: (value) {
-            if (value != null && value.isEmpty) {
-              return L10n.of(context).pleaseEnterEventName;
-            }
-            return null;
-          },
+          // required field, space not allowed
+          validator: (val) => val == null || val.trim().isEmpty
+              ? L10n.of(context).pleaseEnterEventName
+              : null,
         ),
       ],
     );
@@ -207,12 +205,10 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                       suffixIcon: const Icon(Icons.calendar_month_outlined),
                     ),
                     onTap: () => _selectDate(isStartDate: true),
-                    validator: (value) {
-                      if (value != null && value.isEmpty) {
-                        return L10n.of(context).startDateRequired;
-                      }
-                      return null;
-                    },
+                    // required field, space not allowed
+                    validator: (val) => val == null || val.trim().isEmpty
+                        ? L10n.of(context).startDateRequired
+                        : null,
                   ),
                 ],
               ),
@@ -234,12 +230,10 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                       suffixIcon: const Icon(Icons.access_time_outlined),
                     ),
                     onTap: () => _selectTime(isStartTime: true),
-                    validator: (value) {
-                      if (value != null && value.isEmpty) {
-                        return L10n.of(context).startTimeRequired;
-                      }
-                      return null;
-                    },
+                    // required field, space not allowed
+                    validator: (val) => val == null || val.trim().isEmpty
+                        ? L10n.of(context).startTimeRequired
+                        : null,
                   ),
                 ],
               ),
@@ -265,12 +259,10 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                       suffixIcon: const Icon(Icons.calendar_month_outlined),
                     ),
                     onTap: () => _selectDate(isStartDate: false),
-                    validator: (value) {
-                      if (value != null && value.isEmpty) {
-                        return L10n.of(context).endDateRequired;
-                      }
-                      return null;
-                    },
+                    // required field, space not allowed
+                    validator: (val) => val == null || val.trim().isEmpty
+                        ? L10n.of(context).endDateRequired
+                        : null,
                   ),
                 ],
               ),
@@ -292,12 +284,10 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                       suffixIcon: const Icon(Icons.access_time_outlined),
                     ),
                     onTap: () => _selectTime(isStartTime: false),
-                    validator: (value) {
-                      if (value != null && value.isEmpty) {
-                        return L10n.of(context).endTimeRequired;
-                      }
-                      return null;
-                    },
+                    // required field, space not allowed
+                    validator: (val) => val == null || val.trim().isEmpty
+                        ? L10n.of(context).endTimeRequired
+                        : null,
                   ),
                 ],
               ),

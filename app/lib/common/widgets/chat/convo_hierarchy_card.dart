@@ -127,7 +127,7 @@ class ConvoHierarchyCard extends ConsumerWidget {
               RoomHierarchyJoinButton(
                 joinRule: roomInfo.joinRuleStr().toLowerCase(),
                 roomId: roomId,
-                roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
+                roomName: roomInfo.name() ?? roomId,
                 viaServerName: roomInfo.viaServerName(),
                 forward: (roomId) {
                   goToChat(context, roomId);

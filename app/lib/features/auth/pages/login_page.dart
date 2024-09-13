@@ -129,12 +129,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyUsername;
-            }
-            return null;
-          },
+          // required field, space not allowed
+          validator: (val) => val == null || val.trim().isEmpty
+              ? L10n.of(context).emptyUsername
+              : null,
         ),
       ],
     );
@@ -166,12 +164,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyPassword;
-            }
-            return null;
-          },
+          // required field, space allowed
+          validator: (val) => val == null || val.isEmpty
+              ? L10n.of(context).emptyPassword
+              : null,
         ),
       ],
     );
