@@ -31,13 +31,6 @@ class TaskItemsListWidget extends ConsumerStatefulWidget {
 
 class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
   final ValueNotifier<bool> showInlineAddTask = ValueNotifier(false);
-  late String taskListId;
-
-  @override
-  void initState() {
-    super.initState();
-    taskListId = widget.taskList.eventIdStr();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +61,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
     if (overview.openTasks.isEmpty) {
       return const SizedBox.shrink();
     }
-
+    final taskListId = widget.taskList.eventIdStr();
     return Column(
       children: [
         for (final taskId in overview.openTasks)
@@ -82,6 +75,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
   }
 
   Widget inlineAddTask() {
+    final taskListId = widget.taskList.eventIdStr();
     return ValueListenableBuilder(
       valueListenable: showInlineAddTask,
       builder: (context, value, child) {
@@ -110,7 +104,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
     if (overview.doneTasks.isEmpty || !widget.showCompletedTask) {
       return const SizedBox.shrink();
     }
-
+    final taskListId = widget.taskList.eventIdStr();
     return Column(
       children: [
         const SizedBox(height: 10),
