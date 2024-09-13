@@ -81,7 +81,7 @@ final maybeSpaceInfoProvider =
   final membership = await space.getMyMembership();
   return SpaceItem(
     space: space,
-    roomId: space.getRoomIdStr(),
+    roomId: spaceId,
     membership: membership,
     activeMembers: [],
     avatarInfo: avatarInfo,
