@@ -11,6 +11,7 @@ import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/space/actions/unlink_child_room.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -122,30 +123,23 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //Parent space
   Widget parentSpaceDataUI() {
-    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
+    final space = ref.watch(selectedSpaceDetailsProvider);
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: spaceDetails.when(
-        data: (space) {
-          if (space == null) return const SizedBox.shrink();
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(L10n.of(context).parentSpace),
-              SpaceChip(
-                spaceId: space.roomId,
-                onTapOpenSpaceDetail: false,
-              ),
-            ],
-          );
-        },
-        error: (e, s) {
-          _log.severe('Failed to load the details of selected space', e, s);
-          return errorUI(L10n.of(context).loadingFailed(e));
-        },
-        loading: () => Container(),
-      ),
+      child: space.map(
+            (p0) => Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(L10n.of(context).parentSpace),
+                SpaceChip(
+                  spaceId: p0.roomId,
+                  onTapOpenSpaceDetail: false,
+                ),
+              ],
+            ),
+          ) ??
+          const SizedBox.shrink(),
     );
   }
 

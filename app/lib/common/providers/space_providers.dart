@@ -93,14 +93,12 @@ final selectedSpaceIdProvider =
     StateProvider.autoDispose<String?>((ref) => null);
 
 /// gives current context space details based on id, will throw null if id is null
-final selectedSpaceDetailsProvider =
-    FutureProvider.autoDispose<SpaceItem?>((ref) async {
+final selectedSpaceDetailsProvider = Provider.autoDispose<SpaceItem?>((ref) {
   final selectedSpaceId = ref.watch(selectedSpaceIdProvider);
   if (selectedSpaceId == null) {
     return null;
   }
-
-  return await ref.watch(briefSpaceItemProvider(selectedSpaceId).future);
+  return ref.watch(briefSpaceItemProvider(selectedSpaceId));
 });
 
 class SpaceItem {
@@ -210,11 +208,10 @@ final searchedSpacesProvider =
 /// (only spaceProfileData, no activeMembers). Stays up to date with underlying
 /// client info
 final briefSpaceItemProvider =
-    FutureProvider.autoDispose.family<SpaceItem, String>((ref, spaceId) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
+    Provider.autoDispose.family<SpaceItem, String>((ref, spaceId) {
   final avatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
   return SpaceItem(
-    roomId: space.getRoomIdStr(),
+    roomId: spaceId,
     membership: null,
     activeMembers: [],
     avatarInfo: avatarInfo,
