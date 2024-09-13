@@ -3,6 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/widgets/related/chats_helpers.dart';
 import 'package:acter/features/space/widgets/related/util.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,6 +25,17 @@ class ChatsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final suggestedChats =
+        ref.watch(suggestedChatsProvider(spaceId)).valueOrNull;
+    if (suggestedChats != null &&
+        (suggestedChats.$1.isNotEmpty || suggestedChats.$2.isNotEmpty)) {
+      return buildSuggestedChatsSectionUI(
+        context,
+        ref,
+        suggestedChats.$1,
+        suggestedChats.$2,
+      );
+    }
     final overviewLoader = ref.watch(spaceRelationsOverviewProvider(spaceId));
     return overviewLoader.when(
       data: (overview) => buildChatsSectionUI(
@@ -42,6 +54,51 @@ class ChatsSection extends ConsumerWidget {
           child: Text(L10n.of(context).loading),
         ),
       ),
+    );
+  }
+
+  Widget buildSuggestedChatsSectionUI(
+    BuildContext context,
+    WidgetRef ref,
+    List<String> suggestedLocalChats,
+    List<SpaceHierarchyRoomInfo> suggestedRemoteChats,
+  ) {
+    final config = calculateSectionConfig(
+      localListLen: suggestedLocalChats.length,
+      limit: limit,
+      remoteListLen: suggestedRemoteChats.length,
+    );
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionHeader(
+          title: L10n.of(context).suggestedChats,
+          isShowSeeAllButton: true,
+          onTapSeeAll: () => context.pushNamed(
+            Routes.spaceChats.name,
+            pathParameters: {'spaceId': spaceId},
+          ),
+        ),
+        chatsListUI(
+          ref,
+          spaceId,
+          suggestedLocalChats,
+          config.listingLimit,
+          showOptions: false,
+          showSuggestedMarkIfGiven: false,
+        ),
+        if (config.renderRemote)
+          renderRemoteChats(
+            context,
+            ref,
+            spaceId,
+            suggestedRemoteChats,
+            config.remoteCount,
+            showSuggestedMarkIfGiven: false,
+            renderMenu: false,
+          ),
+      ],
     );
   }
 

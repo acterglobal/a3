@@ -1,9 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/room/room_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RoomHierarchyCard extends ConsumerWidget {
@@ -77,8 +75,8 @@ class RoomHierarchyCard extends ConsumerWidget {
   /// Custom trailing widget.
   final Widget? trailing;
 
-  /// Whether to show the suggested icon if this is a suggested space
-  final bool showIconIfSuggested;
+  /// Whether to show the suggested info if this is a suggested room
+  final bool indicateIfSuggested;
 
   const RoomHierarchyCard({
     super.key,
@@ -94,7 +92,7 @@ class RoomHierarchyCard extends ConsumerWidget {
     this.contentPadding = const EdgeInsets.all(15),
     this.shape,
     this.withBorder = true,
-    this.showIconIfSuggested = false,
+    this.indicateIfSuggested = false,
     this.trailing,
   });
 
@@ -102,22 +100,11 @@ class RoomHierarchyCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = roomInfo.roomIdStr();
     final avatarInfo = ref.watch(roomHierarchyAvatarInfoProvider(roomInfo));
-    final topic = roomInfo.topic();
-    bool showSuggested = showIconIfSuggested && roomInfo.suggested();
-    final Widget? subtitle = topic?.isNotEmpty == true
-        ? ExpandableText(
-            topic!,
-            maxLines: 2,
-            expandText: L10n.of(context).showMore,
-            collapseText: L10n.of(context).showLess,
-            linkColor: Theme.of(context).colorScheme.primary,
-          )
-        : null;
+    bool showSuggested = indicateIfSuggested && roomInfo.suggested();
 
     return RoomWithAvatarInfoCard(
       roomId: roomId,
       avatarInfo: avatarInfo,
-      subtitle: subtitle,
       onTap: onTap ?? () {},
       onFocusChange: onFocusChange,
       onLongPress: onLongPress,

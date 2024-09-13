@@ -19,7 +19,7 @@ final shouldShowSuggestedProvider =
     }
 
     final suggestedRooms =
-        await ref.watch(suggestedRoomsProvider(spaceId).future);
+        await ref.watch(roomsToSuggestProvider(spaceId).future);
     // only if we really have some remote rooms that the user is suggested and not yet in
     return suggestedRooms.chats.isNotEmpty || suggestedRooms.spaces.isNotEmpty;
   } catch (e, s) {
@@ -33,11 +33,14 @@ typedef SuggestedRooms = ({
   List<SpaceHierarchyRoomInfo> chats
 });
 
-final suggestedRoomsProvider =
+// Will show the room _to_ suggest to the user, ergo excludes rooms they are
+// already in
+final roomsToSuggestProvider =
     FutureProvider.family<SuggestedRooms, String>((ref, roomId) async {
   final chats = await ref.watch(remoteChatRelationsProvider(roomId).future);
   final spaces =
       await ref.watch(remoteSubspaceRelationsProvider(roomId).future);
+
   return (
     chats: chats.where((r) => r.suggested()).toList(),
     spaces: spaces.where((r) => r.suggested()).toList()

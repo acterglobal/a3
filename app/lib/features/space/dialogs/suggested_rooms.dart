@@ -34,7 +34,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
     super.initState();
 
     ref.listenManual(
-      suggestedRoomsProvider(widget.spaceId),
+      roomsToSuggestProvider(widget.spaceId),
       (prev, next) {
         if (next.hasValue) {
           setState(() {
