@@ -1,5 +1,5 @@
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/widgets/chat/convo_card.dart';
+import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';

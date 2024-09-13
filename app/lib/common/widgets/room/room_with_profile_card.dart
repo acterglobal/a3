@@ -1,14 +1,15 @@
-import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/common/widgets/visibility/visibility_chip.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 
-typedef SubtitleFn = Widget? Function(Space);
-
-class SpaceCard extends ConsumerWidget {
+class RoomWithAvatarInfoCard extends StatelessWidget {
   final String roomId;
-  final SubtitleFn? subtitleFn;
+  final AvatarInfo avatarInfo;
+  final List<AvatarInfo>? parents;
+  final Widget? subtitle;
+  final Widget? trailing;
   final double avatarSize;
 
   /// Called when the user taps this list tile.
@@ -66,20 +67,11 @@ class SpaceCard extends ConsumerWidget {
   /// with a circular corner radius of 4.0.
   final ShapeBorder? shape;
 
-  /// Whether or not to render a border around that element.
-  ///
-  /// Overwritten if you provider a `shape`. Otherwise, if set to true renders
-  /// the default border.
-  final bool withBorder;
-
-  /// Custom Trailing Widget
-  final Widget? trailing;
-
-  /// Whether or not to render the parent Icon
+  /// Whether or not to render the parent(s) Icon
   ///
   final bool showParents;
 
-  /// Whether or not to render the suggested Icon
+  /// Whether or not to render the suggested icon
   ///
   final bool showSuggestedMark;
 
@@ -87,69 +79,94 @@ class SpaceCard extends ConsumerWidget {
   ///
   final bool showVisibilityMark;
 
-  const SpaceCard({
+  const RoomWithAvatarInfoCard({
     super.key,
     required this.roomId,
-    this.subtitleFn,
+    required this.avatarInfo,
+    this.parents,
+    this.subtitle,
+    this.trailing,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
     this.titleTextStyle,
     this.subtitleTextStyle,
     this.leadingAndTrailingTextStyle,
-    this.avatarSize = 48,
-    this.contentPadding =
-        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    this.margin,
     this.shape,
-    this.withBorder = true,
     this.showParents = true,
-    this.showSuggestedMark = false,
-    this.showVisibilityMark = false,
-    this.trailing,
-  });
-
-  const SpaceCard.small({
-    super.key,
-    required this.roomId,
-    this.subtitleFn,
-    this.onTap,
-    this.onLongPress,
-    this.onFocusChange,
-    this.titleTextStyle,
-    this.subtitleTextStyle,
-    this.leadingAndTrailingTextStyle,
-    this.avatarSize = 24,
-    this.contentPadding = const EdgeInsets.all(5),
     this.margin,
-    this.shape,
-    this.withBorder = false,
-    this.showParents = false,
     this.showSuggestedMark = false,
     this.showVisibilityMark = false,
-    this.trailing,
+    required this.avatarSize,
+    required this.contentPadding,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-    final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
+  Widget build(BuildContext context) {
+    final displayName = avatarInfo.displayName;
+    final title = displayName?.isNotEmpty == true ? displayName! : roomId;
 
-    return SpaceWithAvatarInfoCard(
-      margin: margin,
-      roomId: roomId,
-      avatarInfo: avatarInfo,
-      parents: parents,
-      onTap: onTap,
-      onFocusChange: onFocusChange,
-      onLongPress: onLongPress,
-      avatarSize: avatarSize,
-      contentPadding: contentPadding,
-      shape: shape,
-      showParents: showParents,
-      showSuggestedMark: showSuggestedMark,
-      showVisibilityMark: showVisibilityMark,
-      trailing: trailing,
+    final avatar = ActerAvatar(
+      options: AvatarOptions(
+        AvatarInfo(
+          uniqueId: roomId,
+          displayName: title,
+          avatar: avatarInfo.avatar,
+        ),
+        parentBadges: showParents ? parents : [],
+        size: avatarSize,
+        badgesSize: avatarSize / 2,
+      ),
     );
+
+    return Card(
+      margin: margin,
+      child: ListTile(
+        contentPadding: contentPadding,
+        onTap: onTap ?? () => context.push('/$roomId'),
+        onFocusChange: onFocusChange,
+        onLongPress: onLongPress,
+        titleTextStyle: titleTextStyle,
+        subtitleTextStyle: subtitleTextStyle,
+        leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
+        title: Text(title, overflow: TextOverflow.ellipsis),
+        subtitle: buildSubtitle(context),
+        leading: avatar,
+        trailing: trailing,
+      ),
+    );
+  }
+
+  Widget? buildSubtitle(BuildContext context) {
+    List<Widget> subtitles = [];
+
+    //SHOW SPACE VISIBILITY INDICATION
+    if (showVisibilityMark) {
+      final visibilityWidget = VisibilityChip(
+        roomId: roomId,
+        useCompactView: true,
+      );
+      subtitles.add(visibilityWidget);
+    }
+
+    //SHOW SUGGEST LABEL
+    if (showSuggestedMark) {
+      //ADD SEPARATION
+      if (subtitles.isNotEmpty) subtitles.add(const Text(' - '));
+
+      final suggestedWidget = Text(
+        L10n.of(context).suggested,
+        style: Theme.of(context).textTheme.labelSmall,
+      );
+      subtitles.add(suggestedWidget);
+
+      //ADD CUSTOM SUBTITLE IF AVAILABLE
+      if (subtitle != null) {
+        subtitles.add(const Text(' - '));
+        subtitles.add(subtitle!);
+      }
+    }
+
+    return Row(children: subtitles);
   }
 }
