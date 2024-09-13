@@ -180,12 +180,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             hintText: L10n.of(context).hintMessageDisplayName,
           ),
           style: Theme.of(context).textTheme.labelLarge,
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).missingName;
-            }
-            return null;
-          },
+          // required field, space not allowed
+          validator: (val) => val == null || val.trim().isEmpty
+              ? L10n.of(context).missingName
+              : null,
         ),
       ],
     );
@@ -215,6 +213,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             }),
           ],
           style: Theme.of(context).textTheme.labelLarge,
+          // required field, space not allowed
           validator: (val) {
             if (val == null || val.trim().isEmpty) {
               return L10n.of(context).emptyUsername;
@@ -259,12 +258,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             ),
           ],
           style: Theme.of(context).textTheme.labelLarge,
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyPassword;
-            }
-            return null;
-          },
+          // required field, space allowed
+          validator: (val) => val == null || val.isEmpty
+              ? L10n.of(context).emptyPassword
+              : null,
         ),
       ],
     );
@@ -300,12 +297,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             ),
           ],
           style: Theme.of(context).textTheme.labelLarge,
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyToken;
-            }
-            return null;
-          },
+          // required field, space not allowed
+          validator: (val) => val == null || val.trim().isEmpty
+              ? L10n.of(context).emptyToken
+              : null,
         ),
       ],
     );

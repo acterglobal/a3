@@ -96,8 +96,8 @@ class _CreateSuperInviteTokenPageConsumerState
                         key: CreateSuperInviteTokenPage.tokenFieldKey,
                         textInputType: TextInputType.text,
                         controller: _tokenController,
-                        validator: (String? val) => (val?.isNotEmpty == true &&
-                                val!.length < 6)
+                        // required field
+                        validator: (val) => val == null || val.length < 6
                             ? L10n.of(context).codeMustBeAtLeast6CharactersLong
                             : null,
                       ),

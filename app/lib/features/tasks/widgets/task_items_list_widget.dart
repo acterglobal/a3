@@ -194,12 +194,10 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
             _handleSubmit(context);
           }
         },
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return L10n.of(context).aTaskMustHaveATitle;
-          }
-          return null;
-        },
+        // required field, space not allowed
+        validator: (val) => val == null || val.trim().isEmpty
+            ? L10n.of(context).aTaskMustHaveATitle
+            : null,
       ),
     );
   }

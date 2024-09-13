@@ -55,7 +55,8 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
                     },
                   ),
                 ),
-                validator: (v) => (v == null || v.isEmpty)
+                // required field, space not allowed
+                validator: (val) => val == null || val.trim().isEmpty
                     ? L10n.of(context).encryptionBackupRecoverProvideKey
                     : null,
               ),
