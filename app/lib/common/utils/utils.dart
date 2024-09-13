@@ -263,9 +263,7 @@ Future<void> uploadAvatar(
 ) async {
   final room = await ref.read(maybeRoomProvider(roomId).future);
   if (room == null || !context.mounted) return;
-  FilePickerResult? result = await FilePicker.platform.pickFiles(
-    type: FileType.image,
-  );
+  final result = await FilePicker.platform.pickFiles(type: FileType.image);
   if (result == null || result.files.isEmpty) return;
   try {
     if (!context.mounted) return;

@@ -14,6 +14,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 class SpaceActionsSection extends ConsumerWidget {
   static const createChatAction = Key('space-action-create-chat');
   static const createSpaceAction = Key('space-action-create-space');
+
   final String spaceId;
 
   const SpaceActionsSection({
@@ -54,14 +55,13 @@ class SpaceActionsSection extends ConsumerWidget {
           title: L10n.of(context).createNewUpdate,
           onPressed: () async {
             if (!canPostUpdate && canChangeSetting) {
-              if (!await offerToActivateFeature(
+              final result = await offerToActivateFeature(
                 context: context,
                 ref: ref,
                 spaceId: spaceId,
                 feature: SpaceFeature.updates,
-              )) {
-                return;
-              }
+              );
+              if (!result) return;
             }
             if (context.mounted) {
               context.pushNamed(
@@ -78,14 +78,13 @@ class SpaceActionsSection extends ConsumerWidget {
           title: L10n.of(context).addPin,
           onPressed: () async {
             if (!canAddPin && canChangeSetting) {
-              if (!await offerToActivateFeature(
+              final result = await offerToActivateFeature(
                 context: context,
                 ref: ref,
                 spaceId: spaceId,
                 feature: SpaceFeature.pins,
-              )) {
-                return;
-              }
+              );
+              if (!result) return;
             }
             if (context.mounted) {
               context.pushNamed(
@@ -102,14 +101,13 @@ class SpaceActionsSection extends ConsumerWidget {
           title: L10n.of(context).addEvent,
           onPressed: () async {
             if (!canAddEvent && canChangeSetting) {
-              if (!await offerToActivateFeature(
+              final result = await offerToActivateFeature(
                 context: context,
                 ref: ref,
                 spaceId: spaceId,
                 feature: SpaceFeature.events,
-              )) {
-                return;
-              }
+              );
+              if (!result) return;
             }
             if (context.mounted) {
               context.pushNamed(
@@ -126,14 +124,13 @@ class SpaceActionsSection extends ConsumerWidget {
           title: L10n.of(context).addTask,
           onPressed: () async {
             if (!canAddEvent && canChangeSetting) {
-              if (!await offerToActivateFeature(
+              final result = await offerToActivateFeature(
                 context: context,
                 ref: ref,
                 spaceId: spaceId,
                 feature: SpaceFeature.tasks,
-              )) {
-                return;
-              }
+              );
+              if (!result) return;
             }
             if (context.mounted) {
               showCreateUpdateTaskListBottomSheet(

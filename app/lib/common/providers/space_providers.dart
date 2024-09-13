@@ -244,9 +244,7 @@ final spaceRelationsOverviewProvider =
   final List<String> knownSubspaces = [];
   final List<String> knownChats = [];
   final List<String> suggested = [];
-  List<Space> otherRelated = [];
-  final children = relatedSpaces.children();
-  for (final related in children) {
+  for (final related in relatedSpaces.children()) {
     String targetType = related.targetType();
     final roomId = related.roomId().toString();
     if (related.suggested()) {
@@ -267,34 +265,28 @@ final spaceRelationsOverviewProvider =
       knownSubspaces.add(roomId);
     }
   }
-  List<Space> parents = [];
 
   Space? mainParent;
   final mainSpace = relatedSpaces.mainParent();
   if (mainSpace != null) {
-    String targetType = mainSpace.targetType();
-    if (targetType != 'ChatRoom') {
+    if (mainSpace.targetType() != 'ChatRoom') {
       final roomId = mainSpace.roomId().toString();
       try {
         final space = await ref.watch(spaceProvider(roomId).future);
-        if (space.isJoined()) {
-          mainParent = space;
-        }
+        if (space.isJoined()) mainParent = space;
       } catch (e, s) {
         _log.severe('Loading main Parent of $spaceId failed', e, s);
       }
     }
   }
 
+  List<Space> parents = [];
   for (final related in relatedSpaces.otherParents()) {
-    String targetType = related.targetType();
-    if (targetType != 'ChatRoom') {
+    if (related.targetType() != 'ChatRoom') {
       final roomId = related.roomId().toString();
       try {
         final space = await ref.watch(spaceProvider(roomId).future);
-        if (space.isJoined()) {
-          parents.add(space);
-        }
+        if (space.isJoined()) parents.add(space);
       } catch (e, s) {
         _log.severe('Loading other Parents of $spaceId failed', e, s);
       }
@@ -305,7 +297,7 @@ final spaceRelationsOverviewProvider =
     parents: parents,
     knownChats: knownChats,
     knownSubspaces: knownSubspaces,
-    otherRelations: otherRelated,
+    otherRelations: [],
     mainParent: mainParent,
     hasMore: hasMore,
     suggestedIds: suggested,

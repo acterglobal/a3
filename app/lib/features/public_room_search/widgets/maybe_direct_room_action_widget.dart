@@ -1,9 +1,9 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +16,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
   final bool canMatchAlias;
   final bool canMatchId;
   final String searchVal;
+
   const MaybeDirectRoomActionWidget({
     super.key,
     required this.searchVal,
@@ -30,7 +31,10 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String server,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 20,
+      ),
       child: Card(
         child: ListTile(
           onTap: () => onSelectedMatch(context, ref, [server], alias: alias),
@@ -83,38 +87,27 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     final room = roomWatch.value!;
 
     if (room.isJoined()) {
-      if (room.isSpace()) {
-        return renderSpaceCard(
-          context,
-          ref,
-          roomId,
-          onTap: () => context.pushNamed(
-            Routes.space.name,
-            pathParameters: {
-              'spaceId': roomId,
-            },
-          ),
-        );
-      }
-      return renderConvoCard(
-        context,
-        ref,
-        roomId,
-        onTap: () => context.pushNamed(
-          Routes.chatroom.name,
-          pathParameters: {
-            'roomId': roomId,
-          },
-        ),
-      );
+      return room.isSpace()
+          ? renderSpaceCard(
+              roomId,
+              onTap: () => context.pushNamed(
+                Routes.space.name,
+                pathParameters: {'spaceId': roomId},
+              ),
+            )
+          : renderConvoCard(
+              roomId,
+              onTap: () => context.pushNamed(
+                Routes.chatroom.name,
+                pathParameters: {'roomId': roomId},
+              ),
+            );
     }
 
     final trailing = noMemberButton(context, ref, room, roomId, servers);
-
-    if (room.isSpace()) {
-      return renderSpaceCard(context, ref, roomId, trailing: trailing);
-    }
-    return renderConvoCard(context, ref, roomId, trailing: trailing);
+    return room.isSpace()
+        ? renderSpaceCard(roomId, trailing: trailing)
+        : renderConvoCard(roomId, trailing: trailing);
   }
 
   Widget noMemberButton(
@@ -157,8 +150,6 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
   }
 
   Widget renderSpaceCard(
-    BuildContext context,
-    WidgetRef ref,
     String roomId, {
     void Function()? onTap,
     Widget? trailing,
@@ -172,8 +163,6 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
   }
 
   Widget renderConvoCard(
-    BuildContext context,
-    WidgetRef ref,
     String roomId, {
     void Function()? onTap,
     Widget? trailing,
