@@ -31,6 +31,13 @@ class TaskItemsListWidget extends ConsumerStatefulWidget {
 
 class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
   final ValueNotifier<bool> showInlineAddTask = ValueNotifier(false);
+  late String taskListId;
+
+  @override
+  void initState() {
+    super.initState();
+    taskListId = widget.taskList.eventIdStr();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +74,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
         for (final taskId in overview.openTasks)
           TaskItem(
             onTap: () => showInlineAddTask.value = false,
-            taskListId: widget.taskList.eventIdStr(),
+            taskListId: taskListId,
             taskId: taskId,
           ),
       ],
@@ -75,7 +82,6 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
   }
 
   Widget inlineAddTask() {
-    final taskListEventId = widget.taskList.eventIdStr();
     return ValueListenableBuilder(
       valueListenable: showInlineAddTask,
       builder: (context, value, child) {
@@ -91,7 +97,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
                   vertical: 8,
                 ),
                 child: ActerInlineTextButton(
-                  key: Key('task-list-$taskListEventId-add-task-inline'),
+                  key: Key('task-list-$taskListId-add-task-inline'),
                   onPressed: () => showInlineAddTask.value = true,
                   child: Text(L10n.of(context).addTask),
                 ),
@@ -119,7 +125,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
         ),
         for (final taskId in overview.doneTasks)
           TaskItem(
-            taskListId: widget.taskList.eventIdStr(),
+            taskListId: taskListId,
             taskId: taskId,
             onTap: () => showInlineAddTask.value = false,
           ),
