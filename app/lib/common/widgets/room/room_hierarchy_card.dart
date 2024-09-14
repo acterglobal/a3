@@ -1,14 +1,17 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
+import 'package:acter/common/widgets/room/room_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-typedef SubtitleFn = Widget? Function(Space);
+class RoomHierarchyCard extends ConsumerWidget {
+  /// The room info to display
+  final SpaceHierarchyRoomInfo roomInfo;
 
-class SpaceCard extends ConsumerWidget {
-  final String roomId;
-  final SubtitleFn? subtitleFn;
+  /// The parent roomId this is rendered for
+  final String parentId;
+
+  /// the Size of the Avatar to render
   final double avatarSize;
 
   /// Called when the user taps this list tile.
@@ -54,9 +57,6 @@ class SpaceCard extends ConsumerWidget {
   /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
   final EdgeInsetsGeometry? contentPadding;
 
-  /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
-  final EdgeInsetsGeometry? margin;
-
   /// The shape of the card’s [Material].
   ///
   /// Defines the card’s [Material.shape].
@@ -72,25 +72,16 @@ class SpaceCard extends ConsumerWidget {
   /// the default border.
   final bool withBorder;
 
-  /// Custom Trailing Widget
+  /// Custom trailing widget.
   final Widget? trailing;
 
-  /// Whether or not to render the parent Icon
-  ///
-  final bool showParents;
+  /// Whether to show the suggested info if this is a suggested room
+  final bool indicateIfSuggested;
 
-  /// Whether or not to render the suggested Icon
-  ///
-  final bool showSuggestedMark;
-
-  /// Whether or not to render the visibility icon
-  ///
-  final bool showVisibilityMark;
-
-  const SpaceCard({
+  const RoomHierarchyCard({
     super.key,
-    required this.roomId,
-    this.subtitleFn,
+    required this.roomInfo,
+    required this.parentId,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
@@ -98,57 +89,29 @@ class SpaceCard extends ConsumerWidget {
     this.subtitleTextStyle,
     this.leadingAndTrailingTextStyle,
     this.avatarSize = 48,
-    this.contentPadding =
-        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    this.margin,
+    this.contentPadding = const EdgeInsets.all(15),
     this.shape,
     this.withBorder = true,
-    this.showParents = true,
-    this.showSuggestedMark = false,
-    this.showVisibilityMark = false,
-    this.trailing,
-  });
-
-  const SpaceCard.small({
-    super.key,
-    required this.roomId,
-    this.subtitleFn,
-    this.onTap,
-    this.onLongPress,
-    this.onFocusChange,
-    this.titleTextStyle,
-    this.subtitleTextStyle,
-    this.leadingAndTrailingTextStyle,
-    this.avatarSize = 24,
-    this.contentPadding = const EdgeInsets.all(5),
-    this.margin,
-    this.shape,
-    this.withBorder = false,
-    this.showParents = false,
-    this.showSuggestedMark = false,
-    this.showVisibilityMark = false,
+    this.indicateIfSuggested = false,
     this.trailing,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-    final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
+    final roomId = roomInfo.roomIdStr();
+    final avatarInfo = ref.watch(roomHierarchyAvatarInfoProvider(roomInfo));
+    bool showSuggested = indicateIfSuggested && roomInfo.suggested();
 
-    return SpaceWithAvatarInfoCard(
-      margin: margin,
+    return RoomWithAvatarInfoCard(
       roomId: roomId,
       avatarInfo: avatarInfo,
-      parents: parents,
-      onTap: onTap,
+      onTap: onTap ?? () {},
       onFocusChange: onFocusChange,
       onLongPress: onLongPress,
       avatarSize: avatarSize,
       contentPadding: contentPadding,
       shape: shape,
-      showParents: showParents,
-      showSuggestedMark: showSuggestedMark,
-      showVisibilityMark: showVisibilityMark,
+      showSuggestedMark: showSuggested,
       trailing: trailing,
     );
   }

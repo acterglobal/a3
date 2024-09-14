@@ -1,8 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/chat/convo_card.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -88,14 +87,14 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
 
     if (room.isJoined()) {
       return room.isSpace()
-          ? renderSpaceCard(
+          ? renderRoomCard(
               roomId,
               onTap: () => context.pushNamed(
                 Routes.space.name,
                 pathParameters: {'spaceId': roomId},
               ),
             )
-          : renderConvoCard(
+          : renderRoomCard(
               roomId,
               onTap: () => context.pushNamed(
                 Routes.chatroom.name,
@@ -106,8 +105,14 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
 
     final trailing = noMemberButton(context, ref, room, roomId, servers);
     return room.isSpace()
-        ? renderSpaceCard(roomId, trailing: trailing)
-        : renderConvoCard(roomId, trailing: trailing);
+        ? renderRoomCard(
+            roomId,
+            trailing: trailing,
+          )
+        : renderRoomCard(
+            roomId,
+            trailing: trailing,
+          );
   }
 
   Widget noMemberButton(
@@ -149,25 +154,12 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     );
   }
 
-  Widget renderSpaceCard(
+  Widget renderRoomCard(
     String roomId, {
     void Function()? onTap,
     Widget? trailing,
   }) {
-    return SpaceCard(
-      roomId: roomId,
-      showParents: true,
-      onTap: onTap,
-      trailing: trailing,
-    );
-  }
-
-  Widget renderConvoCard(
-    String roomId, {
-    void Function()? onTap,
-    Widget? trailing,
-  }) {
-    return ConvoCard(
+    return RoomCard(
       roomId: roomId,
       showParents: true,
       onTap: onTap,
@@ -196,7 +188,10 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
         id.namedGroup('server_name3') ?? '',
       ].where((e) => e.isNotEmpty).toList();
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 10,
+        ),
         child: renderForRoomId(context, ref, '!$roomId', servers),
       );
     }

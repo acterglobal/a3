@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/chat/convo_with_avatar_card.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -13,8 +12,10 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/features/chat/widgets/room_avatar.dart';
 
-final _log = Logger('a3::common::chat::convo_card');
+final _log = Logger('a3::chat::convo_card');
 
 class ConvoCard extends ConsumerWidget {
   final String roomId;
@@ -44,23 +45,105 @@ class ConvoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final titleIsLoading = !ref.watch(roomDisplayNameProvider(roomId)).hasValue;
-    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-    // ToDo: UnreadCounter
-    return ConvoWithAvatarInfoCard(
-      animation: animation,
-      roomId: roomId,
-      showParents: showParents,
-      showSuggestedMark: showSuggestedMark,
-      avatarInfo: roomAvatarInfo,
-      onTap: onTap,
-      title: titleIsLoading ? Skeletonizer(child: Text(roomId)) : null,
-      showSelectedIndication: showSelectedIndication,
-      subtitle: _SubtitleWidget(
-        roomId: roomId,
-      ),
-      trailing: trailing ?? renderTrailing(context, ref),
+    if (animation != null) {
+      return SizeTransition(
+        sizeFactor: animation!,
+        child: buildInner(context, ref),
+      );
+    }
+    return buildInner(context, ref);
+  }
+
+  Widget buildInner(BuildContext context, WidgetRef ref) {
+    final displayNameProvider = ref.watch(roomDisplayNameProvider(roomId));
+    final titleIsLoading = displayNameProvider.isLoading;
+    final displayName = displayNameProvider.valueOrNull ?? roomId;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Material(
+              color: Colors.transparent,
+              child: ListTile(
+                dense: true,
+                onTap: onTap,
+                selected: showSelectedIndication &&
+                    roomId == ref.watch(selectedChatIdProvider),
+                selectedTileColor: Theme.of(context).colorScheme.primary,
+                leading: avatarWithIndicator(context, ref),
+                title: titleIsLoading
+                    ? Skeletonizer(child: Text(roomId))
+                    : Text(
+                        displayName,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(fontWeight: FontWeight.w700),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                subtitle: buildSubtitle(context, constraints),
+                trailing: constraints.maxWidth < 300 ? null : trailing,
+              ),
+            ),
+          ],
+        );
+      },
     );
+  }
+
+  Widget? buildSubtitle(BuildContext context, BoxConstraints constraints) {
+    if (!showSuggestedMark) {
+      return constraints.maxWidth < 300
+          ? null
+          : _SubtitleWidget(
+              roomId: roomId,
+            );
+    }
+
+    return Row(
+      children: [
+        Text(
+          L10n.of(context).suggested,
+          style: Theme.of(context).textTheme.labelSmall,
+        ),
+        const SizedBox(width: 2),
+        Expanded(
+          child: _SubtitleWidget(
+            roomId: roomId,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget avatarWithIndicator(BuildContext context, WidgetRef ref) {
+    final unreadCounters =
+        ref.watch(unreadCountersProvider(roomId)).valueOrNull;
+
+    final child = RoomAvatar(roomId: roomId, showParents: showParents);
+    if (unreadCounters == null) {
+      return child;
+    }
+
+    if (unreadCounters.$1 > 0) {
+      return Badge(
+        backgroundColor: Theme.of(context).colorScheme.badgeImportant,
+        child: child,
+      );
+    } else if (unreadCounters.$2 > 0) {
+      return Badge(
+        backgroundColor: Theme.of(context).colorScheme.badgeUrgent,
+        child: child,
+      );
+    } else if (unreadCounters.$3 > 0) {
+      return Badge(
+        backgroundColor: Theme.of(context).colorScheme.badgeUnread,
+        child: child,
+      );
+    }
+    // nothing urgent enough for us to indicate anything
+    return child;
   }
 
   Widget renderTrailing(BuildContext context, WidgetRef ref) {

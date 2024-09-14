@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +88,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
         } else {
           roomId = others[index - bookmarked.length].getRoomIdStr();
         }
-        return SpaceCard(
+        return RoomCard(
           onTap: () => context.pushNamed(
             Routes.space.name,
             pathParameters: {'spaceId': roomId},

@@ -1,22 +1,14 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/chat/convo_with_avatar_card.dart';
-import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
-import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
-import 'package:acter/router/utils.dart';
-import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter/common/widgets/room/room_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ConvoHierarchyCard extends ConsumerWidget {
-  /// The room info to display
-  final SpaceHierarchyRoomInfo roomInfo;
+typedef SubtitleFn = Widget? Function(Space);
 
-  /// The parent roomId this is rendered for
-  final String parentId;
-
-  /// the Size of the Avatar to render
+class RoomCard extends ConsumerWidget {
+  final String roomId;
+  final SubtitleFn? subtitleFn;
   final double avatarSize;
 
   /// Called when the user taps this list tile.
@@ -62,6 +54,9 @@ class ConvoHierarchyCard extends ConsumerWidget {
   /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
   final EdgeInsetsGeometry? contentPadding;
 
+  /// If null, `EdgeInsets.symmetric(horizontal: 16.0)` is used.
+  final EdgeInsetsGeometry? margin;
+
   /// The shape of the card’s [Material].
   ///
   /// Defines the card’s [Material.shape].
@@ -77,16 +72,25 @@ class ConvoHierarchyCard extends ConsumerWidget {
   /// the default border.
   final bool withBorder;
 
-  /// Custom trailing widget.
+  /// Custom Trailing Widget
   final Widget? trailing;
 
-  /// Whether to show the suggested icon if this is a suggested chat
-  final bool showIconIfSuggested;
+  /// Whether or not to render the parent Icon
+  ///
+  final bool showParents;
 
-  const ConvoHierarchyCard({
+  /// Whether or not to render the suggested Icon
+  ///
+  final bool showSuggestedMark;
+
+  /// Whether or not to render the visibility icon
+  ///
+  final bool showVisibilityMark;
+
+  const RoomCard({
     super.key,
-    required this.roomInfo,
-    required this.parentId,
+    required this.roomId,
+    this.subtitleFn,
     this.onTap,
     this.onLongPress,
     this.onFocusChange,
@@ -94,58 +98,58 @@ class ConvoHierarchyCard extends ConsumerWidget {
     this.subtitleTextStyle,
     this.leadingAndTrailingTextStyle,
     this.avatarSize = 48,
-    this.contentPadding = const EdgeInsets.all(15),
+    this.contentPadding =
+        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    this.margin,
     this.shape,
     this.withBorder = true,
-    this.showIconIfSuggested = false,
+    this.showParents = true,
+    this.showSuggestedMark = false,
+    this.showVisibilityMark = false,
+    this.trailing,
+  });
+
+  const RoomCard.small({
+    super.key,
+    required this.roomId,
+    this.subtitleFn,
+    this.onTap,
+    this.onLongPress,
+    this.onFocusChange,
+    this.titleTextStyle,
+    this.subtitleTextStyle,
+    this.leadingAndTrailingTextStyle,
+    this.avatarSize = 24,
+    this.contentPadding = const EdgeInsets.all(5),
+    this.margin,
+    this.shape,
+    this.withBorder = false,
+    this.showParents = false,
+    this.showSuggestedMark = false,
+    this.showVisibilityMark = false,
     this.trailing,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomId = roomInfo.roomIdStr();
-    final avatarInfo = ref.watch(roomHierarchyAvatarInfoProvider(roomInfo));
-    final topic = roomInfo.topic();
-    final subtitle = topic?.isNotEmpty == true ? Text(topic!) : null;
-    bool showSuggested = showIconIfSuggested && roomInfo.suggested();
+    final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
+    final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
 
-    return ConvoWithAvatarInfoCard(
-      avatar: ActerAvatar(
-        options: AvatarOptions(
-          avatarInfo,
-          size: avatarSize,
-          badgesSize: avatarSize / 2,
-        ),
-      ),
+    return RoomWithAvatarInfoCard(
+      margin: margin,
       roomId: roomId,
       avatarInfo: avatarInfo,
-      showSuggestedMark: showSuggested,
-      subtitle: subtitle,
-      trailing: trailing ??
-          Wrap(
-            children: [
-              RoomHierarchyJoinButton(
-                joinRule: roomInfo.joinRuleStr().toLowerCase(),
-                roomId: roomId,
-                roomName: roomInfo.name() ?? roomId,
-                viaServerName: roomInfo.viaServerName(),
-                forward: (roomId) {
-                  goToChat(context, roomId);
-                  // make sure the UI refreshes when the user comes back here
-                  ref.invalidate(spaceRelationsProvider(parentId));
-                  ref.invalidate(spaceRemoteRelationsProvider(parentId));
-                },
-              ),
-              RoomHierarchyOptionsMenu(
-                isSuggested: roomInfo.suggested(),
-                childId: roomId,
-                parentId: parentId,
-              ),
-            ],
-          ),
+      parents: parents,
       onTap: onTap,
       onFocusChange: onFocusChange,
       onLongPress: onLongPress,
+      avatarSize: avatarSize,
+      contentPadding: contentPadding,
+      shape: shape,
+      showParents: showParents,
+      showSuggestedMark: showSuggestedMark,
+      showVisibilityMark: showVisibilityMark,
+      trailing: trailing,
     );
   }
 }
