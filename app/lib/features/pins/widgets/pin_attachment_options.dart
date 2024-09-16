@@ -104,7 +104,7 @@ class PinAttachmentOptions extends ConsumerWidget {
     BuildContext context,
     AttachmentType attachmentType,
   ) async {
-    await selectAttachment(ref, attachmentType);
+    await selectAttachment(L10n.of(context), ref, attachmentType);
     if (isBottomSheetOpen && context.mounted) {
       Navigator.pop(context);
     }
