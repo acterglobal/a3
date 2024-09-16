@@ -69,11 +69,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     );
   }
 
-  Widget? optionMenu(
-    WidgetRef ref,
-    ActerPin pin,
-    String link,
-  ) {
+  Widget? optionMenu(WidgetRef ref, ActerPin pin, String link) {
     //Get my membership details
     final membership =
         ref.read(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
@@ -125,7 +121,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     String title,
     String link,
   ) async {
-    var manager =
+    final manager =
         await ref.read(attachmentsManagerProvider(pin.attachments()).future);
     if (!context.mounted) return;
     //Make link empty on Pin Data

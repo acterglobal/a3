@@ -35,7 +35,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     final curSlide = ref.watch(newsStateProvider).currentNewsSlide;
     final keyboardVisibility = ref.watch(keyboardVisibleProvider);
     return Visibility(
-      visible: curSlide != null && !(keyboardVisibility.value == true),
+      visible: curSlide != null && keyboardVisibility.value != true,
       child: Container(
         color: Theme.of(context).colorScheme.primary,
         child: newsSlideListUI(context),

@@ -25,6 +25,7 @@ class SettingsMenu extends ConsumerWidget {
   static Key emailAddresses = const Key('settings-email-addresses');
   static Key chat = const Key('settings-chat');
   static Key labs = const Key('settings-labs');
+
   final bool isFullPage;
 
   const SettingsMenu({
@@ -40,12 +41,9 @@ class SettingsMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final replacementRouting = !isFullPage && context.isLargeScreen;
-
-    final isSuperInviteEnable =
-        ref.watch(hasSuperTokensAccess).valueOrNull == true;
+    final isBackupEnabled =
+        ref.watch(featuresProvider).isActive(LabsFeature.encryptionBackup);
     final helpMenuUrl = helpUrl;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -61,10 +59,14 @@ class SettingsMenu extends ConsumerWidget {
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.settingNotifications),
               ),
-              onTap: () => replacementRouting
-                  ? context
-                      .pushReplacementNamed(Routes.settingNotifications.name)
-                  : context.pushNamed(Routes.settingNotifications.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context
+                      .pushReplacementNamed(Routes.settingNotifications.name);
+                } else {
+                  context.pushNamed(Routes.settingNotifications.name);
+                }
+              },
             ),
             MenuItemWidget(
               innerKey: SettingsMenu.emailAddresses,
@@ -75,9 +77,13 @@ class SettingsMenu extends ConsumerWidget {
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.emailAddresses),
               ),
-              onTap: () => replacementRouting
-                  ? context.pushReplacementNamed(Routes.emailAddresses.name)
-                  : context.pushNamed(Routes.emailAddresses.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.emailAddresses.name);
+                } else {
+                  context.pushNamed(Routes.emailAddresses.name);
+                }
+              },
             ),
           ],
         ),
@@ -93,13 +99,15 @@ class SettingsMenu extends ConsumerWidget {
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.settingSessions),
               ),
-              onTap: () => replacementRouting
-                  ? context.pushReplacementNamed(Routes.settingSessions.name)
-                  : context.pushNamed(Routes.settingSessions.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingSessions.name);
+                } else {
+                  context.pushNamed(Routes.settingSessions.name);
+                }
+              },
             ),
-            if (ref
-                .watch(featuresProvider)
-                .isActive(LabsFeature.encryptionBackup))
+            if (isBackupEnabled)
               MenuItemWidget(
                 iconData: Atlas.key_website_thin,
                 iconColor: routedColor(context, ref, Routes.settingBackup),
@@ -108,9 +116,13 @@ class SettingsMenu extends ConsumerWidget {
                 titleStyles: TextStyle(
                   color: routedColor(context, ref, Routes.settingBackup),
                 ),
-                onTap: () => replacementRouting
-                    ? context.pushReplacementNamed(Routes.settingBackup.name)
-                    : context.pushNamed(Routes.settingBackup.name),
+                onTap: () {
+                  if (!isFullPage && context.isLargeScreen) {
+                    context.pushReplacementNamed(Routes.settingBackup.name);
+                  } else {
+                    context.pushNamed(Routes.settingBackup.name);
+                  }
+                },
               ),
             MenuItemWidget(
               iconData: Atlas.users_thin,
@@ -120,9 +132,13 @@ class SettingsMenu extends ConsumerWidget {
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.blockedUsers),
               ),
-              onTap: () => replacementRouting
-                  ? context.pushReplacementNamed(Routes.blockedUsers.name)
-                  : context.pushNamed(Routes.blockedUsers.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.blockedUsers.name);
+                } else {
+                  context.pushNamed(Routes.blockedUsers.name);
+                }
+              },
             ),
             MenuItemWidget(
               iconData: Atlas.passcode,
@@ -132,9 +148,13 @@ class SettingsMenu extends ConsumerWidget {
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.changePassword),
               ),
-              onTap: () => replacementRouting
-                  ? context.pushReplacementNamed(Routes.changePassword.name)
-                  : context.pushNamed(Routes.changePassword.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.changePassword.name);
+                } else {
+                  context.pushNamed(Routes.changePassword.name);
+                }
+              },
             ),
           ],
         ),
@@ -145,7 +165,7 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               innerKey: SettingsMenu.superInvitations,
               iconData: Atlas.plus_envelope_thin,
-              enabled: isSuperInviteEnable,
+              enabled: ref.watch(hasSuperTokensAccess).valueOrNull == true,
               iconColor: routedColor(context, ref, Routes.settingsSuperInvites),
               title: L10n.of(context).superInvitations,
               subTitle: L10n.of(context).manageYourInvitationCodes,
@@ -153,8 +173,8 @@ class SettingsMenu extends ConsumerWidget {
                 color: routedColor(context, ref, Routes.settingsSuperInvites),
               ),
               onTap: () {
-                if (!isSuperInviteEnable) return;
-                if (replacementRouting) {
+                if (ref.read(hasSuperTokensAccess).valueOrNull != true) return;
+                if (!isFullPage && context.isLargeScreen) {
                   context
                       .pushReplacementNamed(Routes.settingsSuperInvites.name);
                 } else {
@@ -177,9 +197,13 @@ class SettingsMenu extends ConsumerWidget {
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.settingsChat),
               ),
-              onTap: () => replacementRouting
-                  ? context.pushReplacementNamed(Routes.settingsChat.name)
-                  : context.pushNamed(Routes.settingsChat.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingsChat.name);
+                } else {
+                  context.pushNamed(Routes.settingsChat.name);
+                }
+              },
             ),
             MenuItemWidget(
               iconData: Atlas.language_translation,
@@ -189,9 +213,13 @@ class SettingsMenu extends ConsumerWidget {
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.settingLanguage),
               ),
-              onTap: () => replacementRouting
-                  ? context.pushReplacementNamed(Routes.settingLanguage.name)
-                  : context.pushNamed(Routes.settingLanguage.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingLanguage.name);
+                } else {
+                  context.pushNamed(Routes.settingLanguage.name);
+                }
+              },
             ),
             MenuItemWidget(
               key: SettingsMenu.labs,
@@ -202,9 +230,13 @@ class SettingsMenu extends ConsumerWidget {
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.settingsLabs),
               ),
-              onTap: () => replacementRouting
-                  ? context.pushReplacementNamed(Routes.settingsLabs.name)
-                  : context.pushNamed(Routes.settingsLabs.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingsLabs.name);
+                } else {
+                  context.pushNamed(Routes.settingsLabs.name);
+                }
+              },
             ),
             MenuItemWidget(
               iconData: Atlas.info_circle_thin,
@@ -213,9 +245,13 @@ class SettingsMenu extends ConsumerWidget {
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.info),
               ),
-              onTap: () => replacementRouting
-                  ? context.pushReplacementNamed(Routes.info.name)
-                  : context.pushNamed(Routes.info.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.info.name);
+                } else {
+                  context.pushNamed(Routes.info.name);
+                }
+              },
             ),
             if (helpMenuUrl != null)
               MenuItemWidget(

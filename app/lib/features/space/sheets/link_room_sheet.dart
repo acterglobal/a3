@@ -4,6 +4,7 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
@@ -11,7 +12,6 @@ import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/space/actions/unlink_child_room.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -123,31 +123,23 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //Parent space
   Widget parentSpaceDataUI() {
-    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
+    final space = ref.watch(selectedSpaceDetailsProvider);
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: spaceDetails.when(
-        data: (space) =>
-            space.map(
-              (p0) => Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(L10n.of(context).parentSpace),
-                  SpaceChip(
-                    spaceId: p0.roomId,
-                    onTapOpenSpaceDetail: false,
-                  ),
-                ],
-              ),
-            ) ??
-            const SizedBox.shrink(),
-        error: (e, s) {
-          _log.severe('Failed to load the details of selected space', e, s);
-          return errorUI(L10n.of(context).loadingFailed(e));
-        },
-        loading: () => Container(),
-      ),
+      child: space.let(
+            (p0) => Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(L10n.of(context).parentSpace),
+                SpaceChip(
+                  spaceId: p0.roomId,
+                  onTapOpenSpaceDetail: false,
+                ),
+              ],
+            ),
+          ) ??
+          const SizedBox.shrink(),
     );
   }
 

@@ -21,7 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::news::news_item');
 
@@ -49,7 +48,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
   @override
   Widget build(BuildContext context) {
     final roomId = widget.news.roomId().toString();
-    final spaceLoader = ref.watch(briefSpaceItemProvider(roomId));
+    final space = ref.watch(briefSpaceItemProvider(roomId));
     final slides = widget.news.slides().toList();
 
     return Stack(
@@ -104,16 +103,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
               onTap: () => goToSpace(context, roomId),
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: spaceLoader.when(
-                  data: (space) => Text(space.avatarInfo.displayName ?? roomId),
-                  error: (e, s) {
-                    _log.severe('Failed to load brief of space', e, s);
-                    return Text(L10n.of(context).errorLoadingSpace(e));
-                  },
-                  loading: () => Skeletonizer(
-                    child: Text(roomId),
-                  ),
-                ),
+                child: Text(space.avatarInfo.displayName ?? roomId),
               ),
             ),
           ],

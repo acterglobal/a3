@@ -89,11 +89,9 @@ class AppShellState extends ConsumerState<AppShell> {
   }
 
   Future<void> _initPushForClient(Client client) async {
-    if (!ref.read(
-      isActiveProvider(LabsFeature.mobilePushNotifications),
-    )) {
-      return;
-    }
+    final pushActive =
+        ref.read(isActiveProvider(LabsFeature.mobilePushNotifications));
+    if (!pushActive) return;
     _log.info('Attempting to ask for push notifications');
     setupPushNotifications(client);
   }

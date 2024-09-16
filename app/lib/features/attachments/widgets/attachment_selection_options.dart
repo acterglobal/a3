@@ -222,7 +222,11 @@ class _FileWidget extends StatelessWidget {
   final AttachmentType type;
   final OnAttachmentSelected handleFileUpload;
 
-  const _FileWidget(this.selectedFiles, this.type, this.handleFileUpload);
+  const _FileWidget(
+    this.selectedFiles,
+    this.type,
+    this.handleFileUpload,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -237,9 +241,9 @@ class _FileWidget extends StatelessWidget {
           Wrap(
             spacing: 5.0,
             runSpacing: 10.0,
-            children: <Widget>[
-              for (var file in selectedFiles) _filePreview(context, file),
-            ],
+            children: selectedFiles
+                .map((file) => _filePreview(context, file))
+                .toList(),
           ),
           _buildActionBtns(context),
         ],

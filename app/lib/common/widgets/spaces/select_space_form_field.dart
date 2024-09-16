@@ -1,15 +1,10 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter_avatar/acter_avatar.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-
-final _log = Logger('a3::common::spaces::select_form_field');
 
 class SelectSpaceFormField extends ConsumerWidget {
   static Key openKey = const Key('select-space-form-field-open');
@@ -95,36 +90,18 @@ class SelectSpaceFormField extends ConsumerWidget {
   }
 
   Widget spaceBuilder(BuildContext context, WidgetRef ref, Widget? child) {
-    final spaceLoader = ref.watch(selectedSpaceDetailsProvider);
+    final space = ref.watch(selectedSpaceDetailsProvider);
     final currentId = ref.watch(selectedSpaceIdProvider);
-    return spaceLoader.when(
-      data: (space) =>
-          space.map(
-            (p0) => SpaceChip(
-              spaceId: p0.roomId,
-              onTapOpenSpaceDetail: false,
-              useCompatView: useCompatView,
-              onTapSelectSpace: () {
-                if (useCompatView) selectSpace(context, ref);
-              },
-            ),
-          ) ??
-          Text(currentId!),
-      error: (e, s) {
-        _log.severe('Failed to load the details of selected space', e, s);
-        return Text(L10n.of(context).loadingFailed(e));
-      },
-      loading: () => Skeletonizer(
-        child: Chip(
-          avatar: ActerAvatar(
-            options: AvatarOptions(
-              AvatarInfo(uniqueId: L10n.of(context).loading),
-              size: 24,
-            ),
+    return space.let(
+          (p0) => SpaceChip(
+            spaceId: p0.roomId,
+            onTapOpenSpaceDetail: false,
+            useCompatView: useCompatView,
+            onTapSelectSpace: () {
+              if (useCompatView) selectSpace(context, ref);
+            },
           ),
-          label: Text(L10n.of(context).loading),
-        ),
-      ),
-    );
+        ) ??
+        Text(currentId!);
   }
 }

@@ -29,7 +29,7 @@ class VideoSlide extends StatelessWidget {
     final tempDir = await getTemporaryDirectory();
     final filePath = p.join(tempDir.path, videoName);
     File file = File(filePath);
-    if (!(await file.exists())) {
+    if (!await file.exists()) {
       await file.create();
       file.writeAsBytesSync(newsVideo.asTypedList());
     }

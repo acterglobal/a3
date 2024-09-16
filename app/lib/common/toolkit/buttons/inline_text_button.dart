@@ -1,7 +1,8 @@
-import 'package:acter/common/themes/acter_theme.dart';
-import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
+
+import 'package:acter/common/themes/acter_theme.dart';
+import 'package:flutter/material.dart';
 
 /// InlineTextButton for text inlined actions
 ///
@@ -45,7 +46,10 @@ class ActerInlineTextButton extends TextButton {
       autofocus: autofocus ?? false,
       clipBehavior: clipBehavior = Clip.none,
       statesController: statesController,
-      child: _IconLabelChild(icon: icon, label: label),
+      child: _IconLabelChild(
+        icon: icon,
+        label: label,
+      ),
     );
   }
 
@@ -58,13 +62,13 @@ class ActerInlineTextButton extends TextButton {
 
 // copied from the original OutlinedButton
 class _IconLabelChild extends StatelessWidget {
+  final Widget label;
+  final Widget icon;
+
   const _IconLabelChild({
     required this.label,
     required this.icon,
   });
-
-  final Widget label;
-  final Widget icon;
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +78,7 @@ class _IconLabelChild extends StatelessWidget {
         scale <= 1 ? 8 : lerpDouble(8, 4, math.min(scale - 1, 1))!;
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[icon, SizedBox(width: gap), Flexible(child: label)],
+      children: [icon, SizedBox(width: gap), Flexible(child: label)],
     );
   }
 }

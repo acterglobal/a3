@@ -30,7 +30,10 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String server,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 20,
+      ),
       child: Card(
         child: ListTile(
           onTap: () => onSelectedMatch(context, ref, [server], alias: alias),
@@ -102,8 +105,14 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
 
     final trailing = noMemberButton(context, ref, room, roomId, servers);
     return isSpace
-        ? renderRoomCard(roomId, trailing: trailing)
-        : renderRoomCard(roomId, trailing: trailing);
+        ? renderRoomCard(
+            roomId,
+            trailing: trailing,
+          )
+        : renderRoomCard(
+            roomId,
+            trailing: trailing,
+          );
   }
 
   Widget noMemberButton(
