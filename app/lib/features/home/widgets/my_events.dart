@@ -2,11 +2,11 @@ import 'dart:math';
 
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,7 +73,7 @@ class MyEventsSection extends ConsumerWidget {
   }
 
   Widget eventListUI(BuildContext context, List<CalendarEvent> events) {
-    final count = limit.map((p0) => min(events.length, p0)) ?? events.length;
+    final count = limit.let((p0) => min(events.length, p0)) ?? events.length;
     return ListView.builder(
       shrinkWrap: true,
       itemCount: count,

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:extension_nullable/extension_nullable.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
@@ -26,11 +26,11 @@ String? selectEmojiFont() {
 
 final emojiFont = selectEmojiFont();
 // non-noto-emoji we just fallback to the system fonts.
-final List<String>? emojiFallbackFonts = emojiFont.map((p0) => [p0]);
+final List<String>? emojiFallbackFonts = emojiFont.let((p0) => [p0]);
 
 class EmojiConfig {
   static TextStyle? emojiTextStyle =
-      emojiFont.map((p0) => TextStyle(fontFamily: p0));
+      emojiFont.let((p0) => TextStyle(fontFamily: p0));
   static final checkPlatformCompatibility = emojiFont != defaultEmojiFont;
   static final emojiSizeMax = 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0);
 }

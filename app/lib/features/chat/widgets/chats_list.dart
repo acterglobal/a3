@@ -2,12 +2,12 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:diffutil_dart/diffutil.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -214,7 +214,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       key: Key('convo-card-$roomId-removed'),
       roomId: roomId,
       onTap: () {
-        widget.onSelected.map((cb) => cb(roomId));
+        widget.onSelected.let((cb) => cb(roomId));
       },
     );
   }
@@ -236,7 +236,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       key: Key('convo-card-$roomId'),
       roomId: roomId,
       onTap: () {
-        widget.onSelected.map((cb) => cb(roomId));
+        widget.onSelected.let((cb) => cb(roomId));
       },
     );
   }

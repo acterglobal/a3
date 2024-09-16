@@ -2,11 +2,11 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/utils/validation_utils.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -45,7 +45,7 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
         ),
       );
     }
-    return tokenResponse.map(
+    return tokenResponse.let(
           (p0) => _NewPassword(
             tokenResponse: p0,
             sdk: sdk,

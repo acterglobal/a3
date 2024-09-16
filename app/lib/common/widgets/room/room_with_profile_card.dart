@@ -1,6 +1,6 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
@@ -162,7 +162,7 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
       subtitles.add(suggestedWidget);
 
       //ADD CUSTOM SUBTITLE IF AVAILABLE
-      subtitle.map((p0) {
+      subtitle.let((p0) {
         subtitles.add(const Text(' - '));
         subtitles.add(p0);
       });

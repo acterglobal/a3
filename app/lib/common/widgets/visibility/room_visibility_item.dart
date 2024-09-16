@@ -1,5 +1,4 @@
 import 'package:acter/common/utils/utils.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 
 class RoomVisibilityItem extends StatelessWidget {
@@ -37,7 +36,7 @@ class RoomVisibilityItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
-        key: spaceVisibilityValue.map((p0) => generateKey(p0)),
+        key: spaceVisibilityValue.let((p0) => generateKey(p0)),
         leading: Icon(iconData),
         title: Text(
           title,
@@ -49,9 +48,9 @@ class RoomVisibilityItem extends StatelessWidget {
         ),
         onTap: () {
           if (!isShowRadio) return;
-          spaceVisibilityValue.map((p0) => onChanged.map((cb) => cb(p0)));
+          spaceVisibilityValue.let((p0) => onChanged.let((cb) => cb(p0)));
         },
-        trailing: spaceVisibilityValue.map(
+        trailing: spaceVisibilityValue.let(
               (p0) => isShowRadio
                   ? Radio<RoomVisibility>(
                       value: p0,

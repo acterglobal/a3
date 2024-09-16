@@ -16,7 +16,6 @@ import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -80,7 +79,7 @@ class AppShellState extends ConsumerState<AppShell> {
   }
 
   Future<void> initNotifications() async {
-    ref.read(clientProvider).map((p0) => _initPushForClient(p0));
+    ref.read(clientProvider).let((p0) => _initPushForClient(p0));
     ref.listenManual(clientProvider, (previous, next) {
       if (next != null) {
         _initPushForClient(next);

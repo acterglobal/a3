@@ -1,4 +1,4 @@
-import 'package:extension_nullable/extension_nullable.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class DialogPage<T> extends Page<T> {
@@ -36,7 +36,7 @@ class DialogPage<T> extends Page<T> {
           stepWidth: 56,
           child: builder(context),
         );
-        label.map((p0) {
+        label.let((p0) {
           dialogChild = Semantics(
             scopesRoute: true,
             explicitChildNodes: true,

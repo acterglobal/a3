@@ -1,10 +1,10 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/create_chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +22,7 @@ class MessageUserButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(alwaysClientProvider);
     final dmId = client.dmWithUser(member.userId().toString()).text();
-    return dmId.map(
+    return dmId.let(
           (p0) => Center(
             child: OutlinedButton.icon(
               icon: const Icon(Atlas.chats_thin),

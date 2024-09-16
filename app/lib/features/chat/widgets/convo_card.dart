@@ -4,7 +4,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -295,7 +294,7 @@ class _SubtitleWidget extends ConsumerWidget {
               return const SizedBox.shrink();
             }
             String body =
-                msgContent.formattedBody().map((p0) => simplifyBody(p0)) ??
+                msgContent.formattedBody().let((p0) => simplifyBody(p0)) ??
                     msgContent.body();
             return Row(
               mainAxisSize: MainAxisSize.min,
@@ -331,7 +330,7 @@ class _SubtitleWidget extends ConsumerWidget {
           return const SizedBox();
         }
         String body =
-            msgContent.formattedBody().map((p0) => simplifyBody(p0)) ??
+            msgContent.formattedBody().let((p0) => simplifyBody(p0)) ??
                 msgContent.body();
         return Row(
           mainAxisSize: MainAxisSize.min,
@@ -444,7 +443,7 @@ class _SubtitleWidget extends ConsumerWidget {
           return const SizedBox();
         }
         String body =
-            msgContent.formattedBody().map((p0) => simplifyBody(p0)) ??
+            msgContent.formattedBody().let((p0) => simplifyBody(p0)) ??
                 msgContent.body();
         return Row(
           mainAxisSize: MainAxisSize.min,

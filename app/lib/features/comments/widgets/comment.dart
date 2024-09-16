@@ -1,9 +1,9 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -45,12 +45,12 @@ class CommentWidget extends ConsumerWidget {
               avatarInfo.displayName ?? userId,
               style: Theme.of(context).textTheme.titleSmall,
             ),
-            subtitle: avatarInfo.displayName.map((p0) => Text(userId)),
+            subtitle: avatarInfo.displayName.let((p0) => Text(userId)),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child:
-                msgContent.formattedBody().map((p0) => RenderHtml(text: p0)) ??
+                msgContent.formattedBody().let((p0) => RenderHtml(text: p0)) ??
                     Text(msgContent.body()),
           ),
           const SizedBox(height: 12),

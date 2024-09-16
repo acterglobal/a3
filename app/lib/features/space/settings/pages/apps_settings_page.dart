@@ -6,7 +6,6 @@ import 'package:acter/features/space/actions/set_acter_feature.dart';
 import 'package:acter/features/space/actions/update_feature_power_level.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +15,7 @@ import 'package:settings_ui/settings_ui.dart';
 final _log = Logger('a3::space::settings::app_settings');
 
 String powerLevelName(int? pw) {
-  return pw.map(
+  return pw.let(
         (p0) => switch (pw) {
           100 => 'Admin',
           50 => 'Mod',
@@ -102,7 +101,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       'Minimum power level required to post news updates',
                     ),
                     trailing: Text(
-                      currentPw.map(
+                      currentPw.let(
                             (p0) => maxPowerLevel == 100
                                 ? powerLevelName(p0)
                                 : 'Custom ($p0)',
@@ -143,7 +142,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       'Minimum power level required to post and edit pins',
                     ),
                     trailing: Text(
-                      currentPw.map(
+                      currentPw.let(
                             (p0) => maxPowerLevel == 100
                                 ? powerLevelName(p0)
                                 : 'Custom ($p0)',
@@ -184,7 +183,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       'Minimum power level required to post calendar events',
                     ),
                     trailing: Text(
-                      currentPw.map(
+                      currentPw.let(
                             (p0) => maxPowerLevel == 100
                                 ? powerLevelName(p0)
                                 : 'Custom ($p0)',
@@ -235,7 +234,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       'Minimum power level required to create & manage task lists',
                     ),
                     trailing: Text(
-                      taskListCurrentPw.map(
+                      taskListCurrentPw.let(
                             (p0) => maxPowerLevel == 100
                                 ? powerLevelName(p0)
                                 : 'Custom ($p0)',
@@ -259,7 +258,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       'Minimum power level required to interact with tasks',
                     ),
                     trailing: Text(
-                      tasksCurrentPw.map(
+                      tasksCurrentPw.let(
                             (p0) => maxPowerLevel == 100
                                 ? powerLevelName(tasksCurrentPw)
                                 : 'Custom ($tasksCurrentPw)',

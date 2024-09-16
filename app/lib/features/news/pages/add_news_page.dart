@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -15,7 +16,6 @@ import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -58,7 +58,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         final next = nextState.currentNewsSlide;
         if (next == null) throw 'Current news slide not available';
         final document =
-            next.html.map((p0) => ActerDocumentHelpers.fromHtml(p0)) ??
+            next.html.let((p0) => ActerDocumentHelpers.fromHtml(p0)) ??
                 ActerDocumentHelpers.fromMarkdown(next.text ?? '');
         final autoFocus =
             (next.html?.isEmpty != false) && (next.text?.isEmpty != false);

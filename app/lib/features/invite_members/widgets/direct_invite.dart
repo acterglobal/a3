@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/member/widgets/user_builder.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,7 +28,7 @@ class DirectInvite extends ConsumerWidget {
         title: !isInvited(userId, invited) && !isJoined(userId, joined)
             ? Text(L10n.of(context).directInviteUser(userId))
             : Text(userId),
-        trailing: room.map(
+        trailing: room.let(
               (p0) => UserStateButton(
                 userId: userId,
                 room: p0,

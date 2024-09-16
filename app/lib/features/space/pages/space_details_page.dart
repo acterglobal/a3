@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
 import 'package:acter/features/space/dialogs/suggested_rooms.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
@@ -12,7 +13,6 @@ import 'package:acter/features/space/widgets/space_sections/pins_section.dart';
 import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -203,7 +203,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceAvatar() {
     final avatarData =
         ref.watch(roomAvatarProvider(widget.spaceId)).valueOrNull;
-    return avatarData.map(
+    return avatarData.let(
           (p0) => Image.memory(
             p0.bytes,
             height: 300,

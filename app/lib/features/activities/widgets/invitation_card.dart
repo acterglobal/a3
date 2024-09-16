@@ -1,11 +1,11 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -117,7 +117,7 @@ class InvitationCard extends ConsumerWidget {
         ref.watch(invitationUserProfileProvider(invitation)).valueOrNull;
     final senderId = invitation.senderIdStr();
     final title =
-        profile?.displayName.map((p0) => '$p0 ($senderId)') ?? senderId;
+        profile?.displayName.let((p0) => '$p0 ($senderId)') ?? senderId;
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions.DM(

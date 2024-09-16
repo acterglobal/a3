@@ -1,5 +1,5 @@
 import 'package:acter/common/toolkit/errors/error_dialog.dart';
-import 'package:extension_nullable/extension_nullable.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -34,7 +34,7 @@ class ActerInlineErrorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return icon.map(
+    return icon.let(
           (p0) => IconButton(
             icon: p0,
             onPressed: () async {
@@ -45,7 +45,7 @@ class ActerInlineErrorButton extends StatelessWidget {
                 title: dialogTitle,
                 text: text,
                 textBuilder: textBuilder,
-                onRetryTap: () => onRetryTap.map((cb) {
+                onRetryTap: () => onRetryTap.let((cb) {
                   cb();
                   Navigator.pop(context);
                 }),
@@ -63,7 +63,7 @@ class ActerInlineErrorButton extends StatelessWidget {
               title: dialogTitle,
               text: text,
               textBuilder: textBuilder,
-              onRetryTap: () => onRetryTap.map((cb) {
+              onRetryTap: () => onRetryTap.let((cb) {
                 cb();
                 Navigator.pop(context);
               }),

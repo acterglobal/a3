@@ -1,4 +1,4 @@
-import 'package:extension_nullable/extension_nullable.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class MenuItemWidget extends StatelessWidget {
@@ -36,7 +36,7 @@ class MenuItemWidget extends StatelessWidget {
         key: innerKey,
         onTap: onTap,
         visualDensity: visualDensity,
-        leading: iconData.map(
+        leading: iconData.let(
           (p0) => Icon(
             p0,
             color: enabled ? iconColor : Theme.of(context).disabledColor,
@@ -48,7 +48,7 @@ class MenuItemWidget extends StatelessWidget {
             color: enabled ? null : Theme.of(context).disabledColor,
           ),
         ),
-        subtitle: subTitle.map(
+        subtitle: subTitle.let(
           (p0) => Text(
             p0,
             style: titleStyles?.copyWith(

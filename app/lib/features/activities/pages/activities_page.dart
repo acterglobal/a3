@@ -13,7 +13,6 @@ import 'package:acter/features/settings/providers/session_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/session_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,14 +40,14 @@ class ActivitiesPage extends ConsumerWidget {
       );
     }
     final syncState = ref.watch(syncStateProvider);
-    return syncState.errorMsg.map(
+    return syncState.errorMsg.let(
       (p0) => SliverToBoxAdapter(
         child: Card(
           child: ListTile(
             leading: const Icon(Atlas.warning),
             title: Text(L10n.of(context).errorSyncing(p0)),
             subtitle: Text(
-              syncState.countDown.map(
+              syncState.countDown.let(
                     (p1) {
                       final retryDuration = Duration(seconds: p1);
                       return L10n.of(context).retryIn(
@@ -175,15 +174,15 @@ class ActivitiesPage extends ConsumerWidget {
     final syncStateWidget = renderSyncingState(context, ref);
 
     if (ref.watch(featuresProvider).isActive(LabsFeature.encryptionBackup)) {
-      renderBackupSection(context, ref).map((p0) => children.add(p0));
+      renderBackupSection(context, ref).let((p0) => children.add(p0));
     }
     final hasUnconfirmedEmails = ref.watch(hasUnconfirmedEmailAddresses);
     if (hasUnconfirmedEmails) {
       children.add(renderUnconfirmedEmailAddrs(context));
     }
 
-    renderSessions(context, ref).map((p0) => children.add(p0));
-    renderInvitations(context, ref).map((p0) {
+    renderSessions(context, ref).let((p0) => children.add(p0));
+    renderInvitations(context, ref).let((p0) {
       if (p0.isNotEmpty) children.addAll(p0);
     });
 

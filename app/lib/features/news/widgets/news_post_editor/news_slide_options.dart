@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -8,7 +9,6 @@ import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/post_attachment_options.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cross_file_image/cross_file_image.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -126,7 +126,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     final spaceId = ref.watch(newsStateProvider).newsPostSpaceId;
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: spaceId.map(
+      child: spaceId.let(
             (p0) => InkWell(
               key: NewsUpdateKeys.selectSpace,
               onTap: () async {
@@ -215,7 +215,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
             FutureBuilder(
               future: NewsUtils.getThumbnailData(mediaFile),
               builder: (context, snapshot) =>
-                  snapshot.data.map(
+                  snapshot.data.let(
                     (p0) => ClipRRect(
                       borderRadius: BorderRadius.circular(5.0),
                       child: Image.file(

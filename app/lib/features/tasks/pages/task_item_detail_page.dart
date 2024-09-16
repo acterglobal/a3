@@ -16,7 +16,6 @@ import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter/features/tasks/widgets/skeleton/task_item_detail_page_skeleton.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -240,7 +239,7 @@ class TaskItemDetailPage extends ConsumerWidget {
             onTap: () {
               showEditDescriptionSheet(context, ref, task);
             },
-            child: description.formattedBody().map(
+            child: description.formattedBody().let(
                       (p0) => RenderHtml(
                         text: p0,
                         defaultTextStyle:
@@ -317,7 +316,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       trailing: Padding(
         padding: const EdgeInsets.only(right: 12),
         child: Text(
-          task.dueDate().map((p0) => taskDueDateFormat(DateTime.parse(p0))) ??
+          task.dueDate().let((p0) => taskDueDateFormat(DateTime.parse(p0))) ??
               L10n.of(context).noDueDate,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
@@ -330,7 +329,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     final newDue = await showDuePicker(
       context: context,
       initialDate:
-          task.dueDate().map((p0) => DateTime.parse(p0)) ?? DateTime.now(),
+          task.dueDate().let((p0) => DateTime.parse(p0)) ?? DateTime.now(),
     );
     if (!context.mounted) return;
     if (newDue == null) return;

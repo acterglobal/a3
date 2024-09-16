@@ -1,10 +1,10 @@
 import 'package:acter/common/providers/notifiers/relations_notifier.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -362,10 +362,12 @@ final suggestedChatsProvider =
         await ref.watch(spaceRemoteRelationsProvider(spaceId).future);
     // filter out the known rooms
     final remoteRooms = roomHierarchy
-        .where((r) =>
-            !r.isSpace() &&
-            suggestedRooms.contains(r.roomIdStr()) &&
-            !toIgnore.contains(r.roomIdStr()),)
+        .where(
+          (r) =>
+              !r.isSpace() &&
+              suggestedRooms.contains(r.roomIdStr()) &&
+              !toIgnore.contains(r.roomIdStr()),
+        )
         .toList();
     return (localRooms, remoteRooms);
   } on SpaceNotFound {
@@ -390,10 +392,12 @@ final suggestedSpacesProvider =
         await ref.watch(spaceRemoteRelationsProvider(spaceId).future);
     // filter out the known rooms
     final remoteRooms = roomHierarchy
-        .where((r) =>
-            r.isSpace() &&
-            suggestedRooms.contains(r.roomIdStr()) &&
-            !toIgnore.contains(r.roomIdStr()),)
+        .where(
+          (r) =>
+              r.isSpace() &&
+              suggestedRooms.contains(r.roomIdStr()) &&
+              !toIgnore.contains(r.roomIdStr()),
+        )
         .toList();
     return (localRooms, remoteRooms);
   } on SpaceNotFound {
@@ -409,7 +413,7 @@ final remoteSubspaceRelationsProvider =
         await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
     final toIgnore = List.of(relatedSpaces.knownSubspaces);
     toIgnore.addAll(relatedSpaces.parents.map((e) => e.getRoomIdStr()));
-    relatedSpaces.mainParent.map((p0) => toIgnore.add(p0.getRoomIdStr()));
+    relatedSpaces.mainParent.let((p0) => toIgnore.add(p0.getRoomIdStr()));
     toIgnore.add(spaceId); // the hierarchy also gives us ourselfes ...
 
     final roomHierarchy =

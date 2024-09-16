@@ -1,7 +1,7 @@
 import 'package:acter/common/toolkit/menu_item_widget.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:dart_date/dart_date.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -74,7 +74,7 @@ class _DueQuickPickerDrawer extends StatelessWidget {
   }
 
   List<Widget> renderPostponing(BuildContext context) {
-    return currentDue.map(
+    return currentDue.let(
           (p0) => [
             const SizedBox(height: 10),
             MenuItemWidget(
@@ -103,7 +103,7 @@ class _DueQuickPickerDrawer extends StatelessWidget {
   }) {
     Navigator.pop<PickedDue?>(
       context,
-      newValue.map((p0) => PickedDue(p0, includeTime)),
+      newValue.let((p0) => PickedDue(p0, includeTime)),
     );
   }
 

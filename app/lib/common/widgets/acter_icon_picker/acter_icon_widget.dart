@@ -1,6 +1,6 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/picker/acter_icon_picker.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 
 class ActerIconWidget extends StatefulWidget {
@@ -27,8 +27,8 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
 
   @override
   Widget build(BuildContext context) {
-    widget.color.map((p0) => color.value = p0);
-    widget.icon.map((p0) => icon.value = p0);
+    widget.color.let((p0) => color.value = p0);
+    widget.icon.let((p0) => icon.value = p0);
     return InkWell(
       borderRadius: BorderRadius.circular(100),
       onTap: widget.onIconSelection == null
@@ -41,7 +41,7 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
                   color.value = selectedColor;
                   icon.value = selectedIcon;
                   widget.onIconSelection
-                      .map((cb) => cb(selectedColor, selectedIcon));
+                      .let((cb) => cb(selectedColor, selectedIcon));
                 },
               ),
       child: _buildIconUI(),

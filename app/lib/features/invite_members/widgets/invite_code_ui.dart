@@ -4,10 +4,10 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/dotted_border_widget.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -49,7 +49,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
         orElse: () => tokens.first, // or otherwise pick the first available
       );
 
-      selectedToken.map((p0) {
+      selectedToken.let((p0) {
         // we had a token selected, let’s try to find it again
         final tokenCode = p0.token();
         newToken = tokens.firstWhere(

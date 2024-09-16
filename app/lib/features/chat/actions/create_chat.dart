@@ -1,8 +1,8 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -28,24 +28,24 @@ Future<String?> createChat(
 
     final config = sdk.api.newConvoSettingsBuilder();
     // add the users
-    selectedUsers.map((p0) {
+    selectedUsers.let((p0) {
       for (final userId in p0) {
         config.addInvitee(userId);
       }
     });
     // set the name
-    name.map((p0) {
+    name.let((p0) {
       if (p0.isNotEmpty) config.setName(p0);
     });
     // and an optional description
-    description.map((p0) {
+    description.let((p0) {
       if (p0.isNotEmpty) config.setTopic(p0);
     });
-    avatarUri.map((p0) {
+    avatarUri.let((p0) {
       // convo creation will upload it
       if (p0.isNotEmpty) config.setAvatarUri(p0);
     });
-    parentId.map((p0) => config.setParent(p0));
+    parentId.let((p0) => config.setParent(p0));
 
     final client = ref.read(alwaysClientProvider);
     final settings = config.build();

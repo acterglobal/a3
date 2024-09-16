@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/public_room_search/models/public_search_filters.dart';
 import 'package:acter/features/public_room_search/providers/public_search_providers.dart';
 import 'package:acter/features/public_room_search/types.dart';
@@ -7,7 +8,6 @@ import 'package:acter/features/public_room_search/widgets/public_room_item.dart'
 import 'package:acter/features/public_room_search/widgets/server_selection_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,7 +41,7 @@ class __SearchFieldState extends ConsumerState<_SearchField> {
   }
 
   void _checkInitialQuery() {
-    widget.initialQuery.map((p0) => searchTextController.text = p0);
+    widget.initialQuery.let((p0) => searchTextController.text = p0);
   }
 
   @override
@@ -114,7 +114,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
   }
 
   void _checkInitialQuery() {
-    widget.initialQuery.map((p0) {
+    widget.initialQuery.let((p0) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         ref.read(searchFilterProvider.notifier).updateSearchTerm(p0);
       });

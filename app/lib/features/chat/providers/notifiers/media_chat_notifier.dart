@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
@@ -101,7 +101,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       );
       if (state.mediaFile?.path == mediaPath) {
         final videoThumbnailFile = await getThumbnailData(mediaPath);
-        videoThumbnailFile.map((p0) {
+        videoThumbnailFile.let((p0) {
           state = state.copyWith(videoThumbnailFile: p0);
         });
       }

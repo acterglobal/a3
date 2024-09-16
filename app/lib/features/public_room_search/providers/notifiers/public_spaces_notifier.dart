@@ -4,7 +4,6 @@ import 'package:acter/features/public_room_search/models/publiic_search_result_s
 import 'package:acter/features/public_room_search/providers/public_search_providers.dart';
 import 'package:acter/features/public_room_search/types.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
@@ -68,7 +67,7 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
         pageReq,
       );
       final entries = res.chunks();
-      Next? finalPageKey = res.nextBatch().map((p0) {
+      Next? finalPageKey = res.nextBatch().let((p0) {
         // we are not at the end
         return Next(next: p0);
       });

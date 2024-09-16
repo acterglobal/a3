@@ -1,6 +1,6 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -21,8 +21,8 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
   }
 
   void _init() {
-    final formattedBody = pin.content().map((p0) => p0.formattedBody());
-    final markdown = pin.content().map((p0) => p0.body()) ?? '';
+    final formattedBody = pin.content().let((p0) => p0.formattedBody());
+    final markdown = pin.content().let((p0) => p0.body()) ?? '';
     state = state.copyWith(
       title: pin.title(),
       link: pin.isLink() ? pin.url() ?? '' : '',
@@ -58,12 +58,12 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
           hasChanges = true;
         }
       }
-      pin.content().map((p0) {
+      pin.content().let((p0) {
         if (p0.body() != state.markdown) {
           updateBuilder.contentMarkdown(state.markdown);
           hasChanges = true;
         }
-        state.html.map((p1) {
+        state.html.let((p1) {
           if (p0.formattedBody() != p1) {
             updateBuilder.contentHtml(state.markdown, p1);
             hasChanges = true;

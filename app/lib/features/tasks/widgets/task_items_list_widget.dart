@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_item.dart';
@@ -6,7 +7,6 @@ import 'package:acter/features/tasks/widgets/skeleton/task_items_skeleton.dart';
 import 'package:acter/features/tasks/widgets/task_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -218,7 +218,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
       return;
     }
     _textCtrl.text = '';
-    _formKey.currentContext.map((p0) => Scrollable.ensureVisible(p0));
+    _formKey.currentContext.let((p0) => Scrollable.ensureVisible(p0));
     focusNode.requestFocus();
   }
 }

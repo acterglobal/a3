@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -98,7 +98,7 @@ class UploadAvatarPage extends ConsumerWidget {
               ValueListenableBuilder(
                 valueListenable: selectedUserAvatar,
                 builder: (context, userAvatar, child) =>
-                    userAvatar?.path.map(
+                    userAvatar?.path.let(
                       (p0) => CircleAvatar(
                         radius: 100,
                         backgroundImage: FileImage(File(p0)),

@@ -1,5 +1,5 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -47,7 +47,7 @@ class __OptionsSettingsTileState<T> extends State<_OptionsSettingsTile<T>> {
         widget.title,
         style: tileTextTheme,
       ),
-      description: widget.explainer.map((p0) => Text(p0)),
+      description: widget.explainer.let((p0) => Text(p0)),
       leading: widget.icon,
       trailing: MenuAnchor(
         controller: menuController,

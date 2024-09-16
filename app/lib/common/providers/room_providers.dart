@@ -10,7 +10,6 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
@@ -139,7 +138,7 @@ final parentIdsProvider =
 
     // Collect all parents: mainParent and otherParents
     List<String> allParents = [];
-    relations.mainParent().map((p0) => allParents.add(p0.roomId().toString()));
+    relations.mainParent().let((p0) => allParents.add(p0.roomId().toString()));
     allParents
         .addAll(relations.otherParents().map((p) => p.roomId().toString()));
     return allParents;
@@ -171,7 +170,7 @@ final roomAvatarProvider =
   final avatar = await room.avatar(thumbsize);
   return avatar
       .data()
-      .map((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
+      .let((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
 });
 
 /// Provide the AvatarInfo for each room. Update internally accordingly
@@ -260,10 +259,7 @@ final membershipStatusStr =
 final memberDisplayNameProvider =
     FutureProvider.autoDispose.family<String?, MemberInfo>((ref, query) async {
   try {
-    return ref
-        .watch(_memberProfileProvider(query))
-        .valueOrNull
-        ?.displayName();
+    return ref.watch(_memberProfileProvider(query)).valueOrNull?.displayName();
   } on RoomNotFound {
     return null;
   }
@@ -283,7 +279,7 @@ final _memberAvatarProvider = FutureProvider.autoDispose
     final avatar = await profile.getAvatar(thumbsize);
     return avatar
         .data()
-        .map((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
+        .let((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
   } on RoomNotFound {
     return null;
   }
@@ -336,7 +332,7 @@ final roomHierarchyAvatarProvider =
   final avatar = await room.getAvatar(thumbsize);
   return avatar
       .data()
-      .map((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
+      .let((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
 });
 
 /// Fill the Profile data for the given space-hierarchy-info

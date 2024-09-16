@@ -1,8 +1,8 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -31,7 +31,7 @@ Future<String?> joinRoom(
     ref.invalidate(maybeRoomProvider(roomId));
     ref.invalidate(chatProvider(roomId));
     ref.invalidate(spaceProvider(roomId));
-    forward.map((cb) => cb(roomId));
+    forward.let((cb) => cb(roomId));
     return roomId;
   } catch (e, s) {
     _log.severe('Failed to join room', e, s);

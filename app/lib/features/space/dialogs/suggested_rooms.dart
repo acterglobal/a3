@@ -1,12 +1,12 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/features/space/actions/has_seen_suggested.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -186,7 +186,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
             contentPadding: EdgeInsets.zero,
             trailing: Switch(
               onChanged: (value) => _toggle(roomId),
-              value: selectedRooms.map((p0) => p0.contains(roomId)) ?? true,
+              value: selectedRooms.let((p0) => p0.contains(roomId)) ?? true,
             ),
           );
         },
@@ -213,7 +213,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
             contentPadding: EdgeInsets.zero,
             trailing: Switch(
               onChanged: (value) => _toggle(roomId),
-              value: selectedRooms.map((p0) => p0.contains(roomId)) ?? true,
+              value: selectedRooms.let((p0) => p0.contains(roomId)) ?? true,
             ),
           );
         },

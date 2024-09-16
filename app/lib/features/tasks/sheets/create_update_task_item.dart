@@ -3,7 +3,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -74,11 +73,11 @@ class _CreateUpdateItemListConsumerState
   void setUpdateData() {
     final task = widget.task;
     if (task == null) return;
-    task.description().map((p0) => _taskDescriptionController.text = p0.body());
-    task.dueDate().map((p0) {
+    task.description().let((p0) => _taskDescriptionController.text = p0.body());
+    task.dueDate().let((p0) {
       selectedDate = DateTime.parse(p0);
       selectedDate
-          .map((p1) => _taskDueDateController.text = taskDueDateFormat(p1));
+          .let((p1) => _taskDueDateController.text = taskDueDateFormat(p1));
     });
   }
 
@@ -251,12 +250,12 @@ class _CreateUpdateItemListConsumerState
     if (_taskDescriptionController.text.isNotEmpty) {
       taskDraft.descriptionText(_taskDescriptionController.text);
     }
-    selectedDate.map((p0) => taskDraft.dueDate(p0.year, p0.month, p0.day));
+    selectedDate.let((p0) => taskDraft.dueDate(p0.year, p0.month, p0.day));
     try {
       await taskDraft.send();
       EasyLoading.dismiss();
       if (!mounted) return;
-      widget.cancel.map((cb) => cb());
+      widget.cancel.let((cb) => cb());
       Navigator.pop(context);
     } catch (e, s) {
       _log.severe('Failed to create task', e, s);
@@ -281,7 +280,7 @@ class _CreateUpdateItemListConsumerState
     if (_taskDescriptionController.text.isNotEmpty) {
       updater.descriptionText(_taskDescriptionController.text);
     }
-    selectedDate.map((p0) => updater.dueDate(p0.year, p0.month, p0.day));
+    selectedDate.let((p0) => updater.dueDate(p0.year, p0.month, p0.day));
     try {
       await updater.send();
       EasyLoading.dismiss();

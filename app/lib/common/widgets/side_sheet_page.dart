@@ -1,4 +1,4 @@
-import 'package:extension_nullable/extension_nullable.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -45,7 +45,7 @@ class SideSheetPage<T> extends CustomTransitionPage<T> {
           stepWidth: 56,
           child: child,
         );
-        label.map((p0) {
+        label.let((p0) {
           dialogChild = Semantics(
             scopesRoute: true,
             explicitChildNodes: true,

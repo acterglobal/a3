@@ -5,6 +5,7 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
@@ -22,7 +23,6 @@ import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
@@ -681,7 +681,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     ref.read(chatInputProvider.notifier).startSending();
     try {
       // end the typing notification
-      widget.onTyping.map((cb) => cb(false));
+      widget.onTyping.let((cb) => cb(false));
 
       final mentions = ref.read(chatInputProvider).mentions;
       String markdownText = textController.text;
@@ -775,7 +775,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
               next.selectedMessage != prev?.selectedMessage)) {
         // a new message has been selected to be edited or switched from reply
         // to edit, force refresh the inner text controller to reflect that
-        next.selectedMessage.map((p0) {
+        next.selectedMessage.let((p0) {
           widget.controller.text = parseEditMsg(p0);
           // frame delay to keep focus connected with keyboard.
         });
@@ -890,7 +890,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         enabled: ref.watch(_allowEdit(widget.roomId)),
         onChanged: (String val) {
           // send typing notice
-          widget.onTyping.map((cb) => cb(val.isNotEmpty));
+          widget.onTyping.let((cb) => cb(val.isNotEmpty));
         },
         onSubmitted: (_) => widget.onSendButtonPressed(),
         style: Theme.of(context).textTheme.bodyMedium,

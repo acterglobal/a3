@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,6 +25,6 @@ class RoomAvatarBuilder extends ConsumerWidget {
         size: avatarSize,
       ),
     );
-    return padding.map((p0) => Padding(padding: p0, child: child)) ?? child;
+    return padding.let((p0) => Padding(padding: p0, child: child)) ?? child;
   }
 }

@@ -8,7 +8,6 @@ import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:device_calendar/device_calendar.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -132,7 +131,7 @@ Future<void> _refreshCalendar(
     final calEvent = eventAndRsvp.event;
     final rsvp = eventAndRsvp.rsvp;
     final calEventId = calEvent.eventId().toString();
-    var localEvent = currentLinks[calEventId].map((p0) {
+    var localEvent = currentLinks[calEventId].let((p0) {
       final ret = foundEvents.where((e) => e.eventId == p0).firstOrNull;
       if (ret != null) foundEventIds.add(p0);
       return ret;

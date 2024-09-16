@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:extension_nullable/extension_nullable.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:scrolls_to_top/scrolls_to_top.dart';
@@ -172,7 +172,7 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
   void onSelectedTabChange() {
     final selectedTabIndex = _selectedTabIndex.value;
     final debounce = _debounce;
-    debounce.map((p0) {
+    debounce.let((p0) {
       if (p0.isActive) p0.cancel();
     });
 
@@ -206,7 +206,7 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
     if (itemPositionsListener.itemPositions.value.isEmpty) {
       return;
     }
-    getDisplayedPositionFromList().map((p0) {
+    getDisplayedPositionFromList().let((p0) {
       setCurrentActiveIfDifferent(p0);
     });
   }
@@ -289,11 +289,11 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
           child: Builder(
             builder: (context) {
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                context.size.map((p0) => _currentPositionedListSize = p0);
+                context.size.let((p0) => _currentPositionedListSize = p0);
               });
               return ScrollsToTop(
                 onScrollsToTop: _onScrollsToTop,
-                child: widget.onRefresh.map(
+                child: widget.onRefresh.let(
                       (cb) => RefreshIndicator(
                         onRefresh: cb,
                         child: buildScrollabelPositionedList(),

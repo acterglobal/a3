@@ -1,7 +1,7 @@
 import 'package:acter/common/toolkit/errors/util.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:quickalert/models/quickalert_options.dart';
@@ -90,7 +90,7 @@ class ActerErrorDialog extends StatelessWidget {
             ErrorCode.notFound => lang.notFound,
             _ => lang.fatalError,
           },
-      text: text ?? textBuilder.map((cb) => cb(error)),
+      text: text ?? textBuilder.let((cb) => cb(error)),
       type: switch (err) {
         ErrorCode.notFound => QuickAlertType.warning,
         _ => QuickAlertType.error,
@@ -100,11 +100,11 @@ class ActerErrorDialog extends StatelessWidget {
       cancelBtnText: lang.back,
       borderRadius: borderRadius,
     );
-    onRetryTap.map((p0) {
+    onRetryTap.let((cb) {
       options.showConfirmBtn = true;
       options.confirmBtnColor = theme.primaryColor;
       options.confirmBtnText = lang.retry;
-      options.onConfirmBtnTap = p0;
+      options.onConfirmBtnTap = cb;
     });
 
     return _ActerErrorAlert(
@@ -151,7 +151,7 @@ class _ActerErrorAlert extends QuickAlertContainer {
               final queryParams = {
                 'error': error.toString(),
               };
-              stack.map((p0) {
+              stack.let((p0) {
                 queryParams['stack'] = p0.toString();
               });
               return openBugReport(

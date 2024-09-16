@@ -2,6 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
@@ -10,7 +11,6 @@ import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -57,7 +57,7 @@ class _CreateSuperInviteTokenPageConsumerState
   void initState() {
     super.initState();
     final provider = ref.read(superInvitesProvider);
-    tokenUpdater = widget.token.map((p0) {
+    tokenUpdater = widget.token.let((p0) {
           // given an update builder we are in an edit mode
           isEdit = true;
           _tokenController.text = p0.token();

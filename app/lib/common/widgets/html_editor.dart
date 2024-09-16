@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
@@ -68,7 +68,7 @@ extension ActerDocumentHelpers on Document {
   static Document fromMsgContent(MsgContent msgContent) {
     return msgContent
             .formattedBody()
-            .map((p0) => ActerDocumentHelpers.fromHtml(p0)) ??
+            .let((p0) => ActerDocumentHelpers.fromHtml(p0)) ??
         ActerDocumentHelpers.fromMarkdown(msgContent.body());
   }
 }
@@ -142,10 +142,10 @@ class HtmlEditorState extends State<HtmlEditor> {
       );
 
       _changeListener?.cancel();
-      widget.onChanged.map((p0) {
+      widget.onChanged.let((cb) {
         _changeListener = editorState.transactionStream.listen(
           (data) {
-            _triggerExport(p0);
+            _triggerExport(cb);
           },
           onError: (e, s) {
             _log.severe('tx stream errored', e, s);
@@ -187,21 +187,21 @@ class HtmlEditorState extends State<HtmlEditor> {
   Widget? generateFooter() {
     if (widget.footer != null) return widget.footer;
     final List<Widget> children = [];
-    widget.onCancel.map((p0) {
+    widget.onCancel.let((cb) {
       children.add(
         OutlinedButton(
           key: HtmlEditor.cancelEditKey,
-          onPressed: p0,
+          onPressed: cb,
           child: const Text('Cancel'),
         ),
       );
     });
     children.add(const SizedBox(width: 10));
-    widget.onSave.map((p0) {
+    widget.onSave.let((cb) {
       children.add(
         ActerPrimaryActionButton(
           key: HtmlEditor.saveEditKey,
-          onPressed: () => _triggerExport(p0),
+          onPressed: () => _triggerExport(cb),
           child: const Text('Save'),
         ),
       );

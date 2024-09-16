@@ -23,7 +23,6 @@ import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_attachment_options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -325,8 +324,8 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       if (pinIconColor != null || pinIcon != null) {
         final sdk = await ref.watch(sdkProvider.future);
         final displayBuilder = sdk.api.newDisplayBuilder();
-        pinIconColor.map((p0) => displayBuilder.color(p0.value));
-        pinIcon.map((p0) => displayBuilder.icon('acter-icon', p0.name));
+        pinIconColor.let((p0) => displayBuilder.color(p0.value));
+        pinIcon.let((p0) => displayBuilder.icon('acter-icon', p0.name));
         pinDraft.display(displayBuilder.build());
       }
 
@@ -383,7 +382,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
         context: context,
         ref: ref,
         manager: manager,
-        attachments: attachment.path.map((p0) => [File(p0)]) ?? [],
+        attachments: attachment.path.let((p0) => [File(p0)]) ?? [],
         title: attachment.title,
         link: attachment.link,
         attachmentType: attachment.attachmentType,

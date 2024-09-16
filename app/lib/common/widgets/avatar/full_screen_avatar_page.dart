@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -38,7 +37,7 @@ class FullScreenAvatarPage extends ConsumerWidget {
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
     final profileData = ref.watch(roomAvatarInfoProvider(roomId));
-    return profileData.avatar.map(
+    return profileData.avatar.let(
           (p0) => Center(
             child: PinchZoomReleaseUnzoomWidget(
               child: Container(

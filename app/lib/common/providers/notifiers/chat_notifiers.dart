@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/util.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
@@ -169,7 +169,7 @@ class SelectedChatIdNotifier extends Notifier<String?> {
   }
 
   void select(String? input) {
-    input.map((p0) => removeNotificationsForRoom(p0));
+    input.let((p0) => removeNotificationsForRoom(p0));
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       state = input;
     });

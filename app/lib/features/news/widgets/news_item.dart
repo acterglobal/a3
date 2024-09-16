@@ -16,7 +16,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:carousel_indicator/carousel_indicator.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -187,7 +186,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
       // fallback support for older, badly formatted calendar events.
       return renderCalendarEventAction(targetEventId: uri);
     }
-    return title.map(
+    return title.let(
           (p0) => Card(
             child: ListTile(
               leading: const Icon(Atlas.link),

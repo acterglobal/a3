@@ -8,7 +8,6 @@ import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart'
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:logging/logging.dart';
@@ -300,7 +299,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         String? orgMsgType = orgEventItem.msgType();
         switch (orgMsgType) {
           case 'm.text':
-            orgEventItem.msgContent().map((p0) {
+            orgEventItem.msgContent().let((p0) {
               String body = p0.body();
               repliedToContent = {
                 'content': body,
@@ -318,7 +317,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.image':
             final convo = await ref.read(chatProvider(roomId).future);
             if (convo == null) throw RoomNotFound();
-            orgEventItem.msgContent().map((p0) {
+            orgEventItem.msgContent().let((p0) {
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
@@ -339,7 +338,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.audio':
             final convo = await ref.read(chatProvider(roomId).future);
             if (convo == null) throw RoomNotFound();
-            orgEventItem.msgContent().map((p0) {
+            orgEventItem.msgContent().let((p0) {
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
@@ -360,7 +359,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.video':
             final convo = await ref.read(chatProvider(roomId).future);
             if (convo == null) throw RoomNotFound();
-            orgEventItem.msgContent().map((p0) {
+            orgEventItem.msgContent().let((p0) {
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
@@ -378,7 +377,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             });
             break;
           case 'm.file':
-            orgEventItem.msgContent().map((p0) {
+            orgEventItem.msgContent().let((p0) {
               final src = p0.source();
               if (src == null) throw 'File source not found';
               repliedToContent = {
@@ -456,7 +455,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     Map<String, int> receipts = {};
     for (var userId in eventItem.readUsers()) {
       String id = userId.toDartString();
-      eventItem.receiptTs(id).map((p0) => receipts[id] = p0);
+      eventItem.receiptTs(id).let((p0) => receipts[id] = p0);
     }
 
     // state event
@@ -511,7 +510,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           'eventState': eventState,
           'receipts': receipts,
         };
-        inReplyTo.map((p0) => metadata['repliedTo'] = p0);
+        inReplyTo.let((p0) => metadata['repliedTo'] = p0);
         return types.CustomMessage(
           remoteId: eventId,
           author: author,
@@ -526,7 +525,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           'eventState': eventState,
           'receipts': receipts,
         };
-        inReplyTo.map((p0) => metadata['repliedTo'] = p0);
+        inReplyTo.let((p0) => metadata['repliedTo'] = p0);
         return types.CustomMessage(
           remoteId: eventId,
           author: author,
@@ -557,7 +556,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         Map<String, dynamic> reactions = {};
         for (var key in eventItem.reactionKeys()) {
           String k = key.toDartString();
-          eventItem.reactionRecords(k).map((p0) => reactions[k] = p0.toList());
+          eventItem.reactionRecords(k).let((p0) => reactions[k] = p0.toList());
         }
         switch (eventItem.msgType()) {
           case 'm.audio':
@@ -570,7 +569,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 'was_edited': wasEdited,
                 'isEditable': isEditable,
               };
-              inReplyTo.map((p0) => metadata['repliedTo'] = p0);
+              inReplyTo.let((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               final src = msgContent.source();
               if (src == null) throw 'Audio source not found';
@@ -601,7 +600,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 // check whether string only contains emoji(s).
                 'enlargeEmoji': isOnlyEmojis(body),
               };
-              inReplyTo.map((p0) => metadata['repliedTo'] = p0);
+              inReplyTo.let((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               return types.TextMessage(
                 author: author,
@@ -622,7 +621,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 'was_edited': wasEdited,
                 'isEditable': isEditable,
               };
-              inReplyTo.map((p0) => metadata['repliedTo'] = p0);
+              inReplyTo.let((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               final src = msgContent.source();
               if (src == null) throw 'File source not found';
@@ -648,7 +647,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 'was_edited': wasEdited,
                 'isEditable': isEditable,
               };
-              inReplyTo.map((p0) => metadata['repliedTo'] = p0);
+              inReplyTo.let((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               final src = msgContent.source();
               if (src == null) throw 'Image source not found';
@@ -680,22 +679,22 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 'was_edited': wasEdited,
                 'isEditable': isEditable,
               };
-              inReplyTo.map((p0) => metadata['repliedTo'] = p0);
+              inReplyTo.let((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
-              msgContent.thumbnailSource().map((p0) {
+              msgContent.thumbnailSource().let((p0) {
                 metadata['thumbnailSource'] = p0.url();
               });
               final thumbnailInfo = msgContent.thumbnailInfo();
-              thumbnailInfo?.mimetype().map((p0) {
+              thumbnailInfo?.mimetype().let((p0) {
                 metadata['thumbnailMimetype'] = p0;
               });
-              thumbnailInfo?.size().map((p0) {
+              thumbnailInfo?.size().let((p0) {
                 metadata['thumbnailSize'] = p0;
               });
-              thumbnailInfo?.width().map((p0) {
+              thumbnailInfo?.width().let((p0) {
                 metadata['thumbnailWidth'] = p0;
               });
-              thumbnailInfo?.height().map((p0) {
+              thumbnailInfo?.height().let((p0) {
                 metadata['thumbnailHeight'] = p0;
               });
               return types.CustomMessage(
@@ -719,7 +718,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               // check whether string only contains emoji(s).
               'enlargeEmoji': isOnlyEmojis(body),
             };
-            inReplyTo.map((p0) => metadata['repliedTo'] = p0);
+            inReplyTo.let((p0) => metadata['repliedTo'] = p0);
             if (reactions.isNotEmpty) metadata['reactions'] = reactions;
             return types.TextMessage(
               author: author,
@@ -739,7 +738,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 'was_edited': wasEdited,
                 'isEditable': isEditable,
               };
-              inReplyTo.map((p0) => metadata['repliedTo'] = p0);
+              inReplyTo.let((p0) => metadata['repliedTo'] = p0);
               if (reactions.isNotEmpty) metadata['reactions'] = reactions;
               final src = msgContent.source();
               if (src == null) throw 'Video source not found';
@@ -763,12 +762,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         Map<String, dynamic> receipts = {};
         for (var userId in eventItem.readUsers()) {
           String id = userId.toDartString();
-          eventItem.receiptTs(id).map((p0) => receipts[id] = p0);
+          eventItem.receiptTs(id).let((p0) => receipts[id] = p0);
         }
         Map<String, dynamic> reactions = {};
         for (var key in eventItem.reactionKeys()) {
           String k = key.toDartString();
-          eventItem.reactionRecords(k).map((p0) => reactions[k] = p0.toList());
+          eventItem.reactionRecords(k).let((p0) => reactions[k] = p0.toList());
         }
         MsgContent? msgContent = eventItem.msgContent();
         if (msgContent != null) {
@@ -785,7 +784,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             'was_edited': wasEdited,
             'isEditable': isEditable,
           };
-          inReplyTo.map((p0) => metadata['repliedTo'] = p0);
+          inReplyTo.let((p0) => metadata['repliedTo'] = p0);
           if (reactions.isNotEmpty) metadata['reactions'] = reactions;
           return types.CustomMessage(
             author: author,

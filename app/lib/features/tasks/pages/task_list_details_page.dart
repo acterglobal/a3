@@ -2,6 +2,7 @@ import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
@@ -15,7 +16,6 @@ import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -215,7 +215,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             onTap: () {
               showEditDescriptionSheet(taskListData);
             },
-            child: description.formattedBody().map(
+            child: description.formattedBody().let(
                       (p0) => RenderHtml(
                         text: p0,
                         defaultTextStyle:

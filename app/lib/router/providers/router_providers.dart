@@ -1,5 +1,5 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/router/router.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +25,7 @@ class LocationStateNotifier extends StateNotifier<String> {
         // read it up from the specific StatefulNavigationShell.
         // see https://github.com/flutter/flutter/issues/146610
         final actualRoute = switch (newRoute) {
-          'chat' => chatTabNavKey.currentContext.map(
+          'chat' => chatTabNavKey.currentContext.let(
                 (p0) => StatefulNavigationShell.of(p0)
                     .widget
                     .shellRouteContext
@@ -35,7 +35,7 @@ class LocationStateNotifier extends StateNotifier<String> {
                     .join('/'),
               ) ??
               newRoute,
-          'activities' => activitiesTabNavKey.currentContext.map(
+          'activities' => activitiesTabNavKey.currentContext.let(
                 (p0) => StatefulNavigationShell.of(p0)
                     .widget
                     .shellRouteContext
@@ -45,7 +45,7 @@ class LocationStateNotifier extends StateNotifier<String> {
                     .join('/'),
               ) ??
               newRoute,
-          'updates' => updateTabNavKey.currentContext.map(
+          'updates' => updateTabNavKey.currentContext.let(
                 (p0) => StatefulNavigationShell.of(p0)
                     .widget
                     .shellRouteContext
@@ -55,7 +55,7 @@ class LocationStateNotifier extends StateNotifier<String> {
                     .join('/'),
               ) ??
               newRoute,
-          '/' => homeTabNavKey.currentContext.map(
+          '/' => homeTabNavKey.currentContext.let(
                 (p0) => StatefulNavigationShell.of(p0)
                     .widget
                     .shellRouteContext
@@ -65,7 +65,7 @@ class LocationStateNotifier extends StateNotifier<String> {
                     .join('/'),
               ) ??
               newRoute,
-          'search' => searchTabNavKey.currentContext.map(
+          'search' => searchTabNavKey.currentContext.let(
                 (p0) => StatefulNavigationShell.of(p0)
                     .widget
                     .shellRouteContext

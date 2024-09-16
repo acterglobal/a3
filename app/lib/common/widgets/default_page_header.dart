@@ -1,4 +1,4 @@
-import 'package:extension_nullable/extension_nullable.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 const expandedHeighMinWidth = 600;
@@ -45,7 +45,7 @@ class PageHeaderWidget extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
-              background: expandedContent.map(
+              background: expandedContent.let(
                 (p0) => Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,

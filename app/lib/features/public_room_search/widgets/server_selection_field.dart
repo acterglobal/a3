@@ -1,5 +1,5 @@
 import 'package:acter/common/utils/constants.dart';
-import 'package:extension_nullable/extension_nullable.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -79,7 +79,7 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
         );
       },
       itemBuilder: (context, entry) =>
-          entry.name.map(
+          entry.name.let(
             (p0) => ListTile(
               title: Text(p0),
               subtitle: Text(entry.value),

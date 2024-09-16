@@ -1,12 +1,12 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/cross_signing/providers/verification_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/session_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:breadcrumbs/breadcrumbs.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,11 +22,11 @@ class SessionCard extends ConsumerWidget {
     final fields = [
       isVerified ? L10n.of(context).verified : L10n.of(context).unverified,
     ];
-    deviceRecord.lastSeenTs().map((p0) {
+    deviceRecord.lastSeenTs().let((p0) {
       final dateTime = DateTime.fromMillisecondsSinceEpoch(p0, isUtc: true);
       fields.add(dateTime.toLocal().toString());
     });
-    deviceRecord.lastSeenIp().map((p0) => fields.add(p0));
+    deviceRecord.lastSeenIp().let((p0) => fields.add(p0));
     fields.add(deviceRecord.deviceId().toString());
     return Card(
       margin: const EdgeInsets.symmetric(

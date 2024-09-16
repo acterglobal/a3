@@ -7,7 +7,6 @@ import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent, RsvpStatusTag;
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,7 +36,7 @@ class EventItem extends StatelessWidget {
     return InkWell(
       onTap: () {
         final calEventId = event.eventId().toString();
-        onTapEventItem.map((cb) => cb(calEventId)) ??
+        onTapEventItem.let((cb) => cb(calEventId)) ??
             context.pushNamed(
               Routes.calendarEvent.name,
               pathParameters: {'calendarId': calEventId},
@@ -131,7 +130,7 @@ class EventItem extends StatelessWidget {
   }
 
   Widget? _getRsvpStatus(BuildContext context, RsvpStatusTag? status) {
-    return status.map(
+    return status.let(
       (p0) => switch (p0) {
         RsvpStatusTag.Yes => Icon(
             Icons.check_circle,

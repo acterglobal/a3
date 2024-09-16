@@ -1,12 +1,12 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -216,8 +216,8 @@ class _CreateUpdateTaskListConsumerState
       if (taskListIconColor != null || taskListIcon != null) {
         final sdk = await ref.watch(sdkProvider.future);
         final displayBuilder = sdk.api.newDisplayBuilder();
-        taskListIconColor.map((p0) => displayBuilder.color(p0.value));
-        taskListIcon.map((p0) => displayBuilder.icon('acter-icon', p0.name));
+        taskListIconColor.let((p0) => displayBuilder.color(p0.value));
+        taskListIcon.let((p0) => displayBuilder.icon('acter-icon', p0.name));
         taskListDraft.display(displayBuilder.build());
       }
 

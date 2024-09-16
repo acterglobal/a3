@@ -1,7 +1,7 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -69,7 +69,7 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
           ActerPrimaryActionButton(
             onPressed: () {
               widget.onIconSelection
-                  .map((cb) => cb(selectedColor.value, selectedIcon.value));
+                  .let((cb) => cb(selectedColor.value, selectedIcon.value));
               Navigator.pop(context);
             },
             child: Text(L10n.of(context).select),

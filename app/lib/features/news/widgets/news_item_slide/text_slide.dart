@@ -1,7 +1,7 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -70,7 +70,7 @@ class _TextSlideState extends ConsumerState<TextSlide> {
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(vertical: 100),
         // SelectionArea and SelectableText for select text
-        child: slideContent.formattedBody().map(
+        child: slideContent.formattedBody().let(
                   (p0) => SelectionArea(
                     child: RenderHtml(
                       key: NewsUpdateKeys.textUpdateContent,

@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -22,7 +22,7 @@ final userAvatarProvider =
       final avatar = await user.getAvatar(null);
       return avatar
           .data()
-          .map((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
+          .let((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
     } catch (e, s) {
       _log.severe('failure fetching avatar', e, s);
     }
@@ -130,9 +130,9 @@ class UserBuilder extends ConsumerWidget {
 
   Widget? _renderTrailing(BuildContext context, WidgetRef ref) {
     if (!includeUserJoinState) return null;
-    return roomId.map((p0) {
+    return roomId.let((p0) {
       final room = ref.watch(maybeRoomProvider(p0)).valueOrNull;
-      return room.map(
+      return room.let(
             (p1) => UserStateButton(
               userId: userId,
               room: p1,
@@ -229,8 +229,8 @@ class UserBuilder extends ConsumerWidget {
   }
 
   AvatarInfo _avatarInfo(WidgetRef ref) {
-    return userProfile.map((p0) => ref.watch(userAvatarInfoProvider(p0))) ??
-        roomId.map(
+    return userProfile.let((p0) => ref.watch(userAvatarInfoProvider(p0))) ??
+        roomId.let(
           (p0) => ref.watch(
             memberAvatarInfoProvider((roomId: p0, userId: userId)),
           ),
