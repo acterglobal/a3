@@ -2189,5 +2189,9 @@
   "updateFeaturePowerLevelDialogFromTo": "Von {memberStatus} ({currentPowerLevel}) zu",
   "@updateFeaturePowerLevelDialogFromTo": {},
   "updateFeaturePowerLevelDialogFromDefaultTo": "von Standard zu",
-  "@updateFeaturePowerLevelDialogFromDefaultTo": {}
+  "@updateFeaturePowerLevelDialogFromDefaultTo": {},
+  "suggestedChats": "Vorgeschlagene Chats",
+  "@suggestedChats": {},
+  "suggestedSpaces": "Vorgeschlagene Spaces",
+  "@suggestedSpaces": {}
 }
