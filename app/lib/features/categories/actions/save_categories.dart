@@ -1,9 +1,8 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,7 +16,7 @@ void saveCategories(
   WidgetRef ref,
   String spaceId,
   CategoriesFor categoriesFor,
-  List<Category> categoryList,
+  List<CategoryModelLocal> categoryList,
 ) async {
   // Show loading message
   EasyLoading.show(status: L10n.of(context).updatingCategories);
@@ -28,28 +27,34 @@ void saveCategories(
         (spaceId: spaceId, categoriesFor: categoriesFor),
       ).future,
     );
+    final sdk = await ref.watch(sdkProvider.future);
+    final displayBuilder = sdk.api.newDisplayBuilder();
 
     //Get category builder
-    final categoryBuilder = categoriesManager.updateBuilder();
+    final categoriesBuilder = categoriesManager.updateBuilder();
 
     //Clear category builder data and Add new
-    categoryBuilder.clear();
+    categoriesBuilder.clear();
     for (int i = 0; i < categoryList.length; i++) {
-      final Category category = categoryList[i];
-      final categoryItemBuilder = category.updateBuilder();
-      final newEntries =
-          category.entries().map((s) => s.toDartString()).toList();
-      categoryItemBuilder.clearEntries();
-      for (int j = 0; j < newEntries.length; j++) {
-        categoryItemBuilder.addEntry(newEntries[j]);
+      final newCategoryItem = categoriesManager.newCategoryBuilder();
+      //ADD TITLE
+      newCategoryItem.title(categoryList[i].title);
+
+      //ADD COLOR AND ICON
+      displayBuilder.color(categoryList[i].color.value);
+      displayBuilder.icon('acter-icon', categoryList[i].icon.name);
+      newCategoryItem.display(displayBuilder.build());
+
+      //ADD ENTRIES
+      for (int j = 0; j < categoryList[i].entries.length; j++) {
+        newCategoryItem.addEntry(categoryList[i].entries[j]);
       }
-      final newCategoryItem = categoryItemBuilder.build();
-      categoryBuilder.add(newCategoryItem);
+      categoriesBuilder.add(newCategoryItem.build());
     }
 
     //Save category builder
     final space = await ref.read(spaceProvider(spaceId).future);
-    space.setCategories(categoriesFor.name, categoryBuilder);
+    space.setCategories(categoriesFor.name, categoriesBuilder);
 
     EasyLoading.dismiss();
     if (context.mounted) {

@@ -3,9 +3,10 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/categories/actions/save_categories.dart';
 import 'package:acter/features/categories/draggable_category_list.dart';
+import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
+import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -135,10 +136,30 @@ class SubSpaces extends ConsumerWidget {
         (spaceId: spaceId, categoriesFor: CategoriesFor.spaces),
       ),
     );
+    // final subSpaceList = ref.watch(subSpacesListProvider(spaceId));
+    //
+    // return subSpaceList.when(
+    //   data: (subSpaceListData) {
+    //     return ListView.builder(
+    //       scrollDirection: Axis.vertical,
+    //       shrinkWrap: true,
+    //       itemCount: subSpaceListData.length,
+    //       itemBuilder: (BuildContext context, int index) {
+    //         return SpaceCard(roomId: subSpaceListData[index]);
+    //       },
+    //     );
+    //   },
+    //   error: (e, s) {
+    //     _log.severe('Failed to load the space categories', e, s);
+    //     return Center(child: Text(L10n.of(context).loadingFailed(e)));
+    //   },
+    //   loading: () => Center(child: Text(L10n.of(context).loading)),
+    // );
+
     return categoryManager.when(
       data: (categoryManagerData) {
-        final List<Category> categoryList =
-            categoryManagerData.categories().toList();
+        final List<CategoryModelLocal> categoryList =
+            getLocalCategoryList(categoryManagerData.categories().toList());
         return ListView.builder(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
@@ -156,14 +177,14 @@ class SubSpaces extends ConsumerWidget {
     );
   }
 
-  Widget _buildCategoriesList(BuildContext context, Category category) {
-    final entries = category.entries().map((s) => s.toDartString()).toList();
+  Widget _buildCategoriesList(BuildContext context, CategoryModelLocal categoryModelLocal) {
+    final entries = categoryModelLocal.entries;
     return Card(
       child: ExpansionTile(
         initiallyExpanded: true,
         shape: const Border(),
         backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-        title: CategoryHeaderView(category: category),
+        title: CategoryHeaderView(categoryModelLocal: categoryModelLocal),
         children: List<Widget>.generate(
           entries.length,
           (index) => SpaceCard(

@@ -1,18 +1,15 @@
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
-import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
-import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class CategoryHeaderView extends StatelessWidget {
-  final Category category;
+  final CategoryModelLocal categoryModelLocal;
   final bool isShowDragHandle;
 
   const CategoryHeaderView({
     super.key,
-    required this.category,
+    required this.categoryModelLocal,
     this.isShowDragHandle = false,
   });
 
@@ -22,19 +19,15 @@ class CategoryHeaderView extends StatelessWidget {
   }
 
   Widget _buildCategoryHeader() {
-    final display = category.display();
     return Row(
       children: [
         ActerIconWidget(
           iconSize: 24,
-          color: convertColor(
-            display?.color(),
-            iconPickerColors[0],
-          ),
-          icon: ActerIcon.iconForCategories(display?.iconStr()),
+          color: categoryModelLocal.color,
+          icon: categoryModelLocal.icon,
         ),
         const SizedBox(width: 6),
-        Text(category.title()),
+        Text(categoryModelLocal.title),
         const Spacer(),
         if (isShowDragHandle) Icon(PhosphorIcons.dotsSixVertical()),
       ],

@@ -1,8 +1,9 @@
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/categories/actions/save_categories.dart';
+import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
+import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +28,7 @@ class DraggableCategoryList extends ConsumerStatefulWidget {
 class _DraggableCategoriesListState
     extends ConsumerState<DraggableCategoryList> {
   List<DragAndDropList>? dragAndDropList;
-  late List<Category> categoryList;
+  late List<CategoryModelLocal> categoryList;
 
   @override
   void initState() {
@@ -41,27 +42,27 @@ class _DraggableCategoriesListState
         (spaceId: widget.spaceId, categoriesFor: widget.categoriesFor),
       ).future,
     );
-    categoryList = categoriesManager.categories().toList();
+    categoryList =
+        getLocalCategoryList(categoriesManager.categories().toList());
     setDragAndDropListData();
   }
 
   void setDragAndDropListData() {
-    dragAndDropList = List.generate(categoryList.length, (index) {
-      final spaceEntries =
-          categoryList[index].entries().map((s) => s.toDartString()).toList();
+    dragAndDropList = List.generate(categoryList.length, (indexCategory) {
       return DragAndDropList(
         header: Padding(
           padding: const EdgeInsets.all(14),
           child: CategoryHeaderView(
-            category: categoryList[index],
+            categoryModelLocal: categoryList[indexCategory],
             isShowDragHandle: true,
           ),
         ),
         children: List<DragAndDropItem>.generate(
-          spaceEntries.length,
-          (index) => DragAndDropItem(
+          categoryList[indexCategory].entries.length,
+          (indexEntry) => DragAndDropItem(
             child: SpaceCard(
-              roomId: spaceEntries[index].toString(),
+              roomId:
+                  categoryList[indexCategory].entries[indexEntry].toString(),
               margin: const EdgeInsets.symmetric(vertical: 6),
               trailing: Icon(PhosphorIcons.dotsSixVertical()),
             ),
@@ -177,70 +178,9 @@ class _DraggableCategoriesListState
           dragAndDropList![oldListIndex].children.removeAt(oldItemIndex);
       dragAndDropList![newListIndex].children.insert(newItemIndex, movedItem);
 
-      ///MOVE ENTRY ITEM ON SAME CATEGORY
-      if (oldListIndex == newListIndex) {
-        //GET OLDER CATEGORY ITEM
-        final oldCategoryItem = categoryList[oldListIndex];
-
-        //GET OLDER CATEGORY ITEM DATA IN LOCAL
-        final spaceEntries =
-            oldCategoryItem.entries().map((s) => s.toDartString()).toList();
-
-        //REMOVE SPACE ENTRY FROM SPECIFIED POSITION
-        var movedEntryItem = spaceEntries.removeAt(oldItemIndex);
-
-        //ADD SPACE ENTRY FROM SPECIFIED POSITION
-        spaceEntries.insert(newItemIndex, movedEntryItem);
-
-        //UPDATE CATEGORY ITEM
-        final categoryItemBuilder = oldCategoryItem.updateBuilder();
-        categoryItemBuilder.clearEntries();
-        for (int j = 0; j < spaceEntries.length; j++) {
-          categoryItemBuilder.addEntry(spaceEntries[j]);
-        }
-
-        //REMOVE OLDER CATEGORY ITEM FROM SPECIFIED POSITION
-        categoryList.removeAt(oldListIndex);
-
-        //SAVE NEW CATEGORY ITEM AT SPECIFIED POSITION
-        final newCategoryItem = categoryItemBuilder.build();
-        categoryList.insert(newListIndex, newCategoryItem);
-      } else {
-        ///MOVE ENTRY ITEM NOT ON SAME CATEGORY
-        final oldCategoryItem = categoryList[oldListIndex];
-
-        //GET OLDER CATEGORY ITEM DATA IN LOCAL
-        final oldCategoryItemSpaceEntries =
-            oldCategoryItem.entries().map((s) => s.toDartString()).toList();
-
-        //REMOVE SPACE ENTRY FROM SPECIFIED POSITION
-        var movedEntryItem = oldCategoryItemSpaceEntries.removeAt(oldItemIndex);
-
-        //UPDATE OLD CATEGORY ITEM
-        final oldCategoryItemBuilder = oldCategoryItem.updateBuilder();
-        oldCategoryItemBuilder.clearEntries();
-        for (int j = 0; j < oldCategoryItemSpaceEntries.length; j++) {
-          oldCategoryItemBuilder.addEntry(oldCategoryItemSpaceEntries[j]);
-        }
-        categoryList[oldListIndex] = oldCategoryItemBuilder.build();
-
-        final newCategoryItem = categoryList[newListIndex];
-
-        //GET NEW CATEGORY ITEM DATA IN LOCAL
-        final newCategoryItemSpaceEntries =
-            newCategoryItem.entries().map((s) => s.toDartString()).toList();
-
-        //REMOVE SPACE ENTRY FROM SPECIFIED POSITION
-        newCategoryItemSpaceEntries.insert(newItemIndex, movedEntryItem);
-
-        //UPDATE OLD CATEGORY ITEM
-        final newCategoryItemBuilder = newCategoryItem.updateBuilder();
-        newCategoryItemBuilder.clearEntries();
-        for (int j = 0; j < newCategoryItemSpaceEntries.length; j++) {
-          newCategoryItemBuilder.addEntry(newCategoryItemSpaceEntries[j]);
-        }
-        categoryList[newListIndex] = newCategoryItemBuilder.build();
-      }
+      var movedEntryItem =
+          categoryList[oldListIndex].entries.removeAt(oldItemIndex);
+      categoryList[newListIndex].entries.insert(newItemIndex, movedEntryItem);
     });
   }
 
