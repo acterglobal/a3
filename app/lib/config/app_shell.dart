@@ -1,11 +1,11 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/config/notifications/init.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/auth/pages/logged_out_screen.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
@@ -91,11 +91,9 @@ class AppShellState extends ConsumerState<AppShell> {
   }
 
   Future<void> _initPushForClient(Client client) async {
-    if (!ref.read(
-      isActiveProvider(LabsFeature.mobilePushNotifications),
-    )) {
-      return;
-    }
+    final pushActive =
+        ref.read(isActiveProvider(LabsFeature.mobilePushNotifications));
+    if (!pushActive) return;
     _log.info('Attempting to ask for push notifications');
     setupPushNotifications(client);
   }

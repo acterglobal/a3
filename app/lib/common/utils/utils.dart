@@ -263,9 +263,7 @@ Future<void> uploadAvatar(
 ) async {
   final room = await ref.read(maybeRoomProvider(roomId).future);
   if (room == null || !context.mounted) return;
-  FilePickerResult? result = await FilePicker.platform.pickFiles(
-    type: FileType.image,
-  );
+  final result = await FilePicker.platform.pickFiles(type: FileType.image);
   if (result == null || result.files.isEmpty) return;
   try {
     if (!context.mounted) return;
@@ -455,3 +453,18 @@ enum LabsFeature {
 // typedef MemberInfo = ({String userId, String? roomId});
 // typedef ChatMessageInfo = ({String messageId, String roomId});
 // typedef AttachmentInfo = ({AttachmentType type, File file});
+
+// helper fn to mimic Option::map() in rust
+// it is used to remove bang operator about nullable variable
+extension Let<T> on T? {
+  R? let<R>(R? Function(T) op) {
+    final T? value = this;
+    return value == null ? null : op(value);
+  }
+
+  // it supports async callback too unlike `extension_nullable`
+  Future<R?> letAsync<R>(R? Function(T) op) async {
+    final T? value = this;
+    return value == null ? null : op(value);
+  }
+}

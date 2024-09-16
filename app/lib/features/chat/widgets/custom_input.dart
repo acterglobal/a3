@@ -55,10 +55,15 @@ class CustomChatInput extends ConsumerWidget {
   static const noAccessKey = Key('custom-chat-no-access');
   static const loadingKey = Key('custom-chat-loading');
   static const sendBtnKey = Key('custom-chat-send-button');
+
   final String roomId;
   final void Function(bool)? onTyping;
 
-  const CustomChatInput({required this.roomId, this.onTyping, super.key});
+  const CustomChatInput({
+    required this.roomId,
+    this.onTyping,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -190,7 +195,10 @@ class _ChatInput extends ConsumerStatefulWidget {
   final String roomId;
   final void Function(bool)? onTyping;
 
-  const _ChatInput({required this.roomId, this.onTyping});
+  const _ChatInput({
+    required this.roomId,
+    this.onTyping,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => __ChatInputState();
@@ -369,6 +377,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     final roomId = widget.roomId;
     final isEncrypted =
         ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
+    final emojiPickerVisible = ref
+        .watch(chatInputProvider.select((value) => value.emojiPickerVisible));
     return Column(
       children: [
         if (child != null) child,
@@ -386,7 +396,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                 children: <Widget>[
                   Flexible(
                     child: _TextInputWidget(
-                      roomId: widget.roomId,
+                      roomId: roomId,
                       controller: textController,
                       chatFocus: chatFocus,
                       onSendButtonPressed: () => onSendButtonPressed(ref),
@@ -407,9 +417,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             ),
           ),
         ),
-        if (ref.watch(
-          chatInputProvider.select((value) => value.emojiPickerVisible),
-        ))
+        if (emojiPickerVisible)
           EmojiPickerWidget(
             size: Size(
               MediaQuery.of(context).size.width,
@@ -537,9 +545,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     final client = ref.read(alwaysClientProvider);
     final inputState = ref.read(chatInputProvider);
     final lang = L10n.of(context);
-    final stream = await ref.read(
-      timelineStreamProvider(widget.roomId).future,
-    );
+    final stream = await ref.read(timelineStreamProvider(widget.roomId).future);
 
     try {
       for (File file in files) {
@@ -861,16 +867,15 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
             },
           ),
         ],
-        fieldViewBuilder: (context, ctrl, focusNode) =>
-            _innerTextField(context, focusNode, ctrl),
+        fieldViewBuilder: _innerTextField,
       ),
     );
   }
 
   Widget _innerTextField(
     BuildContext context,
-    FocusNode chatFocus,
     TextEditingController ctrl,
+    FocusNode chatFocus,
   ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),

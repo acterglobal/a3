@@ -19,10 +19,11 @@ class TaskItemsListNotifier
     List<String> openTasks = [];
     List<String> doneTasks = [];
     for (final task in tasks) {
+      final eventId = task.eventIdStr();
       if (task.isDone()) {
-        doneTasks.add(task.eventIdStr());
+        doneTasks.add(eventId);
       } else {
-        openTasks.add(task.eventIdStr());
+        openTasks.add(eventId);
       }
     }
 

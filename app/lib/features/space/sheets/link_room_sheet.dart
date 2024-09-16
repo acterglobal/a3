@@ -4,6 +4,7 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
@@ -122,30 +123,23 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //Parent space
   Widget parentSpaceDataUI() {
-    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
+    final space = ref.watch(selectedSpaceDetailsProvider);
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: spaceDetails.when(
-        data: (space) {
-          if (space == null) return const SizedBox.shrink();
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(L10n.of(context).parentSpace),
-              SpaceChip(
-                spaceId: space.roomId,
-                onTapOpenSpaceDetail: false,
-              ),
-            ],
-          );
-        },
-        error: (e, s) {
-          _log.severe('Failed to load the details of selected space', e, s);
-          return errorUI(L10n.of(context).loadingFailed(e));
-        },
-        loading: () => Container(),
-      ),
+      child: space.let(
+            (p0) => Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(L10n.of(context).parentSpace),
+                SpaceChip(
+                  spaceId: p0.roomId,
+                  onTapOpenSpaceDetail: false,
+                ),
+              ],
+            ),
+          ) ??
+          const SizedBox.shrink(),
     );
   }
 
