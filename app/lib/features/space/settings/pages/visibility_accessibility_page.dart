@@ -210,19 +210,8 @@ class _VisibilityAccessibilityPageState
   }
 
   Widget _spaceItemUI(String spaceId, bool canEdit) {
-    final spaceLoader = ref.watch(briefSpaceItemProvider(spaceId));
-    return spaceLoader.when(
-      data: (space) => _spaceFoundUI(space, canEdit),
-      error: (e, s) {
-        _log.severe('Failed to load brief of space', e, s);
-        return _spaceItemCard(
-          spaceId,
-          subtitle: Text(L10n.of(context).failedToLoadSpace(e)),
-          removeAction: canEdit ? () => removeSpace(spaceId) : null,
-        );
-      },
-      loading: _loadingSpaceItem,
-    );
+    final space = ref.watch(briefSpaceItemProvider(spaceId));
+    return _spaceFoundUI(space, canEdit);
   }
 
   Widget _spaceFoundUI(SpaceItem spaceItem, bool canEdit) {

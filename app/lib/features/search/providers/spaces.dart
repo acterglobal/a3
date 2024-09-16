@@ -29,28 +29,24 @@ List<SpaceDetails> _filterSpaces(
   for (final space in spaces) {
     final roomId = space.getRoomIdStr();
     final info = ref.watch(roomAvatarInfoProvider(roomId));
-
+    final name = info.displayName ?? roomId;
     if (searchValue.isNotEmpty) {
-      if (!(info.displayName!.toLowerCase()).contains(searchValue)) {
+      if (!name.toLowerCase().contains(searchValue)) {
         continue;
       }
     }
     finalSpaces.add(
       SpaceDetails(
-        info.displayName ?? roomId,
+        name,
         roomId,
         icon: ActerAvatar(
-          options: AvatarOptions(
-            info,
-          ),
+          options: AvatarOptions(info),
         ),
       ),
     );
   }
 
-  finalSpaces.sort((a, b) {
-    return a.name.compareTo(b.name);
-  });
+  finalSpaces.sort((a, b) => a.name.compareTo(b.name));
   return finalSpaces;
 }
 

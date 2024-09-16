@@ -31,10 +31,10 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideOptionsUI(BuildContext context) {
+    final curSlide = ref.watch(newsStateProvider).currentNewsSlide;
     final keyboardVisibility = ref.watch(keyboardVisibleProvider);
     return Visibility(
-      visible: ref.watch(newsStateProvider).currentNewsSlide != null &&
-          !(keyboardVisibility.value ?? false),
+      visible: curSlide != null && keyboardVisibility.value != true,
       child: Container(
         color: Theme.of(context).colorScheme.primary,
         child: newsSlideListUI(context),
@@ -200,10 +200,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     );
   }
 
-  Widget getIconAsPerSlideType(
-    NewsSlideType slidePostType,
-    XFile? mediaFile,
-  ) {
+  Widget getIconAsPerSlideType(NewsSlideType slidePostType, XFile? mediaFile) {
     switch (slidePostType) {
       case NewsSlideType.text:
         return const Icon(Atlas.size_text);
