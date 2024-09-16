@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -63,11 +64,8 @@ class UploadAvatarPage extends ConsumerWidget {
     );
   }
 
-  Future<void> pickAvatar(BuildContext context, WidgetRef ref) async {
-    final result = await FilePicker.platform.pickFiles(
-      dialogTitle: L10n.of(context).uploadAvatar,
-      type: FileType.image,
-    );
+  Future<void> onSelectAvatar(BuildContext context, WidgetRef ref) async {
+    FilePickerResult? result = await pickAvatar(context: context);
     if (result != null && result.files.isNotEmpty) {
       setUserAvatar(result.files.first);
     }
@@ -80,7 +78,7 @@ class UploadAvatarPage extends ConsumerWidget {
   Widget _buildAvatarUI(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       key: UploadAvatarPage.selectUserAvatar,
-      onTap: () => pickAvatar(context, ref),
+      onTap: () => onSelectAvatar(context, ref),
       child: Center(
         child: Container(
           height: 150,

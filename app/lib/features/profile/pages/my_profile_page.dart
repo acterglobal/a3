@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -109,10 +110,7 @@ class MyProfilePage extends StatelessWidget {
   }
 
   Future<void> updateAvatar(BuildContext context, WidgetRef ref) async {
-    final result = await FilePicker.platform.pickFiles(
-      dialogTitle: L10n.of(context).uploadAvatar,
-      type: FileType.image,
-    );
+    FilePickerResult? result = await pickAvatar(context: context);
     if (!context.mounted) return;
     if (result != null) {
       EasyLoading.show(status: L10n.of(context).updatingProfileImage);

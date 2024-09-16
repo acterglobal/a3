@@ -501,6 +501,8 @@
   "@failedToAcceptInvite": {},
   "failedToRejectInvite": "Failed to reject invite: {error}",
   "@failedToRejectInvite": {},
+  "missingStoragePermissions": "You must grant us permissions to storage to pick an Image file",
+  "@missingStoragePermissions": {},
   "file": "File",
   "@file": {},
   "forgotPassword": "Forgot Password?",

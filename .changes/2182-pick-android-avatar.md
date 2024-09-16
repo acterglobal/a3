@@ -1,0 +1,1 @@
+- Fix crash when picking an Avatar or image on older devices

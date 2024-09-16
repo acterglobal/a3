@@ -685,6 +685,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
       final mentions = ref.read(chatInputProvider).mentions;
       String markdownText = textController.text;
+      // Replace empty new lines with <br> tags
+      markdownText = markdownText.replaceAll(RegExp(r'(\n\s*\n)'), '\n<br>\n');
       final userMentions = [];
       mentions.forEach((key, value) {
         userMentions.add(value);

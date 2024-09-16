@@ -8,6 +8,7 @@ import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/common/widgets/visibility/room_visibility_item.dart';
 import 'package:acter/common/widgets/visibility/visibility_selector_drawer.dart';
+import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter/features/spaces/actions/create_space.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -144,11 +145,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
   }
 
-  Future<void> _handleAvatarUpload() async {
-    final result = await FilePicker.platform.pickFiles(
-      dialogTitle: L10n.of(context).uploadAvatar,
-      type: FileType.image,
-    );
+  void _handleAvatarUpload() async {
+    FilePickerResult? result = await pickAvatar(context: context);
     if (result != null) {
       final imagePath = result.files.single.path;
       if (imagePath == null) throw 'Picked image not found';

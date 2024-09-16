@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:file_picker/file_picker.dart';
@@ -238,7 +239,7 @@ Future<void> uploadAvatar(
 ) async {
   final room = await ref.read(maybeRoomProvider(roomId).future);
   if (room == null || !context.mounted) return;
-  final result = await FilePicker.platform.pickFiles(type: FileType.image);
+  FilePickerResult? result = await pickAvatar(context: context);
   if (result == null || result.files.isEmpty) return;
   try {
     if (!context.mounted) return;

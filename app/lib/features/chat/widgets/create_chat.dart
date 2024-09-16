@@ -6,6 +6,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/chat/providers/create_chat_providers.dart';
@@ -580,10 +581,7 @@ class _CreateRoomFormWidgetConsumerState
   }
 
   Future<void> _handleAvatarUpload() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      dialogTitle: L10n.of(context).uploadAvatar,
-      type: FileType.image,
-    );
+    FilePickerResult? result = await pickAvatar(context: context);
     if (result != null) {
       final avatarPath = result.files.single.path;
       if (avatarPath == null) throw 'Selected avatar not found';
