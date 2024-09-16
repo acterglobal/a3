@@ -7,6 +7,7 @@ import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
+import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -52,6 +53,10 @@ class SubSpaces extends ConsumerWidget {
         ],
       ),
       actions: [
+        IconButton(
+          icon: Icon(PhosphorIcons.x()),
+          onPressed: () => clearCategories(context, ref, spaceId),
+        ),
         IconButton(
           icon: Icon(PhosphorIcons.plusCircle()),
           onPressed: () => addDummyData(context, ref, spaceId),
@@ -131,56 +136,52 @@ class SubSpaces extends ConsumerWidget {
   }
 
   Widget _buildSubSpacesUI(BuildContext context, WidgetRef ref) {
-    final categoryManager = ref.watch(
-      categoryManagerProvider(
-        (spaceId: spaceId, categoriesFor: CategoriesFor.spaces),
-      ),
-    );
-    // final subSpaceList = ref.watch(subSpacesListProvider(spaceId));
-    //
-    // return subSpaceList.when(
-    //   data: (subSpaceListData) {
-    //     return ListView.builder(
-    //       scrollDirection: Axis.vertical,
-    //       shrinkWrap: true,
-    //       itemCount: subSpaceListData.length,
-    //       itemBuilder: (BuildContext context, int index) {
-    //         return SpaceCard(roomId: subSpaceListData[index]);
-    //       },
-    //     );
-    //   },
-    //   error: (e, s) {
-    //     _log.severe('Failed to load the space categories', e, s);
-    //     return Center(child: Text(L10n.of(context).loadingFailed(e)));
-    //   },
-    //   loading: () => Center(child: Text(L10n.of(context).loading)),
-    // );
+    final subSpaceList = ref.watch(subSpacesListProvider(spaceId));
 
-    return categoryManager.when(
-      data: (categoryManagerData) {
-        final List<CategoryModelLocal> categoryList =
-            getLocalCategoryList(categoryManagerData.categories().toList());
-        return ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: categoryList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return _buildCategoriesList(context, categoryList[index]);
+    return subSpaceList.when(
+      data: (subSpaceListData) {
+        final categoryManager = ref.watch(
+          categoryManagerProvider(
+            (spaceId: spaceId, categoriesFor: CategoriesFor.spaces),
+          ),
+        );
+        return categoryManager.when(
+          data: (categoryManagerData) {
+            final List<CategoryModelLocal> categoryList =
+                getCategorisedSubSpaces(
+              categoryManagerData.categories().toList(),
+              subSpaceListData,
+            );
+            return ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: categoryList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return _buildCategoriesList(context, categoryList[index]);
+              },
+            );
           },
+          error: (e, s) {
+            _log.severe('Failed to load the space categories', e, s);
+            return Center(child: Text(L10n.of(context).loadingFailed(e)));
+          },
+          loading: () => Center(child: Text(L10n.of(context).loading)),
         );
       },
       error: (e, s) {
-        _log.severe('Failed to load the space categories', e, s);
+        _log.severe('Failed to load the sub-spaces', e, s);
         return Center(child: Text(L10n.of(context).loadingFailed(e)));
       },
       loading: () => Center(child: Text(L10n.of(context).loading)),
     );
   }
 
-  Widget _buildCategoriesList(BuildContext context, CategoryModelLocal categoryModelLocal) {
+  Widget _buildCategoriesList(
+      BuildContext context, CategoryModelLocal categoryModelLocal) {
     final entries = categoryModelLocal.entries;
     return Card(
       child: ExpansionTile(
+        showTrailingIcon: false,
         initiallyExpanded: true,
         shape: const Border(),
         backgroundColor: Theme.of(context).colorScheme.secondaryContainer,

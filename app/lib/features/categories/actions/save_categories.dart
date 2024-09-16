@@ -36,20 +36,22 @@ void saveCategories(
     //Clear category builder data and Add new
     categoriesBuilder.clear();
     for (int i = 0; i < categoryList.length; i++) {
-      final newCategoryItem = categoriesManager.newCategoryBuilder();
-      //ADD TITLE
-      newCategoryItem.title(categoryList[i].title);
+      if (categoryList[i].title != 'Un-categorized') {
+        final newCategoryItem = categoriesManager.newCategoryBuilder();
+        //ADD TITLE
+        newCategoryItem.title(categoryList[i].title);
 
-      //ADD COLOR AND ICON
-      displayBuilder.color(categoryList[i].color.value);
-      displayBuilder.icon('acter-icon', categoryList[i].icon.name);
-      newCategoryItem.display(displayBuilder.build());
+        //ADD COLOR AND ICON
+        displayBuilder.color(categoryList[i].color.value);
+        displayBuilder.icon('acter-icon', categoryList[i].icon.name);
+        newCategoryItem.display(displayBuilder.build());
 
-      //ADD ENTRIES
-      for (int j = 0; j < categoryList[i].entries.length; j++) {
-        newCategoryItem.addEntry(categoryList[i].entries[j]);
+        //ADD ENTRIES
+        for (int j = 0; j < categoryList[i].entries.length; j++) {
+          newCategoryItem.addEntry(categoryList[i].entries[j]);
+        }
+        categoriesBuilder.add(newCategoryItem.build());
       }
-      categoriesBuilder.add(newCategoryItem.build());
     }
 
     //Save category builder
@@ -70,6 +72,39 @@ void saveCategories(
       L10n.of(context).updatingCategoriesFailed(e),
       duration: const Duration(seconds: 3),
     );
+  }
+}
+
+Future<void> clearCategories(
+  BuildContext context,
+  WidgetRef ref,
+  String spaceId,
+) async {
+  // Show loading message
+  EasyLoading.show(status: L10n.of(context).updatingCategories);
+  try {
+    final maybeSpace = await ref.watch(maybeSpaceProvider(spaceId).future);
+    if (maybeSpace != null) {
+      final categoriesManager = await maybeSpace.categories('spaces');
+
+      final newCats = categoriesManager.updateBuilder();
+      newCats.clear();
+      maybeSpace.setCategories('spaces', newCats);
+      if (context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+    }
+  } catch (e, s) {
+    _log.severe('Failed to update categories', e, s);
+    if (context.mounted) {
+      EasyLoading.dismiss();
+      EasyLoading.showError(
+        L10n.of(context).updatingCategoriesFailed(e),
+        duration: const Duration(seconds: 3),
+      );
+      return;
+    }
   }
 }
 
@@ -101,8 +136,6 @@ Future<void> addDummyData(
       newCat1.display(displayBuilder.build());
 
       //ADD ENTRIES
-      newCat1.addEntry('!ECGEsoitdTwuBFQlWq:m-1.acter.global');
-      newCat1.addEntry('!ETVXYJQaiONyZgsjNE:m-1.acter.global');
       newCats.add(newCat1.build());
 
       /// --------(NEW CATEGORY-2)--------
@@ -112,29 +145,12 @@ Future<void> addDummyData(
       newCat2.title('Test Cat - 2');
 
       //ADD COLOR AND ICON
-      displayBuilder.color(Colors.green.value);
-      displayBuilder.icon('acter-icon', ActerIcon.airplay.name);
+      displayBuilder.color(Colors.blue.value);
+      displayBuilder.icon('acter-icon', ActerIcon.appleLogo.name);
       newCat2.display(displayBuilder.build());
 
       //ADD ENTRIES
-      newCat2.addEntry('!QttcPDfFpCKjwjDLgg:m-1.acter.global');
-      newCat2.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
       newCats.add(newCat2.build());
-
-      /// --------(NEW CATEGORY-3)--------
-      final newCat3 = categoriesManager.newCategoryBuilder();
-
-      //ADD TITLE
-      newCat3.title('Test Cat - 3');
-
-      //ADD COLOR AND ICON
-      displayBuilder.color(Colors.blue.value);
-      displayBuilder.icon('acter-icon', ActerIcon.appleLogo.name);
-      newCat3.display(displayBuilder.build());
-
-      //ADD ENTRIES
-      newCat3.addEntry('!rvKjUYxJTzOmesLgut:acter.global');
-      newCats.add(newCat3.build());
 
       maybeSpace.setCategories('spaces', newCats);
     }

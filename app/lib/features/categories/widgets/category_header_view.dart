@@ -15,7 +15,9 @@ class CategoryHeaderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildCategoryHeader();
+    return (categoryModelLocal.title == 'Un-categorized')
+        ? _buildUnCategoriesHeader(context)
+        : _buildCategoryHeader();
   }
 
   Widget _buildCategoryHeader() {
@@ -31,6 +33,16 @@ class CategoryHeaderView extends StatelessWidget {
         const Spacer(),
         if (isShowDragHandle) Icon(PhosphorIcons.dotsSixVertical()),
       ],
+    );
+  }
+
+  Widget _buildUnCategoriesHeader(BuildContext context) {
+    return Text(
+      categoryModelLocal.title,
+      style: Theme.of(context)
+          .textTheme
+          .titleSmall!
+          .copyWith(color: Theme.of(context).disabledColor),
     );
   }
 }

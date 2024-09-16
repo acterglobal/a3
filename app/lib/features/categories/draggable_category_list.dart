@@ -4,6 +4,7 @@ import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
+import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,8 +43,12 @@ class _DraggableCategoriesListState
         (spaceId: widget.spaceId, categoriesFor: widget.categoriesFor),
       ).future,
     );
-    categoryList =
-        getLocalCategoryList(categoriesManager.categories().toList());
+    final subSpaceList =
+        await ref.read(subSpacesListProvider(widget.spaceId).future);
+    categoryList = getCategorisedSubSpaces(
+      categoriesManager.categories().toList(),
+      subSpaceList,
+    );
     setDragAndDropListData();
   }
 
