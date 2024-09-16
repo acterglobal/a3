@@ -177,7 +177,9 @@ class SubSpaces extends ConsumerWidget {
   }
 
   Widget _buildCategoriesList(
-      BuildContext context, CategoryModelLocal categoryModelLocal) {
+    BuildContext context,
+    CategoryModelLocal categoryModelLocal,
+  ) {
     final entries = categoryModelLocal.entries;
     return Card(
       child: ExpansionTile(
