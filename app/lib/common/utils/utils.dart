@@ -454,7 +454,8 @@ enum LabsFeature {
 // typedef ChatMessageInfo = ({String messageId, String roomId});
 // typedef AttachmentInfo = ({AttachmentType type, File file});
 
-// helper fn to remove bang operator about nullable variable
+// helper fn to mimic Option::map() in rust
+// it is used to remove bang operator about nullable variable
 extension Let<T> on T? {
   R? let<R>(R? Function(T) op) {
     final T? value = this;
