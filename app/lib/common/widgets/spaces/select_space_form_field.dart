@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:extension_nullable/extension_nullable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -92,7 +92,7 @@ class SelectSpaceFormField extends ConsumerWidget {
   Widget spaceBuilder(BuildContext context, WidgetRef ref, Widget? child) {
     final space = ref.watch(selectedSpaceDetailsProvider);
     final currentId = ref.watch(selectedSpaceIdProvider);
-    return space.map(
+    return space.let(
           (p0) => SpaceChip(
             spaceId: p0.roomId,
             onTapOpenSpaceDetail: false,
