@@ -149,6 +149,7 @@ dependencies:
   phosphor_flutter: ^2.1.0
   device_calendar: ^4.3.3-20240801
   quickalert: ^1.1.0
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:

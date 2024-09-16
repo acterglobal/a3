@@ -4,4 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 Future<FilePickerResult?> pickAvatar({required BuildContext context}) =>
-    pickImage(dialogTitle: L10n.of(context).uploadAvatar);
+    pickImage(
+      lang: L10n.of(context),
+      dialogTitle: L10n.of(context).uploadAvatar,
+    );
