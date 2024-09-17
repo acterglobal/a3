@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
-import 'package:acter/features/categories/actions/save_categories.dart';
 import 'package:acter/features/categories/draggable_category_list.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
@@ -54,12 +53,8 @@ class SubSpaces extends ConsumerWidget {
       ),
       actions: [
         IconButton(
-          icon: Icon(PhosphorIcons.x()),
-          onPressed: () => clearCategories(context, ref, spaceId),
-        ),
-        IconButton(
-          icon: Icon(PhosphorIcons.plusCircle()),
-          onPressed: () => addDummyData(context, ref, spaceId),
+          icon: Icon(PhosphorIcons.arrowsClockwise()),
+          onPressed: () => ref.invalidate(subSpacesListProvider),
         ),
         if (canLinkSpace) _buildMenuOptions(context),
       ],

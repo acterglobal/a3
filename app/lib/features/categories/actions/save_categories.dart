@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:flutter/material.dart';
@@ -72,101 +71,5 @@ void saveCategories(
       L10n.of(context).updatingCategoriesFailed(e),
       duration: const Duration(seconds: 3),
     );
-  }
-}
-
-Future<void> clearCategories(
-  BuildContext context,
-  WidgetRef ref,
-  String spaceId,
-) async {
-  // Show loading message
-  EasyLoading.show(status: L10n.of(context).updatingCategories);
-  try {
-    final maybeSpace = await ref.watch(maybeSpaceProvider(spaceId).future);
-    if (maybeSpace != null) {
-      final categoriesManager = await maybeSpace.categories('spaces');
-
-      final newCats = categoriesManager.updateBuilder();
-      newCats.clear();
-      maybeSpace.setCategories('spaces', newCats);
-      if (context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-    }
-  } catch (e, s) {
-    _log.severe('Failed to update categories', e, s);
-    if (context.mounted) {
-      EasyLoading.dismiss();
-      EasyLoading.showError(
-        L10n.of(context).updatingCategoriesFailed(e),
-        duration: const Duration(seconds: 3),
-      );
-      return;
-    }
-  }
-}
-
-Future<void> addDummyData(
-  BuildContext context,
-  WidgetRef ref,
-  String spaceId,
-) async {
-  // Show loading message
-  EasyLoading.show(status: L10n.of(context).updatingCategories);
-  try {
-    final maybeSpace = await ref.watch(maybeSpaceProvider(spaceId).future);
-    if (maybeSpace != null) {
-      final categoriesManager = await maybeSpace.categories('spaces');
-
-      final newCats = categoriesManager.updateBuilder();
-      newCats.clear();
-      final sdk = await ref.watch(sdkProvider.future);
-      final displayBuilder = sdk.api.newDisplayBuilder();
-
-      /// --------(NEW CATEGORY-1)--------
-      final newCat1 = categoriesManager.newCategoryBuilder();
-      //ADD TITLE
-      newCat1.title('Test Cat - 1');
-
-      //ADD COLOR AND ICON
-      displayBuilder.color(Colors.red.value);
-      displayBuilder.icon('acter-icon', ActerIcon.addressBook.name);
-      newCat1.display(displayBuilder.build());
-
-      //ADD ENTRIES
-      newCats.add(newCat1.build());
-
-      /// --------(NEW CATEGORY-2)--------
-      final newCat2 = categoriesManager.newCategoryBuilder();
-
-      //ADD TITLE
-      newCat2.title('Test Cat - 2');
-
-      //ADD COLOR AND ICON
-      displayBuilder.color(Colors.blue.value);
-      displayBuilder.icon('acter-icon', ActerIcon.appleLogo.name);
-      newCat2.display(displayBuilder.build());
-
-      //ADD ENTRIES
-      newCats.add(newCat2.build());
-
-      maybeSpace.setCategories('spaces', newCats);
-    }
-    if (context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-  } catch (e, s) {
-    _log.severe('Failed to update categories', e, s);
-    if (context.mounted) {
-      EasyLoading.dismiss();
-      EasyLoading.showError(
-        L10n.of(context).updatingCategoriesFailed(e),
-        duration: const Duration(seconds: 3),
-      );
-      return;
-    }
   }
 }

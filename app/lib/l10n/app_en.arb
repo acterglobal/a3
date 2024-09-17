@@ -2175,7 +2175,7 @@
   "colonCharacter": " : ",
   "@colonCharacter": {},
   "andSeparator": " and ",
-  "andNMore":", and {count} more",
+  "andNMore": ", and {count} more",
   "errorLoadingSpaces": "Error loading spaces: {error}",
   "@errorLoadingSpaces": {},
   "eventNoLongerAvailable": "Event no longer available",
@@ -2191,6 +2191,8 @@
   "organized": "Organized",
   "updatingCategories": "Updating categories",
   "updatingCategoriesFailed": "Updating categories failed {error}",
+  "addingNewCategory": "Adding new category",
+  "addingNewCategoriesFailed": "Adding new category failed {error}",
   "action": "Action",
   "@action": {}
 }

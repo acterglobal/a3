@@ -1,8 +1,10 @@
 import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/features/categories/actions/add_category.dart';
 import 'package:acter/features/categories/actions/save_categories.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
+import 'package:acter/features/categories/widgets/add_edit_category.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
 import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
@@ -137,7 +139,18 @@ class _DraggableCategoriesListState
             Expanded(
               child: OutlinedButton(
                 style: buttonStyle,
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => showAddEditCategoryBottomSheet(
+                  context: context,
+                  onSave: (title, color, icon) => addCategory(
+                    context,
+                    ref,
+                    widget.spaceId,
+                    widget.categoriesFor,
+                    title,
+                    color,
+                    icon,
+                  ),
+                ),
                 child: Text(L10n.of(context).createCategory),
               ),
             ),
