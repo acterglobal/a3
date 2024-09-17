@@ -152,6 +152,7 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
           icon: Icon(PhosphorIcons.plus()),
           onPressed: () => showAddEditCategoryBottomSheet(
             context: context,
+            bottomSheetTitle: L10n.of(context).addCategory,
             onSave: (title, color, icon) {
               setState(() {
                 categoryList.insert(

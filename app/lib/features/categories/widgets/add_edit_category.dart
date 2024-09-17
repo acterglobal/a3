@@ -80,7 +80,7 @@ class _AddEditCategoryBottomSheet
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                widget.bottomSheetTitle ?? L10n.of(context).edit,
+                widget.bottomSheetTitle ?? L10n.of(context).editCategory,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
