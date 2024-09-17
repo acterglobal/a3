@@ -1,5 +1,7 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/categories/organized_categories.dart';
+import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/events/pages/create_event_page.dart';
 import 'package:acter/features/events/pages/event_list_page.dart';
 import 'package:acter/features/invite_members/pages/invite_individual_users.dart';
@@ -234,6 +236,21 @@ final homeShellRoutes = [
         key: state.pageKey,
         child: SubSpaces(
           spaceId: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.organizedCategories.name,
+    path: Routes.organizedCategories.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: OrganizedCategories(
+          spaceId: state.pathParameters['spaceId']!,
+          categoriesFor:
+              getCategoryEnumFromName(state.pathParameters['categoriesFor']!),
         ),
       );
     },

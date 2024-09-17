@@ -67,6 +67,7 @@ enum Routes {
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
   subSpaces('/:spaceId([!#][^/]+)/subSpaces'),
+  organizedCategories('/organizedCategories/:spaceId([^/]+)/:categoriesFor([^/]+)'),
   spaceMembers('/:spaceId([!#][^/]+)/members'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
   spaceEvents('/:spaceId([!#][^/]+)/events'),
@@ -113,5 +114,6 @@ enum Routes {
   fatalFail('/error');
 
   const Routes(this.route);
+
   final String route;
 }

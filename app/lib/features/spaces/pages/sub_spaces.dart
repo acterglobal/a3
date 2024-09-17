@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
-import 'package:acter/features/categories/draggable_category_list.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
@@ -109,15 +108,13 @@ class SubSpaces extends ConsumerWidget {
           ),
         ),
         PopupMenuItem(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (context) => DraggableCategoryList(
-                spaceId: spaceId,
-                categoriesFor: CategoriesFor.spaces,
-              ),
-            );
-          },
+          onTap: () => context.pushNamed(
+            Routes.organizedCategories.name,
+            pathParameters: {
+              'spaceId': spaceId,
+              'categoriesFor': CategoriesFor.spaces.name,
+            },
+          ),
           child: Row(
             children: [
               Icon(PhosphorIcons.dotsSixVertical()),

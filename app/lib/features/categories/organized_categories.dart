@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/categories/actions/save_categories.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
@@ -12,23 +13,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-class DraggableCategoryList extends ConsumerStatefulWidget {
+class OrganizedCategories extends ConsumerStatefulWidget {
   final String spaceId;
   final CategoriesFor categoriesFor;
 
-  const DraggableCategoryList({
+  const OrganizedCategories({
     super.key,
     required this.spaceId,
     required this.categoriesFor,
   });
 
   @override
-  ConsumerState<DraggableCategoryList> createState() =>
+  ConsumerState<OrganizedCategories> createState() =>
       _DraggableCategoriesListState();
 }
 
-class _DraggableCategoriesListState
-    extends ConsumerState<DraggableCategoryList> {
+class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
   List<DragAndDropList>? dragAndDropList;
   late List<CategoryModelLocal> categoryList;
 
@@ -92,98 +92,67 @@ class _DraggableCategoriesListState
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        color: Theme.of(context).colorScheme.secondaryContainer,
+    return Scaffold(
+      appBar: _buildAppBarUI(),
+      body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildAppBarUI(),
-            const Divider(endIndent: 0, indent: 0),
-            Expanded(
-              child: Column(
-                children: [
-                  Expanded(child: _buildSubSpacesUIWithDrag()),
-                  _buildActionButtons(),
-                ],
-              ),
-            ),
+            Expanded(child: _buildSubSpacesUIWithDrag()),
+            _buildSaveCategoriesButton(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAppBarUI() {
-    return Row(
-      children: [
-        Text(
-          L10n.of(context).organized,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const Spacer(),
+  AppBar _buildAppBarUI() {
+    return AppBar(
+      title: Text(
+        L10n.of(context).organized,
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
+      actions: [
         IconButton(
-          icon: Icon(PhosphorIcons.x()),
-          onPressed: () => Navigator.pop(context),
+          icon: Icon(PhosphorIcons.plus()),
+          onPressed: () => showAddEditCategoryBottomSheet(
+            context: context,
+            onSave: (title, color, icon) {
+              setState(() {
+                categoryList.insert(
+                  categoryList.length - 1,
+                  CategoryModelLocal(
+                    title: title,
+                    color: color,
+                    icon: icon,
+                    entries: [],
+                  ),
+                );
+              });
+              setDragAndDropListData();
+            },
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildActionButtons() {
-    final buttonStyle = OutlinedButton.styleFrom(
-      backgroundColor: Theme.of(context).primaryColor,
-    );
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.8),
-        borderRadius: const BorderRadius.all(Radius.circular(16)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: OutlinedButton(
-              style: buttonStyle,
-              onPressed: () => showAddEditCategoryBottomSheet(
-                context: context,
-                onSave: (title, color, icon) {
-                  setState(() {
-                    categoryList.insert(
-                      categoryList.length - 1,
-                      CategoryModelLocal(
-                        title: title,
-                        color: color,
-                        icon: icon,
-                        entries: [],
-                      ),
-                    );
-                  });
-                  setDragAndDropListData();
-                },
-              ),
-              child: Text(L10n.of(context).createCategory),
-            ),
-          ),
-          const SizedBox(width: 30),
-          Expanded(
-            child: OutlinedButton(
-              style: buttonStyle,
-              onPressed: () async {
-                await saveCategories(
-                  context,
-                  ref,
-                  widget.spaceId,
-                  widget.categoriesFor,
-                  categoryList,
-                );
-                if (context.mounted) Navigator.pop(context);
-              },
-              child: Text(L10n.of(context).save),
-            ),
-          ),
-        ],
+  Widget _buildSaveCategoriesButton() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ActerPrimaryActionButton(
+        onPressed: () async {
+          await saveCategories(
+            context,
+            ref,
+            widget.spaceId,
+            widget.categoriesFor,
+            categoryList,
+          );
+          if (context.mounted) Navigator.pop(context);
+        },
+        child: Text(L10n.of(context).save),
       ),
     );
   }
