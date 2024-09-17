@@ -58,37 +58,43 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
     dragAndDropList = List.generate(categoryList.length, (indexCategory) {
       return DragAndDropList(
         canDrag: categoryList[indexCategory].title != 'Un-categorized',
-        header: CategoryHeaderView(
-          categoryModelLocal: categoryList[indexCategory],
-          isShowDragHandle: true,
-          headerBackgroundColor:
-              Theme.of(context).unselectedWidgetColor.withOpacity(0.7),
-          onClickEditCategory: () async {
-            showAddEditCategoryBottomSheet(
-              context: context,
-              onSave: (title, color, icon) {
-                CategoryModelLocal categoryModelLocal = CategoryModelLocal(
-                  title: title,
-                  color: color,
-                  icon: icon,
-                  entries: categoryList[indexCategory].entries,
-                );
-                categoryList[indexCategory] = categoryModelLocal;
-                setDragAndDropListData();
-              },
-            );
-          },
-          onClickDeleteCategory: () async {
-            categoryList.removeAt(indexCategory);
-            await saveCategories(
-              context,
-              ref,
-              widget.spaceId,
-              CategoriesFor.spaces,
-              categoryList,
-            );
-            setDragAndDropListData();
-          },
+        header: Padding(
+          padding: const EdgeInsets.only(top: 18, bottom: 8),
+          child: CategoryHeaderView(
+            categoryModelLocal: categoryList[indexCategory],
+            isShowDragHandle: true,
+            headerBackgroundColor:
+                Theme.of(context).unselectedWidgetColor.withOpacity(0.7),
+            onClickEditCategory: () async {
+              showAddEditCategoryBottomSheet(
+                context: context,
+                title: categoryList[indexCategory].title,
+                color: categoryList[indexCategory].color,
+                icon: categoryList[indexCategory].icon,
+                onSave: (title, color, icon) {
+                  CategoryModelLocal categoryModelLocal = CategoryModelLocal(
+                    title: title,
+                    color: color,
+                    icon: icon,
+                    entries: categoryList[indexCategory].entries,
+                  );
+                  categoryList[indexCategory] = categoryModelLocal;
+                  setDragAndDropListData();
+                },
+              );
+            },
+            onClickDeleteCategory: () async {
+              categoryList.removeAt(indexCategory);
+              await saveCategories(
+                context,
+                ref,
+                widget.spaceId,
+                CategoriesFor.spaces,
+                categoryList,
+              );
+              setDragAndDropListData();
+            },
+          ),
         ),
         children: List<DragAndDropItem>.generate(
           categoryList[indexCategory].entries.length,
