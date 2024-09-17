@@ -74,7 +74,7 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
                   entries: categoryList[indexCategory].entries,
                 );
                 categoryList[indexCategory] = categoryModelLocal;
-                setDragAndDropList();
+                setDragAndDropListData();
               },
             );
           },
@@ -87,7 +87,7 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
               CategoriesFor.spaces,
               categoryList,
             );
-            setDragAndDropList();
+            setDragAndDropListData();
           },
         ),
         children: List<DragAndDropItem>.generate(
