@@ -72,6 +72,9 @@ class SpaceCard extends ConsumerWidget {
   /// the default border.
   final bool withBorder;
 
+  /// Custom Leading Widget
+  final Widget? leading;
+
   /// Custom Trailing Widget
   final Widget? trailing;
 
@@ -106,6 +109,7 @@ class SpaceCard extends ConsumerWidget {
     this.showParents = true,
     this.showSuggestedMark = false,
     this.showVisibilityMark = false,
+    this.leading,
     this.trailing,
   });
 
@@ -127,6 +131,7 @@ class SpaceCard extends ConsumerWidget {
     this.showParents = false,
     this.showSuggestedMark = false,
     this.showVisibilityMark = false,
+    this.leading,
     this.trailing,
   });
 
@@ -149,6 +154,7 @@ class SpaceCard extends ConsumerWidget {
       showParents: showParents,
       showSuggestedMark: showSuggestedMark,
       showVisibilityMark: showVisibilityMark,
+      leading: leading,
       trailing: trailing,
     );
   }

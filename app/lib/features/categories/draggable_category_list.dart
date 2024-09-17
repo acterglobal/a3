@@ -57,12 +57,12 @@ class _DraggableCategoriesListState
   void setDragAndDropListData() {
     dragAndDropList = List.generate(categoryList.length, (indexCategory) {
       return DragAndDropList(
-        header: Padding(
-          padding: const EdgeInsets.all(14),
-          child: CategoryHeaderView(
-            categoryModelLocal: categoryList[indexCategory],
-            isShowDragHandle: true,
-          ),
+        canDrag: categoryList[indexCategory].title != 'Un-categorized',
+        header: CategoryHeaderView(
+          categoryModelLocal: categoryList[indexCategory],
+          isShowDragHandle: true,
+          headerBackgroundColor:
+              Theme.of(context).unselectedWidgetColor.withOpacity(0.7),
         ),
         children: List<DragAndDropItem>.generate(
           categoryList[indexCategory].entries.length,
@@ -71,7 +71,7 @@ class _DraggableCategoriesListState
               roomId:
                   categoryList[indexCategory].entries[indexEntry].toString(),
               margin: const EdgeInsets.symmetric(vertical: 6),
-              trailing: Icon(PhosphorIcons.dotsSixVertical()),
+              leading: Icon(PhosphorIcons.dotsSixVertical()),
             ),
           ),
         ),
@@ -84,17 +84,17 @@ class _DraggableCategoriesListState
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        padding: const EdgeInsets.all(16),
+        color: Theme.of(context).colorScheme.secondaryContainer,
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 16),
         child: Column(
           children: [
             _buildAppBarUI(),
             const Divider(endIndent: 0, indent: 0),
             Expanded(
-              child: Stack(
+              child: Column(
                 children: [
-                  _buildSubSpacesUIWithDrag(),
-                  Positioned.fill(child: _buildActionButtons()),
+                  Expanded(child: _buildSubSpacesUIWithDrag()),
+                  _buildActionButtons(),
                 ],
               ),
             ),
@@ -124,52 +124,48 @@ class _DraggableCategoriesListState
     final buttonStyle = OutlinedButton.styleFrom(
       backgroundColor: Theme.of(context).primaryColor,
     );
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 30),
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withOpacity(0.8),
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                style: buttonStyle,
-                onPressed: () => showAddEditCategoryBottomSheet(
-                  context: context,
-                  onSave: (title, color, icon) => addCategory(
-                    context,
-                    ref,
-                    widget.spaceId,
-                    widget.categoriesFor,
-                    title,
-                    color,
-                    icon,
-                  ),
-                ),
-                child: Text(L10n.of(context).createCategory),
-              ),
-            ),
-            const SizedBox(width: 30),
-            Expanded(
-              child: OutlinedButton(
-                style: buttonStyle,
-                onPressed: () => saveCategories(
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor.withOpacity(0.8),
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: OutlinedButton(
+              style: buttonStyle,
+              onPressed: () => showAddEditCategoryBottomSheet(
+                context: context,
+                onSave: (title, color, icon) => addCategory(
                   context,
                   ref,
                   widget.spaceId,
                   widget.categoriesFor,
-                  categoryList,
+                  title,
+                  color,
+                  icon,
                 ),
-                child: Text(L10n.of(context).save),
               ),
+              child: Text(L10n.of(context).createCategory),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 30),
+          Expanded(
+            child: OutlinedButton(
+              style: buttonStyle,
+              onPressed: () => saveCategories(
+                context,
+                ref,
+                widget.spaceId,
+                widget.categoriesFor,
+                categoryList,
+              ),
+              child: Text(L10n.of(context).save),
+            ),
+          ),
+        ],
       ),
     );
   }

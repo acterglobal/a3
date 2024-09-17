@@ -178,16 +178,17 @@ class SubSpaces extends ConsumerWidget {
     final entries = categoryModelLocal.entries;
     return Card(
       child: ExpansionTile(
+        tilePadding: EdgeInsets.zero,
         showTrailingIcon: false,
         initiallyExpanded: true,
         shape: const Border(),
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        collapsedBackgroundColor: Colors.transparent,
         title: CategoryHeaderView(categoryModelLocal: categoryModelLocal),
         children: List<Widget>.generate(
           entries.length,
           (index) => SpaceCard(
             roomId: entries[index],
-            margin: const EdgeInsets.symmetric(vertical: 6),
+            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
           ),
         ),
       ),

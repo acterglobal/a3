@@ -2194,5 +2194,7 @@
   "addingNewCategory": "Adding new category",
   "addingNewCategoriesFailed": "Adding new category failed {error}",
   "action": "Action",
+  "editCategory": "Edit Category",
+  "deleteCategory": "Delete Category",
   "@action": {}
 }
