@@ -41,7 +41,7 @@ class CategoryHeaderView extends StatelessWidget {
           const SizedBox(width: 6),
           Text(categoryModelLocal.title),
           const Spacer(),
-          _buildMenuOptions(context),
+          if (isShowDragHandle) _buildMenuOptions(context),
         ],
       ),
     );

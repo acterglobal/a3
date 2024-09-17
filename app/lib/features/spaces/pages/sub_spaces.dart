@@ -178,8 +178,7 @@ class SubSpaces extends ConsumerWidget {
     final entries = categoryModelLocal.entries;
     return Card(
       child: ExpansionTile(
-        tilePadding: EdgeInsets.zero,
-        showTrailingIcon: false,
+        tilePadding: const EdgeInsets.only(right: 16),
         initiallyExpanded: true,
         shape: const Border(),
         collapsedBackgroundColor: Colors.transparent,
