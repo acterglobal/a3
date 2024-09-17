@@ -10,7 +10,7 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::save_categories');
 
-void saveCategories(
+Future<void> saveCategories(
   BuildContext context,
   WidgetRef ref,
   String spaceId,
@@ -58,9 +58,6 @@ void saveCategories(
     space.setCategories(categoriesFor.name, categoriesBuilder);
 
     EasyLoading.dismiss();
-    if (context.mounted) {
-      Navigator.pop(context);
-    }
   } catch (e, s) {
     _log.severe('Failed to save categories', e, s);
     if (!context.mounted) {

@@ -1,5 +1,4 @@
 import 'package:acter/common/widgets/spaces/space_card.dart';
-import 'package:acter/features/categories/actions/add_category.dart';
 import 'package:acter/features/categories/actions/save_categories.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
@@ -63,6 +62,17 @@ class _DraggableCategoriesListState
           isShowDragHandle: true,
           headerBackgroundColor:
               Theme.of(context).unselectedWidgetColor.withOpacity(0.7),
+          onClickDeleteCategory: () async {
+            categoryList.removeAt(indexCategory);
+            await saveCategories(
+              context,
+              ref,
+              widget.spaceId,
+              CategoriesFor.spaces,
+              categoryList,
+            );
+            setDragAndDropListData();
+          },
         ),
         children: List<DragAndDropItem>.generate(
           categoryList[indexCategory].entries.length,
@@ -138,15 +148,20 @@ class _DraggableCategoriesListState
               style: buttonStyle,
               onPressed: () => showAddEditCategoryBottomSheet(
                 context: context,
-                onSave: (title, color, icon) => addCategory(
-                  context,
-                  ref,
-                  widget.spaceId,
-                  widget.categoriesFor,
-                  title,
-                  color,
-                  icon,
-                ),
+                onSave: (title, color, icon) {
+                  setState(() {
+                    categoryList.insert(
+                      categoryList.length - 1,
+                      CategoryModelLocal(
+                        title: title,
+                        color: color,
+                        icon: icon,
+                        entries: [],
+                      ),
+                    );
+                  });
+                  setDragAndDropListData();
+                },
               ),
               child: Text(L10n.of(context).createCategory),
             ),
@@ -155,13 +170,16 @@ class _DraggableCategoriesListState
           Expanded(
             child: OutlinedButton(
               style: buttonStyle,
-              onPressed: () => saveCategories(
-                context,
-                ref,
-                widget.spaceId,
-                widget.categoriesFor,
-                categoryList,
-              ),
+              onPressed: () async {
+                await saveCategories(
+                  context,
+                  ref,
+                  widget.spaceId,
+                  widget.categoriesFor,
+                  categoryList,
+                );
+                if (context.mounted) Navigator.pop(context);
+              },
               child: Text(L10n.of(context).save),
             ),
           ),
