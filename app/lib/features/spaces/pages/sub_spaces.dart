@@ -140,7 +140,7 @@ class SubSpaces extends ConsumerWidget {
         return categoryManager.when(
           data: (categoryManagerData) {
             final List<CategoryModelLocal> categoryList =
-                getCategorisedSubSpaces(
+                getCategorisedSubSpacesWithoutEmptyList(
               categoryManagerData.categories().toList(),
               subSpaceListData,
             );

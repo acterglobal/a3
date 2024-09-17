@@ -10,6 +10,23 @@ CategoriesFor getCategoryEnumFromName(String name) {
   return CategoriesFor.values.firstWhere((v) => v.name == name);
 }
 
+List<CategoryModelLocal> getCategorisedSubSpacesWithoutEmptyList(
+  List<Category> categoryList,
+  List<String> subSpaceList,
+) {
+//CONVERT CATEGORY LIST TO LOCAL CATEGORY LIST
+  List<CategoryModelLocal> categoryListLocal =
+      getCategorisedSubSpaces(categoryList, subSpaceList);
+
+  List<CategoryModelLocal> categoryListLocalWithoutEmptyEntries = [];
+  for (var categoryListLocal in categoryListLocal) {
+    if (categoryListLocal.entries.isNotEmpty) {
+      categoryListLocalWithoutEmptyEntries.add(categoryListLocal);
+    }
+  }
+  return categoryListLocalWithoutEmptyEntries;
+}
+
 List<CategoryModelLocal> getCategorisedSubSpaces(
   List<Category> categoryList,
   List<String> subSpaceList,
