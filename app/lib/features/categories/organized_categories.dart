@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/categories/actions/save_categories.dart';
@@ -108,10 +109,22 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
   }
 
   AppBar _buildAppBarUI() {
+    final spaceName =
+        ref.watch(roomDisplayNameProvider(widget.spaceId)).valueOrNull;
     return AppBar(
-      title: Text(
-        L10n.of(context).organized,
-        style: Theme.of(context).textTheme.titleLarge,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            L10n.of(context).organized,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          Text(
+            '(${widget.categoriesFor.name} in $spaceName)',
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+        ],
       ),
       actions: [
         IconButton(
