@@ -8,6 +8,7 @@ class CategoryHeaderView extends StatelessWidget {
   final CategoryModelLocal categoryModelLocal;
   final Color? headerBackgroundColor;
   final bool isShowDragHandle;
+  final Function()? onClickEditCategory;
   final Function()? onClickDeleteCategory;
 
   const CategoryHeaderView({
@@ -15,6 +16,7 @@ class CategoryHeaderView extends StatelessWidget {
     required this.categoryModelLocal,
     this.isShowDragHandle = false,
     this.headerBackgroundColor,
+    this.onClickEditCategory,
     this.onClickDeleteCategory,
   });
 
@@ -68,7 +70,8 @@ class CategoryHeaderView extends StatelessWidget {
       iconSize: 28,
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
         PopupMenuItem(
-          onTap: () {},
+          onTap: () =>
+              onClickEditCategory != null ? onClickEditCategory!() : null,
           child: Row(
             children: <Widget>[
               Icon(PhosphorIcons.pencil()),
@@ -78,7 +81,8 @@ class CategoryHeaderView extends StatelessWidget {
           ),
         ),
         PopupMenuItem(
-          onTap: () => onClickDeleteCategory!=null?onClickDeleteCategory!():null,
+          onTap: () =>
+              onClickDeleteCategory != null ? onClickDeleteCategory!() : null,
           child: Row(
             children: <Widget>[
               Icon(PhosphorIcons.trash()),

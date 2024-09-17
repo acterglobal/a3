@@ -63,6 +63,21 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
           isShowDragHandle: true,
           headerBackgroundColor:
               Theme.of(context).unselectedWidgetColor.withOpacity(0.7),
+          onClickEditCategory: () async {
+            showAddEditCategoryBottomSheet(
+              context: context,
+              onSave: (title, color, icon) {
+                CategoryModelLocal categoryModelLocal = CategoryModelLocal(
+                  title: title,
+                  color: color,
+                  icon: icon,
+                  entries: categoryList[indexCategory].entries,
+                );
+                categoryList[indexCategory] = categoryModelLocal;
+                setDragAndDropList();
+              },
+            );
+          },
           onClickDeleteCategory: () async {
             categoryList.removeAt(indexCategory);
             await saveCategories(
@@ -72,7 +87,7 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
               CategoriesFor.spaces,
               categoryList,
             );
-            setDragAndDropListData();
+            setDragAndDropList();
           },
         ),
         children: List<DragAndDropItem>.generate(
