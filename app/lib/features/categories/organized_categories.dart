@@ -38,70 +38,78 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
   }
 
   void setDragAndDropList() async {
+    //GET LOCAL CATEGORY LIST
     categoryList = await ref.read(
       localCategoryListProvider(
         (spaceId: widget.spaceId, categoriesFor: widget.categoriesFor),
       ).future,
     );
+
+    //SET DRAG AND DROP LIST DATA BASED ON THE LOCAL CATEGORY LIST
     setDragAndDropListData();
   }
 
   void setDragAndDropListData() {
-    dragAndDropList = List.generate(categoryList.length, (indexCategory) {
+    dragAndDropList = List.generate(categoryList.length, (categoryIndex) {
       return DragAndDropList(
-        canDrag: categoryList[indexCategory].title != 'Un-categorized',
-        header: Padding(
-          padding: const EdgeInsets.only(top: 18, bottom: 8),
-          child: CategoryHeaderView(
-            categoryModelLocal: categoryList[indexCategory],
-            isShowDragHandle: true,
-            headerBackgroundColor:
-                Theme.of(context).unselectedWidgetColor.withOpacity(0.7),
-            onClickEditCategory: () async {
-              showAddEditCategoryBottomSheet(
-                context: context,
-                title: categoryList[indexCategory].title,
-                color: categoryList[indexCategory].color,
-                icon: categoryList[indexCategory].icon,
-                onSave: (title, color, icon) {
-                  CategoryModelLocal categoryModelLocal = CategoryModelLocal(
-                    title: title,
-                    color: color,
-                    icon: icon,
-                    entries: categoryList[indexCategory].entries,
-                  );
-                  categoryList[indexCategory] = categoryModelLocal;
-                  setDragAndDropListData();
-                },
-              );
-            },
-            onClickDeleteCategory: () async {
-              categoryList.removeAt(indexCategory);
-              await saveCategories(
-                context,
-                ref,
-                widget.spaceId,
-                CategoriesFor.spaces,
-                categoryList,
-              );
-              setDragAndDropListData();
-            },
-          ),
-        ),
-        children: List<DragAndDropItem>.generate(
-          categoryList[indexCategory].entries.length,
-          (indexEntry) => DragAndDropItem(
-            child: SpaceCard(
-              roomId:
-                  categoryList[indexCategory].entries[indexEntry].toString(),
-              margin: const EdgeInsets.symmetric(vertical: 6),
-              leading: Icon(PhosphorIcons.dotsSixVertical()),
-            ),
-          ),
-        ),
+        canDrag: categoryList[categoryIndex].title != 'Un-categorized',
+        header: dragDropListHeaderView(categoryIndex),
+        children: getDragAndDropItemList(categoryIndex),
       );
     });
     setState(() {});
+  }
+
+  Widget dragDropListHeaderView(int categoryIndex) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 18, bottom: 8),
+      child: CategoryHeaderView(
+        categoryModelLocal: categoryList[categoryIndex],
+        isShowDragHandle: true,
+        headerBackgroundColor:
+            Theme.of(context).unselectedWidgetColor.withOpacity(0.7),
+        onClickEditCategory: () => callEditCategory(categoryIndex),
+        onClickDeleteCategory: () => callDeleteCategory(categoryIndex),
+      ),
+    );
+  }
+
+  void callEditCategory(int categoryIndex) {
+    showAddEditCategoryBottomSheet(
+      context: context,
+      title: categoryList[categoryIndex].title,
+      color: categoryList[categoryIndex].color,
+      icon: categoryList[categoryIndex].icon,
+      onSave: (title, color, icon) {
+        CategoryModelLocal categoryModelLocal = CategoryModelLocal(
+          title: title,
+          color: color,
+          icon: icon,
+          entries: categoryList[categoryIndex].entries,
+        );
+        categoryList[categoryIndex] = categoryModelLocal;
+        setDragAndDropListData();
+      },
+    );
+  }
+
+  void callDeleteCategory(int categoryIndex) async {
+    categoryList.removeAt(categoryIndex);
+    setDragAndDropListData();
+  }
+
+  List<DragAndDropItem> getDragAndDropItemList(int categoryIndex) {
+    return List<DragAndDropItem>.generate(
+      categoryList[categoryIndex].entries.length,
+      (entryItemIndex) => DragAndDropItem(
+        child: SpaceCard(
+          roomId:
+              categoryList[categoryIndex].entries[entryItemIndex].toString(),
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          leading: Icon(PhosphorIcons.dotsSixVertical()),
+        ),
+      ),
+    );
   }
 
   @override
@@ -177,7 +185,7 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
             widget.categoriesFor,
             categoryList,
           );
-          if (context.mounted) Navigator.pop(context);
+          if (mounted) Navigator.pop(context);
         },
         child: Text(L10n.of(context).save),
       ),
