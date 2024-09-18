@@ -215,13 +215,13 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizeCategories> {
     int newListIndex,
   ) async {
     if (dragAndDropList == null) return;
-    setState(() {
-      var movedList = dragAndDropList!.removeAt(oldListIndex);
-      dragAndDropList!.insert(newListIndex, movedList);
+    var movedList = dragAndDropList!.removeAt(oldListIndex);
+    dragAndDropList!.insert(newListIndex, movedList);
 
-      var movedCategoryList = categoryList.removeAt(oldListIndex);
-      categoryList.insert(newListIndex, movedCategoryList);
-    });
+    var movedCategoryList = categoryList.removeAt(oldListIndex);
+    categoryList.insert(newListIndex, movedCategoryList);
+
+    setDragAndDropListData();
   }
 
   //ON SUB ITEM REORDER
@@ -232,15 +232,15 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizeCategories> {
     int newListIndex,
   ) async {
     if (dragAndDropList == null) return;
-    setState(() {
-      var movedItem =
-          dragAndDropList![oldListIndex].children.removeAt(oldItemIndex);
-      dragAndDropList![newListIndex].children.insert(newItemIndex, movedItem);
+    var movedItem =
+        dragAndDropList![oldListIndex].children.removeAt(oldItemIndex);
+    dragAndDropList![newListIndex].children.insert(newItemIndex, movedItem);
 
-      var movedEntryItem =
-          categoryList[oldListIndex].entries.removeAt(oldItemIndex);
-      categoryList[newListIndex].entries.insert(newItemIndex, movedEntryItem);
-    });
+    var movedEntryItem =
+        categoryList[oldListIndex].entries.removeAt(oldItemIndex);
+    categoryList[newListIndex].entries.insert(newItemIndex, movedEntryItem);
+
+    setDragAndDropListData();
   }
 
   //SAVE ORGANIZED CATEGORIES
