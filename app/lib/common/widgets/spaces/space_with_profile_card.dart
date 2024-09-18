@@ -136,13 +136,15 @@ class SpaceWithAvatarInfoCard extends StatelessWidget {
           children: [
             avatar,
             const SizedBox(width: 12),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, overflow: TextOverflow.ellipsis),
-                buildSubtitle(context) ?? const SizedBox.shrink(),
-              ],
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, overflow: TextOverflow.ellipsis),
+                  buildSubtitle(context) ?? const SizedBox.shrink(),
+                ],
+              ),
             ),
           ],
         ),

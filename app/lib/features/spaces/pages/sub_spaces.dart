@@ -184,6 +184,8 @@ class SubSpaces extends ConsumerWidget {
           entries.length,
           (index) => SpaceCard(
             roomId: entries[index],
+            showParents: false,
+            showVisibilityMark: true,
             margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
           ),
         ),
