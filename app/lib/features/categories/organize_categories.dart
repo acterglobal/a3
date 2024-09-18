@@ -98,7 +98,12 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizeCategories> {
 
   //DELETE CATEGORY (LOCALLY)
   void callDeleteCategory(int categoryIndex) async {
+    List<String> entriesOfDeleteCategory = categoryList[categoryIndex].entries;
+    CategoryModelLocal unCategoriesItem = categoryList[categoryList.length - 1];
+    unCategoriesItem.entries.addAll(entriesOfDeleteCategory);
     categoryList.removeAt(categoryIndex);
+    categoryList.removeAt(categoryList.length - 1);
+    categoryList.add(unCategoriesItem);
     setDragAndDropListData();
   }
 
@@ -139,6 +144,19 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizeCategories> {
     final spaceName =
         ref.watch(roomDisplayNameProvider(widget.spaceId)).valueOrNull;
     return AppBar(
+      leading: IconButton(
+        onPressed: () async {
+          await saveCategories(
+            context,
+            ref,
+            widget.spaceId,
+            widget.categoriesFor,
+            categoryList,
+          );
+          if (mounted) Navigator.pop(context);
+        },
+        icon: const Icon(Icons.arrow_back),
+      ),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
