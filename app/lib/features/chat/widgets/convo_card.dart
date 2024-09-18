@@ -507,23 +507,23 @@ class _SubtitleWidget extends ConsumerWidget {
     List<User> users,
     WidgetRef ref,
   ) {
+    final user1 = simplifyUserId(users[0].id);
+    if (user1 == null) throw 'first user id not available';
     final textStyle = Theme.of(context).textTheme.bodySmall!;
     if (users.length == 1) {
-      final user1 = simplifyUserId(users[0].id)!;
       return Text(
         L10n.of(context).typingUser1(user1),
         style: textStyle,
       );
     }
     if (users.length == 2) {
-      final user1 = simplifyUserId(users[0].id)!;
-      final user2 = simplifyUserId(users[1].id)!;
+      final user2 = simplifyUserId(users[1].id);
+      if (user2 == null) throw 'second user id not available';
       return Text(
         L10n.of(context).typingUser2(user1, user2),
         style: textStyle,
       );
     }
-    final user1 = simplifyUserId(users[0].id)!;
     return Text(
       L10n.of(context).typingUser3(user1, {users.length - 1}),
       style: textStyle,

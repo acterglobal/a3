@@ -114,18 +114,22 @@ class _EmojiContainerState extends State<EmojiContainer>
     });
     // sort the users per item on the number of emojis sent - highest first
     usersByReaction.forEach((key, users) {
-      users.sort(
-        (user1, user2) => reactionsByUser[user2]!
-            .length
-            .compareTo(reactionsByUser[user1]!.length),
-      );
+      users.sort((user1, user2) {
+        final user1Reactions = reactionsByUser[user1];
+        if (user1Reactions == null) throw 'user1 reactions not available';
+        final user2Reactions = reactionsByUser[user2];
+        if (user2Reactions == null) throw 'user2 reactions not available';
+        return user2Reactions.length.compareTo(user1Reactions.length);
+      });
     });
     final allUsers = reactionsByUser.keys.toList();
-    allUsers.sort(
-      (user1, user2) => reactionsByUser[user2]!
-          .length
-          .compareTo(reactionsByUser[user1]!.length),
-    );
+    allUsers.sort((user1, user2) {
+      final user1Reactions = reactionsByUser[user1];
+      if (user1Reactions == null) throw 'user1 reactions not available';
+      final user2Reactions = reactionsByUser[user2];
+      if (user2Reactions == null) throw 'user2 reactions not available';
+      return user2Reactions.length.compareTo(user1Reactions.length);
+    });
 
     num total = 0;
     if (mounted) {
@@ -242,10 +246,13 @@ class _ReactionListing extends StatelessWidget {
       shrinkWrap: true,
       itemCount: users.length,
       itemBuilder: (BuildContext context, int index) {
+        final userId = users[index];
+        final emojis = usersMap[userId];
+        if (emojis == null) throw 'emoji list of user not available';
         return EmojiReactionItem(
           roomId: roomId,
-          userId: users[index],
-          emojis: usersMap[users[index]]!,
+          userId: userId,
+          emojis: emojis,
         );
       },
       separatorBuilder: (BuildContext context, int index) {

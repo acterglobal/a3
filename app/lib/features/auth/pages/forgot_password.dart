@@ -168,7 +168,10 @@ class _AskForEmail extends StatelessWidget {
   }
 
   Future<void> _forgotPassword(BuildContext context) async {
-    if (!formKey.currentState!.validate()) return;
+    final curState = formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
+
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.sendingEmail);
     try {
@@ -298,7 +301,9 @@ class _NewPassword extends StatelessWidget {
   }
 
   void _resetPassword(BuildContext context) async {
-    if (!formKey.currentState!.validate()) return;
+    final curState = formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
 
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.resettingPassword);

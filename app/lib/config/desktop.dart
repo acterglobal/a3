@@ -127,16 +127,18 @@ class _DesktopSupportState extends State<DesktopSupport>
     }
 
     await windowManager.show();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) async {
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      final curContext = rootNavKey.currentContext;
+      if (curContext == null) throw 'Root context not available';
       if (menuItem.key == 'home') {
         _log.info('route home');
-        rootNavKey.currentContext!.pushNamed(Routes.main.name);
+        curContext.pushNamed(Routes.main.name);
       } else if (menuItem.key == 'chat') {
         _log.info('route chat');
-        rootNavKey.currentContext!.pushNamed(Routes.chat.name);
+        curContext.pushNamed(Routes.chat.name);
       } else if (menuItem.key == 'activities') {
         _log.info('route activities');
-        rootNavKey.currentContext!.pushNamed(Routes.activities.name);
+        curContext.pushNamed(Routes.activities.name);
       }
     });
   }

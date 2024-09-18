@@ -224,7 +224,9 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
   }
 
   void onSubmit() {
-    if (!_formKey.currentState!.validate()) return;
+    final curState = _formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
     final freshMemberStatus = widget.currentPowerLevelName;
     if (freshMemberStatus == currentMemberStatus) {
       // nothing to do, all the same.

@@ -54,7 +54,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final usernamePattern = RegExp(r'^[a-z0-9._=\-/]+$');
 
   Future<void> handleSubmit(BuildContext context) async {
-    if (!formKey.currentState!.validate()) return;
+    final curState = formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
+
     if (!inCI && !ref.read(hasNetworkProvider)) {
       showNoInternetNotification(context);
       return;

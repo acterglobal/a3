@@ -78,10 +78,11 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
     );
   }
 
-  void submit(BuildContext context) async {
-    if (!formKey.currentState!.validate()) {
-      return;
-    }
+  Future<void> submit(BuildContext context) async {
+    final curState = formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
+
     EasyLoading.show(
       status: L10n.of(context).encryptionBackupRecoverRecovering,
     );

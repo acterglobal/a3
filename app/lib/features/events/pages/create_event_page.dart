@@ -54,7 +54,8 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     if (widget.templateEvent == null) {
       return;
     }
-    final event = widget.templateEvent!;
+    final event = widget.templateEvent;
+    if (event == null) throw 'template event not available';
     // title
     _eventNameController.text = event.title();
     // description
@@ -412,7 +413,9 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
   // Create event handler
   Future<void> _handleCreateEvent() async {
-    if (!_formKey.currentState!.validate()) return;
+    final curState = _formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
 
     final spaceId = ref.read(selectedSpaceIdProvider);
     if (spaceId == null) {

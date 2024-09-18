@@ -85,21 +85,23 @@ Future<bool> setupPushNotifications(
 
 bool _handleMessageTap(Map<String?, Object?> data) {
   _log.info('Notification was tapped. Data: \n $data');
+  final curContext = rootNavKey.currentContext;
+  if (curContext == null) throw 'Root context not available';
   try {
     final uri = data['payload'] as String?;
     if (uri != null) {
       _log.info('Uri found $uri');
       if (isCurrentRoute(uri)) {
         // ensure we reload
-        rootNavKey.currentContext!.replace(uri);
+        curContext.replace(uri);
       } else {
         _log.info('Different page, routing');
         if (shouldReplaceCurrentRoute(uri)) {
           // this is a chat-room page, replace this to allow for
           // a smother "back"-navigation story
-          rootNavKey.currentContext!.pushReplacement(uri);
+          curContext.pushReplacement(uri);
         } else {
-          rootNavKey.currentContext!.push(uri);
+          curContext.push(uri);
         }
       }
       return true;
@@ -113,7 +115,7 @@ bool _handleMessageTap(Map<String?, Object?> data) {
       return false;
     }
     // fallback support
-    rootNavKey.currentContext!.push(
+    curContext.push(
       makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),
     );
   } catch (e, s) {
@@ -124,10 +126,13 @@ bool _handleMessageTap(Map<String?, Object?> data) {
 }
 
 bool _isEnabled() {
+  final curContext = rootNavKey.currentContext;
+  if (curContext == null) throw 'Root context not available';
   try {
     // ignore: use_build_context_synchronously
-    if (!rootNavKey.currentContext!
-        .read(isActiveProvider(LabsFeature.mobilePushNotifications))) {
+    final pushActive =
+        curContext.read(isActiveProvider(LabsFeature.mobilePushNotifications));
+    if (!pushActive) {
       _log.info(
         'Showing push notifications has been disabled on this device. Ignoring',
       );
@@ -140,10 +145,12 @@ bool _isEnabled() {
 }
 
 bool _shouldShow(String url) {
+  final curContext = rootNavKey.currentContext;
+  if (curContext == null) throw 'Root context not available';
   // we ignore if we are in foreground and looking at that URL
   if (isCurrentRoute(url) &&
       // ignore: use_build_context_synchronously
-      rootNavKey.currentContext!.read(isAppInForeground)) {
+      curContext.read(isAppInForeground)) {
     return false;
   }
   return true;

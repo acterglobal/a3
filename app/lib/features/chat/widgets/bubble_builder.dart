@@ -311,10 +311,12 @@ class _OriginalMessageBuilder extends ConsumerWidget {
       );
     }
     if (repliedMessage is types.FileMessage) {
+      final metadata = repliedMessage.metadata;
+      if (metadata == null) throw 'Replied metadata not available';
       return Padding(
         padding: const EdgeInsets.all(12),
         child: Text(
-          repliedMessage.metadata!['content'],
+          metadata['content'],
           style: Theme.of(context).textTheme.bodySmall,
         ),
       );

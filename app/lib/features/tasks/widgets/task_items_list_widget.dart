@@ -190,8 +190,10 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
           ),
         ),
         onFieldSubmitted: (value) {
-          if (_formKey.currentState!.validate()) {
-            _formKey.currentState!.save();
+          final curState = _formKey.currentState;
+          if (curState == null) throw 'Form state not available';
+          if (curState.validate()) {
+            curState.save();
             _handleSubmit(context);
           }
         },

@@ -257,7 +257,9 @@ class __ActivateFeatureDialogState extends State<_ActivateFeatureDialog> {
   }
 
   void onSubmit() {
-    if (!_formKey.currentState!.validate()) return;
+    final curState = _formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
     final freshMemberStatus = widget.currentPowerLevelName;
     if (freshMemberStatus != currentMemberStatus) {
       int? newValue = switch (currentMemberStatus) {

@@ -98,7 +98,9 @@ class LinkEmailPage extends ConsumerWidget {
   }
 
   Future<void> linkEmail(BuildContext context, WidgetRef ref) async {
-    if (!formKey.currentState!.validate()) return;
+    final curState = formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
     final account = ref.read(accountProvider);
     EasyLoading.show(status: L10n.of(context).linkingEmailAddress);
     try {

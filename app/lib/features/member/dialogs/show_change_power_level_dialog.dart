@@ -149,23 +149,21 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
         ),
         ActerPrimaryActionButton(
           onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
+            final curState = _formKey.currentState;
+            if (curState == null) throw 'Form state not available';
+            if (!curState.validate()) return;
             final freshMemberStatus = widget.member.membershipStatusStr();
             if (freshMemberStatus == currentMemberStatus) {
               // nothing to do, all the same.
               Navigator.pop(context, null);
               return;
             }
-            int? newValue;
-            if (currentMemberStatus == 'Admin') {
-              newValue = 100;
-            } else if (currentMemberStatus == 'Mod') {
-              newValue = 50;
-            } else if (currentMemberStatus == 'Regular') {
-              newValue = 0;
-            } else {
-              newValue = customValue ?? 0;
-            }
+            int? newValue = switch (currentMemberStatus) {
+              'Admin' => 100,
+              'Mod' => 50,
+              'Regular' => 0,
+              _ => customValue ?? 0,
+            };
 
             if (currentPowerLevel == newValue) {
               // nothing to be done.

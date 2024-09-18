@@ -156,11 +156,15 @@ class AttachmentSelectionOptions extends StatelessWidget {
   Future<void> onTapAudio(BuildContext context) async {
     final result = await FilePicker.platform.pickFiles(type: FileType.audio);
     if (result == null) return;
+    final audios = result.paths.map((path) {
+      if (path == null) throw 'Path of selected audios not available';
+      return File(path);
+    }).toList();
     if (!context.mounted) return;
     Navigator.pop(context);
     _attachmentConfirmation(
       context,
-      result.paths.map((path) => File(path!)).toList(),
+      audios,
       AttachmentType.audio,
       onSelected,
     );
@@ -172,11 +176,15 @@ class AttachmentSelectionOptions extends StatelessWidget {
       allowMultiple: true,
     );
     if (result == null) return;
+    final files = result.paths.map((path) {
+      if (path == null) throw 'Path of selected files not available';
+      return File(path);
+    }).toList();
     if (!context.mounted) return;
     Navigator.pop(context);
     _attachmentConfirmation(
       context,
-      result.paths.map((path) => File(path!)).toList(),
+      files,
       AttachmentType.file,
       onSelected,
     );

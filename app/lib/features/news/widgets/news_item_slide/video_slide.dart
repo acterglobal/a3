@@ -57,9 +57,9 @@ class VideoSlide extends StatelessWidget {
             );
           }
 
-          final data = snapshot.data;
-          if (data != null &&
-              snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            final data = snapshot.data;
+            if (data == null) throw 'slide data not available';
             return ActerVideoPlayer(
               key: Key('news-slide-video-${data.path}'),
               videoFile: data,

@@ -24,16 +24,19 @@ class ShowCommand extends Command {
 
   @override
   Future<void> run() async {
-    if (argResults != null) {
-      if (argResults!['all']) {
+    final results = argResults;
+    if (results != null) {
+      if (results['all']) {
         for (final entry in supportedKeys.entries) {
           await printSetting(entry.value, entry.key);
         }
         return;
       }
-      String? key = argResults!['key'];
+      String? key = results['key'];
       if (key != null) {
-        return await printSetting(supportedKeys[key]!, key);
+        final sk = supportedKeys[key];
+        if (sk == null) throw '$key not supported';
+        return await printSetting(sk, key);
       }
     }
 
@@ -73,11 +76,14 @@ class SetCommand extends Command {
 
   @override
   Future<void> run() async {
-    if (argResults != null) {
-      String? key = argResults!['key'];
-      String? value = argResults!['value'];
+    final results = argResults;
+    if (results != null) {
+      String? key = results['key'];
+      String? value = results['value'];
       if (key != null && value != null) {
-        await setSetting(supportedKeys[key]!, key, value);
+        final sk = supportedKeys[key];
+        if (sk == null) throw '$key not supported';
+        await setSetting(sk, key, value);
         return;
       }
     }
@@ -109,16 +115,19 @@ class ResetCommand extends Command {
 
   @override
   Future<void> run() async {
-    if (argResults != null) {
-      if (argResults!['all']) {
+    final results = argResults;
+    if (results != null) {
+      if (results['all']) {
         for (final entry in supportedKeys.entries) {
           await resetSetting(entry.value, entry.key);
         }
         return;
       }
-      String? key = argResults!['key'];
+      String? key = results['key'];
       if (key != null) {
-        await resetSetting(supportedKeys[key]!, key);
+        final sk = supportedKeys[key];
+        if (sk == null) throw '$key not supported';
+        await resetSetting(sk, key);
         return;
       }
     }

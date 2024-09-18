@@ -30,9 +30,11 @@ late DeviceCalendarPlugin deviceCalendar = DeviceCalendarPlugin();
 ProviderSubscription<AsyncValue<List<EventAndRsvp>>>? _subscription;
 
 Future<bool> _isEnabled() async {
+  final curContext = rootNavKey.currentContext;
+  if (curContext == null) throw 'Root context not available';
   try {
-    return (await rootNavKey.currentContext!
-        .read(asyncIsActiveProvider(LabsFeature.deviceCalendarSync).future));
+    return await curContext
+        .read(asyncIsActiveProvider(LabsFeature.deviceCalendarSync).future);
   } catch (e, s) {
     _log.severe('Reading current context failed', e, s);
     return false;
@@ -68,7 +70,7 @@ Future<void> initCalendarSync({bool ignoreRejection = false}) async {
   final hasPermission = await deviceCalendar.hasPermissions();
 
   if (hasPermission.data == false) {
-    if (!ignoreRejection && (preferences.getBool(rejectionKey) ?? false)) {
+    if (!ignoreRejection && preferences.getBool(rejectionKey) == true) {
       _log.warning('user previously rejected calendar sync. quitting');
       return;
     }
@@ -217,15 +219,19 @@ Future<List<String>> _findActerCalendars() async {
           c.name == 'Acter',
     )
         .map((c) {
-      _log.info('Scheduling to delete ${c.id} (${c.accountType})');
-      return c.id!;
+      final id = c.id;
+      if (id == null) throw 'calendar id not available';
+      _log.info('Scheduling to delete $id (${c.accountType})');
+      return id;
     }).toList();
   }
   return calendars
       .where((c) => c.accountType == 'Local' && c.name == 'Acter')
       .map((c) {
-    _log.info('Scheduling to delete ${c.id} (${c.accountType})');
-    return c.id!;
+    final id = c.id;
+    if (id == null) throw 'calendar id not available';
+    _log.info('Scheduling to delete $id (${c.accountType})');
+    return id;
   }).toList();
 }
 
@@ -280,7 +286,8 @@ Future<String> _getOrCreateCalendar() async {
     ),
     'Failed to create new calendar',
     doThrow: true,
-  )!;
+  );
+  if (newCalendarId == null) throw 'New calendar id not available';
   await preferences.setString(calendarSyncKey, newCalendarId);
   return newCalendarId;
 }

@@ -301,7 +301,9 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
 
   // Edit event handler
   Future<void> _handleUpdateEvent() async {
-    if (!_formKey.currentState!.validate()) return;
+    final curState = _formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
 
     EasyLoading.show(status: L10n.of(context).updatingDate);
     try {

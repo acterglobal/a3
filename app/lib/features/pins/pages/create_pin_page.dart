@@ -311,7 +311,9 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   Future<void> _createPin() async {
     //Close keyboard
     FocusManager.instance.primaryFocus?.unfocus();
-    if (!_formKey.currentState!.validate()) return;
+    final curState = _formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
     EasyLoading.show(status: L10n.of(context).creatingPin);
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);

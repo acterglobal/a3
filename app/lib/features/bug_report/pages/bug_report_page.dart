@@ -150,7 +150,11 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                     : ActerPrimaryActionButton(
                         key: BugReportPage.submitBtn,
                         onPressed: () async {
-                          if (!formKey.currentState!.validate()) return;
+                          final curState = formKey.currentState;
+                          if (curState == null) {
+                            throw 'Form state not available';
+                          }
+                          if (!curState.validate()) return;
                           if (!await reportBug(context)) return;
                           if (!context.mounted) return;
                           if (context.canPop()) {

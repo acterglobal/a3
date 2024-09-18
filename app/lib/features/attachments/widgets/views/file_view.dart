@@ -44,6 +44,8 @@ class FileView extends ConsumerWidget {
     WidgetRef ref,
   ) {
     final msgContent = attachment.msgContent();
+    final contentSize = msgContent.size();
+    if (contentSize == null) throw 'File content size not available';
     return InkWell(
       onTap: () async {
         final mediaFile = mediaState.mediaFile;
@@ -81,7 +83,7 @@ class FileView extends ConsumerWidget {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  formatBytes(msgContent.size()!.truncate()),
+                  formatBytes(contentSize.truncate()),
                   style: Theme.of(context).textTheme.labelSmall!,
                   textScaler: const TextScaler.linear(0.7),
                 ),

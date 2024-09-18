@@ -243,7 +243,9 @@ class _CreateUpdateItemListConsumerState
   }
 
   Future<void> addTask() async {
-    if (!_formKey.currentState!.validate()) return;
+    final curState = _formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
     EasyLoading.show(status: L10n.of(context).addingTask);
     final taskDraft = widget.taskList.taskBuilder();
     taskDraft.title(_taskNameController.text);
@@ -271,7 +273,9 @@ class _CreateUpdateItemListConsumerState
   }
 
   Future<void> updateTask() async {
-    if (!_formKey.currentState!.validate()) return;
+    final curState = _formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
     final task = widget.task;
     if (task == null) return;
     EasyLoading.show(status: L10n.of(context).updatingTask);

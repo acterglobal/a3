@@ -29,17 +29,15 @@ final chatShellRoutes = [
     path: Routes.chatroom.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final curContext = rootNavKey.currentContext;
+      if (curContext == null) throw 'Root context not available';
       final roomId = state.pathParameters['roomId'];
       if (roomId == null) throw 'Room id for route path not found';
-      rootNavKey.currentContext!
-          .read(selectedChatIdProvider.notifier)
-          .select(roomId);
+      curContext.read(selectedChatIdProvider.notifier).select(roomId);
       return NoTransitionPage(
         key: state.pageKey,
         child: ChatLayoutBuilder(
-          centerChild: RoomPage(
-            roomId: roomId,
-          ),
+          centerChild: RoomPage(roomId: roomId),
         ),
       );
     },
@@ -49,20 +47,16 @@ final chatShellRoutes = [
     path: Routes.chatProfile.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final curContext = rootNavKey.currentContext;
+      if (curContext == null) throw 'Root context not available';
       final roomId = state.pathParameters['roomId'];
       if (roomId == null) throw 'Room id for route path not found';
-      rootNavKey.currentContext!
-          .read(selectedChatIdProvider.notifier)
-          .select(roomId);
+      curContext.read(selectedChatIdProvider.notifier).select(roomId);
       return NoTransitionPage(
         key: state.pageKey,
         child: ChatLayoutBuilder(
-          centerChild: RoomPage(
-            roomId: roomId,
-          ),
-          expandedChild: RoomProfilePage(
-            roomId: roomId,
-          ),
+          centerChild: RoomPage(roomId: roomId),
+          expandedChild: RoomProfilePage(roomId: roomId),
         ),
       );
     },
@@ -72,17 +66,15 @@ final chatShellRoutes = [
     path: Routes.chatSettingsVisibility.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final curContext = rootNavKey.currentContext;
+      if (curContext == null) throw 'Root context not available';
       final roomId = state.pathParameters['roomId'];
       if (roomId == null) throw 'Room id for route path not found';
-      rootNavKey.currentContext!
-          .read(selectedChatIdProvider.notifier)
-          .select(roomId);
+      curContext.read(selectedChatIdProvider.notifier).select(roomId);
       return NoTransitionPage(
         key: state.pageKey,
         child: ChatLayoutBuilder(
-          centerChild: RoomPage(
-            roomId: roomId,
-          ),
+          centerChild: RoomPage(roomId: roomId),
           expandedChild: VisibilityAccessibilityPage(
             roomId: roomId,
             impliedClose: true,
@@ -100,9 +92,7 @@ final chatShellRoutes = [
       if (roomId == null) throw 'Room id for route path not found';
       return NoTransitionPage(
         key: state.pageKey,
-        child: InvitePage(
-          roomId: roomId,
-        ),
+        child: InvitePage(roomId: roomId),
       );
     },
   ),

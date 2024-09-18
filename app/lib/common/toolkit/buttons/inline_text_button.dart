@@ -74,11 +74,17 @@ class _IconLabelChild extends StatelessWidget {
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
     final double scale = MediaQuery.textScalerOf(context).textScaleFactor;
-    final double gap =
-        scale <= 1 ? 8 : lerpDouble(8, 4, math.min(scale - 1, 1))!;
+    final double gap = calcGap(scale);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [icon, SizedBox(width: gap), Flexible(child: label)],
     );
+  }
+
+  double calcGap(double scale) {
+    if (scale <= 1) return 8;
+    final inter = lerpDouble(8, 4, math.min(scale - 1, 1));
+    if (inter == null) throw 'Interpolation not available';
+    return inter;
   }
 }

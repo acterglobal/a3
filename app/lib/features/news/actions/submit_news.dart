@@ -159,9 +159,28 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
 ObjRef getSlideReference(ActerSdk sdk, NewsReferencesModel refModel) {
   final refDetails = switch (refModel.type) {
     NewsReferencesType.calendarEvent =>
-      sdk.api.newCalendarEventRefBuilder(refModel.id!, null, null).build(),
-    NewsReferencesType.link =>
-      sdk.api.newLinkRefBuilder(refModel.title!, refModel.id!).build(),
+      _getCalEventRefBuilder(sdk, refModel).build(),
+    NewsReferencesType.link => _getLinkRefBuilder(sdk, refModel).build(),
   };
   return sdk.api.newObjRefBuilder(null, refDetails).build();
+}
+
+RefDetailsBuilder _getCalEventRefBuilder(
+  ActerSdk sdk,
+  NewsReferencesModel refModel,
+) {
+  final id = refModel.id;
+  if (id == null) throw 'ref model id not available';
+  return sdk.api.newCalendarEventRefBuilder(id, null, null);
+}
+
+RefDetailsBuilder _getLinkRefBuilder(
+  ActerSdk sdk,
+  NewsReferencesModel refModel,
+) {
+  final id = refModel.id;
+  if (id == null) throw 'ref model id not available';
+  final title = refModel.title;
+  if (title == null) throw 'ref model title not available';
+  return sdk.api.newLinkRefBuilder(id, title);
 }

@@ -60,7 +60,9 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
         ),
         ActerPrimaryActionButton(
           onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
+            final curState = _formKey.currentState;
+            if (curState == null) throw 'Form state not available';
+            if (!curState.validate()) return;
             final currentUserName = widget.currentName;
             final newDisplayName = newUsername.text;
             if (currentUserName != newDisplayName) {

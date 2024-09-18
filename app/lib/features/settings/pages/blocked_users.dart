@@ -55,7 +55,9 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
         ),
         ActerPrimaryActionButton(
           onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
+            final curState = _formKey.currentState;
+            if (curState == null) throw 'Form state not available';
+            if (!curState.validate()) return;
             Navigator.pop(context, userName.text);
           },
           child: Text(L10n.of(context).block),

@@ -37,8 +37,9 @@ class ImageSlide extends StatelessWidget {
           );
         }
 
-        final data = snapshot.data;
-        if (data != null && snapshot.connectionState == ConnectionState.done) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          final data = snapshot.data;
+          if (data == null) throw 'slide data not available';
           return Container(
             color: bgColor,
             alignment: Alignment.center,

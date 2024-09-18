@@ -241,7 +241,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
     // reply is allowed for only EventItem not VirtualItem
     // user should be able to get original event as RoomMessage
-    RoomEventItem orgEventItem = roomMsg.eventItem()!;
+    RoomEventItem? orgEventItem = roomMsg.eventItem();
+    if (orgEventItem == null) throw 'original event item not found';
     EventSendState? eventState = orgEventItem.sendState();
     String eventType = orgEventItem.eventType();
     Map<String, dynamic> repliedToContent = {'eventState': eventState};
@@ -434,7 +435,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
 
     // If not virtual item, it should be event item
-    RoomEventItem eventItem = message.eventItem()!;
+    RoomEventItem? eventItem = message.eventItem();
+    if (eventItem == null) throw 'event item of msg not found';
     EventSendState? eventState = eventItem.sendState();
 
     String eventType = eventItem.eventType();

@@ -26,7 +26,9 @@ class BackupAndResetCommand extends Command {
 
   @override
   Future<void> run() async {
-    final isDry = argResults!.flag('dry');
+    final results = argResults;
+    if (results == null) throw 'argument results not available';
+    final isDry = results.flag('dry');
     final now = DateTime.now();
     final tzMinTotal = now.timeZoneOffset.inMinutes;
     final separator = tzMinTotal.isNegative ? '-' : '+';
