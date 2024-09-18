@@ -67,7 +67,7 @@ enum Routes {
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
   subSpaces('/:spaceId([!#][^/]+)/subSpaces'),
-  organizedCategories('/organizedCategories/:spaceId([^/]+)/:categoriesFor([^/]+)'),
+  organizeCategories('/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)'),
   spaceMembers('/:spaceId([!#][^/]+)/members'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
   spaceEvents('/:spaceId([!#][^/]+)/events'),

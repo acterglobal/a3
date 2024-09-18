@@ -1,6 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/categories/organized_categories.dart';
+import 'package:acter/features/categories/organize_categories.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/events/pages/create_event_page.dart';
 import 'package:acter/features/events/pages/event_list_page.dart';
@@ -241,16 +241,16 @@ final homeShellRoutes = [
     },
   ),
   GoRoute(
-    name: Routes.organizedCategories.name,
-    path: Routes.organizedCategories.route,
+    name: Routes.organizeCategories.name,
+    path: Routes.organizeCategories.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       return NoTransitionPage(
         key: state.pageKey,
-        child: OrganizedCategories(
+        child: OrganizeCategories(
           spaceId: state.pathParameters['spaceId']!,
-          categoriesFor:
-              getCategoryEnumFromName(state.pathParameters['categoriesFor']!),
+          categoriesFor: CategoryUtils()
+              .getCategoryEnumFromName(state.pathParameters['categoriesFor']!),
         ),
       );
     },

@@ -109,7 +109,7 @@ class SubSpaces extends ConsumerWidget {
         ),
         PopupMenuItem(
           onTap: () => context.pushNamed(
-            Routes.organizedCategories.name,
+            Routes.organizeCategories.name,
             pathParameters: {
               'spaceId': spaceId,
               'categoriesFor': CategoriesFor.spaces.name,

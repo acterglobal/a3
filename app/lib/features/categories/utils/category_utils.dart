@@ -6,10 +6,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
-CategoriesFor getCategoryEnumFromName(String name) {
-  return CategoriesFor.values.firstWhere((v) => v.name == name);
-}
-
 class CategoryUtils {
   ///CREATE SINGLETON CLASS OBJECT
   static final CategoryUtils _singleton = CategoryUtils._internal();
@@ -19,6 +15,11 @@ class CategoryUtils {
   }
 
   CategoryUtils._internal();
+
+  ///CATEGORY ENUM ITEM FROM NAME
+  CategoriesFor getCategoryEnumFromName(String name) {
+    return CategoriesFor.values.firstWhere((v) => v.name == name);
+  }
 
   ///GET LIST OF LOCAL CATEGORY WHICH EXCLUDE ITEM WITH EMPTY ENTRIES
   List<CategoryModelLocal> getCategorisedSubSpacesWithoutEmptyList(
