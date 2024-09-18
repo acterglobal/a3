@@ -281,8 +281,9 @@ class UserStateButton extends ConsumerWidget {
       dismissOnTap: false,
     );
     try {
+      final roomId = room.roomIdStr();
       final member = ref
-          .read(memberProvider((userId: userId, roomId: room.roomIdStr())))
+          .read(memberProvider((userId: userId, roomId: roomId)))
           .valueOrNull;
       if (member != null) {
         await member.kick('Cancel Invite');

@@ -38,8 +38,7 @@ class SelectSpaceFormField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final selectedSpace = currentSelectedSpace != null;
+    final hasSelected = ref.watch(selectedSpaceIdProvider) != null;
 
     final emptyButton = OutlinedButton(
       key: openKey,
@@ -48,7 +47,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     );
 
     return FormField(
-      builder: (state) => selectedSpace
+      builder: (state) => hasSelected
           ? InkWell(
               key: openKey,
               onTap: () => selectSpace(context, ref),

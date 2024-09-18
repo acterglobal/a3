@@ -132,8 +132,8 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     );
     if (roomIdStr != null) {
       try {
-        final convo =
-            await ref.read(alwaysClientProvider).convoWithRetry(roomIdStr, 120);
+        final client = ref.read(alwaysClientProvider);
+        final convo = await client.convoWithRetry(roomIdStr, 120);
         EasyLoading.showToast(roomCreated);
         return convo;
       } catch (e, s) {

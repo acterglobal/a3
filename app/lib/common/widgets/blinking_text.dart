@@ -136,16 +136,14 @@ class BlinkTextState extends State<BlinkText>
   late AnimationController _controller;
   late Animation<Color?> _colorAnimation;
   int _counter = 0;
-  Duration? duration = const Duration(milliseconds: 500);
+  late Duration duration;
   Color? beginColor = Colors.black;
 
   @override
   void initState() {
     super.initState();
     //default duration
-    if (widget.duration != null) {
-      duration = widget.duration;
-    }
+    duration = widget.duration ?? const Duration(milliseconds: 500);
 
     //default beginColor
     if (widget.beginColor != null) {
@@ -180,9 +178,8 @@ class BlinkTextState extends State<BlinkText>
     _controller.forward();
   }
 
-  Future<void> _endTween() => Future.delayed(duration!, () {
-        _controller.stop();
-      });
+  Future<void> _endTween() =>
+      Future.delayed(duration, () => _controller.stop());
 
   @override
   void dispose() {

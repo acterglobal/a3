@@ -140,42 +140,38 @@ class _CreateSuperInviteTokenPageConsumerState
   }
 
   List<Widget> _spacesSection(BuildContext context, List<String> rooms) {
-    return _renderSection(
-        context, L10n.of(context).spaces, L10n.of(context).addSpace, rooms,
-        () async {
+    final title = L10n.of(context).spaces;
+    final label = L10n.of(context).addSpace;
+    return _renderSection(context, title, label, rooms, () async {
       final newSpace = await selectSpaceDrawer(
         context: context,
         currentSpaceId: null,
         canCheck: 'CanInvite',
-        title: Text(L10n.of(context).addSpace),
+        title: Text(label),
       );
       if (newSpace != null) {
         if (!_roomIds.contains(newSpace)) {
           tokenUpdater.addRoom(newSpace);
-          setState(
-            () => _roomIds = List.from(_roomIds)..add(newSpace),
-          );
+          setState(() => _roomIds = List.from(_roomIds)..add(newSpace));
         }
       }
     });
   }
 
   List<Widget> _chatsSection(BuildContext context, List<String> rooms) {
-    return _renderSection(
-        context, L10n.of(context).chats, L10n.of(context).addChat, rooms,
-        () async {
+    final title = L10n.of(context).chats;
+    final label = L10n.of(context).addChat;
+    return _renderSection(context, title, label, rooms, () async {
       final newSpace = await selectChatDrawer(
         context: context,
         currentChatId: null,
         canCheck: 'CanInvite',
-        title: Text(L10n.of(context).addChat),
+        title: Text(label),
       );
       if (newSpace != null) {
         if (!_roomIds.contains(newSpace)) {
           tokenUpdater.addRoom(newSpace);
-          setState(
-            () => _roomIds = List.from(_roomIds)..add(newSpace),
-          );
+          setState(() => _roomIds = List.from(_roomIds)..add(newSpace));
         }
       }
     });

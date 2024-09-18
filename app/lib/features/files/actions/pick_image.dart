@@ -16,7 +16,7 @@ Future<FilePickerResult?> pickImage({
     // see https://github.com/miguelpruivo/flutter_file_picker/issues/1461
     final androidInfo = await DeviceInfoPlugin().androidInfo;
     if (androidInfo.version.sdkInt <= 29) {
-      if (!(await Permission.storage.request().isGranted)) {
+      if (!await Permission.storage.request().isGranted) {
         EasyLoading.showToast(lang.missingStoragePermissions);
         return null;
       }

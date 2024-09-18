@@ -61,7 +61,7 @@ class AnalyticsOptInPage extends ConsumerWidget {
         ref.watch(allowSentryReportingProvider).valueOrNull ?? isNightly;
 
     void toggle(bool? input) {
-      setCanReportToSentry(input ?? (!allowReportSending));
+      setCanReportToSentry(input ?? !allowReportSending);
       ref.invalidate(allowSentryReportingProvider);
     }
 

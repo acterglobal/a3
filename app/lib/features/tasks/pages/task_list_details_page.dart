@@ -297,9 +297,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          L10n.of(context).tasks,
-        ),
+        Text(L10n.of(context).tasks),
         ValueListenableBuilder(
           valueListenable: showCompletedTask,
           builder: (context, value, child) {
