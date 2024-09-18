@@ -168,17 +168,16 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
 
   //ADD CATEGORY (LOCALLY)
   void callAddCategory(title, color, icon) {
-    setState(() {
-      categoryList.insert(
-        0,
-        CategoryModelLocal(
-          title: title,
-          color: color,
-          icon: icon,
-          entries: [],
-        ),
-      );
-    });
+    categoryList.insert(
+      0,
+      CategoryModelLocal(
+        title: title,
+        color: color,
+        icon: icon,
+        entries: [],
+      ),
+    );
+    setDragAndDropListData();
   }
 
   //DRAG AND DROP LIST VIEW

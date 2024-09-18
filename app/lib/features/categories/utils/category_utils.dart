@@ -11,6 +11,7 @@ CategoriesFor getCategoryEnumFromName(String name) {
 }
 
 class CategoryUtils {
+  ///CREATE SINGLETON CLASS OBJECT
   static final CategoryUtils _singleton = CategoryUtils._internal();
 
   factory CategoryUtils() {
@@ -19,16 +20,12 @@ class CategoryUtils {
 
   CategoryUtils._internal();
 
+  ///GET LIST OF LOCAL CATEGORY WHICH EXCLUDE ITEM WITH EMPTY ENTRIES
   List<CategoryModelLocal> getCategorisedSubSpacesWithoutEmptyList(
-    List<Category> categoryList,
-    List<String> subSpaceList,
+    List<CategoryModelLocal> categoryList,
   ) {
-//CONVERT CATEGORY LIST TO LOCAL CATEGORY LIST
-    List<CategoryModelLocal> categoryListLocal =
-        getCategorisedSubSpaces(categoryList, subSpaceList);
-
     List<CategoryModelLocal> categoryListLocalWithoutEmptyEntries = [];
-    for (var categoryListLocal in categoryListLocal) {
+    for (var categoryListLocal in categoryList) {
       if (categoryListLocal.entries.isNotEmpty) {
         categoryListLocalWithoutEmptyEntries.add(categoryListLocal);
       }
@@ -36,43 +33,48 @@ class CategoryUtils {
     return categoryListLocalWithoutEmptyEntries;
   }
 
-  List<CategoryModelLocal> getCategorisedSubSpaces(
+  ///GET CATEGORIES LOCAL LIST BASED ON ITEM ENTRIES
+  List<CategoryModelLocal> getCategorisedList(
     List<Category> categoryList,
-    List<String> subSpaceList,
+    List<String> entries,
   ) {
-//CONVERT CATEGORY LIST TO LOCAL CATEGORY LIST
+    //CONVERT CATEGORY LIST TO LOCAL CATEGORY LIST
     List<CategoryModelLocal> categoryListLocal =
-        getLocalCategoryList(categoryList);
+        convertToLocalCategoryList(categoryList);
 
-//GET CATEGORIES SPACE IDs
-    List<String> categoriesSpaceIds = [];
-    for (var spaceId in subSpaceList) {
+    //GET CATEGORIES ENTRIES
+    List<String> categoriesEntriesList = [];
+    for (var entryItem in entries) {
       for (var categoryItemLocal in categoryListLocal) {
-        if (categoryItemLocal.entries.contains(spaceId)) {
-          categoriesSpaceIds.add(spaceId);
+        if (categoryItemLocal.entries.contains(entryItem)) {
+          categoriesEntriesList.add(entryItem);
         }
       }
     }
 
-//GET UN-CATEGORIES SPACE IDs
-    List<String> unCategoriesSpaceIds = subSpaceList;
-    for (var spaceId in categoriesSpaceIds) {
-      unCategoriesSpaceIds.remove(spaceId);
+    //GET UN-CATEGORIES ENTRIES
+    List<String> unCategoriesEntriesList = entries;
+    for (var entryItem in categoriesEntriesList) {
+      unCategoriesEntriesList.remove(entryItem);
     }
 
-//ADD UN-CATEGORIES ITEM
+    //ADD UN-CATEGORIES ITEM to LAST POSITION
     CategoryModelLocal unCategorized = CategoryModelLocal(
-      entries: unCategoriesSpaceIds,
+      entries: unCategoriesEntriesList,
       title: 'Un-categorized',
       icon: ActerIcon.list,
       color: Colors.blueGrey,
     );
     categoryListLocal.add(unCategorized);
 
+    //RETURN FINAL LOCAL CATEGORY LIST
     return categoryListLocal;
   }
 
-  List<CategoryModelLocal> getLocalCategoryList(List<Category> categoryList) {
+  ///GET CATEGORY LIST TO LOCAL CATEGORY LIST
+  List<CategoryModelLocal> convertToLocalCategoryList(
+    List<Category> categoryList,
+  ) {
     List<CategoryModelLocal> categoryListLocal = [];
     for (var categoryItem in categoryList) {
       final title = categoryItem.title();

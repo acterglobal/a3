@@ -3,6 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
+import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
 import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -138,12 +139,14 @@ class SubSpaces extends ConsumerWidget {
 
     return localCategoryList.when(
       data: (localCategoryListData) {
+        final categoryList = CategoryUtils()
+            .getCategorisedSubSpacesWithoutEmptyList(localCategoryListData);
         return ListView.builder(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
-          itemCount: localCategoryListData.length,
+          itemCount: categoryList.length,
           itemBuilder: (BuildContext context, int index) {
-            return _buildCategoriesList(context, localCategoryListData[index]);
+            return _buildCategoriesList(context, categoryList[index]);
           },
         );
       },

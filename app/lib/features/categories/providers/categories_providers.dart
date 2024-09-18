@@ -20,8 +20,8 @@ final categoryManagerProvider =
   throw 'Space not found';
 });
 
-final localCategoryListProvider =
-    FutureProvider.family<List<CategoryModelLocal>, CategoriesInfo>(
+final localCategoryListProvider = FutureProvider.family
+    .autoDispose<List<CategoryModelLocal>, CategoriesInfo>(
         (ref, categoryInfo) async {
   final categoriesManager = await ref.read(
     categoryManagerProvider(
@@ -31,11 +31,11 @@ final localCategoryListProvider =
       ),
     ).future,
   );
-  final subSpaceList =
+  final subSpacesList =
       await ref.read(subSpacesListProvider(categoryInfo.spaceId).future);
-  final categoryList = CategoryUtils().getCategorisedSubSpaces(
+  final categoryList = CategoryUtils().getCategorisedList(
     categoriesManager.categories().toList(),
-    subSpaceList,
+    subSpacesList,
   );
   return categoryList;
 });
