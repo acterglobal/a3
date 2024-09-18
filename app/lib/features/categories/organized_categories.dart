@@ -50,16 +50,18 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
   }
 
   void setDragAndDropListData() {
-    dragAndDropList = List.generate(categoryList.length, (categoryIndex) {
-      return DragAndDropList(
-        canDrag: categoryList[categoryIndex].title != 'Un-categorized',
-        header: dragDropListHeaderView(categoryIndex),
-        children: getDragAndDropItemList(categoryIndex),
-      );
+    setState(() {
+      dragAndDropList = List.generate(categoryList.length, (categoryIndex) {
+        return DragAndDropList(
+          canDrag: categoryList[categoryIndex].title != 'Un-categorized',
+          header: dragDropListHeaderView(categoryIndex),
+          children: getDragAndDropItemList(categoryIndex),
+        );
+      });
     });
-    setState(() {});
   }
 
+  //HEADER ITEM VIEW
   Widget dragDropListHeaderView(int categoryIndex) {
     return Padding(
       padding: const EdgeInsets.only(top: 18, bottom: 8),
@@ -74,6 +76,7 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
     );
   }
 
+  //EDIT CATEGORY (LOCALLY)
   void callEditCategory(int categoryIndex) {
     showAddEditCategoryBottomSheet(
       context: context,
@@ -93,11 +96,13 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
     );
   }
 
+  //DELETE CATEGORY (LOCALLY)
   void callDeleteCategory(int categoryIndex) async {
     categoryList.removeAt(categoryIndex);
     setDragAndDropListData();
   }
 
+  //DRAG AND DROP ITEM LIST VIEW
   List<DragAndDropItem> getDragAndDropItemList(int categoryIndex) {
     return List<DragAndDropItem>.generate(
       categoryList[categoryIndex].entries.length,
@@ -129,6 +134,7 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
     );
   }
 
+  //APPBAR VIEW
   AppBar _buildAppBarUI() {
     final spaceName =
         ref.watch(roomDisplayNameProvider(widget.spaceId)).valueOrNull;
@@ -153,55 +159,55 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
           onPressed: () => showAddEditCategoryBottomSheet(
             context: context,
             bottomSheetTitle: L10n.of(context).addCategory,
-            onSave: (title, color, icon) {
-              setState(() {
-                categoryList.insert(
-                  categoryList.length - 1,
-                  CategoryModelLocal(
-                    title: title,
-                    color: color,
-                    icon: icon,
-                    entries: [],
-                  ),
-                );
-              });
-              setDragAndDropListData();
-            },
+            onSave: (title, color, icon) => callAddCategory(title, color, icon),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSaveCategoriesButton() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ActerPrimaryActionButton(
-        onPressed: () async {
-          await saveCategories(
-            context,
-            ref,
-            widget.spaceId,
-            widget.categoriesFor,
-            categoryList,
-          );
-          if (mounted) Navigator.pop(context);
-        },
-        child: Text(L10n.of(context).save),
-      ),
-    );
+  //ADD CATEGORY (LOCALLY)
+  void callAddCategory(title, color, icon) {
+    setState(() {
+      categoryList.insert(
+        0,
+        CategoryModelLocal(
+          title: title,
+          color: color,
+          icon: icon,
+          entries: [],
+        ),
+      );
+    });
   }
 
+  //DRAG AND DROP LIST VIEW
   Widget _buildSubSpacesUIWithDrag() {
     return dragAndDropList == null
-        ? const SizedBox.shrink()
+        ? const Center(child: CircularProgressIndicator())
         : DragAndDropLists(
             children: dragAndDropList!,
-            onItemReorder: _onItemReorder,
             onListReorder: _onListReorder,
+            onItemReorder: _onItemReorder,
           );
   }
 
+  //ON HEADER ITEM REORDER
+  Future<void> _onListReorder(
+    int oldListIndex,
+    int newListIndex,
+  ) async {
+    if (dragAndDropList == null) return;
+    setState(() {
+      var movedList = dragAndDropList!.removeAt(oldListIndex);
+      dragAndDropList!.insert(newListIndex, movedList);
+
+      var movedCategoryList = categoryList.removeAt(oldListIndex);
+      categoryList.insert(newListIndex, movedCategoryList);
+    });
+  }
+
+  //ON SUB ITEM REORDER
   Future<void> _onItemReorder(
     int oldItemIndex,
     int oldListIndex,
@@ -220,17 +226,23 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
     });
   }
 
-  Future<void> _onListReorder(
-    int oldListIndex,
-    int newListIndex,
-  ) async {
-    if (dragAndDropList == null) return;
-    setState(() {
-      var movedList = dragAndDropList!.removeAt(oldListIndex);
-      dragAndDropList!.insert(newListIndex, movedList);
-
-      var movedCategoryList = categoryList.removeAt(oldListIndex);
-      categoryList.insert(newListIndex, movedCategoryList);
-    });
+  //SAVE ORGANIZED CATEGORIES
+  Widget _buildSaveCategoriesButton() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ActerPrimaryActionButton(
+        onPressed: () async {
+          await saveCategories(
+            context,
+            ref,
+            widget.spaceId,
+            widget.categoriesFor,
+            categoryList,
+          );
+          if (mounted) Navigator.pop(context);
+        },
+        child: Text(L10n.of(context).save),
+      ),
+    );
   }
 }
