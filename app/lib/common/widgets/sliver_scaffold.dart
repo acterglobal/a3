@@ -1,5 +1,4 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class SliverScaffold extends StatelessWidget {
@@ -180,6 +179,9 @@ class _SliverFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cancelTitle = cancelActionTitle;
+    final confirmTitle = confirmActionTitle;
+    final onCancel = cancelActionOnPressed;
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -193,22 +195,23 @@ class _SliverFooter extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: actions ??
                 [
-                  if (cancelActionTitle != null)
+                  if (cancelTitle != null)
                     OutlinedButton(
                       onPressed: () {
-                        cancelActionOnPressed.let((cb) {
-                              cb();
-                            }) ??
-                            Navigator.pop(context);
+                        if (onCancel != null) {
+                          onCancel();
+                        } else {
+                          Navigator.pop(context);
+                        }
                       },
-                      child: Text(cancelActionTitle!),
+                      child: Text(cancelTitle),
                     ),
                   const SizedBox(width: 12),
-                  if (confirmActionTitle != null)
+                  if (confirmTitle != null)
                     ActerPrimaryActionButton(
                       key: confirmActionKey,
                       onPressed: confirmActionOnPressed,
-                      child: Text(confirmActionTitle!),
+                      child: Text(confirmTitle),
                     ),
                 ],
           ),

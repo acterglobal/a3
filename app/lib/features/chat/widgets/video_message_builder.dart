@@ -34,7 +34,9 @@ class VideoMessageBuilder extends ConsumerWidget {
       return loadingIndication(context);
     }
     final mediaFile = mediaState.mediaFile;
-    if (mediaFile != null) return videoUI(context, mediaState);
+    if (mediaFile != null) {
+      return videoUI(context, mediaFile, mediaState.videoThumbnailFile);
+    }
     return videoPlaceholder(context, roomId, mediaFile, ref);
   }
 
@@ -114,22 +116,18 @@ class VideoMessageBuilder extends ConsumerWidget {
     );
   }
 
-  Widget videoUI(BuildContext context, MediaChatState mediaState) {
-    final mediaFile = mediaState.mediaFile;
-    final thumbFile = mediaState.videoThumbnailFile;
+  Widget videoUI(BuildContext context, File mediaFile, File? thumbFile) {
     return InkWell(
       onTap: () {
-        if (mediaFile != null) {
-          showAdaptiveDialog(
-            context: context,
-            barrierDismissible: false,
-            useRootNavigator: false,
-            builder: (context) => VideoDialog(
-              title: message.name,
-              videoFile: mediaFile,
-            ),
-          );
-        }
+        showAdaptiveDialog(
+          context: context,
+          barrierDismissible: false,
+          useRootNavigator: false,
+          builder: (context) => VideoDialog(
+            title: message.name,
+            videoFile: mediaFile,
+          ),
+        );
       },
       child: ClipRRect(
         borderRadius: isReplyContent
