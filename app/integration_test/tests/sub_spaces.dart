@@ -1,6 +1,6 @@
 import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
-import 'package:acter/features/space/pages/sub_spaces_page.dart';
+import 'package:acter/features/spaces/pages/sub_spaces.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -42,8 +42,8 @@ void subSpaceTests() {
       await t.gotoSpace(spaceId);
       await t.navigateTo([
         const Key('spaces'),
-        SubSpacesPage.moreOptionKey,
-        SubSpacesPage.linkSubspaceKey,
+        SubSpaces.moreOptionKey,
+        SubSpaces.linkSubspaceKey,
       ]);
 
       final roomListEntry = find.byKey(Key('room-list-link-$subSpace'));
@@ -89,8 +89,8 @@ void subSpaceTests() {
       await t.gotoSpace(spaceId);
       await t.navigateTo([
         const Key('spaces'),
-        SubSpacesPage.moreOptionKey,
-        SubSpacesPage.linkSubspaceKey,
+        SubSpaces.moreOptionKey,
+        SubSpaces.linkSubspaceKey,
       ]);
 
       final roomListEntry = find.byKey(Key('room-list-link-$subSpace'));
