@@ -119,7 +119,7 @@ class SubSpaces extends ConsumerWidget {
             children: [
               Icon(PhosphorIcons.dotsSixVertical()),
               const SizedBox(width: 6),
-              Text(L10n.of(context).organized),
+              Text(L10n.of(context).organize),
             ],
           ),
         ),

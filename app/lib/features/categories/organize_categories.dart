@@ -161,7 +161,7 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizeCategories> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            L10n.of(context).organized,
+            L10n.of(context).organize,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           Text(

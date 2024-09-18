@@ -2188,7 +2188,7 @@
   "selectColor": "Select color",
   "selectIcon": "Select icon",
   "createCategory": "Create Category",
-  "organized": "Organized",
+  "organize": "Organize",
   "updatingCategories": "Updating categories",
   "updatingCategoriesFailed": "Updating categories failed {error}",
   "addingNewCategory": "Adding new category",
