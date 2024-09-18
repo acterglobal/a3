@@ -43,13 +43,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialSelectedSpace != null) {
+    widget.initialSelectedSpace.let((p0) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        ref
-            .read(newsStateProvider.notifier)
-            .setSpaceId(widget.initialSelectedSpace);
+        ref.read(newsStateProvider.notifier).setSpaceId(p0);
       });
-    }
+    });
     ref.listenManual(newsStateProvider, fireImmediately: true,
         (prevState, nextState) async {
       final isText = nextState.currentNewsSlide?.type == NewsSlideType.text;

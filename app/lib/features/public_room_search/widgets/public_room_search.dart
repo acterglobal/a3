@@ -124,7 +124,10 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
   Widget _searchBar(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 20,
+        ),
         child: SizedBox(
           height: 160,
           child: Column(

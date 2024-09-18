@@ -50,12 +50,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   TimeOfDay _selectedEndTime = TimeOfDay.now();
   EditorState textEditorState = EditorState.blank();
 
-  void _setFromTemplate() {
-    if (widget.templateEvent == null) {
-      return;
-    }
-    final event = widget.templateEvent;
-    if (event == null) throw 'template event not available';
+  void _setFromTemplate(CalendarEvent event) {
     // title
     _eventNameController.text = event.title();
     // description
@@ -95,18 +90,14 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.templateEvent != null) {
-      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        _setFromTemplate();
-      });
-    } else {
-      final initialSpace = widget.initialSelectedSpace;
-      if (initialSpace != null && initialSpace.isNotEmpty) {
-        WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-          _setSpaceId(initialSpace);
+    widget.templateEvent.let((p0) {
+          WidgetsBinding.instance
+              .addPostFrameCallback((Duration dur) => _setFromTemplate(p0));
+        }) ??
+        widget.initialSelectedSpace.let((p0) {
+          WidgetsBinding.instance
+              .addPostFrameCallback((Duration dur) => _setSpaceId(p0));
         });
-      }
-    }
   }
 
   @override

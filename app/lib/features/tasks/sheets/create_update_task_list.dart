@@ -36,9 +36,13 @@ class CreateUpdateTaskList extends ConsumerStatefulWidget {
   static const titleKey = Key('task-list-title');
   static const descKey = Key('task-list-desc');
   static const submitKey = Key('task-list-submit');
+
   final String? initialSelectedSpace;
 
-  const CreateUpdateTaskList({super.key, this.initialSelectedSpace});
+  const CreateUpdateTaskList({
+    super.key,
+    this.initialSelectedSpace,
+  });
 
   @override
   ConsumerState<CreateUpdateTaskList> createState() =>
@@ -58,9 +62,10 @@ class _CreateUpdateTaskListConsumerState
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      final spaceNotifier = ref.read(selectedSpaceIdProvider.notifier);
-      spaceNotifier.state = widget.initialSelectedSpace;
+    widget.initialSelectedSpace.let((p0) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        ref.read(selectedSpaceIdProvider.notifier).state = p0;
+      });
     });
   }
 

@@ -37,10 +37,8 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     state = state.copyWith(newsPostSpaceId: spaceId);
   }
 
-  void setSpaceId(String? spaceId) {
-    state = state.copyWith(
-      newsPostSpaceId: spaceId,
-    );
+  void setSpaceId(String spaceId) {
+    state = state.copyWith(newsPostSpaceId: spaceId);
   }
 
   Future<void> selectEventToShare(BuildContext context) async {
