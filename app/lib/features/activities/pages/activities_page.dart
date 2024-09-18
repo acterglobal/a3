@@ -110,36 +110,36 @@ class ActivitiesPage extends ConsumerWidget {
       );
     }
     if (!allSessions.hasValue) return null; // we can ignore
-
-    final sessions =
-        allSessions.value!.where((session) => !session.isVerified()).toList();
-    if (sessions.isEmpty) return null;
-    if (sessions.length == 1) {
+    return allSessions.value.let((p0) {
+      final sessions = p0.where((sess) => !sess.isVerified()).toList();
+      if (sessions.isEmpty) return null;
+      if (sessions.length == 1) {
+        return SliverToBoxAdapter(
+          child: SessionCard(
+            key: oneUnverifiedSessionsCard,
+            deviceRecord: sessions[0],
+          ),
+        );
+      }
       return SliverToBoxAdapter(
-        child: SessionCard(
-          key: oneUnverifiedSessionsCard,
-          deviceRecord: sessions[0],
+        child: Card(
+          key: unverifiedSessionsCard,
+          child: ListTile(
+            leading: const Icon(Atlas.warning_bold),
+            title: Text(
+              L10n.of(context).unverifiedSessionsTitle(sessions.length),
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            trailing: OutlinedButton(
+              onPressed: () {
+                context.pushNamed(Routes.settingSessions.name);
+              },
+              child: Text(L10n.of(context).review),
+            ),
+          ),
         ),
       );
-    }
-    return SliverToBoxAdapter(
-      child: Card(
-        key: unverifiedSessionsCard,
-        child: ListTile(
-          leading: const Icon(Atlas.warning_bold),
-          title: Text(
-            L10n.of(context).unverifiedSessionsTitle(sessions.length),
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          trailing: OutlinedButton(
-            onPressed: () {
-              context.pushNamed(Routes.settingSessions.name);
-            },
-            child: Text(L10n.of(context).review),
-          ),
-        ),
-      ),
-    );
+    });
   }
 
   Widget? renderBackupSection(BuildContext context, WidgetRef ref) {

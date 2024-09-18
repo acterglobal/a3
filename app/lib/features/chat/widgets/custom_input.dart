@@ -261,18 +261,17 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
     final inputNotifier = ref.read(chatInputProvider.notifier);
     inputNotifier.unsetSelectedMessage();
-    final eventId = draft.eventId();
-    if (eventId != null) {
+    draft.eventId().let((p0) {
       final draftType = draft.draftType();
       final m = ref
           .read(chatMessagesProvider(widget.roomId))
-          .firstWhere((x) => x.id == eventId);
+          .firstWhere((x) => x.id == p0);
       if (draftType == 'edit') {
         inputNotifier.setEditMessage(m);
       } else if (draftType == 'reply') {
         inputNotifier.setReplyToMessage(m);
       }
-    }
+    });
     final htmlText = draft.htmlText();
     if (htmlText != null) {
       await parseUserMentionText(

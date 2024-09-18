@@ -45,13 +45,13 @@ class ConvoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (animation != null) {
-      return SizeTransition(
-        sizeFactor: animation!,
-        child: buildInner(context, ref),
-      );
-    }
-    return buildInner(context, ref);
+    return animation.let(
+          (p0) => SizeTransition(
+            sizeFactor: p0,
+            child: buildInner(context, ref),
+          ),
+        ) ??
+        buildInner(context, ref);
   }
 
   Widget buildInner(BuildContext context, WidgetRef ref) {

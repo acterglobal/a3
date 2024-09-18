@@ -61,16 +61,11 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     final desc = event.description();
     if (desc != null) {
       final formatted = desc.formatted();
-      if (formatted != null) {
-        textEditorState =
-            EditorState(document: ActerDocumentHelpers.fromHtml(formatted));
-      } else {
-        textEditorState = EditorState(
-          document: ActerDocumentHelpers.fromMarkdown(
-            desc.body(),
-          ),
-        );
-      }
+      final body = desc.body();
+      textEditorState = formatted.let(
+            (p0) => EditorState(document: ActerDocumentHelpers.fromHtml(p0)),
+          ) ??
+          EditorState(document: ActerDocumentHelpers.fromMarkdown(body));
     }
 
     // Getting start and end date time
