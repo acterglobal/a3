@@ -1,6 +1,8 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
@@ -146,7 +148,7 @@ class SubSpaces extends ConsumerWidget {
           shrinkWrap: true,
           itemCount: categoryList.length,
           itemBuilder: (BuildContext context, int index) {
-            return _buildCategoriesList(context, categoryList[index]);
+            return _buildCategoriesList(context, ref, categoryList[index]);
           },
         );
       },
@@ -160,9 +162,20 @@ class SubSpaces extends ConsumerWidget {
 
   Widget _buildCategoriesList(
     BuildContext context,
+    WidgetRef ref,
     CategoryModelLocal categoryModelLocal,
   ) {
     final entries = categoryModelLocal.entries;
+
+    final suggestedSpaces =
+        ref.watch(suggestedSpacesProvider(spaceId)).valueOrNull;
+    final suggestedSpaceIds = [];
+    if (suggestedSpaces != null &&
+        (suggestedSpaces.$1.isNotEmpty || suggestedSpaces.$2.isNotEmpty)) {
+      suggestedSpaceIds.addAll(suggestedSpaces.$1);
+      suggestedSpaceIds.addAll(suggestedSpaces.$2);
+    }
+
     return Card(
       child: ExpansionTile(
         tilePadding: const EdgeInsets.only(right: 16),
@@ -170,15 +183,22 @@ class SubSpaces extends ConsumerWidget {
         shape: const Border(),
         collapsedBackgroundColor: Colors.transparent,
         title: CategoryHeaderView(categoryModelLocal: categoryModelLocal),
-        children: List<Widget>.generate(
-          entries.length,
-          (index) => RoomCard(
-            roomId: entries[index],
+        children: List<Widget>.generate(entries.length, (index) {
+          final roomId = entries[index];
+          final isSuggested = suggestedSpaceIds.contains(roomId);
+          return RoomCard(
+            roomId: roomId,
             showParents: false,
             showVisibilityMark: true,
+            showSuggestedMark: isSuggested,
+            trailing: RoomHierarchyOptionsMenu(
+              childId: roomId,
+              parentId: spaceId,
+              isSuggested: isSuggested,
+            ),
             margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
