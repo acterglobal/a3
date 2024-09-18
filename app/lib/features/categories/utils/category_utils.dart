@@ -4,7 +4,6 @@ import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 
 class CategoryUtils {
   ///CREATE SINGLETON CLASS OBJECT
@@ -19,6 +18,11 @@ class CategoryUtils {
   ///CATEGORY ENUM ITEM FROM NAME
   CategoriesFor getCategoryEnumFromName(String name) {
     return CategoriesFor.values.firstWhere((v) => v.name == name);
+  }
+
+  ///CHECK FOR UN-CATEGORIZED TYPE
+  bool isValidCategory(CategoryModelLocal category) {
+    return category.color != null && category.icon != null;
   }
 
   ///GET LIST OF LOCAL CATEGORY WHICH EXCLUDE ITEM WITH EMPTY ENTRIES
@@ -63,8 +67,6 @@ class CategoryUtils {
     CategoryModelLocal unCategorized = CategoryModelLocal(
       entries: unCategoriesEntriesList,
       title: 'Un-categorized',
-      icon: ActerIcon.list,
-      color: Colors.blueGrey,
     );
     categoryListLocal.add(unCategorized);
 

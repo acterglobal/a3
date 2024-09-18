@@ -1,5 +1,6 @@
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
+import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -22,9 +23,9 @@ class CategoryHeaderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return (categoryModelLocal.title == 'Un-categorized')
-        ? _buildUnCategoriesHeader(context)
-        : _buildCategoryHeader(context);
+    return CategoryUtils().isValidCategory(categoryModelLocal)
+        ? _buildCategoryHeader(context)
+        : _buildUnCategoriesHeader(context);
   }
 
   Widget _buildCategoryHeader(BuildContext context) {

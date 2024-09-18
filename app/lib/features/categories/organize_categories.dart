@@ -4,6 +4,7 @@ import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/categories/actions/save_categories.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
+import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/add_edit_category.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
@@ -53,7 +54,8 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizeCategories> {
     setState(() {
       dragAndDropList = List.generate(categoryList.length, (categoryIndex) {
         return DragAndDropList(
-          canDrag: categoryList[categoryIndex].title != 'Un-categorized',
+          canDrag:
+              CategoryUtils().isValidCategory(categoryList[categoryIndex]),
           header: dragDropListHeaderView(categoryIndex),
           children: getDragAndDropItemList(categoryIndex),
         );

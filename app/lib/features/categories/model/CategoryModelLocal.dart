@@ -3,15 +3,14 @@ import 'package:flutter/material.dart';
 
 class CategoryModelLocal {
   final String title;
-  final Color color;
-  final ActerIcon icon;
+  final Color? color;
+  final ActerIcon? icon;
   final List<String> entries;
 
   const CategoryModelLocal({
     required this.title,
-    required this.color,
-    required this.icon,
+    this.color,
+    this.icon,
     required this.entries,
   });
 }
-
