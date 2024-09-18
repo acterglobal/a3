@@ -33,7 +33,6 @@ import 'package:acter/features/spaces/pages/sub_spaces.dart';
 import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';
-import 'package:acter/features/space/pages/sub_spaces_page.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/space/settings/pages/notification_configuration_page.dart';
@@ -212,19 +211,6 @@ final homeShellRoutes = [
       return NoTransitionPage(
         key: state.pageKey,
         child: const ChangePasswordPage(),
-      );
-    },
-  ),
-  GoRoute(
-    name: Routes.spaceRelatedSpaces.name,
-    path: Routes.spaceRelatedSpaces.route,
-    redirect: authGuardRedirect,
-    pageBuilder: (context, state) {
-      return NoTransitionPage(
-        key: state.pageKey,
-        child: SubSpacesPage(
-          spaceIdOrAlias: state.pathParameters['spaceId']!,
-        ),
       );
     },
   ),

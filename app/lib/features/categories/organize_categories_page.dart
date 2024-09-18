@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/categories/actions/save_categories.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
@@ -116,7 +116,7 @@ class _DraggableCategoriesListState
     return List<DragAndDropItem>.generate(
       categoryList[categoryIndex].entries.length,
       (entryItemIndex) => DragAndDropItem(
-        child: SpaceCard(
+        child: RoomCard(
           roomId:
               categoryList[categoryIndex].entries[entryItemIndex].toString(),
           margin: const EdgeInsets.symmetric(vertical: 6),

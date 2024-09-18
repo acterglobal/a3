@@ -71,7 +71,7 @@ class SpacesSection extends ConsumerWidget {
           title: L10n.of(context).suggestedSpaces,
           isShowSeeAllButton: true,
           onTapSeeAll: () => context.pushNamed(
-            Routes.spaceRelatedSpaces.name,
+            Routes.subSpaces.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),

@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
@@ -172,7 +172,7 @@ class SubSpaces extends ConsumerWidget {
         title: CategoryHeaderView(categoryModelLocal: categoryModelLocal),
         children: List<Widget>.generate(
           entries.length,
-          (index) => SpaceCard(
+          (index) => RoomCard(
             roomId: entries[index],
             showParents: false,
             showVisibilityMark: true,
