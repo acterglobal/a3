@@ -104,7 +104,7 @@ class _DraggableCategoriesListState
   void callDeleteCategory(int categoryIndex) async {
     List<String> entriesOfDeleteCategory = categoryList[categoryIndex].entries;
     CategoryModelLocal unCategoriesItem = categoryList[categoryList.length - 1];
-    unCategoriesItem.entries.addAll(entriesOfDeleteCategory);
+    unCategoriesItem.entries.insertAll(0, entriesOfDeleteCategory);
     categoryList.removeAt(categoryIndex);
     categoryList.removeAt(categoryList.length - 1);
     categoryList.add(unCategoriesItem);
