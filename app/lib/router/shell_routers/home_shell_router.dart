@@ -1,6 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/categories/organize_categories.dart';
+import 'package:acter/features/categories/organize_categories_page.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/events/pages/create_event_page.dart';
 import 'package:acter/features/events/pages/event_list_page.dart';
@@ -247,7 +247,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       return NoTransitionPage(
         key: state.pageKey,
-        child: OrganizeCategories(
+        child: OrganizeCategoriesPage(
           spaceId: state.pathParameters['spaceId']!,
           categoriesFor: CategoryUtils()
               .getCategoryEnumFromName(state.pathParameters['categoriesFor']!),

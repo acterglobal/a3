@@ -13,22 +13,22 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class OrganizeCategories extends ConsumerStatefulWidget {
+class OrganizeCategoriesPage extends ConsumerStatefulWidget {
   final String spaceId;
   final CategoriesFor categoriesFor;
 
-  const OrganizeCategories({
+  const OrganizeCategoriesPage({
     super.key,
     required this.spaceId,
     required this.categoriesFor,
   });
 
   @override
-  ConsumerState<OrganizeCategories> createState() =>
+  ConsumerState<OrganizeCategoriesPage> createState() =>
       _DraggableCategoriesListState();
 }
 
-class _DraggableCategoriesListState extends ConsumerState<OrganizeCategories> {
+class _DraggableCategoriesListState extends ConsumerState<OrganizeCategoriesPage> {
   List<DragAndDropList>? dragAndDropList;
   late List<CategoryModelLocal> categoryList;
 
