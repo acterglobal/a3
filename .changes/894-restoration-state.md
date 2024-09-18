@@ -1,1 +1,0 @@
-- [Fix] restores the proper pages and routing upon start of the app on supported devices

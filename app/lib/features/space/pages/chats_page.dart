@@ -3,7 +3,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/chat/loading_convo_card.dart';
+import 'package:acter/features/space/widgets/loading_convo_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/space/widgets/related/chats_helpers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -21,6 +21,7 @@ class SpaceChatsPage extends ConsumerWidget {
 
   Widget _renderLoading(BuildContext context) {
     return ListView.builder(
+      shrinkWrap: true,
       itemCount: 3,
       itemBuilder: (context, idx) => const LoadingConvoCard(roomId: 'fake'),
     );
@@ -145,7 +146,13 @@ class SpaceChatsPage extends ConsumerWidget {
         child: Column(
           children: [
             if (chatList.isNotEmpty)
-              chatsListUI(ref, chatList, chatList.length),
+              chatsListUI(
+                ref,
+                spaceIdOrAlias,
+                chatList,
+                chatList.length,
+                showOptions: true,
+              ),
             if (isLoading) _renderLoading(context),
             if (remoteChats.isNotEmpty)
               renderFurther(context, ref, spaceIdOrAlias, null),

@@ -9,10 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class SpaceActionsSection extends ConsumerWidget {
   static const createChatAction = Key('space-action-create-chat');
   static const createSpaceAction = Key('space-action-create-space');
+
   final String spaceId;
 
   const SpaceActionsSection({
@@ -38,6 +40,7 @@ class SpaceActionsSection extends ConsumerWidget {
   Widget actionButtons(BuildContext context, WidgetRef ref) {
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     bool canAddPin = membership?.canString('CanPostPin') == true;
+    bool canPostUpdate = membership?.canString('CanPostNews') == true;
     bool canChangeSetting =
         membership?.canString('CanChangeAppSettings') == true;
     bool canAddEvent = membership?.canString('CanPostEvent') == true;
@@ -45,6 +48,29 @@ class SpaceActionsSection extends ConsumerWidget {
     bool canLinkSpaces = membership?.canString('CanLinkSpaces') == true;
 
     final children = [
+      if (canPostUpdate || canChangeSetting)
+        simpleActionButton(
+          context: context,
+          iconData: PhosphorIcons.newspaper(),
+          title: L10n.of(context).createNewUpdate,
+          onPressed: () async {
+            if (!canPostUpdate && canChangeSetting) {
+              final result = await offerToActivateFeature(
+                context: context,
+                ref: ref,
+                spaceId: spaceId,
+                feature: SpaceFeature.updates,
+              );
+              if (!result) return;
+            }
+            if (context.mounted) {
+              context.pushNamed(
+                Routes.actionAddUpdate.name,
+                queryParameters: {'spaceId': spaceId},
+              );
+            }
+          },
+        ),
       if (canAddPin || canChangeSetting)
         simpleActionButton(
           context: context,
@@ -52,14 +78,13 @@ class SpaceActionsSection extends ConsumerWidget {
           title: L10n.of(context).addPin,
           onPressed: () async {
             if (!canAddPin && canChangeSetting) {
-              if (!await offerToActivateFeature(
+              final result = await offerToActivateFeature(
                 context: context,
                 ref: ref,
                 spaceId: spaceId,
                 feature: SpaceFeature.pins,
-              )) {
-                return;
-              }
+              );
+              if (!result) return;
             }
             if (context.mounted) {
               context.pushNamed(
@@ -76,14 +101,13 @@ class SpaceActionsSection extends ConsumerWidget {
           title: L10n.of(context).addEvent,
           onPressed: () async {
             if (!canAddEvent && canChangeSetting) {
-              if (!await offerToActivateFeature(
+              final result = await offerToActivateFeature(
                 context: context,
                 ref: ref,
                 spaceId: spaceId,
                 feature: SpaceFeature.events,
-              )) {
-                return;
-              }
+              );
+              if (!result) return;
             }
             if (context.mounted) {
               context.pushNamed(
@@ -100,14 +124,13 @@ class SpaceActionsSection extends ConsumerWidget {
           title: L10n.of(context).addTask,
           onPressed: () async {
             if (!canAddEvent && canChangeSetting) {
-              if (!await offerToActivateFeature(
+              final result = await offerToActivateFeature(
                 context: context,
                 ref: ref,
                 spaceId: spaceId,
                 feature: SpaceFeature.tasks,
-              )) {
-                return;
-              }
+              );
+              if (!result) return;
             }
             if (context.mounted) {
               showCreateUpdateTaskListBottomSheet(

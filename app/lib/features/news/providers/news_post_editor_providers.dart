@@ -40,6 +40,12 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     );
   }
 
+  void setSpaceId(String? spaceId) {
+    state = state.copyWith(
+      newsPostSpaceId: spaceId,
+    );
+  }
+
   Future<void> selectEventToShare(BuildContext context) async {
     final eventId = await selectEventDrawer(
       context: context,

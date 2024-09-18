@@ -61,13 +61,13 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
     if (overview.openTasks.isEmpty) {
       return const SizedBox.shrink();
     }
-
+    final taskListId = widget.taskList.eventIdStr();
     return Column(
       children: [
         for (final taskId in overview.openTasks)
           TaskItem(
             onTap: () => showInlineAddTask.value = false,
-            taskListId: widget.taskList.eventIdStr(),
+            taskListId: taskListId,
             taskId: taskId,
           ),
       ],
@@ -75,7 +75,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
   }
 
   Widget inlineAddTask() {
-    final taskListEventId = widget.taskList.eventIdStr();
+    final taskListId = widget.taskList.eventIdStr();
     return ValueListenableBuilder(
       valueListenable: showInlineAddTask,
       builder: (context, value, child) {
@@ -91,7 +91,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
                   vertical: 8,
                 ),
                 child: ActerInlineTextButton(
-                  key: Key('task-list-$taskListEventId-add-task-inline'),
+                  key: Key('task-list-$taskListId-add-task-inline'),
                   onPressed: () => showInlineAddTask.value = true,
                   child: Text(L10n.of(context).addTask),
                 ),
@@ -104,7 +104,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
     if (overview.doneTasks.isEmpty || !widget.showCompletedTask) {
       return const SizedBox.shrink();
     }
-
+    final taskListId = widget.taskList.eventIdStr();
     return Column(
       children: [
         const SizedBox(height: 10),
@@ -119,7 +119,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
         ),
         for (final taskId in overview.doneTasks)
           TaskItem(
-            taskListId: widget.taskList.eventIdStr(),
+            taskListId: taskListId,
             taskId: taskId,
             onTap: () => showInlineAddTask.value = false,
           ),
@@ -194,12 +194,10 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
             _handleSubmit(context);
           }
         },
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return L10n.of(context).aTaskMustHaveATitle;
-          }
-          return null;
-        },
+        // required field, space not allowed
+        validator: (val) => val == null || val.trim().isEmpty
+            ? L10n.of(context).aTaskMustHaveATitle
+            : null,
       ),
     );
   }

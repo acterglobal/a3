@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/widgets/chat/convo_card.dart';
+import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

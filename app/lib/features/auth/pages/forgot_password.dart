@@ -282,7 +282,8 @@ class _NewPassword extends StatelessWidget {
               hintText: L10n.of(context).hintMessagePassword,
             ),
             style: Theme.of(context).textTheme.labelLarge,
-            validator: (val) => (val == null || val.length < 6)
+            // required field, space allowed
+            validator: (val) => val == null || val.length < 6
                 ? L10n.of(context).hintMessagePassword
                 : null,
           ),

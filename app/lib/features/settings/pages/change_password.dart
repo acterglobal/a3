@@ -97,12 +97,10 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
               },
             ),
           ),
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyOldPassword;
-            }
-            return null;
-          },
+          // required field, space allowed
+          validator: (val) => val == null || val.isEmpty
+              ? L10n.of(context).emptyOldPassword
+              : null,
         ),
       ],
     );
@@ -133,12 +131,10 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyNewPassword;
-            }
-            return null;
-          },
+          // required field, space allowed
+          validator: (val) => val == null || val.isEmpty
+              ? L10n.of(context).emptyNewPassword
+              : null,
         ),
       ],
     );
@@ -171,10 +167,11 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
+          // required field, space allowed
           validator: (val) {
-            if (val == null || val.trim().isEmpty) {
+            if (val == null || val.isEmpty) {
               return L10n.of(context).emptyConfirmPassword;
-            } else if (val.trim() != newPassword.text.trim()) {
+            } else if (val != newPassword.text) {
               return L10n.of(context).validateSamePassword;
             }
             return null;

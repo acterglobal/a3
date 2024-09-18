@@ -146,12 +146,10 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
                         suffixIcon: const Icon(Icons.calendar_month_outlined),
                       ),
                       onTap: () => _selectDate(isStartDate: true),
-                      validator: (value) {
-                        if (value != null && value.isEmpty) {
-                          return L10n.of(context).startDateRequired;
-                        }
-                        return null;
-                      },
+                      // required field, space not allowed
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? L10n.of(context).startDateRequired
+                          : null,
                     ),
                   ],
                 ),
@@ -172,12 +170,10 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
                         suffixIcon: const Icon(Icons.access_time_outlined),
                       ),
                       onTap: () => _selectTime(isStartTime: true),
-                      validator: (value) {
-                        if (value != null && value.isEmpty) {
-                          return L10n.of(context).startTimeRequired;
-                        }
-                        return null;
-                      },
+                      // required field, space not allowed
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? L10n.of(context).startTimeRequired
+                          : null,
                     ),
                   ],
                 ),
@@ -202,12 +198,10 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
                         suffixIcon: const Icon(Icons.calendar_month_outlined),
                       ),
                       onTap: () => _selectDate(isStartDate: false),
-                      validator: (value) {
-                        if (value != null && value.isEmpty) {
-                          return L10n.of(context).endDateRequired;
-                        }
-                        return null;
-                      },
+                      // required field, space not allowed
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? L10n.of(context).endDateRequired
+                          : null,
                     ),
                   ],
                 ),
@@ -228,12 +222,10 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
                         suffixIcon: const Icon(Icons.access_time_outlined),
                       ),
                       onTap: () => _selectTime(isStartTime: false),
-                      validator: (value) {
-                        if (value != null && value.isEmpty) {
-                          return L10n.of(context).endTimeRequired;
-                        }
-                        return null;
-                      },
+                      // required field, space not allowed
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? L10n.of(context).endTimeRequired
+                          : null,
                     ),
                   ],
                 ),

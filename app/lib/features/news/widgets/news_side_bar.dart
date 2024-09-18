@@ -16,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::news::sidebar');
 
@@ -36,7 +35,7 @@ class NewsSideBar extends ConsumerWidget {
     final userId = ref.watch(myUserIdStrProvider);
     final isLikedByMe = ref.watch(likedByMeProvider(news));
     final likesCount = ref.watch(totalLikesForNewsProvider(news));
-    final spaceLoader = ref.watch(briefSpaceItemProvider(roomId));
+    final space = ref.watch(briefSpaceItemProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
 
     return Column(
@@ -61,63 +60,34 @@ class NewsSideBar extends ConsumerWidget {
           },
         ),
         const SizedBox(height: 10),
-        spaceLoader.maybeWhen(
-          data: (space) => InkWell(
-            key: NewsUpdateKeys.newsSidebarActionBottomSheet,
-            onTap: () => showModalBottomSheet(
-              context: context,
-              builder: (context) => DefaultBottomSheet(
-                content: ActionBox(
-                  news: news,
-                  userId: userId,
-                  roomId: roomId,
-                ),
+        InkWell(
+          key: NewsUpdateKeys.newsSidebarActionBottomSheet,
+          onTap: () => showModalBottomSheet(
+            context: context,
+            builder: (context) => DefaultBottomSheet(
+              content: ActionBox(
+                news: news,
+                userId: userId,
+                roomId: roomId,
               ),
             ),
-            child: _SideBarItem(
-              icon: const Icon(Atlas.dots_horizontal_thin),
-              label: '',
-              style: style,
-            ),
           ),
-          orElse: () => _SideBarItem(
+          child: _SideBarItem(
             icon: const Icon(Atlas.dots_horizontal_thin),
             label: '',
             style: style,
           ),
         ),
         const SizedBox(height: 10),
-        spaceLoader.when(
-          data: (space) => ActerAvatar(
-            options: AvatarOptions(
-              AvatarInfo(
-                uniqueId: roomId,
-                displayName: space.avatarInfo.displayName,
-                avatar: space.avatarInfo.avatar,
-                onAvatarTap: () => goToSpace(context, roomId),
-              ),
-              size: 42,
+        ActerAvatar(
+          options: AvatarOptions(
+            AvatarInfo(
+              uniqueId: roomId,
+              displayName: space.avatarInfo.displayName,
+              avatar: space.avatarInfo.avatar,
+              onAvatarTap: () => goToSpace(context, roomId),
             ),
-          ),
-          error: (e, s) {
-            _log.severe('Failed to load brief of space', e, s);
-            return ActerAvatar(
-              options: AvatarOptions(
-                AvatarInfo(
-                  uniqueId: roomId,
-                  displayName: roomId,
-                ),
-                size: 42,
-              ),
-            );
-          },
-          loading: () => Skeletonizer(
-            child: ActerAvatar(
-              options: AvatarOptions(
-                AvatarInfo(uniqueId: roomId),
-                size: 42,
-              ),
-            ),
+            size: 42,
           ),
         ),
         const SizedBox(height: 15),

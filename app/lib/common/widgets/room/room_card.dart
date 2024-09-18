@@ -1,12 +1,12 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
+import 'package:acter/common/widgets/room/room_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef SubtitleFn = Widget? Function(Space);
 
-class SpaceCard extends ConsumerWidget {
+class RoomCard extends ConsumerWidget {
   final String roomId;
   final SubtitleFn? subtitleFn;
   final double avatarSize;
@@ -90,7 +90,7 @@ class SpaceCard extends ConsumerWidget {
   ///
   final bool showVisibilityMark;
 
-  const SpaceCard({
+  const RoomCard({
     super.key,
     required this.roomId,
     this.subtitleFn,
@@ -113,7 +113,7 @@ class SpaceCard extends ConsumerWidget {
     this.trailing,
   });
 
-  const SpaceCard.small({
+  const RoomCard.small({
     super.key,
     required this.roomId,
     this.subtitleFn,
@@ -140,7 +140,7 @@ class SpaceCard extends ConsumerWidget {
     final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
 
-    return SpaceWithAvatarInfoCard(
+    return RoomWithAvatarInfoCard(
       margin: margin,
       roomId: roomId,
       avatarInfo: avatarInfo,

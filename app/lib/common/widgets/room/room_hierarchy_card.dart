@@ -1,16 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
-import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
-import 'package:acter/common/widgets/spaces/space_with_profile_card.dart';
-import 'package:acter/router/utils.dart';
+import 'package:acter/common/widgets/room/room_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SpaceHierarchyCard extends ConsumerWidget {
+class RoomHierarchyCard extends ConsumerWidget {
   /// The room info to display
   final SpaceHierarchyRoomInfo roomInfo;
 
@@ -81,10 +75,10 @@ class SpaceHierarchyCard extends ConsumerWidget {
   /// Custom trailing widget.
   final Widget? trailing;
 
-  /// Whether to show the suggested icon if this is a suggested space
-  final bool showIconIfSuggested;
+  /// Whether to show the suggested info if this is a suggested room
+  final bool indicateIfSuggested;
 
-  const SpaceHierarchyCard({
+  const RoomHierarchyCard({
     super.key,
     required this.roomInfo,
     required this.parentId,
@@ -98,7 +92,7 @@ class SpaceHierarchyCard extends ConsumerWidget {
     this.contentPadding = const EdgeInsets.all(15),
     this.shape,
     this.withBorder = true,
-    this.showIconIfSuggested = false,
+    this.indicateIfSuggested = false,
     this.trailing,
   });
 
@@ -106,22 +100,11 @@ class SpaceHierarchyCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomId = roomInfo.roomIdStr();
     final avatarInfo = ref.watch(roomHierarchyAvatarInfoProvider(roomInfo));
-    final topic = roomInfo.topic();
-    bool showSuggested = showIconIfSuggested && roomInfo.suggested();
-    final Widget? subtitle = topic?.isNotEmpty == true
-        ? ExpandableText(
-            topic!,
-            maxLines: 2,
-            expandText: L10n.of(context).showMore,
-            collapseText: L10n.of(context).showLess,
-            linkColor: Theme.of(context).colorScheme.primary,
-          )
-        : null;
+    bool showSuggested = indicateIfSuggested && roomInfo.suggested();
 
-    return SpaceWithAvatarInfoCard(
+    return RoomWithAvatarInfoCard(
       roomId: roomId,
       avatarInfo: avatarInfo,
-      subtitle: subtitle,
       onTap: onTap ?? () {},
       onFocusChange: onFocusChange,
       onLongPress: onLongPress,
@@ -129,27 +112,7 @@ class SpaceHierarchyCard extends ConsumerWidget {
       contentPadding: contentPadding,
       shape: shape,
       showSuggestedMark: showSuggested,
-      trailing: trailing ??
-          Wrap(
-            children: [
-              RoomHierarchyJoinButton(
-                joinRule: roomInfo.joinRuleStr().toLowerCase(),
-                roomId: roomInfo.roomIdStr(),
-                roomName: roomInfo.name() ?? roomInfo.roomIdStr(),
-                viaServerName: roomInfo.viaServerName(),
-                forward: (spaceId) {
-                  goToSpace(context, spaceId);
-                  ref.invalidate(spaceRelationsProvider(parentId));
-                  ref.invalidate(spaceRemoteRelationsProvider(parentId));
-                },
-              ),
-              RoomHierarchyOptionsMenu(
-                isSuggested: roomInfo.suggested(),
-                childId: roomId,
-                parentId: parentId,
-              ),
-            ],
-          ),
+      trailing: trailing,
     );
   }
 }

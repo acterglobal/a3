@@ -44,6 +44,7 @@ import 'package:acter/features/tasks/pages/task_item_detail_page.dart';
 import 'package:acter/features/tasks/pages/task_list_details_page.dart';
 import 'package:acter/features/tasks/pages/tasks_list_page.dart';
 import 'package:acter/router/router.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:go_router/go_router.dart';
 
 final homeShellRoutes = [
@@ -491,10 +492,16 @@ final homeShellRoutes = [
     name: Routes.createEvent.name,
     path: Routes.createEvent.route,
     pageBuilder: (context, state) {
+      final extra = state.extra;
+      CalendarEvent? templateEvent;
+      if (extra != null && extra is CalendarEvent) {
+        templateEvent = extra;
+      }
       return NoTransitionPage(
         key: state.pageKey,
         child: CreateEventPage(
           initialSelectedSpace: state.uri.queryParameters['spaceId'],
+          templateEvent: templateEvent,
         ),
       );
     },

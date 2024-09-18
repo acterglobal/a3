@@ -16,8 +16,15 @@ final spacesProvider =
   return SpaceListNotifier(ref: ref, client: client);
 });
 
+final hasSpacesProvider =
+    Provider((ref) => ref.watch(spacesProvider).isNotEmpty);
+
 final bookmarkedSpacesProvider = Provider(
   (ref) => ref.watch(spacesProvider).where((s) => s.isBookmarked()).toList(),
+);
+
+final unbookmarkedSpacesProvider = Provider(
+  (ref) => ref.watch(spacesProvider).where((s) => !s.isBookmarked()).toList(),
 );
 
 /// List of spaces other than current space and it’s parent space
@@ -74,7 +81,7 @@ final maybeSpaceInfoProvider =
   final membership = await space.getMyMembership();
   return SpaceItem(
     space: space,
-    roomId: space.getRoomIdStr(),
+    roomId: spaceId,
     membership: membership,
     activeMembers: [],
     avatarInfo: avatarInfo,
@@ -86,14 +93,12 @@ final selectedSpaceIdProvider =
     StateProvider.autoDispose<String?>((ref) => null);
 
 /// gives current context space details based on id, will throw null if id is null
-final selectedSpaceDetailsProvider =
-    FutureProvider.autoDispose<SpaceItem?>((ref) async {
+final selectedSpaceDetailsProvider = Provider.autoDispose<SpaceItem?>((ref) {
   final selectedSpaceId = ref.watch(selectedSpaceIdProvider);
   if (selectedSpaceId == null) {
     return null;
   }
-
-  return await ref.watch(briefSpaceItemProvider(selectedSpaceId).future);
+  return ref.watch(briefSpaceItemProvider(selectedSpaceId));
 });
 
 class SpaceItem {
@@ -153,7 +158,9 @@ final hasSpaceWithPermissionProvider =
 /// Stays up to date with underlying client info
 final _spaceIdAndNames =
     FutureProvider.autoDispose<List<_SpaceIdAndName>>((ref) async {
-  final spaces = ref.watch(spacesProvider);
+  final spaces = ref
+      .watch(bookmarkedSpacesProvider)
+      .followedBy(ref.watch(unbookmarkedSpacesProvider));
   List<_SpaceIdAndName> items = [];
   for (final space in spaces) {
     final roomId = space.getRoomIdStr();
@@ -201,11 +208,10 @@ final searchedSpacesProvider =
 /// (only spaceProfileData, no activeMembers). Stays up to date with underlying
 /// client info
 final briefSpaceItemProvider =
-    FutureProvider.autoDispose.family<SpaceItem, String>((ref, spaceId) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
+    Provider.autoDispose.family<SpaceItem, String>((ref, spaceId) {
   final avatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
   return SpaceItem(
-    roomId: space.getRoomIdStr(),
+    roomId: spaceId,
     membership: null,
     activeMembers: [],
     avatarInfo: avatarInfo,
@@ -238,9 +244,7 @@ final spaceRelationsOverviewProvider =
   final List<String> knownSubspaces = [];
   final List<String> knownChats = [];
   final List<String> suggested = [];
-  List<Space> otherRelated = [];
-  final children = relatedSpaces.children();
-  for (final related in children) {
+  for (final related in relatedSpaces.children()) {
     String targetType = related.targetType();
     final roomId = related.roomId().toString();
     if (related.suggested()) {
@@ -261,34 +265,28 @@ final spaceRelationsOverviewProvider =
       knownSubspaces.add(roomId);
     }
   }
-  List<Space> parents = [];
 
   Space? mainParent;
   final mainSpace = relatedSpaces.mainParent();
   if (mainSpace != null) {
-    String targetType = mainSpace.targetType();
-    if (targetType != 'ChatRoom') {
+    if (mainSpace.targetType() != 'ChatRoom') {
       final roomId = mainSpace.roomId().toString();
       try {
         final space = await ref.watch(spaceProvider(roomId).future);
-        if (space.isJoined()) {
-          mainParent = space;
-        }
+        if (space.isJoined()) mainParent = space;
       } catch (e, s) {
         _log.severe('Loading main Parent of $spaceId failed', e, s);
       }
     }
   }
 
+  List<Space> parents = [];
   for (final related in relatedSpaces.otherParents()) {
-    String targetType = related.targetType();
-    if (targetType != 'ChatRoom') {
+    if (related.targetType() != 'ChatRoom') {
       final roomId = related.roomId().toString();
       try {
         final space = await ref.watch(spaceProvider(roomId).future);
-        if (space.isJoined()) {
-          parents.add(space);
-        }
+        if (space.isJoined()) parents.add(space);
       } catch (e, s) {
         _log.severe('Loading other Parents of $spaceId failed', e, s);
       }
@@ -299,11 +297,17 @@ final spaceRelationsOverviewProvider =
     parents: parents,
     knownChats: knownChats,
     knownSubspaces: knownSubspaces,
-    otherRelations: otherRelated,
+    otherRelations: [],
     mainParent: mainParent,
     hasMore: hasMore,
     suggestedIds: suggested,
   );
+});
+
+final suggestedIdsProvider =
+    FutureProvider.family<List<String>, String>((ref, spaceId) async {
+  return (await ref.watch(spaceRelationsOverviewProvider(spaceId).future))
+      .suggestedIds;
 });
 
 final hasSubChatsProvider =
@@ -341,6 +345,64 @@ final remoteChatRelationsProvider =
         .toList();
   } on SpaceNotFound {
     return [];
+  }
+});
+
+typedef RoomsAndRoomInfos = (List<String>, List<SpaceHierarchyRoomInfo>);
+
+final suggestedChatsProvider =
+    FutureProvider.family<RoomsAndRoomInfos, String>((ref, spaceId) async {
+  try {
+    final relatedSpaces =
+        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    final suggestedRooms = relatedSpaces.suggestedIds;
+    if (suggestedRooms.isEmpty) {
+      return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
+    }
+    final toIgnore = relatedSpaces.knownChats.toList();
+    final localRooms = relatedSpaces.knownChats
+        .where((r) => suggestedRooms.contains(r))
+        .toList();
+    final roomHierarchy =
+        await ref.watch(spaceRemoteRelationsProvider(spaceId).future);
+    // filter out the known rooms
+    final remoteRooms = roomHierarchy
+        .where((r) =>
+            !r.isSpace() &&
+            suggestedRooms.contains(r.roomIdStr()) &&
+            !toIgnore.contains(r.roomIdStr()),)
+        .toList();
+    return (localRooms, remoteRooms);
+  } on SpaceNotFound {
+    return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
+  }
+});
+
+final suggestedSpacesProvider =
+    FutureProvider.family<RoomsAndRoomInfos, String>((ref, spaceId) async {
+  try {
+    final relatedSpaces =
+        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    final suggestedRooms = relatedSpaces.suggestedIds;
+    if (suggestedRooms.isEmpty) {
+      return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
+    }
+    final toIgnore = relatedSpaces.knownSubspaces.toList();
+    final localRooms = relatedSpaces.knownSubspaces
+        .where((r) => suggestedRooms.contains(r))
+        .toList();
+    final roomHierarchy =
+        await ref.watch(spaceRemoteRelationsProvider(spaceId).future);
+    // filter out the known rooms
+    final remoteRooms = roomHierarchy
+        .where((r) =>
+            r.isSpace() &&
+            suggestedRooms.contains(r.roomIdStr()) &&
+            !toIgnore.contains(r.roomIdStr()),)
+        .toList();
+    return (localRooms, remoteRooms);
+  } on SpaceNotFound {
+    return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
   }
 });
 

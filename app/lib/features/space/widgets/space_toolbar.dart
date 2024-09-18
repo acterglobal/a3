@@ -14,6 +14,7 @@ class SpaceToolbar extends ConsumerWidget {
   static const optionsMenu = Key('space-options-menu');
   static const settingsMenu = Key('space-options-settings');
   static const leaveMenu = Key('space-options-leave');
+
   final String spaceId;
   final Widget? spaceTitle;
 
@@ -101,8 +102,10 @@ class SpaceToolbar extends ConsumerWidget {
         showInviteBtn && invited.length <= 100
             ? OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                 ),
                 onPressed: () => context.pushNamed(
                   Routes.spaceInvite.name,
@@ -113,12 +116,19 @@ class SpaceToolbar extends ConsumerWidget {
             : const SizedBox.shrink(),
         IconButton(
           icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
-          onPressed: () async =>
-              await (await ref.read(spaceProvider(spaceId).future))
-                  .setBookmarked(!isBookmarked),
+          onPressed: () async {
+            final bookmarked =
+                ref.read(spaceIsBookmarkedProvider(spaceId)).valueOrNull ??
+                    false;
+            final space = await ref.read(spaceProvider(spaceId).future);
+            await space.setBookmarked(!bookmarked);
+          },
         ),
         PopupMenuButton(
-          icon: const Icon(key: optionsMenu, Icons.more_vert),
+          icon: const Icon(
+            Icons.more_vert,
+            key: optionsMenu,
+          ),
           iconSize: 28,
           color: Theme.of(context).colorScheme.surface,
           itemBuilder: (BuildContext context) => submenu,

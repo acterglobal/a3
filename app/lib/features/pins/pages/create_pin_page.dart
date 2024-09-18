@@ -152,9 +152,10 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
           onInputChanged: (text) => ref
               .read(createPinStateProvider.notifier)
               .setPinTitleValue(text ?? ''),
-          validator: (value) => (value != null && value.trim().isNotEmpty)
-              ? null
-              : L10n.of(context).pleaseEnterATitle,
+          // required field, space not allowed
+          validator: (val) => val == null || val.trim().isEmpty
+              ? L10n.of(context).pleaseEnterATitle
+              : null,
         ),
       ],
     );

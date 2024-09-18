@@ -1,9 +1,10 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/space/widgets/related/spaces_helpers.dart';
 import 'package:acter/features/space/widgets/related/util.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,6 +25,14 @@ class SpacesSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final suggestedSpaces =
+        ref.watch(suggestedSpacesProvider(spaceId)).valueOrNull;
+    if (suggestedSpaces != null &&
+        (suggestedSpaces.$1.isNotEmpty || suggestedSpaces.$2.isNotEmpty)) {
+      return buildSuggestedSpacesSectionUI(
+          context, ref, suggestedSpaces.$1, suggestedSpaces.$2,);
+    }
+
     final overviewLoader = ref.watch(spaceRelationsOverviewProvider(spaceId));
     return overviewLoader.when(
       data: (overview) => buildSpacesSectionUI(
@@ -40,6 +49,47 @@ class SpacesSection extends ConsumerWidget {
       loading: () => Center(
         child: Text(L10n.of(context).loading),
       ),
+    );
+  }
+
+  Widget buildSuggestedSpacesSectionUI(
+    BuildContext context,
+    WidgetRef ref,
+    List<String> suggestedLocalSpaces,
+    List<SpaceHierarchyRoomInfo> suggestedRemoteSpaces,
+  ) {
+    final config = calculateSectionConfig(
+      localListLen: suggestedLocalSpaces.length,
+      limit: limit,
+      remoteListLen: suggestedRemoteSpaces.length,
+    );
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionHeader(
+          title: L10n.of(context).suggestedSpaces,
+          isShowSeeAllButton: true,
+          onTapSeeAll: () => context.pushNamed(
+            Routes.spaceRelatedSpaces.name,
+            pathParameters: {'spaceId': spaceId},
+          ),
+        ),
+        spacesListUI(
+          suggestedLocalSpaces,
+          config.listingLimit,
+          // showOptions: false,
+          // showSuggestedMarkIfGiven: false,
+        ),
+        if (config.renderRemote)
+          renderRemoteSubspaces(
+            context,
+            ref,
+            spaceId,
+            suggestedRemoteSpaces,
+            maxLength: config.remoteCount,
+          ),
+      ],
     );
   }
 
@@ -87,7 +137,7 @@ class SpacesSection extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         final roomId = spaces[index];
-        return SpaceCard(
+        return RoomCard(
           key: Key('subspace-list-item-$roomId'),
           roomId: roomId,
           showParents: false,
