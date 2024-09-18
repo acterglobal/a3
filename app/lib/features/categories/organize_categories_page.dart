@@ -28,7 +28,8 @@ class OrganizeCategoriesPage extends ConsumerStatefulWidget {
       _DraggableCategoriesListState();
 }
 
-class _DraggableCategoriesListState extends ConsumerState<OrganizeCategoriesPage> {
+class _DraggableCategoriesListState
+    extends ConsumerState<OrganizeCategoriesPage> {
   List<DragAndDropList>? dragAndDropList;
   late List<CategoryModelLocal> categoryList;
 
@@ -53,11 +54,12 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizeCategoriesPage
   void setDragAndDropListData() {
     setState(() {
       dragAndDropList = List.generate(categoryList.length, (categoryIndex) {
+        bool isLastItem = categoryIndex == categoryList.length - 1;
         return DragAndDropList(
-          canDrag:
-              CategoryUtils().isValidCategory(categoryList[categoryIndex]),
+          canDrag: CategoryUtils().isValidCategory(categoryList[categoryIndex]),
           header: dragDropListHeaderView(categoryIndex),
           children: getDragAndDropItemList(categoryIndex),
+          lastTarget: SizedBox(height: isLastItem ? 100 : 20),
         );
       });
     });
