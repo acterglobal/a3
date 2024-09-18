@@ -10,79 +10,89 @@ CategoriesFor getCategoryEnumFromName(String name) {
   return CategoriesFor.values.firstWhere((v) => v.name == name);
 }
 
-List<CategoryModelLocal> getCategorisedSubSpacesWithoutEmptyList(
-  List<Category> categoryList,
-  List<String> subSpaceList,
-) {
-//CONVERT CATEGORY LIST TO LOCAL CATEGORY LIST
-  List<CategoryModelLocal> categoryListLocal =
-      getCategorisedSubSpaces(categoryList, subSpaceList);
+class CategoryUtils {
+  static final CategoryUtils _singleton = CategoryUtils._internal();
 
-  List<CategoryModelLocal> categoryListLocalWithoutEmptyEntries = [];
-  for (var categoryListLocal in categoryListLocal) {
-    if (categoryListLocal.entries.isNotEmpty) {
-      categoryListLocalWithoutEmptyEntries.add(categoryListLocal);
-    }
+  factory CategoryUtils() {
+    return _singleton;
   }
-  return categoryListLocalWithoutEmptyEntries;
-}
 
-List<CategoryModelLocal> getCategorisedSubSpaces(
-  List<Category> categoryList,
-  List<String> subSpaceList,
-) {
+  CategoryUtils._internal();
+
+  List<CategoryModelLocal> getCategorisedSubSpacesWithoutEmptyList(
+    List<Category> categoryList,
+    List<String> subSpaceList,
+  ) {
 //CONVERT CATEGORY LIST TO LOCAL CATEGORY LIST
-  List<CategoryModelLocal> categoryListLocal =
-      getLocalCategoryList(categoryList);
+    List<CategoryModelLocal> categoryListLocal =
+        getCategorisedSubSpaces(categoryList, subSpaceList);
 
-//GET CATEGORIES SPACE IDs
-  List<String> categoriesSpaceIds = [];
-  for (var spaceId in subSpaceList) {
-    for (var categoryItemLocal in categoryListLocal) {
-      if (categoryItemLocal.entries.contains(spaceId)) {
-        categoriesSpaceIds.add(spaceId);
+    List<CategoryModelLocal> categoryListLocalWithoutEmptyEntries = [];
+    for (var categoryListLocal in categoryListLocal) {
+      if (categoryListLocal.entries.isNotEmpty) {
+        categoryListLocalWithoutEmptyEntries.add(categoryListLocal);
       }
     }
+    return categoryListLocalWithoutEmptyEntries;
   }
+
+  List<CategoryModelLocal> getCategorisedSubSpaces(
+    List<Category> categoryList,
+    List<String> subSpaceList,
+  ) {
+//CONVERT CATEGORY LIST TO LOCAL CATEGORY LIST
+    List<CategoryModelLocal> categoryListLocal =
+        getLocalCategoryList(categoryList);
+
+//GET CATEGORIES SPACE IDs
+    List<String> categoriesSpaceIds = [];
+    for (var spaceId in subSpaceList) {
+      for (var categoryItemLocal in categoryListLocal) {
+        if (categoryItemLocal.entries.contains(spaceId)) {
+          categoriesSpaceIds.add(spaceId);
+        }
+      }
+    }
 
 //GET UN-CATEGORIES SPACE IDs
-  List<String> unCategoriesSpaceIds = subSpaceList;
-  for (var spaceId in categoriesSpaceIds) {
-    unCategoriesSpaceIds.remove(spaceId);
-  }
+    List<String> unCategoriesSpaceIds = subSpaceList;
+    for (var spaceId in categoriesSpaceIds) {
+      unCategoriesSpaceIds.remove(spaceId);
+    }
 
 //ADD UN-CATEGORIES ITEM
-  CategoryModelLocal unCategorized = CategoryModelLocal(
-    entries: unCategoriesSpaceIds,
-    title: 'Un-categorized',
-    icon: ActerIcon.list,
-    color: Colors.blueGrey,
-  );
-  categoryListLocal.add(unCategorized);
-
-  return categoryListLocal;
-}
-
-List<CategoryModelLocal> getLocalCategoryList(List<Category> categoryList) {
-  List<CategoryModelLocal> categoryListLocal = [];
-  for (var categoryItem in categoryList) {
-    final title = categoryItem.title();
-    final color = convertColor(
-      categoryItem.display()?.color(),
-      iconPickerColors[0],
+    CategoryModelLocal unCategorized = CategoryModelLocal(
+      entries: unCategoriesSpaceIds,
+      title: 'Un-categorized',
+      icon: ActerIcon.list,
+      color: Colors.blueGrey,
     );
-    final icon = ActerIcon.iconForPin(categoryItem.display()?.iconStr());
-    final entries =
-        categoryItem.entries().map((s) => s.toDartString()).toList();
+    categoryListLocal.add(unCategorized);
 
-    CategoryModelLocal categoryModelLocal = CategoryModelLocal(
-      title: title,
-      color: color,
-      icon: icon,
-      entries: entries,
-    );
-    categoryListLocal.add(categoryModelLocal);
+    return categoryListLocal;
   }
 
-  return categoryListLocal;
+  List<CategoryModelLocal> getLocalCategoryList(List<Category> categoryList) {
+    List<CategoryModelLocal> categoryListLocal = [];
+    for (var categoryItem in categoryList) {
+      final title = categoryItem.title();
+      final color = convertColor(
+        categoryItem.display()?.color(),
+        iconPickerColors[0],
+      );
+      final icon = ActerIcon.iconForPin(categoryItem.display()?.iconStr());
+      final entries =
+          categoryItem.entries().map((s) => s.toDartString()).toList();
+
+      CategoryModelLocal categoryModelLocal = CategoryModelLocal(
+        title: title,
+        color: color,
+        icon: icon,
+        entries: entries,
+      );
+      categoryListLocal.add(categoryModelLocal);
+    }
+
+    return categoryListLocal;
+  }
 }

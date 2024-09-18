@@ -1,4 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/categories/model/CategoryModelLocal.dart';
+import 'package:acter/features/categories/utils/category_utils.dart';
+import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,4 +18,24 @@ final categoryManagerProvider =
     return maybeSpace.categories(categoryInfo.categoriesFor.name);
   }
   throw 'Space not found';
+});
+
+final localCategoryListProvider =
+    FutureProvider.family<List<CategoryModelLocal>, CategoriesInfo>(
+        (ref, categoryInfo) async {
+  final categoriesManager = await ref.read(
+    categoryManagerProvider(
+      (
+        spaceId: categoryInfo.spaceId,
+        categoriesFor: categoryInfo.categoriesFor
+      ),
+    ).future,
+  );
+  final subSpaceList =
+      await ref.read(subSpacesListProvider(categoryInfo.spaceId).future);
+  final categoryList = CategoryUtils().getCategorisedSubSpaces(
+    categoriesManager.categories().toList(),
+    subSpaceList,
+  );
+  return categoryList;
 });

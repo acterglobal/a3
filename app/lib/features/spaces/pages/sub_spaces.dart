@@ -3,7 +3,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
-import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
 import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -128,36 +127,24 @@ class SubSpaces extends ConsumerWidget {
   }
 
   Widget _buildSubSpacesUI(BuildContext context, WidgetRef ref) {
-    final subSpaceList = ref.watch(subSpacesListProvider(spaceId));
+    final localCategoryList = ref.watch(
+      localCategoryListProvider(
+        (
+          spaceId: spaceId,
+          categoriesFor: CategoriesFor.spaces,
+        ),
+      ),
+    );
 
-    return subSpaceList.when(
-      data: (subSpaceListData) {
-        final categoryManager = ref.watch(
-          categoryManagerProvider(
-            (spaceId: spaceId, categoriesFor: CategoriesFor.spaces),
-          ),
-        );
-        return categoryManager.when(
-          data: (categoryManagerData) {
-            final List<CategoryModelLocal> categoryList =
-                getCategorisedSubSpacesWithoutEmptyList(
-              categoryManagerData.categories().toList(),
-              subSpaceListData,
-            );
-            return ListView.builder(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: categoryList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return _buildCategoriesList(context, categoryList[index]);
-              },
-            );
+    return localCategoryList.when(
+      data: (localCategoryListData) {
+        return ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: localCategoryListData.length,
+          itemBuilder: (BuildContext context, int index) {
+            return _buildCategoriesList(context, localCategoryListData[index]);
           },
-          error: (e, s) {
-            _log.severe('Failed to load the space categories', e, s);
-            return Center(child: Text(L10n.of(context).loadingFailed(e)));
-          },
-          loading: () => Center(child: Text(L10n.of(context).loading)),
         );
       },
       error: (e, s) {

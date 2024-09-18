@@ -4,15 +4,13 @@ import 'package:acter/common/widgets/spaces/space_card.dart';
 import 'package:acter/features/categories/actions/save_categories.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
-import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/add_edit_category.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
-import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class OrganizedCategories extends ConsumerStatefulWidget {
   final String spaceId;
@@ -40,16 +38,10 @@ class _DraggableCategoriesListState extends ConsumerState<OrganizedCategories> {
   }
 
   void setDragAndDropList() async {
-    final categoriesManager = await ref.read(
-      categoryManagerProvider(
+    categoryList = await ref.read(
+      localCategoryListProvider(
         (spaceId: widget.spaceId, categoriesFor: widget.categoriesFor),
       ).future,
-    );
-    final subSpaceList =
-        await ref.read(subSpacesListProvider(widget.spaceId).future);
-    categoryList = getCategorisedSubSpaces(
-      categoriesManager.categories().toList(),
-      subSpaceList,
     );
     setDragAndDropListData();
   }
