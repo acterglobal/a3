@@ -33,7 +33,6 @@ default-features = false
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-ui"
 default-features = false
-features = ["e2e-encryption"]
 
 [workspace.dependencies.matrix-sdk-test]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
@@ -44,12 +43,12 @@ default-features = false
 # not used directly but needed to enable specific features from ruma
 # ATTENTION: _MUST_ stay in sync with the ruma-rev used by matrix-sdk!
 [workspace.dependencies.ruma]
-git = "https://github.com/matrix-org/ruma"
-rev = "17f6e555528512319e706bb2cfe68a12ec5603b6"
+git = "https://github.com/ruma/ruma"
+rev = "1ae98db9c44f46a590f4c76baf5cef70ebb6970d"
 # - see comment above
 [workspace.dependencies.ruma-common]
-git = "https://github.com/matrix-org/ruma"
-rev = "17f6e555528512319e706bb2cfe68a12ec5603b6"
+git = "https://github.com/ruma/ruma"
+rev = "1ae98db9c44f46a590f4c76baf5cef70ebb6970d"
 
 [workspace.dependencies.url]
 version = "2.5.0"

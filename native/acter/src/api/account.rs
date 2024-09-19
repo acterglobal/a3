@@ -204,7 +204,7 @@ impl Account {
 
         RUNTIME
             .spawn(async move {
-                if let Err(e) = account.deactivate(None, None).await {
+                if let Err(e) = account.deactivate(None, None, false).await {
                     let Some(inf) = e.as_uiaa_response() else {
                         return Err(clearify_error(e));
                     };
@@ -212,7 +212,7 @@ impl Account {
                         session: inf.session.clone(),
                     });
                     let auth_data = AuthData::Password(pswd);
-                    account.deactivate(None, Some(auth_data)).await?;
+                    account.deactivate(None, Some(auth_data), false).await?;
                     // FIXME: remove local data, too!
                 }
                 Ok(true)
