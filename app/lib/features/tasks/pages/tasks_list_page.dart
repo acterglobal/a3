@@ -137,7 +137,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
       child: StaggeredGrid.count(
         crossAxisCount: max(1, min(widthCount, minCount)),
         children: [
-          for (var tasklistId in tasklists)
+          for (final tasklistId in tasklists)
             ValueListenableBuilder(
               valueListenable: showCompletedTask,
               builder: (context, value, child) => TaskListItemCard(

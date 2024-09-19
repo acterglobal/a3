@@ -142,12 +142,12 @@ class RoomPage extends ConsumerWidget {
     return CustomChatInput(
       key: Key('chat-input-$roomId'),
       roomId: roomId,
-      onTyping: sendTypingNotice
-          ? (typing) async {
-              final chat = await ref.read(chatProvider(roomId).future);
-              chat?.typingNotice(typing);
-            }
-          : null,
+      onTyping: (typing) async {
+        if (sendTypingNotice) {
+          final chat = await ref.read(chatProvider(roomId).future);
+          if (chat != null) await chat.typingNotice(typing);
+        }
+      },
     );
   }
 }

@@ -212,7 +212,6 @@ class AttachmentSelectionOptions extends StatelessWidget {
           ),
         ),
       );
-      return;
     } else {
       showModalBottomSheet(
         context: context,

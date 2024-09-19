@@ -115,12 +115,8 @@ final emailAddressesProvider = FutureProvider((ref) async {
   ref.watch(genericUpdatesStream('global.acter.dev.three_pid'));
   final confirmed = asDartStringList(await account.confirmedEmailAddresses());
   final requested = asDartStringList(await account.requestedEmailAddresses());
-  final List<String> unconfirmed = [];
-  for (var i = 0; i < requested.length; i++) {
-    if (!confirmed.contains(requested[i])) {
-      unconfirmed.add(requested[i]);
-    }
-  }
+  final unconfirmed =
+      requested.where((email) => !confirmed.contains(email)).toList();
   return EmailAddresses(confirmed, unconfirmed);
 });
 

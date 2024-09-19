@@ -15,15 +15,13 @@ import 'package:settings_ui/settings_ui.dart';
 final _log = Logger('a3::space::settings::app_settings');
 
 String powerLevelName(int? pw) {
-  return pw.let(
-        (p0) => switch (pw) {
-          100 => 'Admin',
-          50 => 'Mod',
-          0 => 'Regular',
-          _ => 'Custom',
-        },
-      ) ??
-      'None';
+  if (pw == null) return 'None';
+  return switch (pw) {
+    100 => 'Admin',
+    50 => 'Mod',
+    0 => 'Regular',
+    _ => 'Custom',
+  };
 }
 
 class SettingsAndMembership {

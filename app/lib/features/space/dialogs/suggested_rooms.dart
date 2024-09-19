@@ -122,26 +122,23 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
 
   Future<void> _joinSelected(BuildContext context) async {
     final allRooms = chatsFound.followedBy(spacesFound).toList();
-    List<SpaceHierarchyRoomInfo> roomsToJoin = [];
+    List<SpaceHierarchyRoomInfo> roomsToJoin = selectedRooms.let(
+          (p0) => p0
+              .where((rId) {
+                final found = allRooms.any((r) => r.roomIdStr() == rId);
+                if (!found) {
+                  _log.warning(
+                    'Room $rId not found in list. Not sure how that can ever be.',
+                  );
+                }
+                return found;
+              })
+              .map((rId) => allRooms.firstWhere((r) => r.roomIdStr() == rId))
+              .toList(),
+        ) ??
+        allRooms;
     bool hadFailures = false;
 
-    final selected = selectedRooms;
-    if (selected == null) {
-      roomsToJoin = allRooms;
-    } else {
-      for (final roomId in selected) {
-        final room =
-            allRooms.where((el) => el.roomIdStr() == roomId).firstOrNull;
-        if (room != null) {
-          // it was found
-          roomsToJoin.add(room);
-        } else {
-          _log.warning(
-            'Room $roomId not found in list. Not sure how that can ever be.',
-          );
-        }
-      }
-    }
     final displayMsg = L10n.of(context).joiningSuggested;
     for (final room in roomsToJoin) {
       final roomId = room.roomIdStr();

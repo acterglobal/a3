@@ -67,9 +67,7 @@ class SettingsSectionWithTitleActions extends AbstractSettingsSection {
             end: 24,
           ),
           child: DefaultTextStyle(
-            style: TextStyle(
-              color: theme.themeData.titleTextColor,
-            ),
+            style: TextStyle(color: theme.themeData.titleTextColor),
             child: title,
           ),
         );
@@ -89,7 +87,6 @@ class SettingsSectionWithTitleActions extends AbstractSettingsSection {
             child: title,
           ),
         );
-
       case DevicePlatform.web:
       case DevicePlatform.device:
         throw Exception(L10n.of(context).devicePlatformException);

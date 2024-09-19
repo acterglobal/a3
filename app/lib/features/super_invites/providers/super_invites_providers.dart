@@ -18,11 +18,8 @@ final superInviteTokenProvider = FutureProvider.autoDispose
     .family<SuperInviteToken, String>((ref, tokenCode) async {
   final tokens = await ref.watch(superInvitesTokensProvider.future);
   for (final token in tokens) {
-    if (token.token() == tokenCode) {
-      return token;
-    }
+    if (token.token() == tokenCode) return token;
   }
-
   throw 'SuperInvite $tokenCode not found';
 });
 

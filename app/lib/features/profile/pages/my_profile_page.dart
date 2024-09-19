@@ -114,13 +114,12 @@ class MyProfilePage extends StatelessWidget {
   Future<void> updateAvatar(BuildContext context, WidgetRef ref) async {
     FilePickerResult? result = await pickAvatar(context: context);
     if (!context.mounted) return;
-    if (result != null) {
+    if (result != null && result.files.isNotEmpty) {
       EasyLoading.show(status: L10n.of(context).updatingProfileImage);
       final filePath = result.files.first.path;
-      if (filePath != null) {
-        await ref.read(accountProvider).uploadAvatar(filePath);
-        ref.invalidate(accountProvider);
-      }
+      if (filePath == null) throw 'avatar path not available';
+      await ref.read(accountProvider).uploadAvatar(filePath);
+      ref.invalidate(accountProvider);
       // close loading
       EasyLoading.dismiss();
     } else {

@@ -147,7 +147,10 @@ impl Client {
         let parsed = RoomOrAliasId::parse(room_id_or_alias)?;
         let server_names = match server_name {
             Some(inner) => vec![OwnedServerName::try_from(inner)?],
-            None => vec![],
+            None => parsed
+                .server_name()
+                .map(|i| vec![i.to_owned()])
+                .unwrap_or_default(),
         };
 
         self.join_room_typed(parsed, server_names).await

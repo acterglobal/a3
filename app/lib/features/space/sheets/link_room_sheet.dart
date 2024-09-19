@@ -67,26 +67,20 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   }
 
 //Fetch known sub-rooms list of selected parent space
-  void fetchKnownSubChatsData() async {
+  Future<void> fetchKnownSubChatsData() async {
     final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
     final space = await ref
         .read(spaceRelationsOverviewProvider(selectedParentSpaceId).future);
 
     childRoomsIds.clear();
+    recommendedChildSpaceIds.clear();
     if (widget.childRoomType == ChildRoomType.chat) {
-      for (int i = 0; i < space.knownChats.length; i++) {
-        childRoomsIds.add(space.knownChats[i]);
-      }
+      childRoomsIds.addAll(space.knownChats);
     } else {
-      for (int i = 0; i < space.knownSubspaces.length; i++) {
-        childRoomsIds.add(space.knownSubspaces[i]);
-      }
-      //Add recommended child spaces ids
-      recommendedChildSpaceIds.clear();
-      for (int i = 0; i < space.otherRelations.length; i++) {
-        recommendedChildSpaceIds.add(space.otherRelations[i].getRoomIdStr());
-      }
+      childRoomsIds.addAll(space.knownSubspaces);
+      recommendedChildSpaceIds
+          .addAll(space.otherRelations.map((other) => other.getRoomIdStr()));
     }
   }
 
@@ -393,12 +387,12 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   }
 
 //Link child room
-  void onTapLinkChildRoom(BuildContext context, String roomId) async {
-    final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
-    if (selectedParentSpaceId == null) return;
+  Future<void> onTapLinkChildRoom(BuildContext context, String roomId) async {
+    final spaceId = ref.read(selectedSpaceIdProvider);
+    if (spaceId == null) return;
 
     //Fetch selected parent space data and add given roomId as child
-    final space = await ref.read(spaceProvider(selectedParentSpaceId).future);
+    final space = await ref.read(spaceProvider(spaceId).future);
     space.addChildRoom(roomId, false);
 
     //Make subspace
@@ -406,9 +400,9 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       //Fetch selected room data and add given parentSpaceId as parent
       final room = await ref.read(maybeRoomProvider(roomId).future);
       if (room != null) {
-        room.addParentRoom(selectedParentSpaceId, true);
+        room.addParentRoom(spaceId, true);
         // ignore: use_build_context_synchronously
-        checkJoinRule(context, room, selectedParentSpaceId);
+        checkJoinRule(context, room, spaceId);
       }
     }
 
@@ -418,19 +412,19 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       childRoomsIds.add(roomId);
     }
     // spaceRelations come from the server and must be manually invalidated
-    ref.invalidate(spaceRelationsProvider(selectedParentSpaceId));
-    ref.invalidate(spaceRemoteRelationsProvider(selectedParentSpaceId));
+    ref.invalidate(spaceRelationsProvider(spaceId));
+    ref.invalidate(spaceRemoteRelationsProvider(spaceId));
   }
 
 //Unlink child room
-  void onTapUnlinkChildRoom(String roomId) async {
-    final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
-    if (selectedParentSpaceId == null) return;
+  Future<void> onTapUnlinkChildRoom(String roomId) async {
+    final spaceId = ref.read(selectedSpaceIdProvider);
+    if (spaceId == null) return;
 
     await unlinkChildRoom(
       context,
       ref,
-      parentId: selectedParentSpaceId,
+      parentId: spaceId,
       roomId: roomId,
     );
 

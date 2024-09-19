@@ -50,18 +50,14 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
   Widget _buildIconUI() {
     return ValueListenableBuilder<Color>(
       valueListenable: color,
-      builder: (context, colorData, child) {
-        return ValueListenableBuilder<ActerIcon>(
-          valueListenable: icon,
-          builder: (context, acterIcon, child) {
-            return Icon(
-              acterIcon.data,
-              size: widget.iconSize ?? 100,
-              color: colorData,
-            );
-          },
-        );
-      },
+      builder: (context, colorData, child) => ValueListenableBuilder<ActerIcon>(
+        valueListenable: icon,
+        builder: (context, acterIcon, child) => Icon(
+          acterIcon.data,
+          size: widget.iconSize ?? 100,
+          color: colorData,
+        ),
+      ),
     );
   }
 }

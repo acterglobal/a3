@@ -127,7 +127,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
       child: StaggeredGrid.count(
         crossAxisCount: max(1, min(widthCount, minCount)),
         children: [
-          for (var pin in pins)
+          for (final pin in pins)
             PinListItemWidget(
               pinId: pin.eventIdStr(),
               showSpace: widget.spaceId == null,

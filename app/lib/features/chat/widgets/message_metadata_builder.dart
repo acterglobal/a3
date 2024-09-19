@@ -22,15 +22,14 @@ class MessageMetadataBuilder extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Map<String, int>? receipts = message.metadata?['receipts'];
-    if (receipts != null && receipts.isNotEmpty == true) {
+    if (receipts != null && receipts.isNotEmpty) {
       return _UserReceiptsWidget(
         roomId: roomId,
         seenList: receipts.keys.toList(),
       );
     }
     EventSendState? sendState = message.metadata?['eventState'];
-    if (sendState == null) return const SizedBox.shrink();
-    return switch (sendState.state()) {
+    final result = switch (sendState?.state()) {
       'NotSentYet' => const SizedBox(
           height: 8,
           width: 8,
@@ -51,8 +50,9 @@ class MessageMetadataBuilder extends ConsumerWidget {
           Atlas.check_circle_thin,
           size: 8,
         ),
-      _ => const SizedBox.shrink(),
+      _ => null,
     };
+    return result ?? const SizedBox.shrink();
   }
 }
 
@@ -77,7 +77,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
           spacing: -16,
           children: seenList.length > limit
               ? [
-                  for (var userId in seenList.sublist(0, limit))
+                  for (final userId in seenList.sublist(0, limit))
                     Consumer(
                       builder: (context, ref, child) {
                         final memberProfile = ref.watch(

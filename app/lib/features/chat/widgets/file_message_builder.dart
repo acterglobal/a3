@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
 
 class FileMessageBuilder extends ConsumerWidget {
   final types.FileMessage message;
@@ -63,7 +64,7 @@ class FileMessageBuilder extends ConsumerWidget {
   }
 
   Widget getFileIcon(BuildContext context) {
-    final extension = message.name.split('.').last;
+    final extension = p.extension(message.name);
     final iconData = switch (extension) {
       '.png' || '.jpg' || '.jpeg' => Atlas.file_image,
       '.pdf' => Icons.picture_as_pdf,

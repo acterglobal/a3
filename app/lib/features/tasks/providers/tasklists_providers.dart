@@ -37,6 +37,7 @@ final tasksListSearchProvider = FutureProvider.autoDispose
 
   //Return all task list if search text is empty
   if (params.searchText.isEmpty) return tasksList;
+  final search = params.searchText.toLowerCase();
 
   //Return all task list filter if search text is given
   List<String> filteredTaskList = [];
@@ -44,10 +45,7 @@ final tasksListSearchProvider = FutureProvider.autoDispose
     //Check search param in task list
     final taskListItem =
         await ref.watch(taskListItemProvider(taskListId).future);
-    if (taskListItem
-        .name()
-        .toLowerCase()
-        .contains(params.searchText.toLowerCase())) {
+    if (taskListItem.name().toLowerCase().contains(search)) {
       filteredTaskList.add(taskListId);
       continue;
     }
@@ -59,10 +57,7 @@ final tasksListSearchProvider = FutureProvider.autoDispose
         taskItemProvider((taskListId: taskListId, taskId: openTaskItemId))
             .future,
       );
-      if (openTaskItem
-          .title()
-          .toLowerCase()
-          .contains(params.searchText.toLowerCase())) {
+      if (openTaskItem.title().toLowerCase().contains(search)) {
         filteredTaskList.add(taskListId);
         break;
       }

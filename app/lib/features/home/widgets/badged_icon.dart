@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 class BadgedIcon extends StatelessWidget {
   final UrgencyBadge urgency;
   final Widget child;
-  const BadgedIcon({required this.urgency, required this.child, super.key});
+
+  const BadgedIcon({
+    required this.urgency,
+    required this.child,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

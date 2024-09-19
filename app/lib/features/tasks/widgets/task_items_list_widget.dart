@@ -111,11 +111,21 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
         const SizedBox(height: 10),
         Row(
           children: [
-            const Expanded(child: Divider(indent: 20, endIndent: 20)),
+            const Expanded(
+              child: Divider(
+                indent: 20,
+                endIndent: 20,
+              ),
+            ),
             Text(
               L10n.of(context).countTasksCompleted(overview.doneTasks.length),
             ),
-            const Expanded(child: Divider(indent: 20, endIndent: 20)),
+            const Expanded(
+              child: Divider(
+                indent: 20,
+                endIndent: 20,
+              ),
+            ),
           ],
         ),
         for (final taskId in overview.doneTasks)
@@ -133,7 +143,10 @@ class _InlineTaskAdd extends StatefulWidget {
   final Function() cancel;
   final TaskList taskList;
 
-  const _InlineTaskAdd({required this.cancel, required this.taskList});
+  const _InlineTaskAdd({
+    required this.cancel,
+    required this.taskList,
+  });
 
   @override
   _InlineTaskAddState createState() => _InlineTaskAddState();
