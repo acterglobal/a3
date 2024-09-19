@@ -2193,5 +2193,7 @@
   "suggestedChats": "Vorgeschlagene Chats",
   "@suggestedChats": {},
   "suggestedSpaces": "Vorgeschlagene Spaces",
-  "@suggestedSpaces": {}
+  "@suggestedSpaces": {},
+  "missingStoragePermissions": "Wir brauchen Zugriff auf dein Storage um ein Bild wählen zu können",
+  "@missingStoragePermissions": {}
 }
