@@ -387,12 +387,12 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   }
 
 //Link child room
-  void onTapLinkChildRoom(BuildContext context, String roomId) async {
-    final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
-    if (selectedParentSpaceId == null) return;
+  Future<void> onTapLinkChildRoom(BuildContext context, String roomId) async {
+    final spaceId = ref.read(selectedSpaceIdProvider);
+    if (spaceId == null) return;
 
     //Fetch selected parent space data and add given roomId as child
-    final space = await ref.read(spaceProvider(selectedParentSpaceId).future);
+    final space = await ref.read(spaceProvider(spaceId).future);
     space.addChildRoom(roomId, false);
 
     //Make subspace
@@ -400,9 +400,9 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       //Fetch selected room data and add given parentSpaceId as parent
       final room = await ref.read(maybeRoomProvider(roomId).future);
       if (room != null) {
-        room.addParentRoom(selectedParentSpaceId, true);
+        room.addParentRoom(spaceId, true);
         // ignore: use_build_context_synchronously
-        checkJoinRule(context, room, selectedParentSpaceId);
+        checkJoinRule(context, room, spaceId);
       }
     }
 
@@ -412,19 +412,19 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       childRoomsIds.add(roomId);
     }
     // spaceRelations come from the server and must be manually invalidated
-    ref.invalidate(spaceRelationsProvider(selectedParentSpaceId));
-    ref.invalidate(spaceRemoteRelationsProvider(selectedParentSpaceId));
+    ref.invalidate(spaceRelationsProvider(spaceId));
+    ref.invalidate(spaceRemoteRelationsProvider(spaceId));
   }
 
 //Unlink child room
-  void onTapUnlinkChildRoom(String roomId) async {
-    final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
-    if (selectedParentSpaceId == null) return;
+  Future<void> onTapUnlinkChildRoom(String roomId) async {
+    final spaceId = ref.read(selectedSpaceIdProvider);
+    if (spaceId == null) return;
 
     await unlinkChildRoom(
       context,
       ref,
-      parentId: selectedParentSpaceId,
+      parentId: spaceId,
       roomId: roomId,
     );
 

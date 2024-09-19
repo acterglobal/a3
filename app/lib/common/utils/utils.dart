@@ -259,8 +259,9 @@ Future<void> uploadAvatar(
   try {
     if (!context.mounted) return;
     EasyLoading.show(status: L10n.of(context).avatarUploading);
-    final file = result.files.first;
-    if (file.path != null) await room.uploadAvatar(file.path!);
+    final filePath = result.files.first.path;
+    if (filePath == null) throw 'avatar path not available';
+    await room.uploadAvatar(filePath);
     // close loading
     EasyLoading.dismiss();
   } catch (e, s) {
