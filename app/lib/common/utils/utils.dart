@@ -393,9 +393,7 @@ String? getIssueId(String url) {
 
 ///helper function to convert list ffiString object to DartString.
 List<String> asDartStringList(FfiListFfiString data) {
-  if (data.isEmpty) {
-    return [];
-  }
+  if (data.isEmpty) return [];
   return data.toList().map((e) => e.toDartString()).toList();
 }
 

@@ -400,22 +400,21 @@ class TaskItemDetailPage extends ConsumerWidget {
   }
 
   Widget assigneeName(BuildContext context, Task task, WidgetRef ref) {
-    final assignees = task.assigneesStr().map((s) => s.toDartString()).toList();
+    final assignees = asDartStringList(task.assigneesStr());
+    final roomId = task.roomIdStr();
 
     return Wrap(
       direction: Axis.horizontal,
-      children: assignees.map((i) {
-        final displayName = ref
-            .watch(
-              memberDisplayNameProvider((roomId: task.roomIdStr(), userId: i)),
-            )
+      children: assignees.map((userId) {
+        final dispName = ref
+            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
             .valueOrNull;
         return Padding(
           padding: const EdgeInsets.only(right: 8),
           child: Chip(
             labelPadding: EdgeInsets.zero,
             label: Text(
-              displayName ?? i,
+              dispName ?? userId,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),

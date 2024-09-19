@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,10 +34,7 @@ final superInvitesForRoom = FutureProvider.autoDispose
     .family<List<SuperInviteToken>, String>((ref, roomId) async {
   final allInvites = await ref.watch(superInvitesTokensProvider.future);
   return allInvites
-      .where(
-        (invite) =>
-            invite.rooms().map((e) => e.toDartString()).contains(roomId),
-      )
+      .where((invite) => asDartStringList(invite.rooms()).contains(roomId))
       .toList();
 });
 

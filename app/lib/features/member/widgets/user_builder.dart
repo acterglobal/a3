@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -134,10 +135,8 @@ class UserBuilder extends ConsumerWidget {
 
   Widget _buildSharedRooms(BuildContext context, Widget tile) {
     final sharedRooms =
-        userProfile?.sharedRooms().map((s) => s.toDartString()).toList() ?? [];
-    if (sharedRooms.isEmpty) {
-      return tile;
-    }
+        userProfile.let((p0) => asDartStringList(p0.sharedRooms())) ?? [];
+    if (sharedRooms.isEmpty) return tile;
 
     const style = TextStyle(fontStyle: FontStyle.italic);
 
