@@ -31,9 +31,7 @@ List<SpaceDetails> _filterSpaces(
     final info = ref.watch(roomAvatarInfoProvider(roomId));
     final name = info.displayName ?? roomId;
     if (searchValue.isNotEmpty) {
-      if (!name.toLowerCase().contains(searchValue)) {
-        continue;
-      }
+      if (!name.toLowerCase().contains(searchValue)) continue;
     }
     finalSpaces.add(
       SpaceDetails(

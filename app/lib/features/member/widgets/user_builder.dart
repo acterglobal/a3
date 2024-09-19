@@ -42,21 +42,11 @@ final userAvatarInfoProvider =
 });
 
 bool isInvited(String userId, List<Member> invited) {
-  for (final i in invited) {
-    if (i.userId().toString() == userId) {
-      return true;
-    }
-  }
-  return false;
+  return invited.any((member) => member.userId().toString() == userId);
 }
 
 bool isJoined(String userId, List<String> joined) {
-  for (final i in joined) {
-    if (i == userId) {
-      return true;
-    }
-  }
-  return false;
+  return joined.contains(userId);
 }
 
 class _RoomName extends ConsumerWidget {
