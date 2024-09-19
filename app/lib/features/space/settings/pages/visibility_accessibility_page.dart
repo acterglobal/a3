@@ -294,7 +294,7 @@ class _VisibilityAccessibilityPageState
           break;
         case RoomVisibility.SpaceVisible:
           update.joinRule('restricted');
-          for (var roomId in (spaceIds ?? [])) {
+          for (final roomId in (spaceIds ?? [])) {
             update.addRoom(roomId);
           }
           break;

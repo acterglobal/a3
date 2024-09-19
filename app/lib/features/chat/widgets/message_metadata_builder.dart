@@ -77,7 +77,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
           spacing: -16,
           children: seenList.length > limit
               ? [
-                  for (var userId in seenList.sublist(0, limit))
+                  for (final userId in seenList.sublist(0, limit))
                     Consumer(
                       builder: (context, ref, child) {
                         final memberProfile = ref.watch(

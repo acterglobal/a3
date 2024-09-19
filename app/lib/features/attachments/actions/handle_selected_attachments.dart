@@ -32,7 +32,7 @@ Future<void> handleAttachmentSelected({
   final client = ref.read(alwaysClientProvider);
   List<AttachmentDraft> drafts = [];
   try {
-    for (var file in attachments) {
+    for (final file in attachments) {
       final mimeType = lookupMimeType(file.path);
       String fileName = p.basename(file.path);
       if (mimeType == null) throw lang.failedToDetectMimeType;
@@ -77,7 +77,7 @@ Future<void> handleAttachmentSelected({
       final attachmentDraft = await manager.linkDraft(link, title);
       drafts.add(attachmentDraft);
     }
-    for (var draft in drafts) {
+    for (final draft in drafts) {
       final res = await draft.send();
       _log.info('attachment sent: $res');
     }
