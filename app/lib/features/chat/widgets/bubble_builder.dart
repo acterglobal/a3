@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -276,57 +277,58 @@ class _OriginalMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repliedMessage = message.repliedMessage;
-    if (repliedMessage == null) return const SizedBox();
-    if (repliedMessage is types.TextMessage) {
-      final metadata = repliedMessage.metadata;
-      if (metadata == null) throw 'Replied metadata not available';
-      // when original msg is text msg, messageLength should be initialized
-      final len = metadata['messageLength'] as int;
-      return TextMessageBuilder(
-        roomId: roomId,
-        message: message.repliedMessage as types.TextMessage,
-        messageWidth: (len * 38.5).toInt(),
-        isReply: true,
-      );
-    }
-    if (repliedMessage is types.ImageMessage) {
-      return Row(
-        children: [
-          Container(
-            constraints: const BoxConstraints(maxHeight: 50),
-            margin: const EdgeInsets.all(12),
-            child: ImageMessageBuilder(
+    return message.repliedMessage.let((p0) {
+          if (p0 is types.TextMessage) {
+            final metadata = p0.metadata;
+            if (metadata == null) throw 'Replied metadata not available';
+            // when original msg is text msg, messageLength should be initialized
+            final len = metadata['messageLength'] as int;
+            return TextMessageBuilder(
               roomId: roomId,
-              message: repliedMessage,
-              messageWidth: repliedMessage.size.toInt(),
-              isReplyContent: true,
-            ),
-          ),
-          Text(
-            L10n.of(context).sentAnImage,
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
-        ],
-      );
-    }
-    if (repliedMessage is types.FileMessage) {
-      final metadata = repliedMessage.metadata;
-      if (metadata == null) throw 'Replied metadata not available';
-      return Padding(
-        padding: const EdgeInsets.all(12),
-        child: Text(
-          metadata['content'],
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      );
-    }
-    if (repliedMessage is types.CustomMessage) {
-      return CustomMessageBuilder(
-        message: repliedMessage,
-        messageWidth: 100,
-      );
-    }
-    return const SizedBox();
+              message: message.repliedMessage as types.TextMessage,
+              messageWidth: (len * 38.5).toInt(),
+              isReply: true,
+            );
+          }
+          if (p0 is types.ImageMessage) {
+            return Row(
+              children: [
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 50),
+                  margin: const EdgeInsets.all(12),
+                  child: ImageMessageBuilder(
+                    roomId: roomId,
+                    message: p0,
+                    messageWidth: p0.size.toInt(),
+                    isReplyContent: true,
+                  ),
+                ),
+                Text(
+                  L10n.of(context).sentAnImage,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+              ],
+            );
+          }
+          if (p0 is types.FileMessage) {
+            final metadata = p0.metadata;
+            if (metadata == null) throw 'Replied metadata not available';
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                metadata['content'],
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            );
+          }
+          if (p0 is types.CustomMessage) {
+            return CustomMessageBuilder(
+              message: p0,
+              messageWidth: 100,
+            );
+          }
+          return null;
+        }) ??
+        const SizedBox();
   }
 }

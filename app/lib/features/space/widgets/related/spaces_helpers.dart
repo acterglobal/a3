@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -64,10 +66,8 @@ Widget renderRemoteSubspaces(
     return const SizedBox.shrink();
   }
 
-  int itemCount = spaces.length;
-  if (maxLength != null && maxLength < itemCount) {
-    itemCount = maxLength;
-  }
+  int itemCount =
+      maxLength.let((p0) => min(p0, spaces.length)) ?? spaces.length;
 
   return GridView.builder(
     padding: padding,

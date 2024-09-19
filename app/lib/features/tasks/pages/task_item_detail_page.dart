@@ -229,32 +229,33 @@ class TaskItemDetailPage extends ConsumerWidget {
 
   Widget _widgetDescription(BuildContext context, Task task, WidgetRef ref) {
     final description = task.description();
-    if (description == null) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SelectionArea(
-          child: GestureDetector(
-            onTap: () {
-              showEditDescriptionSheet(context, ref, task);
-            },
-            child: description.formattedBody().let(
-                      (p0) => RenderHtml(
-                        text: p0,
-                        defaultTextStyle:
-                            Theme.of(context).textTheme.labelLarge,
+    return description.let(
+          (p0) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SelectionArea(
+                child: GestureDetector(
+                  onTap: () {
+                    showEditDescriptionSheet(context, ref, task);
+                  },
+                  child: p0.formattedBody().let(
+                            (p1) => RenderHtml(
+                              text: p1,
+                              defaultTextStyle:
+                                  Theme.of(context).textTheme.labelLarge,
+                            ),
+                          ) ??
+                      Text(
+                        p0.body(),
+                        style: Theme.of(context).textTheme.labelLarge,
                       ),
-                    ) ??
-                Text(
-                  description.body(),
-                  style: Theme.of(context).textTheme.labelLarge,
                 ),
+              ),
+              const SizedBox(height: 10),
+            ],
           ),
-        ),
-        const SizedBox(height: 10),
-      ],
-    );
+        ) ??
+        const SizedBox.shrink();
   }
 
   void showEditDescriptionSheet(

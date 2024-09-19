@@ -56,34 +56,32 @@ class _DueChipState extends State<DueChip> {
   Widget inner(BuildContext context) {
     final textStyle =
         widget.baseTextStyle ?? Theme.of(context).textTheme.bodySmall!;
-    final date = dueDate;
-    if (date == null) {
-      return widget.noneChild ?? const SizedBox.shrink();
-    }
+    return dueDate.let((p0) {
+          final label = getLabel(context, p0);
+          final dueTheme = p0.isPast
+              ? textStyle.copyWith(color: Theme.of(context).colorScheme.error)
+              : null;
+          final dateText =
+              DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(p0);
 
-    String? label;
-    TextStyle? dueTheme;
+          return Chip(
+            visualDensity: widget.visualDensity,
+            label: Text(
+              // FIXME: tooltip to show the full date?
+              label ?? L10n.of(context).due(dateText),
+              style: widget.task.isDone() ? null : dueTheme,
+            ),
+          );
+        }) ??
+        widget.noneChild ??
+        const SizedBox.shrink();
+  }
 
-    if (date.isToday) {
-      label = L10n.of(context).dueToday;
-    } else if (date.isTomorrow) {
-      label = L10n.of(context).dueTomorrow;
-    } else if (date.isPast) {
-      label = date.timeago();
-      dueTheme = textStyle.copyWith(
-        color: Theme.of(context).colorScheme.error,
-      );
-    }
-    final dateText = DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(date);
-
-    return Chip(
-      visualDensity: widget.visualDensity,
-      label: Text(
-        // FIXME: tooltip to show the full date?
-        label ?? L10n.of(context).due(dateText),
-        style: widget.task.isDone() ? null : dueTheme,
-      ),
-    );
+  String? getLabel(BuildContext context, DateTime date) {
+    if (date.isToday) return L10n.of(context).dueToday;
+    if (date.isTomorrow) return L10n.of(context).dueTomorrow;
+    if (date.isPast) return date.timeago();
+    return null;
   }
 
   Future<void> duePickerAction(BuildContext context) async {

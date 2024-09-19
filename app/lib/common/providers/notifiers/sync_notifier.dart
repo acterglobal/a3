@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:acter/common/models/sync_state/sync_state.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
 
@@ -64,9 +65,8 @@ class SyncNotifier extends StateNotifier<SyncState> {
           // regular logout, we do nothing here
           state = SyncState(initialSync: false, errorMsg: msg);
         } else {
-          final nextRetry = state.nextRetry;
           final retry = min(
-            (nextRetry == null ? 5 : nextRetry * 2),
+            state.nextRetry.let((p0) => p0 * 2) ?? 5,
             300,
           ); // we double this to a max of 5min.
           state = state.copyWith(

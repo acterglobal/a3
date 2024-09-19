@@ -241,13 +241,11 @@ class UserBuilder extends ConsumerWidget {
   String? _displayName(WidgetRef ref) {
     final res = userProfile?.displayName();
     if (res != null) return res;
-    final rId = roomId;
-    if (rId != null) {
-      return ref
-          .watch(memberDisplayNameProvider((roomId: rId, userId: userId)))
-          .valueOrNull;
-    }
-    return null;
+    return roomId.let(
+      (p0) => ref
+          .watch(memberDisplayNameProvider((roomId: p0, userId: userId)))
+          .valueOrNull,
+    );
   }
 }
 

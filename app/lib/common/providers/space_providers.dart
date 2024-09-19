@@ -96,11 +96,9 @@ final selectedSpaceIdProvider =
 
 /// gives current context space details based on id, will throw null if id is null
 final selectedSpaceDetailsProvider = Provider.autoDispose<SpaceItem?>((ref) {
-  final selectedSpaceId = ref.watch(selectedSpaceIdProvider);
-  if (selectedSpaceId == null) {
-    return null;
-  }
-  return ref.watch(briefSpaceItemProvider(selectedSpaceId));
+  return ref.watch(selectedSpaceIdProvider).let((p0) {
+    return ref.watch(briefSpaceItemProvider(p0));
+  });
 });
 
 class SpaceItem {
@@ -262,19 +260,17 @@ final spaceRelationsOverviewProvider =
     }
   }
 
-  Space? mainParent;
-  final mainSpace = relatedSpaces.mainParent();
-  if (mainSpace != null) {
-    if (mainSpace.targetType() != 'ChatRoom') {
-      final roomId = mainSpace.roomId().toString();
-      try {
-        final space = await ref.watch(spaceProvider(roomId).future);
-        if (space.isJoined()) mainParent = space;
-      } catch (e, s) {
-        _log.severe('Loading main Parent of $spaceId failed', e, s);
-      }
+  final mainParent = relatedSpaces.mainParent();
+  final mainSpace = await mainParent.letAsync((p0) async {
+    if (p0.targetType() == 'ChatRoom') return null;
+    final roomId = p0.roomId().toString();
+    try {
+      final space = await ref.watch(spaceProvider(roomId).future);
+      return space.isJoined() ? space : null;
+    } catch (e, s) {
+      _log.severe('Loading main Parent of $spaceId failed', e, s);
     }
-  }
+  });
 
   List<Space> parents = [];
   for (final related in relatedSpaces.otherParents()) {
@@ -294,7 +290,7 @@ final spaceRelationsOverviewProvider =
     knownChats: knownChats,
     knownSubspaces: knownSubspaces,
     otherRelations: [],
-    mainParent: mainParent,
+    mainParent: mainSpace,
     hasMore: hasMore,
     suggestedIds: suggested,
   );

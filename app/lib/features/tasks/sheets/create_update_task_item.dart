@@ -276,30 +276,30 @@ class _CreateUpdateItemListConsumerState
     final curState = _formKey.currentState;
     if (curState == null) throw 'Form state not available';
     if (!curState.validate()) return;
-    final task = widget.task;
-    if (task == null) return;
-    EasyLoading.show(status: L10n.of(context).updatingTask);
-    final updater = task.updateBuilder();
-    updater.title(_taskNameController.text);
-    if (_taskDescriptionController.text.isNotEmpty) {
-      updater.descriptionText(_taskDescriptionController.text);
-    }
-    selectedDate.let((p0) => updater.dueDate(p0.year, p0.month, p0.day));
-    try {
-      await updater.send();
-      EasyLoading.dismiss();
-      if (!mounted) return;
-      Navigator.pop(context);
-    } catch (e, s) {
-      _log.severe('Failed to change task', e, s);
-      if (!mounted) {
-        EasyLoading.dismiss();
-        return;
+    await widget.task.let((p0) async {
+      EasyLoading.show(status: L10n.of(context).updatingTask);
+      final updater = p0.updateBuilder();
+      updater.title(_taskNameController.text);
+      if (_taskDescriptionController.text.isNotEmpty) {
+        updater.descriptionText(_taskDescriptionController.text);
       }
-      EasyLoading.showError(
-        L10n.of(context).updatingTaskFailed(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
+      selectedDate.let((p1) => updater.dueDate(p1.year, p1.month, p1.day));
+      try {
+        await updater.send();
+        EasyLoading.dismiss();
+        if (!mounted) return;
+        Navigator.pop(context);
+      } catch (e, s) {
+        _log.severe('Failed to change task', e, s);
+        if (!mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
+        EasyLoading.showError(
+          L10n.of(context).updatingTaskFailed(e),
+          duration: const Duration(seconds: 3),
+        );
+      }
+    });
   }
 }

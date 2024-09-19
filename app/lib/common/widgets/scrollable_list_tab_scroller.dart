@@ -212,31 +212,29 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
   }
 
   int? getDisplayedPositionFromList() {
-    final value = itemPositionsListener.itemPositions.value;
-    if (value.isEmpty) {
-      return null;
-    }
-    final orderedListByPositionIndex = value.toList()
-      ..sort((a, b) => a.index.compareTo(b.index));
+    return itemPositionsListener.itemPositions.value.let((p0) {
+      final orderedListByPositionIndex = p0.toList()
+        ..sort((a, b) => a.index.compareTo(b.index));
 
-    final renderedMostTopItem = orderedListByPositionIndex.first;
+      final renderedMostTopItem = orderedListByPositionIndex.first;
 
-    if (orderedListByPositionIndex.length > 1 &&
-        orderedListByPositionIndex.last.index == widget.itemCount - 1) {
-      // I dont know why it’s not perfectly 1.0
-      // 1.01 LGTM
-      const fullBottomEdge = 1.01;
-      if (orderedListByPositionIndex.last.itemTrailingEdge < fullBottomEdge) {
-        return orderedListByPositionIndex.last.index;
+      if (orderedListByPositionIndex.length > 1 &&
+          orderedListByPositionIndex.last.index == widget.itemCount - 1) {
+        // I dont know why it’s not perfectly 1.0
+        // 1.01 LGTM
+        const fullBottomEdge = 1.01;
+        if (orderedListByPositionIndex.last.itemTrailingEdge < fullBottomEdge) {
+          return orderedListByPositionIndex.last.index;
+        }
       }
-    }
-    if (renderedMostTopItem.getBottomOffset(_currentPositionedListSize) <
-        widget.earlyChangePositionOffset) {
-      if (orderedListByPositionIndex.length > 1) {
-        return orderedListByPositionIndex[1].index;
+      if (renderedMostTopItem.getBottomOffset(_currentPositionedListSize) <
+          widget.earlyChangePositionOffset) {
+        if (orderedListByPositionIndex.length > 1) {
+          return orderedListByPositionIndex[1].index;
+        }
       }
-    }
-    return renderedMostTopItem.index;
+      return renderedMostTopItem.index;
+    });
   }
 
   Widget buildCustomHeaderContainerOrDefault({

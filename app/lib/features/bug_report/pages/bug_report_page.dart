@@ -172,17 +172,19 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   }
 
   List<Widget> renderErrorOptions() {
-    if (widget.error == null) return [];
-    return [
-      CheckboxListTile(
-        title: Text(L10n.of(context).includeErrorAndStackTrace),
-        value: submitErrorAndStackTrace,
-        onChanged: (bool? value) => setState(() {
-          submitErrorAndStackTrace = value ?? true;
-        }),
-        controlAffinity: ListTileControlAffinity.leading,
-      ),
-    ];
+    return widget.error.let(
+          (p0) => [
+            CheckboxListTile(
+              title: Text(L10n.of(context).includeErrorAndStackTrace),
+              value: submitErrorAndStackTrace,
+              onChanged: (val) {
+                setState(() => submitErrorAndStackTrace = val != false);
+              },
+              controlAffinity: ListTileControlAffinity.leading,
+            ),
+          ],
+        ) ??
+        [];
   }
 
   List<Widget> renderLogOptions() {
@@ -209,28 +211,30 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   }
 
   List<Widget> renderForScreenShot() {
-    final imagePath = widget.imagePath;
-    if (imagePath == null) return [];
-    return [
-      const SizedBox(height: 10),
-      CheckboxListTile(
-        key: BugReportPage.includeScreenshot,
-        title: Text(L10n.of(context).includeScreenshot),
-        value: withScreenshot,
-        onChanged: (val) => setState(() => withScreenshot = (val != false)),
-        controlAffinity: ListTileControlAffinity.leading,
-      ),
-      const SizedBox(height: 10),
-      if (withScreenshot)
-        Image.file(
-          File(imagePath),
-          key: BugReportPage.screenshot,
-          width: MediaQuery.of(context).size.width * 0.8,
-          errorBuilder: (context, error, stackTrace) {
-            return Text(L10n.of(context).couldNotLoadImage(error));
-          },
-        ),
-      if (withScreenshot) const SizedBox(height: 10),
-    ];
+    return widget.imagePath.let(
+          (p0) => [
+            const SizedBox(height: 10),
+            CheckboxListTile(
+              key: BugReportPage.includeScreenshot,
+              title: Text(L10n.of(context).includeScreenshot),
+              value: withScreenshot,
+              onChanged: (val) =>
+                  setState(() => withScreenshot = (val != false)),
+              controlAffinity: ListTileControlAffinity.leading,
+            ),
+            const SizedBox(height: 10),
+            if (withScreenshot)
+              Image.file(
+                File(p0),
+                key: BugReportPage.screenshot,
+                width: MediaQuery.of(context).size.width * 0.8,
+                errorBuilder: (context, error, stackTrace) {
+                  return Text(L10n.of(context).couldNotLoadImage(error));
+                },
+              ),
+            if (withScreenshot) const SizedBox(height: 10),
+          ],
+        ) ??
+        [];
   }
 }

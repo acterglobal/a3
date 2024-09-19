@@ -58,20 +58,17 @@ final accountAvatarInfoProvider = StateProvider.autoDispose<AvatarInfo>((ref) {
 
   final displayName = ref.watch(accountDisplayNameProvider).valueOrNull;
   final avatar = ref.watch(_accountAvatarProvider).valueOrNull;
-  final fallback = AvatarInfo(
-    uniqueId: userId,
-    displayName: displayName,
-  );
-
-  if (avatar == null) {
-    return fallback;
-  }
-
-  return AvatarInfo(
-    uniqueId: userId,
-    displayName: displayName,
-    avatar: avatar,
-  );
+  return avatar.let(
+        (p0) => AvatarInfo(
+          uniqueId: userId,
+          displayName: displayName,
+          avatar: p0,
+        ),
+      ) ??
+      AvatarInfo(
+        uniqueId: userId,
+        displayName: displayName,
+      );
 });
 
 /// Caching the name of each Room

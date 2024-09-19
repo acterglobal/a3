@@ -50,10 +50,10 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
           videoThumbnailFile: null,
           mediaChatLoadingState: const MediaChatLoadingState.loaded(),
         );
-        final videoThumbnailFile = await getThumbnailData(mediaPath);
-        if (videoThumbnailFile != null) {
+        final thumbFile = await getThumbnailData(mediaPath);
+        if (thumbFile != null) {
           if (state.mediaFile?.path == mediaPath) {
-            state = state.copyWith(videoThumbnailFile: videoThumbnailFile);
+            state = state.copyWith(videoThumbnailFile: thumbFile);
           }
         }
       } else {
@@ -78,42 +78,42 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
   }
 
   Future<void> downloadMedia() async {
-    final convo = _convo;
-    if (convo == null) return;
-    state = state.copyWith(isDownloading: true);
-    try {
-      //Download media if media path is not available
-      final tempDir = await getTemporaryDirectory();
-      final result = await convo.downloadMedia(
-        messageInfo.messageId,
-        null,
-        tempDir.path,
-      );
-      final mediaPath = result.text();
-      if (mediaPath == null) {
-        state = state.copyWith(isDownloading: false);
-        return;
+    await _convo.letAsync((p0) async {
+      state = state.copyWith(isDownloading: true);
+      try {
+        //Download media if media path is not available
+        final tempDir = await getTemporaryDirectory();
+        final result = await p0.downloadMedia(
+          messageInfo.messageId,
+          null,
+          tempDir.path,
+        );
+        final mediaPath = result.text();
+        if (mediaPath == null) {
+          state = state.copyWith(isDownloading: false);
+          return;
+        }
+        state = state.copyWith(
+          mediaFile: File(mediaPath),
+          videoThumbnailFile: null,
+          isDownloading: false,
+        );
+        if (state.mediaFile?.path == mediaPath) {
+          final thumbFile = await getThumbnailData(mediaPath);
+          if (thumbFile != null) {
+            state = state.copyWith(videoThumbnailFile: thumbFile);
+          }
+        }
+      } catch (e, s) {
+        _log.severe('Error downloading media:', e, s);
+        state = state.copyWith(
+          isDownloading: false,
+          mediaChatLoadingState: MediaChatLoadingState.error(
+            'Some error occurred ${e.toString()}',
+          ),
+        );
       }
-      state = state.copyWith(
-        mediaFile: File(mediaPath),
-        videoThumbnailFile: null,
-        isDownloading: false,
-      );
-      if (state.mediaFile?.path == mediaPath) {
-        final videoThumbnailFile = await getThumbnailData(mediaPath);
-        videoThumbnailFile.let((p0) {
-          state = state.copyWith(videoThumbnailFile: p0);
-        });
-      }
-    } catch (e, s) {
-      _log.severe('Error downloading media:', e, s);
-      state = state.copyWith(
-        isDownloading: false,
-        mediaChatLoadingState: MediaChatLoadingState.error(
-          'Some error occurred ${e.toString()}',
-        ),
-      );
-    }
+    });
   }
 
   //FIXME : This is temporarily solution for media thumb management which lead to security issue.

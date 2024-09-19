@@ -31,19 +31,18 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
     widget.icon.let((p0) => icon.value = p0);
     return InkWell(
       borderRadius: BorderRadius.circular(100),
-      onTap: widget.onIconSelection == null
-          ? null
-          : () => showActerIconPicker(
-                context: context,
-                selectedColor: color.value,
-                selectedIcon: icon.value,
-                onIconSelection: (selectedColor, selectedIcon) {
-                  color.value = selectedColor;
-                  icon.value = selectedIcon;
-                  widget.onIconSelection
-                      .let((cb) => cb(selectedColor, selectedIcon));
-                },
-              ),
+      onTap: () => widget.onIconSelection.let(
+        (cb) => showActerIconPicker(
+          context: context,
+          selectedColor: color.value,
+          selectedIcon: icon.value,
+          onIconSelection: (selectedColor, selectedIcon) {
+            color.value = selectedColor;
+            icon.value = selectedIcon;
+            cb(selectedColor, selectedIcon);
+          },
+        ),
+      ),
       child: _buildIconUI(),
     );
   }
