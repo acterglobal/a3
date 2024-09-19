@@ -404,7 +404,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     if (repliedTo == null) return;
     final messages = state.messages;
     int index = messages.indexWhere((x) => x.id == msgId);
-    if (index != -1 && repliedTo != null) {
+    if (index != -1) {
       replaceMessageAt(
         index,
         messages[index].copyWith(repliedMessage: repliedTo),
@@ -837,7 +837,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.audio':
       case 'm.video':
         final messages = state.messages;
-
         final convo = await ref.read(chatProvider(roomId).future);
         if (convo == null) {
           throw RoomNotFound();
