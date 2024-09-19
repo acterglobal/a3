@@ -45,21 +45,19 @@ final maybeRoomProvider =
 final roomVisibilityProvider = FutureProvider.family
     .autoDispose<RoomVisibility?, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return null;
-  }
+  if (room == null) return null;
   final joinRule = room.joinRuleStr();
-  switch (joinRule) {
-    case 'public':
-      return RoomVisibility.Public;
-    case 'restricted':
-      return RoomVisibility.SpaceVisible;
-    case 'invite':
-      return RoomVisibility.Private;
-    default:
-      _log.warning('Unsupported joinRule for $roomId: $joinRule');
-      throw 'Unsupported joinRule $joinRule';
+  final visibility = switch (joinRule) {
+    'public' => RoomVisibility.Public,
+    'restricted' => RoomVisibility.SpaceVisible,
+    'invite' => RoomVisibility.Private,
+    _ => null,
+  };
+  if (visibility == null) {
+    _log.warning('Unsupported joinRule for $roomId: $joinRule');
+    throw 'Unsupported joinRule $joinRule';
   }
+  return visibility;
 });
 
 /// Get the members invited of a given roomId the user knows about. Errors
@@ -266,10 +264,7 @@ final membershipStatusStr =
 final memberDisplayNameProvider =
     FutureProvider.autoDispose.family<String?, MemberInfo>((ref, query) async {
   try {
-    return ref
-        .watch(_memberProfileProvider(query))
-        .valueOrNull
-        ?.displayName();
+    return ref.watch(_memberProfileProvider(query)).valueOrNull?.displayName();
   } on RoomNotFound {
     return null;
   }

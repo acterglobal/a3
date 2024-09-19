@@ -351,16 +351,11 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     final selectedMessage = ref.watch(
       chatInputProvider.select((value) => value.selectedMessage),
     );
-
-    if (selectedMessage == null) {
-      return renderMain(context);
-    }
-
-    return switch (ref.watch(
-      chatInputProvider.select(
-        (value) => value.selectedMessageState,
-      ),
-    )) {
+    if (selectedMessage == null) return renderMain(context);
+    final selMsgState = ref.watch(
+      chatInputProvider.select((value) => value.selectedMessageState),
+    );
+    return switch (selMsgState) {
       SelectedMessageState.replyTo => renderReplyView(context, selectedMessage),
       SelectedMessageState.edit => renderEditView(context, selectedMessage),
       SelectedMessageState.none ||

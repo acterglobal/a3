@@ -142,7 +142,7 @@ class EventItem extends StatelessWidget {
           color: Theme.of(context).colorScheme.error,
         ),
       RsvpStatusTag.Maybe => const Icon(Icons.question_mark_rounded),
-      null => null,
+      _ => null,
     };
   }
 
