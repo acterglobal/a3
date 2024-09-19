@@ -46,9 +46,10 @@ class LanguageSelectPage extends ConsumerWidget {
         value: language.languageCode,
         groupValue: ref.watch(localeProvider),
         title: Text(language.languageName),
-        onChanged: (value) async {
-          if (value != null) {
-            await ref.read(localeProvider.notifier).setLanguage(value);
+        onChanged: (val) async {
+          if (val != null) {
+            final notifier = ref.read(localeProvider.notifier);
+            await notifier.setLanguage(val);
           }
         },
       ),

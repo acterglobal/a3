@@ -465,7 +465,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
     // user read receipts for timeline event item
     Map<String, int> receipts = {};
-    for (var userId in eventItem.readUsers()) {
+    for (final userId in eventItem.readUsers()) {
       String id = userId.toDartString();
       final ts = eventItem.receiptTs(id);
       if (ts != null) {
@@ -575,7 +575,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'm.room.message':
         Map<String, dynamic> reactions = {};
-        for (var key in eventItem.reactionKeys()) {
+        for (final key in eventItem.reactionKeys()) {
           String k = key.toDartString();
           final records = eventItem.reactionRecords(k);
           if (records != null) {
@@ -810,7 +810,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'm.sticker':
         Map<String, dynamic> receipts = {};
-        for (var userId in eventItem.readUsers()) {
+        for (final userId in eventItem.readUsers()) {
           String id = userId.toDartString();
           final ts = eventItem.receiptTs(id);
           if (ts != null) {
@@ -818,7 +818,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           }
         }
         Map<String, dynamic> reactions = {};
-        for (var key in eventItem.reactionKeys()) {
+        for (final key in eventItem.reactionKeys()) {
           String k = key.toDartString();
           final records = eventItem.reactionRecords(k);
           if (records != null) {

@@ -216,29 +216,30 @@ class AttachmentSelectionOptions extends StatelessWidget {
     AttachmentType type,
     OnAttachmentSelected handleFileUpload,
   ) {
-    final size = MediaQuery.of(context).size;
-    if (selectedFiles != null && selectedFiles.isNotEmpty) {
-      context.isLargeScreen
-          ? showAdaptiveDialog(
-              context: context,
-              builder: (context) => Dialog(
-                insetPadding: const EdgeInsets.all(8),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: size.width * 0.5,
-                    maxHeight: size.height * 0.5,
-                  ),
-                  child: _FileWidget(selectedFiles, type, handleFileUpload),
-                ),
-              ),
-            )
-          : showModalBottomSheet(
-              context: context,
-              builder: (context) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: _FileWidget(selectedFiles, type, handleFileUpload),
-              ),
-            );
+    if (selectedFiles == null || selectedFiles.isEmpty) return;
+    if (context.isLargeScreen) {
+      final size = MediaQuery.of(context).size;
+      showAdaptiveDialog(
+        context: context,
+        builder: (context) => Dialog(
+          insetPadding: const EdgeInsets.all(8),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: size.width * 0.5,
+              maxHeight: size.height * 0.5,
+            ),
+            child: _FileWidget(selectedFiles, type, handleFileUpload),
+          ),
+        ),
+      );
+    } else {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _FileWidget(selectedFiles, type, handleFileUpload),
+        ),
+      );
     }
   }
 }

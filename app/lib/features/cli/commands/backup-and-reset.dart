@@ -52,11 +52,11 @@ class BackupAndResetCommand extends Command {
     if (appInfo.accounts.isEmpty) {
       print('⚠️ No account data found.');
     } else {
-      for (final a in appInfo.accounts) {
-        final oldPath = p.join(appInfo.appDocPath, a);
-        final newPath = p.join(appInfo.appDocPath, '${a}_backup_$stamper');
+      for (final acc in appInfo.accounts) {
+        final oldPath = p.join(appInfo.appDocPath, acc);
+        final newPath = p.join(appInfo.appDocPath, '${acc}_backup_$stamper');
         if (!isDry) await Directory(oldPath).rename(newPath);
-        print('✔️ $a backed up: $newPath');
+        print('✔️ $acc backed up: $newPath');
       }
     }
 

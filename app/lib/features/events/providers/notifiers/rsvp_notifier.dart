@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
@@ -10,7 +11,8 @@ class AsyncRsvpStatusNotifier
   Future<ffi.RsvpStatusTag?> _getMyResponse() async {
     final client = ref.read(alwaysClientProvider);
     final calEvent = await client.waitForCalendarEvent(arg, null);
-    return switch ((await calEvent.respondedByMe()).statusStr()) {
+    final rsvp = await calEvent.respondedByMe();
+    return switch (rsvp.statusStr()) {
       'yes' => ffi.RsvpStatusTag.Yes,
       'no' => ffi.RsvpStatusTag.No,
       'maybe' => ffi.RsvpStatusTag.Maybe,

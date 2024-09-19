@@ -357,17 +357,12 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           await ref.read(calendarEventProvider(widget.calendarId).future);
       final rsvpManager = await event.rsvps();
       final draft = rsvpManager.rsvpDraft();
-      switch (status) {
-        case RsvpStatusTag.Yes:
-          draft.status('yes');
-          break;
-        case RsvpStatusTag.No:
-          draft.status('no');
-          break;
-        case RsvpStatusTag.Maybe:
-          draft.status('maybe');
-          break;
-      }
+      final statusStr = switch (status) {
+        RsvpStatusTag.Yes => 'yes',
+        RsvpStatusTag.No => 'no',
+        RsvpStatusTag.Maybe => 'maybe',
+      };
+      draft.status(statusStr);
       final rsvpId = await draft.send();
       _log.info('new rsvp id: $rsvpId');
       // refresh cache

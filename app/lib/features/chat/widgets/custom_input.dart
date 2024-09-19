@@ -351,16 +351,11 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     final selectedMessage = ref.watch(
       chatInputProvider.select((value) => value.selectedMessage),
     );
-
-    if (selectedMessage == null) {
-      return renderMain(context);
-    }
-
-    return switch (ref.watch(
-      chatInputProvider.select(
-        (value) => value.selectedMessageState,
-      ),
-    )) {
+    if (selectedMessage == null) return renderMain(context);
+    final selMsgState = ref.watch(
+      chatInputProvider.select((value) => value.selectedMessageState),
+    );
+    return switch (selMsgState) {
       SelectedMessageState.replyTo => renderReplyView(context, selectedMessage),
       SelectedMessageState.edit => renderEditView(context, selectedMessage),
       SelectedMessageState.none ||
@@ -548,7 +543,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     final stream = await ref.read(timelineStreamProvider(widget.roomId).future);
 
     try {
-      for (File file in files) {
+      for (final file in files) {
         String? mimeType = lookupMimeType(file.path);
         if (mimeType == null) throw lang.failedToDetectMimeType;
         final fileLen = file.lengthSync();

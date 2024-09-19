@@ -50,10 +50,8 @@ final otherSpacesForInviteMembersProvider = FutureProvider.autoDispose
 final spaceProvider =
     FutureProvider.family<Space, String>((ref, spaceId) async {
   final maybeSpace = await ref.watch(maybeSpaceProvider(spaceId).future);
-  if (maybeSpace != null) {
-    return maybeSpace;
-  }
-  throw 'Space not found';
+  if (maybeSpace == null) throw 'Space not found';
+  return maybeSpace;
 });
 
 final spaceIsBookmarkedProvider =
@@ -74,9 +72,7 @@ final maybeSpaceProvider =
 final maybeSpaceInfoProvider =
     FutureProvider.autoDispose.family<SpaceItem?, String>((ref, spaceId) async {
   final space = await ref.watch(maybeSpaceProvider(spaceId).future);
-  if (space == null || !space.isJoined()) {
-    return null;
-  }
+  if (space == null || !space.isJoined()) return null;
   final avatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
   final membership = await space.getMyMembership();
   return SpaceItem(
@@ -95,9 +91,7 @@ final selectedSpaceIdProvider =
 /// gives current context space details based on id, will throw null if id is null
 final selectedSpaceDetailsProvider = Provider.autoDispose<SpaceItem?>((ref) {
   final selectedSpaceId = ref.watch(selectedSpaceIdProvider);
-  if (selectedSpaceId == null) {
-    return null;
-  }
+  if (selectedSpaceId == null) return null;
   return ref.watch(briefSpaceItemProvider(selectedSpaceId));
 });
 
@@ -145,9 +139,7 @@ final hasSpaceWithPermissionProvider =
   final spaces = ref.watch(spacesProvider);
   for (final element in spaces) {
     final membership = await element.getMyMembership();
-    if (membership.canString(permission)) {
-      return true;
-    }
+    if (membership.canString(permission)) return true;
   }
   // none found
   return false;
@@ -164,9 +156,8 @@ final _spaceIdAndNames =
   List<_SpaceIdAndName> items = [];
   for (final space in spaces) {
     final roomId = space.getRoomIdStr();
-    items.add(
-      (roomId, await ref.watch(roomDisplayNameProvider(roomId).future)),
-    );
+    final dispName = await ref.watch(roomDisplayNameProvider(roomId).future);
+    items.add((roomId, dispName));
   }
   return items;
 });
@@ -224,9 +215,7 @@ final briefSpaceItemProvider =
 final spaceInvitedMembersProvider = FutureProvider.autoDispose
     .family<List<Member>, String>((ref, roomIdOrAlias) async {
   final space = await ref.watch(spaceProvider(roomIdOrAlias).future);
-  if (!space.isJoined()) {
-    return [];
-  }
+  if (!space.isJoined()) return [];
   final members = await space.invitedMembers();
   return members.toList();
 });
@@ -237,19 +226,15 @@ final spaceInvitedMembersProvider = FutureProvider.autoDispose
 final spaceRelationsOverviewProvider =
     FutureProvider.family<SpaceRelationsOverview, String>((ref, spaceId) async {
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
-  if (relatedSpaces == null) {
-    throw SpaceNotFound;
-  }
+  if (relatedSpaces == null) throw SpaceNotFound;
   bool hasMore = false;
   final List<String> knownSubspaces = [];
   final List<String> knownChats = [];
   final List<String> suggested = [];
   for (final related in relatedSpaces.children()) {
-    String targetType = related.targetType();
     final roomId = related.roomId().toString();
-    if (related.suggested()) {
-      suggested.add(roomId);
-    }
+    if (related.suggested()) suggested.add(roomId);
+
     final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
     if (room == null || !room.isJoined()) {
       // we don’t know this room or are not in it
@@ -257,7 +242,7 @@ final spaceRelationsOverviewProvider =
       continue;
     }
 
-    if (targetType == 'ChatRoom') {
+    if (related.targetType() == 'ChatRoom') {
       // we know this as a chat room
       knownChats.add(roomId);
     } else {
@@ -324,9 +309,7 @@ final spaceRemoteRelationsProvider =
     FutureProvider.family<List<SpaceHierarchyRoomInfo>, String>(
         (ref, spaceId) async {
   final relatedSpaces = await ref.watch(spaceRelationsProvider(spaceId).future);
-  if (relatedSpaces == null) {
-    return [];
-  }
+  if (relatedSpaces == null) return [];
   return (await relatedSpaces.queryHierarchy()).toList();
 });
 
@@ -367,10 +350,12 @@ final suggestedChatsProvider =
         await ref.watch(spaceRemoteRelationsProvider(spaceId).future);
     // filter out the known rooms
     final remoteRooms = roomHierarchy
-        .where((r) =>
-            !r.isSpace() &&
-            suggestedRooms.contains(r.roomIdStr()) &&
-            !toIgnore.contains(r.roomIdStr()),)
+        .where(
+          (r) =>
+              !r.isSpace() &&
+              suggestedRooms.contains(r.roomIdStr()) &&
+              !toIgnore.contains(r.roomIdStr()),
+        )
         .toList();
     return (localRooms, remoteRooms);
   } on SpaceNotFound {
@@ -395,10 +380,12 @@ final suggestedSpacesProvider =
         await ref.watch(spaceRemoteRelationsProvider(spaceId).future);
     // filter out the known rooms
     final remoteRooms = roomHierarchy
-        .where((r) =>
-            r.isSpace() &&
-            suggestedRooms.contains(r.roomIdStr()) &&
-            !toIgnore.contains(r.roomIdStr()),)
+        .where(
+          (r) =>
+              r.isSpace() &&
+              suggestedRooms.contains(r.roomIdStr()) &&
+              !toIgnore.contains(r.roomIdStr()),
+        )
         .toList();
     return (localRooms, remoteRooms);
   } on SpaceNotFound {

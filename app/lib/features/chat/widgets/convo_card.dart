@@ -96,9 +96,7 @@ class ConvoCard extends ConsumerWidget {
     if (!showSuggestedMark) {
       return constraints.maxWidth < 300
           ? null
-          : _SubtitleWidget(
-              roomId: roomId,
-            );
+          : _SubtitleWidget(roomId: roomId);
     }
 
     return Row(
