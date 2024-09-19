@@ -224,6 +224,7 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
     EasyLoading.show(status: L10n.of(context).rejecting);
     try {
       bool res = await widget.invitation.reject();
+      ref.invalidate(invitationListProvider);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
