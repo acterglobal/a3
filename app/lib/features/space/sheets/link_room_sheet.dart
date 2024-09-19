@@ -67,26 +67,20 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   }
 
 //Fetch known sub-rooms list of selected parent space
-  void fetchKnownSubChatsData() async {
+  Future<void> fetchKnownSubChatsData() async {
     final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
     final space = await ref
         .read(spaceRelationsOverviewProvider(selectedParentSpaceId).future);
 
     childRoomsIds.clear();
+    recommendedChildSpaceIds.clear();
     if (widget.childRoomType == ChildRoomType.chat) {
-      for (int i = 0; i < space.knownChats.length; i++) {
-        childRoomsIds.add(space.knownChats[i]);
-      }
+      childRoomsIds.addAll(space.knownChats);
     } else {
-      for (int i = 0; i < space.knownSubspaces.length; i++) {
-        childRoomsIds.add(space.knownSubspaces[i]);
-      }
-      //Add recommended child spaces ids
-      recommendedChildSpaceIds.clear();
-      for (int i = 0; i < space.otherRelations.length; i++) {
-        recommendedChildSpaceIds.add(space.otherRelations[i].getRoomIdStr());
-      }
+      childRoomsIds.addAll(space.knownSubspaces);
+      recommendedChildSpaceIds
+          .addAll(space.otherRelations.map((other) => other.getRoomIdStr()));
     }
   }
 

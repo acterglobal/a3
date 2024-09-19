@@ -543,7 +543,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     final stream = await ref.read(timelineStreamProvider(widget.roomId).future);
 
     try {
-      for (File file in files) {
+      for (final file in files) {
         String? mimeType = lookupMimeType(file.path);
         if (mimeType == null) throw lang.failedToDetectMimeType;
         final fileLen = file.lengthSync();
