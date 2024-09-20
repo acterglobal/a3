@@ -66,11 +66,11 @@ enum Routes {
   spaceInvite('/:spaceId([!#][^/]+)/invite'),
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   subSpaces('/:spaceId([!#][^/]+)/subSpaces'),
+  subChats('/:spaceId([!#][^/]+)/subChats'),
   organizeCategories('/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)'),
   spaceMembers('/:spaceId([!#][^/]+)/members'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
   spaceEvents('/:spaceId([!#][^/]+)/events'),
-  spaceChats('/:spaceId([!#][^/]+)/chats'),
   spaceTasks('/:spaceId([!#][^/]+)/tasks'),
   // -- space Settings
   spaceSettings('/:spaceId([!#][^/]+)/settings'),

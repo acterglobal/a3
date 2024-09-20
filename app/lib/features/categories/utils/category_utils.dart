@@ -26,7 +26,7 @@ class CategoryUtils {
   }
 
   ///GET LIST OF LOCAL CATEGORY WHICH EXCLUDE ITEM WITH EMPTY ENTRIES
-  List<CategoryModelLocal> getCategorisedSubSpacesWithoutEmptyList(
+  List<CategoryModelLocal> getCategorisedListWithoutEmptyEntries(
     List<CategoryModelLocal> categoryList,
   ) {
     List<CategoryModelLocal> categoryListLocalWithoutEmptyEntries = [];

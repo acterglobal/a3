@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,11 +31,19 @@ final localCategoryListProvider = FutureProvider.family
       ),
     ).future,
   );
-  final subSpacesList =
-      await ref.read(subSpacesListProvider(categoryInfo.spaceId).future);
+  List<String> subEntriesList = [];
+
+  if (categoryInfo.categoriesFor == CategoriesFor.spaces) {
+    subEntriesList =
+        await ref.read(subSpacesListProvider(categoryInfo.spaceId).future);
+  } else if (categoryInfo.categoriesFor == CategoriesFor.chats) {
+    subEntriesList =
+        await ref.read(subChatsListProvider(categoryInfo.spaceId).future);
+  }
+
   final categoryList = CategoryUtils().getCategorisedList(
     categoriesManager.categories().toList(),
-    subSpacesList,
+    subEntriesList,
   );
   return categoryList;
 });

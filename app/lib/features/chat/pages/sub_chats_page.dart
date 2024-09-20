@@ -7,7 +7,7 @@ import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
-import 'package:acter/features/spaces/providers/space_list_provider.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -16,21 +16,21 @@ import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-final _log = Logger('a3::space::sub_spaces');
+final _log = Logger('a3::space::sub_chats');
 
-class SubSpaces extends ConsumerWidget {
-  static const moreOptionKey = Key('sub-spaces-more-actions');
-  static const createSubspaceKey = Key('sub-spaces-more-create-subspace');
-  static const linkSubspaceKey = Key('sub-spaces-more-link-subspace');
+class SubChatsPage extends ConsumerWidget {
+  static const moreOptionKey = Key('sub-chats-more-actions');
+  static const createSubChatKey = Key('sub-chats-more-create-subChat');
+  static const linkSubChatKey = Key('sub-chats-more-link-subChat');
   final String spaceId;
 
-  const SubSpaces({super.key, required this.spaceId});
+  const SubChatsPage({super.key, required this.spaceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: _buildAppBarUI(context, ref),
-      body: _buildSubSpacesUI(context, ref),
+      body: _buildSubChatsUI(context, ref),
     );
   }
 
@@ -44,7 +44,7 @@ class SubSpaces extends ConsumerWidget {
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(L10n.of(context).spaces),
+          Text(L10n.of(context).chats),
           Text(
             '($spaceName)',
             overflow: TextOverflow.ellipsis,
@@ -55,7 +55,7 @@ class SubSpaces extends ConsumerWidget {
       actions: [
         IconButton(
           icon: Icon(PhosphorIcons.arrowsClockwise()),
-          onPressed: () => ref.invalidate(subSpacesListProvider),
+          onPressed: () => ref.invalidate(subChatsListProvider),
         ),
         if (canLinkSpace) _buildMenuOptions(context),
       ],
@@ -69,7 +69,7 @@ class SubSpaces extends ConsumerWidget {
       color: Theme.of(context).colorScheme.surface,
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
         PopupMenuItem(
-          key: SubSpaces.createSubspaceKey,
+          key: SubChatsPage.createSubChatKey,
           onTap: () => context.pushNamed(
             Routes.createSpace.name,
             queryParameters: {'parentSpaceId': spaceId},
@@ -83,7 +83,7 @@ class SubSpaces extends ConsumerWidget {
           ),
         ),
         PopupMenuItem(
-          key: SubSpaces.linkSubspaceKey,
+          key: SubChatsPage.linkSubChatKey,
           onTap: () => context.pushNamed(
             Routes.linkSubspace.name,
             pathParameters: {'spaceId': spaceId},
@@ -114,7 +114,7 @@ class SubSpaces extends ConsumerWidget {
             Routes.organizeCategories.name,
             pathParameters: {
               'spaceId': spaceId,
-              'categoriesFor': CategoriesFor.spaces.name,
+              'categoriesFor': CategoriesFor.chats.name,
             },
           ),
           child: Row(
@@ -129,12 +129,12 @@ class SubSpaces extends ConsumerWidget {
     );
   }
 
-  Widget _buildSubSpacesUI(BuildContext context, WidgetRef ref) {
+  Widget _buildSubChatsUI(BuildContext context, WidgetRef ref) {
     final localCategoryList = ref.watch(
       localCategoryListProvider(
         (
           spaceId: spaceId,
-          categoriesFor: CategoriesFor.spaces,
+          categoriesFor: CategoriesFor.chats,
         ),
       ),
     );
@@ -167,13 +167,13 @@ class SubSpaces extends ConsumerWidget {
   ) {
     final entries = categoryModelLocal.entries;
 
-    final suggestedSpaces =
-        ref.watch(suggestedSpacesProvider(spaceId)).valueOrNull;
-    final suggestedSpaceIds = [];
-    if (suggestedSpaces != null &&
-        (suggestedSpaces.$1.isNotEmpty || suggestedSpaces.$2.isNotEmpty)) {
-      suggestedSpaceIds.addAll(suggestedSpaces.$1);
-      suggestedSpaceIds.addAll(suggestedSpaces.$2);
+    final suggestedChats =
+        ref.watch(suggestedChatsProvider(spaceId)).valueOrNull;
+    final suggestedChatIds = [];
+    if (suggestedChats != null &&
+        (suggestedChats.$1.isNotEmpty || suggestedChats.$2.isNotEmpty)) {
+      suggestedChatIds.addAll(suggestedChats.$1);
+      suggestedChatIds.addAll(suggestedChats.$2);
     }
 
     return Card(
@@ -185,7 +185,7 @@ class SubSpaces extends ConsumerWidget {
         title: CategoryHeaderView(categoryModelLocal: categoryModelLocal),
         children: List<Widget>.generate(entries.length, (index) {
           final roomId = entries[index];
-          final isSuggested = suggestedSpaceIds.contains(roomId);
+          final isSuggested = suggestedChatIds.contains(roomId);
           return RoomCard(
             roomId: roomId,
             showParents: false,
