@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/skeletons/general_list_skeleton_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
@@ -159,7 +160,7 @@ class SubSpaces extends ConsumerWidget {
         _log.severe('Failed to load the sub-spaces', e, s);
         return Center(child: Text(L10n.of(context).loadingFailed(e)));
       },
-      loading: () => Center(child: Text(L10n.of(context).loading)),
+      loading: () => const GeneralListSkeletonWidget(),
     );
   }
 
