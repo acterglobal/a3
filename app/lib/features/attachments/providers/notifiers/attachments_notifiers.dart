@@ -44,6 +44,7 @@ class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
 class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
   final Ref ref;
   final Attachment attachment;
+
   AttachmentMediaNotifier({
     required this.attachment,
     required this.ref,
@@ -84,10 +85,7 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
     state = state.copyWith(isDownloading: true);
     //Download media if media path is not available
     final tempDir = await getTemporaryDirectory();
-    final result = await attachment.downloadMedia(
-      null,
-      tempDir.path,
-    );
+    final result = await attachment.downloadMedia(null, tempDir.path);
     String? mediaPath = result.text();
     if (mediaPath != null) {
       state = state.copyWith(
