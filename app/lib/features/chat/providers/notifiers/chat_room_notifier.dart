@@ -454,9 +454,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
     // user read receipts for timeline event item
     Map<String, int> receipts = {};
-    for (final userId in eventItem.readUsers()) {
-      String id = userId.toDartString();
-      eventItem.receiptTs(id).let((p0) => receipts[id] = p0);
+    for (final userId in asDartStringList(eventItem.readUsers())) {
+      final ts = eventItem.receiptTs(userId);
+      if (ts != null) receipts[userId] = ts;
     }
 
     // state event
@@ -555,9 +555,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'm.room.message':
         Map<String, dynamic> reactions = {};
-        for (final key in eventItem.reactionKeys()) {
-          String k = key.toDartString();
-          eventItem.reactionRecords(k).let((p0) => reactions[k] = p0.toList());
+        for (final key in asDartStringList(eventItem.reactionKeys())) {
+          final records = eventItem.reactionRecords(key);
+          if (records != null) reactions[key] = records.toList();
         }
         switch (eventItem.msgType()) {
           case 'm.audio':
@@ -761,14 +761,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         break;
       case 'm.sticker':
         Map<String, dynamic> receipts = {};
-        for (final userId in eventItem.readUsers()) {
-          String id = userId.toDartString();
-          eventItem.receiptTs(id).let((p0) => receipts[id] = p0);
+        for (final userId in asDartStringList(eventItem.readUsers())) {
+          final ts = eventItem.receiptTs(userId);
+          if (ts != null) receipts[userId] = ts;
         }
         Map<String, dynamic> reactions = {};
-        for (final key in eventItem.reactionKeys()) {
-          String k = key.toDartString();
-          eventItem.reactionRecords(k).let((p0) => reactions[k] = p0.toList());
+        for (final key in asDartStringList(eventItem.reactionKeys())) {
+          final records = eventItem.reactionRecords(key);
+          if (records != null) reactions[key] = records.toList();
         }
         MsgContent? msgContent = eventItem.msgContent();
         if (msgContent != null) {

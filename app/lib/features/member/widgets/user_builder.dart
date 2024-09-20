@@ -135,10 +135,8 @@ class UserBuilder extends ConsumerWidget {
 
   Widget _buildSharedRooms(BuildContext context, Widget tile) {
     final sharedRooms =
-        userProfile?.sharedRooms().map((s) => s.toDartString()).toList() ?? [];
-    if (sharedRooms.isEmpty) {
-      return tile;
-    }
+        userProfile.let((p0) => asDartStringList(p0.sharedRooms())) ?? [];
+    if (sharedRooms.isEmpty) return tile;
 
     const style = TextStyle(fontStyle: FontStyle.italic);
 

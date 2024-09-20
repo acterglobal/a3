@@ -196,14 +196,12 @@ class TaskItem extends ConsumerWidget {
   }
 
   Widget? taskAssignee(WidgetRef ref, Task task) {
-    final assignees = task.assigneesStr().map((s) => s.toDartString()).toList();
-
+    final assignees = asDartStringList(task.assigneesStr());
     if (assignees.isEmpty) return null;
 
+    final roomId = task.roomIdStr();
     final avatarInfo = ref.watch(
-      memberAvatarInfoProvider(
-        (roomId: task.roomIdStr(), userId: assignees.first),
-      ),
+      memberAvatarInfoProvider((roomId: roomId, userId: assignees.first)),
     );
 
     return ActerAvatar(
