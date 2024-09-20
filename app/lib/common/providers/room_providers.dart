@@ -182,7 +182,7 @@ final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
     .family<List<String>, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
   if (room == null) return [];
-  return room.restrictedRoomIdsStr().map((e) => e.toDartString()).toList();
+  return asDartStringList(room.restrictedRoomIdsStr());
 });
 
 /// Get the user’s membership for a specific space based off the roomId

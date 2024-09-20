@@ -42,6 +42,7 @@ class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
 class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
   final Ref ref;
   final Attachment attachment;
+
   AttachmentMediaNotifier({
     required this.attachment,
     required this.ref,
@@ -56,13 +57,13 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
 
     try {
       //Get media path if already downloaded
-      final mediaPath = await attachment.mediaPath(false);
-      state = mediaPath.text().let(
-                (p0) => state.copyWith(
-                  mediaFile: File(p0),
-                  mediaLoadingState: const AttachmentMediaLoadingState.loaded(),
-                ),
-              ) ??
+      final mediaPath = (await attachment.mediaPath(false)).text();
+      state = mediaPath.let(
+            (p0) => state.copyWith(
+              mediaFile: File(p0),
+              mediaLoadingState: const AttachmentMediaLoadingState.loaded(),
+            ),
+          ) ??
           state.copyWith(
             mediaLoadingState:
                 const AttachmentMediaLoadingState.error('Media not found'),
@@ -80,8 +81,9 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
     state = state.copyWith(isDownloading: true);
     //Download media if media path is not available
     final tempDir = await getTemporaryDirectory();
-    final result = await attachment.downloadMedia(null, tempDir.path);
-    result.text().let((p0) {
+    final filePath =
+        (await attachment.downloadMedia(null, tempDir.path)).text();
+    filePath.let((p0) {
       state = state.copyWith(
         mediaFile: File(p0),
         isDownloading: false,

@@ -22,6 +22,7 @@ class BugReportPage extends ConsumerStatefulWidget {
   static const includeUserId = Key('bug-report-include-user-id');
   static const submitBtn = Key('bug-report-submit');
   static const pageKey = Key('bug-report');
+
   final String? imagePath;
   final String? error;
   final String? stack;

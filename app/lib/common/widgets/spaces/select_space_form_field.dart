@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:flutter/material.dart';
@@ -90,17 +89,18 @@ class SelectSpaceFormField extends ConsumerWidget {
 
   Widget spaceBuilder(BuildContext context, WidgetRef ref, Widget? child) {
     final space = ref.watch(selectedSpaceDetailsProvider);
+    if (space != null) {
+      return SpaceChip(
+        spaceId: space.roomId,
+        onTapOpenSpaceDetail: false,
+        useCompatView: useCompatView,
+        onTapSelectSpace: () {
+          if (useCompatView) selectSpace(context, ref);
+        },
+      );
+    }
     final currentId = ref.watch(selectedSpaceIdProvider);
-    return space.let(
-          (p0) => SpaceChip(
-            spaceId: p0.roomId,
-            onTapOpenSpaceDetail: false,
-            useCompatView: useCompatView,
-            onTapSelectSpace: () {
-              if (useCompatView) selectSpace(context, ref);
-            },
-          ),
-        ) ??
-        Text(currentId!);
+    if (currentId == null) throw 'Selected space not available';
+    return Text(currentId);
   }
 }

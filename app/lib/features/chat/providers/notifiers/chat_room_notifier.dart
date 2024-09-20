@@ -297,8 +297,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.call.invite':
         break;
       case 'm.room.message':
-        String? orgMsgType = orgEventItem.msgType();
-        switch (orgMsgType) {
+        switch (orgEventItem.msgType()) {
           case 'm.text':
             orgEventItem.msgContent().let((p0) {
               String body = p0.body();

@@ -17,17 +17,16 @@ final _log = Logger('a3::common::user');
 
 final userAvatarProvider =
     FutureProvider.family<MemoryImage?, UserProfile>((ref, user) async {
-  if (user.hasAvatar()) {
-    try {
-      final avatar = await user.getAvatar(null);
-      return avatar
-          .data()
-          .let((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
-    } catch (e, s) {
-      _log.severe('failure fetching avatar', e, s);
-    }
+  if (!user.hasAvatar()) return null;
+  try {
+    final avatar = await user.getAvatar(null);
+    return avatar
+        .data()
+        .let((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
+  } catch (e, s) {
+    _log.severe('failure fetching avatar', e, s);
+    return null;
   }
-  return null;
 });
 
 final userAvatarInfoProvider =

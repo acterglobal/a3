@@ -66,10 +66,11 @@ extension ActerDocumentHelpers on Document {
   }
 
   static Document fromMsgContent(MsgContent msgContent) {
-    return msgContent
-            .formattedBody()
-            .let((p0) => ActerDocumentHelpers.fromHtml(p0)) ??
-        ActerDocumentHelpers.fromMarkdown(msgContent.body());
+    final html = msgContent.formattedBody();
+    final markdown = msgContent.body();
+    return html != null
+        ? ActerDocumentHelpers.fromHtml(html)
+        : ActerDocumentHelpers.fromMarkdown(markdown);
   }
 }
 
