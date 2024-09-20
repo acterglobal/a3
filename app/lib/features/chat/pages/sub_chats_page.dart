@@ -9,6 +9,7 @@ import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -186,6 +187,7 @@ class SubChatsPage extends ConsumerWidget {
               parentId: spaceId,
               isSuggested: isSuggested,
             ),
+            onTap: () => goToChat(context, roomId),
             margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
           );
         }),
