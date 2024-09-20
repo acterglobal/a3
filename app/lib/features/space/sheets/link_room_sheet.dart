@@ -8,8 +8,11 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
+import 'package:acter/features/categories/providers/categories_providers.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/space/actions/unlink_child_room.dart';
+import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -417,9 +420,8 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     } else {
       childRoomsIds.add(roomId);
     }
-    // spaceRelations come from the server and must be manually invalidated
-    ref.invalidate(spaceRelationsProvider(selectedParentSpaceId));
-    ref.invalidate(spaceRemoteRelationsProvider(selectedParentSpaceId));
+
+    invalidateProviders(selectedParentSpaceId);
   }
 
 //Unlink child room
@@ -439,5 +441,17 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     } else {
       childRoomsIds.remove(roomId);
     }
+
+    //Invalidate providers
+    invalidateProviders(selectedParentSpaceId);
+  }
+
+  void invalidateProviders(String selectedParentSpaceId) {
+    //Invalidate providers
+    ref.invalidate(spaceRelationsProvider(selectedParentSpaceId));
+    ref.invalidate(spaceRemoteRelationsProvider(selectedParentSpaceId));
+    ref.invalidate(subChatsListProvider(selectedParentSpaceId));
+    ref.invalidate(subSpacesListProvider(selectedParentSpaceId));
+    ref.invalidate(localCategoryListProvider);
   }
 }

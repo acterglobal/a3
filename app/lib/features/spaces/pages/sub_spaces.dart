@@ -55,7 +55,10 @@ class SubSpaces extends ConsumerWidget {
       actions: [
         IconButton(
           icon: Icon(PhosphorIcons.arrowsClockwise()),
-          onPressed: () => ref.invalidate(subSpacesListProvider),
+          onPressed: () {
+            ref.invalidate(subSpacesListProvider);
+            ref.invalidate(localCategoryListProvider);
+          },
         ),
         if (canLinkSpace) _buildMenuOptions(context),
       ],

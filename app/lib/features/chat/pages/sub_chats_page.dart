@@ -54,7 +54,10 @@ class SubChatsPage extends ConsumerWidget {
       actions: [
         IconButton(
           icon: Icon(PhosphorIcons.arrowsClockwise()),
-          onPressed: () => ref.invalidate(subChatsListProvider),
+          onPressed: () {
+            ref.invalidate(subChatsListProvider);
+            ref.invalidate(localCategoryListProvider);
+          },
         ),
         if (canLinkSpace) _buildMenuOptions(context),
       ],
