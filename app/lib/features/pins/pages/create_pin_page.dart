@@ -58,12 +58,10 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      if (widget.initialSelectedSpace != null &&
-          widget.initialSelectedSpace!.isNotEmpty) {
-        final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
-        parentNotifier.state = widget.initialSelectedSpace;
-      }
+    widget.initialSelectedSpace.let((p0) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        ref.read(selectedSpaceIdProvider.notifier).state = p0;
+      });
     });
   }
 

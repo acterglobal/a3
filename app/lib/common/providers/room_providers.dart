@@ -45,21 +45,19 @@ final maybeRoomProvider =
 final roomVisibilityProvider = FutureProvider.family
     .autoDispose<RoomVisibility?, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return null;
-  }
+  if (room == null) return null;
   final joinRule = room.joinRuleStr();
-  switch (joinRule) {
-    case 'public':
-      return RoomVisibility.Public;
-    case 'restricted':
-      return RoomVisibility.SpaceVisible;
-    case 'invite':
-      return RoomVisibility.Private;
-    default:
-      _log.warning('Unsupported joinRule for $roomId: $joinRule');
-      throw 'Unsupported joinRule $joinRule';
+  final visibility = switch (joinRule) {
+    'public' => RoomVisibility.Public,
+    'restricted' => RoomVisibility.SpaceVisible,
+    'invite' => RoomVisibility.Private,
+    _ => null,
+  };
+  if (visibility == null) {
+    _log.warning('Unsupported joinRule for $roomId: $joinRule');
+    throw 'Unsupported joinRule $joinRule';
   }
+  return visibility;
 });
 
 /// Get the members invited of a given roomId the user knows about. Errors
@@ -134,18 +132,12 @@ final parentIdsProvider =
   try {
     // FIXME: we should get only the parent Ids from the underlying SDK
     final relations = await ref.watch(spaceRelationsProvider(roomId).future);
-    if (relations == null) {
-      return [];
-    }
-
+    if (relations == null) return [];
     // Collect all parents: mainParent and otherParents
-    List<String> allParents = [];
-    final mainParent = relations.mainParent();
-    if (mainParent != null) {
-      allParents.add(mainParent.roomId().toString());
-    }
-    allParents
-        .addAll(relations.otherParents().map((p) => p.roomId().toString()));
+    List<String> allParents =
+        relations.mainParent().let((p0) => [p0.roomId().toString()]) ?? [];
+    final others = relations.otherParents().map((p) => p.roomId().toString());
+    allParents.addAll(others);
     return allParents;
   } catch (e) {
     _log.warning('Failed to load parent ids for $roomId: $e');
@@ -157,9 +149,7 @@ final parentIdsProvider =
 final roomDisplayNameProvider =
     FutureProvider.family<String?, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return null;
-  }
+  if (room == null) return null;
   return (await room.displayName()).text();
 });
 
@@ -169,10 +159,7 @@ final roomAvatarProvider =
   final sdk = await ref.watch(sdkProvider.future);
   final thumbsize = sdk.api.newThumbSize(48, 48);
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null || !room.hasAvatar()) {
-    return null;
-  }
-
+  if (room == null || !room.hasAvatar()) return null;
   final avatar = (await room.avatar(thumbsize)).data();
   if (avatar != null) {
     return MemoryImage(Uint8List.fromList(avatar.asTypedList()));
@@ -197,10 +184,8 @@ final parentAvatarInfosProvider =
 final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
     .family<List<String>, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return [];
-  }
-  return room.restrictedRoomIdsStr().map((e) => e.toDartString()).toList();
+  if (room == null) return [];
+  return asDartStringList(room.restrictedRoomIdsStr());
 });
 
 /// Get the user’s membership for a specific space based off the roomId
@@ -208,9 +193,7 @@ final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
 final roomMembershipProvider = FutureProvider.family<Member?, String>(
   (ref, roomId) async {
     final room = await ref.watch(maybeRoomProvider(roomId).future);
-    if (room == null || !room.isJoined()) {
-      return null;
-    }
+    if (room == null || !room.isJoined()) return null;
     return await room.getMyMembership();
   },
 );
@@ -219,20 +202,16 @@ final roomMembershipProvider = FutureProvider.family<Member?, String>(
 final roomNotificationStatusProvider =
     FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return null;
-  }
-  return room.notificationMode();
+  if (room == null) return null;
+  return await room.notificationMode();
 });
 
 /// Get the default RoomNotificationsStatus for this room type
 final roomDefaultNotificationStatusProvider =
     FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return null;
-  }
-  return room.defaultNotificationMode();
+  if (room == null) return null;
+  return await room.defaultNotificationMode();
 });
 
 /// Get the default RoomNotificationsStatus for this room type
@@ -266,10 +245,8 @@ final membershipStatusStr =
 final memberDisplayNameProvider =
     FutureProvider.autoDispose.family<String?, MemberInfo>((ref, query) async {
   try {
-    return ref
-        .watch(_memberProfileProvider(query))
-        .valueOrNull
-        ?.displayName();
+    final profile = ref.watch(_memberProfileProvider(query)).valueOrNull;
+    return profile?.displayName();
   } on RoomNotFound {
     return null;
   }
@@ -311,9 +288,7 @@ final memberAvatarInfoProvider =
 final membersIdsProvider =
     FutureProvider.family<List<String>, String>((ref, roomIdOrAlias) async {
   final room = await ref.watch(maybeRoomProvider(roomIdOrAlias).future);
-  if (room == null) {
-    return [];
-  }
+  if (room == null) return [];
   final members = await room.activeMembersIds();
   return asDartStringList(members);
 });

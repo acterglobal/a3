@@ -183,24 +183,14 @@ String getHumanReadableFileSize(int bytes) {
 }
 
 String documentTypeFromFileExtension(String fileExtension) {
-  switch (fileExtension) {
-    case '.png':
-    case '.jpg':
-    case '.jpeg':
-      return 'Image';
-    case '.mov':
-    case '.mp4':
-      return 'Video';
-    case '.mp3':
-    case '.wav':
-      return 'Audio';
-    case '.pdf':
-      return 'PDF';
-    case '.txt':
-      return 'Text File';
-    default:
-      return '';
-  }
+  return switch (fileExtension) {
+    '.png' || '.jpg' || '.jpeg' => 'Image',
+    '.mov' || '.mp4' => 'Video',
+    '.mp3' || '.wav' => 'Audio',
+    '.pdf' => 'PDF',
+    '.txt' => 'Text File',
+    _ => '',
+  };
 }
 
 Future<void> shareTextToWhatsApp(
@@ -269,8 +259,9 @@ Future<void> uploadAvatar(
   try {
     if (!context.mounted) return;
     EasyLoading.show(status: L10n.of(context).avatarUploading);
-    final file = result.files.first;
-    if (file.path != null) await room.uploadAvatar(file.path!);
+    final filePath = result.files.first.path;
+    if (filePath == null) throw 'avatar path not available';
+    await room.uploadAvatar(filePath);
     // close loading
     EasyLoading.dismiss();
   } catch (e, s) {
@@ -402,9 +393,7 @@ String? getIssueId(String url) {
 
 ///helper function to convert list ffiString object to DartString.
 List<String> asDartStringList(FfiListFfiString data) {
-  if (data.isEmpty) {
-    return [];
-  }
+  if (data.isEmpty) return [];
   return data.toList().map((e) => e.toDartString()).toList();
 }
 

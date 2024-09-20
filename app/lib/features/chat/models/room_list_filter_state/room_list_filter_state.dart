@@ -30,8 +30,7 @@ Future<bool> roomListFilterStateAppliesToRoom(
       return true;
     }
     final displayName = await ref.read(roomDisplayNameProvider(convoId).future);
-    return (displayName != null &&
-        displayName.toLowerCase().contains(searchTerm));
+    return displayName?.toLowerCase().contains(searchTerm) == true;
   }
   return true;
 }

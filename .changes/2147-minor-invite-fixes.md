@@ -1,0 +1,2 @@
+- Show the room name when invited
+- Fix joining public sub rooms

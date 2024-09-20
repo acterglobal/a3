@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
@@ -67,7 +68,7 @@ class SuperInvitesPage extends ConsumerWidget {
                         L10n.of(context).usedTimes(token.acceptedCount());
                     final tokenStr = token.token().toString();
                     final firstRoom =
-                        token.rooms().map((t) => t.toDartString()).firstOrNull;
+                        asDartStringList(token.rooms()).firstOrNull;
                     return Card(
                       key: Key('edit-token-$tokenStr'),
                       margin: const EdgeInsets.all(5),

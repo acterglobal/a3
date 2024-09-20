@@ -88,8 +88,9 @@ class TaskListItemCard extends ConsumerWidget {
   }
 
   Widget? subtitle(WidgetRef ref, TaskList taskList) {
+    if (!showSpace) return null;
     final spaceId = taskList.spaceIdStr();
     final spaceProfile = ref.watch(roomAvatarInfoProvider(spaceId));
-    return showSpace ? Text(spaceProfile.displayName ?? '') : null;
+    return Text(spaceProfile.displayName ?? '');
   }
 }

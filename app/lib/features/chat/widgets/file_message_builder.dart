@@ -65,31 +65,15 @@ class FileMessageBuilder extends ConsumerWidget {
 
   Widget getFileIcon(BuildContext context) {
     final extension = p.extension(message.name);
-    IconData iconData;
-    switch (extension) {
-      case '.png':
-      case '.jpg':
-      case '.jpeg':
-        iconData = Atlas.file_image;
-        break;
-      case '.pdf':
-        iconData = Icons.picture_as_pdf;
-        break;
-      case '.doc':
-        iconData = Atlas.file;
-        break;
-      case '.mp4':
-        iconData = Atlas.file_video;
-        break;
-      case '.mp3':
-        iconData = Atlas.music_file;
-        break;
-      case '.rtf':
-      case '.txt':
-      default:
-        iconData = Atlas.lines_file;
-        break;
-    }
+    IconData iconData = switch (extension) {
+      '.png' || '.jpg' || '.jpeg' => Atlas.file_image,
+      '.pdf' => Icons.picture_as_pdf,
+      '.doc' => Atlas.file,
+      '.mp4' => Atlas.file_video,
+      '.mp3' => Atlas.music_file,
+      '.rtf' || '.txt' => Atlas.lines_file,
+      _ => Atlas.lines_file,
+    };
     return Icon(iconData, size: 28);
   }
 

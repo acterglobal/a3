@@ -1,1 +1,0 @@
-- [Fix] you can now suggest chat rooms you are already in as well

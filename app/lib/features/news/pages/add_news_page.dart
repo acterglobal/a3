@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -42,13 +43,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialSelectedSpace != null) {
+    widget.initialSelectedSpace.let((p0) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        ref
-            .read(newsStateProvider.notifier)
-            .setSpaceId(widget.initialSelectedSpace);
+        ref.read(newsStateProvider.notifier).setSpaceId(p0);
       });
-    }
+    });
     ref.listenManual(newsStateProvider, fireImmediately: true,
         (prevState, nextState) async {
       final isText = nextState.currentNewsSlide?.type == NewsSlideType.text;
@@ -199,16 +198,12 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
 
   //Show slide data view based on the current slide selection
   Widget slidePostUI(BuildContext context) {
-    switch (selectedNewsPost?.type) {
-      case NewsSlideType.text:
-        return slideTextPostUI(context);
-      case NewsSlideType.image:
-        return slideImagePostUI(context);
-      case NewsSlideType.video:
-        return slideVideoPostUI(context);
-      default:
-        return emptySlidePostUI(context);
-    }
+    return switch (selectedNewsPost?.type) {
+      NewsSlideType.text => slideTextPostUI(context),
+      NewsSlideType.image => slideImagePostUI(context),
+      NewsSlideType.video => slideVideoPostUI(context),
+      _ => emptySlidePostUI(context),
+    };
   }
 
   //Show selected Action Buttons

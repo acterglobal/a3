@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/public_room_search/models/public_search_filters.dart';
 import 'package:acter/features/public_room_search/providers/public_search_providers.dart';
 import 'package:acter/features/public_room_search/types.dart';
@@ -115,19 +116,20 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
   }
 
   void _checkInitialQuery() {
-    if (widget.initialQuery != null) {
+    widget.initialQuery.let((p0) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        ref
-            .read(searchFilterProvider.notifier)
-            .updateSearchTerm(widget.initialQuery!);
+        ref.read(searchFilterProvider.notifier).updateSearchTerm(p0);
       });
-    }
+    });
   }
 
   Widget _searchBar(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 20,
+        ),
         child: SizedBox(
           height: 160,
           child: Column(

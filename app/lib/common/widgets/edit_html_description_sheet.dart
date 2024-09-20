@@ -3,8 +3,8 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void showEditHtmlDescriptionBottomSheet({
   required BuildContext context,
@@ -56,13 +56,11 @@ class _EditHtmlDescriptionSheetState
   @override
   void initState() {
     super.initState();
-    final document = widget.descriptionHtmlValue != null
-        ? ActerDocumentHelpers.fromHtml(
-            widget.descriptionHtmlValue!,
-          )
-        : ActerDocumentHelpers.fromMarkdown(
-            widget.descriptionMarkdownValue ?? '',
-          );
+    final html = widget.descriptionHtmlValue;
+    final markdown = widget.descriptionMarkdownValue ?? '';
+    final document = html != null
+        ? ActerDocumentHelpers.fromHtml(html)
+        : ActerDocumentHelpers.fromMarkdown(markdown);
     textEditorState = EditorState(document: document);
   }
 

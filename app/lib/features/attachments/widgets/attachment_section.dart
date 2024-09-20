@@ -110,7 +110,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
             spacing: 5.0,
             runSpacing: 10.0,
             children: <Widget>[
-              for (var item in list)
+              for (final item in list)
                 _buildAttachmentItem(context, item, canEdit),
             ],
           ),

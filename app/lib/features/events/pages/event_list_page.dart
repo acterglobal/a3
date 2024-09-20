@@ -171,7 +171,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
       child: StaggeredGrid.count(
         crossAxisCount: max(1, min(widthCount, minCount)),
         children: [
-          for (var event in events)
+          for (final event in events)
             EventItem(
               event: event,
               isShowSpaceName: widget.spaceId == null,

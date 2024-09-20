@@ -336,7 +336,7 @@ Future<void> parseUserMentionText(
   controller.text = parsedText;
 
   // Apply the tags to the text controller
-  for (var tag in tags) {
+  for (final tag in tags) {
     controller.addTag(tag);
   }
 }

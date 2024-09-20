@@ -73,24 +73,20 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget roomListTitle(BuildContext context) {
-    String title = L10n.of(context).chat;
+    String? title;
 
     if (ref.watch(hasRoomFilters)) {
       final selection =
           ref.watch(roomListFilterProvider.select((value) => value.selection));
-      switch (selection) {
-        case FilterSelection.dmsOnly:
-          title = L10n.of(context).dms;
-          break;
-        case FilterSelection.favorites:
-          title = L10n.of(context).bookmarked;
-        default:
-          break;
-      }
+      title = switch (selection) {
+        FilterSelection.dmsOnly => L10n.of(context).dms,
+        FilterSelection.favorites => L10n.of(context).bookmarked,
+        _ => null,
+      };
     }
 
     return Text(
-      title,
+      title ?? L10n.of(context).chat,
       style: Theme.of(context).textTheme.headlineSmall,
     );
   }

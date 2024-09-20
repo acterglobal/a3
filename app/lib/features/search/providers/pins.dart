@@ -18,31 +18,23 @@ class PinDetails extends SearchTermDelegate {
 final AutoDisposeFutureProvider<List<PinDetails>> pinsFoundProvider =
     FutureProvider.autoDispose((ref) async {
   final pins = await ref.watch(pinListProvider(null).future);
-  final List<PinDetails> finalPins = [];
-  final searchValue = ref.watch(searchValueProvider).toLowerCase();
-
-  for (final pin in pins) {
-    final pinTitle = pin.title();
-    final pinId = pin.eventIdStr();
-    final isLink = pin.isLink();
-    if (searchValue.isNotEmpty) {
-      if (!(pinTitle.toLowerCase()).contains(searchValue)) {
-        continue;
-      }
-    }
-    finalPins.add(
-      PinDetails(
-        pinTitle,
-        pinId,
-        icon: isLink
-            ? const Icon(Atlas.link_chain_thin, size: 12)
-            : const Icon(Atlas.document_thin, size: 12),
-      ),
-    );
-  }
-
-  finalPins.sort((a, b) {
-    return a.name.compareTo(b.name);
-  });
+  final search = ref.watch(searchValueProvider).toLowerCase();
+  final List<PinDetails> finalPins = pins
+      .where((pin) {
+        if (search.isEmpty) return true;
+        return pin.title().toLowerCase().contains(search);
+      })
+      .map(
+        (pin) => PinDetails(
+          pin.title(),
+          pin.eventIdStr(),
+          icon: Icon(
+            pin.isLink() ? Atlas.link_chain_thin : Atlas.document_thin,
+            size: 12,
+          ),
+        ),
+      )
+      .toList();
+  finalPins.sort((a, b) => a.name.compareTo(b.name));
   return finalPins;
 });

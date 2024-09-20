@@ -196,7 +196,7 @@ class _EmojiContainerState extends State<EmojiContainer>
                       users: allUsers,
                       usersMap: reactionsByUsers,
                     ),
-                    for (var key in keys)
+                    for (final key in keys)
                       _ReactionListing(
                         roomId: roomId,
                         users: usersByReaction[key]!,

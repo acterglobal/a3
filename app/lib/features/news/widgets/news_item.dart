@@ -63,34 +63,30 @@ class _NewsItemState extends ConsumerState<NewsItem> {
             final slideType = slide.typeStr();
             final bgColor = getBackgroundColor(slide);
             final fgColor = getForegroundColor(slide);
-            switch (slideType) {
-              case 'image':
-                return ImageSlide(
+            return switch (slideType) {
+              'image' => ImageSlide(
                   slide: slide,
                   bgColor: bgColor,
                   fgColor: fgColor,
-                );
-              case 'video':
-                return VideoSlide(
+                ),
+              'video' => VideoSlide(
                   slide: slide,
                   bgColor: bgColor,
                   fgColor: fgColor,
-                );
-              case 'text':
-                return TextSlide(
+                ),
+              'text' => TextSlide(
                   slide: slide,
                   bgColor: bgColor,
                   fgColor: fgColor,
                   pageController: widget.pageController,
-                );
-              default:
-                return Expanded(
+                ),
+              _ => Expanded(
                   child: Center(
                     child:
                         Text(L10n.of(context).slidesNotYetSupported(slideType)),
                   ),
-                );
-            }
+                ),
+            };
           },
         ),
         Column(

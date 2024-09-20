@@ -1,5 +1,6 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/features/room/actions/join_room.dart';
@@ -127,28 +128,23 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
 
   void _joinSelected(BuildContext context) async {
     final allRooms = chatsFound.followedBy(spacesFound).toList();
-    List<SpaceHierarchyRoomInfo> roomsToJoin = [];
+    List<SpaceHierarchyRoomInfo> roomsToJoin = selectedRooms.let(
+          (p0) => p0
+              .where((rId) {
+                final found = allRooms.any((r) => r.roomIdStr() == rId);
+                if (!found) {
+                  _log.warning(
+                    'Room $rId not found in list. Not sure how that can ever be.',
+                  );
+                }
+                return found;
+              })
+              .map((rId) => allRooms.firstWhere((r) => r.roomIdStr() == rId))
+              .toList(),
+        ) ??
+        allRooms;
     bool hadFailures = false;
 
-    if (selectedRooms == null) {
-      roomsToJoin = allRooms;
-    } else {
-      final casted = allRooms.cast<SpaceHierarchyRoomInfo?>();
-      for (final roomId in selectedRooms!) {
-        final room = casted.firstWhere(
-          (s) => s!.roomIdStr() == roomId,
-          orElse: () => null,
-        );
-        if (room != null) {
-          // it was found
-          roomsToJoin.add(room);
-        } else {
-          _log.warning(
-            'Room $roomId not found in list. Not sure how that can ever be.',
-          );
-        }
-      }
-    }
     final displayMsg = L10n.of(context).joiningSuggested;
     for (final room in roomsToJoin) {
       final roomId = room.roomIdStr();

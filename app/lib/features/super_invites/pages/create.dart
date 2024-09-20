@@ -2,6 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
@@ -28,6 +29,7 @@ class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
   static Key submitBtn = const Key('super-invites-create-submitBtn');
   static Key deleteBtn = const Key('super-invites-create-delete');
   static Key deleteConfirm = const Key('super-invites-create-delete-confirm');
+
   final SuperInviteToken? token;
 
   const CreateSuperInviteTokenPage({super.key, this.token});
@@ -58,7 +60,7 @@ class _CreateSuperInviteTokenPageConsumerState
       isEdit = true;
       final token = widget.token!;
       _tokenController.text = token.token();
-      _roomIds = token.rooms().map((e) => e.toDartString()).toList();
+      _roomIds = asDartStringList(token.rooms());
       _acceptedCount = token.acceptedCount();
       _initialDmCheck = token.createDm();
       tokenUpdater = token.updateBuilder();
@@ -72,7 +74,8 @@ class _CreateSuperInviteTokenPageConsumerState
     final spaces = List<String>.empty(growable: true);
     final chats = List<String>.empty(growable: true);
     for (final roomId in _roomIds) {
-      if (ref.watch(maybeRoomProvider(roomId)).valueOrNull?.isSpace() == true) {
+      final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+      if (room?.isSpace() == true) {
         spaces.add(roomId);
       } else {
         chats.add(roomId);

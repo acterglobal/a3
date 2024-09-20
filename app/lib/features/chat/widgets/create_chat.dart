@@ -446,13 +446,13 @@ class _CreateRoomFormWidgetConsumerState
   @override
   void initState() {
     super.initState();
-    if (widget.initialSelectedSpaceId != null) {
+    widget.initialSelectedSpaceId.let((p0) {
       isSpaceRoom = true;
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         final notifier = ref.read(selectedSpaceIdProvider.notifier);
-        notifier.state = widget.initialSelectedSpaceId;
+        notifier.state = p0;
       });
-    }
+    });
   }
 
   @override
