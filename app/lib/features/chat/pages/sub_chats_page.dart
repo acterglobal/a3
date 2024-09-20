@@ -8,7 +8,6 @@ import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -71,41 +70,28 @@ class SubChatsPage extends ConsumerWidget {
         PopupMenuItem(
           key: SubChatsPage.createSubChatKey,
           onTap: () => context.pushNamed(
-            Routes.createSpace.name,
+            Routes.createChat.name,
             queryParameters: {'parentSpaceId': spaceId},
           ),
           child: Row(
             children: <Widget>[
               Icon(PhosphorIcons.plus()),
               const SizedBox(width: 6),
-              Text(L10n.of(context).createSubspace),
+              Text(L10n.of(context).createChat),
             ],
           ),
         ),
         PopupMenuItem(
           key: SubChatsPage.linkSubChatKey,
           onTap: () => context.pushNamed(
-            Routes.linkSubspace.name,
+            Routes.linkChat.name,
             pathParameters: {'spaceId': spaceId},
           ),
           child: Row(
             children: <Widget>[
               Icon(PhosphorIcons.link()),
               const SizedBox(width: 6),
-              Text(L10n.of(context).linkExistingSpace),
-            ],
-          ),
-        ),
-        PopupMenuItem(
-          onTap: () => context.pushNamed(
-            Routes.linkRecommended.name,
-            pathParameters: {'spaceId': spaceId},
-          ),
-          child: Row(
-            children: [
-              const Icon(Atlas.link_select, size: 18),
-              const SizedBox(width: 8),
-              Text(L10n.of(context).recommendedSpaces),
+              Text(L10n.of(context).linkExistingChat),
             ],
           ),
         ),
