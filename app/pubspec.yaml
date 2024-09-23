@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
 
   # UI
-  flutter_adaptive_scaffold: ^0.2.2
+  flutter_adaptive_scaffold: ^0.3.1
   atlas_icons: ^0.0.12
   skeletonizer: ^1.1.1
   flutter_chat_ui: ^1.6.9
@@ -49,7 +49,7 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   expandable_text: ^2.3.0
   cached_network_image: ^3.4.1
-  fc_native_video_thumbnail: ^0.11.1
+  fc_native_video_thumbnail: ^0.12.0
   flutter_matrix_html:
     # path: "../../flutter_matrix_html"
     git:
@@ -156,7 +156,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  icons_launcher: ^2.0.7
+  icons_launcher: ^3.0.0
   flutter_lints: ^4.0.0
   build_runner: ^2.4.12
   convenient_test: ^1.3.7
@@ -166,14 +166,7 @@ dev_dependencies:
       url: https://github.com/gnunicorn/flutter_convenient_test/
       ref: ben-cli-limit-tests
       path: packages/convenient_test_manager_dart
-  msix: #^3.7.0
-    # FIXME mainline `msix` comes with outdated VS redistribution libs
-    # that make our app crash. We already copy over the proper ones in the
-    # CI job, it we need a msix-version that doesn't copy over its own bad ones
-    # see https://github.com/YehudaKremer/msix/issues/272#issuecomment-2181634105
-    git:
-      url: https://github.com/insertjokehere/msix.git
-      ref: msvc_redist
+  msix: ^3.7.0
   # mockito: ^5.4.2
   uuid: ^4.0.0
   enough_mail: ^2.1.6
@@ -182,23 +175,15 @@ dev_dependencies:
   enven: ^1.0.1
 
 dependency_overrides:
-  flutter_secure_storage_linux:
-    git:
-      url: https://github.com/gnunicorn/flutter_secure_storage/
-      ref: ben-fix-linux-secret-store-problem
-      path: flutter_secure_storage_linux
 
-  firebase_core:
-    git:
-      url: https://github.com/firebase/flutterfire/
-      path:  packages/firebase_core/firebase_core
-      ref: feat/update-web100
-
-  firebase_core_web:
-    git:
-      url: https://github.com/firebase/flutterfire/
-      path:  packages/firebase_core/firebase_core_web
-      ref: feat/update-web100
+  # msix: #^3.7.0
+  #   # FIXME mainline `msix` comes with outdated VS redistribution libs
+  #   # that make our app crash. We already copy over the proper ones in the
+  #   # CI job, it we need a msix-version that doesn't copy over its own bad ones
+  #   # see https://github.com/YehudaKremer/msix/issues/272#issuecomment-2181634105
+  #   git:
+  #     url: https://github.com/insertjokehere/msix.git
+  #     ref: msvc_redist
 sentry:
   upload_debug_symbols: true
   upload_source_maps: false
