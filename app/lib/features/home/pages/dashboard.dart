@@ -152,7 +152,7 @@ class Dashboard extends ConsumerWidget {
               title: L10n.of(context).updates,
               iconData: Atlas.megaphone_thin,
               color: Colors.blueGrey,
-              onTap: () => context.goNamed(Routes.updates.name),
+              onTap: () => context.pushNamed(Routes.updateList.name),
             ),
           ],
         ),

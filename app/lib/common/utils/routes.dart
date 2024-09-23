@@ -29,6 +29,7 @@ enum Routes {
 
   // --- Updates
   updates('/updates'),
+  updateList('/updateList'),
   actionAddUpdate('/actions/addUpdate'),
 
   // --- search
@@ -71,6 +72,7 @@ enum Routes {
   spaceEvents('/:spaceId([!#][^/]+)/events'),
   spaceChats('/:spaceId([!#][^/]+)/chats'),
   spaceTasks('/:spaceId([!#][^/]+)/tasks'),
+  spaceUpdates('/:spaceId([!#][^/]+)/updates'),
   // -- space Settings
   spaceSettings('/:spaceId([!#][^/]+)/settings'),
   spaceSettingsApps('/:spaceId([!#][^/]+)/settings/app'),
