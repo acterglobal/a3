@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
+import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -76,40 +80,65 @@ class _UpdateListPageState extends ConsumerState<UpdateListPage> {
   }
 
   Widget _buildUpdateListUI(List<NewsEntry> updateList) {
+    final size = MediaQuery.of(context).size;
+    final widthCount = (size.width ~/ 500).toInt();
+    const int minCount = 2;
+
     if (updateList.isEmpty) return Container();
 
-    return MasonryGridView.count(
-      crossAxisCount: 2,
-      itemCount: updateList.length,
-      itemBuilder: (context, index) => updateItemUI(updateList[index], index),
+    return SingleChildScrollView(
+      child: StaggeredGrid.count(
+        crossAxisCount: max(2, min(widthCount, minCount)),
+        children: [for (final update in updateList) updateItemUI(update)],
+      ),
     );
   }
 
-  Widget updateItemUI(NewsEntry newsEntry, int index) {
+  Widget updateItemUI(NewsEntry newsEntry) {
     final List<NewsSlide> newsSlides = newsEntry.slides().toList();
     final slide = newsSlides[0];
-    final slideType = slide.typeStr();
     final bgColor = convertColor(
       slide.colors()?.background(),
       Theme.of(context).colorScheme.surface,
     );
 
     return Container(
-      height: index % 2 == 0 ? 300 : 200,
       color: bgColor,
+      height: 300,
       margin: const EdgeInsets.all(6),
-      child: getSlideItem(slideType),
+      child: getSlideItem(slide),
     );
   }
 
-  Widget getSlideItem(slideType) {
+  Widget getSlideItem(NewsSlide slide) {
+    final slideType = slide.typeStr();
+    final bgColor = convertColor(
+      slide.colors()?.background(),
+      Theme.of(context).colorScheme.surface,
+    );
+    final fgColor = convertColor(
+      slide.colors()?.color(),
+      Theme.of(context).colorScheme.surface,
+    );
     return switch (slideType) {
-      'image' => const Icon(Icons.image),
-      'video' => const Icon(Icons.video_collection),
-      'text' => const Icon(Icons.text_fields),
+      'image' => ImageSlide(
+          slide: slide,
+          bgColor: bgColor,
+          fgColor: fgColor,
+        ),
+      'video' => VideoSlide(
+          slide: slide,
+          bgColor: bgColor,
+          fgColor: fgColor,
+        ),
+      'text' => Container(
+          padding: const EdgeInsets.all(16),
+          child: Center(child: Text(slide.msgContent().body().toString()))),
       _ => Expanded(
           child: Center(
-            child: Text(L10n.of(context).slidesNotYetSupported(slideType)),
+            child: Text(
+              L10n.of(context).slidesNotYetSupported(slideType),
+            ),
           ),
         ),
     };
