@@ -19,13 +19,13 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 final _log = Logger('a3::space::sub_spaces');
 
-class SubSpaces extends ConsumerWidget {
+class SubSpacesPage extends ConsumerWidget {
   static const moreOptionKey = Key('sub-spaces-more-actions');
   static const createSubspaceKey = Key('sub-spaces-more-create-subspace');
   static const linkSubspaceKey = Key('sub-spaces-more-link-subspace');
   final String spaceId;
 
-  const SubSpaces({super.key, required this.spaceId});
+  const SubSpacesPage({super.key, required this.spaceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -73,7 +73,7 @@ class SubSpaces extends ConsumerWidget {
       color: Theme.of(context).colorScheme.surface,
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
         PopupMenuItem(
-          key: SubSpaces.createSubspaceKey,
+          key: SubSpacesPage.createSubspaceKey,
           onTap: () => context.pushNamed(
             Routes.createSpace.name,
             queryParameters: {'parentSpaceId': spaceId},
@@ -87,7 +87,7 @@ class SubSpaces extends ConsumerWidget {
           ),
         ),
         PopupMenuItem(
-          key: SubSpaces.linkSubspaceKey,
+          key: SubSpacesPage.linkSubspaceKey,
           onTap: () => context.pushNamed(
             Routes.linkSubspace.name,
             pathParameters: {'spaceId': spaceId},
