@@ -152,7 +152,9 @@ impl TimelineStream {
                     .item_by_event_id(&event_id)
                     .await
                     .context("Not found which item would be edited")?;
-                let new_content = draft.into_room_msg(&room).await?;
+                let new_content = matrix_sdk::room::edit::EditedContent::RoomMessage(
+                    draft.into_room_msg(&room).await?,
+                );
                 timeline.edit(&item, new_content).await?;
                 Ok(true)
             })

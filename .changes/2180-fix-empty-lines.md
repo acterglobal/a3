@@ -1,1 +1,0 @@
-- Empty lines are now preserved and rendered in chats when composing room message text.
