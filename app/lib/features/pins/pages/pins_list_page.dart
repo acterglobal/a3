@@ -71,16 +71,13 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   }
 
   Widget _buildBody() {
-    AsyncValue<List<ActerPin>> pinsLoader;
-    if (searchValue.isNotEmpty) {
-      pinsLoader = ref.watch(
-        pinListSearchProvider(
-          (spaceId: widget.spaceId, searchText: searchValue),
-        ),
-      );
-    } else {
-      pinsLoader = ref.watch(pinListProvider(widget.spaceId));
-    }
+    final pinsLoader = searchValue.isNotEmpty
+        ? ref.watch(
+            pinListSearchProvider(
+              (spaceId: widget.spaceId, searchText: searchValue),
+            ),
+          )
+        : ref.watch(pinListProvider(widget.spaceId));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
