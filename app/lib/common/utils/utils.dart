@@ -15,6 +15,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:html/dom.dart';
+import 'package:html/parser.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:logging/logging.dart';
@@ -456,5 +458,31 @@ extension Let<T> on T? {
   Future<R?> letAsync<R>(R? Function(T) op) async {
     final T? value = this;
     return value == null ? null : op(value);
+  }
+}
+
+// check the input string if its valid HTML
+bool isValidHtml(String? html) {
+  if (html == null || html.isEmpty) {
+    return false;
+  }
+
+  try {
+    // Parse the HTML
+    Document document = parse(html);
+
+    // Check if there are any elements in the body
+    var body = document.body;
+    if (body == null || body.nodes.isEmpty) {
+      return false;
+    }
+
+    // Check if the body contains only whitespace
+    bool hasNonWhitespace = body.text.trim().isNotEmpty;
+
+    return hasNonWhitespace;
+  } catch (e) {
+    // If parsing fails, it's not valid HTML
+    return false;
   }
 }
