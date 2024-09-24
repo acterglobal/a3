@@ -62,7 +62,11 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
               final document = html != null
                   ? ActerDocumentHelpers.fromHtml(html)
                   : ActerDocumentHelpers.fromMarkdown(body);
-              textEditorState = EditorState(document: document);
+              if (document != null) {
+                textEditorState = EditorState(document: document);
+              } else {
+                textEditorState = EditorState.blank();
+              }
             },
           ),
         ),

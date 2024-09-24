@@ -1,6 +1,5 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
@@ -59,10 +58,14 @@ class _EditHtmlDescriptionSheetState
     super.initState();
     final html = widget.descriptionHtmlValue;
     final markdown = widget.descriptionMarkdownValue ?? '';
-    final document = isValidHtml(html)
-        ? ActerDocumentHelpers.fromHtml(html!)
+    final document = html != null
+        ? ActerDocumentHelpers.fromHtml(html)
         : ActerDocumentHelpers.fromMarkdown(markdown);
-    textEditorState = EditorState(document: document);
+    if (document != null) {
+      textEditorState = EditorState(document: document);
+    } else {
+      textEditorState = EditorState.blank();
+    }
   }
 
   @override
@@ -99,9 +102,6 @@ class _EditHtmlDescriptionSheetState
                 onPressed: () {
                   // No need to change
                   String htmlBodyDescription = textEditorState.intoHtml();
-                  htmlBodyDescription = isValidHtml(htmlBodyDescription)
-                      ? htmlBodyDescription
-                      : '';
                   final plainDescription = textEditorState.intoMarkdown();
                   if (htmlBodyDescription == widget.descriptionHtmlValue ||
                       plainDescription == widget.descriptionMarkdownValue) {

@@ -173,7 +173,11 @@ class _CreateUpdateTaskListConsumerState
                   final document = html != null
                       ? ActerDocumentHelpers.fromHtml(html)
                       : ActerDocumentHelpers.fromMarkdown(body);
-                  textEditorState = EditorState(document: document);
+                  if (document != null) {
+                    textEditorState = EditorState(document: document);
+                  } else {
+                    textEditorState = EditorState.blank();
+                  }
                 },
               ),
             ),

@@ -58,8 +58,11 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     if (desc != null) {
       final formatted = desc.formatted();
       if (formatted != null) {
-        textEditorState =
-            EditorState(document: ActerDocumentHelpers.fromHtml(formatted));
+        final document = ActerDocumentHelpers.fromHtml(formatted);
+        if (document != null) {
+          textEditorState = EditorState(document: document);
+        }
+        textEditorState = EditorState.blank();
       } else {
         textEditorState = EditorState(
           document: ActerDocumentHelpers.fromMarkdown(
@@ -380,7 +383,11 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               final document = html != null
                   ? ActerDocumentHelpers.fromHtml(html)
                   : ActerDocumentHelpers.fromMarkdown(body);
-              textEditorState = EditorState(document: document);
+              if (document != null) {
+                textEditorState = EditorState(document: document);
+              } else {
+                textEditorState = EditorState.blank();
+              }
             },
           ),
         ),
