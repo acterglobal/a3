@@ -13,13 +13,7 @@ class GeneralListSkeletonWidget extends StatelessWidget {
 
   Widget _buildSkeletonUI(BuildContext context) {
     return Column(
-      children: [
-        _buildListItemSkeletonUI(context),
-        _buildListItemSkeletonUI(context),
-        _buildListItemSkeletonUI(context),
-        _buildListItemSkeletonUI(context),
-        _buildListItemSkeletonUI(context),
-      ],
+      children: List.generate(5, (_) => _buildListItemSkeletonUI(context)),
     );
   }
 

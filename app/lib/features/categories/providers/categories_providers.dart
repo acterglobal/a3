@@ -23,7 +23,7 @@ final categoryManagerProvider = FutureProvider.family
 final localCategoryListProvider = FutureProvider.family
     .autoDispose<List<CategoryModelLocal>, CategoriesInfo>(
         (ref, categoryInfo) async {
-  final categoriesManager = await ref.read(
+  final categoriesManager = await ref.watch(
     categoryManagerProvider(
       (
         spaceId: categoryInfo.spaceId,
@@ -35,10 +35,10 @@ final localCategoryListProvider = FutureProvider.family
 
   if (categoryInfo.categoriesFor == CategoriesFor.spaces) {
     subEntriesList =
-        await ref.read(subSpacesListProvider(categoryInfo.spaceId).future);
+        await ref.watch(subSpacesListProvider(categoryInfo.spaceId).future);
   } else if (categoryInfo.categoriesFor == CategoriesFor.chats) {
     subEntriesList =
-        await ref.read(subChatsListProvider(categoryInfo.spaceId).future);
+        await ref.watch(subChatsListProvider(categoryInfo.spaceId).future);
   }
 
   final categoryList = CategoryUtils().getCategorisedList(
