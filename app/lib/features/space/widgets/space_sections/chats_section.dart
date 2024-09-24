@@ -76,7 +76,7 @@ class ChatsSection extends ConsumerWidget {
           title: L10n.of(context).suggestedChats,
           isShowSeeAllButton: true,
           onTapSeeAll: () => context.pushNamed(
-            Routes.spaceChats.name,
+            Routes.subChats.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
@@ -122,7 +122,7 @@ class ChatsSection extends ConsumerWidget {
           title: L10n.of(context).chats,
           isShowSeeAllButton: config.isShowSeeAllButton,
           onTapSeeAll: () => context.pushNamed(
-            Routes.spaceChats.name,
+            Routes.subChats.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),

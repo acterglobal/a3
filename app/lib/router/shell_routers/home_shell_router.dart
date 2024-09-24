@@ -1,5 +1,8 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/categories/organize_categories_page.dart';
+import 'package:acter/features/categories/utils/category_utils.dart';
+import 'package:acter/features/chat/pages/sub_chats_page.dart';
 import 'package:acter/features/events/pages/create_event_page.dart';
 import 'package:acter/features/events/pages/event_list_page.dart';
 import 'package:acter/features/invite_members/pages/invite_individual_users.dart';
@@ -28,10 +31,9 @@ import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/space/pages/space_details_page.dart';
 import 'package:acter/features/space/settings/pages/visibility_accessibility_page.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
+import 'package:acter/features/spaces/pages/sub_spaces_page.dart';
 import 'package:acter/features/super_invites/pages/super_invites.dart';
-import 'package:acter/features/space/pages/chats_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';
-import 'package:acter/features/space/pages/sub_spaces_page.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/space/settings/pages/notification_configuration_page.dart';
@@ -214,14 +216,42 @@ final homeShellRoutes = [
     },
   ),
   GoRoute(
-    name: Routes.spaceRelatedSpaces.name,
-    path: Routes.spaceRelatedSpaces.route,
+    name: Routes.subSpaces.name,
+    path: Routes.subSpaces.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       return NoTransitionPage(
         key: state.pageKey,
         child: SubSpacesPage(
-          spaceIdOrAlias: state.pathParameters['spaceId']!,
+          spaceId: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.subChats.name,
+    path: Routes.subChats.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: SubChatsPage(
+          spaceId: state.pathParameters['spaceId']!,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.organizeCategories.name,
+    path: Routes.organizeCategories.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: OrganizeCategoriesPage(
+          spaceId: state.pathParameters['spaceId']!,
+          categoriesFor: CategoryUtils()
+              .getCategoryEnumFromName(state.pathParameters['categoriesFor']!),
         ),
       );
     },
@@ -261,19 +291,6 @@ final homeShellRoutes = [
         key: state.pageKey,
         child: EventListPage(
           spaceId: state.pathParameters['spaceId']!,
-        ),
-      );
-    },
-  ),
-  GoRoute(
-    name: Routes.spaceChats.name,
-    path: Routes.spaceChats.route,
-    redirect: authGuardRedirect,
-    pageBuilder: (context, state) {
-      return NoTransitionPage(
-        key: state.pageKey,
-        child: SpaceChatsPage(
-          spaceIdOrAlias: state.pathParameters['spaceId']!,
         ),
       );
     },
