@@ -448,19 +448,12 @@ jobs:
 
       - name: Create Pull Request
         id: cpr
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: "ci/release-${{ needs.tags.outputs.tag }}"
-          base: main
-          title: "Releasing ${{ needs.tags.outputs.tag }}"
-          body: Release ${{ needs.tags.outputs.tag }} auto PR.
-          labels: minor
-          assignees: gnunicorn
-
-      - name: Enable Pull Request Automerge
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          gh pr create -B main -H ci/release-$TAG --title "Releasing $TAG" --body "Release $TAG auto PR." -a gnunicorn -l minor
+          gh pr merge --auto ci/release-$TAG
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            TAG: ${{ needs.tags.outputs.tag }}
 
       - name: Release
         id: create_release
@@ -471,7 +464,7 @@ jobs:
           generate_release_notes: false
           name: "${{ needs.tags.outputs.release_title_prefix }} ${{ needs.tags.outputs.tag }}"
           tag_name: ${{ needs.tags.outputs.tag }}
-          body_path: CHANGELOG.md
+          # body_path: CHANGELOG.md
           prerelease: false
           files: CHANGELOG.md
       - uses: eregon/publish-release@v1
