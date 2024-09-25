@@ -20338,6 +20338,22 @@ class Api {
         int,
         int,
       )>();
+  late final _msgDraftMimetypePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__MsgDraft_mimetype");
+
+  late final _msgDraftMimetype = _msgDraftMimetypePtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _msgDraftSizePtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -42551,6 +42567,38 @@ class MsgDraft {
     tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
     final tmp4 = MsgDraft._(_api, tmp9_1);
     return tmp4;
+  }
+
+  /// available for only image/audio/video/file
+  MsgDraft mimetype(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._msgDraftMimetype(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// available for only image/audio/video/file

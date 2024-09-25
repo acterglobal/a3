@@ -59,6 +59,43 @@ pub(crate) enum MsgContentDraft {
 }
 
 impl MsgContentDraft {
+    fn mimetype(mut self, value: String) -> Self {
+        match self {
+            MsgContentDraft::Image { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.mimetype = Some(value);
+                } else {
+                    *info = Some(assign!(ImageInfo::new(), { mimetype: Some(value) }));
+                }
+            }
+            MsgContentDraft::Audio { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.mimetype = Some(value);
+                } else {
+                    *info = Some(assign!(AudioInfo::new(), { mimetype: Some(value) }));
+                }
+            }
+            MsgContentDraft::Video { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.mimetype = Some(value);
+                } else {
+                    *info = Some(assign!(VideoInfo::new(), { mimetype: Some(value) }));
+                }
+            }
+            MsgContentDraft::File { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.mimetype = Some(value);
+                } else {
+                    *info = Some(assign!(FileInfo::new(), { mimetype: Some(value) }));
+                }
+            }
+            _ => {
+                warn!("mimetype is available for only image/audio/video/file");
+            }
+        }
+        self
+    }
+
     fn size(mut self, value: u64) -> Self {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
@@ -332,6 +369,13 @@ impl MsgDraft {
         Ok(MsgDraft { inner, mentions })
     }
 
+    pub fn mimetype(&self, value: String) -> Self {
+        let MsgDraft { inner, mentions } = self.clone();
+        MsgDraft {
+            inner: inner.mimetype(value),
+            mentions,
+        }
+    }
     pub fn size(&self, value: u64) -> Self {
         let MsgDraft { inner, mentions } = self.clone();
         MsgDraft {

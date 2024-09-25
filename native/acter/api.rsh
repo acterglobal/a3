@@ -1176,6 +1176,9 @@ object MsgDraft {
     fn add_room_mention(mention: bool) -> Result<MsgDraft>;
 
     /// available for only image/audio/video/file
+    fn mimetype(value: string) -> MsgDraft;
+
+    /// available for only image/audio/video/file
     fn size(value: u64) -> MsgDraft;
 
     /// available for only image/video
