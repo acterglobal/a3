@@ -61,7 +61,7 @@ class _UpdateListPageState extends ConsumerState<UpdateListPage> {
   }
 
   Widget _buildBody() {
-    final newsListLoader = ref.watch(newsListProvider);
+    final newsListLoader = ref.watch(newsListProvider(widget.spaceId));
 
     return newsListLoader.when(
       data: (updateList) => _buildUpdateListUI(updateList),

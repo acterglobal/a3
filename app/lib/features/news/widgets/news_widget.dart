@@ -38,7 +38,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
   @override
   Widget build(BuildContext context) {
     final client = ref.watch(alwaysClientProvider);
-    final newsListLoader = ref.watch(newsListProvider);
+    final newsListLoader = ref.watch(newsListProvider(null));
     return newsListLoader.when(
       data: (newsList) {
         if (newsList.isEmpty) {
