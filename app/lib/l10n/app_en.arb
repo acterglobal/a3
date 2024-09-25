@@ -2200,6 +2200,15 @@
   "@selectColor": {},
   "selectIcon": "Select icon",
   "@selectIcon": {},
+  "createCategory": "Create Category",
+  "organize": "Organize",
+  "updatingCategories": "Updating categories",
+  "updatingCategoriesFailed": "Updating categories failed {error}",
+  "addingNewCategory": "Adding new category",
+  "addingNewCategoriesFailed": "Adding new category failed {error}",
   "action": "Action",
+  "addCategory": "Add Category",
+  "editCategory": "Edit Category",
+  "deleteCategory": "Delete Category",
   "@action": {}
 }

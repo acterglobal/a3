@@ -2045,7 +2045,7 @@ object ActerAppSettingsBuilder {
 
 object Category {
     fn title() -> string;
-    fn entries() -> string;
+    fn entries() -> Vec<string>;
     fn display() -> Option<Display>;
     fn update_builder() -> CategoryBuilder;
 }

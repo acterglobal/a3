@@ -65,11 +65,12 @@ enum Routes {
   linkRecommended('/:spaceId([!#][^/]+)/linkRecommended'),
   spaceInvite('/:spaceId([!#][^/]+)/invite'),
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
-  spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
+  subSpaces('/:spaceId([!#][^/]+)/subSpaces'),
+  subChats('/:spaceId([!#][^/]+)/subChats'),
+  organizeCategories('/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)'),
   spaceMembers('/:spaceId([!#][^/]+)/members'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
   spaceEvents('/:spaceId([!#][^/]+)/events'),
-  spaceChats('/:spaceId([!#][^/]+)/chats'),
   spaceTasks('/:spaceId([!#][^/]+)/tasks'),
   // -- space Settings
   spaceSettings('/:spaceId([!#][^/]+)/settings'),
@@ -112,5 +113,6 @@ enum Routes {
   fatalFail('/error');
 
   const Routes(this.route);
+
   final String route;
 }
