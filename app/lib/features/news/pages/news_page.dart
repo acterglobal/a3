@@ -1,6 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/plus_icon_widget.dart';
+import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,29 +10,25 @@ class NewsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canPostNews = ref
-            .watch(
-              hasSpaceWithPermissionProvider('CanPostNews'),
-            )
-            .valueOrNull ==
-        true;
-
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        actions: <Widget>[
-          Visibility(
-            visible: canPostNews,
-            child: PlusIconWidget(
-              onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
-            ),
-          ),
+      body: Stack(
+        alignment: Alignment.topRight,
+        children: [
+          const NewsWidget(),
+          addNewButton(context),
         ],
       ),
-      body: const NewsWidget(),
+    );
+  }
+
+  Widget addNewButton(BuildContext context) {
+    return Positioned(
+      top: 50,
+      right: 20,
+      child: AddButtonWithCanPermission(
+        canString: 'CanPostNews',
+        onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
+      ),
     );
   }
 }

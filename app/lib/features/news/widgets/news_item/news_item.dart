@@ -46,11 +46,14 @@ class _NewsItemState extends ConsumerState<NewsItem> {
 
   Widget buildSpaceName() {
     final roomId = widget.news.roomId().toString();
-    return InkWell(
-      onTap: () => goToSpace(context, roomId),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SpaceNameWidget(spaceId: roomId, isShowBrackets: false),
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: InkWell(
+        onTap: () => goToSpace(context, roomId),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SpaceNameWidget(spaceId: roomId, isShowBrackets: false),
+        ),
       ),
     );
   }
