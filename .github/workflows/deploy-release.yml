@@ -450,7 +450,7 @@ jobs:
         id: cpr
         run: |
           gh pr create -B main -H ci/release-$TAG --title "Releasing $TAG" --body "Release $TAG auto PR." -a gnunicorn -l minor
-          gh pr merge --auto ci/release-$TAG
+          gh pr merge --auto --merge --delete-branch ci/release-$TAG
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             TAG: ${{ needs.tags.outputs.tag }}

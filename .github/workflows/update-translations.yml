@@ -22,6 +22,6 @@ jobs:
       - name: create pull request
         run: |
           gh pr create -B main -H weblate-latest --title 'Update translations' --body 'Update latest weblate into main' -a gnunicorn -l minor -l translations 
-          gh pr merge --auto weblate-latest
+          gh pr merge --auto --merge weblate-latest
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
