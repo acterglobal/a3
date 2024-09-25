@@ -1,4 +1,5 @@
 import 'package:acter/features/news/news_utils/news_utils.dart';
+import 'package:acter/features/news/widgets/news_item_slide/news_slide_actions.dart';
 import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/text_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
@@ -8,12 +9,12 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class NewsSlideItem extends StatelessWidget {
   final NewsSlide slide;
-  final bool showRichText;
+  final bool showRichContent;
 
   const NewsSlideItem({
     super.key,
     required this.slide,
-    this.showRichText = true,
+    this.showRichContent = true,
   });
 
   @override
@@ -24,14 +25,32 @@ class NewsSlideItem extends StatelessWidget {
   Widget buildNewsSlideItem(BuildContext context) {
     final slideType = slide.typeStr();
     final slideBackgroundColor = NewsUtils.getBackgroundColor(context, slide);
-    return Container(
-      color: slideBackgroundColor,
-      child: switch (slideType) {
-        'image' => ImageSlide(slide: slide),
-        'video' => VideoSlide(slide: slide),
-        'text' => showRichText ? TextSlide(slide: slide) : normalTextSlide(),
-        _ => notSupportedSlide(context, slideType),
-      },
+    return Stack(
+      children: [
+        //SLIDE CONTENT UI
+        Positioned.fill(
+          child: Container(
+            color: slideBackgroundColor,
+            child: switch (slideType) {
+              'image' => ImageSlide(slide: slide),
+              'video' => VideoSlide(slide: slide),
+              'text' =>
+                showRichContent ? TextSlide(slide: slide) : normalTextSlide(),
+              _ => notSupportedSlide(context, slideType),
+            },
+          ),
+        ),
+        //SLIDE ACTIONS
+        if (showRichContent)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 190,
+              padding: const EdgeInsets.only(right: 60, bottom: 80),
+              child: NewsSlideActions(newsSlide: slide),
+            ),
+          ),
+      ],
     );
   }
 

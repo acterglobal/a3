@@ -99,7 +99,7 @@ class _UpdateListPageState extends ConsumerState<UpdateListPage> {
     return Container(
       height: 300,
       margin: const EdgeInsets.all(6),
-      child: NewsSlideItem(slide: slide, showRichText: false),
+      child: NewsSlideItem(slide: slide, showRichContent: false),
     );
   }
 }
