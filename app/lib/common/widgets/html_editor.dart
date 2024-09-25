@@ -50,7 +50,7 @@ extension ActerEditorStateHelpers on EditorState {
 }
 
 extension ActerDocumentHelpers on Document {
-  static Document? fromHtml(
+  static Document? _fromHtml(
     String content, {
     AppFlowyEditorHTMLCodec? codec,
   }) {
@@ -65,20 +65,33 @@ extension ActerDocumentHelpers on Document {
     return document;
   }
 
-  static Document fromMarkdown(
+  static Document _fromMarkdown(
     String content, {
     AppFlowyEditorMarkdownCodec? codec,
   }) {
     return (codec ?? defaultMarkdownCodec).decode(content);
   }
 
-  static Document fromMsgContent(MsgContent msgContent) {
-    final formattedBody = msgContent.formattedBody();
-    if (formattedBody != null) {
-      return ActerDocumentHelpers.fromHtml(formattedBody)!;
-    } else {
-      return ActerDocumentHelpers.fromMarkdown(msgContent.body());
+  static Document parse(
+    String content, {
+    String? htmlContent,
+    AppFlowyEditorMarkdownCodec? codec,
+  }) {
+    if (htmlContent != null) {
+      final document = ActerDocumentHelpers._fromHtml(htmlContent);
+      if (document != null) {
+        return document;
+      }
     }
+    // fallback: parse from markdown
+    return ActerDocumentHelpers._fromMarkdown(content);
+  }
+
+  static Document fromMsgContent(MsgContent msgContent) {
+    return ActerDocumentHelpers.parse(
+      msgContent.body(),
+      htmlContent: msgContent.formattedBody(),
+    );
   }
 }
 

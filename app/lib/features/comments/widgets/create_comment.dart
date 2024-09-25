@@ -59,14 +59,12 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
             editorState: textEditorState,
             footer: const SizedBox(),
             onChanged: (body, html) {
-              final document = html != null
-                  ? ActerDocumentHelpers.fromHtml(html)
-                  : ActerDocumentHelpers.fromMarkdown(body);
-              if (document != null) {
-                textEditorState = EditorState(document: document);
-              } else {
-                textEditorState = EditorState.blank();
-              }
+              textEditorState = EditorState(
+                document: ActerDocumentHelpers.parse(
+                  body,
+                  htmlContent: html,
+                ),
+              );
             },
           ),
         ),

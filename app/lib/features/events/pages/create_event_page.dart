@@ -56,20 +56,14 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     // description
     final desc = event.description();
     if (desc != null) {
-      final formatted = desc.formatted();
-      if (formatted != null) {
-        final document = ActerDocumentHelpers.fromHtml(formatted);
-        if (document != null) {
-          textEditorState = EditorState(document: document);
-        }
-        textEditorState = EditorState.blank();
-      } else {
-        textEditorState = EditorState(
-          document: ActerDocumentHelpers.fromMarkdown(
-            desc.body(),
-          ),
-        );
-      }
+      textEditorState = EditorState(
+        document: ActerDocumentHelpers.parse(
+          desc.body(),
+          htmlContent: desc.formatted(),
+        ),
+      );
+    } else {
+      textEditorState = EditorState.blank();
     }
 
     // Getting start and end date time
@@ -380,14 +374,12 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
             editable: true,
             autoFocus: false,
             onChanged: (body, html) {
-              final document = html != null
-                  ? ActerDocumentHelpers.fromHtml(html)
-                  : ActerDocumentHelpers.fromMarkdown(body);
-              if (document != null) {
-                textEditorState = EditorState(document: document);
-              } else {
-                textEditorState = EditorState.blank();
-              }
+              textEditorState = EditorState(
+                document: ActerDocumentHelpers.parse(
+                  body,
+                  htmlContent: html,
+                ),
+              );
             },
           ),
         ),
