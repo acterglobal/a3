@@ -184,44 +184,28 @@ impl MsgContentDraft {
 
     fn filename(mut self, value: String) -> Self {
         match self {
-            MsgContentDraft::Image {
-                source,
-                info,
-                filename: _,
-            } => {
+            MsgContentDraft::Image { source, info, .. } => {
                 return MsgContentDraft::Image {
                     source,
                     filename: Some(value),
                     info,
                 };
             }
-            MsgContentDraft::Video {
-                source,
-                info,
-                filename: _,
-            } => {
+            MsgContentDraft::Video { source, info, .. } => {
                 return MsgContentDraft::Video {
                     source,
                     filename: Some(value),
                     info,
                 };
             }
-            MsgContentDraft::Audio {
-                source,
-                info,
-                filename: _,
-            } => {
+            MsgContentDraft::Audio { source, info, .. } => {
                 return MsgContentDraft::Audio {
                     source,
                     filename: Some(value),
                     info,
                 };
             }
-            MsgContentDraft::File {
-                source,
-                info,
-                filename: _,
-            } => {
+            MsgContentDraft::File { source, info, .. } => {
                 return MsgContentDraft::File {
                     source,
                     filename: Some(value),
