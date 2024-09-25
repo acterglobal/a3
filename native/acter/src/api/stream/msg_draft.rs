@@ -368,10 +368,10 @@ impl MsgDraft {
         size: Option<u64>,
     ) -> Self {
         let value = assign!(ThumbnailInfo::new(), {
-            width: width.and_then(|x| UInt::new(x)),
-            height: height.and_then(|x| UInt::new(x)),
+            width: width.and_then(UInt::new),
+            height: height.and_then(UInt::new),
             mimetype,
-            size: size.and_then(|x| UInt::new(x)),
+            size: size.and_then(UInt::new),
         });
         let MsgDraft { inner, mentions } = self.clone();
         MsgDraft {
