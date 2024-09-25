@@ -16,16 +16,16 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::update::list');
 
-class UpdateListPage extends ConsumerStatefulWidget {
+class NewsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
 
-  const UpdateListPage({super.key, this.spaceId});
+  const NewsListPage({super.key, this.spaceId});
 
   @override
-  ConsumerState<UpdateListPage> createState() => _UpdateListPageState();
+  ConsumerState<NewsListPage> createState() => _NewsListPageState();
 }
 
-class _UpdateListPageState extends ConsumerState<UpdateListPage> {
+class _NewsListPageState extends ConsumerState<NewsListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +62,7 @@ class _UpdateListPageState extends ConsumerState<UpdateListPage> {
     final newsListLoader = ref.watch(newsListProvider(widget.spaceId));
 
     return newsListLoader.when(
-      data: (updateList) => _buildUpdateListUI(updateList),
+      data: (updateList) => _buildNewsListUI(updateList),
       error: (error, stack) {
         _log.severe('Failed to load updates', error, stack);
         return ErrorPage(
@@ -77,7 +77,7 @@ class _UpdateListPageState extends ConsumerState<UpdateListPage> {
     );
   }
 
-  Widget _buildUpdateListUI(List<NewsEntry> updateList) {
+  Widget _buildNewsListUI(List<NewsEntry> updateList) {
     final size = MediaQuery.of(context).size;
     final widthCount = (size.width ~/ 500).toInt();
     const int minCount = 2;
@@ -87,12 +87,12 @@ class _UpdateListPageState extends ConsumerState<UpdateListPage> {
     return SingleChildScrollView(
       child: StaggeredGrid.count(
         crossAxisCount: max(2, min(widthCount, minCount)),
-        children: [for (final update in updateList) updateItemUI(update)],
+        children: [for (final update in updateList) newsItemUI(update)],
       ),
     );
   }
 
-  Widget updateItemUI(NewsEntry newsEntry) {
+  Widget newsItemUI(NewsEntry newsEntry) {
     final List<NewsSlide> newsSlides = newsEntry.slides().toList();
     final slide = newsSlides[0];
 
