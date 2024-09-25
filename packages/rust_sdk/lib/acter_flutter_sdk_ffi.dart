@@ -37942,7 +37942,6 @@ class CalendarEvent {
     return tmp2;
   }
 
-  /// locations
   /// event id
   EventId eventId() {
     var tmp0 = 0;
@@ -40266,6 +40265,7 @@ class EventSendState {
 
   EventSendState._(this._api, this._box);
 
+  /// one of NotSentYet/SendingFailed/Cancelled/Sent
   String state() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -40295,6 +40295,7 @@ class EventSendState {
     return tmp2;
   }
 
+  /// gives error value for SendingFailed only
   String? error() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -40328,6 +40329,7 @@ class EventSendState {
     return tmp2;
   }
 
+  /// gives event id for Sent only
   EventId? eventId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -42685,6 +42687,7 @@ class MsgDraft {
     return tmp6;
   }
 
+  /// convert this into a NewsSlideDraft;
   NewsSlideDraft intoNewsSlideDraft() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -45148,6 +45151,7 @@ class AttachmentsManager {
     return tmp12;
   }
 
+  /// inform about the changes to this manager
   Future<AttachmentsManager> reload() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -45164,6 +45168,7 @@ class AttachmentsManager {
     return tmp2;
   }
 
+  /// redact attachment
   Future<EventId> redact(
     String attachmentId,
     String? reason,
@@ -48082,6 +48087,7 @@ class SpaceHierarchyRoomInfo {
     return tmp6;
   }
 
+  /// recommended server to try to join via
   String? viaServerName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -51490,6 +51496,8 @@ class Account {
     return tmp2;
   }
 
+  /// deactivate the account. This can not be reversed. The username will
+  /// be blocked from any future usage, all personal data will be removed.
   Future<bool> deactivate(
     String password,
   ) {
@@ -53113,6 +53121,7 @@ class NotificationItem {
     return tmp6;
   }
 
+  /// if this is an invite, this the room it invites to
   String? roomInvite() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
