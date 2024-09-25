@@ -11,12 +11,12 @@ use futures::stream::StreamExt;
 use matrix_sdk::notification_settings::{
     IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings, RoomNotificationMode,
 };
-use matrix_sdk_base::ruma::api::client::{
+use matrix_sdk_base::ruma::{push::PushFormat, api::client::{
     device,
     push::{
         get_pushers, get_pushrules_all, set_pusher, set_pushrule, EmailPusherData,
         Pusher as RumaPusher, PusherIds, PusherInit, PusherKind, RuleScope,
-    },
+    },},
 };
 use matrix_sdk_base::ruma::events::{
     room::{message::MessageType, MediaSource},
@@ -472,11 +472,30 @@ impl Client {
         let device_id = self.device_id()?;
         let push_data = if with_ios_defaults {
             assign!(HttpPusherData::new(server_url), {
+                // we only send over the event id & room id, preventing the service from
+                // leaking any further information to apple
+                // additionally this prevents sygnal (the push relayer) from adding
+                // further information in the json that will then be displayed as fallback
+                format: Some(PushFormat::EventIdOnly),
                 default_payload: serde_json::json!({
                     "aps": {
+                        // specific tags to ensure the iOS notifications work as expected
+                        //
+                        // allows us to change the content in the extension:
                         "mutable-content": 1,
-                        "content-available": 1
+                        // make sure this goes to the foreground process, too:
+                        "content-available": 1,
+                        // the fallback message if the extension fails to load:
+                        "alert": {
+                            "title": "New messages available",
+                        },
+
+                        // Further information: by sending only the event-id and including the `alert`
+                        // text in the aps payload, apple will regard this as _important_ messages
+                        // that have to be delivered and processed by the background services
                     },
+                    // include the device-id allowing us to identify _which_ client we
+                    // need to process that with
                     "device_id": device_id,
                 })
             })
