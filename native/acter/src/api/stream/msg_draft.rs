@@ -61,30 +61,30 @@ impl MsgContentDraft {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.size = UInt::new(value)
+                    o.size = UInt::new(value);
                 } else {
-                    *info = Some(assign!(ImageInfo::new(), { size : UInt::new(value)}));
+                    *info = Some(assign!(ImageInfo::new(), { size: UInt::new(value) }));
                 }
             }
             MsgContentDraft::Audio { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.size = UInt::new(value)
+                    o.size = UInt::new(value);
                 } else {
-                    *info = Some(assign!(AudioInfo::new(), { size : UInt::new(value)}));
+                    *info = Some(assign!(AudioInfo::new(), { size: UInt::new(value) }));
                 }
             }
             MsgContentDraft::Video { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.size = UInt::new(value)
+                    o.size = UInt::new(value);
                 } else {
-                    *info = Some(assign!(VideoInfo::new(), { size : UInt::new(value)}));
+                    *info = Some(assign!(VideoInfo::new(), { size: UInt::new(value) }));
                 }
             }
             MsgContentDraft::File { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.size = UInt::new(value)
+                    o.size = UInt::new(value);
                 } else {
-                    *info = Some(assign!(FileInfo::new(), { size : UInt::new(value)}));
+                    *info = Some(assign!(FileInfo::new(), { size: UInt::new(value) }));
                 }
             }
             _ => {
@@ -98,16 +98,16 @@ impl MsgContentDraft {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.width = UInt::new(value)
+                    o.width = UInt::new(value);
                 } else {
-                    *info = Some(assign!(ImageInfo::new(), { width : UInt::new(value)}));
+                    *info = Some(assign!(ImageInfo::new(), { width: UInt::new(value) }));
                 }
             }
             MsgContentDraft::Video { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.width = UInt::new(value)
+                    o.width = UInt::new(value);
                 } else {
-                    *info = Some(assign!(VideoInfo::new(), { width : UInt::new(value)}));
+                    *info = Some(assign!(VideoInfo::new(), { width: UInt::new(value) }));
                 }
             }
             _ => warn!("width is available for only image/video"),
@@ -119,16 +119,16 @@ impl MsgContentDraft {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.height = UInt::new(value)
+                    o.height = UInt::new(value);
                 } else {
-                    *info = Some(assign!(ImageInfo::new(), { height : UInt::new(value)}));
+                    *info = Some(assign!(ImageInfo::new(), { height: UInt::new(value) }));
                 }
             }
             MsgContentDraft::Video { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.height = UInt::new(value)
+                    o.height = UInt::new(value);
                 } else {
-                    *info = Some(assign!(VideoInfo::new(), { height : UInt::new(value)}));
+                    *info = Some(assign!(VideoInfo::new(), { height: UInt::new(value) }));
                 }
             }
             _ => warn!("height is available for only image/video"),
@@ -143,7 +143,7 @@ impl MsgContentDraft {
                     o.duration = Some(Duration::from_secs(value));
                 } else {
                     *info = Some(
-                        assign!(AudioInfo::new(), { duration : Some(Duration::from_secs(value)) } ),
+                        assign!(AudioInfo::new(), { duration: Some(Duration::from_secs(value)) }),
                     );
                 }
             }
@@ -152,7 +152,7 @@ impl MsgContentDraft {
                     o.duration = Some(Duration::from_secs(value));
                 } else {
                     *info = Some(
-                        assign!(VideoInfo::new(), { duration : Some(Duration::from_secs(value))}),
+                        assign!(VideoInfo::new(), { duration: Some(Duration::from_secs(value)) }),
                     );
                 }
             }
@@ -165,16 +165,16 @@ impl MsgContentDraft {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.blurhash = Some(value)
+                    o.blurhash = Some(value);
                 } else {
-                    *info = Some(assign!(ImageInfo::new(), { blurhash : Some(value)}));
+                    *info = Some(assign!(ImageInfo::new(), { blurhash: Some(value) }));
                 }
             }
             MsgContentDraft::Video { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.blurhash = Some(value)
+                    o.blurhash = Some(value);
                 } else {
-                    *info = Some(assign!(VideoInfo::new(), { blurhash : Some(value)}));
+                    *info = Some(assign!(VideoInfo::new(), { blurhash: Some(value) }));
                 }
             }
             _ => warn!("blurhash is available for only image/video"),
