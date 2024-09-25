@@ -1,19 +1,21 @@
 use anyhow::Result;
 use core::time::Duration;
 use matrix_sdk::room::Room;
-use matrix_sdk_base::ruma::events::{
-    room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-            ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
-            RoomMessageEventContentWithoutRelation, VideoInfo, VideoMessageEventContent,
+use matrix_sdk_base::ruma::{
+    assign,
+    events::{
+        room::{
+            message::{
+                AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+                ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
+                RoomMessageEventContentWithoutRelation, VideoInfo, VideoMessageEventContent,
+            },
+            ImageInfo, MediaSource, ThumbnailInfo,
         },
-        ImageInfo,
+        Mentions,
     },
-    Mentions,
+    OwnedMxcUri, UInt, UserId,
 };
-use matrix_sdk_base::ruma::UserId;
-use matrix_sdk_base::ruma::{assign, UInt};
 use std::path::PathBuf;
 use tracing::{info, warn};
 
@@ -132,6 +134,81 @@ impl MsgContentDraft {
                 }
             }
             _ => warn!("height is available for only image/video"),
+        }
+        self
+    }
+
+    fn thumbnail_source(mut self, value: MediaSource) -> Self {
+        match self {
+            MsgContentDraft::Image { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_source = Some(value);
+                } else {
+                    *info = Some(assign!(ImageInfo::new(), { thumbnail_source: Some(value) }));
+                }
+            }
+            MsgContentDraft::Video { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_source = Some(value);
+                } else {
+                    *info = Some(assign!(VideoInfo::new(), { thumbnail_source: Some(value) }));
+                }
+            }
+            MsgContentDraft::File { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_source = Some(value);
+                } else {
+                    *info = Some(assign!(FileInfo::new(), { thumbnail_source: Some(value) }));
+                }
+            }
+            MsgContentDraft::Location { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_source = Some(value);
+                } else {
+                    *info = Some(assign!(LocationInfo::new(), { thumbnail_source: Some(value) }));
+                }
+            }
+            _ => warn!("thumbnail_source is available for only image/video/file/location"),
+        }
+        self
+    }
+
+    fn thumbnail_info(mut self, value: ThumbnailInfo) -> Self {
+        match self {
+            MsgContentDraft::Image { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_info = Some(Box::new(value));
+                } else {
+                    *info =
+                        Some(assign!(ImageInfo::new(), { thumbnail_info: Some(Box::new(value)) }));
+                }
+            }
+            MsgContentDraft::Video { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_info = Some(Box::new(value));
+                } else {
+                    *info =
+                        Some(assign!(VideoInfo::new(), { thumbnail_info: Some(Box::new(value)) }));
+                }
+            }
+            MsgContentDraft::File { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_info = Some(Box::new(value));
+                } else {
+                    *info =
+                        Some(assign!(FileInfo::new(), { thumbnail_info: Some(Box::new(value)) }));
+                }
+            }
+            MsgContentDraft::Location { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_info = Some(Box::new(value));
+                } else {
+                    *info = Some(
+                        assign!(LocationInfo::new(), { thumbnail_info: Some(Box::new(value)) }),
+                    );
+                }
+            }
+            _ => warn!("thumbnail_info is available for only image/video/file/location"),
         }
         self
     }
@@ -273,6 +350,32 @@ impl MsgDraft {
         let MsgDraft { inner, mentions } = self.clone();
         MsgDraft {
             inner: inner.height(value),
+            mentions,
+        }
+    }
+    pub fn thumbnail_source(&self, value: String) -> Self {
+        let MsgDraft { inner, mentions } = self.clone();
+        MsgDraft {
+            inner: inner.thumbnail_source(MediaSource::Plain(OwnedMxcUri::from(value))),
+            mentions,
+        }
+    }
+    pub fn thumbnail_info(
+        &self,
+        width: Option<u64>,
+        height: Option<u64>,
+        mimetype: Option<String>,
+        size: Option<u64>,
+    ) -> Self {
+        let value = assign!(ThumbnailInfo::new(), {
+            width: width.and_then(|x| UInt::new(x)),
+            height: height.and_then(|x| UInt::new(x)),
+            mimetype,
+            size: size.and_then(|x| UInt::new(x)),
+        });
+        let MsgDraft { inner, mentions } = self.clone();
+        MsgDraft {
+            inner: inner.thumbnail_info(value),
             mentions,
         }
     }

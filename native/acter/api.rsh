@@ -1190,6 +1190,12 @@ object MsgDraft {
     /// available for only image/video
     fn blurhash(value: string) -> MsgDraft;
 
+    /// available for only image/video/file/location
+    fn thumbnail_source(value: string) -> MsgDraft;
+
+    /// available for only image/video/file/location
+    fn thumbnail_info(width: Option<u64>, height: Option<u64>, mimetype: Option<string>, size: Option<u64>) -> MsgDraft;
+
     /// available for only file
     fn filename(value: string) -> MsgDraft;
 
