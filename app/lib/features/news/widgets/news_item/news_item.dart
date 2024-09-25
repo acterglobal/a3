@@ -2,7 +2,7 @@ import 'dart:core';
 
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
-import 'package:acter/features/news/widgets/news_side_bar.dart';
+import 'package:acter/features/news/widgets/news_item/news_side_bar.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:carousel_indicator/carousel_indicator.dart';
