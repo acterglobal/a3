@@ -11,6 +11,7 @@ import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -20,13 +21,11 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::news::sidebar');
 
 class NewsSideBar extends ConsumerWidget {
-  final ffi.NewsEntry news;
-  final int index;
+  final NewsEntry news;
 
   const NewsSideBar({
     super.key,
     required this.news,
-    required this.index,
   });
 
   @override
@@ -47,7 +46,6 @@ class NewsSideBar extends ConsumerWidget {
           likeCount: likesCount.valueOrNull ?? 0,
           style: style,
           color: Theme.of(context).colorScheme.textColor,
-          index: index,
           onTap: () async {
             final manager = await ref.read(newsReactionsProvider(news).future);
             final status = manager.likedByMe();

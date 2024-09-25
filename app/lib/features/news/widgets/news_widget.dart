@@ -2,7 +2,6 @@ import 'package:acter/common/animations/like_animation.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_item.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +36,6 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final client = ref.watch(alwaysClientProvider);
     final newsListLoader = ref.watch(newsListProvider(null));
     return newsListLoader.when(
       data: (newsList) {
@@ -69,12 +67,7 @@ class _NewsWidgetState extends ConsumerState<NewsWidget> {
                 await manager.sendLike();
               }
             },
-            child: NewsItem(
-              client: client,
-              news: newsList[index],
-              index: index,
-              pageController: _pageController,
-            ),
+            child: NewsItem(news: newsList[index]),
           ),
         );
       },
