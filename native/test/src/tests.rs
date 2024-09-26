@@ -18,5 +18,6 @@ mod spaces;
 mod super_invites;
 mod tasks;
 mod templates;
+mod thumbnail;
 mod typing;
 mod verification;
