@@ -7,8 +7,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NewsVerticalView extends ConsumerStatefulWidget {
   final List<NewsEntry> newsList;
+  final int initialPageIndex;
 
-  const NewsVerticalView({super.key, required this.newsList});
+  const NewsVerticalView({
+    super.key,
+    required this.newsList,
+    this.initialPageIndex = 0,
+  });
 
   @override
   ConsumerState<NewsVerticalView> createState() => _NewsVerticalViewState();
@@ -20,7 +25,9 @@ class _NewsVerticalViewState extends ConsumerState<NewsVerticalView> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: 0);
+    _pageController = PageController(
+      initialPage: widget.initialPageIndex,
+    );
   }
 
   @override

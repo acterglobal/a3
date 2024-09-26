@@ -6,7 +6,9 @@ import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
+import 'package:acter/features/news/widgets/news_vertical_view.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +28,9 @@ class NewsListPage extends ConsumerStatefulWidget {
 }
 
 class _NewsListPageState extends ConsumerState<NewsListPage> {
+  final ValueNotifier<bool> gridMode = ValueNotifier(false);
+  final ValueNotifier<int> currentIndex = ValueNotifier(0);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,6 +52,20 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
         ],
       ),
       actions: [
+        ValueListenableBuilder(
+          valueListenable: gridMode,
+          builder: (context, value, child) {
+            return IconButton(
+              onPressed: () {
+                gridMode.value = !gridMode.value;
+                currentIndex.value = 0;
+              },
+              icon: value
+                  ? const Icon(Icons.fullscreen)
+                  : const Icon(Icons.grid_view),
+            );
+          },
+        ),
         AddButtonWithCanPermission(
           canString: 'CanPostNews',
           onPressed: () => context.pushNamed(
@@ -62,7 +81,19 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
     final newsListLoader = ref.watch(newsListProvider(widget.spaceId));
 
     return newsListLoader.when(
-      data: (updateList) => _buildNewsListUI(updateList),
+      data: (updateList) {
+        return ValueListenableBuilder(
+          valueListenable: gridMode,
+          builder: (context, value, child) {
+            return value
+                ? _buildNewsListGridUI(updateList)
+                : NewsVerticalView(
+                    newsList: updateList,
+                    initialPageIndex: currentIndex.value,
+                  );
+          },
+        );
+      },
       error: (error, stack) {
         _log.severe('Failed to load updates', error, stack);
         return ErrorPage(
@@ -77,7 +108,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
     );
   }
 
-  Widget _buildNewsListUI(List<NewsEntry> updateList) {
+  Widget _buildNewsListGridUI(List<NewsEntry> updateList) {
     final size = MediaQuery.of(context).size;
     final widthCount = (size.width ~/ 500).toInt();
     const int minCount = 2;
@@ -87,7 +118,15 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
     return SingleChildScrollView(
       child: StaggeredGrid.count(
         crossAxisCount: max(2, min(widthCount, minCount)),
-        children: [for (final update in updateList) newsItemUI(update)],
+        children: List.generate(
+          updateList.length,
+          (index) => InkWell(
+              onTap: () {
+                gridMode.value = !gridMode.value;
+                currentIndex.value = index;
+              },
+              child: newsItemUI(updateList[index])),
+        ),
       ),
     );
   }
