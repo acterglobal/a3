@@ -11,16 +11,19 @@ use futures::stream::StreamExt;
 use matrix_sdk::notification_settings::{
     IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings, RoomNotificationMode,
 };
-use matrix_sdk_base::ruma::{push::PushFormat, api::client::{
-    device,
-    push::{
-        get_pushers, get_pushrules_all, set_pusher, set_pushrule, EmailPusherData,
-        Pusher as RumaPusher, PusherIds, PusherInit, PusherKind, RuleScope,
-    },},
-};
 use matrix_sdk_base::ruma::events::{
     room::{message::MessageType, MediaSource},
     AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
+};
+use matrix_sdk_base::ruma::{
+    api::client::{
+        device,
+        push::{
+            get_pushers, get_pushrules_all, set_pusher, set_pushrule, EmailPusherData,
+            Pusher as RumaPusher, PusherIds, PusherInit, PusherKind, RuleScope,
+        },
+    },
+    push::PushFormat,
 };
 use matrix_sdk_base::ruma::{assign, push::HttpPusherData};
 use matrix_sdk_base::ruma::{EventId, OwnedMxcUri, OwnedRoomId, RoomId};
