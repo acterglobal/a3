@@ -1,6 +1,8 @@
 PODS:
   - acter_flutter_sdk (0.0.1):
     - Flutter
+  - app_badge_plus (1.1.5):
+    - Flutter
   - app_settings (5.1.1):
     - Flutter
   - connectivity_plus (0.0.1):
@@ -135,6 +137,7 @@ PODS:
 
 DEPENDENCIES:
   - acter_flutter_sdk (from `.symlinks/plugins/acter_flutter_sdk/ios`)
+  - app_badge_plus (from `.symlinks/plugins/app_badge_plus/ios`)
   - app_settings (from `.symlinks/plugins/app_settings/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/darwin`)
   - device_calendar (from `.symlinks/plugins/device_calendar/ios`)
@@ -186,6 +189,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   acter_flutter_sdk:
     :path: ".symlinks/plugins/acter_flutter_sdk/ios"
+  app_badge_plus:
+    :path: ".symlinks/plugins/app_badge_plus/ios"
   app_settings:
     :path: ".symlinks/plugins/app_settings/ios"
   connectivity_plus:
@@ -259,6 +264,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   acter_flutter_sdk: e60481171e46975418babb7d0ec8809eaacaaa03
+  app_badge_plus: 4ab1da0bfadc61b82507c3f48e63e559ed3080de
   app_settings: 017320c6a680cdc94c799949d95b84cb69389ebc
   connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
   device_calendar: 9cb33f88a02e19652ec7b8b122ca778f751b1f7b
