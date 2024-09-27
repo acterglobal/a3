@@ -1,4 +1,4 @@
-use acter::RoomMessage;
+use acter::api::RoomMessage;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, FutureExt, StreamExt};

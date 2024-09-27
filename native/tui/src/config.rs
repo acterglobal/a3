@@ -1,4 +1,4 @@
-use acter::{api::login_new_client, Client};
+use acter::api::{login_new_client, Client};
 use anyhow::Result;
 use clap::Parser;
 use dialoguer::{theme::ColorfulTheme, Password};

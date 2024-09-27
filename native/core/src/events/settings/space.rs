@@ -1,6 +1,5 @@
 use derive_builder::Builder;
-use matrix_sdk_base::ruma::events::macros::EventContent;
-use matrix_sdk_base::ruma::events::EmptyStateKey;
+use matrix_sdk_base::ruma::events::{macros::EventContent, EmptyStateKey};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize, Builder)]

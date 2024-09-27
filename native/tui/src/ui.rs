@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use acter::{Convo, HistoryLoadState, Space, Task, TaskList};
+use acter::api::{Convo, HistoryLoadState, Space, Task, TaskList};
 use anyhow::Result;
 use clap::crate_version;
 use crossterm::{

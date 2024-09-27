@@ -12,17 +12,19 @@ use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     Client as SdkClient,
 };
-use matrix_sdk_base::ruma::api::client::{
-    device::delete_device,
-    uiaa::{AuthData, Password, UserIdentifier},
+use matrix_sdk_base::ruma::{
+    api::client::{
+        device::delete_device,
+        uiaa::{AuthData, Password, UserIdentifier},
+    },
+    assign, device_id,
+    events::{
+        key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
+        room::message::{MessageType, OriginalSyncRoomMessageEvent},
+        AnyToDeviceEvent, EventContent,
+    },
+    OwnedDeviceId, OwnedUserId,
 };
-use matrix_sdk_base::ruma::assign;
-use matrix_sdk_base::ruma::events::{
-    key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
-    room::message::{MessageType, OriginalSyncRoomMessageEvent},
-    AnyToDeviceEvent, EventContent,
-};
-use matrix_sdk_base::ruma::{device_id, OwnedDeviceId, OwnedUserId};
 use std::{
     collections::HashMap,
     ops::Deref,
