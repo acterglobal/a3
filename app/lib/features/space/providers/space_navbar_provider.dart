@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,7 @@ enum TabEntry {
   pins,
   tasks,
   events,
+  news,
   chats,
   spaces,
   members,
@@ -47,6 +49,12 @@ final tabsProvider =
       final eventList = await ref.watch(allEventListProvider(spaceId).future);
       if (eventList.isNotEmpty) {
         tabs.add(TabEntry.events);
+      }
+    }
+    if (appSettings.news().active()) {
+      final newsList = await ref.watch(newsListProvider(spaceId).future);
+      if (newsList.isNotEmpty) {
+        tabs.add(TabEntry.news);
       }
     }
   }

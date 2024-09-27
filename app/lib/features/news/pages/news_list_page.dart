@@ -8,7 +8,6 @@ import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
 import 'package:acter/features/news/widgets/news_vertical_view.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,16 +19,23 @@ final _log = Logger('a3::update::list');
 
 class NewsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
+  final bool gridMode;
 
-  const NewsListPage({super.key, this.spaceId});
+  const NewsListPage({super.key, this.spaceId, this.gridMode = true});
 
   @override
   ConsumerState<NewsListPage> createState() => _NewsListPageState();
 }
 
 class _NewsListPageState extends ConsumerState<NewsListPage> {
-  final ValueNotifier<bool> gridMode = ValueNotifier(false);
+  final ValueNotifier<bool> gridMode = ValueNotifier(true);
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
+
+  @override
+  void initState() {
+    super.initState();
+    gridMode.value = widget.gridMode;
+  }
 
   @override
   Widget build(BuildContext context) {

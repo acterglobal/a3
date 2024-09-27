@@ -10,6 +10,7 @@ import 'package:acter/features/space/widgets/space_sections/about_section.dart';
 import 'package:acter/features/space/widgets/space_sections/chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/events_section.dart';
 import 'package:acter/features/space/widgets/space_sections/members_section.dart';
+import 'package:acter/features/space/widgets/space_sections/news_section.dart';
 import 'package:acter/features/space/widgets/space_sections/pins_section.dart';
 import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
 import 'package:acter/features/space/widgets/space_sections/spaces_section.dart';
@@ -234,6 +235,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.pins => L10n.of(context).pins,
       TabEntry.tasks => L10n.of(context).tasks,
       TabEntry.events => L10n.of(context).events,
+      TabEntry.news => L10n.of(context).updates,
       TabEntry.chats => L10n.of(context).chats,
       TabEntry.spaces => L10n.of(context).spaces,
       TabEntry.members => L10n.of(context).members,
@@ -247,6 +249,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.pins => PinsSection(spaceId: widget.spaceId),
       TabEntry.tasks => TasksSection(spaceId: widget.spaceId),
       TabEntry.events => EventsSection(spaceId: widget.spaceId),
+      TabEntry.news => NewsSection(spaceId: widget.spaceId),
       TabEntry.chats => ChatsSection(spaceId: widget.spaceId),
       TabEntry.spaces => SpacesSection(spaceId: widget.spaceId),
       TabEntry.members => MembersSection(spaceId: widget.spaceId),
