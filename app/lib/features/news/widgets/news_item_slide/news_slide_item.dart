@@ -57,7 +57,13 @@ class NewsSlideItem extends StatelessWidget {
   Widget normalTextSlide() {
     return Container(
       padding: const EdgeInsets.all(16),
-      child: Center(child: Text(slide.msgContent().body().toString())),
+      child: Center(
+        child: Text(
+          slide.msgContent().body().toString(),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 7,
+        ),
+      ),
     );
   }
 
