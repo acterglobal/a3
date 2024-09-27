@@ -1,6 +1,6 @@
 use acter::{
-    testing::ensure_user, Client, Convo, CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder,
-    SyncState,
+    api::{Client, Convo, CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder, SyncState},
+    testing::ensure_user,
 };
 use acter_core::templates::Engine;
 use anyhow::Result;

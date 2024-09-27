@@ -1,9 +1,8 @@
 use derive_getters::Getters;
-use matrix_sdk_base::ruma::events::{
-    reaction::ReactionEventContent, relation::Annotation, OriginalMessageLikeEvent,
+use matrix_sdk_base::ruma::{
+    events::{reaction::ReactionEventContent, relation::Annotation, OriginalMessageLikeEvent},
+    EventId, OwnedEventId, OwnedUserId, RoomId, UserId,
 };
-use matrix_sdk_base::ruma::RoomId;
-use matrix_sdk_base::ruma::{EventId, OwnedEventId, OwnedUserId, UserId};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref};
 use tracing::{error, info, trace};

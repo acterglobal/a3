@@ -1,19 +1,21 @@
 use anyhow::Result;
 use core::time::Duration;
 use matrix_sdk::room::Room;
-use matrix_sdk_base::ruma::events::{
-    room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-            ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
-            RoomMessageEventContentWithoutRelation, VideoInfo, VideoMessageEventContent,
+use matrix_sdk_base::ruma::{
+    assign,
+    events::{
+        room::{
+            message::{
+                AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+                ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
+                RoomMessageEventContentWithoutRelation, VideoInfo, VideoMessageEventContent,
+            },
+            ImageInfo,
         },
-        ImageInfo,
+        Mentions,
     },
-    Mentions,
+    UInt, UserId,
 };
-use matrix_sdk_base::ruma::UserId;
-use matrix_sdk_base::ruma::{assign, UInt};
 use std::path::PathBuf;
 use tracing::{info, warn};
 

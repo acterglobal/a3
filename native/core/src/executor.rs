@@ -1,7 +1,7 @@
-use matrix_sdk_base::ruma::events::{
-    room::redaction::OriginalRoomRedactionEvent, UnsignedRoomRedactionEvent,
+use matrix_sdk_base::ruma::{
+    events::{room::redaction::OriginalRoomRedactionEvent, UnsignedRoomRedactionEvent},
+    OwnedRoomId,
 };
-use matrix_sdk_base::ruma::OwnedRoomId;
 use scc::hash_map::{Entry, HashMap};
 use std::sync::Arc;
 use tokio::sync::broadcast::{channel, Receiver, Sender};
@@ -203,9 +203,12 @@ mod tests {
         models::{Comment, TestModelBuilder},
     };
     use matrix_sdk::Client;
-    use matrix_sdk_base::ruma::events::room::message::TextMessageEventContent;
-    use matrix_sdk_base::ruma::{api::MatrixVersion, event_id, user_id};
-    use matrix_sdk_base::store::{MemoryStore, StoreConfig};
+    use matrix_sdk_base::{
+        ruma::{
+            api::MatrixVersion, event_id, events::room::message::TextMessageEventContent, user_id,
+        },
+        store::{MemoryStore, StoreConfig},
+    };
 
     async fn fresh_executor() -> Result<Executor> {
         let config = StoreConfig::default().state_store(MemoryStore::new());

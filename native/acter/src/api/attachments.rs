@@ -11,8 +11,10 @@ use matrix_sdk::{
     room::Room,
     RoomState,
 };
-use matrix_sdk_base::ruma::events::{room::message::RoomMessageEvent, MessageLikeEventType};
-use matrix_sdk_base::ruma::{EventId, OwnedEventId, OwnedTransactionId};
+use matrix_sdk_base::ruma::{
+    events::{room::message::RoomMessageEvent, MessageLikeEventType},
+    EventId, OwnedEventId, OwnedTransactionId,
+};
 use std::{fs::exists, io::Write, ops::Deref, path::PathBuf, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
