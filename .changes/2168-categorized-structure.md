@@ -1,2 +1,0 @@
-- [New] : All new categorize management for sub-spaces and sub-chats
-- [New] : You can now create custom categories and manage all the sub-space and sub-chat base on the your requirements 
