@@ -1,4 +1,5 @@
 mod auth;
+mod blurhash;
 mod bookmarks;
 mod calendar;
 mod categories;
