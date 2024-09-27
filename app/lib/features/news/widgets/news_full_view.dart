@@ -5,21 +5,21 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NewsVerticalView extends ConsumerStatefulWidget {
+class NewsFullView extends ConsumerStatefulWidget {
   final List<NewsEntry> newsList;
   final int initialPageIndex;
 
-  const NewsVerticalView({
+  const NewsFullView({
     super.key,
     required this.newsList,
     this.initialPageIndex = 0,
   });
 
   @override
-  ConsumerState<NewsVerticalView> createState() => _NewsVerticalViewState();
+  ConsumerState<NewsFullView> createState() => _NewsVerticalViewState();
 }
 
-class _NewsVerticalViewState extends ConsumerState<NewsVerticalView> {
+class _NewsVerticalViewState extends ConsumerState<NewsFullView> {
   late PageController _pageController;
 
   @override

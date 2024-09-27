@@ -1,21 +1,18 @@
-import 'dart:math';
-
-import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
-import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
-import 'package:acter/features/news/widgets/news_vertical_view.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/features/news/widgets/news_full_view.dart';
+import 'package:acter/features/news/widgets/news_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::update::list');
+final _log = Logger('a3::news::list');
 
 class NewsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
@@ -87,64 +84,59 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
     final newsListLoader = ref.watch(newsListProvider(widget.spaceId));
 
     return newsListLoader.when(
-      data: (updateList) {
+      data: (newsList) {
         return ValueListenableBuilder(
           valueListenable: gridMode,
           builder: (context, value, child) {
+            if (newsList.isEmpty) return newsEmptyStateUI(context);
             return value
-                ? _buildNewsListGridUI(updateList)
-                : NewsVerticalView(
-                    newsList: updateList,
+                ? NewsGridView(
+                    newsList: newsList,
+                    onTapNewItem: (index) {
+                      gridMode.value = !gridMode.value;
+                      currentIndex.value = index;
+                    },
+                  )
+                : NewsFullView(
+                    newsList: newsList,
                     initialPageIndex: currentIndex.value,
                   );
           },
         );
       },
-      error: (error, stack) {
-        _log.severe('Failed to load updates', error, stack);
-        return ErrorPage(
-          background: Container(),
-          error: error,
-          stack: stack,
-          textBuilder: L10n.of(context).loadingFailed,
-          onRetryTap: () {},
-        );
-      },
-      loading: () => Container(),
+      error: (e, s) => newsErrorUI(context, e, s),
+      loading: () => newsLoadingUI(),
     );
   }
 
-  Widget _buildNewsListGridUI(List<NewsEntry> updateList) {
-    final size = MediaQuery.of(context).size;
-    final widthCount = (size.width ~/ 500).toInt();
-    const int minCount = 2;
-
-    if (updateList.isEmpty) return Container();
-
-    return SingleChildScrollView(
-      child: StaggeredGrid.count(
-        crossAxisCount: max(2, min(widthCount, minCount)),
-        children: List.generate(
-          updateList.length,
-          (index) => InkWell(
-              onTap: () {
-                gridMode.value = !gridMode.value;
-                currentIndex.value = index;
-              },
-              child: newsItemUI(updateList[index])),
-        ),
+  Widget newsLoadingUI() {
+    return const Center(
+      child: SizedBox(
+        height: 50,
+        width: 50,
+        child: CircularProgressIndicator(),
       ),
     );
   }
 
-  Widget newsItemUI(NewsEntry newsEntry) {
-    final List<NewsSlide> newsSlides = newsEntry.slides().toList();
-    final slide = newsSlides[0];
+  Widget newsErrorUI(BuildContext context, e, s) {
+    _log.severe('Failed to load news list', e, s);
+    return Center(
+      child: Text(L10n.of(context).couldNotFetchNews),
+    );
+  }
 
-    return Container(
-      height: 300,
-      margin: const EdgeInsets.all(6),
-      child: NewsSlideItem(slide: slide, showRichContent: false),
+  Widget newsEmptyStateUI(BuildContext context) {
+    return Center(
+      child: EmptyState(
+        title: L10n.of(context).youHaveNoUpdates,
+        subtitle: L10n.of(context).createPostsAndEngageWithinSpace,
+        image: 'assets/images/empty_updates.svg',
+        primaryButton: ActerPrimaryActionButton(
+          onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
+          child: Text(L10n.of(context).createNewUpdate),
+        ),
+      ),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/news/model/keys.dart';
-import 'package:acter/features/news/widgets/news_widget.dart';
+import 'package:acter/features/news/pages/news_list_page.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +31,7 @@ class InDashboard extends ConsumerWidget {
                 child: Stack(
                   alignment: Alignment.topRight,
                   children: [
-                    const NewsWidget(),
+                    const NewsListPage(gridMode: false),
                     Visibility(
                       visible: canPostNews,
                       child: IconButton(
