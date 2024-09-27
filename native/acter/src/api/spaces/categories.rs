@@ -1,10 +1,12 @@
-use super::Space;
-use crate::{Categories, CategoriesBuilder, RUNTIME};
 use acter_core::events::CategoriesStateEventContent;
 use anyhow::{bail, Result};
 use matrix_sdk::deserialized_responses::{RawSyncOrStrippedState, SyncOrStrippedState};
 use matrix_sdk_base::ruma::events::{EventContent, FullStateEventContent, SyncStateEvent};
 use tracing::warn;
+
+use crate::{Categories, CategoriesBuilder, RUNTIME};
+
+use super::Space;
 
 impl Space {
     pub async fn categories(&self, cat_type: String) -> Result<Categories> {

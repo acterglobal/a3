@@ -8,21 +8,24 @@ use anyhow::{Context, Result};
 use core::time::Duration;
 use matrix_sdk::{
     media::{MediaFormat, MediaThumbnailSettings, MediaThumbnailSize},
-    ComposerDraft, ComposerDraftType,
+    ComposerDraft, ComposerDraftType, HttpError, RumaApiError,
 };
-use matrix_sdk_base::ruma::api::client::media::get_content_thumbnail;
-use matrix_sdk_base::ruma::events::room::{
-    message::{
-        AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
-        FileMessageEventContent, ImageMessageEventContent, LocationInfo,
-        LocationMessageEventContent, TextMessageEventContent, UnstableAudioDetailsContentBlock,
-        VideoInfo, VideoMessageEventContent,
-    },
-    ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
-};
-use matrix_sdk_base::ruma::UInt;
 use matrix_sdk_base::ruma::{
+    api::{
+        client::{error::ErrorBody, media::get_content_thumbnail},
+        error::FromHttpResponseError,
+    },
+    events::room::{
+        message::{
+            AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
+            FileMessageEventContent, ImageMessageEventContent, LocationInfo,
+            LocationMessageEventContent, TextMessageEventContent, UnstableAudioDetailsContentBlock,
+            VideoInfo, VideoMessageEventContent,
+        },
+        ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
+    },
     EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedEventId, OwnedMxcUri, OwnedUserId,
+    UInt,
 };
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
@@ -766,30 +769,26 @@ pub fn new_obj_ref_builder(
 }
 
 pub fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
-    if let matrix_sdk::Error::Http(matrix_sdk::HttpError::Api(api_error)) = &err {
+    if let matrix_sdk::Error::Http(HttpError::Api(api_error)) = &err {
         match api_error {
-            matrix_sdk::ruma::api::error::FromHttpResponseError::Deserialization(des) => {
+            FromHttpResponseError::Deserialization(des) => {
                 return anyhow::anyhow!("Deserialization failed: {des}");
             }
-            matrix_sdk::ruma::api::error::FromHttpResponseError::Server(inner) => match inner {
-                matrix_sdk::RumaApiError::ClientApi(error) => {
-                    if let matrix_sdk::ruma::api::client::error::ErrorBody::Standard {
-                        kind,
-                        message,
-                    } = &error.body
-                    {
+            FromHttpResponseError::Server(inner) => match inner {
+                RumaApiError::ClientApi(error) => {
+                    if let ErrorBody::Standard { kind, message } = &error.body {
                         return anyhow::anyhow!("{message} [{kind}]");
                     }
                     return anyhow::anyhow!("{0:?} [{1}]", error.body, error.status_code);
                 }
-                matrix_sdk::RumaApiError::Uiaa(uiaa_error) => {
+                RumaApiError::Uiaa(uiaa_error) => {
                     if let Some(err) = &uiaa_error.auth_error {
                         return anyhow::anyhow!("{0} [{1}]", err.message, err.kind);
                     }
                     error!(?uiaa_error, "Other UIAA response");
                     return anyhow::anyhow!("Unsupported User Interaction needed.");
                 }
-                matrix_sdk::RumaApiError::Other(err) => {
+                RumaApiError::Other(err) => {
                     return anyhow::anyhow!("{0:?} [{1}]", err.body, err.status_code);
                 }
             },

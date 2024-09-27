@@ -1,5 +1,4 @@
-use matrix_sdk_base::ruma::events::macros::EventContent;
-use matrix_sdk_base::ruma::OwnedClientSecret;
+use matrix_sdk_base::ruma::{events::macros::EventContent, OwnedClientSecret};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 

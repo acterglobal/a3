@@ -1,7 +1,6 @@
 use crate::EventCacheStore;
 use async_trait::async_trait;
-use matrix_sdk_base::media::MediaRequest;
-use matrix_sdk_base::ruma::MxcUri;
+use matrix_sdk_base::{media::MediaRequest, ruma::MxcUri};
 use std::sync::Arc;
 use tokio::sync::Semaphore;
 use tracing::instrument;

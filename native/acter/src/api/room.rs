@@ -24,25 +24,29 @@ use matrix_sdk::{
     room::{Room as SdkRoom, RoomMember},
     DisplayName, RoomMemberships, RoomState,
 };
-use matrix_sdk_base::ruma::api::client::{
-    room::report_content,
-    space::{get_hierarchy, SpaceHierarchyRoomsChunk},
-};
-use matrix_sdk_base::ruma::events::{
-    room::{
-        avatar::ImageInfo as AvatarImageInfo,
-        join_rules::{AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership},
-        message::{MessageType, RoomMessageEvent},
-        MediaSource,
-    },
-    space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
-    MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
-};
-use matrix_sdk_base::ruma::{assign, Int};
 use matrix_sdk_base::ruma::{
-    room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, IdParseError, OwnedEventId,
-    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedTransactionId, OwnedUserId, RoomId,
-    ServerName, UserId,
+    api::client::{
+        room::report_content,
+        space::{get_hierarchy, SpaceHierarchyRoomsChunk},
+    },
+    assign,
+    events::{
+        room::{
+            avatar::ImageInfo as AvatarImageInfo,
+            join_rules::{
+                AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
+            },
+            message::{MessageType, RoomMessageEvent},
+            MediaSource,
+        },
+        space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
+        MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
+    },
+    room::RoomType,
+    serde::Raw,
+    space::SpaceRoomJoinRule,
+    EventId, IdParseError, Int, OwnedEventId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
+    OwnedTransactionId, OwnedUserId, RoomId, ServerName, UserId,
 };
 use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
 use tokio::fs;

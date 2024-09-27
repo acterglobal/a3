@@ -10,8 +10,10 @@ use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use matrix_sdk_base::ruma::events::{room::message::TextMessageEventContent, MessageLikeEventType};
-use matrix_sdk_base::ruma::{EventId, OwnedEventId, OwnedRoomId, OwnedUserId};
+use matrix_sdk_base::ruma::{
+    events::{room::message::TextMessageEventContent, MessageLikeEventType},
+    EventId, OwnedEventId, OwnedRoomId, OwnedUserId,
+};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,

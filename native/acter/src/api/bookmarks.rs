@@ -1,8 +1,9 @@
-use crate::RUNTIME;
 use acter_core::events::bookmarks::BookmarksEventContent;
 use anyhow::Result;
 use matrix_sdk::Account;
 use tracing::warn;
+
+use crate::RUNTIME;
 
 pub struct Bookmarks {
     inner: BookmarksEventContent,

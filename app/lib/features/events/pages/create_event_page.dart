@@ -56,17 +56,14 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     // description
     final desc = event.description();
     if (desc != null) {
-      final formatted = desc.formatted();
-      if (formatted != null) {
-        textEditorState =
-            EditorState(document: ActerDocumentHelpers.fromHtml(formatted));
-      } else {
-        textEditorState = EditorState(
-          document: ActerDocumentHelpers.fromMarkdown(
-            desc.body(),
-          ),
-        );
-      }
+      textEditorState = EditorState(
+        document: ActerDocumentHelpers.parse(
+          desc.body(),
+          htmlContent: desc.formatted(),
+        ),
+      );
+    } else {
+      textEditorState = EditorState.blank();
     }
 
     // Getting start and end date time
@@ -377,10 +374,12 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
             editable: true,
             autoFocus: false,
             onChanged: (body, html) {
-              final document = html != null
-                  ? ActerDocumentHelpers.fromHtml(html)
-                  : ActerDocumentHelpers.fromMarkdown(body);
-              textEditorState = EditorState(document: document);
+              textEditorState = EditorState(
+                document: ActerDocumentHelpers.parse(
+                  body,
+                  htmlContent: html,
+                ),
+              );
             },
           ),
         ),

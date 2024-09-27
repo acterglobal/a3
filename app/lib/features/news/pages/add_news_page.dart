@@ -54,9 +54,9 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       final changed = prevState?.currentNewsSlide != nextState.currentNewsSlide;
       if (isText && changed) {
         final next = nextState.currentNewsSlide!;
-        final document = next.html != null
-            ? ActerDocumentHelpers.fromHtml(next.html!)
-            : ActerDocumentHelpers.fromMarkdown(next.text ?? '');
+        final document =
+            ActerDocumentHelpers.parse(next.text ?? '', htmlContent: next.html);
+
         final autoFocus =
             (next.html?.isEmpty ?? true) && (next.text?.isEmpty ?? true);
 

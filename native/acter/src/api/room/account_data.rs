@@ -1,9 +1,11 @@
-use crate::RUNTIME;
-
-use super::Room;
 use acter_core::events::room::UserSettingsEventContent;
 use anyhow::Result;
 use tracing::error;
+
+use crate::RUNTIME;
+
+use super::Room;
+
 impl Room {
     pub(crate) async fn user_settings(&self) -> Result<UserSettingsEventContent> {
         let room = self.room.clone();

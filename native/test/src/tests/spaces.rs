@@ -1,4 +1,4 @@
-use acter::{new_join_rule_builder, new_space_settings_builder};
+use acter::api::{new_join_rule_builder, new_space_settings_builder};
 use acter_core::statics::KEYS;
 use anyhow::{bail, Result};
 use matrix_sdk_base::ruma::events::{
