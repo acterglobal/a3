@@ -78,20 +78,26 @@ class NewsSection extends ConsumerWidget {
         crossAxisCount: max(2, min(widthCount, minCount)),
         children: List.generate(
           count,
-          (index) => newsItemUI(updateList[index]),
+          (index) => newsItemUI(context, updateList[index]),
         ),
       ),
     );
   }
 
-  Widget newsItemUI(NewsEntry newsEntry) {
+  Widget newsItemUI(BuildContext context, NewsEntry newsEntry) {
     final List<NewsSlide> newsSlides = newsEntry.slides().toList();
     final slide = newsSlides[0];
 
-    return Container(
-      height: 300,
-      margin: const EdgeInsets.all(6),
-      child: NewsSlideItem(slide: slide, showRichContent: false),
+    return InkWell(
+      onTap: () => context.pushNamed(
+        Routes.spaceUpdates.name,
+        pathParameters: {'spaceId': spaceId},
+      ),
+      child: Container(
+        height: 300,
+        margin: const EdgeInsets.all(6),
+        child: NewsSlideItem(slide: slide, showRichContent: false),
+      ),
     );
   }
 }
