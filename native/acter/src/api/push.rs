@@ -490,7 +490,8 @@ impl Client {
                         "content-available": 1,
                         // the fallback message if the extension fails to load:
                         "alert": {
-                            "title": "New messages available",
+                            "title": "Acter",
+                            "body": "New messages available",
                         },
 
                         // Further information: by sending only the event-id and including the `alert`
