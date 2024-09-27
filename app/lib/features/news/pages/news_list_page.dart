@@ -36,15 +36,22 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
+    return ValueListenableBuilder(
+      valueListenable: gridMode,
+      builder: (context, value, child) {
+        return Scaffold(
+          extendBodyBehindAppBar: !value,
+          appBar: _buildAppBar(value),
+          body: _buildBody(value),
+        );
+      },
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(bool gridMode) {
     final spaceId = widget.spaceId;
     return AppBar(
+      backgroundColor: Colors.transparent,
       centerTitle: false,
       title: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -55,19 +62,14 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
         ],
       ),
       actions: [
-        ValueListenableBuilder(
-          valueListenable: gridMode,
-          builder: (context, value, child) {
-            return IconButton(
-              onPressed: () {
-                gridMode.value = !gridMode.value;
-                currentIndex.value = 0;
-              },
-              icon: value
-                  ? const Icon(Icons.fullscreen)
-                  : const Icon(Icons.grid_view),
-            );
+        IconButton(
+          onPressed: () {
+            this.gridMode.value = !this.gridMode.value;
+            currentIndex.value = 0;
           },
+          icon: gridMode
+              ? const Icon(Icons.fullscreen)
+              : const Icon(Icons.grid_view),
         ),
         AddButtonWithCanPermission(
           canString: 'CanPostNews',
@@ -80,29 +82,24 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(bool gridMode) {
     final newsListLoader = ref.watch(newsListProvider(widget.spaceId));
 
     return newsListLoader.when(
       data: (newsList) {
-        return ValueListenableBuilder(
-          valueListenable: gridMode,
-          builder: (context, value, child) {
-            if (newsList.isEmpty) return newsEmptyStateUI(context);
-            return value
-                ? NewsGridView(
-                    newsList: newsList,
-                    onTapNewItem: (index) {
-                      gridMode.value = !gridMode.value;
-                      currentIndex.value = index;
-                    },
-                  )
-                : NewsFullView(
-                    newsList: newsList,
-                    initialPageIndex: currentIndex.value,
-                  );
-          },
-        );
+        if (newsList.isEmpty) return newsEmptyStateUI(context);
+        return gridMode
+            ? NewsGridView(
+                newsList: newsList,
+                onTapNewItem: (index) {
+                  this.gridMode.value = !this.gridMode.value;
+                  currentIndex.value = index;
+                },
+              )
+            : NewsFullView(
+                newsList: newsList,
+                initialPageIndex: currentIndex.value,
+              );
       },
       error: (e, s) => newsErrorUI(context, e, s),
       loading: () => newsLoadingUI(),
