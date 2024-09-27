@@ -41,14 +41,14 @@ class AsyncNewsListNotifier
   }
 
   Future<List<NewsEntry>> _fetchNews(Client client) async {
-    //GET ALL PINS
+    //GET ALL NEWS
     if (arg == null) {
       return (await client.latestNewsEntries(25))
           .toList(); // this might throw internally
     } else {
-      //GET SPACE PINS
+      //GET SPACE NEWS
       final space = await client.space(arg!);
-      return (await space.latestNewsEntries(25))
+      return (await space.latestNewsEntries(100))
           .toList(); // this might throw internally
     }
   }
