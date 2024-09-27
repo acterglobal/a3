@@ -3,20 +3,21 @@ use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
 use matrix_sdk::{executor::JoinHandle, ComposerDraft, ComposerDraftType, RoomMemberships};
-use matrix_sdk_base::ruma::api::client::room::{create_room, Visibility};
-use matrix_sdk_base::ruma::assign;
-use matrix_sdk_base::ruma::events::{
-    receipt::{ReceiptThread, ReceiptType},
-    room::{
-        avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-        join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
-    },
-    space::parent::SpaceParentEventContent,
-    InitialStateEvent,
-};
 use matrix_sdk_base::ruma::{
-    serde::Raw, MxcUri, OwnedEventId, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomAliasId,
-    RoomId, RoomOrAliasId, ServerName, UserId,
+    api::client::room::{create_room, Visibility},
+    assign,
+    events::{
+        receipt::{ReceiptThread, ReceiptType},
+        room::{
+            avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+            join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+        },
+        space::parent::SpaceParentEventContent,
+        InitialStateEvent,
+    },
+    serde::Raw,
+    MxcUri, OwnedEventId, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomAliasId, RoomId,
+    RoomOrAliasId, ServerName, UserId,
 };
 use matrix_sdk_ui::{timeline::RoomExt, Timeline};
 use std::{

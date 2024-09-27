@@ -1,6 +1,5 @@
 use matrix_sdk::Client;
-use matrix_sdk_base::ruma::OwnedRoomId;
-use matrix_sdk_base::ruma::{OwnedUserId, UserId};
+use matrix_sdk_base::ruma::{OwnedRoomId, OwnedUserId, UserId};
 use scc::hash_map::{Entry, HashMap};
 use std::collections::HashSet as StdHashSet;
 use std::sync::{Arc, Mutex as StdMutex};
@@ -393,9 +392,10 @@ mod tests {
     use super::*;
     use crate::models::{TestModel, TestModelBuilder};
     use anyhow::bail;
-    use matrix_sdk_base::ruma::{api::MatrixVersion, user_id};
-    use matrix_sdk_base::ruma::{event_id, OwnedEventId, OwnedRoomId};
-    use matrix_sdk_base::store::{MemoryStore, StoreConfig};
+    use matrix_sdk_base::{
+        ruma::{api::MatrixVersion, event_id, user_id, OwnedEventId, OwnedRoomId},
+        store::{MemoryStore, StoreConfig},
+    };
 
     async fn fresh_store_and_client() -> Result<(Store, Client)> {
         let config = StoreConfig::default().state_store(MemoryStore::new());

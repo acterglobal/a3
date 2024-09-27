@@ -1,18 +1,25 @@
 use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{room::Receipts, RoomState};
-use matrix_sdk_base::ruma::api::client::receipt::create_receipt;
-use matrix_sdk_base::ruma::assign;
-use matrix_sdk_base::ruma::events::{
-    receipt::ReceiptThread,
-    relation::Annotation,
-    room::{
-        message::{AudioInfo, FileInfo, ForwardThread, LocationInfo, RoomMessageEvent, VideoInfo},
-        ImageInfo,
-    },
-    MessageLikeEventType,
+use matrix_sdk::{
+    room::{edit::EditedContent, Receipts},
+    RoomState,
 };
-use matrix_sdk_base::ruma::{EventId, OwnedEventId, OwnedTransactionId};
+use matrix_sdk_base::ruma::{
+    api::client::receipt::create_receipt,
+    assign,
+    events::{
+        receipt::ReceiptThread,
+        relation::Annotation,
+        room::{
+            message::{
+                AudioInfo, FileInfo, ForwardThread, LocationInfo, RoomMessageEvent, VideoInfo,
+            },
+            ImageInfo,
+        },
+        MessageLikeEventType,
+    },
+    EventId, OwnedEventId, OwnedTransactionId,
+};
 use matrix_sdk_ui::timeline::Timeline;
 use std::{ops::Deref, sync::Arc};
 use tracing::info;
@@ -152,9 +159,8 @@ impl TimelineStream {
                     .item_by_event_id(&event_id)
                     .await
                     .context("Not found which item would be edited")?;
-                let new_content = matrix_sdk::room::edit::EditedContent::RoomMessage(
-                    draft.into_room_msg(&room).await?,
-                );
+                let event_content = draft.into_room_msg(&room).await?;
+                let new_content = EditedContent::RoomMessage(event_content);
                 timeline.edit(&item, new_content).await?;
                 Ok(true)
             })
@@ -233,14 +239,17 @@ impl TimelineStream {
     pub async fn mark_as_read(&self, user_triggered: bool) -> Result<bool> {
         let timeline = self.timeline.clone();
         let receipt = if user_triggered {
-            matrix_sdk_base::ruma::api::client::receipt::create_receipt::v3::ReceiptType::Read
+            create_receipt::v3::ReceiptType::Read
         } else {
-            matrix_sdk_base::ruma::api::client::receipt::create_receipt::v3::ReceiptType::FullyRead
+            create_receipt::v3::ReceiptType::FullyRead
         };
 
-        Ok(RUNTIME
-            .spawn(async move { timeline.mark_as_read(receipt).await })
-            .await??)
+        RUNTIME
+            .spawn(async move {
+                let result = timeline.mark_as_read(receipt).await?;
+                Ok(result)
+            })
+            .await?
     }
 
     pub async fn send_multiple_receipts(

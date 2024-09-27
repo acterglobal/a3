@@ -1,5 +1,6 @@
-use matrix_sdk_base::ruma::events::AnyInitialStateEvent;
-use matrix_sdk_base::ruma::{serde::Raw, OwnedRoomAliasId, RoomAliasId};
+use matrix_sdk_base::ruma::{
+    events::AnyInitialStateEvent, serde::Raw, OwnedRoomAliasId, RoomAliasId,
+};
 use serde_json::{json, value::to_raw_value};
 
 pub static PURPOSE_FIELD: &str = "m.room.purpose";
