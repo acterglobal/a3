@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Client, Space, SpaceDiff;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -11,8 +12,7 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
-  Future<Space?> _getSpace() async {
-    final client = ref.read(alwaysClientProvider);
+  Future<Space?> _getSpace(Client client) async {
     return await client.space(arg);
   }
 
@@ -23,7 +23,7 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
     _poller = _listener.listen(
       (data) async {
         _log.info('seen update $arg');
-        state = await AsyncValue.guard(_getSpace);
+        state = await AsyncValue.guard(() async => await _getSpace(client));
       },
       onError: (e, s) {
         _log.severe('space stream errored', e, s);
@@ -33,7 +33,7 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await _getSpace();
+    return await _getSpace(client);
   }
 }
 

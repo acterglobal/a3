@@ -1,9 +1,11 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use matrix_sdk_base::ruma::events::macros::EventContent;
-use matrix_sdk_base::ruma::events::room::message::{
-    AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-    LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+use matrix_sdk_base::ruma::events::{
+    macros::EventContent,
+    room::message::{
+        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+        LocationMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+    },
 };
 use serde::{Deserialize, Serialize};
 

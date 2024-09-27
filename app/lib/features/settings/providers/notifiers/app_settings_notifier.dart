@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Account, ActerUserAppSettings;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -12,8 +13,8 @@ class UserAppSettingsNotifier
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
-  Future<ActerUserAppSettings> _getSettings() async {
-    return await ref.read(accountProvider).acterAppSettings();
+  Future<ActerUserAppSettings> _getSettings(Account account) async {
+    return await account.acterAppSettings();
   }
 
   @override
@@ -23,7 +24,7 @@ class UserAppSettingsNotifier
     _poller = _listener.listen(
       (data) async {
         // refresh on update
-        state = await AsyncValue.guard(_getSettings);
+        state = await AsyncValue.guard(() async => await _getSettings(account));
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);
@@ -33,6 +34,6 @@ class UserAppSettingsNotifier
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await _getSettings();
+    return await _getSettings(account);
   }
 }

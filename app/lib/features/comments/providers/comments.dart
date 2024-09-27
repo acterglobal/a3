@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Comment, CommentsManager;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -23,7 +24,7 @@ class AsyncCommentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
     _poller = _listener.listen(
       (data) async {
         // reset
-        state = await AsyncValue.guard(() => manager.reload());
+        state = await AsyncValue.guard(() async => await manager.reload());
       },
       onError: (e, s) {
         _log.severe('msg stream errored', e, s);

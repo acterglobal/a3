@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show DeviceEvent, DeviceRecord, SessionManager;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -11,6 +12,10 @@ class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
   Stream<DeviceEvent>? _listener;
   StreamSubscription<DeviceEvent>? _poller;
 
+  Future<List<DeviceRecord>> _getSessions(SessionManager manager) async {
+    return (await manager.allSessions()).toList();
+  }
+
   @override
   Future<List<DeviceRecord>> build() async {
     final client = ref.watch(alwaysClientProvider);
@@ -19,8 +24,7 @@ class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
     _listener = client.deviceEventRx();
     _poller = _listener?.listen(
       (data) async {
-        final sessions = (await manager.allSessions()).toList();
-        state = AsyncValue.data(sessions);
+        state = await AsyncValue.guard(() async => await _getSessions(manager));
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);
@@ -31,7 +35,6 @@ class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
     );
     ref.onDispose(() => _poller?.cancel());
 
-    final sessions = (await manager.allSessions()).toList();
-    return sessions;
+    return await _getSessions(manager);
   }
 }

@@ -7,10 +7,8 @@ use matrix_sdk::{
     room::Room,
     Client as SdkClient,
 };
-use matrix_sdk_base::ruma::events::receipt::{
-    ReceiptThread as SdkReceiptThread, ReceiptType, SyncReceiptEvent,
-};
 use matrix_sdk_base::ruma::{
+    events::receipt::{ReceiptThread as SdkReceiptThread, ReceiptType, SyncReceiptEvent},
     EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, UserId,
 };
 use std::sync::Arc;

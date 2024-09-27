@@ -2,8 +2,10 @@ use chrono::{DateTime, Utc};
 use derive_builder::Builder;
 use indexmap::IndexMap;
 use matrix_sdk::room::Room;
-use matrix_sdk_base::ruma::events::{receipt::Receipt, room::message::MessageType};
-use matrix_sdk_base::ruma::{OwnedEventId, OwnedTransactionId, OwnedUserId};
+use matrix_sdk_base::ruma::{
+    events::{receipt::Receipt, room::message::MessageType},
+    OwnedEventId, OwnedTransactionId, OwnedUserId,
+};
 use matrix_sdk_ui::timeline::{
     EventSendState as SdkEventSendState, EventTimelineItem, MembershipChange, TimelineItem,
     TimelineItemContent, TimelineItemKind, VirtualTimelineItem,

@@ -12,12 +12,12 @@ pub mod tasks;
 pub mod three_pid;
 
 pub use common::*;
-use matrix_sdk_base::ruma::events::{
-    reaction::{ReactionEvent, ReactionEventContent},
-    EventTypeDeHelper, StaticEventContent,
-};
-use matrix_sdk_base::ruma::exports::{
-    serde::de::Error as SerdeDeError, serde_json as smart_serde_json,
+use matrix_sdk_base::ruma::{
+    events::{
+        reaction::{ReactionEvent, ReactionEventContent},
+        EventTypeDeHelper, StaticEventContent,
+    },
+    exports::{serde::de::Error as SerdeDeError, serde_json as smart_serde_json},
 };
 
 #[derive(Clone, Debug)]
