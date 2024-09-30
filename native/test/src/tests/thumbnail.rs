@@ -1,5 +1,5 @@
 use acter::api::{MediaSource, RoomMessage, ThumbnailInfo};
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
 use std::io::Write;
@@ -10,13 +10,13 @@ use tokio_retry::{
     Retry,
 };
 
-use crate::utils::random_user_with_random_convo;
+use crate::utils::{random_user_with_random_convo, random_user_with_random_space};
 
 #[tokio::test]
-async fn image_thumbnail_support() -> Result<()> {
+async fn room_msg_can_support_image_thumbnail() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let (mut user, room_id) = random_user_with_random_convo("image_thumbnail").await?;
+    let (mut user, room_id) = random_user_with_random_convo("room_msg_image_thumbnail").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
@@ -125,10 +125,10 @@ async fn image_thumbnail_support() -> Result<()> {
 }
 
 #[tokio::test]
-async fn video_thumbnail_support() -> Result<()> {
+async fn room_msg_can_support_video_thumbnail() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let (mut user, room_id) = random_user_with_random_convo("video_thumbnail").await?;
+    let (mut user, room_id) = random_user_with_random_convo("room_msg_video_thumbnail").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
@@ -258,4 +258,162 @@ fn match_media_msg(
         }
     }
     None
+}
+
+#[tokio::test]
+async fn news_can_support_image_thumbnail() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (mut user, room_id) = random_user_with_random_space("news_image_thumbnail").await?;
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
+    })
+    .await?;
+
+    let bytes = include_bytes!("./fixtures/kingfisher.jpg");
+    let mut tmp_jpg = NamedTempFile::new()?;
+    tmp_jpg.as_file_mut().write_all(bytes)?;
+
+    let bytes = include_bytes!("./fixtures/PNG_transparency_demonstration_1.png");
+    let size = bytes.len() as u64;
+    let mut tmp_png = NamedTempFile::new()?;
+    tmp_png.as_file_mut().write_all(bytes)?;
+
+    let space = user.space(room_id.to_string()).await?;
+    let mut draft = space.news_draft()?;
+    let image_draft = user
+        .image_draft(
+            tmp_jpg.path().to_string_lossy().to_string(),
+            "image/jpeg".to_string(),
+        )
+        .thumbnail_source(tmp_png.path().to_string_lossy().to_string())
+        .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
+    draft.add_slide(Box::new(image_draft.into())).await?;
+    draft.send().await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let space_cl = space.clone();
+    Retry::spawn(retry_strategy, move || {
+        let inner_space = space_cl.clone();
+        async move {
+            if inner_space.latest_news_entries(1).await?.len() != 1 {
+                bail!("news not found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let slides = space.latest_news_entries(1).await?;
+    let final_entry = slides.first().expect("Item is there");
+    let image_slide = final_entry.get_slide(0).expect("we have a slide");
+    assert_eq!(image_slide.type_str(), "image");
+
+    let msg_content = image_slide.msg_content();
+    assert!(
+        msg_content.thumbnail_source().is_some(),
+        "we sent thumbnail, but thumbnail source not available",
+    );
+    let thumbnail_info = msg_content
+        .thumbnail_info()
+        .context("we sent thumbnail, but thumbnail info not available")?;
+    assert_eq!(
+        thumbnail_info.mimetype(),
+        Some("image/png".to_owned()),
+        "we sent thumbnail in png format",
+    );
+    assert_eq!(
+        thumbnail_info.size(),
+        Some(size),
+        "wrong file size in thumbnail",
+    );
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn news_can_support_video_thumbnail() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (mut user, room_id) = random_user_with_random_space("news_video_thumbnail").await?;
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
+    })
+    .await?;
+
+    let bytes = include_bytes!("./fixtures/big_buck_bunny.mp4");
+    let mut tmp_mp4 = NamedTempFile::new()?;
+    tmp_mp4.as_file_mut().write_all(bytes)?;
+
+    let bytes = include_bytes!("./fixtures/PNG_transparency_demonstration_1.png");
+    let size = bytes.len() as u64;
+    let mut tmp_png = NamedTempFile::new()?;
+    tmp_png.as_file_mut().write_all(bytes)?;
+
+    let space = user.space(room_id.to_string()).await?;
+    let mut draft = space.news_draft()?;
+    let video_draft = user
+        .video_draft(
+            tmp_mp4.path().to_string_lossy().to_string(),
+            "video/mp4".to_string(),
+        )
+        .thumbnail_source(tmp_png.path().to_string_lossy().to_string())
+        .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
+    draft.add_slide(Box::new(video_draft.into())).await?;
+    draft.send().await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let space_cl = space.clone();
+    Retry::spawn(retry_strategy, move || {
+        let inner_space = space_cl.clone();
+        async move {
+            if inner_space.latest_news_entries(1).await?.len() != 1 {
+                bail!("news not found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let slides = space.latest_news_entries(1).await?;
+    let final_entry = slides.first().expect("Item is there");
+    let video_slide = final_entry.get_slide(0).expect("we have a slide");
+    assert_eq!(video_slide.type_str(), "video");
+
+    let msg_content = video_slide.msg_content();
+    assert!(
+        msg_content.thumbnail_source().is_some(),
+        "we sent thumbnail, but thumbnail source not available",
+    );
+    let thumbnail_info = msg_content
+        .thumbnail_info()
+        .context("we sent thumbnail, but thumbnail info not available")?;
+    assert_eq!(
+        thumbnail_info.mimetype(),
+        Some("image/png".to_owned()),
+        "we sent thumbnail in png format",
+    );
+    assert_eq!(
+        thumbnail_info.size(),
+        Some(size),
+        "wrong file size in thumbnail",
+    );
+
+    Ok(())
 }
