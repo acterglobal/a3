@@ -139,7 +139,7 @@ impl Attachment {
                                 });
                             (request, filename)
                         }
-                        AttachmentContent::Video(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content))=> {
+                        AttachmentContent::Video(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
                             let request = content
                                 .info
                                 .as_ref()
@@ -159,7 +159,7 @@ impl Attachment {
                                 });
                             (request, filename)
                         }
-                        AttachmentContent::File(content) | AttachmentContent::Fallback(FallbackAttachmentContent::File(content))=> {
+                        AttachmentContent::File(content) | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
                             let request = content
                                 .info
                                 .as_ref()
@@ -218,7 +218,7 @@ impl Attachment {
                                 });
                             (Some(request), filename)
                         }
-                        AttachmentContent::Audio(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content))=> {
+                        AttachmentContent::Audio(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
                             let request = MediaRequest {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,

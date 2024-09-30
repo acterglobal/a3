@@ -305,7 +305,7 @@ object ReceiptRecord {
 object TypingEvent {
     /// Get list of user id
     fn user_ids() -> Vec<UserId>;
-} 
+}
 
 object TextMessageContent {
     fn body() -> string;
@@ -437,7 +437,7 @@ object NewsEntry {
 
     /// get event id
     fn event_id() -> EventId;
-    
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
@@ -610,7 +610,7 @@ object CalendarEvent {
     fn utc_end() -> UtcDateTime;
     /// whether to show the time or just the dates
     fn show_without_time() -> bool;
-    /// locations
+    // /// locations
     // fn locations() -> Vec<Location>;
     /// event id
     fn event_id() -> EventId;
@@ -641,7 +641,7 @@ object CalendarEvent {
     /// Generate a iCal as a String for sharing with others
     fn ical_for_sharing(file_name: string) -> Result<bool>;
 
-    /// get the physical location(s) details 
+    /// get the physical location(s) details
     fn physical_locations() -> Vec<EventLocationInfo>;
 
     /// get the virtual location(s) details
@@ -689,7 +689,7 @@ object CalendarEventDraft {
 
     /// set the description html for this calendar event
     fn description_html(text: string, html: string);
-    
+
     fn unset_description();
 
     /// set the utc_start for this calendar event in rfc3339 format
@@ -864,13 +864,13 @@ object Reaction {
 
 /// Sending state of outgoing message.
 object EventSendState {
-    // one of NotSentYet/SendingFailed/Cancelled/Sent
+    /// one of NotSentYet/SendingFailed/Cancelled/Sent
     fn state() -> string;
-    
-    // gives error value for SendingFailed only
+
+    /// gives error value for SendingFailed only
     fn error() -> Option<string>;
 
-    // gives event id for Sent only
+    /// gives event id for Sent only
     fn event_id() -> Option<EventId>;
 }
 
@@ -1105,9 +1105,9 @@ object Room {
 
     /// Unset the `mute` for this room.
     fn unmute() -> Future<Result<bool>>;
-    
+
     /// set the RoomNotificationMode
-    fn set_notification_mode(new_mode: Option<string>) -> Future<Result<bool>>; 
+    fn set_notification_mode(new_mode: Option<string>) -> Future<Result<bool>>;
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
@@ -1174,7 +1174,10 @@ object MsgDraft {
 
     /// whether to mention the entire room
     fn add_room_mention(mention: bool) -> Result<MsgDraft>;
-    
+
+    /// available for only image/audio/video/file
+    fn mimetype(value: string) -> MsgDraft;
+
     /// available for only image/audio/video/file
     fn size(value: u64) -> MsgDraft;
 
@@ -1190,13 +1193,22 @@ object MsgDraft {
     /// available for only image/video
     fn blurhash(value: string) -> MsgDraft;
 
+    /// Provide the file system path to a static thumbnail
+    /// for this media to be read and shared upon sending
+    ///
+    /// available for only image/video/file/location
+    fn thumbnail_file_path(value: string) -> MsgDraft;
+
+    /// available for only image/video/file/location
+    fn thumbnail_info(width: Option<u64>, height: Option<u64>, mimetype: Option<string>, size: Option<u64>) -> MsgDraft;
+
     /// available for only file
     fn filename(value: string) -> MsgDraft;
 
     /// available for only location
     fn geo_uri(value: string) -> MsgDraft;
 
-    // convert this into a NewsSlideDraft;
+    /// convert this into a NewsSlideDraft;
     fn into_news_slide_draft() -> NewsSlideDraft;
 }
 
@@ -1240,7 +1252,6 @@ object TimelineStream {
     /// send reaction to event
     /// if sent twice, reaction is redacted
     fn toggle_reaction(event_id: string, key: string) -> Future<Result<bool>>;
-
 }
 
 
@@ -1537,10 +1548,10 @@ object AttachmentsManager {
     /// create attachment for given link draft
     fn link_draft(url: string, name: Option<string>) -> Future<Result<AttachmentDraft>>;
 
-    // inform about the changes to this manager
+    /// inform about the changes to this manager
     fn reload() -> Future<Result<AttachmentsManager>>;
-    
-    // redact attachment 
+
+    /// redact attachment
     fn redact(attachment_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// subscribe to the changes of this model key
@@ -1637,7 +1648,7 @@ object Task {
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<Task>>;
-    
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
@@ -1924,7 +1935,7 @@ object SpaceHierarchyRoomInfo {
     fn join_rule_str() -> string;
     /// whether to have avatar
     fn has_avatar() -> bool;
-    
+
     /// is this a suggested room?
     fn suggested() -> bool;
 
@@ -1932,7 +1943,7 @@ object SpaceHierarchyRoomInfo {
     /// if thumb size is given, avatar thumbnail is returned
     /// if thumb size is not given, avatar file is returned
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
-    // recommended server to try to join via
+    /// recommended server to try to join via
     fn via_server_name() -> Option<string>;
 }
 
@@ -2340,7 +2351,7 @@ object Member {
 object ActerUserAppSettings {
     /// either of 'always', 'never' or 'wifiOnly'
     fn auto_download_chat() -> Option<string>;
-    
+
     /// whether to allow sending typing notice of users
     fn typing_notice() -> Option<bool>;
 
@@ -2407,8 +2418,8 @@ object Account {
     /// listen to updates to the app settings
     fn subscribe_app_settings_stream() -> Stream<bool>;
 
-    // deactivate the account. This can not be reversed. The username will
-    // be blocked from any future usage, all personal data will be removed.
+    /// deactivate the account. This can not be reversed. The username will
+    /// be blocked from any future usage, all personal data will be removed.
     fn deactivate(password: string) -> Future<Result<bool>>;
 
     /// change password
@@ -2588,7 +2599,7 @@ object NotificationItem {
     fn image() -> Future<Result<buffer<u8>>>;
     fn image_path(tmp_dir: string) -> Future<Result<string>>;
 
-    // if this is an invite, this the room it invites to
+    /// if this is an invite, this the room it invites to
     fn room_invite() -> Option<string>;
 }
 
@@ -2871,7 +2882,7 @@ object Client {
 
     /// getting a notification item from the notification data;
     fn get_notification_item(room_id: string, event_id: string) -> Future<Result<NotificationItem>>;
-    
+
     /// get all upcoming events, whether I responded or not
     fn all_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
 
@@ -2927,7 +2938,7 @@ object NotificationSettings {
 
     /// set default RoomNotificationMode for this combination
     fn set_default_notification_mode(is_encrypted: bool, is_one_on_one: bool, mode: string) -> Future<Result<bool>>;
-    
+
     /// app settings
     fn global_content_setting(app_key: string) -> Future<Result<bool>>;
     fn set_global_content_setting(app_key: string, enabled: bool) -> Future<Result<bool>>;
@@ -3216,7 +3227,7 @@ object BackupManager {
     /// state as a string via a stream. Issues the current state immediately
     fn state_stream() -> Stream<string>;
 
-    /// Open the existing secret store using the given key and import the keys 
+    /// Open the existing secret store using the given key and import the keys
     fn recover(secret: string) -> Future<Result<bool>>;
 
 }
