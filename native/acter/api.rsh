@@ -1193,8 +1193,11 @@ object MsgDraft {
     /// available for only image/video
     fn blurhash(value: string) -> MsgDraft;
 
+    /// Provide the file system path to a static thumbnail
+    /// for this media to be read and shared upon sending
+    ///
     /// available for only image/video/file/location
-    fn thumbnail_source(value: string) -> MsgDraft;
+    fn thumbnail_file_path(value: string) -> MsgDraft;
 
     /// available for only image/video/file/location
     fn thumbnail_info(width: Option<u64>, height: Option<u64>, mimetype: Option<string>, size: Option<u64>) -> MsgDraft;

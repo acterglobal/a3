@@ -58,7 +58,7 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
             tmp_jpg.path().to_string_lossy().to_string(),
             "image/jpeg".to_string(),
         )
-        .thumbnail_source(tmp_png.path().to_string_lossy().to_string())
+        .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
     timeline.send_message(Box::new(draft)).await?;
 
@@ -170,7 +170,7 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
             tmp_mp4.path().to_string_lossy().to_string(),
             "video/mp4".to_string(),
         )
-        .thumbnail_source(tmp_png.path().to_string_lossy().to_string())
+        .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
     timeline.send_message(Box::new(draft)).await?;
 
@@ -296,7 +296,7 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
             tmp_jpg.path().to_string_lossy().to_string(),
             "image/jpeg".to_string(),
         )
-        .thumbnail_source(tmp_png.path().to_string_lossy().to_string())
+        .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
@@ -375,7 +375,7 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
             tmp_mp4.path().to_string_lossy().to_string(),
             "video/mp4".to_string(),
         )
-        .thumbnail_source(tmp_png.path().to_string_lossy().to_string())
+        .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
     draft.add_slide(Box::new(video_draft.into())).await?;
     draft.send().await?;
@@ -494,7 +494,7 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
             jpg_file.path().to_string_lossy().to_string(),
             "image/jpeg".to_string(),
         )
-        .thumbnail_source(png_file.path().to_string_lossy().to_string())
+        .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
     let attachment_id = attachments_manager
         .content_draft(Box::new(base_draft))
@@ -587,7 +587,7 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
             mp4_file.path().to_string_lossy().to_string(),
             "video/mp4".to_string(),
         )
-        .thumbnail_source(png_file.path().to_string_lossy().to_string())
+        .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
     let attachment_id = attachments_manager
         .content_draft(Box::new(base_draft))

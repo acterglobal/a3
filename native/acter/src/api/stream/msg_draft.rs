@@ -397,10 +397,11 @@ impl MsgDraft {
             mentions,
         }
     }
-    pub fn thumbnail_source(&self, value: String) -> Self {
+    pub fn thumbnail_file_path(&self, value: String) -> Self {
         let MsgDraft { inner, mentions } = self.clone();
+        let v = MediaSource::Plain(OwnedMxcUri::from(value));
         MsgDraft {
-            inner: inner.thumbnail_source(MediaSource::Plain(OwnedMxcUri::from(value))),
+            inner: inner.thumbnail_source(v),
             mentions,
         }
     }

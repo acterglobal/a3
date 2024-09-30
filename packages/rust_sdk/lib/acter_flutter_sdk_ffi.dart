@@ -20418,22 +20418,23 @@ class Api {
         int,
         int,
       )>();
-  late final _msgDraftThumbnailSourcePtr = _lookup<
+  late final _msgDraftThumbnailFilePathPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
             ffi.IntPtr,
             ffi.IntPtr,
             ffi.UintPtr,
             ffi.UintPtr,
-          )>>("__MsgDraft_thumbnail_source");
+          )>>("__MsgDraft_thumbnail_file_path");
 
-  late final _msgDraftThumbnailSource = _msgDraftThumbnailSourcePtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _msgDraftThumbnailFilePath =
+      _msgDraftThumbnailFilePathPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _msgDraftThumbnailInfoPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -42717,8 +42718,11 @@ class MsgDraft {
     return tmp6;
   }
 
+  /// Provide the file system path to a static thumbnail
+  /// for this media to be read and shared upon sending
+  ///
   /// available for only image/video/file/location
-  MsgDraft thumbnailSource(
+  MsgDraft thumbnailFilePath(
     String value,
   ) {
     final tmp1 = value;
@@ -42735,7 +42739,7 @@ class MsgDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._msgDraftThumbnailSource(
+    final tmp5 = _api._msgDraftThumbnailFilePath(
       tmp0,
       tmp2,
       tmp3,
