@@ -8,8 +8,7 @@ class EventListNotifier
     extends FamilyAsyncNotifier<List<ffi.CalendarEvent>, String?> {
   late Stream<bool> _listener;
 
-  Future<List<ffi.CalendarEvent>> _getEventList() async {
-    final client = ref.watch(alwaysClientProvider);
+  Future<List<ffi.CalendarEvent>> _getEventList(ffi.Client client) async {
     final spaceId = arg;
     //GET ALL EVENTS
     if (spaceId == null) {
@@ -35,9 +34,9 @@ class EventListNotifier
     }
 
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(_getEventList);
+      state = await AsyncValue.guard(() => _getEventList(client));
     });
-    return await _getEventList();
+    return await _getEventList(client);
   }
 }
 
@@ -45,8 +44,7 @@ class AsyncCalendarEventNotifier
     extends AutoDisposeFamilyAsyncNotifier<ffi.CalendarEvent, String> {
   late Stream<bool> _listener;
 
-  Future<ffi.CalendarEvent> _getCalendarEvent() async {
-    final client = ref.read(alwaysClientProvider);
+  Future<ffi.CalendarEvent> _getCalendarEvent(ffi.Client client) async {
     return await client.waitForCalendarEvent(arg, null);
   }
 
@@ -55,8 +53,8 @@ class AsyncCalendarEventNotifier
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream(arg); // keep it resident in memory
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(_getCalendarEvent);
+      state = await AsyncValue.guard(() => _getCalendarEvent(client));
     });
-    return await _getCalendarEvent();
+    return await _getCalendarEvent(client);
   }
 }

@@ -53,8 +53,8 @@ final chatComposerDraftProvider = FutureProvider.autoDispose
 
 final chatTopic =
     FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
-  final c = await ref.watch(chatProvider(roomId).future);
-  return c?.topic();
+  final convo = await ref.watch(chatProvider(roomId).future);
+  return convo?.topic();
 });
 
 bool msgFilter(types.Message m) {

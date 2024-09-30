@@ -330,7 +330,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                 name: p0.body(),
                 size: p0.size() ?? 0,
                 uri: src.url(),
-                width: p0.width()?.toDouble() ?? 0,
+                width: p0.width()?.toDouble(),
                 metadata: repliedToContent,
               );
             });
@@ -481,18 +481,19 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.room.topic':
       case 'm.space.child':
       case 'm.space.parent':
+        final metadata = {
+          'itemType': 'event',
+          'eventType': eventType,
+          'eventState': eventItem.sendState(),
+          'receipts': receipts,
+        };
+        eventItem.msgContent().let((p0) => metadata['body'] = p0.body());
         return types.CustomMessage(
           author: author,
           createdAt: createdAt,
           id: uniqueId,
           remoteId: eventId,
-          metadata: {
-            'itemType': 'event',
-            'eventType': eventType,
-            'body': eventItem.msgContent()?.body(),
-            'eventState': eventItem.sendState(),
-            'receipts': receipts,
-          },
+          metadata: metadata,
         );
     }
 
@@ -777,14 +778,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             'eventType': eventType,
             'name': msgContent.body(),
             'size': msgContent.size() ?? 0,
-            'width': msgContent.width()?.toDouble(),
-            'height': msgContent.height()?.toDouble(),
             'base64': '',
             'eventState': eventState,
             'receipts': receipts,
             'was_edited': wasEdited,
             'isEditable': isEditable,
           };
+          msgContent.width().let((p0) => metadata['width'] = p0.toDouble());
+          msgContent.height().let((p0) => metadata['height'] = p0.toDouble());
           inReplyTo.let((p0) => metadata['repliedTo'] = p0);
           if (reactions.isNotEmpty) metadata['reactions'] = reactions;
           return types.CustomMessage(

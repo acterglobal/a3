@@ -219,11 +219,10 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
   ) async {
     try {
       EasyLoading.show(status: L10n.of(context).generateInviteCode);
-      final displayName =
+      final dispName =
           await ref.read(roomDisplayNameProvider(widget.roomId).future);
       String prefix =
-          (displayName?.replaceAll(RegExp(r'[^A-Za-z]'), '').toLowerCase() ??
-              '');
+          dispName?.replaceAll(RegExp(r'[^A-Za-z]'), '').toLowerCase() ?? '';
 
       final rng = Random();
 

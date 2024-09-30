@@ -220,10 +220,9 @@ class _SubtitleWidget extends ConsumerWidget {
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
 
     RoomEventItem? eventItem = latestMessage?.eventItem();
-    if (eventItem == null) {
-      return const SizedBox.shrink();
-    }
+    if (eventItem == null) return const SizedBox.shrink();
 
+    MsgContent? msgContent = eventItem.msgContent();
     String sender = eventItem.sender();
     String eventType = eventItem.eventType();
     // message event
@@ -249,10 +248,7 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.room.topic':
       case 'm.space.child':
       case 'm.space.parent':
-        MsgContent? msgContent = eventItem.msgContent();
-        if (msgContent == null) {
-          return const SizedBox();
-        }
+        if (msgContent == null) return const SizedBox();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -287,10 +283,7 @@ class _SubtitleWidget extends ConsumerWidget {
           case 'm.notice':
           case 'm.server_notice':
           case 'm.text':
-            MsgContent? msgContent = eventItem.msgContent();
-            if (msgContent == null) {
-              return const SizedBox.shrink();
-            }
+            if (msgContent == null) return const SizedBox.shrink();
             String body =
                 msgContent.formattedBody().let((p0) => simplifyBody(p0)) ??
                     msgContent.body();
@@ -323,10 +316,7 @@ class _SubtitleWidget extends ConsumerWidget {
             );
         }
       case 'm.reaction':
-        MsgContent? msgContent = eventItem.msgContent();
-        if (msgContent == null) {
-          return const SizedBox();
-        }
+        if (msgContent == null) return const SizedBox();
         String body =
             msgContent.formattedBody().let((p0) => simplifyBody(p0)) ??
                 msgContent.body();
@@ -358,10 +348,7 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.sticker':
-        MsgContent? msgContent = eventItem.msgContent();
-        if (msgContent == null) {
-          return const SizedBox();
-        }
+        if (msgContent == null) return const SizedBox();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -436,10 +423,7 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.room.member':
-        MsgContent? msgContent = eventItem.msgContent();
-        if (msgContent == null) {
-          return const SizedBox();
-        }
+        if (msgContent == null) return const SizedBox();
         String body =
             msgContent.formattedBody().let((p0) => simplifyBody(p0)) ??
                 msgContent.body();
@@ -470,10 +454,7 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.poll.start':
-        MsgContent? msgContent = eventItem.msgContent();
-        if (msgContent == null) {
-          return const SizedBox();
-        }
+        if (msgContent == null) return const SizedBox();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -538,10 +519,7 @@ class _TrailingWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
     RoomEventItem? eventItem = latestMessage?.eventItem();
-    if (eventItem == null) {
-      return const SizedBox.shrink();
-    }
-
+    if (eventItem == null) return const SizedBox.shrink();
     return Text(
       jiffyTime(context, eventItem.originServerTs()),
       style: Theme.of(context).textTheme.labelMedium,

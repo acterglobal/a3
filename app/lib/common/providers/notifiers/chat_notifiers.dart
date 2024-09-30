@@ -52,7 +52,7 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
         _log.info('received new latest message call for $roomId');
         state = ref
             .watch(chatProvider(roomId))
-            .whenData((cb) => cb?.latestMessage());
+            .whenData((convo) => convo?.latestMessage());
       },
       onError: (e, s) {
         _log.severe('latest msg stream errored', e, s);
@@ -63,7 +63,8 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return ref.watch(chatProvider(roomId)).valueOrNull?.latestMessage();
+    final convo = ref.read(chatProvider(roomId)).valueOrNull;
+    return convo?.latestMessage();
   }
 }
 
