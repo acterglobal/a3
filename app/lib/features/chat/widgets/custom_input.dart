@@ -827,7 +827,6 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
       final String text = widget.controller.text;
       final int start = selection.start;
       final newText = text.replaceRange(start, selection.end, '\n');
-      debugPrint('TEXT AFTER NEWLINE :$newText}');
       widget.controller.value = TextEditingValue(
         text: newText,
         selection: TextSelection.collapsed(offset: start + 1),
