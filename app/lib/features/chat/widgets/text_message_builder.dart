@@ -137,7 +137,6 @@ class _TextWidget extends ConsumerWidget {
                   onLinkTap: (url) => onMessageLinkTap(url, context),
                   backgroundColor: Colors.transparent,
                   data: message.text,
-                  renderNewlines: true,
                   pillBuilder: ({
                     required String identifier,
                     required String url,

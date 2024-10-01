@@ -690,8 +690,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
       final mentions = ref.read(chatInputProvider).mentions;
       String markdownText = textController.text;
-      // Replace empty new lines with <br> tags
-      markdownText = markdownText.replaceAll(RegExp(r'(\n\s*\n)'), '\n<br>\n');
+      markdownText = markdownText.replaceAll('\n', '<br>');
       final userMentions = [];
       mentions.forEach((key, value) {
         userMentions.add(value);
@@ -828,6 +827,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
       final String text = widget.controller.text;
       final int start = selection.start;
       final newText = text.replaceRange(start, selection.end, '\n');
+      debugPrint('TEXT AFTER NEWLINE :$newText}');
       widget.controller.value = TextEditingValue(
         text: newText,
         selection: TextSelection.collapsed(offset: start + 1),
@@ -889,6 +889,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         controller: widget.controller,
         focusNode: chatFocus,
         textCapitalization: TextCapitalization.sentences,
+        textInputAction: TextInputAction.newline,
         enabled: ref.watch(_allowEdit(widget.roomId)),
         onChanged: (String val) {
           // send typing notice

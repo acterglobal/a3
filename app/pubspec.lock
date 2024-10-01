@@ -881,10 +881,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: f8db768b26450a06c3d6c23d00f31d0eee727882
+      resolved-ref: "318a23a3a27f55bc69c3a0e531830a874fbf525d"
       url: "https://github.com/acterglobal/flutter_matrix_html.git"
     source: git
-    version: "1.2.2"
+    version: "1.2.2+1"
   flutter_parsed_text:
     dependency: transitive
     description:
@@ -2658,10 +2658,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: f652077d0bdf60abe4c1f6377448e8655008eef28f128bc023f7b5e8dfeb48fc
+      sha256: "5c5f338a667b4c644744b661f309fb8080bb94b18a7e91ef1dbd343bed00ed6d"
       url: "https://pub.dev"
     source: hosted
-    version: "14.2.4"
+    version: "14.2.5"
   volume_controller:
     dependency: transitive
     description:
