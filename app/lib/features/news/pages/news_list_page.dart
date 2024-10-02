@@ -14,11 +14,17 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::news::list');
 
+enum NewsViewMode { gridView, fullView }
+
 class NewsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
-  final bool gridMode;
+  final NewsViewMode newsViewMode;
 
-  const NewsListPage({super.key, this.spaceId, this.gridMode = true});
+  const NewsListPage({
+    super.key,
+    this.spaceId,
+    this.newsViewMode = NewsViewMode.gridView,
+  });
 
   @override
   ConsumerState<NewsListPage> createState() => _NewsListPageState();
@@ -31,7 +37,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
   @override
   void initState() {
     super.initState();
-    gridMode.value = widget.gridMode;
+    gridMode.value = widget.newsViewMode == NewsViewMode.gridView;
   }
 
   @override
@@ -50,27 +56,34 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
 
   AppBar _buildAppBar(bool gridMode) {
     final spaceId = widget.spaceId;
+    final canPop = widget.newsViewMode == NewsViewMode.gridView &&
+        this.gridMode.value == true;
     return AppBar(
       backgroundColor: Colors.transparent,
       centerTitle: false,
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(L10n.of(context).updates),
-          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
-        ],
-      ),
+      leading: widget.newsViewMode == NewsViewMode.gridView
+          ? IconButton(
+              onPressed: () {
+                if (canPop) {
+                  Navigator.pop(context);
+                } else {
+                  this.gridMode.value = true;
+                }
+              },
+              icon: const Icon(Icons.arrow_back),
+            )
+          : const SizedBox.shrink(),
+      title: widget.newsViewMode == NewsViewMode.gridView
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(L10n.of(context).updates),
+                if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
+              ],
+            )
+          : const SizedBox.shrink(),
       actions: [
-        IconButton(
-          onPressed: () {
-            this.gridMode.value = !this.gridMode.value;
-            currentIndex.value = 0;
-          },
-          icon: gridMode
-              ? const Icon(Icons.fullscreen)
-              : const Icon(Icons.grid_view),
-        ),
         AddButtonWithCanPermission(
           canString: 'CanPostNews',
           onPressed: () => context.pushNamed(

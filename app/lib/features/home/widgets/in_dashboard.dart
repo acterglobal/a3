@@ -31,7 +31,7 @@ class InDashboard extends ConsumerWidget {
                 child: Stack(
                   alignment: Alignment.topRight,
                   children: [
-                    const NewsListPage(gridMode: false),
+                    const NewsListPage(newsViewMode: NewsViewMode.fullView),
                     Visibility(
                       visible: canPostNews,
                       child: IconButton(

@@ -11,7 +11,7 @@ final updateShellRoutes = [
     pageBuilder: (context, state) {
       return NoTransitionPage(
         key: state.pageKey,
-        child: const NewsListPage(gridMode: false),
+        child: const NewsListPage(newsViewMode: NewsViewMode.fullView),
       );
     },
   ),
