@@ -8,10 +8,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum TabEntry {
   overview,
+  news,
   pins,
   tasks,
   events,
-  news,
   chats,
   spaces,
   members,
@@ -31,6 +31,14 @@ final tabsProvider =
 
   if ((await space.isActerSpace()) == true) {
     final appSettings = await space.appSettings();
+
+    if (appSettings.news().active()) {
+      final newsList = await ref.watch(newsListProvider(spaceId).future);
+      if (newsList.isNotEmpty) {
+        tabs.add(TabEntry.news);
+      }
+    }
+
     if (appSettings.pins().active()) {
       final pinsList = await ref.watch(pinListProvider(spaceId).future);
       if (pinsList.isNotEmpty) {
@@ -49,12 +57,6 @@ final tabsProvider =
       final eventList = await ref.watch(allEventListProvider(spaceId).future);
       if (eventList.isNotEmpty) {
         tabs.add(TabEntry.events);
-      }
-    }
-    if (appSettings.news().active()) {
-      final newsList = await ref.watch(newsListProvider(spaceId).future);
-      if (newsList.isNotEmpty) {
-        tabs.add(TabEntry.news);
       }
     }
   }

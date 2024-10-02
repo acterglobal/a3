@@ -75,7 +75,7 @@ class NewsSection extends ConsumerWidget {
 
     return SingleChildScrollView(
       child: StaggeredGrid.count(
-        crossAxisCount: max(2, min(widthCount, minCount)),
+        crossAxisCount: max(4, min(widthCount, minCount)),
         children: List.generate(
           count,
           (index) => newsItemUI(context, updateList[index]),
@@ -94,7 +94,7 @@ class NewsSection extends ConsumerWidget {
         pathParameters: {'spaceId': spaceId},
       ),
       child: Container(
-        height: 300,
+        height: 100,
         margin: const EdgeInsets.all(6),
         child: NewsSlideItem(slide: slide, showRichContent: false),
       ),

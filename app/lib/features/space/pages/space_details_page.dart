@@ -246,10 +246,10 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spacePageUI(TabEntry tabItem) {
     return switch (tabItem) {
       TabEntry.overview => AboutSection(spaceId: widget.spaceId),
+      TabEntry.news => NewsSection(spaceId: widget.spaceId),
       TabEntry.pins => PinsSection(spaceId: widget.spaceId),
       TabEntry.tasks => TasksSection(spaceId: widget.spaceId),
       TabEntry.events => EventsSection(spaceId: widget.spaceId),
-      TabEntry.news => NewsSection(spaceId: widget.spaceId),
       TabEntry.chats => ChatsSection(spaceId: widget.spaceId),
       TabEntry.spaces => SpacesSection(spaceId: widget.spaceId),
       TabEntry.members => MembersSection(spaceId: widget.spaceId),
