@@ -65,7 +65,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                 size: 18,
               ),
               label: Text(
-                L10n.of(context).update,
+                L10n.of(context).boost,
                 style: Theme.of(context).textTheme.labelMedium,
               ),
             ),

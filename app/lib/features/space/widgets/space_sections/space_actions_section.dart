@@ -52,7 +52,7 @@ class SpaceActionsSection extends ConsumerWidget {
         simpleActionButton(
           context: context,
           iconData: PhosphorIcons.newspaper(),
-          title: L10n.of(context).createNewUpdate,
+          title: L10n.of(context).addBoost,
           onPressed: () async {
             if (!canPostUpdate && canChangeSetting) {
               final result = await offerToActivateFeature(

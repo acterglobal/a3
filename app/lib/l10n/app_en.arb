@@ -293,7 +293,6 @@
   "@createSubspace": {},
   "createTaskList": "Create task list",
   "@createTaskList": {},
-  "createNewUpdate": "Create New Update",
   "@createNewUpdate": {},
   "createAcopy": "Copy as new",
   "@createAcopy": {},
@@ -2223,6 +2222,7 @@
   "activeApps": "Active Apps",
   "postSpaceWiseBoost": "Post space-wide boost",
   "pinImportantInformation": "Pin important information",
-  "calenderWithEvents": "'Calender with Events'",
+  "calenderWithEvents": "Calender with Events",
+  "addBoost": "Add Boost",
   "@action": {}
 }

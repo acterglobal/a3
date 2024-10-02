@@ -144,7 +144,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
         image: 'assets/images/empty_updates.svg',
         primaryButton: ActerPrimaryActionButton(
           onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
-          child: Text(L10n.of(context).createNewUpdate),
+          child: Text(L10n.of(context).addBoost),
         ),
       ),
     );
