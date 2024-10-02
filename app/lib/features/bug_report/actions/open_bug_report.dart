@@ -17,25 +17,29 @@ Future<void> openBugReport(
   if (_bugReportOpen) {
     return;
   }
-  queryParams = queryParams ?? {};
-  final cacheDir = await appCacheDir();
-  // rage shake disallows dot in filename
-  final timestamp = DateTime.now().timestamp;
-  final imagePath = await screenshotController.captureAndSave(
-    cacheDir,
-    fileName: 'screenshot_$timestamp.png',
-  );
-  if (imagePath != null) {
-    queryParams['screenshot'] = imagePath;
-  }
-  if (!context.mounted) {
-    _log.warning('Trying to open the bugreport without being mounted');
-    return;
-  }
   _bugReportOpen = true;
-  await context.pushNamed(
-    Routes.bugReport.name,
-    queryParameters: queryParams,
-  );
-  _bugReportOpen = false;
+  try {
+    queryParams = queryParams ?? {};
+    final cacheDir = await appCacheDir();
+    // rage shake disallows dot in filename
+    final timestamp = DateTime.now().timestamp;
+    final imagePath = await screenshotController.captureAndSave(
+      cacheDir,
+      fileName: 'screenshot_$timestamp.png',
+    );
+    if (imagePath != null) {
+      queryParams['screenshot'] = imagePath;
+    }
+    if (!context.mounted) {
+      _log.warning('Trying to open the bugreport without being mounted');
+      return;
+    }
+    _bugReportOpen = true;
+    await context.pushNamed(
+      Routes.bugReport.name,
+      queryParameters: queryParams,
+    );
+  } finally {
+    _bugReportOpen = false;
+  }
 }
