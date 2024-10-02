@@ -56,12 +56,15 @@ class _EditHtmlDescriptionSheetState
   @override
   void initState() {
     super.initState();
-    textEditorState = EditorState(
-      document: ActerDocumentHelpers.parse(
-        widget.descriptionMarkdownValue ?? '',
-        htmlContent: widget.descriptionHtmlValue,
-      ),
+    final document = ActerDocumentHelpers.parse(
+      widget.descriptionMarkdownValue ?? '',
+      htmlContent: widget.descriptionHtmlValue,
     );
+    if (document.isEmpty) {
+      textEditorState = EditorState.blank();
+    } else {
+      textEditorState = EditorState(document: document);
+    }
   }
 
   @override
