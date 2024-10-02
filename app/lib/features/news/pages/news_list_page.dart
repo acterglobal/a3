@@ -31,19 +31,19 @@ class NewsListPage extends ConsumerStatefulWidget {
 }
 
 class _NewsListPageState extends ConsumerState<NewsListPage> {
-  final ValueNotifier<bool> gridMode = ValueNotifier(true);
+  final ValueNotifier<bool> useGridMode = ValueNotifier(true);
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
 
   @override
   void initState() {
     super.initState();
-    gridMode.value = widget.newsViewMode == NewsViewMode.gridView;
+    useGridMode.value = widget.newsViewMode == NewsViewMode.gridView;
   }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: gridMode,
+      valueListenable: useGridMode,
       builder: (context, value, child) {
         return Scaffold(
           extendBodyBehindAppBar: !value,
@@ -54,10 +54,10 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
     );
   }
 
-  AppBar _buildAppBar(bool gridMode) {
+  AppBar _buildAppBar(bool useGridMode) {
     final spaceId = widget.spaceId;
     final canPop = widget.newsViewMode == NewsViewMode.gridView &&
-        this.gridMode.value == true;
+        this.useGridMode.value == true;
     return AppBar(
       backgroundColor: Colors.transparent,
       centerTitle: false,
@@ -67,7 +67,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
                 if (canPop) {
                   Navigator.pop(context);
                 } else {
-                  this.gridMode.value = true;
+                  this.useGridMode.value = true;
                 }
               },
               icon: const Icon(Icons.arrow_back),
@@ -95,17 +95,17 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
     );
   }
 
-  Widget _buildBody(bool gridMode) {
+  Widget _buildBody(bool useGridMode) {
     final newsListLoader = ref.watch(newsListProvider(widget.spaceId));
 
     return newsListLoader.when(
       data: (newsList) {
         if (newsList.isEmpty) return newsEmptyStateUI(context);
-        return gridMode
+        return useGridMode
             ? NewsGridView(
                 newsList: newsList,
                 onTapNewItem: (index) {
-                  this.gridMode.value = !this.gridMode.value;
+                  this.useGridMode.value = !this.useGridMode.value;
                   currentIndex.value = index;
                 },
               )
