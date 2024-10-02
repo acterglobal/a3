@@ -59,7 +59,7 @@ class SpaceActionsSection extends ConsumerWidget {
                 context: context,
                 ref: ref,
                 spaceId: spaceId,
-                feature: SpaceFeature.updates,
+                feature: SpaceFeature.boosts,
               );
               if (!result) return;
             }

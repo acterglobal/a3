@@ -149,7 +149,7 @@ class Dashboard extends ConsumerWidget {
             const SizedBox(width: 20),
             featuresNavItem(
               context: context,
-              title: L10n.of(context).updates,
+              title: L10n.of(context).boosts,
               iconData: Atlas.megaphone_thin,
               color: Colors.blueGrey,
               onTap: () => context.pushNamed(Routes.updateList.name),

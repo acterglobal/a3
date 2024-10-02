@@ -49,7 +49,7 @@ class NewsSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
-          title: L10n.of(context).updates,
+          title: L10n.of(context).boosts,
           isShowSeeAllButton: hasMore,
           onTapSeeAll: () => context.pushNamed(
             Routes.spaceUpdates.name,

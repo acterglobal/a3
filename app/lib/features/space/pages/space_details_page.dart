@@ -235,7 +235,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.pins => L10n.of(context).pins,
       TabEntry.tasks => L10n.of(context).tasks,
       TabEntry.events => L10n.of(context).events,
-      TabEntry.news => L10n.of(context).updates,
+      TabEntry.news => L10n.of(context).boosts,
       TabEntry.chats => L10n.of(context).chats,
       TabEntry.spaces => L10n.of(context).spaces,
       TabEntry.members => L10n.of(context).members,

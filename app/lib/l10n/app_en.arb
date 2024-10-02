@@ -1281,8 +1281,6 @@
   "@updateFeaturePowerLevelDialogFromTo": {},
   "updateFeaturePowerLevelDialogFromDefaultTo": "from default to",
   "@updateFeaturePowerLevelDialogFromDefaultTo": {},
-  "updates": "Updates",
-  "@updates": {},
   "updatingDisplayName": "Updating display name",
   "@updatingDisplayName": {},
   "updatingDue": "Updating due",
@@ -2210,5 +2208,7 @@
   "addCategory": "Add Category",
   "editCategory": "Edit Category",
   "deleteCategory": "Delete Category",
+  "boost": "Boost",
+  "boosts": "Boosts",
   "@action": {}
 }

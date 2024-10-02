@@ -97,7 +97,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
                   title: L10n.of(context).pushToThisDevice,
                 ),
                 AppsNotificationsSettingsTile(
-                  title: L10n.of(context).updates,
+                  title: L10n.of(context).boosts,
                   description: L10n.of(context).notifyAboutSpaceUpdates,
                   appKey: 'global.acter.dev.news',
                 ),

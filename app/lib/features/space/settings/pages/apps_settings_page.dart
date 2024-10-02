@@ -93,7 +93,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 : 'Custom ($currentPw)';
             moreSections.add(
               SettingsSection(
-                title: Text(L10n.of(context).updates),
+                title: Text(L10n.of(context).boosts),
                 tiles: [
                   SettingsTile(
                     enabled: canEdit,
@@ -111,7 +111,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       space,
                       powerLevels,
                       powerLevels.newsKey(),
-                      L10n.of(context).updates,
+                      L10n.of(context).boosts,
                     ),
                   ),
                   SettingsTile.switchTile(
@@ -297,8 +297,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                         newVal,
                         appSettings,
                         space,
-                        SpaceFeature.updates,
-                        L10n.of(context).updates,
+                        SpaceFeature.boosts,
+                        L10n.of(context).boosts,
                       ),
                     ),
                     SettingsTile.switchTile(

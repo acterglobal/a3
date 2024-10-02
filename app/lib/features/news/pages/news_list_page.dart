@@ -78,7 +78,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(L10n.of(context).updates),
+                Text(L10n.of(context).boosts),
                 if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
               ],
             )
