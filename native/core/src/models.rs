@@ -18,15 +18,16 @@ pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use common::*;
 pub use core::fmt::Debug;
 use enum_dispatch::enum_dispatch;
-use matrix_sdk_base::ruma::events::{
-    reaction::ReactionEventContent,
-    room::redaction::{OriginalRoomRedactionEvent, RoomRedactionEventContent},
-    AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent,
-    UnsignedRoomRedactionEvent,
-};
-use matrix_sdk_base::ruma::RoomId;
+use matrix_sdk::room::Room;
 use matrix_sdk_base::ruma::{
-    serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, UserId,
+    events::{
+        reaction::ReactionEventContent,
+        room::redaction::{OriginalRoomRedactionEvent, RoomRedactionEventContent},
+        AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent,
+        UnsignedRoomRedactionEvent,
+    },
+    serde::Raw,
+    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId, UserId,
 };
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
@@ -292,7 +293,7 @@ impl EventMeta {
     }
 }
 
-pub async fn can_redact(room: &matrix_sdk::Room, sender_id: &UserId) -> crate::error::Result<bool> {
+pub async fn can_redact(room: &Room, sender_id: &UserId) -> crate::error::Result<bool> {
     let client = room.client();
     let Some(user_id) = client.user_id() else {
         // not logged in means we can’t redact

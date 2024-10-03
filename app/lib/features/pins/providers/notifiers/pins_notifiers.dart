@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show ActerPin, Client;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -13,18 +14,20 @@ class AsyncPinNotifier
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
-  Future<ActerPin> _getPin() async {
-    final client = ref.read(alwaysClientProvider);
-    return await client.waitForPin(arg, null);
+  Future<ActerPin> _getPin(Client client, String pinId) async {
+    return await client.waitForPin(pinId, null);
   }
 
   @override
   Future<ActerPin> build(String arg) async {
+    final pinId = arg;
     final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(arg); // keep it resident in memory
+    _listener = client.subscribeStream(pinId); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
-        state = await AsyncValue.guard(_getPin);
+        state = await AsyncValue.guard(
+          () async => await _getPin(client, pinId),
+        );
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);
@@ -34,7 +37,7 @@ class AsyncPinNotifier
       },
     ); // stay up to date
     ref.onDispose(() => _poller.cancel());
-    return await _getPin();
+    return await _getPin(client, pinId);
   }
 }
 
@@ -46,19 +49,22 @@ class AsyncPinListNotifier
 
   @override
   Future<List<ActerPin>> build(String? arg) async {
+    final spaceId = arg;
     final client = ref.watch(alwaysClientProvider);
 
     //GET ALL PINS
-    if (arg == null) {
+    if (spaceId == null) {
       _listener = client.subscribeStream('pins');
     } else {
       //GET SPACE PINS
-      _listener = client.subscribeStream('$arg::pins');
+      _listener = client.subscribeStream('$spaceId::pins');
     }
 
     _poller = _listener.listen(
       (data) async {
-        state = await AsyncValue.guard(() => _getPinList(client));
+        state = await AsyncValue.guard(
+          () async => await _getPinList(client, spaceId),
+        );
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);
@@ -68,10 +74,10 @@ class AsyncPinListNotifier
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await _getPinList(client);
+    return await _getPinList(client, spaceId);
   }
 
-  Future<List<ActerPin>> _getPinList(Client client) async {
+  Future<List<ActerPin>> _getPinList(Client client, String? spaceId) async {
     final spaceId = arg;
     //GET ALL PINS
     if (spaceId == null) {

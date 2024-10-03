@@ -16,13 +16,14 @@ use matrix_sdk::{
     room::Room as SdkRoom,
     Client as SdkClient,
 };
-use matrix_sdk_base::ruma::events::room::MediaSource;
-use matrix_sdk_base::ruma::OwnedRoomOrAliasId;
-use matrix_sdk_base::ruma::{
-    device_id, IdParseError, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
-    OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
+use matrix_sdk_base::{
+    ruma::{
+        device_id, events::room::MediaSource, IdParseError, OwnedDeviceId, OwnedMxcUri,
+        OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId,
+        RoomAliasId, RoomId, RoomOrAliasId, UserId,
+    },
+    RoomStateFilter,
 };
-use matrix_sdk_base::RoomStateFilter;
 use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tokio::{
     sync::{broadcast::Receiver, RwLock},

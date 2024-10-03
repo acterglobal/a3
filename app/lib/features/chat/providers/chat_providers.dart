@@ -3,6 +3,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
@@ -237,4 +238,23 @@ final hasUnreadChatsProvider = FutureProvider.autoDispose((ref) async {
     }
   }
   return currentBadge;
+});
+
+final subChatsListProvider =
+FutureProvider.family<List<String>, String>((ref, spaceId) async {
+  List<String> subChatsList = [];
+
+  //Get known sub-chats
+  final spaceRelationsOverview =
+  await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+  subChatsList.addAll(spaceRelationsOverview.knownChats);
+
+  //Get more sub-chats
+  final relatedChatsLoader =
+  await ref.watch(remoteChatRelationsProvider(spaceId).future);
+  for (var element in relatedChatsLoader) {
+    subChatsList.add(element.roomIdStr());
+  }
+
+  return subChatsList;
 });

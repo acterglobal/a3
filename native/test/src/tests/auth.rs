@@ -1,14 +1,12 @@
-use acter::{
-    api::{
-        guest_client, login_new_client, login_new_client_under_config,
-        login_with_token_under_config, make_client_config, request_password_change_token_via_email,
-        request_registration_token_via_email, reset_password,
-    },
-    matrix_sdk::reqwest::{Client as ReqClient, Response as ReqResponse},
+use acter::api::{
+    guest_client, login_new_client, login_new_client_under_config, login_with_token_under_config,
+    make_client_config, request_password_change_token_via_email,
+    request_registration_token_via_email, reset_password,
 };
 use anyhow::{bail, Context, Result};
 use mail_parser::MessageParser;
 use mailhog_rs::{MailHog, MessageList, SearchKind, SearchParams};
+use matrix_sdk::reqwest::{Client as ReqClient, Response as ReqResponse};
 use regex::Regex;
 use tempfile::TempDir;
 use tokio_retry::{

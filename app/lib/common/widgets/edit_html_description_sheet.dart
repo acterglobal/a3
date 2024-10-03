@@ -56,12 +56,15 @@ class _EditHtmlDescriptionSheetState
   @override
   void initState() {
     super.initState();
-    final html = widget.descriptionHtmlValue;
-    final markdown = widget.descriptionMarkdownValue ?? '';
-    final document = html != null
-        ? ActerDocumentHelpers.fromHtml(html)
-        : ActerDocumentHelpers.fromMarkdown(markdown);
-    textEditorState = EditorState(document: document);
+    final document = ActerDocumentHelpers.parse(
+      widget.descriptionMarkdownValue ?? '',
+      htmlContent: widget.descriptionHtmlValue,
+    );
+    if (document.isEmpty) {
+      textEditorState = EditorState.blank();
+    } else {
+      textEditorState = EditorState(document: document);
+    }
   }
 
   @override
@@ -97,13 +100,14 @@ class _EditHtmlDescriptionSheetState
               ActerPrimaryActionButton(
                 onPressed: () {
                   // No need to change
-                  final htmlBodyDescription = textEditorState.intoHtml();
+                  String htmlBodyDescription = textEditorState.intoHtml();
                   final plainDescription = textEditorState.intoMarkdown();
                   if (htmlBodyDescription == widget.descriptionHtmlValue ||
                       plainDescription == widget.descriptionMarkdownValue) {
                     Navigator.pop(context);
                     return;
                   }
+
                   widget.onSave(htmlBodyDescription, plainDescription);
                 },
                 child: Text(L10n.of(context).save),

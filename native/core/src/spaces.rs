@@ -1,18 +1,19 @@
 use derive_builder::Builder;
 use matrix_sdk::{room::Room, RoomState};
-use matrix_sdk_base::ruma::api::client::room::{create_room, Visibility};
-use matrix_sdk_base::ruma::assign;
-use matrix_sdk_base::ruma::events::{
-    room::{
-        avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-        join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
-    },
-    space::{child::SpaceChildEventContent, parent::SpaceParentEventContent},
-    InitialStateEvent,
-};
 use matrix_sdk_base::ruma::{
-    room::RoomType, serde::Raw, MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId,
-    ServerName, UserId,
+    api::client::room::{create_room, Visibility},
+    assign,
+    events::{
+        room::{
+            avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+            join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+        },
+        space::{child::SpaceChildEventContent, parent::SpaceParentEventContent},
+        InitialStateEvent,
+    },
+    room::RoomType,
+    serde::Raw,
+    MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId, ServerName, UserId,
 };
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;

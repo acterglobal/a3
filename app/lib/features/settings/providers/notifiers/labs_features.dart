@@ -23,11 +23,12 @@ class SharedPrefFeaturesNotifier extends StateNotifier<Features<LabsFeature>> {
 
   void _init() {
     listener = ref.listen(asyncFeaturesProvider, (prev, next) {
-      final val = next.value;
-      if (val == null) {
+      if (!next.hasValue) {
         // ignore and wait until it has loaded, debounce in-between
         return;
       }
+      final val = next.value;
+      if (val == null) throw 'next features not available';
       state = val;
     });
   }

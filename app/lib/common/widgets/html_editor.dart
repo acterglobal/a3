@@ -51,26 +51,48 @@ extension ActerEditorStateHelpers on EditorState {
 }
 
 extension ActerDocumentHelpers on Document {
-  static Document fromHtml(
+  static Document? _fromHtml(
     String content, {
     AppFlowyEditorHTMLCodec? codec,
   }) {
-    return (codec ?? defaultHtmlCodec).decode(content);
+    if (content.isEmpty) {
+      return null;
+    }
+
+    Document document = (codec ?? defaultHtmlCodec).decode(content);
+    if (document.isEmpty) {
+      return null;
+    }
+    return document;
   }
 
-  static Document fromMarkdown(
+  static Document _fromMarkdown(
     String content, {
     AppFlowyEditorMarkdownCodec? codec,
   }) {
     return (codec ?? defaultMarkdownCodec).decode(content);
   }
 
+  static Document parse(
+    String content, {
+    String? htmlContent,
+    AppFlowyEditorMarkdownCodec? codec,
+  }) {
+    if (htmlContent != null) {
+      final document = ActerDocumentHelpers._fromHtml(htmlContent);
+      if (document != null) {
+        return document;
+      }
+    }
+    // fallback: parse from markdown
+    return ActerDocumentHelpers._fromMarkdown(content);
+  }
+
   static Document fromMsgContent(MsgContent msgContent) {
-    final html = msgContent.formattedBody();
-    final markdown = msgContent.body();
-    return html != null
-        ? ActerDocumentHelpers.fromHtml(html)
-        : ActerDocumentHelpers.fromMarkdown(markdown);
+    return ActerDocumentHelpers.parse(
+      msgContent.body(),
+      htmlContent: msgContent.formattedBody(),
+    );
   }
 }
 

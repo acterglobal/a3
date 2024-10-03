@@ -4,9 +4,9 @@ use matrix_sdk::{
     room::RoomMember,
     Client, DisplayName, Room,
 };
-use matrix_sdk_base::ruma::api::client::user_directory::search_users;
-use matrix_sdk_base::ruma::events::room::MediaSource;
-use matrix_sdk_base::ruma::{OwnedRoomId, OwnedUserId};
+use matrix_sdk_base::ruma::{
+    api::client::user_directory::search_users, events::room::MediaSource, OwnedRoomId, OwnedUserId,
+};
 
 use super::{
     common::{OptionBuffer, OptionString, ThumbnailSize},

@@ -154,6 +154,7 @@ impl AttachmentContent {
             AttachmentContent::Fallback(f) => f.name(),
         }
     }
+
     pub fn type_str(&self) -> String {
         match self {
             AttachmentContent::Image(_) => "image".to_owned(),
@@ -176,7 +177,7 @@ impl AttachmentContent {
 
     pub fn video(&self) -> Option<VideoMessageEventContent> {
         match self {
-            AttachmentContent::Video(body) => Some(body.clone()),
+            AttachmentContent::Video(content) => Some(content.clone()),
             AttachmentContent::Fallback(f) => f.video(),
             _ => None,
         }
@@ -184,7 +185,7 @@ impl AttachmentContent {
 
     pub fn audio(&self) -> Option<AudioMessageEventContent> {
         match self {
-            AttachmentContent::Audio(body) => Some(body.clone()),
+            AttachmentContent::Audio(content) => Some(content.clone()),
             AttachmentContent::Fallback(f) => f.audio(),
             _ => None,
         }
@@ -205,6 +206,7 @@ impl AttachmentContent {
             _ => None,
         }
     }
+
     pub fn link(&self) -> Option<String> {
         if let AttachmentContent::Link(LinkAttachmentContent { link, .. }) = self {
             Some(link.clone())

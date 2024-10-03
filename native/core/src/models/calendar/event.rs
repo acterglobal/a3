@@ -1,5 +1,5 @@
-use matrix_sdk_base::ruma::events::OriginalMessageLikeEvent;
-use matrix_sdk_base::ruma::{EventId, RoomId, UserId};
+use icalendar::{Component, Event as iCalEvent, EventLike};
+use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
@@ -19,7 +19,6 @@ use crate::{
     },
     Result,
 };
-use icalendar::{Component, Event as iCalEvent, EventLike};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CalendarEvent {

@@ -8,9 +8,10 @@ use anyhow::{bail, Context, Result};
 use clap::{crate_version, Parser, Subcommand};
 use futures::StreamExt;
 use matrix_sdk::HttpError;
-use matrix_sdk_base::ruma::api::client::room::Visibility;
-use matrix_sdk_base::ruma::OwnedUserId;
-use matrix_sdk_base::store::{MemoryStore, StoreConfig};
+use matrix_sdk_base::{
+    ruma::{api::client::room::Visibility, OwnedUserId},
+    store::{MemoryStore, StoreConfig},
+};
 use matrix_sdk_sqlite::SqliteStateStore;
 use std::collections::HashMap;
 use tracing::{error, info, trace};

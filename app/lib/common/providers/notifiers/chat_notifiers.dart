@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Client, Convo, ConvoDiff, RoomMessage;
 import 'package:acter_notifify/util.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
@@ -17,13 +18,12 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
 
   @override
   FutureOr<Convo?> build(String arg) async {
-    final convoId = arg;
+    final roomId = arg;
     final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(convoId); // keep it resident in memory
+    _listener = client.subscribeStream(roomId); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
-        final newConvo = await client.convo(convoId);
-        state = AsyncValue.data(newConvo);
+        state = await AsyncValue.guard(() async => await client.convo(roomId));
       },
       onError: (e, s) {
         _log.severe('convo stream errored', e, s);
@@ -34,7 +34,7 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await client.convoWithRetry(convoId, 120);
+    return await client.convoWithRetry(roomId, 120);
   }
 }
 
@@ -42,17 +42,20 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
+  FutureOr<RoomMessage?> _refresh(String roomId) async {
+    final convo = await ref.read(chatProvider(roomId).future);
+    return convo?.latestMessage();
+  }
+
   @override
   FutureOr<RoomMessage?> build(String arg) async {
     final roomId = arg;
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream('$roomId::latest_message');
     _poller = _listener.listen(
-      (data) {
+      (data) async {
         _log.info('received new latest message call for $roomId');
-        state = ref
-            .watch(chatProvider(roomId))
-            .whenData((convo) => convo?.latestMessage());
+        state = await AsyncValue.guard(() async => await _refresh(roomId));
       },
       onError: (e, s) {
         _log.severe('latest msg stream errored', e, s);
@@ -63,8 +66,7 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    final convo = ref.read(chatProvider(roomId)).valueOrNull;
-    return convo?.latestMessage();
+    return await _refresh(roomId);
   }
 }
 

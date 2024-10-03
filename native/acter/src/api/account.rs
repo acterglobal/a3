@@ -2,13 +2,15 @@ use acter_core::events::settings::{ActerUserAppSettingsContent, APP_USER_SETTING
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{media::MediaRequest, Account as SdkAccount};
-use matrix_sdk_base::ruma::api::client::uiaa::{AuthData, Password};
-use matrix_sdk_base::ruma::assign;
-use matrix_sdk_base::ruma::events::{
-    ignored_user_list::IgnoredUserListEventContent, room::MediaSource,
+use matrix_sdk_base::{
+    ruma::{
+        api::client::uiaa::{AuthData, Password},
+        assign,
+        events::{ignored_user_list::IgnoredUserListEventContent, room::MediaSource},
+        OwnedMxcUri, OwnedUserId, UserId,
+    },
+    StateStoreDataKey, StateStoreDataValue,
 };
-use matrix_sdk_base::ruma::{OwnedMxcUri, OwnedUserId, UserId};
-use matrix_sdk_base::{StateStoreDataKey, StateStoreDataValue};
 use std::{ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -204,7 +206,7 @@ impl Account {
 
         RUNTIME
             .spawn(async move {
-                if let Err(e) = account.deactivate(None, None).await {
+                if let Err(e) = account.deactivate(None, None, false).await {
                     let Some(inf) = e.as_uiaa_response() else {
                         return Err(clearify_error(e));
                     };
@@ -212,7 +214,7 @@ impl Account {
                         session: inf.session.clone(),
                     });
                     let auth_data = AuthData::Password(pswd);
-                    account.deactivate(None, Some(auth_data)).await?;
+                    account.deactivate(None, Some(auth_data), false).await?;
                     // FIXME: remove local data, too!
                 }
                 Ok(true)

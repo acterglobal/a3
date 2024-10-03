@@ -11,8 +11,10 @@ use matrix_sdk::{
     room::Room,
     RoomState,
 };
-use matrix_sdk_base::ruma::events::{room::message::RoomMessageEvent, MessageLikeEventType};
-use matrix_sdk_base::ruma::{EventId, OwnedEventId, OwnedTransactionId};
+use matrix_sdk_base::ruma::{
+    events::{room::message::RoomMessageEvent, MessageLikeEventType},
+    EventId, OwnedEventId, OwnedTransactionId,
+};
 use std::{fs::exists, io::Write, ops::Deref, path::PathBuf, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
@@ -137,7 +139,7 @@ impl Attachment {
                                 });
                             (request, filename)
                         }
-                        AttachmentContent::Video(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content))=> {
+                        AttachmentContent::Video(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
                             let request = content
                                 .info
                                 .as_ref()
@@ -157,7 +159,7 @@ impl Attachment {
                                 });
                             (request, filename)
                         }
-                        AttachmentContent::File(content) | AttachmentContent::Fallback(FallbackAttachmentContent::File(content))=> {
+                        AttachmentContent::File(content) | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
                             let request = content
                                 .info
                                 .as_ref()
@@ -216,7 +218,7 @@ impl Attachment {
                                 });
                             (Some(request), filename)
                         }
-                        AttachmentContent::Audio(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content))=> {
+                        AttachmentContent::Audio(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
                             let request = MediaRequest {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,

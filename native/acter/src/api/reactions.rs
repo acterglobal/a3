@@ -2,8 +2,10 @@ use acter_core::models::{self, ActerModel, AnyActerModel};
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;
-use matrix_sdk_base::ruma::events::{reaction::ReactionEvent, MessageLikeEventType};
-use matrix_sdk_base::ruma::{OwnedEventId, OwnedTransactionId, OwnedUserId, UserId};
+use matrix_sdk_base::ruma::{
+    events::{reaction::ReactionEvent, MessageLikeEventType},
+    OwnedEventId, OwnedTransactionId, OwnedUserId, UserId,
+};
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};

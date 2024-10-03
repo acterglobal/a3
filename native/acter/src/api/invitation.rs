@@ -6,11 +6,11 @@ use matrix_sdk::{
     room::{Room, RoomMember},
     RoomMemberships, RoomState,
 };
-use matrix_sdk_base::ruma::api::client::user_directory::search_users;
-use matrix_sdk_base::ruma::events::room::member::{
-    MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent,
+use matrix_sdk_base::ruma::{
+    api::client::user_directory::search_users,
+    events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
+    OwnedRoomId, OwnedUserId, RoomId,
 };
-use matrix_sdk_base::ruma::{OwnedRoomId, OwnedUserId, RoomId};
 use std::{
     collections::BTreeMap,
     time::{SystemTime, UNIX_EPOCH},

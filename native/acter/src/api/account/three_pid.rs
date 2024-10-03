@@ -1,14 +1,14 @@
 use acter_core::events::three_pid::{ThreePidContent, ThreePidRecord};
 use anyhow::{bail, Context, Result};
 use matrix_sdk::reqwest::{ClientBuilder, StatusCode};
-use matrix_sdk_base::ruma::api::client::{
-    account::{request_3pid_management_token_via_email, ThirdPartyIdRemovalStatus},
-    uiaa::{AuthData, Password, UserIdentifier},
-};
-use matrix_sdk_base::ruma::{assign, uint};
 use matrix_sdk_base::ruma::{
+    api::client::{
+        account::{request_3pid_management_token_via_email, ThirdPartyIdRemovalStatus},
+        uiaa::{AuthData, Password, UserIdentifier},
+    },
+    assign,
     thirdparty::{Medium, ThirdPartyIdentifier},
-    ClientSecret, MilliSecondsSinceUnixEpoch, OwnedClientSecret, SessionId,
+    uint, ClientSecret, MilliSecondsSinceUnixEpoch, OwnedClientSecret, SessionId,
 };
 use serde::Deserialize;
 use std::{collections::BTreeMap, ops::Deref};

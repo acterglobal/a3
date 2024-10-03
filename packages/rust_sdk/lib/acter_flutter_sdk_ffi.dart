@@ -20338,6 +20338,22 @@ class Api {
         int,
         int,
       )>();
+  late final _msgDraftMimetypePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__MsgDraft_mimetype");
+
+  late final _msgDraftMimetype = _msgDraftMimetypePtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _msgDraftSizePtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -20397,6 +20413,53 @@ class Api {
 
   late final _msgDraftBlurhash = _msgDraftBlurhashPtr.asFunction<
       int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _msgDraftThumbnailFilePathPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__MsgDraft_thumbnail_file_path");
+
+  late final _msgDraftThumbnailFilePath =
+      _msgDraftThumbnailFilePathPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _msgDraftThumbnailInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.Uint64,
+            ffi.Uint8,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.Uint8,
+            ffi.Uint64,
+          )>>("__MsgDraft_thumbnail_info");
+
+  late final _msgDraftThumbnailInfo = _msgDraftThumbnailInfoPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
         int,
         int,
         int,
@@ -23931,12 +23994,12 @@ class Api {
       )>();
   late final _categoryEntriesPtr = _lookup<
       ffi.NativeFunction<
-          _CategoryEntriesReturn Function(
+          ffi.IntPtr Function(
             ffi.IntPtr,
           )>>("__Category_entries");
 
   late final _categoryEntries = _categoryEntriesPtr.asFunction<
-      _CategoryEntriesReturn Function(
+      int Function(
         int,
       )>();
   late final _categoryDisplayPtr = _lookup<
@@ -37942,7 +38005,6 @@ class CalendarEvent {
     return tmp2;
   }
 
-  /// locations
   /// event id
   EventId eventId() {
     var tmp0 = 0;
@@ -40266,6 +40328,7 @@ class EventSendState {
 
   EventSendState._(this._api, this._box);
 
+  /// one of NotSentYet/SendingFailed/Cancelled/Sent
   String state() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -40295,6 +40358,7 @@ class EventSendState {
     return tmp2;
   }
 
+  /// gives error value for SendingFailed only
   String? error() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -40328,6 +40392,7 @@ class EventSendState {
     return tmp2;
   }
 
+  /// gives event id for Sent only
   EventId? eventId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -42506,6 +42571,38 @@ class MsgDraft {
   }
 
   /// available for only image/audio/video/file
+  MsgDraft mimetype(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._msgDraftMimetype(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
+    return tmp6;
+  }
+
+  /// available for only image/audio/video/file
   MsgDraft size(
     int value,
   ) {
@@ -42621,6 +42718,120 @@ class MsgDraft {
     return tmp6;
   }
 
+  /// Provide the file system path to a static thumbnail
+  /// for this media to be read and shared upon sending
+  ///
+  /// available for only image/video/file/location
+  MsgDraft thumbnailFilePath(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._msgDraftThumbnailFilePath(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_MsgDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = MsgDraft._(_api, tmp7_1);
+    return tmp6;
+  }
+
+  /// available for only image/video/file/location
+  MsgDraft thumbnailInfo(
+    int? width,
+    int? height,
+    String? mimetype,
+    int? size,
+  ) {
+    final tmp1 = width;
+    final tmp5 = height;
+    final tmp9 = mimetype;
+    final tmp15 = size;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp18 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3;
+    }
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7;
+    }
+    if (tmp9 == null) {
+      tmp10 = 0;
+    } else {
+      tmp10 = 1;
+      final tmp11 = tmp9;
+      final tmp11_0 = utf8.encode(tmp11);
+      tmp13 = tmp11_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = _api.__allocate(tmp13 * 1, 1);
+      final Uint8List tmp12_1 = tmp12_0.asTypedList(tmp13);
+      tmp12_1.setAll(0, tmp11_0);
+      tmp12 = tmp12_0.address;
+      tmp14 = tmp13;
+    }
+    if (tmp15 == null) {
+      tmp16 = 0;
+    } else {
+      tmp16 = 1;
+      final tmp17 = tmp15;
+      tmp18 = tmp17;
+    }
+    final tmp19 = _api._msgDraftThumbnailInfo(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp12,
+      tmp13,
+      tmp14,
+      tmp16,
+      tmp18,
+    );
+    final tmp21 = tmp19;
+    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
+    final tmp21_1 = _Box(_api, tmp21_0, "drop_box_MsgDraft");
+    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
+    final tmp20 = MsgDraft._(_api, tmp21_1);
+    return tmp20;
+  }
+
   /// available for only file
   MsgDraft filename(
     String value,
@@ -42685,6 +42896,7 @@ class MsgDraft {
     return tmp6;
   }
 
+  /// convert this into a NewsSlideDraft;
   NewsSlideDraft intoNewsSlideDraft() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -45148,6 +45360,7 @@ class AttachmentsManager {
     return tmp12;
   }
 
+  /// inform about the changes to this manager
   Future<AttachmentsManager> reload() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -45164,6 +45377,7 @@ class AttachmentsManager {
     return tmp2;
   }
 
+  /// redact attachment
   Future<EventId> redact(
     String attachmentId,
     String? reason,
@@ -48082,6 +48296,7 @@ class SpaceHierarchyRoomInfo {
     return tmp6;
   }
 
+  /// recommended server to try to join via
   String? viaServerName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -49112,32 +49327,18 @@ class Category {
     return tmp2;
   }
 
-  String entries() {
+  FfiListFfiString entries() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._categoryEntries(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -51504,6 +51705,8 @@ class Account {
     return tmp2;
   }
 
+  /// deactivate the account. This can not be reversed. The username will
+  /// be blocked from any future usage, all personal data will be removed.
   Future<bool> deactivate(
     String password,
   ) {
@@ -53127,6 +53330,7 @@ class NotificationItem {
     return tmp6;
   }
 
+  /// if this is an invite, this the room it invites to
   String? roomInvite() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -60304,15 +60508,6 @@ class _SimpleSettingWithTurnOffBuilderBuildReturn extends ffi.Struct {
 }
 
 class _CategoryTitleReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-}
-
-class _CategoryEntriesReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()

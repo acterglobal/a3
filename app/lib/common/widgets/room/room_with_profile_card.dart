@@ -10,6 +10,7 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
   final AvatarInfo avatarInfo;
   final List<AvatarInfo>? parents;
   final Widget? subtitle;
+  final Widget? leading;
   final Widget? trailing;
   final double avatarSize;
 
@@ -86,6 +87,7 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
     required this.avatarInfo,
     this.parents,
     this.subtitle,
+    this.leading,
     this.trailing,
     this.onTap,
     this.onLongPress,
@@ -130,9 +132,24 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
         titleTextStyle: titleTextStyle,
         subtitleTextStyle: subtitleTextStyle,
         leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-        title: Text(title, overflow: TextOverflow.ellipsis),
-        subtitle: buildSubtitle(context),
-        leading: avatar,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            avatar,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, overflow: TextOverflow.ellipsis),
+                  buildSubtitle(context) ?? const SizedBox.shrink(),
+                ],
+              ),
+            ),
+          ],
+        ),
+        leading: leading,
         trailing: trailing,
       ),
     );

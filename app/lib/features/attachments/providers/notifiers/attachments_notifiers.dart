@@ -3,7 +3,8 @@ import 'dart:io';
 
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Attachment, AttachmentsManager;
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
@@ -21,11 +22,13 @@ class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
     _listener = manager.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen(
       (e) async {
-        _log.info('attempting to reload');
-        final newManager = await manager.reload();
-        final count = newManager.attachmentsCount();
-        _log.info('manager updated. attachments: $count');
-        state = AsyncValue.data(newManager);
+        state = await AsyncValue.guard(() async {
+          _log.info('attempting to reload');
+          final newManager = await manager.reload();
+          final count = newManager.attachmentsCount();
+          _log.info('manager updated. attachments: $count');
+          return newManager;
+        });
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);
@@ -81,8 +84,8 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
     state = state.copyWith(isDownloading: true);
     //Download media if media path is not available
     final tempDir = await getTemporaryDirectory();
-    final filePath =
-        (await attachment.downloadMedia(null, tempDir.path)).text();
+    final result = await attachment.downloadMedia(null, tempDir.path);
+    final filePath = result.text();
     filePath.let((p0) {
       state = state.copyWith(
         mediaFile: File(p0),

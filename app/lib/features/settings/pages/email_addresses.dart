@@ -92,6 +92,7 @@ class EmailAddressesPage extends ConsumerWidget {
             IconButton(
               onPressed: () {
                 ref.invalidate(emailAddressesProvider);
+                EasyLoading.showToast(L10n.of(context).refreshing);
               },
               icon: const Icon(Atlas.refresh_account_arrows_thin),
             ),

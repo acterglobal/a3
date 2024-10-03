@@ -1,11 +1,11 @@
 use async_trait::async_trait;
 use base64ct::{Base64UrlUnpadded, Encoding};
 use core::fmt::Debug;
-use matrix_sdk_base::StateStore;
 use matrix_sdk_base::{
     event_cache_store::{EventCacheStore, EventCacheStoreError},
     media::{MediaRequest, UniqueKey},
     ruma::MxcUri,
+    StateStore,
 };
 use matrix_sdk_store_encryption::StoreCipher;
 use std::{fs, path::PathBuf};

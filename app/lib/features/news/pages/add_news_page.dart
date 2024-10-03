@@ -56,14 +56,16 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         final next = nextState.currentNewsSlide;
         if (next == null) throw 'Current news slide not available';
         final document =
-            next.html.let((p0) => ActerDocumentHelpers.fromHtml(p0)) ??
-                ActerDocumentHelpers.fromMarkdown(next.text ?? '');
+            ActerDocumentHelpers.parse(next.text ?? '', htmlContent: next.html);
+
         final autoFocus =
             (next.html?.isEmpty != false) && (next.text?.isEmpty != false);
 
         setState(() {
           selectedNewsPost = next;
-          textEditorState = EditorState(document: document);
+          if (!document.isEmpty) {
+            textEditorState = EditorState(document: document);
+          }
         });
 
         if (autoFocus) {

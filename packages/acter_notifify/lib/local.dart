@@ -111,7 +111,7 @@ Future<String?> initializeLocalNotifications({
       DarwinInitializationSettings(
     // do not bother the user at startup, set all these to falls for now:
     requestAlertPermission: false,
-    requestBadgePermission: false,
+    requestBadgePermission: true,
     requestSoundPermission: false,
     onDidReceiveLocalNotification:
         (int id, String? title, String? body, String? payload) async {

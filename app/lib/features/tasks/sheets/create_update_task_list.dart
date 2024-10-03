@@ -170,10 +170,12 @@ class _CreateUpdateTaskListConsumerState
                 editable: true,
                 autoFocus: false,
                 onChanged: (body, html) {
-                  final document = html != null
-                      ? ActerDocumentHelpers.fromHtml(html)
-                      : ActerDocumentHelpers.fromMarkdown(body);
-                  textEditorState = EditorState(document: document);
+                  textEditorState = EditorState(
+                    document: ActerDocumentHelpers.parse(
+                      body,
+                      htmlContent: html,
+                    ),
+                  );
                 },
               ),
             ),
