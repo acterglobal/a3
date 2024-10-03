@@ -122,10 +122,12 @@ final generalRoutes = [
     name: Routes.createPin.name,
     path: Routes.createPin.route,
     pageBuilder: (context, state) {
+      final String? spaceId = state.uri.queryParameters['spaceId'];
       return NoTransitionPage(
         key: state.pageKey,
         child: CreatePinPage(
-          initialSelectedSpace: state.uri.queryParameters['spaceId'],
+          initialSelectedSpace:
+              spaceId != null && spaceId.isNotEmpty ? spaceId : null,
         ),
       );
     },
