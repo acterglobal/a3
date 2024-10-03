@@ -79,7 +79,8 @@ Future<String?> forwardRedirect(
     final roomId = state.uri.queryParameters['roomId'];
     if (roomId == null) {
       _log.severe(
-          'Receivered forward without roomId failed: ${state.uri.queryParameters}.');
+        'Received forward without roomId failed: ${state.uri.queryParameters}.',
+      );
       return state.namedLocation(Routes.main.name);
     }
 
@@ -87,8 +88,10 @@ Future<String?> forwardRedirect(
     if (!room.isJoined()) {
       // we haven't joined yet or have been kicked
       // either way, we are to be shown the thing on the activities page
-      return state.namedLocation(Routes.activities.name,
-          queryParameters: state.uri.queryParameters);
+      return state.namedLocation(
+        Routes.activities.name,
+        queryParameters: state.uri.queryParameters,
+      );
     }
 
     if (room.isSpace()) {
