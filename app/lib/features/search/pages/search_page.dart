@@ -24,15 +24,17 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 
   Widget _buildBodyUI() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      child: Column(
-        children: [
-          searchBarUI(),
-          const SizedBox(height: 12),
-          filterChipsButtons(),
-        ],
-      ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: searchBarUI(),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: filterChipsButtons(),
+        ),
+      ],
     );
   }
 
