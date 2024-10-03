@@ -483,10 +483,11 @@ final homeShellRoutes = [
       if (extra != null && extra is CalendarEvent) {
         templateEvent = extra;
       }
+      final String? spaceId = state.uri.queryParameters['spaceId'];
       return NoTransitionPage(
         key: state.pageKey,
         child: CreateEventPage(
-          initialSelectedSpace: state.uri.queryParameters['spaceId'],
+          initialSelectedSpace: (spaceId?.isNotEmpty == true) ? spaceId : null,
           templateEvent: templateEvent,
         ),
       );

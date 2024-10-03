@@ -4,6 +4,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -408,11 +409,10 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
   // Create event handler
   Future<void> _handleCreateEvent() async {
-    final curState = _formKey.currentState;
-    if (curState == null) throw 'Form state not available';
-    if (!curState.validate()) return;
+    String? spaceId = ref.read(selectedSpaceIdProvider);
+    spaceId ??= await selectSpace();
+    if (!mounted) return;
 
-    final spaceId = ref.read(selectedSpaceIdProvider);
     if (spaceId == null) {
       EasyLoading.showError(
         L10n.of(context).pleaseSelectSpace,
@@ -420,6 +420,8 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       );
       return;
     }
+
+    if (!_formKey.currentState!.validate()) return;
 
     EasyLoading.show(status: L10n.of(context).creatingCalendarEvent);
     try {
@@ -478,5 +480,16 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
         duration: const Duration(seconds: 3),
       );
     }
+  }
+
+  Future<String?> selectSpace() async {
+    final newSelectedSpaceId = await selectSpaceDrawer(
+      context: context,
+      currentSpaceId: ref.read(selectedSpaceIdProvider),
+      canCheck: 'CanPostEvent',
+      title: Text(L10n.of(context).selectSpace),
+    );
+    ref.read(selectedSpaceIdProvider.notifier).state = newSelectedSpaceId;
+    return newSelectedSpaceId;
   }
 }
