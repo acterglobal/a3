@@ -77,13 +77,24 @@ Future<String?> forwardRedirect(
       return null;
     }
     final roomId = state.uri.queryParameters['roomId'];
-    if (await client.hasConvo(roomId!)) {
-      // this is a chat
-      return state.namedLocation(
-        Routes.chatroom.name,
-        pathParameters: {'roomId': roomId},
+    if (roomId == null) {
+      _log.severe(
+        'Received forward without roomId failed: ${state.uri.queryParameters}.',
       );
-    } else {
+      return state.namedLocation(Routes.main.name);
+    }
+
+    final room = await client.room(roomId);
+    if (!room.isJoined()) {
+      // we haven't joined yet or have been kicked
+      // either way, we are to be shown the thing on the activities page
+      return state.namedLocation(
+        Routes.activities.name,
+        queryParameters: state.uri.queryParameters,
+      );
+    }
+
+    if (room.isSpace()) {
       // final eventId = state.uri.queryParameters['eventId'];
       // with the event ID or further information we could figure out the specific action
       return state.namedLocation(
@@ -91,6 +102,11 @@ Future<String?> forwardRedirect(
         pathParameters: {'spaceId': roomId},
       );
     }
+    // so we assume this is a chat
+    return state.namedLocation(
+      Routes.chatroom.name,
+      pathParameters: {'roomId': roomId},
+    );
   } catch (e, s) {
     _log.severe('Forward fail', e, s);
     return state.namedLocation(
