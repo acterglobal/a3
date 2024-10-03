@@ -13,6 +13,7 @@ import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/pins/actions/attachment_leading_icon.dart';
 import 'package:acter/features/pins/actions/set_pin_description.dart';
@@ -311,10 +312,14 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   Future<void> _createPin() async {
     //Close keyboard
     FocusManager.instance.primaryFocus?.unfocus();
+
+    String? spaceId = ref.read(selectedSpaceIdProvider);
+    spaceId ??= await selectSpace();
     if (!_formKey.currentState!.validate()) return;
+    if (!mounted) return;
+
     EasyLoading.show(status: L10n.of(context).creatingPin);
     try {
-      final spaceId = ref.read(selectedSpaceIdProvider);
       final space = await ref.read(spaceProvider(spaceId!).future);
       final pinDraft = space.pinDraft();
       final pinState = ref.read(createPinStateProvider);
@@ -374,6 +379,17 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
         duration: const Duration(seconds: 3),
       );
     }
+  }
+
+  Future<String?> selectSpace() async {
+    final newSelectedSpaceId = await selectSpaceDrawer(
+      context: context,
+      currentSpaceId: ref.read(selectedSpaceIdProvider),
+      canCheck: 'CanPostPin',
+      title: Text(L10n.of(context).selectSpace),
+    );
+    ref.read(selectedSpaceIdProvider.notifier).state = newSelectedSpaceId;
+    return newSelectedSpaceId;
   }
 
   Future<void> addAttachment(EventId pinId, CreatePinState pinState) async {
