@@ -26,26 +26,9 @@ class InDashboard extends ConsumerWidget {
           return Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Flexible(
+              const Flexible(
                 flex: 1,
-                child: Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    const NewsListPage(newsViewMode: NewsViewMode.fullView),
-                    Visibility(
-                      visible: canPostNews,
-                      child: IconButton(
-                        key: NewsUpdateKeys.addNewsUpdate,
-                        onPressed: () =>
-                            context.pushNamed(Routes.actionAddUpdate.name),
-                        icon: const Icon(
-                          Atlas.plus_circle_thin,
-                          size: 24,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                child: NewsListPage(newsViewMode: NewsViewMode.fullView),
               ),
               Flexible(
                 flex: 2,
