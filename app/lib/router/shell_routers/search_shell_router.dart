@@ -1,5 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/search/pages/search.dart';
+import 'package:acter/features/search/pages/search_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:go_router/go_router.dart';
 

@@ -1,6 +1,6 @@
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/search/model/search_term_delegate.dart';
-import 'package:acter/features/search/providers/search.dart';
+import 'package:acter/features/search/providers/search_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
