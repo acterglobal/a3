@@ -4,6 +4,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/dotted_border_widget.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -48,14 +49,14 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
         orElse: () => tokens.first, // or otherwise pick the first available
       );
 
-      if (selectedToken != null) {
+      selectedToken.let((p0) {
         // we had a token selected, let’s try to find it again
-        final tokenCode = selectedToken!.token();
+        final tokenCode = p0.token();
         newToken = tokens.firstWhere(
           (t) => t.token() == tokenCode, // replace with teh updated one
           orElse: () => newToken,
         );
-      }
+      });
       // auto select a token
       setState(() {
         selectedToken = newToken;
@@ -198,9 +199,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
                       subtitle:
                           Text(L10n.of(context).moreRooms(otherRoomsCount)),
                       onTap: () {
-                        setState(() {
-                          selectedToken = invite;
-                        });
+                        setState(() => selectedToken = invite);
                         Navigator.pop(context, null);
                       },
                     );
@@ -220,11 +219,10 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
   ) async {
     try {
       EasyLoading.show(status: L10n.of(context).generateInviteCode);
-      final displayName =
+      final dispName =
           await ref.read(roomDisplayNameProvider(widget.roomId).future);
       String prefix =
-          (displayName?.replaceAll(RegExp(r'[^A-Za-z]'), '').toLowerCase() ??
-              '');
+          dispName?.replaceAll(RegExp(r'[^A-Za-z]'), '').toLowerCase() ?? '';
 
       final rng = Random();
 

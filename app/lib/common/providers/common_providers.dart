@@ -58,20 +58,17 @@ final accountAvatarInfoProvider = StateProvider.autoDispose<AvatarInfo>((ref) {
 
   final displayName = ref.watch(accountDisplayNameProvider).valueOrNull;
   final avatar = ref.watch(_accountAvatarProvider).valueOrNull;
-  final fallback = AvatarInfo(
-    uniqueId: userId,
-    displayName: displayName,
-  );
-
-  if (avatar == null) {
-    return fallback;
-  }
-
-  return AvatarInfo(
-    uniqueId: userId,
-    displayName: displayName,
-    avatar: avatar,
-  );
+  return avatar.let(
+        (p0) => AvatarInfo(
+          uniqueId: userId,
+          displayName: displayName,
+          avatar: p0,
+        ),
+      ) ??
+      AvatarInfo(
+        uniqueId: userId,
+        displayName: displayName,
+      );
 });
 
 /// Caching the name of each Room
@@ -89,11 +86,9 @@ final _accountAvatarProvider =
   final avatar = await account.avatar(thumbSize);
   // Only call data() once as it will consume the value and any subsequent
   // call will come back with `null`.
-  final avatarData = avatar.data();
-  if (avatarData != null) {
-    return MemoryImage(Uint8List.fromList(avatarData.asTypedList()));
-  }
-  return null;
+  return avatar
+      .data()
+      .let((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
 });
 
 final notificationSettingsProvider = AsyncNotifierProvider<

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/bug_report/actions/submit_bug_report.dart';
@@ -21,6 +22,7 @@ class BugReportPage extends ConsumerStatefulWidget {
   static const includeUserId = Key('bug-report-include-user-id');
   static const submitBtn = Key('bug-report-submit');
   static const pageKey = Key('bug-report');
+
   final String? imagePath;
   final String? error;
   final String? stack;
@@ -52,12 +54,10 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       loadingNotifier.update((state) => true);
       final Map<String, String> extraFields = {};
       if (submitErrorAndStackTrace) {
-        if (widget.error != null) {
-          extraFields['error'] = widget.error.toString();
-        }
-        if (widget.stack != null) {
-          extraFields['stack'] = widget.stack.toString();
-        }
+        final error = widget.error;
+        if (error != null) extraFields['error'] = error;
+        final stack = widget.stack;
+        if (stack != null) extraFields['stack'] = stack;
       }
       if (descController.text.isNotEmpty) {
         extraFields['description'] = descController.text;
@@ -151,7 +151,11 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                     : ActerPrimaryActionButton(
                         key: BugReportPage.submitBtn,
                         onPressed: () async {
-                          if (!formKey.currentState!.validate()) return;
+                          final curState = formKey.currentState;
+                          if (curState == null) {
+                            throw 'Form state not available';
+                          }
+                          if (!curState.validate()) return;
                           if (!await reportBug(context)) return;
                           if (!context.mounted) return;
                           if (context.canPop()) {
@@ -169,17 +173,19 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   }
 
   List<Widget> renderErrorOptions() {
-    if (widget.error == null) return [];
-    return [
-      CheckboxListTile(
-        title: Text(L10n.of(context).includeErrorAndStackTrace),
-        value: submitErrorAndStackTrace,
-        onChanged: (bool? value) => setState(() {
-          submitErrorAndStackTrace = value ?? true;
-        }),
-        controlAffinity: ListTileControlAffinity.leading,
-      ),
-    ];
+    return widget.error.let(
+          (p0) => [
+            CheckboxListTile(
+              title: Text(L10n.of(context).includeErrorAndStackTrace),
+              value: submitErrorAndStackTrace,
+              onChanged: (val) {
+                setState(() => submitErrorAndStackTrace = val != false);
+              },
+              controlAffinity: ListTileControlAffinity.leading,
+            ),
+          ],
+        ) ??
+        [];
   }
 
   List<Widget> renderLogOptions() {
@@ -206,33 +212,30 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   }
 
   List<Widget> renderForScreenShot() {
-    if (widget.imagePath == null) return [];
-    return [
-      const SizedBox(height: 10),
-      CheckboxListTile(
-        key: BugReportPage.includeScreenshot,
-        title: Text(L10n.of(context).includeScreenshot),
-        value: withScreenshot,
-        onChanged: (bool? value) => setState(() {
-          withScreenshot = value ?? true;
-        }),
-        controlAffinity: ListTileControlAffinity.leading,
-      ),
-      const SizedBox(height: 10),
-      if (withScreenshot)
-        Image.file(
-          File(widget.imagePath!),
-          key: BugReportPage.screenshot,
-          width: MediaQuery.of(context).size.width * 0.8,
-          errorBuilder: (
-            BuildContext context,
-            Object error,
-            StackTrace? stackTrace,
-          ) {
-            return Text(L10n.of(context).couldNotLoadImage(error));
-          },
-        ),
-      if (withScreenshot) const SizedBox(height: 10),
-    ];
+    return widget.imagePath.let(
+          (p0) => [
+            const SizedBox(height: 10),
+            CheckboxListTile(
+              key: BugReportPage.includeScreenshot,
+              title: Text(L10n.of(context).includeScreenshot),
+              value: withScreenshot,
+              onChanged: (val) =>
+                  setState(() => withScreenshot = (val != false)),
+              controlAffinity: ListTileControlAffinity.leading,
+            ),
+            const SizedBox(height: 10),
+            if (withScreenshot)
+              Image.file(
+                File(p0),
+                key: BugReportPage.screenshot,
+                width: MediaQuery.of(context).size.width * 0.8,
+                errorBuilder: (context, error, stackTrace) {
+                  return Text(L10n.of(context).couldNotLoadImage(error));
+                },
+              ),
+            if (withScreenshot) const SizedBox(height: 10),
+          ],
+        ) ??
+        [];
   }
 }

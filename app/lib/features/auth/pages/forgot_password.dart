@@ -2,6 +2,7 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/utils/validation_utils.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -44,15 +45,16 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
         ),
       );
     }
-    if (tokenResponse != null) {
-      return _NewPassword(tokenResponse: tokenResponse!, sdk: sdk);
-    }
-    return _AskForEmail(
-      sdk: sdk,
-      onSubmit: (tokenResp) => setState(() {
-        tokenResponse = tokenResp;
-      }),
-    );
+    return tokenResponse.let(
+          (p0) => _NewPassword(
+            tokenResponse: p0,
+            sdk: sdk,
+          ),
+        ) ??
+        _AskForEmail(
+          sdk: sdk,
+          onSubmit: (resp) => setState(() => tokenResponse = resp),
+        );
   }
 }
 
@@ -60,7 +62,10 @@ class _AskForEmail extends StatelessWidget {
   final void Function(PasswordChangeEmailTokenResponse) onSubmit;
   final ActerSdk sdk;
 
-  _AskForEmail({required this.onSubmit, required this.sdk});
+  _AskForEmail({
+    required this.onSubmit,
+    required this.sdk,
+  });
 
   final formKey = GlobalKey<FormState>(debugLabel: 'ask for email form');
   final TextEditingController emailController = TextEditingController();
@@ -163,7 +168,10 @@ class _AskForEmail extends StatelessWidget {
   }
 
   Future<void> _forgotPassword(BuildContext context) async {
-    if (!formKey.currentState!.validate()) return;
+    final curState = formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
+
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.sendingEmail);
     try {
@@ -293,7 +301,9 @@ class _NewPassword extends StatelessWidget {
   }
 
   void _resetPassword(BuildContext context) async {
-    if (!formKey.currentState!.validate()) return;
+    final curState = formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
 
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.resettingPassword);

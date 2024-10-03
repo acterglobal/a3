@@ -1,13 +1,15 @@
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class ServerSelectionField extends StatefulWidget {
   final List<ServerEntry> options;
   final void Function(String) onSelect;
   final String currentSelection;
   final bool autofocus;
+
   const ServerSelectionField({
     super.key,
     required this.options,
@@ -25,9 +27,7 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
   bool editMode = false;
 
   void setEditing() {
-    setState(() {
-      editMode = true;
-    });
+    setState(() => editMode = true);
   }
 
   @override
@@ -37,14 +37,15 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
         initialValue: widget.currentSelection,
         style: TextStyle(color: Theme.of(context).hintColor),
         onTap: () {
-          setState(() {
-            editMode = true;
-          });
+          setState(() => editMode = true);
         },
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           labelText: L10n.of(context).server,
-          suffix: Icon(Icons.edit, color: Theme.of(context).hintColor),
+          suffix: Icon(
+            Icons.edit,
+            color: Theme.of(context).hintColor,
+          ),
         ),
       );
     }
@@ -53,7 +54,7 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
           .where(
             (element) =>
                 element.value.contains(search) ||
-                (element.name?.contains(search) ?? false),
+                element.name?.contains(search) == true,
           )
           .toList(),
       builder: (context, controller, focusNode) {
@@ -62,9 +63,7 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
           focusNode: focusNode,
           onTapOutside: (pointer) {
             // close edit mode when the user clicks elsewhere
-            setState(() {
-              editMode = false;
-            });
+            setState(() => editMode = false);
           },
           autofocus: widget.autofocus,
           decoration: InputDecoration(
@@ -79,23 +78,22 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
           ),
         );
       },
-      itemBuilder: (context, entry) {
-        if (entry.name != null) {
-          return ListTile(
-            title: Text(entry.name!),
-            subtitle: Text(entry.value),
-          );
-        }
-        return ListTile(title: Text(entry.value));
-      },
+      itemBuilder: (context, entry) =>
+          entry.name.let(
+            (p0) => ListTile(
+              title: Text(p0),
+              subtitle: Text(entry.value),
+            ),
+          ) ??
+          ListTile(
+            title: Text(entry.value),
+          ),
       onSelected: (entry) => onSubmit(entry.value),
     );
   }
 
   void onSubmit(String selected) {
-    setState(() {
-      editMode = false;
-    });
+    setState(() => editMode = false);
     widget.onSelect(selected);
   }
 }

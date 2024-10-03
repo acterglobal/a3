@@ -46,6 +46,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
   }
 
   AppBar _buildAppBar() {
+    final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
       title: Column(
@@ -53,19 +54,20 @@ class _EventListPageState extends ConsumerState<EventListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(L10n.of(context).events),
-          if (widget.spaceId != null)
-            SpaceNameWidget(
-              spaceId: widget.spaceId!,
-            ),
+          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
         ],
       ),
       actions: [
         AddButtonWithCanPermission(
           canString: 'CanPostEvent',
-          onPressed: () => context.pushNamed(
-            Routes.createEvent.name,
-            queryParameters: {'spaceId': widget.spaceId},
-          ),
+          onPressed: () {
+            if (spaceId != null) {
+              context.pushNamed(
+                Routes.createEvent.name,
+                queryParameters: {'spaceId': spaceId},
+              );
+            }
+          },
         ),
       ],
     );

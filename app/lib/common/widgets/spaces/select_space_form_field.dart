@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:flutter/material.dart';
@@ -38,8 +37,7 @@ class SelectSpaceFormField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final selectedSpace = currentSelectedSpace != null;
+    final hasSelected = ref.watch(selectedSpaceIdProvider) != null;
 
     final emptyButton = OutlinedButton(
       key: openKey,
@@ -48,7 +46,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     );
 
     return FormField(
-      builder: (state) => selectedSpace
+      builder: (state) => hasSelected
           ? InkWell(
               key: openKey,
               onTap: () => selectSpace(context, ref),
@@ -72,7 +70,7 @@ class SelectSpaceFormField extends ConsumerWidget {
                       children: [
                         emptyButton,
                         Text(
-                          state.errorText!,
+                          state.errorText ?? '',
                           style:
                               Theme.of(context).textTheme.bodySmall!.copyWith(
                                     color: Theme.of(context).colorScheme.error,
@@ -91,17 +89,18 @@ class SelectSpaceFormField extends ConsumerWidget {
 
   Widget spaceBuilder(BuildContext context, WidgetRef ref, Widget? child) {
     final space = ref.watch(selectedSpaceDetailsProvider);
+    if (space != null) {
+      return SpaceChip(
+        spaceId: space.roomId,
+        onTapOpenSpaceDetail: false,
+        useCompatView: useCompatView,
+        onTapSelectSpace: () {
+          if (useCompatView) selectSpace(context, ref);
+        },
+      );
+    }
     final currentId = ref.watch(selectedSpaceIdProvider);
-    return space.let(
-          (p0) => SpaceChip(
-            spaceId: p0.roomId,
-            onTapOpenSpaceDetail: false,
-            useCompatView: useCompatView,
-            onTapSelectSpace: () {
-              if (useCompatView) selectSpace(context, ref);
-            },
-          ),
-        ) ??
-        Text(currentId!);
+    if (currentId == null) throw 'Selected space not available';
+    return Text(currentId);
   }
 }

@@ -182,7 +182,9 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
   }
 
   void _changePassword(BuildContext context) async {
-    if (!formKey.currentState!.validate()) return;
+    final curState = formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
     EasyLoading.show(status: L10n.of(context).changingYourPassword);
     try {
       final client = ref.read(alwaysClientProvider);

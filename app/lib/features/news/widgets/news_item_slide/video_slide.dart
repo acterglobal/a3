@@ -44,27 +44,31 @@ class VideoSlide extends StatelessWidget {
       alignment: Alignment.center,
       child: FutureBuilder<File>(
         future: getNewsVideo(),
-        builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-          if (snapshot.hasError) {
+        builder: (context, snapshot) {
+          final error = snapshot.error;
+          if (error != null) {
             _log.severe(
               'Failed to load video of slide',
-              snapshot.error,
+              error,
               snapshot.stackTrace,
             );
             return Center(
-              child: Text(L10n.of(context).loadingFailed(snapshot.error!)),
+              child: Text(L10n.of(context).loadingFailed(error)),
             );
           }
 
-          if (snapshot.hasData &&
-              snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            final data = snapshot.data;
+            if (data == null) throw 'slide data not available';
             return ActerVideoPlayer(
-              key: Key('news-slide-video-${snapshot.data!.path}'),
-              videoFile: snapshot.data!,
+              key: Key('news-slide-video-${data.path}'),
+              videoFile: data,
             );
           }
 
-          return Center(child: Text(L10n.of(context).loadingVideo));
+          return Center(
+            child: Text(L10n.of(context).loadingVideo),
+          );
         },
       ),
     );

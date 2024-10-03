@@ -2,6 +2,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
@@ -145,9 +146,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
     if (_listKey.currentState == null) {
       _log.fine('no state, hard reset');
       // we can ignore the diffing as we aren’t live, just reset
-      setState(() {
-        _reset();
-      });
+      setState(() => _reset());
       return;
     } else {
       refreshList();
@@ -184,8 +183,9 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
   void _insert(int pos, String data) {
     _log.fine('insert $pos: $data');
     _currentList.insert(pos, data);
-    if (_listKey.currentState != null) {
-      _listKey.currentState!.insertItem(pos);
+    final currentState = _listKey.currentState;
+    if (currentState != null) {
+      currentState.insertItem(pos);
     } else {
       _log.fine('we are not');
     }
@@ -193,8 +193,9 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
 
   void _remove(int pos, String data) {
     _currentList.removeAt(pos);
-    if (_listKey.currentState != null) {
-      _listKey.currentState!.removeItem(
+    final currentState = _listKey.currentState;
+    if (currentState != null) {
+      currentState.removeItem(
         pos,
         (context, animation) => _removedItemBuilder(data, context, animation),
       );
@@ -213,8 +214,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       key: Key('convo-card-$roomId-removed'),
       roomId: roomId,
       onTap: () {
-        final onSelected = widget.onSelected;
-        if (onSelected != null) onSelected(roomId);
+        widget.onSelected.let((cb) => cb(roomId));
       },
     );
   }
@@ -236,8 +236,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
       key: Key('convo-card-$roomId'),
       roomId: roomId,
       onTap: () {
-        final onSelected = widget.onSelected;
-        if (onSelected != null) onSelected(roomId);
+        widget.onSelected.let((cb) => cb(roomId));
       },
     );
   }

@@ -78,6 +78,7 @@ class AsyncPinListNotifier
   }
 
   Future<List<ActerPin>> _getPinList(Client client, String? spaceId) async {
+    final spaceId = arg;
     //GET ALL PINS
     if (spaceId == null) {
       return (await client.pins()).toList(); // this might throw internally

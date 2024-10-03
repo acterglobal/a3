@@ -19,8 +19,7 @@ final hasActivitiesProvider = StateProvider((ref) {
   return UrgencyBadge.none;
 });
 
-final hasUnconfirmedEmailAddresses = StateProvider(
-  (ref) =>
-      ref.watch(emailAddressesProvider).valueOrNull?.unconfirmed.isNotEmpty ==
-      true,
-);
+final hasUnconfirmedEmailAddresses = StateProvider((ref) {
+  final emailAddresses = ref.watch(emailAddressesProvider).valueOrNull;
+  return emailAddresses?.unconfirmed.isNotEmpty == true;
+});

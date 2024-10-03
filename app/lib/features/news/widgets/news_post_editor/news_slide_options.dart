@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -43,6 +44,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideListUI(BuildContext context) {
+    final curSlide = ref.watch(newsStateProvider).currentNewsSlide;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -58,6 +60,8 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 final slidePost = newsSlideList[index];
+                final mediaFile = slidePost.mediaFile;
+                if (mediaFile == null) throw 'Media file for slide not found';
                 return Stack(
                   fit: StackFit.passthrough,
                   children: [
@@ -77,20 +81,14 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(5),
-                          border: ref
-                                      .watch(newsStateProvider)
-                                      .currentNewsSlide ==
-                                  slidePost
+                          border: curSlide == slidePost
                               ? Border.all(
                                   color:
                                       Theme.of(context).colorScheme.textColor,
                                 )
                               : null,
                         ),
-                        child: getIconAsPerSlideType(
-                          slidePost.type,
-                          slidePost.mediaFile,
-                        ),
+                        child: getIconAsPerSlideType(slidePost.type, mediaFile),
                       ),
                     ),
                     Positioned(
@@ -125,11 +123,11 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget parentSpaceSelector() {
-    final newsPostSpaceId = ref.watch(newsStateProvider).newsPostSpaceId;
+    final spaceId = ref.watch(newsStateProvider).newsPostSpaceId;
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: (newsPostSpaceId != null)
-          ? InkWell(
+      child: spaceId.let(
+            (p0) => InkWell(
               key: NewsUpdateKeys.selectSpace,
               onTap: () async {
                 await ref
@@ -141,7 +139,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                 alignment: Alignment.topRight,
                 children: [
                   RoomAvatarBuilder(
-                    roomId: newsPostSpaceId,
+                    roomId: p0,
                     avatarSize: 42,
                   ),
                   Positioned(
@@ -161,16 +159,17 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                   ),
                 ],
               ),
-            )
-          : OutlinedButton(
-              key: NewsUpdateKeys.selectSpace,
-              onPressed: () async {
-                await ref
-                    .read(newsStateProvider.notifier)
-                    .changeNewsPostSpaceId(context);
-              },
-              child: Text(L10n.of(context).selectSpace),
             ),
+          ) ??
+          OutlinedButton(
+            key: NewsUpdateKeys.selectSpace,
+            onPressed: () async {
+              await ref
+                  .read(newsStateProvider.notifier)
+                  .changeNewsPostSpaceId(context);
+            },
+            child: Text(L10n.of(context).selectSpace),
+          ),
     );
   }
 
@@ -200,13 +199,13 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     );
   }
 
-  Widget getIconAsPerSlideType(NewsSlideType slidePostType, XFile? mediaFile) {
+  Widget getIconAsPerSlideType(NewsSlideType slidePostType, XFile mediaFile) {
     return switch (slidePostType) {
       NewsSlideType.text => const Icon(Atlas.size_text),
       NewsSlideType.image => ClipRRect(
           borderRadius: BorderRadius.circular(5.0),
           child: Image(
-            image: XFileImage(mediaFile!),
+            image: XFileImage(mediaFile),
             fit: BoxFit.cover,
           ),
         ),
@@ -214,23 +213,25 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           fit: StackFit.expand,
           children: [
             FutureBuilder(
-              future: NewsUtils.getThumbnailData(mediaFile!),
-              builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(5.0),
-                    child: Image.file(
-                      snapshot.data!,
-                      fit: BoxFit.cover,
+              future: NewsUtils.getThumbnailData(mediaFile),
+              builder: (context, snapshot) =>
+                  snapshot.data.let(
+                    (p0) => ClipRRect(
+                      borderRadius: BorderRadius.circular(5.0),
+                      child: Image.file(
+                        p0,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
+                  ) ??
+                  const SizedBox.shrink(),
             ),
             Container(
               color: Colors.black38,
-              child: const Icon(Icons.play_arrow_outlined, size: 32),
+              child: const Icon(
+                Icons.play_arrow_outlined,
+                size: 32,
+              ),
             ),
           ],
         ),

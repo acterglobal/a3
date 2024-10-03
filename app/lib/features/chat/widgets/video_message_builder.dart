@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
@@ -5,8 +7,8 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class VideoMessageBuilder extends ConsumerWidget {
   final types.VideoMessage message;
@@ -30,11 +32,12 @@ class VideoMessageBuilder extends ConsumerWidget {
     if (mediaState.mediaChatLoadingState.isLoading ||
         mediaState.isDownloading) {
       return loadingIndication(context);
-    } else if (mediaState.mediaFile == null) {
-      return videoPlaceholder(context, roomId, mediaState, ref);
-    } else {
-      return videoUI(context, mediaState);
     }
+    final mediaFile = mediaState.mediaFile;
+    if (mediaFile != null) {
+      return videoUI(context, mediaFile, mediaState.videoThumbnailFile);
+    }
+    return videoPlaceholder(context, roomId, mediaFile, ref);
   }
 
   Widget loadingIndication(BuildContext context) {
@@ -48,29 +51,28 @@ class VideoMessageBuilder extends ConsumerWidget {
   Widget videoPlaceholder(
     BuildContext context,
     String roomId,
-    MediaChatState mediaState,
+    File? mediaFile,
     WidgetRef ref,
   ) {
     return InkWell(
       onTap: () async {
-        if (mediaState.mediaFile != null) {
-          showAdaptiveDialog(
+        if (mediaFile != null) {
+          await showAdaptiveDialog(
             context: context,
             barrierDismissible: false,
             useRootNavigator: false,
             builder: (context) => VideoDialog(
               title: message.name,
-              videoFile: mediaState.mediaFile!,
+              videoFile: mediaFile,
             ),
           );
         } else {
-          await ref
-              .read(
-                mediaChatStateProvider(
-                  (messageId: message.remoteId ?? message.id, roomId: roomId),
-                ).notifier,
-              )
-              .downloadMedia();
+          final notifier = ref.read(
+            mediaChatStateProvider(
+              (messageId: message.remoteId ?? message.id, roomId: roomId),
+            ).notifier,
+          );
+          await notifier.downloadMedia();
         }
       },
       child: SizedBox(
@@ -89,7 +91,10 @@ class VideoMessageBuilder extends ConsumerWidget {
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -111,10 +116,7 @@ class VideoMessageBuilder extends ConsumerWidget {
     );
   }
 
-  Widget videoUI(
-    BuildContext context,
-    MediaChatState mediaState,
-  ) {
+  Widget videoUI(BuildContext context, File mediaFile, File? thumbFile) {
     return InkWell(
       onTap: () {
         showAdaptiveDialog(
@@ -123,7 +125,7 @@ class VideoMessageBuilder extends ConsumerWidget {
           useRootNavigator: false,
           builder: (context) => VideoDialog(
             title: message.name,
-            videoFile: mediaState.mediaFile!,
+            videoFile: mediaFile,
           ),
         );
       },
@@ -139,8 +141,7 @@ class VideoMessageBuilder extends ConsumerWidget {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              if (mediaState.videoThumbnailFile != null)
-                videoThumbFileView(context, mediaState),
+              if (thumbFile != null) videoThumbFileView(context, thumbFile),
               Container(
                 decoration: BoxDecoration(
                   color: Colors.black26,
@@ -159,15 +160,10 @@ class VideoMessageBuilder extends ConsumerWidget {
     );
   }
 
-  Widget videoThumbFileView(BuildContext context, MediaChatState mediaState) {
+  Widget videoThumbFileView(BuildContext context, File thumbFile) {
     return Image.file(
-      mediaState.videoThumbnailFile!,
-      frameBuilder: (
-        BuildContext context,
-        Widget child,
-        int? frame,
-        bool wasSynchronouslyLoaded,
-      ) {
+      thumbFile,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
         if (wasSynchronouslyLoaded) {
           return child;
         }
@@ -178,11 +174,7 @@ class VideoMessageBuilder extends ConsumerWidget {
           child: child,
         );
       },
-      errorBuilder: (
-        BuildContext context,
-        Object url,
-        StackTrace? error,
-      ) {
+      errorBuilder: (context, url, error) {
         return Text(
           L10n.of(context).couldNotLoadImage(error.toString()),
         );

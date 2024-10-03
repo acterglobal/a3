@@ -229,31 +229,33 @@ class TaskItemDetailPage extends ConsumerWidget {
 
   Widget _widgetDescription(BuildContext context, Task task, WidgetRef ref) {
     final description = task.description();
-    if (description == null) return const SizedBox.shrink();
-    final formattedBody = description.formattedBody();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SelectionArea(
-          child: GestureDetector(
-            onTap: () {
-              showEditDescriptionSheet(context, ref, task);
-            },
-            child: formattedBody != null
-                ? RenderHtml(
-                    text: formattedBody,
-                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
-                  )
-                : Text(
-                    description.body(),
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
+    return description.let(
+          (p0) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SelectionArea(
+                child: GestureDetector(
+                  onTap: () {
+                    showEditDescriptionSheet(context, ref, task);
+                  },
+                  child: p0.formattedBody().let(
+                            (p1) => RenderHtml(
+                              text: p1,
+                              defaultTextStyle:
+                                  Theme.of(context).textTheme.labelLarge,
+                            ),
+                          ) ??
+                      Text(
+                        p0.body(),
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
           ),
-        ),
-        const SizedBox(height: 10),
-      ],
-    );
+        ) ??
+        const SizedBox.shrink();
   }
 
   void showEditDescriptionSheet(
@@ -315,9 +317,8 @@ class TaskItemDetailPage extends ConsumerWidget {
       trailing: Padding(
         padding: const EdgeInsets.only(right: 12),
         child: Text(
-          task.dueDate() != null
-              ? taskDueDateFormat(DateTime.parse(task.dueDate()!))
-              : L10n.of(context).noDueDate,
+          task.dueDate().let((p0) => taskDueDateFormat(DateTime.parse(p0))) ??
+              L10n.of(context).noDueDate,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
@@ -328,9 +329,8 @@ class TaskItemDetailPage extends ConsumerWidget {
   Future<void> duePickerAction(BuildContext context, Task task) async {
     final newDue = await showDuePicker(
       context: context,
-      initialDate: task.dueDate() != null
-          ? DateTime.parse(task.dueDate()!)
-          : DateTime.now(),
+      initialDate:
+          task.dueDate().let((p0) => DateTime.parse(p0)) ?? DateTime.now(),
     );
     if (!context.mounted) return;
     if (newDue == null) return;

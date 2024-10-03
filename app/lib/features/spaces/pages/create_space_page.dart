@@ -55,18 +55,18 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       //Set default visibility based on the parent space selection
       // PRIVATE : If no parent is selected
       // SPACE VISIBLE : If parent space is selected
-      ref.read(_selectedVisibilityProvider.notifier).update(
-            (state) => widget.initialParentsSpaceId != null
-                ? RoomVisibility.SpaceVisible
-                : RoomVisibility.Private,
-          );
+      ref.read(_selectedVisibilityProvider.notifier).update((state) {
+        return widget.initialParentsSpaceId != null
+            ? RoomVisibility.SpaceVisible
+            : RoomVisibility.Private;
+      });
       //LISTEN for changes on parent space selection
       ref.listenManual(selectedSpaceIdProvider, (previous, next) {
-        ref.read(_selectedVisibilityProvider.notifier).update(
-              (state) => next != null
-                  ? RoomVisibility.SpaceVisible
-                  : RoomVisibility.Private,
-            );
+        ref.read(_selectedVisibilityProvider.notifier).update((state) {
+          return next != null
+              ? RoomVisibility.SpaceVisible
+              : RoomVisibility.Private;
+        });
       });
     });
   }
@@ -81,10 +81,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
 
   AppBar _buildAppbar() {
     final currentParentSpace = ref.watch(selectedSpaceIdProvider);
-    final parentSelected = currentParentSpace != null;
     return AppBar(
       title: Text(
-        parentSelected
+        currentParentSpace != null
             ? L10n.of(context).createSubspace
             : L10n.of(context).createSpace,
       ),
@@ -134,12 +133,13 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
             color: Theme.of(context).colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(5),
           ),
-          child: spaceAvatar != null
-              ? Image.file(
-                  File(spaceAvatar!.path),
+          child: spaceAvatar.let(
+                (p0) => Image.file(
+                  File(p0.path),
                   fit: BoxFit.cover,
-                )
-              : const Icon(Atlas.up_arrow_from_bracket_thin),
+                ),
+              ) ??
+              const Icon(Atlas.up_arrow_from_bracket_thin),
         ),
       ),
     );
@@ -148,9 +148,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   void _handleAvatarUpload() async {
     FilePickerResult? result = await pickAvatar(context: context);
     if (result != null) {
-      setState(() {
-        spaceAvatar = File(result.files.single.path!);
-      });
+      final imagePath = result.files.single.path;
+      if (imagePath == null) throw 'Picked image not found';
+      setState(() => spaceAvatar = File(imagePath));
     } else {
       // user cancelled the picker
     }
@@ -260,7 +260,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   Widget selectedVisibility() {
-    return switch (ref.watch(_selectedVisibilityProvider)) {
+    final selectedVisibility = ref.watch(_selectedVisibilityProvider);
+    return switch (selectedVisibility) {
       RoomVisibility.Public => RoomVisibilityItem(
           iconData: Icons.language,
           title: L10n.of(context).public,
@@ -318,11 +319,11 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       roomVisibility: ref.read(_selectedVisibilityProvider),
     );
     if (!mounted) return;
-    if (newRoomId != null) {
+    newRoomId.let((p0) {
       context.replaceNamed(
         Routes.spaceInvite.name,
-        pathParameters: {'spaceId': newRoomId},
+        pathParameters: {'spaceId': p0},
       );
-    }
+    });
   }
 }

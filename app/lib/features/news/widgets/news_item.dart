@@ -181,44 +181,42 @@ class _NewsItemState extends ConsumerState<NewsItem> {
       // malformatted
       return renderNotSupportedAction();
     }
-    if (referenceDetails.title() == 'shareEvent' && uri.startsWith('\$')) {
+    final title = referenceDetails.title();
+    if (title == 'shareEvent' && uri.startsWith('\$')) {
       // fallback support for older, badly formatted calendar events.
       return renderCalendarEventAction(targetEventId: uri);
     }
-
-    final title = referenceDetails.title();
-    if (title != null) {
-      return Card(
-        child: ListTile(
-          leading: const Icon(Atlas.link),
-          onTap: () => openLink(uri, context),
-          title: Text(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium,
+    return title.let(
+          (p0) => Card(
+            child: ListTile(
+              leading: const Icon(Atlas.link),
+              onTap: () => openLink(uri, context),
+              title: Text(
+                p0,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+              subtitle: Text(
+                uri,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ),
-          subtitle: Text(
-            uri,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+        ) ??
+        Card(
+          child: ListTile(
+            leading: const Icon(Atlas.link),
+            onTap: () => openLink(uri, context),
+            title: Text(
+              uri,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
           ),
-        ),
-      );
-    } else {
-      return Card(
-        child: ListTile(
-          leading: const Icon(Atlas.link),
-          onTap: () => openLink(uri, context),
-          title: Text(
-            uri,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
-        ),
-      );
-    }
+        );
   }
 
   Widget renderCalendarEventAction({required String targetEventId}) {

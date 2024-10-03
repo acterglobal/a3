@@ -9,6 +9,7 @@ class RoomHierarchyOptionsMenu extends ConsumerWidget {
   final String childId;
   final String parentId;
   final bool isSuggested;
+
   const RoomHierarchyOptionsMenu({
     super.key,
     required this.childId,
@@ -18,11 +19,8 @@ class RoomHierarchyOptionsMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canEdit = ref
-            .watch(roomMembershipProvider(parentId))
-            .valueOrNull
-            ?.canString('CanLinkSpaces') ==
-        true;
+    final membership = ref.watch(roomMembershipProvider(parentId)).valueOrNull;
+    final canEdit = membership?.canString('CanLinkSpaces') == true;
     if (!canEdit) {
       // user doesn’t have the permission. disappear
       return const SizedBox.shrink();

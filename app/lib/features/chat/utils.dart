@@ -9,10 +9,10 @@ import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:html/parser.dart';
 
 //Check for mentioned user link
@@ -82,18 +82,6 @@ class UserMentionMessageData {
   });
 }
 
-String? extractUserIdFromUri(String link) {
-  final mentionedUserLink = mentionedUserLinkRegex.firstMatch(link);
-
-  if (mentionedUserLink != null) {
-    //Get Username from mentioned user link
-    final alias = mentionedUserLink.namedGroup('alias') ?? '';
-    final server = mentionedUserLink.namedGroup('server') ?? '';
-    return '$alias:$server';
-  }
-  return null;
-}
-
 UserMentionMessageData parseUserMentionMessage(
   String message,
   html.Element aTagElement,
@@ -145,13 +133,10 @@ String? getRoomIdFromLink(Uri uri) {
     var server = matches.namedGroup('server');
 
     //Check & remove if string contains "?via=<server> pattern"
-    server = server!.split('?via=').first;
+    server = server?.split('?via=').first;
 
     //Create complete roomId with home server information
-    var roomIdWithServer = '$roomId:$server';
-
-    //Return roomId
-    return roomIdWithServer;
+    return server == null ? roomId : '$roomId:$server';
   }
 
   //Link is other than matrix room link
@@ -181,11 +166,11 @@ Future<void> navigateToRoomOrAskToJoin(
 
   /// Ask to join room if not yet joined
   else {
-    askToJoinRoom(context, ref, roomId);
+    await askToJoinRoom(context, ref, roomId);
   }
 }
 
-void askToJoinRoom(
+Future<void> askToJoinRoom(
   BuildContext context,
   WidgetRef ref,
   String roomId,
@@ -294,24 +279,16 @@ Future<void> parseUserMentionText(
 
   int offset = 0;
   for (final match in matches) {
-    final linkedName = match.group(1);
+    final displayName = match.group(1);
     final userId = match.group(2);
+    if (userId == null) continue;
 
-    String? displayName;
-    bool isValidMention = false;
-
-    if (linkedName != null && userId != null) {
-      displayName = linkedName;
-      isValidMention = roomMentions.any(
-        (uId) => uId == userId,
-      );
-    }
-    if (isValidMention && displayName != null) {
+    if (displayName != null && roomMentions.contains(userId)) {
       final simpleMention = '@$displayName';
       final startIndex = match.start - offset;
       final endIndex = startIndex + simpleMention.length;
       // restore mention state of input
-      inputNotifier.addMention(displayName, userId!);
+      inputNotifier.addMention(displayName, userId);
       // restore tags
       tags.add(
         TaggedText(
@@ -321,7 +298,6 @@ Future<void> parseUserMentionText(
           end: endIndex,
         ),
       );
-
       // Replace the mention in parsed text
       parsedText = parsedText.replaceRange(
         startIndex,
@@ -342,11 +318,7 @@ Future<void> parseUserMentionText(
 }
 
 // save composer draft object handler
-Future<void> saveDraft(
-  String text,
-  String roomId,
-  WidgetRef ref,
-) async {
+Future<void> saveDraft(String text, String roomId, WidgetRef ref) async {
   // get the convo object to initiate draft
   final chat = await ref.read(chatProvider(roomId).future);
   final messageId = ref.read(chatInputProvider).selectedMessage?.id;
@@ -363,18 +335,20 @@ Future<void> saveDraft(
     });
   }
 
-  if (chat != null) {
-    if (messageId != null) {
-      final selectedMessageState =
-          ref.read(chatInputProvider).selectedMessageState;
-      if (selectedMessageState == SelectedMessageState.edit) {
-        await chat.saveMsgDraft(text, htmlText, 'edit', messageId);
-      } else if (selectedMessageState == SelectedMessageState.replyTo) {
-        await chat.saveMsgDraft(text, htmlText, 'reply', messageId);
-      }
-    } else {
-      await chat.saveMsgDraft(text, htmlText, 'new', null);
-    }
+  if (chat == null) return;
+  if (messageId == null) {
+    await chat.saveMsgDraft(text, htmlText, 'new', null);
+    return;
+  }
+  switch (ref.read(chatInputProvider).selectedMessageState) {
+    case SelectedMessageState.edit:
+      await chat.saveMsgDraft(text, htmlText, 'edit', messageId);
+      break;
+    case SelectedMessageState.replyTo:
+      await chat.saveMsgDraft(text, htmlText, 'reply', messageId);
+      break;
+    default:
+      break;
   }
 }
 

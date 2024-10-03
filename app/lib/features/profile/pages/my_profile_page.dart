@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/common_providers.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
@@ -61,7 +60,9 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
         ),
         ActerPrimaryActionButton(
           onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
+            final curState = _formKey.currentState;
+            if (curState == null) throw 'Form state not available';
+            if (!curState.validate()) return;
             final currentUserName = widget.currentName;
             final newDisplayName = newUsername.text;
             if (currentUserName != newDisplayName) {

@@ -65,7 +65,7 @@ class FileMessageBuilder extends ConsumerWidget {
 
   Widget getFileIcon(BuildContext context) {
     final extension = p.extension(message.name);
-    IconData iconData = switch (extension) {
+    final iconData = switch (extension) {
       '.png' || '.jpg' || '.jpeg' => Atlas.file_image,
       '.pdf' => Icons.picture_as_pdf,
       '.doc' => Atlas.file,

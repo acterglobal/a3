@@ -18,17 +18,18 @@ Future<void> setRejected(String deviceId, bool value) async {
 }
 
 bool isCurrentRoute(String uri) {
-  final currentUri = rootNavKey.currentContext!.read(currentRoutingLocation);
-  return currentUri == uri;
+  final curContext = rootNavKey.currentContext;
+  if (curContext == null) throw 'Root context not available';
+  return curContext.read(currentRoutingLocation) == uri;
 }
 
 bool shouldReplaceCurrentRoute(String uri) {
   if (!uri.startsWith(chatRoomUriMatcher)) {
     return false;
   }
-
-  final currentUri = rootNavKey.currentContext!.read(currentRoutingLocation);
-  return currentUri.startsWith(chatRoomUriMatcher);
+  final curContext = rootNavKey.currentContext;
+  if (curContext == null) throw 'Root context not available';
+  return curContext.read(currentRoutingLocation).startsWith(chatRoomUriMatcher);
 }
 
 String makeForward({

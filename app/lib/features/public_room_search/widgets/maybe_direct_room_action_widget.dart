@@ -56,8 +56,8 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String roomId,
     List<String> servers,
   ) {
-    final roomWatch = ref.watch(maybeRoomProvider(roomId));
-    if (roomWatch.valueOrNull == null) {
+    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    if (room == null) {
       return Card(
         child: ListTile(
           onTap: () => onSelectedMatch(
@@ -83,10 +83,10 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
         ),
       );
     }
-    final room = roomWatch.value!;
 
+    final isSpace = room.isSpace();
     if (room.isJoined()) {
-      return room.isSpace()
+      return isSpace
           ? renderRoomCard(
               roomId,
               onTap: () => context.pushNamed(
@@ -104,7 +104,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     }
 
     final trailing = noMemberButton(context, ref, room, roomId, servers);
-    return room.isSpace()
+    return isSpace
         ? renderRoomCard(
             roomId,
             trailing: trailing,
@@ -122,34 +122,30 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String roomId,
     List<String> servers,
   ) {
-    if (room.joinRuleStr() == 'Public') {
-      return OutlinedButton(
-        onPressed: () => onSelectedMatch(
-          context,
-          ref,
-          servers,
-          roomId: roomId,
-        ),
-        child: Text(L10n.of(context).join),
-      );
-    } else {
-      return OutlinedButton(
-        onPressed: () => onSelectedMatch(
-          context,
-          ref,
-          servers,
-          roomId: roomId,
-        ),
-        child: Text(L10n.of(context).requestToJoin),
-      );
-    }
+    return OutlinedButton(
+      onPressed: () => onSelectedMatch(
+        context,
+        ref,
+        servers,
+        roomId: roomId,
+      ),
+      child: Text(
+        room.joinRuleStr() == 'Public'
+            ? L10n.of(context).join
+            : L10n.of(context).requestToJoin,
+      ),
+    );
   }
 
   Widget loadingCard() {
     return const Card(
       child: ListTile(
-        title: Skeletonizer(child: Text('something random ...')),
-        subtitle: Skeletonizer(child: Text('another random thing')),
+        title: Skeletonizer(
+          child: Text('something random ...'),
+        ),
+        subtitle: Skeletonizer(
+          child: Text('another random thing'),
+        ),
       ),
     );
   }
@@ -172,8 +168,10 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     final aliased = aliasedHttpRegexp.firstMatch(searchVal) ??
         idAliasRegexp.firstMatch(searchVal);
     if (canMatchAlias && aliased != null) {
-      final alias = aliased.namedGroup('alias')!;
-      final server = aliased.namedGroup('server')!;
+      final alias = aliased.namedGroup('alias');
+      if (alias == null) throw 'Alias not found';
+      final server = aliased.namedGroup('server');
+      if (server == null) throw 'Server not found';
       return renderAliased(context, ref, alias, server);
     }
 
@@ -181,7 +179,8 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
         idMatrixRegexp.firstMatch(searchVal);
 
     if (canMatchId && id != null) {
-      final roomId = id.namedGroup('id')!;
+      final roomId = id.namedGroup('id');
+      if (roomId == null) throw 'Room id not found';
       final List<String> servers = [
         id.namedGroup('server_name') ?? '',
         id.namedGroup('server_name2') ?? '',
@@ -199,18 +198,20 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     return const SizedBox.shrink();
   }
 
-  void onSelectedMatch(
+  Future<void> onSelectedMatch(
     BuildContext context,
     WidgetRef ref,
     List<String> serverNames, {
     String? roomId,
     String? alias,
   }) async {
+    final roomIdOrAlias = alias ?? roomId;
+    if (roomIdOrAlias == null) throw 'Room id or alias not found';
     await joinRoom(
       context,
       ref,
-      L10n.of(context).tryingToJoin('${alias ?? roomId}'),
-      (alias ?? roomId)!,
+      L10n.of(context).tryingToJoin(roomIdOrAlias),
+      roomIdOrAlias,
       serverNames.first,
       (roomId) => context.pushNamed(
         Routes.forward.name,

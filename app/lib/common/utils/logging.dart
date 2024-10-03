@@ -14,16 +14,13 @@ Future<void> initLogging() async {
     final message = record.message;
     debugPrint('[$loggerName][${level.name}]: $time: $message');
 
-    String levelName = 'trace';
-    if (level == Level.WARNING) {
-      levelName = 'warn';
-    } else if (level == Level.SEVERE || level == Level.SHOUT) {
-      levelName = 'error';
-    } else if (level == Level.INFO) {
-      levelName = 'info';
-    } else if (level == Level.CONFIG) {
-      levelName = 'debug';
-    }
+    String levelName = switch (level) {
+      Level.WARNING => 'warn',
+      Level.SEVERE || Level.SHOUT => 'error',
+      Level.INFO => 'info',
+      Level.CONFIG => 'debug',
+      _ => 'trace',
+    };
 
     bool? curVal = logStateCache[(loggerName, levelName)];
     if (curVal == null) {

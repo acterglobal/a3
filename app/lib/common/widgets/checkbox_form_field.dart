@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 // Inspired by https://stackoverflow.com/questions/53479942/checkbox-form-validation
@@ -17,9 +18,7 @@ class CheckboxFormField extends FormField<bool> {
               value: state.value,
               onChanged: (value) {
                 state.didChange(value);
-                if (onChanged != null) {
-                  onChanged(value);
-                }
+                onChanged.let((cb) => cb(value));
               },
               subtitle: state.hasError
                   ? Builder(

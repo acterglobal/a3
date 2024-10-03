@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,11 +45,8 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
   void _newCustomLevel(String? value) {
     if (mounted) {
       setState(() {
-        if (value != null) {
-          customValue = max(int.tryParse(value) ?? 0, widget.maxPowerLevel);
-        } else {
-          customValue = null;
-        }
+        customValue =
+            value.let((p0) => max(int.tryParse(p0) ?? 0, widget.maxPowerLevel));
       });
     }
   }
@@ -151,23 +149,21 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
         ),
         ActerPrimaryActionButton(
           onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
+            final curState = _formKey.currentState;
+            if (curState == null) throw 'Form state not available';
+            if (!curState.validate()) return;
             final freshMemberStatus = widget.member.membershipStatusStr();
             if (freshMemberStatus == currentMemberStatus) {
               // nothing to do, all the same.
               Navigator.pop(context, null);
               return;
             }
-            int? newValue;
-            if (currentMemberStatus == 'Admin') {
-              newValue = 100;
-            } else if (currentMemberStatus == 'Mod') {
-              newValue = 50;
-            } else if (currentMemberStatus == 'Regular') {
-              newValue = 0;
-            } else {
-              newValue = customValue ?? 0;
-            }
+            int? newValue = switch (currentMemberStatus) {
+              'Admin' => 100,
+              'Mod' => 50,
+              'Regular' => 0,
+              _ => customValue ?? 0,
+            };
 
             if (currentPowerLevel == newValue) {
               // nothing to be done.

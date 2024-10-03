@@ -38,51 +38,53 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
   }
 
   void onStateChange(VerificationState? prev, VerificationState next) {
+    final event = next.event;
+    if (event == null) throw 'event not available on verification state change';
     switch (next.stage) {
       case 'verification.init':
         onVerificationInit();
         break;
       case 'request.created':
-        onRequestCreated(next.event!);
+        onRequestCreated(event);
         break;
       case 'request.requested':
-        onRequestRequested(next.event!);
+        onRequestRequested(event);
         break;
       case 'request.ready':
-        onRequestReady(next.event!);
+        onRequestReady(event);
         break;
       case 'request.transitioned':
-        onRequestTransitioned(next.event!);
+        onRequestTransitioned(event);
         break;
       case 'request.done':
-        onRequestDone(next.event!);
+        onRequestDone(event);
         break;
       case 'request.cancelled':
-        onRequestCancelled(next.event!);
+        onRequestCancelled(event);
         break;
       case 'verification.request':
-        onVerificationRequest(next.event!);
+        onVerificationRequest(event);
         break;
       case 'verification.ready':
-        onVerificationReady(next.event!);
+        onVerificationReady(event);
         break;
       case 'sas.started':
-        onSasStarted(next.event!);
+        onSasStarted(event);
         break;
       case 'sas.accepted':
-        onSasAccepted(next.event!);
+        onSasAccepted(event);
         break;
       case 'sas.cancelled':
-        onSasCancelled(next.event!);
+        onSasCancelled(event);
         break;
       case 'sas.keys_exchanged':
-        onSasKeysExchanged(next.event!);
+        onSasKeysExchanged(event);
         break;
       case 'sas.confirmed':
-        onSasConfirmed(next.event!);
+        onSasConfirmed(event);
         break;
       case 'sas.done':
-        onSasDone(next.event!);
+        onSasDone(event);
         break;
     }
   }
@@ -210,14 +212,15 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
     _log.info('emitter verification.request');
 
     // starting of verifiee’s flow
+    final fId = event.flowId();
     setState(() {
       isVerifier = false;
-      flowId = event.flowId();
+      flowId = fId;
     });
 
     // start request event loop
     final client = ref.read(alwaysClientProvider);
-    client.installRequestEventHandler(flowId!);
+    client.installRequestEventHandler(fId);
 
     // open verification.request dialog
     showModalBottomSheet(

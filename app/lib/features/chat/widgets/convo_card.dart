@@ -45,13 +45,13 @@ class ConvoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (animation != null) {
-      return SizeTransition(
-        sizeFactor: animation!,
-        child: buildInner(context, ref),
-      );
-    }
-    return buildInner(context, ref);
+    return animation.let(
+          (p0) => SizeTransition(
+            sizeFactor: p0,
+            child: buildInner(context, ref),
+          ),
+        ) ??
+        buildInner(context, ref);
   }
 
   Widget buildInner(BuildContext context, WidgetRef ref) {
@@ -212,18 +212,17 @@ class _SubtitleWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userIds = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
-    if (userIds != null && userIds.isNotEmpty) {
-      return renderTypingState(context, userIds, ref);
+    final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
+    if (users != null && users.isNotEmpty) {
+      return renderTypingState(context, users, ref);
     }
 
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
 
     RoomEventItem? eventItem = latestMessage?.eventItem();
-    if (eventItem == null) {
-      return const SizedBox.shrink();
-    }
+    if (eventItem == null) return const SizedBox.shrink();
 
+    MsgContent? msgContent = eventItem.msgContent();
     String sender = eventItem.sender();
     String eventType = eventItem.eventType();
     // message event
@@ -249,6 +248,29 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.room.topic':
       case 'm.space.child':
       case 'm.space.parent':
+        if (msgContent == null) return const SizedBox();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                '${simplifyUserId(sender)}: ',
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium!
+                    .copyWith(fontWeight: FontWeight.w700),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Flexible(
+              child: Text(
+                msgContent.body(),
+                style: Theme.of(context).textTheme.labelMedium,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
       case 'm.room.message':
         switch (eventItem.msgType()) {
           case 'm.audio':
@@ -261,15 +283,10 @@ class _SubtitleWidget extends ConsumerWidget {
           case 'm.notice':
           case 'm.server_notice':
           case 'm.text':
-            MsgContent? msgContent = eventItem.msgContent();
-            if (msgContent == null) {
-              return const SizedBox.shrink();
-            }
-            String body = msgContent.body();
-            String? formattedBody = msgContent.formattedBody();
-            if (formattedBody != null) {
-              body = simplifyBody(formattedBody);
-            }
+            if (msgContent == null) return const SizedBox.shrink();
+            String body =
+                msgContent.formattedBody().let((p0) => simplifyBody(p0)) ??
+                    msgContent.body();
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -299,15 +316,10 @@ class _SubtitleWidget extends ConsumerWidget {
             );
         }
       case 'm.reaction':
-        MsgContent? msgContent = eventItem.msgContent();
-        if (msgContent == null) {
-          return const SizedBox();
-        }
-        String body = msgContent.body();
-        String? formattedBody = msgContent.formattedBody();
-        if (formattedBody != null) {
-          body = simplifyBody(formattedBody);
-        }
+        if (msgContent == null) return const SizedBox();
+        String body =
+            msgContent.formattedBody().let((p0) => simplifyBody(p0)) ??
+                msgContent.body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -336,6 +348,7 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.sticker':
+        if (msgContent == null) return const SizedBox();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -351,7 +364,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                eventItem.msgContent()!.body(),
+                msgContent.body(),
                 style: Theme.of(context).textTheme.labelMedium,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -410,15 +423,10 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.room.member':
-        MsgContent? msgContent = eventItem.msgContent();
-        if (msgContent == null) {
-          return const SizedBox();
-        }
-        String body = msgContent.body();
-        String? formattedBody = msgContent.formattedBody();
-        if (formattedBody != null) {
-          body = simplifyBody(formattedBody);
-        }
+        if (msgContent == null) return const SizedBox();
+        String body =
+            msgContent.formattedBody().let((p0) => simplifyBody(p0)) ??
+                msgContent.body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -446,6 +454,7 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.poll.start':
+        if (msgContent == null) return const SizedBox();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -461,7 +470,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                eventItem.msgContent()!.body(),
+                msgContent.body(),
                 style: Theme.of(context).textTheme.labelMedium,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -474,27 +483,30 @@ class _SubtitleWidget extends ConsumerWidget {
 
   Widget renderTypingState(
     BuildContext context,
-    List<User> userIds,
+    List<User> users,
     WidgetRef ref,
   ) {
+    final user1 = simplifyUserId(users[0].id);
+    if (user1 == null) throw 'first user id not available';
     final textStyle = Theme.of(context).textTheme.bodySmall!;
-    if (userIds.length == 1) {
-      final userName = simplifyUserId(userIds[0].id.toString());
-      return Text(L10n.of(context).typingUser1(userName!), style: textStyle);
-    } else if (userIds.length == 2) {
-      final u1 = simplifyUserId(userIds[0].id.toString());
-      final u2 = simplifyUserId(userIds[1].id.toString());
+    if (users.length == 1) {
       return Text(
-        L10n.of(context).typingUser2(u1!, u2!),
-        style: textStyle,
-      );
-    } else {
-      final u1 = simplifyUserId(userIds[0].id.toString());
-      return Text(
-        L10n.of(context).typingUser3(u1!, {userIds.length - 1}),
+        L10n.of(context).typingUser1(user1),
         style: textStyle,
       );
     }
+    if (users.length == 2) {
+      final user2 = simplifyUserId(users[1].id);
+      if (user2 == null) throw 'second user id not available';
+      return Text(
+        L10n.of(context).typingUser2(user1, user2),
+        style: textStyle,
+      );
+    }
+    return Text(
+      L10n.of(context).typingUser3(user1, {users.length - 1}),
+      style: textStyle,
+    );
   }
 }
 
@@ -507,10 +519,7 @@ class _TrailingWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
     RoomEventItem? eventItem = latestMessage?.eventItem();
-    if (eventItem == null) {
-      return const SizedBox.shrink();
-    }
-
+    if (eventItem == null) return const SizedBox.shrink();
     return Text(
       jiffyTime(context, eventItem.originServerTs()),
       style: Theme.of(context).textTheme.labelMedium,

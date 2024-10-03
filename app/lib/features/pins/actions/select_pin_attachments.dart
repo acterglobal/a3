@@ -7,15 +7,17 @@ import 'package:acter/features/pins/models/create_pin_state/pin_attachment_model
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:path/path.dart' as p;
 
 final _log = Logger('a3::pins::select::attachment');
 
 Future<FilePickerResult?> pick(
-    L10n lang, AttachmentType pinAttachmentType,) async {
+  L10n lang,
+  AttachmentType pinAttachmentType,
+) async {
   if (pinAttachmentType == AttachmentType.image) {
     return await pickImage(lang: lang);
   }

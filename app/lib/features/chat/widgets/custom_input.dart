@@ -5,6 +5,7 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
@@ -73,9 +74,11 @@ class CustomChatInput extends ConsumerWidget {
       return loadingState(context);
     }
     if (canSend) {
-      return _ChatInput(roomId: roomId, onTyping: onTyping);
+      return _ChatInput(
+        roomId: roomId,
+        onTyping: onTyping,
+      );
     }
-
     return FrostEffect(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -96,7 +99,10 @@ class CustomChatInput extends ConsumerWidget {
               Text(
                 key: noAccessKey,
                 L10n.of(context).chatMissingPermissionsToSend,
-                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
@@ -251,36 +257,34 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   Future<void> loadDraft() async {
     final draft =
         await ref.read(chatComposerDraftProvider(widget.roomId).future);
+    if (draft == null) return;
 
-    if (draft != null) {
-      final inputNotifier = ref.read(chatInputProvider.notifier);
-      inputNotifier.unsetSelectedMessage();
-      if (draft.eventId() != null) {
-        final eventId = draft.eventId()!;
-        final draftType = draft.draftType();
-
-        final m = ref
-            .read(chatMessagesProvider(widget.roomId))
-            .firstWhere((x) => x.id == eventId);
-        if (draftType == 'edit') {
-          inputNotifier.setEditMessage(m);
-        } else if (draftType == 'reply') {
-          inputNotifier.setReplyToMessage(m);
-        }
+    final inputNotifier = ref.read(chatInputProvider.notifier);
+    inputNotifier.unsetSelectedMessage();
+    draft.eventId().let((p0) {
+      final draftType = draft.draftType();
+      final m = ref
+          .read(chatMessagesProvider(widget.roomId))
+          .firstWhere((x) => x.id == p0);
+      if (draftType == 'edit') {
+        inputNotifier.setEditMessage(m);
+      } else if (draftType == 'reply') {
+        inputNotifier.setReplyToMessage(m);
       }
-      if (draft.htmlText() != null) {
-        await parseUserMentionText(
-          draft.htmlText()!,
-          widget.roomId,
-          textController,
-          ref,
-        );
-      } else {
-        textController.text = draft.plainText();
-      }
-
-      _log.info('compose draft loaded for room: ${widget.roomId}');
+    });
+    final htmlText = draft.htmlText();
+    if (htmlText != null) {
+      await parseUserMentionText(
+        htmlText,
+        widget.roomId,
+        textController,
+        ref,
+      );
+    } else {
+      textController.text = draft.plainText();
     }
+
+    _log.info('compose draft loaded for room: ${widget.roomId}');
   }
 
   // listener for handling send state
@@ -547,6 +551,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         String? mimeType = lookupMimeType(file.path);
         if (mimeType == null) throw lang.failedToDetectMimeType;
         final fileLen = file.lengthSync();
+        final repliedId = inputState.selectedMessage?.remoteId;
         if (mimeType.startsWith('image/') &&
             attachmentType == AttachmentType.image) {
           final bytes = file.readAsBytesSync();
@@ -557,10 +562,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               .width(image.width)
               .height(image.height);
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            await stream.replyMessage(
-              inputState.selectedMessage!.remoteId!,
-              imageDraft,
-            );
+            if (repliedId == null) throw 'Replied id not found';
+            await stream.replyMessage(repliedId, imageDraft);
           } else {
             await stream.sendMessage(imageDraft);
           }
@@ -569,10 +572,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           final audioDraft =
               client.audioDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            await stream.replyMessage(
-              inputState.selectedMessage!.remoteId!,
-              audioDraft,
-            );
+            if (repliedId == null) throw 'Replied id not found';
+            await stream.replyMessage(repliedId, audioDraft);
           } else {
             await stream.sendMessage(audioDraft);
           }
@@ -580,24 +581,18 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             attachmentType == AttachmentType.video) {
           final videoDraft =
               client.videoDraft(file.path, mimeType).size(file.lengthSync());
-
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            await stream.replyMessage(
-              inputState.selectedMessage!.remoteId!,
-              videoDraft,
-            );
+            if (repliedId == null) throw 'Replied id not found';
+            await stream.replyMessage(repliedId, videoDraft);
           } else {
             await stream.sendMessage(videoDraft);
           }
         } else {
           final fileDraft =
               client.fileDraft(file.path, mimeType).size(file.lengthSync());
-
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            await stream.replyMessage(
-              inputState.selectedMessage!.remoteId!,
-              fileDraft,
-            );
+            if (repliedId == null) throw 'Replied id not found';
+            await stream.replyMessage(repliedId, fileDraft);
           } else {
             await stream.sendMessage(fileDraft);
           }
@@ -684,9 +679,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     ref.read(chatInputProvider.notifier).startSending();
     try {
       // end the typing notification
-      if (widget.onTyping != null) {
-        widget.onTyping!(false);
-      }
+      widget.onTyping.let((cb) => cb(false));
 
       final mentions = ref.read(chatInputProvider).mentions;
       String markdownText = textController.text;
@@ -716,9 +709,13 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       );
 
       if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-        await stream.replyMessage(inputState.selectedMessage!.remoteId!, draft);
+        final repliedId = inputState.selectedMessage?.remoteId;
+        if (repliedId == null) throw 'Replied id not found';
+        await stream.replyMessage(repliedId, draft);
       } else if (inputState.selectedMessageState == SelectedMessageState.edit) {
-        await stream.editMessage(inputState.selectedMessage!.remoteId!, draft);
+        final editedId = inputState.selectedMessage?.remoteId;
+        if (editedId == null) throw 'Edited id not found';
+        await stream.editMessage(editedId, draft);
       } else {
         await stream.sendMessage(draft);
       }
@@ -728,7 +725,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       textController.clear();
       // also clear composed state
       final convo = await ref.read(chatProvider(widget.roomId).future);
-      await convo?.saveMsgDraft(textController.text, null, 'new', null);
+      if (convo == null) throw 'Convo not found';
+      await convo.saveMsgDraft(textController.text, null, 'new', null);
     } catch (e, s) {
       _log.severe('Sending chat message failed', e, s);
       EasyLoading.showError(
@@ -777,10 +775,10 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
               next.selectedMessage != prev?.selectedMessage)) {
         // a new message has been selected to be edited or switched from reply
         // to edit, force refresh the inner text controller to reflect that
-        if (next.selectedMessage != null) {
-          widget.controller.text = parseEditMsg(next.selectedMessage!);
+        next.selectedMessage.let((p0) {
+          widget.controller.text = parseEditMsg(p0);
           // frame delay to keep focus connected with keyboard.
-        }
+        });
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();
         });
@@ -892,9 +890,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         enabled: ref.watch(_allowEdit(widget.roomId)),
         onChanged: (String val) {
           // send typing notice
-          if (widget.onTyping != null) {
-            widget.onTyping!(val.isNotEmpty);
-          }
+          widget.onTyping.let((cb) => cb(val.isNotEmpty));
         },
         onSubmitted: (_) => widget.onSendButtonPressed(),
         style: Theme.of(context).textTheme.bodyMedium,

@@ -158,11 +158,7 @@ class __ActivateFeatureDialogState extends State<_ActivateFeatureDialog> {
   void _newCustomLevel(String? value) {
     if (mounted) {
       setState(() {
-        if (value != null) {
-          customValue = int.tryParse(value);
-        } else {
-          customValue = null;
-        }
+        customValue = (value != null) ? int.tryParse(value) : null;
       });
     }
   }
@@ -261,19 +257,17 @@ class __ActivateFeatureDialogState extends State<_ActivateFeatureDialog> {
   }
 
   void onSubmit() {
-    if (!_formKey.currentState!.validate()) return;
+    final curState = _formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
     final freshMemberStatus = widget.currentPowerLevelName;
     if (freshMemberStatus != currentMemberStatus) {
-      int? newValue;
-      if (currentMemberStatus == 'Admin') {
-        newValue = 100;
-      } else if (currentMemberStatus == 'Mod') {
-        newValue = 50;
-      } else if (currentMemberStatus == 'Regular') {
-        newValue = 0;
-      } else {
-        newValue = customValue ?? 0;
-      }
+      int? newValue = switch (currentMemberStatus) {
+        'Admin' => 100,
+        'Mod' => 50,
+        'Regular' => 0,
+        _ => customValue ?? 0,
+      };
 
       if (widget.currentPowerLevel == newValue) {
         // nothing to be done.

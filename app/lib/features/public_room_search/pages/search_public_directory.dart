@@ -27,14 +27,15 @@ class SearchPublicDirectory extends ConsumerWidget {
     );
   }
 
-  void onSelectedKnown(
+  Future<void> onSelectedKnown(
     BuildContext context,
     WidgetRef ref,
     PublicSearchResultItem spaceSearchResult,
     String? searchServer,
   ) async {
     final roomId = spaceSearchResult.roomIdStr();
-    if ((await ref.read(roomMembershipProvider(roomId).future)) != null) {
+    final membership = await ref.read(roomMembershipProvider(roomId).future);
+    if (membership != null) {
       // we know the space, user just wants to enter it
       if (spaceSearchResult.roomTypeStr() == 'Space') {
         // ignore: use_build_context_synchronously

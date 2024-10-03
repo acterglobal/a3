@@ -132,8 +132,8 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     );
     if (roomIdStr != null) {
       try {
-        final convo =
-            await ref.read(alwaysClientProvider).convoWithRetry(roomIdStr, 120);
+        final client = ref.read(alwaysClientProvider);
+        final convo = await client.convoWithRetry(roomIdStr, 120);
         EasyLoading.showToast(roomCreated);
         return convo;
       } catch (e, s) {
@@ -198,24 +198,20 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
     final selectedUsers = ref.watch(createChatSelectedUsersProvider);
     if (selectedUsers.isEmpty) {
       return L10n.of(context).createGroupChat;
-    } else if (selectedUsers.length > 1) {
-      return L10n.of(context).startGroupDM;
-    } else {
-      final client = ref.watch(alwaysClientProvider);
-      if (checkUserDMExists(selectedUsers[0].userId().toString(), client) !=
-          null) {
-        return L10n.of(context).goToDM;
-      } else {
-        return L10n.of(context).startDM;
-      }
     }
+    if (selectedUsers.length == 1) {
+      final client = ref.watch(alwaysClientProvider);
+      final userId = selectedUsers[0].userId().toString();
+      return checkUserDMExists(userId, client) != null
+          ? L10n.of(context).goToDM
+          : L10n.of(context).startDM;
+    }
+    return L10n.of(context).startGroupDM;
   }
 
   // checks whether user DM already exists or needs created
   String? checkUserDMExists(String userId, ffi.Client client) {
-    final id = client.dmWithUser(userId).text();
-    if (id != null) return id;
-    return null;
+    return client.dmWithUser(userId).text();
   }
 
   Widget renderSelectedUsers(BuildContext context) {
@@ -580,15 +576,16 @@ class _CreateRoomFormWidgetConsumerState
   }
 
   void _handleTitleChange(String? value) {
-    ref.read(_titleProvider.notifier).update((state) => value!);
+    if (value == null) throw 'Changed value not available';
+    ref.read(_titleProvider.notifier).update((state) => value);
   }
 
-  void _handleAvatarUpload() async {
+  Future<void> _handleAvatarUpload() async {
     FilePickerResult? result = await pickAvatar(context: context);
     if (result != null) {
-      File file = File(result.files.single.path!);
-      String filepath = file.path;
-      ref.read(_avatarProvider.notifier).update((state) => filepath);
+      final avatarPath = result.files.single.path;
+      if (avatarPath == null) throw 'Selected avatar not found';
+      ref.read(_avatarProvider.notifier).update((state) => avatarPath);
     } else {
       // user cancelled the picker
     }

@@ -1,6 +1,6 @@
-import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
-
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -26,21 +26,20 @@ class MemberListEntry extends ConsumerWidget {
     final memberStatus = ref
         .watch(membershipStatusStr((roomId: roomId, userId: memberId)))
         .valueOrNull;
-    Widget? trailing;
-    if (memberStatus == 'Admin') {
-      trailing = const Tooltip(
-        message: 'Admin',
-        child: Icon(Atlas.crown_winner_thin),
-      );
-    } else if (memberStatus == 'Mod') {
-      trailing = const Tooltip(
-        message: 'Moderator',
-        child: Icon(Atlas.shield_star_win_thin),
-      );
-    }
-
-    final avatarInfo =
-        ref.watch(memberAvatarInfoProvider((userId: memberId, roomId: roomId)));
+    final trailing = switch (memberStatus) {
+      'Admin' => const Tooltip(
+          message: 'Admin',
+          child: Icon(Atlas.crown_winner_thin),
+        ),
+      'Mod' => const Tooltip(
+          message: 'Moderator',
+          child: Icon(Atlas.shield_star_win_thin),
+        ),
+      _ => null,
+    };
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider((userId: memberId, roomId: roomId)),
+    );
 
     return ListTile(
       onTap: () async {
@@ -64,13 +63,13 @@ class MemberListEntry extends ConsumerWidget {
         style: Theme.of(context).textTheme.bodyMedium,
         overflow: TextOverflow.ellipsis,
       ),
-      subtitle: avatarInfo.displayName != null
-          ? Text(
-              memberId,
-              style: Theme.of(context).textTheme.labelLarge,
-              overflow: TextOverflow.ellipsis,
-            )
-          : null,
+      subtitle: avatarInfo.displayName.let(
+        (p0) => Text(
+          memberId,
+          style: Theme.of(context).textTheme.labelLarge,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
       trailing: trailing,
     );
   }

@@ -1,18 +1,15 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
 import 'package:acter/features/space/dialogs/suggested_rooms.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter/features/space/widgets/skeletons/space_details_skeletons.dart';
 import 'package:acter/features/space/widgets/space_sections/about_section.dart';
-import 'package:acter/features/space/widgets/space_sections/chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/events_section.dart';
-import 'package:acter/features/space/widgets/space_sections/members_section.dart';
 import 'package:acter/features/space/widgets/space_sections/pins_section.dart';
-import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
-import 'package:acter/features/space/widgets/space_sections/spaces_section.dart';
 import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
@@ -206,13 +203,18 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceAvatar() {
     final avatarData =
         ref.watch(roomAvatarProvider(widget.spaceId)).valueOrNull;
-    if (avatarData == null) return Container(height: 200, color: Colors.red);
-    return Image.memory(
-      avatarData.bytes,
-      height: 300,
-      width: MediaQuery.of(context).size.width,
-      fit: BoxFit.cover,
-    );
+    return avatarData.let(
+          (p0) => Image.memory(
+            p0.bytes,
+            height: 300,
+            width: MediaQuery.of(context).size.width,
+            fit: BoxFit.cover,
+          ),
+        ) ??
+        Container(
+          height: 200,
+          color: Colors.red,
+        );
   }
 
   Widget spaceTabMenuUI(BuildContext context, TabEntry tabItem, bool active) {
@@ -247,10 +249,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.pins => PinsSection(spaceId: widget.spaceId),
       TabEntry.tasks => TasksSection(spaceId: widget.spaceId),
       TabEntry.events => EventsSection(spaceId: widget.spaceId),
-      TabEntry.chats => ChatsSection(spaceId: widget.spaceId),
-      TabEntry.spaces => SpacesSection(spaceId: widget.spaceId),
-      TabEntry.members => MembersSection(spaceId: widget.spaceId),
-      TabEntry.actions => SpaceActionsSection(spaceId: widget.spaceId),
+      _ => const SizedBox.shrink(),
     };
   }
 }

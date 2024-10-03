@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/router/utils.dart';
@@ -133,21 +134,20 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
     final profile =
         ref.watch(invitationUserProfileProvider(widget.invitation)).valueOrNull;
     final senderId = widget.invitation.senderIdStr();
-    final roomId = widget.invitation.roomIdStr();
+    final title =
+        profile?.displayName.let((p0) => '$p0 ($senderId)') ?? senderId;
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions.DM(
           AvatarInfo(
-            uniqueId: roomId,
+            uniqueId: widget.invitation.roomIdStr(),
             displayName: profile?.displayName,
             avatar: profile?.avatar,
           ),
           size: 48,
         ),
       ),
-      title: (profile?.displayName) != null
-          ? Text('${profile?.displayName} ($senderId)')
-          : Text(senderId),
+      title: Text(title),
       subtitle: Text(L10n.of(context).invitationToDM),
     );
   }

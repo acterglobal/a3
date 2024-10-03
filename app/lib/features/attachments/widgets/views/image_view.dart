@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
@@ -10,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ImageView extends ConsumerWidget {
   final Attachment attachment;
   final bool? openView;
+
   const ImageView({
     super.key,
     required this.attachment,
@@ -21,11 +24,10 @@ class ImageView extends ConsumerWidget {
     final mediaState = ref.watch(attachmentMediaStateProvider(attachment));
     if (mediaState.mediaLoadingState.isLoading || mediaState.isDownloading) {
       return loadingIndication(context);
-    } else if (mediaState.mediaFile == null) {
-      return imagePlaceholder(context, attachment, mediaState, ref);
-    } else {
-      return imageUI(context, mediaState);
     }
+    final mediaFile = mediaState.mediaFile;
+    if (mediaFile != null) return imageUI(context, mediaFile);
+    return imagePlaceholder(context, attachment, mediaState, ref);
   }
 
   Widget loadingIndication(BuildContext context) {
@@ -43,22 +45,25 @@ class ImageView extends ConsumerWidget {
     WidgetRef ref,
   ) {
     final msgContent = attachment.msgContent();
+    final contentSize = msgContent.size();
+    if (contentSize == null) throw 'Image content size not available';
     return InkWell(
       onTap: () async {
-        if (mediaState.mediaFile != null) {
-          showAdaptiveDialog(
+        final mediaFile = mediaState.mediaFile;
+        if (mediaFile != null) {
+          await showAdaptiveDialog(
             context: context,
             barrierDismissible: false,
             useRootNavigator: false,
             builder: (context) => ImageDialog(
               title: msgContent.body(),
-              imageFile: mediaState.mediaFile!,
+              imageFile: mediaFile,
             ),
           );
         } else {
-          ref
-              .read(attachmentMediaStateProvider(attachment).notifier)
-              .downloadMedia();
+          final notifier =
+              ref.read(attachmentMediaStateProvider(attachment).notifier);
+          await notifier.downloadMedia();
         }
       },
       child: Column(
@@ -84,7 +89,7 @@ class ImageView extends ConsumerWidget {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  formatBytes(msgContent.size()!.truncate()),
+                  formatBytes(contentSize.truncate()),
                   style: Theme.of(context).textTheme.labelSmall,
                   textScaler: const TextScaler.linear(0.7),
                 ),
@@ -96,32 +101,26 @@ class ImageView extends ConsumerWidget {
     );
   }
 
-  Widget imageUI(BuildContext context, AttachmentMediaState mediaState) {
+  Widget imageUI(BuildContext context, File mediaFile) {
     return InkWell(
-      onTap: openView!
-          ? () {
-              final msgContent = attachment.msgContent();
-              showAdaptiveDialog(
-                context: context,
-                barrierDismissible: false,
-                useRootNavigator: false,
-                builder: (context) => ImageDialog(
-                  title: msgContent.body(),
-                  imageFile: mediaState.mediaFile!,
-                ),
-              );
-            }
-          : null,
+      onTap: () async {
+        if (openView == true) {
+          await showAdaptiveDialog(
+            context: context,
+            barrierDismissible: false,
+            useRootNavigator: false,
+            builder: (context) => ImageDialog(
+              title: attachment.msgContent().body(),
+              imageFile: mediaFile,
+            ),
+          );
+        }
+      },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
         child: Image.file(
-          mediaState.mediaFile!,
-          frameBuilder: (
-            BuildContext context,
-            Widget child,
-            int? frame,
-            bool wasSynchronouslyLoaded,
-          ) {
+          mediaFile,
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
             if (wasSynchronouslyLoaded) {
               return child;
             }
@@ -132,11 +131,7 @@ class ImageView extends ConsumerWidget {
               child: child,
             );
           },
-          errorBuilder: (
-            BuildContext context,
-            Object url,
-            StackTrace? error,
-          ) {
+          errorBuilder: (context, url, error) {
             return Text('Could not load image due to $error');
           },
           fit: BoxFit.cover,

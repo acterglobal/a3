@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/notifiers/relations_notifier.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -35,11 +36,12 @@ final otherSpacesForInviteMembersProvider = FutureProvider.autoDispose
 
   //GET PARENT SPACE
   final parentSpaces = ref.watch(parentIdsProvider(spaceId)).valueOrNull;
+  if (parentSpaces == null) throw 'Parents of space not found';
 
   //GET LIST OF SPACES EXCLUDING PARENT SPACES && EXCLUDING CURRENT SPACE
   final spacesExcludingParentSpacesAndCurrentSpace = allSpaces.where((space) {
     final roomId = space.getRoomIdStr();
-    return !(parentSpaces!.any((p) => p == roomId)) && roomId != spaceId;
+    return !parentSpaces.any((p) => p == roomId) && roomId != spaceId;
   }).toList();
 
   return spacesExcludingParentSpacesAndCurrentSpace;
@@ -90,9 +92,9 @@ final selectedSpaceIdProvider =
 
 /// gives current context space details based on id, will throw null if id is null
 final selectedSpaceDetailsProvider = Provider.autoDispose<SpaceItem?>((ref) {
-  final selectedSpaceId = ref.watch(selectedSpaceIdProvider);
-  if (selectedSpaceId == null) return null;
-  return ref.watch(briefSpaceItemProvider(selectedSpaceId));
+  return ref.watch(selectedSpaceIdProvider).let((p0) {
+    return ref.watch(briefSpaceItemProvider(p0));
+  });
 });
 
 class SpaceItem {
@@ -172,23 +174,17 @@ final searchedSpacesProvider =
   final allSpaces = await ref.watch(_spaceIdAndNames.future);
 
   if (searchValue == null || searchValue.isEmpty) {
-    return allSpaces
-        .map(
-          (e) => e.$1,
-        )
-        .toList();
+    return allSpaces.map((i) => i.$1).toList();
   }
 
   final searchTerm = searchValue.toLowerCase();
 
   final foundSpaces = List<String>.empty(growable: true);
 
-  for (final item in allSpaces) {
-    if (item.$1.contains(searchTerm) ||
-        (item.$2 != null
-            ? item.$2!.toLowerCase().contains(searchTerm)
-            : false)) {
-      foundSpaces.add(item.$1);
+  for (final (roomId, dispName) in allSpaces) {
+    if (roomId.contains(searchTerm) ||
+        dispName?.toLowerCase().contains(searchTerm) == true) {
+      foundSpaces.add(roomId);
     }
   }
 
@@ -251,19 +247,17 @@ final spaceRelationsOverviewProvider =
     }
   }
 
-  Space? mainParent;
-  final mainSpace = relatedSpaces.mainParent();
-  if (mainSpace != null) {
-    if (mainSpace.targetType() != 'ChatRoom') {
-      final roomId = mainSpace.roomId().toString();
-      try {
-        final space = await ref.watch(spaceProvider(roomId).future);
-        if (space.isJoined()) mainParent = space;
-      } catch (e, s) {
-        _log.severe('Loading main Parent of $spaceId failed', e, s);
-      }
+  final mainParent = relatedSpaces.mainParent();
+  final mainSpace = await mainParent.letAsync((p0) async {
+    if (p0.targetType() == 'ChatRoom') return null;
+    final roomId = p0.roomId().toString();
+    try {
+      final space = await ref.watch(spaceProvider(roomId).future);
+      return space.isJoined() ? space : null;
+    } catch (e, s) {
+      _log.severe('Loading main Parent of $spaceId failed', e, s);
     }
-  }
+  });
 
   List<Space> parents = [];
   for (final related in relatedSpaces.otherParents()) {
@@ -283,7 +277,7 @@ final spaceRelationsOverviewProvider =
     knownChats: knownChats,
     knownSubspaces: knownSubspaces,
     otherRelations: [],
-    mainParent: mainParent,
+    mainParent: mainSpace,
     hasMore: hasMore,
     suggestedIds: suggested,
   );
@@ -401,9 +395,7 @@ final remoteSubspaceRelationsProvider =
         await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
     final toIgnore = List.of(relatedSpaces.knownSubspaces);
     toIgnore.addAll(relatedSpaces.parents.map((e) => e.getRoomIdStr()));
-    if (relatedSpaces.mainParent != null) {
-      toIgnore.add(relatedSpaces.mainParent!.getRoomIdStr());
-    }
+    relatedSpaces.mainParent.let((p0) => toIgnore.add(p0.getRoomIdStr()));
     toIgnore.add(spaceId); // the hierarchy also gives us ourselfes ...
 
     final roomHierarchy =
@@ -420,11 +412,7 @@ final remoteSubspaceRelationsProvider =
 final acterAppSettingsProvider = FutureProvider.autoDispose
     .family<ActerAppSettings?, String>((ref, spaceId) async {
   final space = await ref.watch(maybeSpaceProvider(spaceId).future);
-  if (space == null) {
-    return null;
-  }
-  if (!await space.isActerSpace()) {
-    return null;
-  }
+  if (space == null) return null;
+  if (!await space.isActerSpace()) return null;
   return await space.appSettings();
 });

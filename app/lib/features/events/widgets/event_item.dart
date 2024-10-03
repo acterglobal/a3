@@ -35,14 +35,12 @@ class EventItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (onTapEventItem != null) {
-          onTapEventItem!(event.eventId().toString());
-          return;
-        }
-        context.pushNamed(
-          Routes.calendarEvent.name,
-          pathParameters: {'calendarId': event.eventId().toString()},
-        );
+        final calEventId = event.eventId().toString();
+        onTapEventItem.let((cb) => cb(calEventId)) ??
+            context.pushNamed(
+              Routes.calendarEvent.name,
+              pathParameters: {'calendarId': calEventId},
+            );
       },
       child: Stack(
         alignment: Alignment.topLeft,
@@ -132,18 +130,19 @@ class EventItem extends StatelessWidget {
   }
 
   Widget? _getRsvpStatus(BuildContext context, RsvpStatusTag? status) {
-    return switch (status) {
-      RsvpStatusTag.Yes => Icon(
-          Icons.check_circle,
-          color: Theme.of(context).colorScheme.secondary,
-        ),
-      RsvpStatusTag.No => Icon(
-          Icons.cancel,
-          color: Theme.of(context).colorScheme.error,
-        ),
-      RsvpStatusTag.Maybe => const Icon(Icons.question_mark_rounded),
-      _ => null,
-    };
+    return status.let(
+      (p0) => switch (p0) {
+        RsvpStatusTag.Yes => Icon(
+            Icons.check_circle,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+        RsvpStatusTag.No => Icon(
+            Icons.cancel,
+            color: Theme.of(context).colorScheme.error,
+          ),
+        RsvpStatusTag.Maybe => const Icon(Icons.question_mark_rounded),
+      },
+    );
   }
 
   Widget _buildHappeningIndication(BuildContext context) {

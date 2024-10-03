@@ -17,17 +17,16 @@ final _log = Logger('a3::common::user');
 
 final userAvatarProvider =
     FutureProvider.family<MemoryImage?, UserProfile>((ref, user) async {
-  if (user.hasAvatar()) {
-    try {
-      final data = (await user.getAvatar(null)).data();
-      if (data != null) {
-        return MemoryImage(Uint8List.fromList(data.asTypedList()));
-      }
-    } catch (e, s) {
-      _log.severe('failure fetching avatar', e, s);
-    }
+  if (!user.hasAvatar()) return null;
+  try {
+    final avatar = await user.getAvatar(null);
+    return avatar
+        .data()
+        .let((p0) => MemoryImage(Uint8List.fromList(p0.asTypedList())));
+  } catch (e, s) {
+    _log.severe('failure fetching avatar', e, s);
+    return null;
   }
-  return null;
 });
 
 final userAvatarInfoProvider =
@@ -119,18 +118,19 @@ class UserBuilder extends ConsumerWidget {
   }
 
   Widget? _renderTrailing(BuildContext context, WidgetRef ref) {
-    if (!includeUserJoinState || roomId == null) {
-      return null;
-    }
-    final room = ref.watch(maybeRoomProvider(roomId!)).valueOrNull;
-    return room != null
-        ? UserStateButton(
-            userId: userId,
-            room: room,
-          )
-        : const Skeletonizer(
+    if (!includeUserJoinState) return null;
+    return roomId.let((p0) {
+      final room = ref.watch(maybeRoomProvider(p0)).valueOrNull;
+      return room.let(
+            (p1) => UserStateButton(
+              userId: userId,
+              room: p1,
+            ),
+          ) ??
+          const Skeletonizer(
             child: Text('user'),
           );
+    });
   }
 
   Widget _buildSharedRooms(BuildContext context, Widget tile) {
@@ -215,23 +215,25 @@ class UserBuilder extends ConsumerWidget {
     );
   }
 
-  AvatarInfo _avatarInfo(WidgetRef ref) => (userProfile != null)
-      ? ref.watch(userAvatarInfoProvider(userProfile!))
-      : roomId != null
-          ? ref.watch(
-              memberAvatarInfoProvider((roomId: roomId!, userId: userId)),
-            )
-          : AvatarInfo(uniqueId: userId);
+  AvatarInfo _avatarInfo(WidgetRef ref) {
+    return userProfile.let((p0) => ref.watch(userAvatarInfoProvider(p0))) ??
+        roomId.let(
+          (p0) => ref.watch(
+            memberAvatarInfoProvider((roomId: p0, userId: userId)),
+          ),
+        ) ??
+        AvatarInfo(uniqueId: userId);
+  }
 
-  String? _displayName(WidgetRef ref) =>
-      userProfile?.displayName() ??
-      (roomId != null
-          ? ref
-              .watch(
-                memberDisplayNameProvider((roomId: roomId!, userId: userId)),
-              )
-              .valueOrNull
-          : null);
+  String? _displayName(WidgetRef ref) {
+    final res = userProfile?.displayName();
+    if (res != null) return res;
+    return roomId.let(
+      (p0) => ref
+          .watch(memberDisplayNameProvider((roomId: p0, userId: userId)))
+          .valueOrNull,
+    );
+  }
 }
 
 class UserStateButton extends ConsumerWidget {
@@ -264,8 +266,9 @@ class UserStateButton extends ConsumerWidget {
       dismissOnTap: false,
     );
     try {
+      final roomId = room.roomIdStr();
       final member = ref
-          .read(memberProvider((userId: userId, roomId: room.roomIdStr())))
+          .read(memberProvider((userId: userId, roomId: roomId)))
           .valueOrNull;
       if (member != null) {
         await member.kick('Cancel Invite');

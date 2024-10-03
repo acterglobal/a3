@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:scrolls_to_top/scrolls_to_top.dart';
@@ -171,10 +172,9 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
   void onSelectedTabChange() {
     final selectedTabIndex = _selectedTabIndex.value;
     final debounce = _debounce;
-
-    if (debounce != null && debounce.isActive) {
-      debounce.cancel();
-    }
+    debounce.let((p0) {
+      if (p0.isActive) p0.cancel();
+    });
 
     _debounce = Timer(widget.animationDuration, () {
       widget.tabChanged?.call(selectedTabIndex);
@@ -206,38 +206,35 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
     if (itemPositionsListener.itemPositions.value.isEmpty) {
       return;
     }
-    final displayedIdx = getDisplayedPositionFromList();
-    if (displayedIdx != null) {
-      setCurrentActiveIfDifferent(displayedIdx);
-    }
+    getDisplayedPositionFromList().let((p0) {
+      setCurrentActiveIfDifferent(p0);
+    });
   }
 
   int? getDisplayedPositionFromList() {
-    final value = itemPositionsListener.itemPositions.value;
-    if (value.isEmpty) {
-      return null;
-    }
-    final orderedListByPositionIndex = value.toList()
-      ..sort((a, b) => a.index.compareTo(b.index));
+    return itemPositionsListener.itemPositions.value.let((p0) {
+      final orderedListByPositionIndex = p0.toList()
+        ..sort((a, b) => a.index.compareTo(b.index));
 
-    final renderedMostTopItem = orderedListByPositionIndex.first;
+      final renderedMostTopItem = orderedListByPositionIndex.first;
 
-    if (orderedListByPositionIndex.length > 1 &&
-        orderedListByPositionIndex.last.index == widget.itemCount - 1) {
-      // I dont know why it’s not perfectly 1.0
-      // 1.01 LGTM
-      const fullBottomEdge = 1.01;
-      if (orderedListByPositionIndex.last.itemTrailingEdge < fullBottomEdge) {
-        return orderedListByPositionIndex.last.index;
+      if (orderedListByPositionIndex.length > 1 &&
+          orderedListByPositionIndex.last.index == widget.itemCount - 1) {
+        // I dont know why it’s not perfectly 1.0
+        // 1.01 LGTM
+        const fullBottomEdge = 1.01;
+        if (orderedListByPositionIndex.last.itemTrailingEdge < fullBottomEdge) {
+          return orderedListByPositionIndex.last.index;
+        }
       }
-    }
-    if (renderedMostTopItem.getBottomOffset(_currentPositionedListSize) <
-        widget.earlyChangePositionOffset) {
-      if (orderedListByPositionIndex.length > 1) {
-        return orderedListByPositionIndex[1].index;
+      if (renderedMostTopItem.getBottomOffset(_currentPositionedListSize) <
+          widget.earlyChangePositionOffset) {
+        if (orderedListByPositionIndex.length > 1) {
+          return orderedListByPositionIndex[1].index;
+        }
       }
-    }
-    return renderedMostTopItem.index;
+      return renderedMostTopItem.index;
+    });
   }
 
   Widget buildCustomHeaderContainerOrDefault({
@@ -290,19 +287,17 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
           child: Builder(
             builder: (context) {
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                final size = context.size;
-                if (size != null) {
-                  _currentPositionedListSize = size;
-                }
+                context.size.let((p0) => _currentPositionedListSize = p0);
               });
               return ScrollsToTop(
                 onScrollsToTop: _onScrollsToTop,
-                child: widget.onRefresh != null
-                    ? RefreshIndicator(
-                        onRefresh: widget.onRefresh!,
+                child: widget.onRefresh.let(
+                      (cb) => RefreshIndicator(
+                        onRefresh: cb,
                         child: buildScrollabelPositionedList(),
-                      )
-                    : buildScrollabelPositionedList(),
+                      ),
+                    ) ??
+                    buildScrollabelPositionedList(),
               );
             },
           ),

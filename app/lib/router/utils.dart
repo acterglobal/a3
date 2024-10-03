@@ -54,8 +54,9 @@ final chatRoomUriMatcher = RegExp('/chat/.+');
 
 /// helper to figure out how to route to the specific chat room
 void goToChat(BuildContext localContext, String roomId) {
-  final context = rootNavKey.currentContext!;
-  final currentUri = context.read(currentRoutingLocation);
+  final curContext = rootNavKey.currentContext;
+  if (curContext == null) throw 'Root context not available';
+  final currentUri = curContext.read(currentRoutingLocation);
   if (!currentUri.startsWith(chatRoomUriMatcher)) {
     // we are not in a chat room. just a regular push routing
     // will do
@@ -69,13 +70,13 @@ void goToChat(BuildContext localContext, String roomId) {
   }
 
   // we are in a chat page
-  if (roomId == rootNavKey.currentContext!.read(selectedChatIdProvider)) {
+  if (roomId == curContext.read(selectedChatIdProvider)) {
     // we are on the same page, nothing to be done
     return;
   }
 
   // we are on a different chat page. Push replace the current screen
-  context.pushReplacementNamed(
+  curContext.pushReplacementNamed(
     Routes.chatroom.name,
     pathParameters: {'roomId': roomId},
   );

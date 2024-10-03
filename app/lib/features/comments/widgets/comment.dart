@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -18,20 +19,17 @@ class CommentWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final roomID = manager.roomIdStr();
+    final roomId = manager.roomIdStr();
     final userId = comment.sender().toString();
     final msgContent = comment.msgContent();
-    final formatted = msgContent.formattedBody();
     final commentTime = DateTime.fromMillisecondsSinceEpoch(
       comment.originServerTs(),
       isUtc: true,
     );
     final time = commentTime.toLocal().timeago();
     final avatarInfo = ref.watch(
-      memberAvatarInfoProvider((roomId: roomID, userId: userId)),
+      memberAvatarInfoProvider((roomId: roomId, userId: userId)),
     );
-
-    final displayName = avatarInfo.displayName;
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -44,18 +42,16 @@ class CommentWidget extends ConsumerWidget {
               ),
             ),
             title: Text(
-              displayName ?? userId,
+              avatarInfo.displayName ?? userId,
               style: Theme.of(context).textTheme.titleSmall,
             ),
-            subtitle: displayName == null ? null : Text(userId),
+            subtitle: avatarInfo.displayName.let((p0) => Text(userId)),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: formatted != null
-                ? RenderHtml(
-                    text: formatted,
-                  )
-                : Text(msgContent.body()),
+            child:
+                msgContent.formattedBody().let((p0) => RenderHtml(text: p0)) ??
+                    Text(msgContent.body()),
           ),
           const SizedBox(height: 12),
           Padding(

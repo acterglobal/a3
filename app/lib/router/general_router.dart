@@ -5,22 +5,22 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/avatar/full_screen_avatar_page.dart';
 import 'package:acter/common/widgets/dialog_page.dart';
 import 'package:acter/common/widgets/side_sheet_page.dart';
+import 'package:acter/features/auth/pages/forgot_password.dart';
+import 'package:acter/features/auth/pages/login_page.dart';
+import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
-import 'package:acter/features/news/pages/add_news_page.dart';
-import 'package:acter/features/auth/pages/forgot_password.dart';
 import 'package:acter/features/intro/pages/intro_page.dart';
 import 'package:acter/features/intro/pages/intro_profile.dart';
-import 'package:acter/features/auth/pages/login_page.dart';
+import 'package:acter/features/news/pages/add_news_page.dart';
 import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
-import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/features/search/pages/quick_jump.dart';
-import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
+import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
@@ -68,8 +68,11 @@ final generalRoutes = [
     parentNavigatorKey: rootNavKey,
     name: Routes.saveUsername.name,
     path: Routes.saveUsername.route,
-    builder: (context, state) =>
-        SaveUsernamePage(username: state.uri.queryParameters['username']!),
+    builder: (context, state) {
+      final username = state.uri.queryParameters['username'];
+      if (username == null) throw 'Username for route query not found';
+      return SaveUsernamePage(username: username);
+    },
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
@@ -105,10 +108,16 @@ final generalRoutes = [
     parentNavigatorKey: rootNavKey,
     name: Routes.fatalFail.name,
     path: Routes.fatalFail.route,
-    builder: (context, state) => FatalFailPage(
-      error: state.uri.queryParameters['error']!,
-      trace: state.uri.queryParameters['trace']!,
-    ),
+    builder: (context, state) {
+      final error = state.uri.queryParameters['error'];
+      if (error == null) throw 'Error for route query not found';
+      final trace = state.uri.queryParameters['trace'];
+      if (trace == null) throw 'Trace for route query not found';
+      return FatalFailPage(
+        error: error,
+        trace: trace,
+      );
+    },
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
@@ -150,7 +159,7 @@ final generalRoutes = [
           );
         },
         child: CreateSuperInviteTokenPage(
-          token: state.extra != null ? state.extra as SuperInviteToken : null,
+          token: state.extra.let((p0) => p0 as SuperInviteToken),
         ),
       );
     },
@@ -160,6 +169,8 @@ final generalRoutes = [
     name: Routes.linkChat.name,
     path: Routes.linkChat.route,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -174,7 +185,7 @@ final generalRoutes = [
           );
         },
         child: LinkRoomPage(
-          parentSpaceId: state.pathParameters['spaceId']!,
+          parentSpaceId: spaceId,
           pageTitle: 'Link as Space-chat',
           childRoomType: ChildRoomType.chat,
         ),
@@ -186,6 +197,8 @@ final generalRoutes = [
     name: Routes.linkSubspace.name,
     path: Routes.linkSubspace.route,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -200,7 +213,7 @@ final generalRoutes = [
           );
         },
         child: LinkRoomPage(
-          parentSpaceId: state.pathParameters['spaceId']!,
+          parentSpaceId: spaceId,
           pageTitle: 'Link Sub-Space',
           childRoomType: ChildRoomType.space,
         ),
@@ -212,6 +225,8 @@ final generalRoutes = [
     name: Routes.linkRecommended.name,
     path: Routes.linkRecommended.route,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'];
+      if (spaceId == null) throw 'Space id for route path not found';
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -226,7 +241,7 @@ final generalRoutes = [
           );
         },
         child: LinkRoomPage(
-          parentSpaceId: state.pathParameters['spaceId']!,
+          parentSpaceId: spaceId,
           pageTitle: 'Link Recommended-Space',
           childRoomType: ChildRoomType.recommendedSpace,
         ),
@@ -286,10 +301,12 @@ final generalRoutes = [
     name: Routes.fullScreenAvatar.name,
     path: Routes.fullScreenAvatar.route,
     pageBuilder: (context, state) {
+      final roomId = state.uri.queryParameters['roomId'];
+      if (roomId == null) throw 'Room id for route query not found';
       return NoTransitionPage(
         key: state.pageKey,
         child: FullScreenAvatarPage(
-          roomId: state.uri.queryParameters['roomId']!,
+          roomId: roomId,
         ),
       );
     },
@@ -301,14 +318,10 @@ final generalRoutes = [
     redirect: (BuildContext context, GoRouterState state) async {
       // we first check if there is a client available for us to use
       final authGuarded = await authGuardRedirect(context, state);
-      if (authGuarded != null) {
-        return authGuarded;
-      }
-      if (context.mounted && isDesktop) {
-        return Routes.dashboard.route;
-      } else {
-        return Routes.updates.route;
-      }
+      if (authGuarded != null) return authGuarded;
+      return (context.mounted && isDesktop)
+          ? Routes.dashboard.route
+          : Routes.updates.route;
     },
   ),
 ];

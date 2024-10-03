@@ -30,9 +30,11 @@ late DeviceCalendarPlugin deviceCalendar = DeviceCalendarPlugin();
 ProviderSubscription<AsyncValue<List<EventAndRsvp>>>? _subscription;
 
 Future<bool> _isEnabled() async {
+  final curContext = rootNavKey.currentContext;
+  if (curContext == null) throw 'Root context not available';
   try {
-    return (await rootNavKey.currentContext!
-        .read(asyncIsActiveProvider(LabsFeature.deviceCalendarSync).future));
+    return await curContext
+        .read(asyncIsActiveProvider(LabsFeature.deviceCalendarSync).future);
   } catch (e, s) {
     _log.severe('Reading current context failed', e, s);
     return false;
@@ -68,7 +70,7 @@ Future<void> initCalendarSync({bool ignoreRejection = false}) async {
   final hasPermission = await deviceCalendar.hasPermissions();
 
   if (hasPermission.data == false) {
-    if (!ignoreRejection && (preferences.getBool(rejectionKey) ?? false)) {
+    if (!ignoreRejection && preferences.getBool(rejectionKey) == true) {
       _log.warning('user previously rejected calendar sync. quitting');
       return;
     }
@@ -114,39 +116,29 @@ Future<void> _refreshCalendar(
     currentLinks[parts.first] = parts.sublist(1).join('=');
   }
 
-  final currentLinkKeys = currentLinks.values;
   List<Event> foundEvents = [];
-  if (currentLinkKeys.isNotEmpty) {
+  if (currentLinks.isNotEmpty) {
     final foundEventsResult = await deviceCalendar.retrieveEvents(
       calendarId,
       RetrieveEventsParams(eventIds: currentLinks.values.toList()),
     );
-
     foundEvents = List.of(
       _logError(foundEventsResult, 'Failed to load calendar events') ?? [],
     );
   }
 
-  final newLinks = {};
-  final foundEventIds = [];
+  Map<String, String> newLinks = {};
+  List<String> foundEventIds = [];
   for (final eventAndRsvp in events) {
     final calEvent = eventAndRsvp.event;
     final rsvp = eventAndRsvp.rsvp;
     final calEventId = calEvent.eventId().toString();
-    final localId = currentLinks[calEventId];
-    Event? localEvent;
-    if (localId != null) {
-      localEvent = foundEvents.cast<Event?>().firstWhere(
-            (e) => e?.eventId == localId,
-            orElse: () => null,
-          );
-    }
-
-    if (localEvent == null) {
-      localEvent = Event(calendarId);
-    } else {
-      foundEventIds.add(localEvent.eventId);
-    }
+    var localEvent = currentLinks[calEventId].let((p0) {
+      final ret = foundEvents.where((e) => e.eventId == p0).firstOrNull;
+      if (ret != null) foundEventIds.add(p0);
+      return ret;
+    });
+    localEvent ??= Event(calendarId);
 
     localEvent = await _updateEventDetails(calEvent, rsvp, localEvent);
     final localRequest = await deviceCalendar.createOrUpdateEvent(localEvent);
@@ -159,10 +151,11 @@ Future<void> _refreshCalendar(
       newLinks[calEventId] = resultData;
     } else {
       _log.warning('Updating $calEventId failed. no new id given');
-      if (localEvent.eventId != null) {
+      final evtId = localEvent.eventId;
+      if (evtId != null) {
         // assuming that all went fine...
         // maybe this is usual?
-        newLinks[calEventId] = localEvent.eventId;
+        newLinks[calEventId] = evtId;
       }
     }
   }
@@ -170,14 +163,12 @@ Future<void> _refreshCalendar(
       newLinks.entries.map((m) => '${m.key}=${m.value}').toList();
   _log.info('Storing new mapping: $newMapping');
   // set our new mapping
-  await preferences.setStringList(
-    calendarSyncIdsKey,
-    newMapping,
-  );
+  await preferences.setStringList(calendarSyncIdsKey, newMapping);
 
   // time to clean up events that we aren’t tracking anymore
-  for (final toDelete in foundEvents
-      .where((e) => e.eventId != null && !foundEventIds.contains(e.eventId))) {
+  final uselessEvents = foundEvents
+      .where((e) => e.eventId != null && !foundEventIds.contains(e.eventId));
+  for (final toDelete in uselessEvents) {
     _log.info('Deleting event ${toDelete.eventId}');
     _logError(
       await deviceCalendar.deleteEvent(calendarId, toDelete.eventId),
@@ -228,15 +219,19 @@ Future<List<String>> _findActerCalendars() async {
           c.name == 'Acter',
     )
         .map((c) {
-      _log.info('Scheduling to delete ${c.id} (${c.accountType})');
-      return c.id!;
+      final id = c.id;
+      if (id == null) throw 'calendar id not available';
+      _log.info('Scheduling to delete $id (${c.accountType})');
+      return id;
     }).toList();
   }
   return calendars
       .where((c) => c.accountType == 'Local' && c.name == 'Acter')
       .map((c) {
-    _log.info('Scheduling to delete ${c.id} (${c.accountType})');
-    return c.id!;
+    final id = c.id;
+    if (id == null) throw 'calendar id not available';
+    _log.info('Scheduling to delete $id (${c.accountType})');
+    return id;
   }).toList();
 }
 
@@ -291,7 +286,8 @@ Future<String> _getOrCreateCalendar() async {
     ),
     'Failed to create new calendar',
     doThrow: true,
-  )!;
+  );
+  if (newCalendarId == null) throw 'New calendar id not available';
   await preferences.setString(calendarSyncKey, newCalendarId);
   return newCalendarId;
 }

@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -84,16 +85,13 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
   Widget renderInfo(BuildContext context, WidgetRef ref, SuperInviteInfo info) {
     final displayName = info.inviterDisplayNameStr();
     final userId = info.inviterUserIdStr();
+    final inviter = displayName.let((p0) => '$p0 ($userId)') ?? userId;
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Card(
         child: ListTile(
           key: redeemInfoKey,
-          title: Text(
-            L10n.of(context).superInvitedBy(
-              displayName != null ? '$displayName ($userId)' : userId,
-            ),
-          ),
+          title: Text(L10n.of(context).superInvitedBy(inviter)),
           subtitle: Text(L10n.of(context).superInvitedTo(info.roomsCount())),
           leading: ActerAvatar(
             options: AvatarOptions.DM(
@@ -109,7 +107,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
     );
   }
 
-  void redeem(BuildContext context, WidgetRef ref) async {
+  Future<void> redeem(BuildContext context, WidgetRef ref) async {
     final superInvites = ref.read(superInvitesProvider);
 
     EasyLoading.show(status: L10n.of(context).redeeming(token));

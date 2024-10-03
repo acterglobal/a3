@@ -89,7 +89,9 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
                   const SizedBox(width: 20),
                   ActerPrimaryActionButton(
                     onPressed: () {
-                      if (!_formKey.currentState!.validate()) return;
+                      final curState = _formKey.currentState;
+                      if (curState == null) throw 'Form state not available';
+                      if (!curState.validate()) return;
 
                       // no changes to submit
                       if (_titleController.text.trim() ==

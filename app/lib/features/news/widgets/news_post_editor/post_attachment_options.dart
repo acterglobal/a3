@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,7 @@ class PostAttachmentOptions extends StatelessWidget {
           key: NewsUpdateKeys.addTextSlide,
           onTap: () {
             Navigator.pop(context);
-            if (onTapAddText != null) onTapAddText!();
+            onTapAddText.let((cb) => cb());
           },
           leading: const Icon(Atlas.size_text),
           title: Text(L10n.of(context).addTextSlide),
@@ -37,7 +38,7 @@ class PostAttachmentOptions extends StatelessWidget {
           key: NewsUpdateKeys.addImageSlide,
           onTap: () {
             Navigator.pop(context);
-            if (onTapImage != null) onTapImage!();
+            onTapImage.let((cb) => cb());
           },
           leading: const Icon(Atlas.file_image),
           title: Text(L10n.of(context).selectPicture),
@@ -46,7 +47,7 @@ class PostAttachmentOptions extends StatelessWidget {
           key: NewsUpdateKeys.addVideoSlide,
           onTap: () {
             Navigator.pop(context);
-            if (onTapVideo != null) onTapVideo!();
+            onTapVideo.let((cb) => cb());
           },
           leading: const Icon(Atlas.file_video),
           title: Text(L10n.of(context).selectVideo),
@@ -55,7 +56,10 @@ class PostAttachmentOptions extends StatelessWidget {
           key: NewsUpdateKeys.cancelButton,
           onTap: () => Navigator.pop(context),
           contentPadding: const EdgeInsets.all(0),
-          title: Text(L10n.of(context).cancel, textAlign: TextAlign.center),
+          title: Text(
+            L10n.of(context).cancel,
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );

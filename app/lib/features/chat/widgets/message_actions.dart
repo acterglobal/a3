@@ -19,7 +19,10 @@ final _log = Logger('a3::chat::message_actions');
 class MessageActions extends ConsumerWidget {
   final String roomId;
 
-  const MessageActions({super.key, required this.roomId});
+  const MessageActions({
+    super.key,
+    required this.roomId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,17 +36,12 @@ class MessageActions extends ConsumerWidget {
 
     final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
-    bool isTextMessage = false;
-    if (message is TextMessage) {
-      isTextMessage = true;
-    }
+    final isTextMessage = (message is TextMessage);
 
     return Container(
       padding: const EdgeInsets.all(8),
       constraints: const BoxConstraints(maxWidth: 200),
-      margin: !isAuthor
-          ? const EdgeInsets.only(top: 4)
-          : const EdgeInsets.only(top: 4),
+      margin: const EdgeInsets.only(top: 4),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(5)),
         color: Theme.of(context).colorScheme.surface,
@@ -53,8 +51,9 @@ class MessageActions extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           makeMenuItem(
-            pressed: () =>
-                ref.read(chatInputProvider.notifier).setReplyToMessage(message),
+            pressed: () {
+              ref.read(chatInputProvider.notifier).setReplyToMessage(message);
+            },
             text: Text(L10n.of(context).reply),
             icon: const Icon(Icons.reply_rounded, size: 18),
           ),
@@ -170,12 +169,8 @@ class MessageActions extends ConsumerWidget {
                 if (convo == null) {
                   throw RoomNotFound();
                 }
-                await convo.redactMessage(
-                  messageId,
-                  ref.read(myUserIdStrProvider),
-                  null,
-                  null,
-                );
+                final myId = ref.read(myUserIdStrProvider);
+                await convo.redactMessage(messageId, myId, null, null);
                 chatInputNotifier.unsetSelectedMessage();
                 if (context.mounted) {
                   Navigator.pop(context);

@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
@@ -35,12 +36,7 @@ class _DueChipState extends State<DueChip> {
   @override
   void initState() {
     super.initState();
-    final dueDateStr = widget.task.dueDate();
-    if (dueDateStr != null) {
-      dueDate = DateTime.parse(dueDateStr);
-    } else {
-      dueDate = null;
-    }
+    dueDate = widget.task.dueDate().let((p0) => DateTime.parse(p0));
   }
 
   @override
@@ -60,34 +56,32 @@ class _DueChipState extends State<DueChip> {
   Widget inner(BuildContext context) {
     final textStyle =
         widget.baseTextStyle ?? Theme.of(context).textTheme.bodySmall!;
-    if (dueDate == null) {
-      return widget.noneChild ?? const SizedBox.shrink();
-    }
+    return dueDate.let((p0) {
+          final label = getLabel(context, p0);
+          final dueTheme = p0.isPast
+              ? textStyle.copyWith(color: Theme.of(context).colorScheme.error)
+              : null;
+          final dateText =
+              DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(p0);
 
-    String? label;
-    TextStyle? dueTheme;
+          return Chip(
+            visualDensity: widget.visualDensity,
+            label: Text(
+              // FIXME: tooltip to show the full date?
+              label ?? L10n.of(context).due(dateText),
+              style: widget.task.isDone() ? null : dueTheme,
+            ),
+          );
+        }) ??
+        widget.noneChild ??
+        const SizedBox.shrink();
+  }
 
-    if (dueDate!.isToday) {
-      label = L10n.of(context).dueToday;
-    } else if (dueDate!.isTomorrow) {
-      label = L10n.of(context).dueTomorrow;
-    } else if (dueDate!.isPast) {
-      label = dueDate!.timeago();
-      dueTheme = textStyle.copyWith(
-        color: Theme.of(context).colorScheme.error,
-      );
-    }
-    final dateText =
-        DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!);
-
-    return Chip(
-      visualDensity: widget.visualDensity,
-      label: Text(
-        // FIXME: tooltip to show the full date?
-        label ?? L10n.of(context).due(dateText),
-        style: widget.task.isDone() ? null : dueTheme,
-      ),
-    );
+  String? getLabel(BuildContext context, DateTime date) {
+    if (date.isToday) return L10n.of(context).dueToday;
+    if (date.isTomorrow) return L10n.of(context).dueTomorrow;
+    if (date.isPast) return date.timeago();
+    return null;
   }
 
   Future<void> duePickerAction(BuildContext context) async {

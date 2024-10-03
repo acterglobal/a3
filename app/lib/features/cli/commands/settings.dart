@@ -24,16 +24,19 @@ class ShowCommand extends Command {
 
   @override
   Future<void> run() async {
-    if (argResults != null) {
-      if (argResults!['all']) {
-        for (final key in supportedKeys.keys) {
-          await printSetting(supportedKeys[key]!, key);
+    final results = argResults;
+    if (results != null) {
+      if (results['all']) {
+        for (final entry in supportedKeys.entries) {
+          await printSetting(entry.value, entry.key);
         }
         return;
       }
-      final key = argResults!['key'];
+      String? key = results['key'];
       if (key != null) {
-        return await printSetting(supportedKeys[key!]!, key);
+        final sk = supportedKeys[key];
+        if (sk == null) throw '$key not supported';
+        return await printSetting(sk, key);
       }
     }
 
@@ -73,11 +76,15 @@ class SetCommand extends Command {
 
   @override
   Future<void> run() async {
-    if (argResults != null) {
-      final key = argResults!['key'];
-      final value = argResults!['value'];
+    final results = argResults;
+    if (results != null) {
+      String? key = results['key'];
+      String? value = results['value'];
       if (key != null && value != null) {
-        return await setSetting(supportedKeys[key!]!, key, value);
+        final sk = supportedKeys[key];
+        if (sk == null) throw '$key not supported';
+        await setSetting(sk, key, value);
+        return;
       }
     }
 
@@ -108,16 +115,20 @@ class ResetCommand extends Command {
 
   @override
   Future<void> run() async {
-    if (argResults != null) {
-      if (argResults!['all']) {
-        for (final key in supportedKeys.keys) {
-          await resetSetting(supportedKeys[key]!, key);
+    final results = argResults;
+    if (results != null) {
+      if (results['all']) {
+        for (final entry in supportedKeys.entries) {
+          await resetSetting(entry.value, entry.key);
         }
         return;
       }
-      final key = argResults!['key'];
+      String? key = results['key'];
       if (key != null) {
-        return await resetSetting(supportedKeys[key!]!, key);
+        final sk = supportedKeys[key];
+        if (sk == null) throw '$key not supported';
+        await resetSetting(sk, key);
+        return;
       }
     }
 

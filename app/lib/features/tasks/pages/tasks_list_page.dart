@@ -46,6 +46,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   }
 
   AppBar _buildAppBar() {
+    final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
       title: Column(
@@ -53,10 +54,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(L10n.of(context).tasks),
-          if (widget.spaceId != null)
-            SpaceNameWidget(
-              spaceId: widget.spaceId!,
-            ),
+          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
         ],
       ),
       actions: [

@@ -299,7 +299,9 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
   }
 
   void onSubmit(BuildContext context) {
-    if (!_formKey.currentState!.validate()) return;
+    final curState = _formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
     Navigator.pop(context, newPassword.text);
   }
 }
@@ -376,7 +378,9 @@ class _TokenConfirmState extends State<TokenConfirm> {
   }
 
   void onSubmit(BuildContext context) {
-    if (!_formKey.currentState!.validate()) {
+    final curState = _formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) {
       EasyLoading.showError(
         L10n.of(context).tokenAndPasswordMustBeProvided,
         duration: const Duration(seconds: 3),

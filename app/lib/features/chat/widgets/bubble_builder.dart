@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -54,19 +55,17 @@ class BubbleBuilder extends ConsumerWidget {
         isMemberEvent
             ? child
             : SwipeTo(
-                onRightSwipe: redactedOrEncrypted
-                    ? null
-                    : (DragUpdateDetails details) {
-                        inputNotifier.setReplyToMessage(message);
-                      },
+                onRightSwipe: (details) {
+                  if (!redactedOrEncrypted) {
+                    inputNotifier.setReplyToMessage(message);
+                  }
+                },
                 iconOnRightSwipe: Icons.reply_rounded,
-                onLeftSwipe: redactedOrEncrypted
-                    ? null
-                    : isAuthor
-                        ? (DragUpdateDetails details) {
-                            inputNotifier.setEditMessage(message);
-                          }
-                        : null,
+                onLeftSwipe: (details) {
+                  if (!redactedOrEncrypted && isAuthor) {
+                    inputNotifier.setEditMessage(message);
+                  }
+                },
                 iconOnLeftSwipe: Atlas.pencil_edit_thin,
                 child: _ChatBubble(
                   roomId: roomId,
@@ -155,46 +154,49 @@ class _ChatBubble extends ConsumerWidget {
   }
 
   Bubble renderBubble(BuildContext context, bool isAuthor) {
-    bool hasRepliedMessage = message.repliedMessage != null;
-    Widget bubbleChild = child;
-    if (hasRepliedMessage) {
-      bubbleChild = Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              color: isAuthor
-                  ? Theme.of(context).colorScheme.surface.withOpacity(0.3)
-                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 10,
-                    top: 15,
-                  ),
-                  child: Consumer(
-                    builder: (context, ref, child) => replyProfileBuilder(
-                      context,
-                      ref,
+    final repliedMessage = message.repliedMessage;
+    Widget bubbleChild = repliedMessage == null
+        ? child
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(
+                  color: isAuthor
+                      ? Theme.of(context).colorScheme.surface.withOpacity(0.3)
+                      : Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 10,
+                        top: 15,
+                      ),
+                      child: Consumer(
+                        builder: (context, ref, child) => replyProfileBuilder(
+                          context,
+                          ref,
+                          repliedMessage,
+                        ),
+                      ),
                     ),
-                  ),
+                    _OriginalMessageBuilder(
+                      roomId: roomId,
+                      message: message,
+                    ),
+                  ],
                 ),
-                _OriginalMessageBuilder(
-                  roomId: roomId,
-                  message: message,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 5),
-          child,
-        ],
-      );
-    }
+              ),
+              const SizedBox(height: 5),
+              child,
+            ],
+          );
 
     return Bubble(
       color: isAuthor
@@ -206,7 +208,7 @@ class _ChatBubble extends ConsumerWidget {
             ? const BubbleEdges.symmetric(horizontal: 2)
             : null,
         radius: const Radius.circular(22),
-        padding: (message is types.ImageMessage && !hasRepliedMessage)
+        padding: (message is types.ImageMessage && repliedMessage == null)
             ? const BubbleEdges.all(0)
             : null,
         nip: (nextMessageInGroup || message is types.ImageMessage)
@@ -222,8 +224,12 @@ class _ChatBubble extends ConsumerWidget {
     );
   }
 
-  Widget replyProfileBuilder(BuildContext context, WidgetRef ref) {
-    final authorId = message.repliedMessage!.author.id;
+  Widget replyProfileBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    types.Message repliedMessage,
+  ) {
+    final authorId = repliedMessage.author.id;
     final replyProfile =
         ref.watch(memberAvatarInfoProvider((userId: authorId, roomId: roomId)));
     return Row(
@@ -271,53 +277,58 @@ class _OriginalMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repliedMessage = message.repliedMessage;
-    if (repliedMessage == null) return const SizedBox();
-    if (repliedMessage is types.TextMessage) {
-      // when original msg is text msg, messageLength should be initialized
-      int len = repliedMessage.metadata!['messageLength'];
-      return TextMessageBuilder(
-        roomId: roomId,
-        message: message.repliedMessage as types.TextMessage,
-        messageWidth: (len * 38.5).toInt(),
-        isReply: true,
-      );
-    }
-    if (repliedMessage is types.ImageMessage) {
-      return Row(
-        children: [
-          Container(
-            constraints: const BoxConstraints(maxHeight: 50),
-            margin: const EdgeInsets.all(12),
-            child: ImageMessageBuilder(
+    return message.repliedMessage.let((p0) {
+          if (p0 is types.TextMessage) {
+            final metadata = p0.metadata;
+            if (metadata == null) throw 'Replied metadata not available';
+            // when original msg is text msg, messageLength should be initialized
+            final len = metadata['messageLength'] as int;
+            return TextMessageBuilder(
               roomId: roomId,
-              message: repliedMessage,
-              messageWidth: repliedMessage.size.toInt(),
-              isReplyContent: true,
-            ),
-          ),
-          Text(
-            L10n.of(context).sentAnImage,
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
-        ],
-      );
-    }
-    if (repliedMessage is types.FileMessage) {
-      return Padding(
-        padding: const EdgeInsets.all(12),
-        child: Text(
-          repliedMessage.metadata!['content'],
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      );
-    }
-    if (repliedMessage is types.CustomMessage) {
-      return CustomMessageBuilder(
-        message: repliedMessage,
-        messageWidth: 100,
-      );
-    }
-    return const SizedBox();
+              message: message.repliedMessage as types.TextMessage,
+              messageWidth: (len * 38.5).toInt(),
+              isReply: true,
+            );
+          }
+          if (p0 is types.ImageMessage) {
+            return Row(
+              children: [
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 50),
+                  margin: const EdgeInsets.all(12),
+                  child: ImageMessageBuilder(
+                    roomId: roomId,
+                    message: p0,
+                    messageWidth: p0.size.toInt(),
+                    isReplyContent: true,
+                  ),
+                ),
+                Text(
+                  L10n.of(context).sentAnImage,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+              ],
+            );
+          }
+          if (p0 is types.FileMessage) {
+            final metadata = p0.metadata;
+            if (metadata == null) throw 'Replied metadata not available';
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                metadata['content'],
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            );
+          }
+          if (p0 is types.CustomMessage) {
+            return CustomMessageBuilder(
+              message: p0,
+              messageWidth: 100,
+            );
+          }
+          return null;
+        }) ??
+        const SizedBox();
   }
 }

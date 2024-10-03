@@ -1,5 +1,6 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/cross_signing/providers/verification_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/session_providers.dart';
@@ -21,21 +22,17 @@ class SessionCard extends ConsumerWidget {
     final fields = [
       isVerified ? L10n.of(context).verified : L10n.of(context).unverified,
     ];
-    final lastSeenTs = deviceRecord.lastSeenTs();
-    if (lastSeenTs != null) {
-      final dateTime = DateTime.fromMillisecondsSinceEpoch(
-        lastSeenTs,
-        isUtc: true,
-      );
+    deviceRecord.lastSeenTs().let((p0) {
+      final dateTime = DateTime.fromMillisecondsSinceEpoch(p0, isUtc: true);
       fields.add(dateTime.toLocal().toString());
-    }
-    final lastSeenIp = deviceRecord.lastSeenIp();
-    if (lastSeenIp != null) {
-      fields.add(lastSeenIp);
-    }
+    });
+    deviceRecord.lastSeenIp().let((p0) => fields.add(p0));
     fields.add(deviceRecord.deviceId().toString());
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
+      margin: const EdgeInsets.symmetric(
+        vertical: 2,
+        horizontal: 15,
+      ),
       child: ListTile(
         leading: isVerified
             ? Icon(
@@ -135,9 +132,7 @@ class SessionCard extends ConsumerWidget {
         );
       },
     );
-    if (result != true) {
-      return;
-    }
+    if (result != true) return;
     final client = ref.read(alwaysClientProvider);
     final manager = client.sessionManager();
     await manager.deleteDevice(

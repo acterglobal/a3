@@ -63,21 +63,17 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              if (selectedRooms != [])
+              if (selectedRooms?.isNotEmpty == true)
                 ActerInlineTextButton(
                   onPressed: () {
-                    setState(() {
-                      selectedRooms = [];
-                    });
+                    setState(() => selectedRooms = []);
                   },
                   child: Text(L10n.of(context).unselectAll),
                 ),
               if (selectedRooms != null)
                 ActerInlineTextButton(
                   onPressed: () {
-                    setState(() {
-                      selectedRooms = null;
-                    });
+                    setState(() => selectedRooms = null);
                   },
                   child: Text(L10n.of(context).selectAll),
                 ),
@@ -101,7 +97,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
           },
           child: Text(L10n.of(context).skip),
         ),
-        if (selectedRooms != [])
+        if (selectedRooms?.isNotEmpty == true)
           ActerPrimaryActionButton(
             onPressed: () => _joinSelected(context),
             child: Text(L10n.of(context).join),
@@ -121,12 +117,10 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
       // was not in, add it new
       newSelectedRooms.add(roomId);
     }
-    setState(() {
-      selectedRooms = newSelectedRooms;
-    });
+    setState(() => selectedRooms = newSelectedRooms);
   }
 
-  void _joinSelected(BuildContext context) async {
+  Future<void> _joinSelected(BuildContext context) async {
     final allRooms = chatsFound.followedBy(spacesFound).toList();
     List<SpaceHierarchyRoomInfo> roomsToJoin = selectedRooms.let(
           (p0) => p0
@@ -184,14 +178,12 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
           final roomId = item.roomIdStr();
           return RoomHierarchyCard(
             onTap: () => _toggle(roomId),
-            roomInfo: item,
             parentId: widget.spaceId,
+            roomInfo: item,
             contentPadding: EdgeInsets.zero,
             trailing: Switch(
               onChanged: (value) => _toggle(roomId),
-              value: selectedRooms == null
-                  ? true
-                  : selectedRooms!.contains(roomId),
+              value: selectedRooms.let((p0) => p0.contains(roomId)) ?? true,
             ),
           );
         },
@@ -218,9 +210,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
             contentPadding: EdgeInsets.zero,
             trailing: Switch(
               onChanged: (value) => _toggle(roomId),
-              value: selectedRooms == null
-                  ? true
-                  : selectedRooms!.contains(roomId),
+              value: selectedRooms.let((p0) => p0.contains(roomId)) ?? true,
             ),
           );
         },

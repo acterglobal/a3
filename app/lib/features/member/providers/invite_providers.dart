@@ -50,22 +50,13 @@ final filteredSuggestedUsersProvider =
     return suggestedUsers;
   }
 
-  final loweredSearchValue = newSearchValue.toLowerCase();
-
+  final search = newSearchValue.toLowerCase();
   return suggestedUsers.where(
     (profile) {
-      if (profile
-          .userId()
-          .toString()
-          .toLowerCase()
-          .contains(loweredSearchValue)) {
-        return true;
-      }
-      return profile
-              .displayName()
-              ?.toLowerCase()
-              .contains(loweredSearchValue) ==
-          true;
+      final userId = profile.userId().toString();
+      if (userId.toLowerCase().contains(search)) return true;
+      final dispName = profile.displayName();
+      return dispName?.toLowerCase().contains(search) == true;
     },
   ).toList();
 });

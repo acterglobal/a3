@@ -141,10 +141,7 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
 
   Widget roomsList(BuildContext context) {
     final searchValue = ref.watch(roomSearchValueProvider);
-    if (searchValue?.isNotEmpty == true) {
-      return searchedRoomsList(context);
-    }
-
+    if (searchValue?.isNotEmpty == true) return searchedRoomsList(context);
     return roomsListUI(allRooms());
   }
 

@@ -10,15 +10,12 @@ import 'package:settings_ui/settings_ui.dart';
 final _log = Logger('a3::room::notification_settings');
 
 String? notifToText(BuildContext context, String curNotifStatus) {
-  if (curNotifStatus == 'muted') {
-    return L10n.of(context).muted;
-  } else if (curNotifStatus == 'mentions') {
-    return L10n.of(context).mentionsAndKeywordsOnly;
-  } else if (curNotifStatus == 'all') {
-    return L10n.of(context).allMessages;
-  } else {
-    return null;
-  }
+  return switch (curNotifStatus) {
+    'muted' => L10n.of(context).muted,
+    'mentions' => L10n.of(context).mentionsAndKeywordsOnly,
+    'all' => L10n.of(context).allMessages,
+    _ => null,
+  };
 }
 
 class _NotificationSettingsTile extends ConsumerWidget {

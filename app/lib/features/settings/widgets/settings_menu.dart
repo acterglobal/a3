@@ -35,18 +35,15 @@ class SettingsMenu extends ConsumerWidget {
 
   Color? routedColor(BuildContext context, WidgetRef ref, Routes route) {
     final currentRoute = ref.watch(currentRoutingLocation);
-    if (currentRoute == route.route) {
-      return Theme.of(context).colorScheme.secondary;
-    } else {
-      return null;
-    }
+    if (currentRoute != route.route) return null;
+    return Theme.of(context).colorScheme.secondary;
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isBackupEnabled =
         ref.watch(featuresProvider).isActive(LabsFeature.encryptionBackup);
-
+    final helpMenuUrl = helpUrl;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -173,11 +170,7 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).superInvitations,
               subTitle: L10n.of(context).manageYourInvitationCodes,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingsSuperInvites,
-                ),
+                color: routedColor(context, ref, Routes.settingsSuperInvites),
               ),
               onTap: () {
                 if (ref.read(hasSuperTokensAccess).valueOrNull != true) return;
@@ -202,11 +195,7 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).chat,
               subTitle: L10n.of(context).chatSettingsExplainer,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingsChat,
-                ),
+                color: routedColor(context, ref, Routes.settingsChat),
               ),
               onTap: () {
                 if (!isFullPage && context.isLargeScreen) {
@@ -222,11 +211,7 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).language,
               subTitle: L10n.of(context).changeAppLanguage,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingLanguage,
-                ),
+                color: routedColor(context, ref, Routes.settingLanguage),
               ),
               onTap: () {
                 if (!isFullPage && context.isLargeScreen) {
@@ -243,11 +228,7 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).labs,
               subTitle: L10n.of(context).experimentalActerFeatures,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingsLabs,
-                ),
+                color: routedColor(context, ref, Routes.settingsLabs),
               ),
               onTap: () {
                 if (!isFullPage && context.isLargeScreen) {
@@ -262,11 +243,7 @@ class SettingsMenu extends ConsumerWidget {
               iconColor: routedColor(context, ref, Routes.info),
               title: L10n.of(context).info,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.info,
-                ),
+                color: routedColor(context, ref, Routes.info),
               ),
               onTap: () {
                 if (!isFullPage && context.isLargeScreen) {
@@ -276,13 +253,13 @@ class SettingsMenu extends ConsumerWidget {
                 }
               },
             ),
-            if (helpUrl != null)
+            if (helpMenuUrl != null)
               MenuItemWidget(
                 iconData: PhosphorIcons.question(),
                 title: L10n.of(context).helpCenterTitle,
                 subTitle: L10n.of(context).helpCenterDesc,
                 trailing: Icon(PhosphorIcons.arrowSquareOut()),
-                onTap: () => launchUrl(helpUrl!),
+                onTap: () => launchUrl(helpMenuUrl),
               ),
           ],
         ),
@@ -344,9 +321,7 @@ class SettingsMenu extends ConsumerWidget {
                   ),
             ),
           ),
-          Column(
-            children: children,
-          ),
+          Column(children: children),
         ],
       ),
     );

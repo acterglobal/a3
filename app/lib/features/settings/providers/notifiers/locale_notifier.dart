@@ -1,7 +1,7 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/features/settings/model/language_model.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 class LocaleNotifier extends StateNotifier<String> {

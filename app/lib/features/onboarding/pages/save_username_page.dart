@@ -8,9 +8,13 @@ import 'package:go_router/go_router.dart';
 class SaveUsernamePage extends StatelessWidget {
   static const copyUsernameBtn = Key('reg-copy-username-btn');
   static const continueBtn = Key('reg-continue-btn');
+
   final String username;
 
-  SaveUsernamePage({super.key, required this.username});
+  SaveUsernamePage({
+    super.key,
+    required this.username,
+  });
 
   final ValueNotifier<bool> isCopied = ValueNotifier(false);
 
@@ -135,9 +139,9 @@ class SaveUsernamePage extends StatelessWidget {
       builder: (context, isCopiedValue, child) {
         return OutlinedButton(
           key: continueBtn,
-          onPressed: isCopiedValue
-              ? () => context.goNamed(Routes.linkEmail.name)
-              : null,
+          onPressed: () {
+            if (isCopiedValue) context.goNamed(Routes.linkEmail.name);
+          },
           style: OutlinedButton.styleFrom(
             side: isCopiedValue
                 ? null

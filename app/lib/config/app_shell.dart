@@ -79,14 +79,9 @@ class AppShellState extends ConsumerState<AppShell> {
   }
 
   Future<void> initNotifications() async {
-    final client = ref.read(clientProvider);
-    if (client != null) {
-      _initPushForClient(client);
-    }
+    ref.read(clientProvider).let((p0) => _initPushForClient(p0));
     ref.listenManual(clientProvider, (previous, next) {
-      if (next != null) {
-        _initPushForClient(next);
-      }
+      if (next != null) _initPushForClient(next);
     });
   }
 

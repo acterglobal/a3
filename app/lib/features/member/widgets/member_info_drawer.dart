@@ -74,6 +74,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     final avatarInfo = ref.watch(
       memberAvatarInfoProvider((userId: memberId, roomId: member.roomIdStr())),
     );
+    final dispName = avatarInfo.displayName;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -83,10 +84,9 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
             const SizedBox(height: 20),
             _buildAvatarUI(context, avatarInfo),
             const SizedBox(height: 20),
-            if (avatarInfo.displayName != null)
+            if (dispName != null)
               Center(
-                child:
-                    Text(avatarInfo.displayName!), // FIXME: make this prettier
+                child: Text(dispName), // FIXME: make this prettier
               ),
             const SizedBox(height: 20),
             _buildUserName(context),

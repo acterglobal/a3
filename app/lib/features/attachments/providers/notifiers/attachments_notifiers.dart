@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Attachment, AttachmentsManager;
 import 'package:logging/logging.dart';
@@ -59,19 +60,17 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
 
     try {
       //Get media path if already downloaded
-      final mediaPath = await attachment.mediaPath(false);
-      if (mediaPath.text() != null) {
-        state = state.copyWith(
-          mediaFile: File(mediaPath.text()!),
-          mediaLoadingState: const AttachmentMediaLoadingState.loaded(),
-        );
-      } else {
-        state = state.copyWith(
-          mediaLoadingState: const AttachmentMediaLoadingState.error(
-            'Media not found',
-          ),
-        );
-      }
+      final mediaPath = (await attachment.mediaPath(false)).text();
+      state = mediaPath.let(
+            (p0) => state.copyWith(
+              mediaFile: File(p0),
+              mediaLoadingState: const AttachmentMediaLoadingState.loaded(),
+            ),
+          ) ??
+          state.copyWith(
+            mediaLoadingState:
+                const AttachmentMediaLoadingState.error('Media not found'),
+          );
     } catch (e) {
       state = state.copyWith(
         mediaLoadingState: AttachmentMediaLoadingState.error(
@@ -86,12 +85,12 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
     //Download media if media path is not available
     final tempDir = await getTemporaryDirectory();
     final result = await attachment.downloadMedia(null, tempDir.path);
-    String? mediaPath = result.text();
-    if (mediaPath != null) {
+    final filePath = result.text();
+    filePath.let((p0) {
       state = state.copyWith(
-        mediaFile: File(mediaPath),
+        mediaFile: File(p0),
         isDownloading: false,
       );
-    }
+    });
   }
 }

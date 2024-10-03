@@ -3,6 +3,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
@@ -116,21 +117,22 @@ class _SidebarItem extends StatelessWidget {
       onTap: onTap,
       child: icon,
     );
-
-    if (indicator != null) {
+    indicator.let((p0) {
       inner = Stack(
         children: [
-          Center(child: indicator!),
+          Center(child: p0),
           Center(child: inner),
         ],
       );
-    }
-
+    });
     return Container(
       height: 40,
       width: 40,
       key: tutorialGlobalKey,
-      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
+      ),
       child: inner,
     );
   }

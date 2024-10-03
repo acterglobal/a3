@@ -28,11 +28,6 @@ class ActivitiesPage extends ConsumerWidget {
   const ActivitiesPage({super.key});
 
   Widget? renderSyncingState(BuildContext context, WidgetRef ref) {
-    final syncState = ref.watch(syncStateProvider);
-    final errorMsg = syncState.errorMsg;
-    final retryDuration = syncState.countDown != null
-        ? Duration(seconds: syncState.countDown!)
-        : null;
     if (!ref.watch(hasFirstSyncedProvider)) {
       return SliverToBoxAdapter(
         child: Card(
@@ -43,31 +38,36 @@ class ActivitiesPage extends ConsumerWidget {
           ),
         ),
       );
-    } else if (errorMsg != null) {
-      return SliverToBoxAdapter(
+    }
+    final syncState = ref.watch(syncStateProvider);
+    return syncState.errorMsg.let(
+      (p0) => SliverToBoxAdapter(
         child: Card(
           child: ListTile(
             leading: const Icon(Atlas.warning),
-            title: Text(L10n.of(context).errorSyncing(errorMsg)),
+            title: Text(L10n.of(context).errorSyncing(p0)),
             subtitle: Text(
-              retryDuration == null
-                  ? L10n.of(context).retrying
-                  : L10n.of(context).retryIn(
-                      retryDuration.inMinutes
-                          .remainder(60)
-                          .toString()
-                          .padLeft(2, '0'),
-                      retryDuration.inSeconds
-                          .remainder(60)
-                          .toString()
-                          .padLeft(2, '0'),
-                    ),
+              syncState.countDown.let(
+                    (p1) {
+                      final retryDuration = Duration(seconds: p1);
+                      return L10n.of(context).retryIn(
+                        retryDuration.inMinutes
+                            .remainder(60)
+                            .toString()
+                            .padLeft(2, '0'),
+                        retryDuration.inSeconds
+                            .remainder(60)
+                            .toString()
+                            .padLeft(2, '0'),
+                      );
+                    },
+                  ) ??
+                  L10n.of(context).retrying,
             ),
           ),
         ),
-      );
-    }
-    return null;
+      ),
+    );
   }
 
   List<Widget>? renderInvitations(BuildContext context, WidgetRef ref) {
@@ -103,30 +103,24 @@ class ActivitiesPage extends ConsumerWidget {
 
   Widget? renderSessions(BuildContext context, WidgetRef ref) {
     final allSessions = ref.watch(unknownSessionsProvider);
-    if (allSessions.error != null) {
+    final err = allSessions.error;
+    if (err != null) {
       return SliverToBoxAdapter(
-        child: Text(
-          L10n.of(context)
-              .errorUnverifiedSessions(allSessions.error.toString()),
-        ),
+        child: Text(L10n.of(context).errorUnverifiedSessions(err.toString())),
       );
-    } else if (!allSessions.hasValue) {
-      // we can ignore
-      return null;
     }
-
-    final sessions =
-        allSessions.value!.where((session) => !session.isVerified()).toList();
-    if (sessions.isEmpty) {
-      return null;
-    } else if (sessions.length == 1) {
-      return SliverToBoxAdapter(
-        child: SessionCard(
-          key: oneUnverifiedSessionsCard,
-          deviceRecord: sessions[0],
-        ),
-      );
-    } else {
+    if (!allSessions.hasValue) return null; // we can ignore
+    return allSessions.value.let((p0) {
+      final sessions = p0.where((sess) => !sess.isVerified()).toList();
+      if (sessions.isEmpty) return null;
+      if (sessions.length == 1) {
+        return SliverToBoxAdapter(
+          child: SessionCard(
+            key: oneUnverifiedSessionsCard,
+            deviceRecord: sessions[0],
+          ),
+        );
+      }
       return SliverToBoxAdapter(
         child: Card(
           key: unverifiedSessionsCard,
@@ -145,7 +139,7 @@ class ActivitiesPage extends ConsumerWidget {
           ),
         ),
       );
-    }
+    });
   }
 
   Widget? renderBackupSection(BuildContext context, WidgetRef ref) {
@@ -180,24 +174,17 @@ class ActivitiesPage extends ConsumerWidget {
     final syncStateWidget = renderSyncingState(context, ref);
 
     if (ref.watch(featuresProvider).isActive(LabsFeature.encryptionBackup)) {
-      final backups = renderBackupSection(context, ref);
-      if (backups != null) {
-        children.add(backups);
-      }
+      renderBackupSection(context, ref).let((p0) => children.add(p0));
     }
     final hasUnconfirmedEmails = ref.watch(hasUnconfirmedEmailAddresses);
     if (hasUnconfirmedEmails) {
       children.add(renderUnconfirmedEmailAddrs(context));
     }
 
-    final sessions = renderSessions(context, ref);
-    if (sessions != null) {
-      children.add(sessions);
-    }
-    final invitations = renderInvitations(context, ref);
-    if (invitations != null && invitations.isNotEmpty) {
-      children.addAll(invitations);
-    }
+    renderSessions(context, ref).let((p0) => children.add(p0));
+    renderInvitations(context, ref).let((p0) {
+      if (p0.isNotEmpty) children.addAll(p0);
+    });
 
     return Scaffold(
       body: CustomScrollView(
@@ -211,7 +198,6 @@ class ActivitiesPage extends ConsumerWidget {
             ),
           ),
           if (syncStateWidget != null) syncStateWidget,
-          if (children.isNotEmpty) ...children,
           if (children.isEmpty)
             SliverToBoxAdapter(
               child: Center(
@@ -222,7 +208,9 @@ class ActivitiesPage extends ConsumerWidget {
                   image: 'assets/images/empty_activity.svg',
                 ),
               ),
-            ),
+            )
+          else
+            ...children,
         ],
       ),
     );

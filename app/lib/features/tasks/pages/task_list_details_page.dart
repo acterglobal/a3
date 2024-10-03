@@ -2,6 +2,7 @@ import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
@@ -204,33 +205,35 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   Widget _widgetDescription(TaskList taskListData) {
     final description = taskListData.description();
-    if (description == null) return const SizedBox.shrink();
-    final formattedBody = description.formattedBody();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SelectionArea(
-          child: GestureDetector(
-            onTap: () {
-              showEditDescriptionSheet(taskListData);
-            },
-            child: formattedBody != null
-                ? RenderHtml(
-                    text: formattedBody,
-                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
-                  )
-                : Text(
-                    description.body(),
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
+    return description.let(
+          (p0) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SelectionArea(
+                child: GestureDetector(
+                  onTap: () {
+                    showEditDescriptionSheet(taskListData);
+                  },
+                  child: p0.formattedBody().let(
+                            (p1) => RenderHtml(
+                              text: p1,
+                              defaultTextStyle:
+                                  Theme.of(context).textTheme.labelLarge,
+                            ),
+                          ) ??
+                      Text(
+                        p0.body(),
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Divider(indent: 10, endIndent: 18),
+              const SizedBox(height: 10),
+            ],
           ),
-        ),
-        const SizedBox(height: 10),
-        const Divider(indent: 10, endIndent: 18),
-        const SizedBox(height: 10),
-      ],
-    );
+        ) ??
+        const SizedBox.shrink();
   }
 
   void showEditDescriptionSheet(TaskList taskListData) {
@@ -295,9 +298,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          L10n.of(context).tasks,
-        ),
+        Text(L10n.of(context).tasks),
         ValueListenableBuilder(
           valueListenable: showCompletedTask,
           builder: (context, value, child) {

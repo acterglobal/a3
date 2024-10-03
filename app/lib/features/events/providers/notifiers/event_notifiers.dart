@@ -10,12 +10,13 @@ class EventListNotifier
   late Stream<bool> _listener;
 
   Future<List<CalendarEvent>> _getEventList(Client client) async {
+    final spaceId = arg;
     //GET ALL EVENTS
-    if (arg == null) {
+    if (spaceId == null) {
       return (await client.calendarEvents()).toList();
     } else {
       //GET SPACE EVENTS
-      final space = await client.space(arg!);
+      final space = await client.space(spaceId);
       return (await space.calendarEvents()).toList();
     }
   }

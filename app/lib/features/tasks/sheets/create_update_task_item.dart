@@ -71,16 +71,14 @@ class _CreateUpdateItemListConsumerState
   }
 
   void setUpdateData() {
-    if (widget.task == null) return;
-    if (widget.task!.description() != null) {
-      _taskDescriptionController.text = widget.task!.description()!.body();
-    }
-    if (widget.task!.dueDate() != null) {
-      selectedDate = DateTime.parse(widget.task!.dueDate()!);
-      if (selectedDate != null) {
-        _taskDueDateController.text = taskDueDateFormat(selectedDate!);
-      }
-    }
+    final task = widget.task;
+    if (task == null) return;
+    task.description().let((p0) => _taskDescriptionController.text = p0.body());
+    task.dueDate().let((p0) {
+      selectedDate = DateTime.parse(p0);
+      selectedDate
+          .let((p1) => _taskDueDateController.text = taskDueDateFormat(p1));
+    });
   }
 
   @override
@@ -200,15 +198,17 @@ class _CreateUpdateItemListConsumerState
           children: [
             ActerInlineTextButton(
               onPressed: () => setState(() {
-                selectedDate = DateTime.now();
-                _taskDueDateController.text = taskDueDateFormat(selectedDate!);
+                final today = DateTime.now();
+                selectedDate = today;
+                _taskDueDateController.text = taskDueDateFormat(today);
               }),
               child: Text(L10n.of(context).today),
             ),
             ActerInlineTextButton(
               onPressed: () => setState(() {
-                selectedDate = DateTime.now().addDays(1);
-                _taskDueDateController.text = taskDueDateFormat(selectedDate!);
+                final tomorrow = DateTime.now().addDays(1);
+                selectedDate = tomorrow;
+                _taskDueDateController.text = taskDueDateFormat(tomorrow);
               }),
               child: Text(L10n.of(context).tomorrow),
             ),
@@ -243,25 +243,21 @@ class _CreateUpdateItemListConsumerState
   }
 
   Future<void> addTask() async {
-    if (!_formKey.currentState!.validate()) return;
+    final curState = _formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
     EasyLoading.show(status: L10n.of(context).addingTask);
     final taskDraft = widget.taskList.taskBuilder();
     taskDraft.title(_taskNameController.text);
     if (_taskDescriptionController.text.isNotEmpty) {
       taskDraft.descriptionText(_taskDescriptionController.text);
     }
-    if (selectedDate != null) {
-      taskDraft.dueDate(
-        selectedDate!.year,
-        selectedDate!.month,
-        selectedDate!.day,
-      );
-    }
+    selectedDate.let((p0) => taskDraft.dueDate(p0.year, p0.month, p0.day));
     try {
       await taskDraft.send();
       EasyLoading.dismiss();
       if (!mounted) return;
-      if (widget.cancel != null) widget.cancel!();
+      widget.cancel.let((cb) => cb());
       Navigator.pop(context);
     } catch (e, s) {
       _log.severe('Failed to create task', e, s);
@@ -277,35 +273,33 @@ class _CreateUpdateItemListConsumerState
   }
 
   Future<void> updateTask() async {
-    if (!_formKey.currentState!.validate() || widget.task == null) return;
-    EasyLoading.show(status: L10n.of(context).updatingTask);
-    final updater = widget.task!.updateBuilder();
-    updater.title(_taskNameController.text);
-    if (_taskDescriptionController.text.isNotEmpty) {
-      updater.descriptionText(_taskDescriptionController.text);
-    }
-    if (selectedDate != null) {
-      updater.dueDate(
-        selectedDate!.year,
-        selectedDate!.month,
-        selectedDate!.day,
-      );
-    }
-    try {
-      await updater.send();
-      EasyLoading.dismiss();
-      if (!mounted) return;
-      Navigator.pop(context);
-    } catch (e, s) {
-      _log.severe('Failed to change task', e, s);
-      if (!mounted) {
-        EasyLoading.dismiss();
-        return;
+    final curState = _formKey.currentState;
+    if (curState == null) throw 'Form state not available';
+    if (!curState.validate()) return;
+    await widget.task.let((p0) async {
+      EasyLoading.show(status: L10n.of(context).updatingTask);
+      final updater = p0.updateBuilder();
+      updater.title(_taskNameController.text);
+      if (_taskDescriptionController.text.isNotEmpty) {
+        updater.descriptionText(_taskDescriptionController.text);
       }
-      EasyLoading.showError(
-        L10n.of(context).updatingTaskFailed(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
+      selectedDate.let((p1) => updater.dueDate(p1.year, p1.month, p1.day));
+      try {
+        await updater.send();
+        EasyLoading.dismiss();
+        if (!mounted) return;
+        Navigator.pop(context);
+      } catch (e, s) {
+        _log.severe('Failed to change task', e, s);
+        if (!mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
+        EasyLoading.showError(
+          L10n.of(context).updatingTaskFailed(e),
+          duration: const Duration(seconds: 3),
+        );
+      }
+    });
   }
 }

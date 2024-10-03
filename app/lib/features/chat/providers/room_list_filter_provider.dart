@@ -20,7 +20,8 @@ final roomListFilterProvider =
 
 final hasRoomFilters = Provider((ref) {
   final state = ref.watch(roomListFilterProvider);
-  if (state.searchTerm != null && state.searchTerm!.isNotEmpty) {
+  final searchTerm = state.searchTerm;
+  if (searchTerm != null && searchTerm.isNotEmpty) {
     _log.info('has search term');
     return true;
   }

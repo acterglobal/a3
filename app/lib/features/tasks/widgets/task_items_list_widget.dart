@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_item.dart';
@@ -202,8 +203,10 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
           ),
         ),
         onFieldSubmitted: (value) {
-          if (_formKey.currentState!.validate()) {
-            _formKey.currentState!.save();
+          final curState = _formKey.currentState;
+          if (curState == null) throw 'Form state not available';
+          if (curState.validate()) {
+            curState.save();
             _handleSubmit(context);
           }
         },
@@ -230,9 +233,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
       return;
     }
     _textCtrl.text = '';
-    if (_formKey.currentContext != null) {
-      Scrollable.ensureVisible(_formKey.currentContext!);
-    }
+    _formKey.currentContext.let((p0) => Scrollable.ensureVisible(p0));
     focusNode.requestFocus();
   }
 }

@@ -88,9 +88,6 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           final labActions = [];
           if (news.active()) {
             final currentPw = powerLevels.news();
-            final pwText = maxPowerLevel == 100
-                ? powerLevelName(currentPw)
-                : 'Custom ($currentPw)';
             moreSections.add(
               SettingsSection(
                 title: Text(L10n.of(context).updates),
@@ -101,10 +98,15 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     description: const Text(
                       'Minimum power level required to post news updates',
                     ),
-                    trailing:
-                        currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    trailing: Text(
+                      currentPw.let(
+                            (p0) => maxPowerLevel == 100
+                                ? powerLevelName(p0)
+                                : 'Custom ($p0)',
+                          ) ??
+                          defaultDesc,
+                    ),
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       currentPw,
@@ -127,9 +129,6 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           }
           if (pins.active()) {
             final currentPw = powerLevels.pins();
-            final pwText = maxPowerLevel == 100
-                ? powerLevelName(currentPw)
-                : 'Custom ($currentPw)';
             moreSections.add(
               SettingsSection(
                 title: const Text('Pin'),
@@ -140,10 +139,15 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     description: const Text(
                       'Minimum power level required to post and edit pins',
                     ),
-                    trailing:
-                        currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    trailing: Text(
+                      currentPw.let(
+                            (p0) => maxPowerLevel == 100
+                                ? powerLevelName(p0)
+                                : 'Custom ($p0)',
+                          ) ??
+                          defaultDesc,
+                    ),
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       currentPw,
@@ -166,9 +170,6 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           }
           if (events.active()) {
             final currentPw = powerLevels.events();
-            final pwText = maxPowerLevel == 100
-                ? powerLevelName(currentPw)
-                : 'Custom ($currentPw)';
             moreSections.add(
               SettingsSection(
                 title: const Text('Calendar Events'),
@@ -179,10 +180,15 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     description: const Text(
                       'Minimum power level required to post calendar events',
                     ),
-                    trailing:
-                        currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    trailing: Text(
+                      currentPw.let(
+                            (p0) => maxPowerLevel == 100
+                                ? powerLevelName(p0)
+                                : 'Custom ($p0)',
+                          ) ??
+                          defaultDesc,
+                    ),
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       currentPw,
@@ -215,12 +221,6 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           if (tasks.active()) {
             final taskListCurrentPw = powerLevels.taskLists();
             final tasksCurrentPw = powerLevels.tasks();
-            final pwTextTL = maxPowerLevel == 100
-                ? powerLevelName(taskListCurrentPw)
-                : 'Custom ($taskListCurrentPw)';
-            final pwTextT = maxPowerLevel == 100
-                ? powerLevelName(tasksCurrentPw)
-                : 'Custom ($tasksCurrentPw)';
             moreSections.add(
               SettingsSection(
                 title: const Text('Tasks'),
@@ -231,11 +231,15 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     description: const Text(
                       'Minimum power level required to create & manage task lists',
                     ),
-                    trailing: taskListCurrentPw != null
-                        ? Text(pwTextTL)
-                        : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    trailing: Text(
+                      taskListCurrentPw.let(
+                            (p0) => maxPowerLevel == 100
+                                ? powerLevelName(p0)
+                                : 'Custom ($p0)',
+                          ) ??
+                          defaultDesc,
+                    ),
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       taskListCurrentPw,
@@ -251,11 +255,15 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     description: const Text(
                       'Minimum power level required to interact with tasks',
                     ),
-                    trailing: tasksCurrentPw != null
-                        ? Text(pwTextT)
-                        : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    trailing: Text(
+                      tasksCurrentPw.let(
+                            (p0) => maxPowerLevel == 100
+                                ? powerLevelName(tasksCurrentPw)
+                                : 'Custom ($tasksCurrentPw)',
+                          ) ??
+                          defaultDesc,
+                    ),
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       tasksCurrentPw,
