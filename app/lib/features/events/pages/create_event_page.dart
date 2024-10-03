@@ -486,7 +486,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     final newSelectedSpaceId = await selectSpaceDrawer(
       context: context,
       currentSpaceId: ref.read(selectedSpaceIdProvider),
-      canCheck: 'CanPostPin',
+      canCheck: 'CanPostEvent',
       title: Text(L10n.of(context).selectSpace),
     );
     ref.read(selectedSpaceIdProvider.notifier).state = newSelectedSpaceId;

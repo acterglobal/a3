@@ -126,8 +126,7 @@ final generalRoutes = [
       return NoTransitionPage(
         key: state.pageKey,
         child: CreatePinPage(
-          initialSelectedSpace:
-              spaceId != null && spaceId.isNotEmpty ? spaceId : null,
+          initialSelectedSpace: (spaceId?.isNotEmpty == true) ? spaceId : null,
         ),
       );
     },

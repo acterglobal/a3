@@ -487,8 +487,7 @@ final homeShellRoutes = [
       return NoTransitionPage(
         key: state.pageKey,
         child: CreateEventPage(
-          initialSelectedSpace:
-              spaceId != null && spaceId.isNotEmpty ? spaceId : null,
+          initialSelectedSpace: (spaceId?.isNotEmpty == true) ? spaceId : null,
           templateEvent: templateEvent,
         ),
       );
