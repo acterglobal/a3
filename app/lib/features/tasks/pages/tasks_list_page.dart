@@ -84,6 +84,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         ),
         AddButtonWithCanPermission(
           key: TasksListPage.createNewTaskListKey,
+          spaceId: widget.spaceId,
           canString: 'CanPostTaskList',
           onPressed: () => showCreateUpdateTaskListBottomSheet(
             context,

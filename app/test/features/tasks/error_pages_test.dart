@@ -45,6 +45,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
+          roomMembershipProvider.overrideWith((a, b) => null),
           allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
@@ -60,6 +61,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
+          roomMembershipProvider.overrideWith((a, b) => null),
           searchValueProvider
               .overrideWith((_) => 'some search'), // set a search string
           allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),

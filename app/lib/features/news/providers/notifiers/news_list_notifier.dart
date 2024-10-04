@@ -1,25 +1,33 @@
 import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Client, NewsEntry;
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::news::list_notifier');
 
-class AsyncNewsListNotifier extends AutoDisposeAsyncNotifier<List<NewsEntry>> {
+class AsyncNewsListNotifier
+    extends FamilyAsyncNotifier<List<NewsEntry>, String?> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
   @override
-  Future<List<NewsEntry>> build() async {
+  Future<List<NewsEntry>> build(String? arg) async {
     final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream('news'); // keep it resident in memory
+
+    //GET ALL NEWS
+    if (arg == null) {
+      _listener = client.subscribeStream('news');
+    } else {
+      //GET SPACE NEWS
+      _listener = client.subscribeStream('$arg::news');
+    }
     _poller = _listener.listen(
       (data) async {
         _log.info('news subscribe received');
-        state = await AsyncValue.guard(() async => await _fetchNews(client));
+        state = await AsyncValue.guard(() => _fetchNews(client));
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);
@@ -33,7 +41,15 @@ class AsyncNewsListNotifier extends AutoDisposeAsyncNotifier<List<NewsEntry>> {
   }
 
   Future<List<NewsEntry>> _fetchNews(Client client) async {
-    _log.info('refreshing news');
-    return (await client.latestNewsEntries(25)).toList();
+    //GET ALL NEWS
+    if (arg == null) {
+      return (await client.latestNewsEntries(25))
+          .toList(); // this might throw internally
+    } else {
+      //GET SPACE NEWS
+      final space = await client.space(arg!);
+      return (await space.latestNewsEntries(100))
+          .toList(); // this might throw internally
+    }
   }
 }

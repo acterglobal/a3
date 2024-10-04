@@ -52,6 +52,7 @@ void main() {
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
           pinListProvider.overrideWith(() => mockedPinListNotifier),
+          roomMembershipProvider.overrideWith((a, b) => null),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const PinsListPage(
@@ -66,6 +67,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
+          roomMembershipProvider.overrideWith((a, b) => null),
           searchValueProvider
               .overrideWith((_) => 'some other string'), // set a search string
           pinListSearchProvider.overrideWith((_, params) async {
