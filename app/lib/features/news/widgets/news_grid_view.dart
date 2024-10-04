@@ -23,14 +23,14 @@ class NewsGridView extends StatelessWidget {
 
   Widget _buildNewsListGridUI(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final widthCount = (size.width ~/ 500).toInt();
+    final widthCount = (size.width ~/ 300).toInt();
     const int minCount = 2;
 
     if (newsList.isEmpty) return Container();
 
     return SingleChildScrollView(
       child: StaggeredGrid.count(
-        crossAxisCount: max(2, min(widthCount, minCount)),
+        crossAxisCount: max(widthCount, minCount),
         children: List.generate(
           newsList.length,
           (index) => InkWell(
