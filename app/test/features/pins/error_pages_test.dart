@@ -67,6 +67,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
+          roomMembershipProvider.overrideWith((a, b) => null),
           searchValueProvider
               .overrideWith((_) => 'some other string'), // set a search string
           pinListSearchProvider.overrideWith((_, params) async {
