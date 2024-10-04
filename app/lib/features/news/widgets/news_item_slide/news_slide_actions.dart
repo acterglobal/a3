@@ -20,10 +20,6 @@ class NewsSlideActions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return newsActionButtons(context, ref);
-  }
-
-  Widget newsActionButtons(BuildContext context, WidgetRef ref) {
     final newsReferencesList = newsSlide.references().toList();
     if (newsReferencesList.isEmpty) return const SizedBox();
     final referenceDetails = newsReferencesList.first.refDetails();
