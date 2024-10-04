@@ -8,7 +8,6 @@ import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/space_overview_tutorials.dart';
 import 'package:acter/common/utils/logging.dart';
 import 'package:acter/common/utils/main.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/config/desktop.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/notifications/init.dart';
@@ -60,18 +59,15 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
     linux: true,
   );
   await initLogging();
-  final initialLocationFromNotification = await initializeNotifications();
+
+  // Note: do await on this or we might be awaiting for an interaction
+  //       on macos desktop without showing anything. This can happen in
+  //       background.
+  initializeNotifications();
 
   if (isDesktop) {
     app = DesktopSupport(child: app);
   }
-
-  initialLocationFromNotification.let((p0) {
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      // push after the next render to ensure we still have the "initial" location
-      goRouter.push(p0);
-    });
-  });
 
   if (withSentry) {
     await SentryFlutter.init(
