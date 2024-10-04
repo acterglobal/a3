@@ -106,7 +106,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
             ? NewsGridView(
                 newsList: newsList,
                 onTapNewItem: (index) {
-                  this.useGridMode.value = !this.useGridMode.value;
+                  this.useGridMode.value = false;
                   currentIndex.value = index;
                 },
               )
