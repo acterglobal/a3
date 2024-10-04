@@ -30,7 +30,7 @@ class NewsSection extends ConsumerWidget {
     return newsLoader.when(
       data: (news) => buildNewsSectionUI(context, news),
       error: (e, s) {
-        _log.severe('Failed to load pins in space', e, s);
+        _log.severe('Failed to load boosts in space', e, s);
         return Center(
           child: Text(L10n.of(context).loadingFailed(e)),
         );
