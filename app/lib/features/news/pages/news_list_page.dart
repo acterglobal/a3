@@ -86,6 +86,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
       actions: [
         AddButtonWithCanPermission(
           canString: 'CanPostNews',
+          spaceId: widget.spaceId,
           onPressed: () => context.pushNamed(
             Routes.actionAddUpdate.name,
             queryParameters: {'spaceId': widget.spaceId},
