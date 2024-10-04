@@ -5,9 +5,9 @@ import 'package:acter/router/router.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:logging/logging.dart';
 
 final _log = Logger('a3::desktop');
 
@@ -122,6 +122,7 @@ class _DesktopSupportState extends State<DesktopSupport>
   void onTrayMenuItemClick(MenuItem menuItem) async {
     if (menuItem.key == 'exit_app') {
       _log.info('exit app');
+      await trayManager.destroy();
       await windowManager.destroy();
       return;
     }
