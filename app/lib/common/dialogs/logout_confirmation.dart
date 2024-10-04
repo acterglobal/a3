@@ -1,7 +1,7 @@
 import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 
-import 'package:acter/features/onboarding/providers/onboarding_providers.dart';
+import 'package:acter/features/auth/providers/auth_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -12,8 +12,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
   showDialog(
     context: context,
-    builder: (BuildContext ctx) {
+    builder: (BuildContext context) {
       return AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -45,7 +46,7 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(
               L10n.of(context).no,
               key: LogoutDialogKeys.cancel,
@@ -53,7 +54,7 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
           ),
           ActerDangerActionButton(
             onPressed: () async {
-              await ref.read(authStateProvider.notifier).logout(ctx);
+              await ref.read(authStateProvider.notifier).logout(context);
             },
             child: Text(
               L10n.of(context).yes,

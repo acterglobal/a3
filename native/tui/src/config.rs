@@ -1,7 +1,8 @@
-use acter::{api::login_new_client, ruma_common::OwnedUserId, Client};
+use acter::api::{login_new_client, Client};
 use anyhow::Result;
 use clap::Parser;
 use dialoguer::{theme::ColorfulTheme, Password};
+use matrix_sdk_base::ruma::OwnedUserId;
 use std::path::PathBuf;
 use tracing::info;
 

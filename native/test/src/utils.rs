@@ -1,10 +1,12 @@
 use acter::{
-    matrix_sdk::config::StoreConfig, ruma_common::OwnedRoomId, testing::ensure_user, Client, Convo,
-    CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder, SyncState,
+    api::{Client, Convo, CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder, SyncState},
+    testing::ensure_user,
 };
 use acter_core::templates::Engine;
 use anyhow::Result;
 use futures::{pin_mut, stream::StreamExt};
+use matrix_sdk::config::StoreConfig;
+use matrix_sdk_base::ruma::OwnedRoomId;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -32,6 +34,24 @@ pub async fn accept_all_invites(client: Client) -> Result<Vec<OwnedRoomId>> {
         invited.join().await?;
     }
     Ok(rooms)
+}
+
+pub async fn random_user(prefix: &str) -> Result<Client> {
+    let uuid = Uuid::new_v4().to_string();
+    let user = ensure_user(
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
+        format!("it-{prefix}-{uuid}"),
+        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
+        "acter-integration-tests".to_owned(),
+        StoreConfig::default(),
+    )
+    .await?;
+    Ok(user)
 }
 
 pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, OwnedRoomId)> {

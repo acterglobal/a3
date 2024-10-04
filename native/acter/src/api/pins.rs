@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         pins::{self, PinBuilder},
-        Icon,
+        Display, Icon,
     },
     models::{self, can_redact, ActerModel, AnyActerModel},
     statics::KEYS,
@@ -9,8 +9,10 @@ use acter_core::{
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
+use matrix_sdk_base::ruma::{
+    events::{room::message::TextMessageEventContent, MessageLikeEventType},
+    OwnedEventId, OwnedRoomId, OwnedUserId,
+};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -227,23 +229,12 @@ impl Pin {
         self.content.content.as_ref().map(MsgContent::from)
     }
 
+    pub fn display(&self) -> Option<Display> {
+        self.content.display.clone()
+    }
+
     pub fn url(&self) -> Option<String> {
         self.content.url.clone()
-    }
-
-    pub fn color(&self) -> Option<u32> {
-        self.content.display.as_ref().and_then(|t| t.color)
-    }
-
-    pub fn icon(&self) -> Option<Icon> {
-        self.content.display.as_ref().and_then(|t| t.icon.clone())
-    }
-
-    pub fn section(&self) -> Option<String> {
-        self.content
-            .display
-            .as_ref()
-            .and_then(|t| t.section.clone())
     }
 
     pub fn event_id_str(&self) -> String {
@@ -374,6 +365,16 @@ impl PinDraft {
         self
     }
 
+    pub fn display(&mut self, display: Box<Display>) -> &mut Self {
+        self.content.display(Some(*display));
+        self
+    }
+
+    pub fn unset_display(&mut self) -> &mut Self {
+        self.content.display(None);
+        self
+    }
+
     pub async fn send(&self) -> Result<OwnedEventId> {
         let room = self.room.clone();
         let my_id = self.client.user_id()?;
@@ -453,6 +454,21 @@ impl PinUpdateBuilder {
 
     pub fn unset_url_update(&mut self) -> &mut Self {
         self.content.url(None::<Option<String>>);
+        self
+    }
+
+    pub fn display(&mut self, display: Box<Display>) -> &mut Self {
+        self.content.display(Some(Some(*display)));
+        self
+    }
+
+    pub fn unset_display(&mut self) -> &mut Self {
+        self.content.display(Some(None));
+        self
+    }
+
+    pub fn unset_display_update(&mut self) -> &mut Self {
+        self.content.display(None::<Option<Display>>);
         self
     }
 

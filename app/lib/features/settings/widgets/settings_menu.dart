@@ -3,6 +3,7 @@ import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/env.g.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
@@ -11,23 +12,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const defaultSettingsMenuKey = Key('settings-menu');
+final helpUrl = Uri.tryParse(Env.helpCenterUrl);
 
 class SettingsMenu extends ConsumerWidget {
   static Key deactivateAccount = const Key('settings-auth-deactivate-account');
   static Key logoutAccount = const Key('settings-auth-logout-account');
   static Key superInvitations = const Key('settings-super-invitations');
+  static Key emailAddresses = const Key('settings-email-addresses');
   static Key chat = const Key('settings-chat');
   static Key labs = const Key('settings-labs');
 
-  const SettingsMenu({super.key = defaultSettingsMenuKey});
+  final bool isFullPage;
 
-  Color? routedColor(
-    BuildContext context,
-    WidgetRef ref,
-    Routes route,
-  ) {
+  const SettingsMenu({
+    this.isFullPage = false,
+    super.key = defaultSettingsMenuKey,
+  });
+
+  Color? routedColor(BuildContext context, WidgetRef ref, Routes route) {
     final currentRoute = ref.watch(currentRoutingLocation);
     if (currentRoute == route.route) {
       return Theme.of(context).colorScheme.secondary;
@@ -38,12 +44,8 @@ class SettingsMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final size = MediaQuery.of(context).size;
-
-    final shouldGoNotNamed = size.width > 770;
-
-    final isSuperInviteEnable =
-        ref.watch(hasSuperTokensAccess).valueOrNull == true;
+    final isBackupEnabled =
+        ref.watch(featuresProvider).isActive(LabsFeature.encryptionBackup);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -58,31 +60,33 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).notifications,
               subTitle: L10n.of(context).notificationsSettingsAndTargets,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingNotifications,
-                ),
+                color: routedColor(context, ref, Routes.settingNotifications),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingNotifications.name)
-                  : context.pushNamed(Routes.settingNotifications.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context
+                      .pushReplacementNamed(Routes.settingNotifications.name);
+                } else {
+                  context.pushNamed(Routes.settingNotifications.name);
+                }
+              },
             ),
             MenuItemWidget(
+              innerKey: SettingsMenu.emailAddresses,
               iconData: Atlas.envelope_paper_email_thin,
               iconColor: routedColor(context, ref, Routes.emailAddresses),
               title: L10n.of(context).emailAddresses,
               subTitle: L10n.of(context).connectedToYourAccount,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.emailAddresses,
-                ),
+                color: routedColor(context, ref, Routes.emailAddresses),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.emailAddresses.name)
-                  : context.pushNamed(Routes.emailAddresses.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.emailAddresses.name);
+                } else {
+                  context.pushNamed(Routes.emailAddresses.name);
+                }
+              },
             ),
           ],
         ),
@@ -96,34 +100,32 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).sessions,
               subTitle: L10n.of(context).yourActiveDevices,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingSessions,
-                ),
+                color: routedColor(context, ref, Routes.settingSessions),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingSessions.name)
-                  : context.pushNamed(Routes.settingSessions.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingSessions.name);
+                } else {
+                  context.pushNamed(Routes.settingSessions.name);
+                }
+              },
             ),
-            if (ref
-                .watch(featuresProvider)
-                .isActive(LabsFeature.encryptionBackup))
+            if (isBackupEnabled)
               MenuItemWidget(
                 iconData: Atlas.key_website_thin,
                 iconColor: routedColor(context, ref, Routes.settingBackup),
                 title: L10n.of(context).settingsKeyBackUpTitle,
                 subTitle: L10n.of(context).settingsKeyBackUpDesc,
                 titleStyles: TextStyle(
-                  color: routedColor(
-                    context,
-                    ref,
-                    Routes.settingBackup,
-                  ),
+                  color: routedColor(context, ref, Routes.settingBackup),
                 ),
-                onTap: () => shouldGoNotNamed
-                    ? context.goNamed(Routes.settingBackup.name)
-                    : context.pushNamed(Routes.settingBackup.name),
+                onTap: () {
+                  if (!isFullPage && context.isLargeScreen) {
+                    context.pushReplacementNamed(Routes.settingBackup.name);
+                  } else {
+                    context.pushNamed(Routes.settingBackup.name);
+                  }
+                },
               ),
             MenuItemWidget(
               iconData: Atlas.users_thin,
@@ -131,15 +133,15 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).blockedUsers,
               subTitle: L10n.of(context).usersYouBlocked,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.blockedUsers,
-                ),
+                color: routedColor(context, ref, Routes.blockedUsers),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.blockedUsers.name)
-                  : context.pushNamed(Routes.blockedUsers.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.blockedUsers.name);
+                } else {
+                  context.pushNamed(Routes.blockedUsers.name);
+                }
+              },
             ),
             MenuItemWidget(
               iconData: Atlas.passcode,
@@ -147,15 +149,15 @@ class SettingsMenu extends ConsumerWidget {
               title: L10n.of(context).changePassword,
               subTitle: L10n.of(context).changePasswordDescription,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.changePassword,
-                ),
+                color: routedColor(context, ref, Routes.changePassword),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.changePassword.name)
-                  : context.pushNamed(Routes.changePassword.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.changePassword.name);
+                } else {
+                  context.pushNamed(Routes.changePassword.name);
+                }
+              },
             ),
           ],
         ),
@@ -166,7 +168,7 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               innerKey: SettingsMenu.superInvitations,
               iconData: Atlas.plus_envelope_thin,
-              enabled: isSuperInviteEnable,
+              enabled: ref.watch(hasSuperTokensAccess).valueOrNull == true,
               iconColor: routedColor(context, ref, Routes.settingsSuperInvites),
               title: L10n.of(context).superInvitations,
               subTitle: L10n.of(context).manageYourInvitationCodes,
@@ -177,11 +179,15 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.settingsSuperInvites,
                 ),
               ),
-              onTap: isSuperInviteEnable
-                  ? () => shouldGoNotNamed
-                      ? context.goNamed(Routes.settingsSuperInvites.name)
-                      : context.pushNamed(Routes.settingsSuperInvites.name)
-                  : null,
+              onTap: () {
+                if (ref.read(hasSuperTokensAccess).valueOrNull != true) return;
+                if (!isFullPage && context.isLargeScreen) {
+                  context
+                      .pushReplacementNamed(Routes.settingsSuperInvites.name);
+                } else {
+                  context.pushNamed(Routes.settingsSuperInvites.name);
+                }
+              },
             ),
           ],
         ),
@@ -202,9 +208,13 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.settingsChat,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingsChat.name)
-                  : context.pushNamed(Routes.settingsChat.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingsChat.name);
+                } else {
+                  context.pushNamed(Routes.settingsChat.name);
+                }
+              },
             ),
             MenuItemWidget(
               iconData: Atlas.language_translation,
@@ -218,9 +228,13 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.settingLanguage,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingLanguage.name)
-                  : context.pushNamed(Routes.settingLanguage.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingLanguage.name);
+                } else {
+                  context.pushNamed(Routes.settingLanguage.name);
+                }
+              },
             ),
             MenuItemWidget(
               key: SettingsMenu.labs,
@@ -235,9 +249,13 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.settingsLabs,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.settingsLabs.name)
-                  : context.pushNamed(Routes.settingsLabs.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingsLabs.name);
+                } else {
+                  context.pushNamed(Routes.settingsLabs.name);
+                }
+              },
             ),
             MenuItemWidget(
               iconData: Atlas.info_circle_thin,
@@ -250,10 +268,22 @@ class SettingsMenu extends ConsumerWidget {
                   Routes.info,
                 ),
               ),
-              onTap: () => shouldGoNotNamed
-                  ? context.goNamed(Routes.info.name)
-                  : context.pushNamed(Routes.info.name),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.info.name);
+                } else {
+                  context.pushNamed(Routes.info.name);
+                }
+              },
             ),
+            if (helpUrl != null)
+              MenuItemWidget(
+                iconData: PhosphorIcons.question(),
+                title: L10n.of(context).helpCenterTitle,
+                subTitle: L10n.of(context).helpCenterDesc,
+                trailing: Icon(PhosphorIcons.arrowSquareOut()),
+                onTap: () => launchUrl(helpUrl!),
+              ),
           ],
         ),
         _settingMenuSection(

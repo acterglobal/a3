@@ -41,7 +41,7 @@ class __OptionsSettingsTileState<T> extends State<_OptionsSettingsTile<T>> {
         )
         .$2;
     return SettingsTile(
-      onPressed: (ctx) => menuController.open(),
+      onPressed: (context) => menuController.open(),
       title: Text(
         widget.title,
         style: tileTextTheme,

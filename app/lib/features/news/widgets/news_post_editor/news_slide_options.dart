@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -9,9 +9,10 @@ import 'package:acter/features/news/widgets/news_post_editor/post_attachment_opt
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class NewsSlideOptions extends ConsumerStatefulWidget {
   const NewsSlideOptions({super.key});
@@ -30,10 +31,10 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideOptionsUI(BuildContext context) {
+    final curSlide = ref.watch(newsStateProvider).currentNewsSlide;
     final keyboardVisibility = ref.watch(keyboardVisibleProvider);
     return Visibility(
-      visible: ref.watch(newsStateProvider).currentNewsSlide != null &&
-          !(keyboardVisibility.value ?? false),
+      visible: curSlide != null && keyboardVisibility.value != true,
       child: Container(
         color: Theme.of(context).colorScheme.primary,
         child: newsSlideListUI(context),
@@ -117,7 +118,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
         IconButton(
           key: NewsUpdateKeys.addNewsSlide,
           onPressed: () => showPostAttachmentOptions(context),
-          icon: const Icon(Icons.add),
+          icon: Icon(PhosphorIcons.stackPlus()),
         ),
       ],
     );
@@ -191,7 +192,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           topLeft: Radius.circular(20),
         ),
       ),
-      builder: (ctx) => PostAttachmentOptions(
+      builder: (context) => PostAttachmentOptions(
         onTapAddText: () => NewsUtils.addTextSlide(ref),
         onTapImage: () async => await NewsUtils.addImageSlide(ref),
         onTapVideo: () async => await NewsUtils.addVideoSlide(ref),
@@ -199,23 +200,17 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     );
   }
 
-  Widget getIconAsPerSlideType(
-    NewsSlideType slidePostType,
-    XFile? mediaFile,
-  ) {
-    switch (slidePostType) {
-      case NewsSlideType.text:
-        return const Icon(Atlas.size_text);
-      case NewsSlideType.image:
-        return ClipRRect(
+  Widget getIconAsPerSlideType(NewsSlideType slidePostType, XFile? mediaFile) {
+    return switch (slidePostType) {
+      NewsSlideType.text => const Icon(Atlas.size_text),
+      NewsSlideType.image => ClipRRect(
           borderRadius: BorderRadius.circular(5.0),
           child: Image(
             image: XFileImage(mediaFile!),
             fit: BoxFit.cover,
           ),
-        );
-      case NewsSlideType.video:
-        return Stack(
+        ),
+      NewsSlideType.video => Stack(
           fit: StackFit.expand,
           children: [
             FutureBuilder(
@@ -238,9 +233,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
               child: const Icon(Icons.play_arrow_outlined, size: 32),
             ),
           ],
-        );
-      default:
-        return Container();
-    }
+        ),
+    };
   }
 }

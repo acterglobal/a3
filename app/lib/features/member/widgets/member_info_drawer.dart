@@ -1,4 +1,3 @@
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
@@ -18,19 +17,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::member::member_info_drawer');
 
 class _MemberInfoDrawerInner extends ConsumerWidget {
   final Member member;
-  final ProfileData profile;
   final String memberId;
   final bool isShowActions;
 
   const _MemberInfoDrawerInner({
     required this.memberId,
     required this.member,
-    required this.profile,
     required this.isShowActions,
   });
 
@@ -57,7 +56,8 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).powerLevelUpdateSubmitted);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to change power level', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -71,6 +71,9 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider((userId: memberId, roomId: member.roomIdStr())),
+    );
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -78,9 +81,13 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 20),
-            _buildAvatarUI(context, profile),
+            _buildAvatarUI(context, avatarInfo),
             const SizedBox(height: 20),
-            if (profile.displayName != null) _buildDisplayName(context),
+            if (avatarInfo.displayName != null)
+              Center(
+                child:
+                    Text(avatarInfo.displayName!), // FIXME: make this prettier
+              ),
             const SizedBox(height: 20),
             _buildUserName(context),
             const SizedBox(height: 20),
@@ -157,101 +164,94 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
   }
 
   List<Widget> _roomMenu(BuildContext context, WidgetRef ref) {
-    return ref.watch(roomMembershipProvider(member.roomIdStr())).when(
-          data: (myMembership) {
-            if (myMembership == null) {
-              // showing just the power level
-              return [_roomTitle(context, ref), _showPowerLevel(context, null)];
-            }
+    final roomId = member.roomIdStr();
+    final membershipLoader = ref.watch(roomMembershipProvider(roomId));
+    return membershipLoader.when(
+      data: (membership) {
+        if (membership == null) {
+          // showing just the power level
+          return [_roomTitle(context, ref), _showPowerLevel(context, null)];
+        }
 
-            final menu = [_roomTitle(context, ref)];
+        final menu = [_roomTitle(context, ref)];
 
-            if (myMembership.canString('CanUpdatePowerLevels')) {
-              menu.add(
-                _showPowerLevel(
-                  context,
-                  () async {
-                    await changePowerLevel(context, ref);
-                    if (context.mounted) {
-                      context.pop();
-                    }
-                  },
-                ),
-              );
-            } else {
-              menu.add(_showPowerLevel(context, null));
-            }
+        if (membership.canString('CanUpdatePowerLevels')) {
+          menu.add(
+            _showPowerLevel(context, () async {
+              await changePowerLevel(context, ref);
+              if (context.mounted) Navigator.pop(context);
+            }),
+          );
+        } else {
+          menu.add(_showPowerLevel(context, null));
+        }
 
-            if (myMembership.canString('CanKick')) {
-              menu.add(
-                MenuItemWidget(
-                  iconData: Icons.eject_outlined,
-                  title: L10n.of(context).kickUser,
-                  withMenu: false,
-                  onTap: () async {
-                    await showKickUserDialog(context, member);
-                    if (context.mounted) {
-                      context.pop();
-                    }
-                  },
-                ),
-              );
-
-              if (myMembership.canString('CanBan')) {
-                menu.add(
-                  MenuItemWidget(
-                    iconData: Icons.gpp_bad_outlined,
-                    title: L10n.of(context).kickAndBanUser,
-                    withMenu: false,
-                    onTap: () async {
-                      await showKickAndBanUserDialog(context, member);
-                      if (context.mounted) {
-                        context.pop();
-                      }
-                    },
-                  ),
-                );
-              }
-            }
-            return menu;
-          },
-          error: (e, s) => [
-            _roomTitle(context, ref),
+        if (membership.canString('CanKick')) {
+          menu.add(
             MenuItemWidget(
-              iconData: Atlas.triangle_exclamation_thin,
-              title: L10n.of(context).errorLoading(e),
+              iconData: Icons.eject_outlined,
+              title: L10n.of(context).kickUser,
               withMenu: false,
-              onTap: () {},
+              onTap: () async {
+                await showKickUserDialog(context, member);
+                if (context.mounted) Navigator.pop(context);
+              },
             ),
-          ],
-          loading: () => [
-            _roomTitle(context, ref),
-            Skeletonizer(
-              child: MenuItemWidget(
-                iconData: Atlas.medal_badge_award_thin,
-                title: L10n.of(context).changePowerLevel,
+          );
+
+          if (membership.canString('CanBan')) {
+            menu.add(
+              MenuItemWidget(
+                iconData: Icons.gpp_bad_outlined,
+                title: L10n.of(context).kickAndBanUser,
                 withMenu: false,
-                onTap: () {},
+                onTap: () async {
+                  await showKickAndBanUserDialog(context, member);
+                  if (context.mounted) Navigator.pop(context);
+                },
               ),
-            ),
-          ],
-        );
+            );
+          }
+        }
+        return menu;
+      },
+      error: (e, s) {
+        _log.severe('Failed to load room membership', e, s);
+        return [
+          _roomTitle(context, ref),
+          MenuItemWidget(
+            iconData: Atlas.triangle_exclamation_thin,
+            title: L10n.of(context).loadingFailed(e),
+            withMenu: false,
+            onTap: () {},
+          ),
+        ];
+      },
+      loading: () => [
+        _roomTitle(context, ref),
+        Skeletonizer(
+          child: MenuItemWidget(
+            iconData: Atlas.medal_badge_award_thin,
+            title: L10n.of(context).changePowerLevel,
+            withMenu: false,
+            onTap: () {},
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _roomTitle(BuildContext context, WidgetRef ref) {
     final roomId = member.roomIdStr();
-    final roomData = ref.watch(briefRoomItemWithMembershipProvider(roomId));
+    final roomName =
+        ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
     return ListTile(
       leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
-      title: roomData.maybeWhen(
-        data: (roomData) =>
-            Text(roomData.roomProfileData.displayName ?? roomId),
-        orElse: () => Text(roomId),
-      ),
+      title: Text(roomName),
     );
   }
 
-  Widget _buildAvatarUI(BuildContext context, ProfileData memberProfile) {
+  Widget _buildAvatarUI(BuildContext context, AvatarInfo memberAvatarInfo) {
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -265,8 +265,8 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           options: AvatarOptions.DM(
             AvatarInfo(
               uniqueId: memberId,
-              avatar: memberProfile.getAvatarImage(),
-              displayName: memberProfile.displayName,
+              avatar: memberAvatarInfo.avatar,
+              displayName: memberAvatarInfo.displayName,
             ),
             size: 50,
           ),
@@ -275,16 +275,10 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     );
   }
 
-  Widget _buildDisplayName(BuildContext context) {
-    return Center(
-      child: Text(profile.displayName!), // FIXME: make this prettier
-    );
-  }
-
   Widget _buildUserName(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        context.pop(); // close the drawer
+        Navigator.pop(context); // close the drawer
         Clipboard.setData(ClipboardData(text: memberId));
         EasyLoading.showToast(L10n.of(context).usernameCopiedToClipboard);
       },
@@ -314,20 +308,23 @@ class MemberInfoDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref
-        .watch(roomMemberProvider((roomId: roomId, userId: memberId)))
-        .when(
-          data: (data) => _MemberInfoDrawerInner(
-            member: data.member,
-            profile: data.profile,
-            memberId: memberId,
-            isShowActions: isShowActions,
-          ),
-          error: (e, s) => Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Text(L10n.of(context).errorLoadingProfile(e)),
-          ),
-          loading: () => const MemberInfoSkeleton(),
+    final memberLoader = ref.watch(
+      memberProvider((roomId: roomId, userId: memberId)),
+    );
+    return memberLoader.when(
+      data: (member) => _MemberInfoDrawerInner(
+        member: member,
+        memberId: memberId,
+        isShowActions: isShowActions,
+      ),
+      error: (e, s) {
+        _log.severe('Failed to load room member', e, s);
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text(L10n.of(context).errorLoadingProfile(e)),
         );
+      },
+      loading: () => const MemberInfoSkeleton(),
+    );
   }
 }

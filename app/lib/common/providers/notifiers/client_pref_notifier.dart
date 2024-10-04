@@ -7,6 +7,7 @@
 ///
 library;
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:riverpod/riverpod.dart';
@@ -60,7 +61,7 @@ class PrefNotifier<T> extends StateNotifier<T> {
   set state(T value) {
     assert(
       false,
-      "Don't use the setter for state. Instead use `await update(value)`.",
+      'Don’t use the setter for state. Instead use `await update(value)`.',
     );
     Future(() async {
       await update(value);
@@ -157,7 +158,7 @@ class MapPrefNotifier<T> extends StateNotifier<T> {
   set state(T value) {
     assert(
       false,
-      "Don't use the setter for state. Instead use `await update(value)`.",
+      'Don’t use the setter for state. Instead use `await update(value)`.',
     );
     Future(() async {
       await update(value);
@@ -219,8 +220,7 @@ StateNotifierProvider<MapPrefNotifier<T>, T> createMapPrefProvider<T>({
   required String Function(T) mapTo,
 }) {
   return StateNotifierProvider<MapPrefNotifier<T>, T>((ref) {
-    final clientId =
-        ref.watch(alwaysClientProvider.select((v) => v.deviceId().toString()));
+    final clientId = ref.watch(deviceIdProvider);
     return MapPrefNotifier<T>('$clientId-$prefKey', mapFrom, mapTo);
   });
 }

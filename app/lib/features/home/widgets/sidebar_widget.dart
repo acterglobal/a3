@@ -4,8 +4,9 @@ import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
+import 'package:acter/features/bug_report/actions/open_bug_report.dart';
+import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/home/data/keys.dart';
-import 'package:acter/features/home/pages/home_shell.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
 import 'package:acter/features/home/widgets/chats_icon.dart';
 import 'package:acter/router/providers/router_providers.dart';
@@ -26,7 +27,7 @@ class _MyUserAvatar extends ConsumerWidget {
       key: Keys.avatar,
       margin: const EdgeInsets.only(top: 8),
       child: InkWell(
-        onTap: () => context.goNamed(Routes.settings.name),
+        onTap: () => context.pushNamed(Routes.settings.name),
         child: const UserAvatarWidget(size: 20),
       ),
     );
@@ -36,6 +37,7 @@ class _MyUserAvatar extends ConsumerWidget {
 class _SidebarItemIndicator extends ConsumerStatefulWidget {
   final List<Routes> routes;
   final bool reversed;
+
   const _SidebarItemIndicator({
     required this.routes,
     this.reversed = false,
@@ -128,7 +130,7 @@ class _SidebarItem extends StatelessWidget {
       height: 40,
       width: 40,
       key: tutorialGlobalKey,
-      margin: const EdgeInsets.all(12.0),
+      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
       child: inner,
     );
   }
@@ -153,7 +155,7 @@ class SidebarWidget extends ConsumerWidget {
     ];
 
     if (size.height < 600) {
-      // we don't have enough space to show more,
+      // we don’t have enough space to show more,
       // only show our main menu
       return SingleChildScrollView(
         child: SizedBox(
@@ -163,7 +165,7 @@ class SidebarWidget extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ...menu,
-              ..._trailing(context),
+              if (isBugReportingEnabled) ..._bugReporter(context),
             ],
           ),
         ),
@@ -187,13 +189,13 @@ class SidebarWidget extends ConsumerWidget {
               ),
             ),
           ),
-          ..._trailing(context),
+          if (isBugReportingEnabled) ..._bugReporter(context),
         ],
       ),
     );
   }
 
-  List<Widget> _trailing(BuildContext context) {
+  List<Widget> _bugReporter(BuildContext context) {
     return [
       const Divider(indent: 18, endIndent: 18),
       InkWell(
@@ -228,6 +230,7 @@ class SidebarWidget extends ConsumerWidget {
         icon: const Icon(
           Atlas.magnifying_glass_thin,
           key: MainNavKeys.quickJump,
+          size: 18,
         ),
         label: Text(
           'Jump',
@@ -242,6 +245,7 @@ class SidebarWidget extends ConsumerWidget {
         icon: const Icon(
           Atlas.home_thin,
           key: MainNavKeys.dashboardHome,
+          size: 18,
         ),
         label: Text(
           'Home',
@@ -291,64 +295,34 @@ class SidebarWidget extends ConsumerWidget {
   }
 
   List<_SidebarItem> _spacesList(BuildContext context, WidgetRef ref) {
-    final spaces = ref.watch(spacesProvider);
+    final bookmarkedSpaces = ref.watch(bookmarkedSpacesProvider);
+    final otherSpaces = ref.watch(unbookmarkedSpacesProvider);
 
-    return spaces.map((space) {
-      final profileData = ref.watch(spaceProfileDataProvider(space));
+    return [].followedBy(bookmarkedSpaces).followedBy(otherSpaces).map((space) {
       final roomId = space.getRoomIdStr();
-      final canonicalParent = ref.watch(canonicalParentProvider(roomId));
-      return profileData.when(
-        loading: () => _SidebarItem(
-          icon: const Icon(Atlas.arrows_dots_rotate_thin),
-          label: Text(
-            roomId,
-            style: Theme.of(context).textTheme.labelSmall,
-            softWrap: false,
-          ),
-          onTap: () => context
-              .goNamed(Routes.space.name, pathParameters: {'spaceId': roomId}),
-        ),
-        error: (err, trace) => _SidebarItem(
-          icon: const Icon(Atlas.warning_bold),
-          label: Text(
-            '$roomId: $err',
-            style: Theme.of(context).textTheme.labelSmall,
-            softWrap: false,
-          ),
-          onTap: () => context
-              .goNamed(Routes.space.name, pathParameters: {'spaceId': roomId}),
-        ),
-        data: (info) => _SidebarItem(
-          icon: ActerAvatar(
-            options: AvatarOptions(
-              AvatarInfo(
-                uniqueId: roomId,
-                displayName: info.displayName,
-                avatar: info.getAvatarImage(),
-              ),
-              parentBadges: canonicalParent.valueOrNull != null
-                  ? [
-                      AvatarInfo(
-                        uniqueId:
-                            canonicalParent.valueOrNull!.space.getRoomIdStr(),
-                        displayName:
-                            canonicalParent.valueOrNull!.profile.displayName,
-                        avatar: canonicalParent.valueOrNull!.profile
-                            .getAvatarImage(),
-                      ),
-                    ]
-                  : [],
-              size: 48,
+      final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
+      final parentBadges =
+          ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
+
+      return _SidebarItem(
+        icon: ActerAvatar(
+          options: AvatarOptions(
+            AvatarInfo(
+              uniqueId: roomId,
+              displayName: avatarInfo.displayName,
+              avatar: avatarInfo.avatar,
             ),
+            parentBadges: parentBadges,
+            size: 48,
           ),
-          label: Text(
-            info.displayName ?? roomId,
-            style: Theme.of(context).textTheme.labelSmall,
-            softWrap: false,
-          ),
-          onTap: () => context
-              .goNamed(Routes.space.name, pathParameters: {'spaceId': roomId}),
         ),
+        label: Text(
+          avatarInfo.displayName ?? roomId,
+          style: Theme.of(context).textTheme.labelSmall,
+          softWrap: false,
+        ),
+        onTap: () => context
+            .goNamed(Routes.space.name, pathParameters: {'spaceId': roomId}),
       );
     }).toList();
   }

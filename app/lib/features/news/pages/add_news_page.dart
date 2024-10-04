@@ -1,25 +1,19 @@
 import 'dart:io';
 
-import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/providers/space_providers.dart';
-
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
+import 'package:acter/features/news/actions/submit_news.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
-import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -28,13 +22,15 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
-import 'package:mime/mime.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::news::add_page');
 
 const addNewsKey = Key('add-news');
 
 class AddNewsPage extends ConsumerStatefulWidget {
-  const AddNewsPage({super.key = addNewsKey});
+  final String? initialSelectedSpace;
+  const AddNewsPage({super.key = addNewsKey, this.initialSelectedSpace});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => AddNewsState();
@@ -47,21 +43,28 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   @override
   void initState() {
     super.initState();
+    widget.initialSelectedSpace.let((p0) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        ref.read(newsStateProvider.notifier).setSpaceId(p0);
+      });
+    });
     ref.listenManual(newsStateProvider, fireImmediately: true,
         (prevState, nextState) async {
       final isText = nextState.currentNewsSlide?.type == NewsSlideType.text;
       final changed = prevState?.currentNewsSlide != nextState.currentNewsSlide;
       if (isText && changed) {
         final next = nextState.currentNewsSlide!;
-        final document = next.html != null
-            ? ActerDocumentHelpers.fromHtml(next.html!)
-            : ActerDocumentHelpers.fromMarkdown(next.text ?? '');
+        final document =
+            ActerDocumentHelpers.parse(next.text ?? '', htmlContent: next.html);
+
         final autoFocus =
             (next.html?.isEmpty ?? true) && (next.text?.isEmpty ?? true);
 
         setState(() {
           selectedNewsPost = next;
-          textEditorState = EditorState(document: document);
+          if (!document.isEmpty) {
+            textEditorState = EditorState(document: document);
+          }
         });
 
         if (autoFocus) {
@@ -99,7 +102,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         onPressed: () {
           // Hide Keyboard
           SystemChannels.textInput.invokeMethod('TextInput.hide');
-          context.pop();
+          Navigator.pop(context);
         },
         icon: const Icon(Atlas.xmark_circle),
       ),
@@ -109,9 +112,16 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       actions: selectedNewsPost == null
           ? []
           : [
-              IconButton(
+              OutlinedButton.icon(
                 onPressed: () => selectActionItemDialog(context),
-                icon: const Icon(Atlas.plus_circle),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                icon: const Icon(Icons.add),
+                label: Text(L10n.of(context).action),
               ),
               IconButton(
                 key: NewsUpdateKeys.slideBackgroundColor,
@@ -134,7 +144,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         padding: const EdgeInsets.only(bottom: 90),
         child: FloatingActionButton(
           key: NewsUpdateKeys.newsSubmitBtn,
-          onPressed: () => sendNews(context),
+          onPressed: () => sendNews(context, ref),
           child: const Icon(Icons.send),
         ),
       ),
@@ -150,7 +160,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           title: Text(L10n.of(context).addActionWidget),
           content: SelectActionItem(
             onShareEventSelected: () async {
-              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.pop(context);
               if (ref.read(newsStateProvider).newsPostSpaceId == null) {
                 EasyLoading.showToast(L10n.of(context).pleaseFirstSelectASpace);
                 return;
@@ -190,31 +200,27 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
 
   //Show slide data view based on the current slide selection
   Widget slidePostUI(BuildContext context) {
-    switch (selectedNewsPost?.type) {
-      case NewsSlideType.text:
-        return slideTextPostUI(context);
-      case NewsSlideType.image:
-        return slideImagePostUI(context);
-      case NewsSlideType.video:
-        return slideVideoPostUI(context);
-      default:
-        return emptySlidePostUI(context);
-    }
+    return switch (selectedNewsPost?.type) {
+      NewsSlideType.text => slideTextPostUI(context),
+      NewsSlideType.image => slideImagePostUI(context),
+      NewsSlideType.video => slideVideoPostUI(context),
+      _ => emptySlidePostUI(context),
+    };
   }
 
   //Show selected Action Buttons
   Widget selectedActionButtonsUI() {
     final newsReferences = selectedNewsPost?.newsReferencesModel;
-
     if (newsReferences == null) return const SizedBox();
+    final calEventId = newsReferences.id;
     return Positioned(
       bottom: 10,
       left: 10,
       child: Row(
         children: [
-          if (newsReferences.type == NewsReferencesType.shareEvent &&
-              newsReferences.id != null)
-            ref.watch(calendarEventProvider(newsReferences.id!)).when(
+          if (newsReferences.type == NewsReferencesType.calendarEvent &&
+              calEventId != null)
+            ref.watch(calendarEventProvider(calEventId)).when(
                   data: (calendarEvent) {
                     return SizedBox(
                       width: 300,
@@ -229,11 +235,16 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                       ),
                     );
                   },
-                  loading: () =>
-                      const SizedBox(width: 300, child: EventItemSkeleton()),
-                  error: (e, s) => Center(
-                    child: Text(L10n.of(context).failedToLoadEvent(e)),
+                  loading: () => const SizedBox(
+                    width: 300,
+                    child: EventItemSkeleton(),
                   ),
+                  error: (e, s) {
+                    _log.severe('Failed to load cal event', e, s);
+                    return Center(
+                      child: Text(L10n.of(context).failedToLoadEvent(e)),
+                    );
+                  },
                 ),
         ],
       ),
@@ -328,160 +339,9 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       alignment: Alignment.center,
       color: selectedNewsPost!.backgroundColor,
       child: ActerVideoPlayer(
-        key: Key(videoFile.name),
+        key: Key('add-news-slide-video-${videoFile.name}'),
         videoFile: File(videoFile.path),
       ),
     );
-  }
-
-  Future<void> sendNews(BuildContext context) async {
-    // Hide Keyboard
-    SystemChannels.textInput.invokeMethod('TextInput.hide');
-    final client = ref.read(alwaysClientProvider);
-    final spaceId = ref.read(newsStateProvider).newsPostSpaceId;
-    final newsSlideList = ref.read(newsStateProvider).newsSlideList;
-    final lang = L10n.of(context);
-
-    if (spaceId == null) {
-      EasyLoading.showToast(L10n.of(context).pleaseFirstSelectASpace);
-      return;
-    }
-
-    String displayMsg = L10n.of(context).slidePosting;
-    // Show loading message
-    EasyLoading.show(status: displayMsg);
-    try {
-      final space = await ref.read(spaceProvider(spaceId).future);
-      NewsEntryDraft draft = space.newsDraft();
-      for (final slidePost in newsSlideList) {
-        final sdk = await ref.read(sdkProvider.future);
-        // If slide type is text
-        if (slidePost.type == NewsSlideType.text) {
-          if (slidePost.text == null || slidePost.text!.trim().isEmpty) {
-            if (!context.mounted) {
-              EasyLoading.dismiss();
-              return;
-            }
-            EasyLoading.showError(
-              L10n.of(context).yourTextSlidesMustContainsSomeText,
-              duration: const Duration(seconds: 3),
-            );
-            return;
-          }
-          final textDraft = slidePost.html != null
-              ? client.textHtmlDraft(slidePost.html!, slidePost.text!)
-              : client.textMarkdownDraft(slidePost.text!);
-          final textSlideDraft = textDraft.intoNewsSlideDraft();
-
-          textSlideDraft.color(
-            sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
-          );
-
-          if (slidePost.newsReferencesModel != null) {
-            final objRef = getSlideReference(sdk, slidePost);
-            textSlideDraft.addReference(objRef);
-          }
-          await draft.addSlide(textSlideDraft);
-        }
-
-        // If slide type is image
-        else if (slidePost.type == NewsSlideType.image &&
-            slidePost.mediaFile != null) {
-          final file = slidePost.mediaFile!;
-          String? mimeType = file.mimeType ?? lookupMimeType(file.path);
-          if (mimeType == null) throw lang.failedToDetectMimeType;
-          if (!mimeType.startsWith('image/')) {
-            if (!context.mounted) {
-              EasyLoading.dismiss();
-              return;
-            }
-            EasyLoading.showError(
-              L10n.of(context).postingOfTypeNotYetSupported(mimeType),
-              duration: const Duration(seconds: 3),
-            );
-            return;
-          }
-          Uint8List bytes = await file.readAsBytes();
-          final decodedImage = await decodeImageFromList(bytes);
-          final imageDraft = client
-              .imageDraft(file.path, mimeType)
-              .size(bytes.length)
-              .width(decodedImage.width)
-              .height(decodedImage.height);
-          final imageSlideDraft = imageDraft.intoNewsSlideDraft();
-          imageSlideDraft.color(
-            sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
-          );
-          if (slidePost.newsReferencesModel != null) {
-            final objRef = getSlideReference(sdk, slidePost);
-            imageSlideDraft.addReference(objRef);
-          }
-          await draft.addSlide(imageSlideDraft);
-        }
-
-        // If slide type is video
-        else if (slidePost.type == NewsSlideType.video &&
-            slidePost.mediaFile != null) {
-          final file = slidePost.mediaFile!;
-          String? mimeType = file.mimeType ?? lookupMimeType(file.path);
-          if (mimeType == null) throw lang.failedToDetectMimeType;
-          if (!mimeType.startsWith('video/')) {
-            if (!context.mounted) {
-              EasyLoading.dismiss();
-              return;
-            }
-            EasyLoading.showError(
-              L10n.of(context).postingOfTypeNotYetSupported(mimeType),
-              duration: const Duration(seconds: 3),
-            );
-            return;
-          }
-          Uint8List bytes = await file.readAsBytes();
-          final videoDraft =
-              client.videoDraft(file.path, mimeType).size(bytes.length);
-          final videoSlideDraft = videoDraft.intoNewsSlideDraft();
-          videoSlideDraft.color(
-            sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
-          );
-          if (slidePost.newsReferencesModel != null) {
-            final objRef = getSlideReference(sdk, slidePost);
-            videoSlideDraft.addReference(objRef);
-          }
-          await draft.addSlide(videoSlideDraft);
-        }
-      }
-      await draft.send();
-
-      // close loading
-      EasyLoading.dismiss();
-
-      if (!context.mounted) return;
-      // FIXME due to #718. well lets at least try forcing a refresh upon route.
-      ref.invalidate(newsListProvider);
-      ref.invalidate(newsStateProvider);
-      // Navigate back to update screen.
-      Navigator.of(context).pop();
-      context.goNamed(Routes.main.name); // go to the home / main updates
-    } catch (err) {
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        '$displayMsg ${L10n.of(context).failed}: \n $err',
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  ObjRef getSlideReference(ActerSdk sdk, NewsSlideItem slidePost) {
-    final linkBuilder = sdk.api.newLinkRefBuilder(
-      slidePost.newsReferencesModel!.type.name,
-      slidePost.newsReferencesModel!.id ?? '',
-    );
-    final linkRef = linkBuilder.build();
-    final objBuilder = sdk.api.newObjRefBuilder(null, linkRef);
-    final objRef = objBuilder.build();
-    return objRef;
   }
 }

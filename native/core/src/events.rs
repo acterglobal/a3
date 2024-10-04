@@ -1,23 +1,23 @@
 pub mod attachments;
+pub mod bookmarks;
 pub mod calendar;
 pub mod comments;
 mod common;
 pub mod news;
 pub mod pins;
+pub mod room;
 pub mod rsvp;
 pub mod settings;
 pub mod tasks;
 pub mod three_pid;
 
-pub use common::{
-    BelongsTo, BrandIcon, CalendarEventAction, Color, Colorize, ColorizeBuilder, Date, Icon,
-    Labels, ObjRef, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder, Reference, References,
-    TaskAction, TaskListAction, Update, UtcDateTime,
-};
-use ruma_common::exports::{serde::de::Error as SerdeDeError, serde_json as smart_serde_json};
-use ruma_events::{
-    reaction::{ReactionEvent, ReactionEventContent},
-    EventTypeDeHelper, StaticEventContent,
+pub use common::*;
+use matrix_sdk_base::ruma::{
+    events::{
+        reaction::{ReactionEvent, ReactionEventContent},
+        EventTypeDeHelper, StaticEventContent,
+    },
+    exports::{serde::de::Error as SerdeDeError, serde_json as smart_serde_json},
 };
 
 #[derive(Clone, Debug)]
@@ -56,7 +56,8 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
         D: serde::Deserializer<'de>,
     {
         let json = Box::<smart_serde_json::value::RawValue>::deserialize(deserializer)?;
-        let EventTypeDeHelper { ev_type, .. } = ::ruma_common::serde::from_raw_json_value(&json)?;
+        let EventTypeDeHelper { ev_type, .. } =
+            ::matrix_sdk_base::ruma::serde::from_raw_json_value(&json)?;
         match &*ev_type {
             calendar::CalendarEventEventContent::TYPE => {
                 let event = smart_serde_json::from_str::<calendar::CalendarEventEvent>(json.get())
@@ -157,8 +158,10 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
 
             ReactionEventContent::TYPE => {
                 let event =
-                    ::ruma_common::exports::serde_json::from_str::<ReactionEvent>(json.get())
-                        .map_err(D::Error::custom)?;
+                    ::matrix_sdk_base::ruma::exports::serde_json::from_str::<ReactionEvent>(
+                        json.get(),
+                    )
+                    .map_err(D::Error::custom)?;
                 Ok(Self::Reaction(event))
             }
 

@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/config/app_shell.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +33,7 @@ bool navigateOnRightBranch(
   bool initialLocation = true,
 }) {
   final navState =
-      (homeShellKey.currentContext?.widget as HomeShell).navigationShell;
+      (appShellKey.currentContext?.widget as AppShell).navigationShell;
   if (navState.currentIndex != targetBranch.index) {
     // when routed to chat, we always want to jump to the chat
     // tab
@@ -41,7 +41,7 @@ bool navigateOnRightBranch(
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       // We need the UI branch to actually switch first
       // and on first switching to it, it might even need to create the
-      // BuildContext, thus we can't optimized based on that either :(
+      // BuildContext, thus we can’t optimized based on that either :(
       navigationCallback(targetBranch.key.currentContext ?? context);
     });
     return true;

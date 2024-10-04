@@ -1,18 +1,25 @@
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/widgets/news_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class InDashboard extends StatelessWidget {
+class InDashboard extends ConsumerWidget {
   final Widget child;
 
   const InDashboard({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canPostNews = ref
+            .watch(
+              hasSpaceWithPermissionProvider('CanPostNews'),
+            )
+            .valueOrNull ==
+        true;
     return LayoutBuilder(
       builder: (context, constrains) {
         if (constrains.maxWidth > 770) {
@@ -26,13 +33,13 @@ class InDashboard extends StatelessWidget {
                   children: [
                     const NewsWidget(),
                     Visibility(
+                      visible: canPostNews,
                       child: IconButton(
                         key: NewsUpdateKeys.addNewsUpdate,
                         onPressed: () =>
                             context.pushNamed(Routes.actionAddUpdate.name),
-                        icon: Icon(
+                        icon: const Icon(
                           Atlas.plus_circle_thin,
-                          color: Theme.of(context).colorScheme.neutral5,
                           size: 24,
                         ),
                       ),

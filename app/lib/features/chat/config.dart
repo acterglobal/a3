@@ -1,1 +1,0 @@
-const sidebarMinWidth = 750;

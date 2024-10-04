@@ -19,7 +19,8 @@ class RedeemToken extends ConsumerStatefulWidget {
 
 class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
   final TextEditingController _tokenController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'redeem super invites form');
   late SuperInvitesTokenUpdateBuilder tokenUpdater;
 
   @override

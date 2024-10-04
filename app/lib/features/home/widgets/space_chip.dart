@@ -1,75 +1,90 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SpaceChip extends ConsumerWidget {
-  final SpaceItem? space;
-  final String? spaceId;
+  final String spaceId;
   final bool onTapOpenSpaceDetail;
+  final bool useCompatView;
+  final VoidCallback? onTapSelectSpace;
 
   const SpaceChip({
     super.key,
-    this.space,
-    this.spaceId,
+    required this.spaceId,
     this.onTapOpenSpaceDetail = true,
+    this.useCompatView = false,
+    this.onTapSelectSpace,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (space == null) {
-      if (spaceId == null) {
-        throw L10n.of(context).spaceOrSpaceIdMustBeProvided;
-      }
-      final brief = ref.watch(briefSpaceItemProvider(spaceId!));
-      return brief.when(
-        data: (space) {
-          return renderSpace(context, space);
-        },
-        error: (error, st) => Chip(
-          label: Text(L10n.of(context).loadingFailed(error)),
-        ),
-        loading: () => renderLoading(spaceId!),
-      );
+    if (useCompatView) {
+      return renderCompactView(context, ref);
     }
-    return renderSpace(context, space);
+    return renderFullChip(context, ref);
   }
 
-  Widget renderLoading(String spaceId) {
+  static Widget loading() {
     return Skeletonizer(
       child: Chip(
         avatar: ActerAvatar(
-          options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: spaceId,
-            ),
+          options: const AvatarOptions(
+            AvatarInfo(uniqueId: 'unique Id'),
             size: 24,
           ),
         ),
-        label: Text(spaceId),
+        label: const Text('unique name'),
       ),
     );
   }
 
-  Widget renderSpace(BuildContext context, space) {
+  Widget renderCompactView(BuildContext context, WidgetRef ref) {
+    final displayName =
+        ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull ?? spaceId;
+    return Row(
+      children: [
+        Text(L10n.of(context).inSpaceLabelInline),
+        Text(L10n.of(context).colonCharacter),
+        InkWell(
+          onTap: () {
+            if (!onTapOpenSpaceDetail) {
+              if (onTapSelectSpace != null) {
+                onTapSelectSpace!();
+                return;
+              }
+            }
+            goToSpace(context, spaceId);
+          },
+          child: Text(
+            displayName,
+            style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                  decoration: TextDecoration.underline,
+                ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget renderFullChip(BuildContext context, WidgetRef ref) {
+    final avatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
+    final spaceName = avatarInfo.displayName ?? spaceId;
     return InkWell(
-      onTap:
-          onTapOpenSpaceDetail ? () => goToSpace(context, space.roomId) : null,
+      onTap: () {
+        if (onTapOpenSpaceDetail) goToSpace(context, spaceId);
+      },
       child: Chip(
         avatar: ActerAvatar(
           options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: space.roomId,
-              displayName: space.spaceProfileData.displayName,
-              avatar: space.spaceProfileData.getAvatarImage(),
-            ),
+            avatarInfo,
             size: 24,
           ),
         ),
-        label: Text(space.spaceProfileData.displayName ?? space.roomId),
+        label: Text(spaceName),
       ),
     );
   }

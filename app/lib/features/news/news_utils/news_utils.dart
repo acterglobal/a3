@@ -17,7 +17,7 @@ class NewsUtils {
   static Future<File?> getThumbnailData(XFile videoFile) async {
     try {
       final tempDir = await getTemporaryDirectory();
-      final videoName = videoFile.name.split('.').first;
+      final videoName = p.basenameWithoutExtension(videoFile.path);
       final destPath = p.join(tempDir.path, '$videoName.jpg');
       final destFile = File(destPath);
 
@@ -31,7 +31,6 @@ class NewsUtils {
         destFile: destPath,
         width: 128,
         height: 128,
-        keepAspectRatio: true,
         format: 'jpeg',
         quality: 90,
       );
@@ -39,9 +38,9 @@ class NewsUtils {
       if (thumbnailGenerated) {
         return destFile;
       }
-    } catch (err, s) {
+    } catch (e, s) {
       // Handle platform errors.
-      _log.severe('Error', err, s);
+      _log.severe('Failed to extract video thumbnail', e, s);
     }
     return null;
   }

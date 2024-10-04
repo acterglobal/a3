@@ -1,4 +1,3 @@
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
@@ -6,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::tasks::widgets::due_clip');
 
 class DueChip extends StatefulWidget {
   final Task task;
@@ -72,7 +74,7 @@ class _DueChipState extends State<DueChip> {
     } else if (dueDate!.isPast) {
       label = dueDate!.timeago();
       dueTheme = textStyle.copyWith(
-        color: Theme.of(context).colorScheme.taskOverdueFG,
+        color: Theme.of(context).colorScheme.error,
       );
     }
     final dateText =
@@ -115,7 +117,8 @@ class _DueChipState extends State<DueChip> {
         return;
       }
       EasyLoading.showToast(L10n.of(context).dueSuccess);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to change due date of task', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

@@ -2,21 +2,32 @@ use acter_core::events::settings::{ActerUserAppSettingsContent, APP_USER_SETTING
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{media::MediaRequest, Account as SdkAccount};
-use ruma_common::{OwnedMxcUri, OwnedUserId, UserId};
-use ruma_events::{ignored_user_list::IgnoredUserListEventContent, room::MediaSource};
+use matrix_sdk_base::{
+    ruma::{
+        api::client::uiaa::{AuthData, Password},
+        assign,
+        events::{ignored_user_list::IgnoredUserListEventContent, room::MediaSource},
+        OwnedMxcUri, OwnedUserId, UserId,
+    },
+    StateStoreDataKey, StateStoreDataValue,
+};
 use std::{ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 
 use super::{
-    common::{OptionBuffer, OptionString, ThumbnailSize},
+    common::{clearify_error, OptionBuffer, OptionString, ThumbnailSize},
     RUNTIME,
 };
 use crate::{ActerUserAppSettings, Client};
 
+mod three_pid;
+
+pub use three_pid::{ExternalId, ThreePidEmailTokenResponse};
+
 #[derive(Clone, Debug)]
 pub struct Account {
-    account: SdkAccount,
+    pub(crate) account: SdkAccount,
     client: Client,
     user_id: OwnedUserId,
 }
@@ -58,7 +69,7 @@ impl Account {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.set_displayname.enabled {
-                    bail!("This client cannot change display name");
+                    bail!("Server doesn’t support change of display name");
                 }
                 let name = if new_name.is_empty() {
                     None
@@ -77,7 +88,7 @@ impl Account {
         RUNTIME
             .spawn(async move {
                 let source = match account.get_cached_avatar_url().await? {
-                    Some(url) => MediaSource::Plain(url.into()),
+                    Some(url) => MediaSource::Plain(url),
                     None => match account.get_avatar_url().await? {
                         Some(e) => MediaSource::Plain(e),
                         None => return Ok(OptionBuffer::new(None)),
@@ -96,16 +107,26 @@ impl Account {
         let client = self.client.deref().clone();
         let account = self.account.clone();
         let path = PathBuf::from(uri);
+        let user_id = self.user_id();
         RUNTIME
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.set_avatar_url.enabled {
-                    bail!("This client cannot change avatar url");
+                    bail!("Server doesn’t support change of avatar url");
                 }
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().context("don't know mime type")?;
+                let content_type = guess.first().context("don’t know mime type")?;
                 let data = std::fs::read(path)?;
                 let new_url = account.upload_avatar(&content_type, data).await?;
+
+                // set the internal cached key so the next fetch properly updates this
+                client
+                    .store()
+                    .set_kv_data(
+                        StateStoreDataKey::UserAvatarUrl(&user_id),
+                        StateStoreDataValue::UserAvatarUrl(new_url.clone()),
+                    )
+                    .await;
                 Ok(new_url)
             })
             .await?
@@ -146,6 +167,57 @@ impl Account {
                     .context("Ignored users not found")?
                     .deserialize()?;
                 Ok(content.ignored_users.keys().cloned().collect())
+            })
+            .await?
+    }
+
+    pub async fn change_password(&self, old_val: String, new_val: String) -> Result<bool> {
+        let client = self.client.deref().clone();
+        let account = self.account.clone();
+        let user_id = self.user_id.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let capabilities = client.get_capabilities().await?;
+                if !capabilities.change_password.enabled {
+                    bail!("Server doesn’t support password change");
+                }
+                if let Err(e) = account.change_password(&new_val, None).await {
+                    let Some(inf) = e.as_uiaa_response() else {
+                        return Err(clearify_error(e));
+                    };
+                    let pswd = assign!(Password::new(user_id.into(), old_val), {
+                        session: inf.session.clone(),
+                    });
+                    let auth_data = AuthData::Password(pswd);
+                    account
+                        .change_password(&new_val, Some(auth_data))
+                        .await
+                        .map_err(clearify_error)?;
+                }
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn deactivate(&self, password: String) -> Result<bool> {
+        let account = self.account.clone();
+        let user_id = self.user_id.clone();
+
+        RUNTIME
+            .spawn(async move {
+                if let Err(e) = account.deactivate(None, None, false).await {
+                    let Some(inf) = e.as_uiaa_response() else {
+                        return Err(clearify_error(e));
+                    };
+                    let pswd = assign!(Password::new(user_id.into(), password), {
+                        session: inf.session.clone(),
+                    });
+                    let auth_data = AuthData::Password(pswd);
+                    account.deactivate(None, Some(auth_data), false).await?;
+                    // FIXME: remove local data, too!
+                }
+                Ok(true)
             })
             .await?
     }

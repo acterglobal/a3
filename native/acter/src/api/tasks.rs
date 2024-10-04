@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-        Color,
+        Color, Display,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, TaskStats},
     statics::KEYS,
@@ -10,8 +10,10 @@ use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{EventId, OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
+use matrix_sdk_base::ruma::{
+    events::{room::message::TextMessageEventContent, MessageLikeEventType},
+    EventId, OwnedEventId, OwnedRoomId, OwnedUserId,
+};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -185,7 +187,7 @@ impl Space {
                     bail!("Not a Tasklist model: {key}")
                 };
                 if room_id != content.room_id() {
-                    bail!("This task doesn't belong to this room");
+                    bail!("This task doesn’t belong to this room");
                 }
 
                 Ok(TaskList {
@@ -223,6 +225,12 @@ impl TaskListDraft {
         self
     }
 
+    pub fn description_html(&mut self, body: String, html_body: String) -> &mut Self {
+        let desc = TextMessageEventContent::html(body, html_body);
+        self.content.description(Some(desc));
+        self
+    }
+
     pub fn unset_description(&mut self) -> &mut Self {
         self.content.description(None);
         self
@@ -230,16 +238,6 @@ impl TaskListDraft {
 
     pub fn sort_order(&mut self, sort_order: u32) -> &mut Self {
         self.content.sort_order(sort_order);
-        self
-    }
-
-    pub fn color(&mut self, color: Color) -> &mut Self {
-        self.content.color(Some(color));
-        self
-    }
-
-    pub fn unset_color(&mut self) -> &mut Self {
-        self.content.color(None);
         self
     }
 
@@ -262,6 +260,16 @@ impl TaskListDraft {
 
     pub fn unset_categories(&mut self) -> &mut Self {
         self.content.categories(vec![]);
+        self
+    }
+
+    pub fn display(&mut self, display: Box<Display>) -> &mut Self {
+        self.content.display(Some(*display));
+        self
+    }
+
+    pub fn unset_display(&mut self) -> &mut Self {
+        self.content.display(None);
         self
     }
 
@@ -320,8 +328,8 @@ impl TaskList {
         self.content.sort_order
     }
 
-    pub fn color(&self) -> Option<u32> {
-        self.content.color
+    pub fn display(&self) -> Option<Display> {
+        self.content.display.clone()
     }
 
     pub fn event_id_str(&self) -> String {
@@ -333,7 +341,7 @@ impl TaskList {
     }
 
     pub fn keywords(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
@@ -344,7 +352,7 @@ impl TaskList {
     }
 
     pub fn categories(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
@@ -526,6 +534,10 @@ impl Task {
         self.content.event_id().to_string()
     }
 
+    pub fn display(&self) -> Option<Display> {
+        self.content.display.clone()
+    }
+
     pub fn task_list_id_str(&self) -> String {
         self.content.task_list_id.event_id.to_string()
     }
@@ -536,10 +548,6 @@ impl Task {
 
     pub fn sort_order(&self) -> u32 {
         self.content.sort_order
-    }
-
-    pub fn color(&self) -> Option<u32> {
-        self.content.color
     }
 
     pub fn room_id_str(&self) -> String {
@@ -586,7 +594,7 @@ impl Task {
     }
 
     pub fn keywords(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
@@ -597,7 +605,7 @@ impl Task {
     }
 
     pub fn categories(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
@@ -751,6 +759,12 @@ impl TaskDraft {
         self
     }
 
+    pub fn description_html(&mut self, body: String, html_body: String) -> &mut Self {
+        let desc = TextMessageEventContent::html(body, html_body);
+        self.content.description(Some(desc));
+        self
+    }
+
     pub fn unset_description(&mut self) -> &mut Self {
         self.content.description(None);
         self
@@ -758,16 +772,6 @@ impl TaskDraft {
 
     pub fn sort_order(&mut self, sort_order: u32) -> &mut Self {
         self.content.sort_order(sort_order);
-        self
-    }
-
-    pub fn color(&mut self, color: Color) -> &mut Self {
-        self.content.color(Some(color));
-        self
-    }
-
-    pub fn unset_color(&mut self) -> &mut Self {
-        self.content.color(None);
         self
     }
 
@@ -816,7 +820,7 @@ impl TaskDraft {
 
     pub fn progress_percent(&mut self, mut progress_percent: u8) -> &mut Self {
         if progress_percent > 100 {
-            // ensure the builder won't kill us later
+            // ensure the builder won’t kill us later
             progress_percent = 100;
         }
         self.content.progress_percent(Some(progress_percent));
@@ -847,6 +851,16 @@ impl TaskDraft {
 
     pub fn unset_categories(&mut self) -> &mut Self {
         self.content.categories(vec![]);
+        self
+    }
+
+    pub fn display(&mut self, display: Box<Display>) -> &mut Self {
+        self.content.display(Some(*display));
+        self
+    }
+
+    pub fn unset_display(&mut self) -> &mut Self {
+        self.content.display(None);
         self
     }
 
@@ -894,6 +908,12 @@ impl TaskUpdateBuilder {
         self
     }
 
+    pub fn description_html(&mut self, body: String, html_body: String) -> &mut Self {
+        let desc = TextMessageEventContent::html(body, html_body);
+        self.content.description(Some(Some(desc)));
+        self
+    }
+
     pub fn unset_description(&mut self) -> &mut Self {
         self.content.description(Some(None));
         self
@@ -915,18 +935,18 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn color(&mut self, color: u32) -> &mut Self {
-        self.content.color(Some(Some(color)));
+    pub fn display(&mut self, display: Box<Display>) -> &mut Self {
+        self.content.display(Some(Some(*display)));
         self
     }
 
-    pub fn unset_color(&mut self) -> &mut Self {
-        self.content.color(Some(None));
+    pub fn unset_display(&mut self) -> &mut Self {
+        self.content.display(Some(None));
         self
     }
 
-    pub fn unset_color_update(&mut self) -> &mut Self {
-        self.content.color(None::<Option<Color>>);
+    pub fn unset_display_update(&mut self) -> &mut Self {
+        self.content.display(None::<Option<Display>>);
         self
     }
 
@@ -1030,7 +1050,7 @@ impl TaskUpdateBuilder {
 
     pub fn progress_percent(&mut self, mut progress_percent: u8) -> &mut Self {
         if progress_percent > 100 {
-            // ensure the builder won't kill us later
+            // ensure the builder won’t kill us later
             progress_percent = 100;
         }
         self.content.progress_percent(Some(Some(progress_percent)));
@@ -1091,6 +1111,12 @@ impl TaskListUpdateBuilder {
         self
     }
 
+    pub fn description_html(&mut self, body: String, html_body: String) -> &mut Self {
+        let desc = TextMessageEventContent::html(body, html_body);
+        self.content.description(Some(desc));
+        self
+    }
+
     pub fn unset_description(&mut self) -> &mut Self {
         self.content.description(Some(None));
         self
@@ -1104,21 +1130,6 @@ impl TaskListUpdateBuilder {
 
     pub fn sort_order(&mut self, sort_order: u32) -> &mut Self {
         self.content.sort_order(Some(sort_order));
-        self
-    }
-
-    pub fn color(&mut self, color: Color) -> &mut Self {
-        self.content.color(Some(color));
-        self
-    }
-
-    pub fn unset_color(&mut self) -> &mut Self {
-        self.content.color(Some(None));
-        self
-    }
-
-    pub fn unset_color_update(&mut self) -> &mut Self {
-        self.content.color(None::<Option<Color>>);
         self
     }
 
@@ -1151,6 +1162,21 @@ impl TaskListUpdateBuilder {
 
     pub fn unset_categories_update(&mut self) -> &mut Self {
         self.content.categories(None);
+        self
+    }
+
+    pub fn display(&mut self, display: Box<Display>) -> &mut Self {
+        self.content.display(Some(Some(*display)));
+        self
+    }
+
+    pub fn unset_display(&mut self) -> &mut Self {
+        self.content.display(Some(None));
+        self
+    }
+
+    pub fn unset_display_update(&mut self) -> &mut Self {
+        self.content.display(None::<Option<Display>>);
         self
     }
 

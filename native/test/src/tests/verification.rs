@@ -63,16 +63,16 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     info!("bob device id: {}", bob_device_id);
     // we have two devices logged in
 
-    // sync both up to ensure they've seen the other device
-    let mut alice_device_new_rx = alice.device_new_event_rx().unwrap();
+    // sync both up to ensure they’ve seen the other device
+    let mut alice_device_rx = alice.device_event_rx().unwrap();
     let syncer = alice.start_sync();
     let mut first_synced = syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
+    while first_synced.next().await != Some(true) {} // let’s wait for it to have synced
     let mut alice_rx = alice.verification_event_rx().unwrap();
 
     let syncer = bob.start_sync();
     let mut first_synced = syncer.first_synced_rx();
-    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
+    while first_synced.next().await != Some(true) {} // let’s wait for it to have synced
     let mut bob_rx = bob.verification_event_rx().unwrap();
 
     // according to alice bob is not verfied:
@@ -82,17 +82,17 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     assert!(!bob.verified_device(alice_device_id.to_string()).await?);
 
     // ----------------------------------------------------------------------------
-    // On Alice's device:
+    // On Alice’s device:
 
     // Alice gets notified that new device (Bob) was logged in
     loop {
-        if let Ok(Some(event)) = alice_device_new_rx.try_next() {
+        if let Ok(Some(_event)) = alice_device_rx.try_next() {
             if let Ok(_devices) = alice.device_records(false).await {
                 // Alice sends a verification request with her desired methods to Bob
-                event
-                    .request_verification_to_device_with_methods(
+                alice
+                    .request_verification_with_method(
                         bob_device_id.to_string(),
-                        &mut vec!["m.sas.v1".to_string()],
+                        "m.sas.v1".to_string(),
                     )
                     .await?;
                 break;
@@ -101,21 +101,21 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     }
 
     // ----------------------------------------------------------------------------
-    // On Bob's device:
+    // On Bob’s device:
 
     // Bob receives the request event from Alice
     let event = wait_for_verification_event(&mut bob_rx, "m.key.verification.request");
 
     // Bob accepts the request, sending a Ready request
     event
-        .accept_verification_request_with_methods(&mut vec!["m.sas.v1".to_string()])
+        .accept_verification_request_with_method("m.sas.v1".to_string())
         .await?;
     // And also immediately sends a start request
     let started = event.start_sas_verification().await?;
     assert!(started, "bob failed to start sas");
 
     // ----------------------------------------------------------------------------
-    // On Alice's device:
+    // On Alice’s device:
 
     // Alice receives the ready event from Bob
     let event = wait_for_verification_event(&mut alice_rx, "m.key.verification.ready");
@@ -129,7 +129,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     wait_for_verification_event(&mut alice_rx, "m.key.verification.start");
 
     // ----------------------------------------------------------------------------
-    // On Bob's device:
+    // On Bob’s device:
 
     // Bob receives the start event from Alice
     let event = wait_for_verification_event(&mut bob_rx, "m.key.verification.start");
@@ -139,7 +139,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     assert!(accepted, "bob failed to accept sas verification");
 
     // ----------------------------------------------------------------------------
-    // On Alice's device:
+    // On Alice’s device:
 
     // Alice receives the accept event from Bob
     let event = wait_for_verification_event(&mut alice_rx, "m.key.verification.accept");
@@ -148,7 +148,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     event.send_verification_key().await?;
 
     // ----------------------------------------------------------------------------
-    // On Bob's device:
+    // On Bob’s device:
 
     // Bob receives the key event from Alice
     let bob_event = wait_for_verification_event(&mut bob_rx, "m.key.verification.key");
@@ -161,7 +161,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     bob_event.send_verification_key().await?;
 
     // ----------------------------------------------------------------------------
-    // On Alice's device:
+    // On Alice’s device:
 
     // Alice receives the key event from Bob
     let alice_event = wait_for_verification_event(&mut alice_rx, "m.key.verification.key");
@@ -171,37 +171,37 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     info!("emojis from bob: {:?}", emojis_from_bob);
 
     // ----------------------------------------------------------------------------
-    // On Bob's device:
+    // On Bob’s device:
 
     // Bob first confirms that the emojis match and sends the mac event...
     bob_event.confirm_sas_verification().await?;
 
     // ----------------------------------------------------------------------------
-    // On Alice's device:
+    // On Alice’s device:
 
     // Alice first confirms that the emojis match and sends the mac event...
     alice_event.confirm_sas_verification().await?;
 
     // ----------------------------------------------------------------------------
-    // On Bob's device:
+    // On Bob’s device:
 
     // Bob receives the mac event from Alice
     wait_for_verification_event(&mut bob_rx, "m.key.verification.mac");
 
     // ----------------------------------------------------------------------------
-    // On Alice's device:
+    // On Alice’s device:
 
     // Alice receives the mac event from Bob
     wait_for_verification_event(&mut alice_rx, "m.key.verification.mac");
 
     // ----------------------------------------------------------------------------
-    // On Bob's device:
+    // On Bob’s device:
 
     // Bob receives the done event from Alice
     wait_for_verification_event(&mut bob_rx, "m.key.verification.done");
 
     // ----------------------------------------------------------------------------
-    // On Alice's device:
+    // On Alice’s device:
 
     // Alice receives the done event from Bob
     wait_for_verification_event(&mut alice_rx, "m.key.verification.done");

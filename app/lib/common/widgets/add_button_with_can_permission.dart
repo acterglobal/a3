@@ -1,37 +1,37 @@
-import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:atlas_icons/atlas_icons.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddButtonWithCanPermission extends ConsumerWidget {
-  final String canString;
-  final String roomId;
   final VoidCallback onPressed;
+  final String? canString;
 
   const AddButtonWithCanPermission({
     super.key,
-    required this.canString,
-    required this.roomId,
     required this.onPressed,
+    this.canString,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final membership = ref.watch(roomMembershipProvider(roomId));
-    bool canAdd = membership.requireValue!.canString(canString);
+    if (canString == null) return _buildIconButton(context);
+    final canDoLoader = ref.watch(hasSpaceWithPermissionProvider(canString!));
+    final canAdd = canDoLoader.valueOrNull ?? false;
+    return canAdd ? _buildIconButton(context) : const SizedBox.shrink();
+  }
 
-    return Visibility(
-      visible: canAdd,
-      child: IconButton(
-        icon: Icon(
-          Atlas.plus_circle_thin,
-          color: Theme.of(context).colorScheme.neutral5,
+  Widget _buildIconButton(BuildContext context) {
+    return IconButton(
+      icon: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+          borderRadius: const BorderRadius.all(Radius.circular(100)),
         ),
-        iconSize: 28,
-        color: Theme.of(context).colorScheme.surface,
-        onPressed: onPressed,
+        child: const Icon(Icons.add),
       ),
+      color: Theme.of(context).colorScheme.surface,
+      onPressed: onPressed,
     );
   }
 }

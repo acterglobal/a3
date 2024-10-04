@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Client, NewsEntry;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -15,18 +16,24 @@ class AsyncNewsListNotifier extends AutoDisposeAsyncNotifier<List<NewsEntry>> {
   Future<List<NewsEntry>> build() async {
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream('news'); // keep it resident in memory
-    _poller = _listener.listen((e) async {
-      _log.info('new subscribe received');
-      state = await AsyncValue.guard(_fetchNews);
-    });
+    _poller = _listener.listen(
+      (data) async {
+        _log.info('news subscribe received');
+        state = await AsyncValue.guard(() async => await _fetchNews(client));
+      },
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('stream ended');
+      },
+    );
     ref.onDispose(() => _poller.cancel());
-    return await _fetchNews();
+    return await _fetchNews(client);
   }
 
-  Future<List<NewsEntry>> _fetchNews() async {
+  Future<List<NewsEntry>> _fetchNews(Client client) async {
     _log.info('refreshing news');
-    final client = ref.read(alwaysClientProvider);
-    final entries = (await client.latestNewsEntries(25)).toList();
-    return entries;
+    return (await client.latestNewsEntries(25)).toList();
   }
 }

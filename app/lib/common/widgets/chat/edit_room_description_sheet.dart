@@ -1,13 +1,13 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::chat::room_description_edit_sheet');
+final _log = Logger('a3::common::chat::room_description');
 
 void showEditRoomDescriptionBottomSheet({
   required BuildContext context,
@@ -76,7 +76,7 @@ class _EditRoomDescriptionSheetState
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 OutlinedButton(
-                  onPressed: () => context.pop(),
+                  onPressed: () => Navigator.pop(context),
                   child: Text(L10n.of(context).cancel),
                 ),
                 const SizedBox(width: 20),
@@ -95,24 +95,30 @@ class _EditRoomDescriptionSheetState
   Future<void> _editDescription(BuildContext context, WidgetRef ref) async {
     final newDesc = _descriptionController.text.trim();
     if (newDesc == widget.description.trim()) {
-      context.pop();
+      Navigator.pop(context);
       return; // no changes to submit
     }
 
     try {
       EasyLoading.show(status: L10n.of(context).updateDescription);
       final convo = await ref.read(chatProvider(widget.roomId).future);
+      if (convo == null) {
+        throw RoomNotFound();
+      }
       await convo.setTopic(_descriptionController.text.trim());
       EasyLoading.dismiss();
       if (!context.mounted) return;
-      context.pop();
-    } catch (e, st) {
-      _log.severe('Failed to edit chat description', e, st);
+      Navigator.pop(context);
+    } catch (e, s) {
+      _log.severe('Failed to edit chat description', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showError(L10n.of(context).updateDescriptionFailed(e));
+      EasyLoading.showError(
+        L10n.of(context).updateDescriptionFailed(e),
+        duration: const Duration(seconds: 3),
+      );
     }
   }
 }

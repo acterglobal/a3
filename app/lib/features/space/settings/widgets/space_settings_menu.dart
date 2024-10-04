@@ -1,94 +1,77 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 const defaultSpaceSettingsMenuKey = Key('space-settings-menu');
 
 class SpaceSettingsMenu extends ConsumerWidget {
   static const appsMenu = Key('space-settings-apps');
+
+  final bool isFullPage;
   final String spaceId;
 
   const SpaceSettingsMenu({
     required this.spaceId,
+    this.isFullPage = false,
     super.key = defaultSpaceSettingsMenuKey,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final size = MediaQuery.of(context).size;
-    final spaceProfile = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
-    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
+    final spaceAvatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
+    final parentBadges =
+        ref.watch(parentAvatarInfosProvider(spaceId)).valueOrNull;
+    final curNotifStatus =
+        ref.watch(roomNotificationStatusProvider(spaceId)).valueOrNull;
 
-    final notificationStatus =
-        ref.watch(roomNotificationStatusProvider(spaceId));
-    final curNotifStatus = notificationStatus.valueOrNull;
+    final spaceName = spaceAvatarInfo.displayName ?? spaceId;
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: isFullPage,
+        leading: !isFullPage
+            ? InkWell(
+                child: const Icon(Icons.close),
+                onTap: () {
+                  context.pop();
+                  context.pop();
+                },
+              )
+            : null,
         title: FittedBox(
           fit: BoxFit.fitWidth,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              ...spaceProfile.when(
-                data: (spaceProfile) => [
-                  ActerAvatar(
-                    options: AvatarOptions(
-                      AvatarInfo(
-                        uniqueId: spaceId,
-                        displayName: spaceProfile.profile.displayName,
-                        avatar: spaceProfile.profile.getAvatarImage(),
-                      ),
-                      parentBadges: canonicalParent.valueOrNull != null
-                          ? [
-                              AvatarInfo(
-                                uniqueId: canonicalParent.valueOrNull!.space
-                                    .getRoomIdStr(),
-                                displayName: canonicalParent
-                                    .valueOrNull!.profile.displayName,
-                                avatar: canonicalParent.valueOrNull!.profile
-                                    .getAvatarImage(),
-                              ),
-                            ]
-                          : [],
-                      badgesSize: 18,
-                    ),
+              ActerAvatar(
+                options: AvatarOptions(
+                  AvatarInfo(
+                    uniqueId: spaceId,
+                    displayName: spaceAvatarInfo.displayName,
+                    avatar: spaceAvatarInfo.avatar,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15),
-                    child: Text(spaceProfile.profile.displayName ?? spaceId),
-                  ),
-                ],
-                error: (e, s) => [
-                  Text(L10n.of(context).loadingFailed(e)),
-                ],
-                loading: () => [
-                  ActerAvatar(
-                    options: AvatarOptions(
-                      AvatarInfo(
-                        uniqueId: spaceId,
-                        tooltip: TooltipStyle.None,
-                      ),
-                      size: 35,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15),
-                    child: Text(spaceId),
-                  ),
-                ],
+                  parentBadges: parentBadges,
+                  badgesSize: 18,
+                ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 15),
-                child: Text(L10n.of(context).settings),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(L10n.of(context).settings),
+                  Text(
+                    '($spaceName)',
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                ],
               ),
             ],
           ),
@@ -112,15 +95,17 @@ class SpaceSettingsMenu extends ConsumerWidget {
                         ? const Icon(Atlas.bell_dash_bold, size: 18)
                         : const Icon(Atlas.bell_thin, size: 18),
                     onPressed: (context) {
-                      isDesktop || size.width > 770
-                          ? context.goNamed(
-                              Routes.spaceSettingsNotifications.name,
-                              pathParameters: {'spaceId': spaceId},
-                            )
-                          : context.pushNamed(
-                              Routes.spaceSettingsNotifications.name,
-                              pathParameters: {'spaceId': spaceId},
-                            );
+                      if (!isFullPage && context.isLargeScreen) {
+                        context.pushReplacementNamed(
+                          Routes.spaceSettingsNotifications.name,
+                          pathParameters: {'spaceId': spaceId},
+                        );
+                      } else {
+                        context.pushNamed(
+                          Routes.spaceSettingsNotifications.name,
+                          pathParameters: {'spaceId': spaceId},
+                        );
+                      }
                     },
                   ),
                 ],
@@ -135,15 +120,17 @@ class SpaceSettingsMenu extends ConsumerWidget {
                     ),
                     leading: const Icon(Atlas.lab_appliance_thin),
                     onPressed: (context) {
-                      isDesktop || size.width > 770
-                          ? context.goNamed(
-                              Routes.spaceSettingsVisibility.name,
-                              pathParameters: {'spaceId': spaceId},
-                            )
-                          : context.pushNamed(
-                              Routes.spaceSettingsVisibility.name,
-                              pathParameters: {'spaceId': spaceId},
-                            );
+                      if (!isFullPage && context.isLargeScreen) {
+                        context.pushReplacementNamed(
+                          Routes.spaceSettingsVisibility.name,
+                          pathParameters: {'spaceId': spaceId},
+                        );
+                      } else {
+                        context.pushNamed(
+                          Routes.spaceSettingsVisibility.name,
+                          pathParameters: {'spaceId': spaceId},
+                        );
+                      }
                     },
                   ),
                   SettingsTile(
@@ -154,15 +141,17 @@ class SpaceSettingsMenu extends ConsumerWidget {
                     ),
                     leading: const Icon(Atlas.info_circle_thin),
                     onPressed: (context) {
-                      isDesktop || size.width > 770
-                          ? context.goNamed(
-                              Routes.spaceSettingsApps.name,
-                              pathParameters: {'spaceId': spaceId},
-                            )
-                          : context.pushNamed(
-                              Routes.spaceSettingsApps.name,
-                              pathParameters: {'spaceId': spaceId},
-                            );
+                      if (!isFullPage && context.isLargeScreen) {
+                        context.pushReplacementNamed(
+                          Routes.spaceSettingsApps.name,
+                          pathParameters: {'spaceId': spaceId},
+                        );
+                      } else {
+                        context.pushNamed(
+                          Routes.spaceSettingsApps.name,
+                          pathParameters: {'spaceId': spaceId},
+                        );
+                      }
                     },
                   ),
                 ],

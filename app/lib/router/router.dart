@@ -1,7 +1,7 @@
 import 'package:acter/common/pages/not_found.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/home/pages/home_shell.dart';
+import 'package:acter/config/app_shell.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/router/general_router.dart';
 import 'package:acter/router/shell_routers/activities_shell_router.dart';
@@ -14,6 +14,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::router');
 
 Future<String?> authGuardRedirect(
   BuildContext context,
@@ -31,14 +34,11 @@ Future<String?> authGuardRedirect(
       await acterSdk.newGuestClient(setAsCurrent: true);
       return null;
     }
-  } catch (error, trace) {
-    // ignore: deprecated_member_use, avoid_print
-    print('Fatal error: $error');
-    // ignore: avoid_print
-    print('Stack: $trace');
+  } catch (e, s) {
+    _log.severe('AuthGuard Fatal error', e, s);
     return state.namedLocation(
       Routes.fatalFail.name,
-      queryParameters: {'error': error.toString(), 'trace': trace.toString()},
+      queryParameters: {'error': e.toString(), 'trace': s.toString()},
     );
   }
 
@@ -72,21 +72,29 @@ Future<String?> forwardRedirect(
       final ref = ProviderScope.containerOf(context);
       // ensure we have selected the right client
       ref.invalidate(clientProvider);
-    } catch (error, trace) {
-      // ignore: deprecated_member_use, avoid_print
-      print('Client not found error: $error');
-      // ignore: avoid_print
-      print('Stack: $trace');
+    } catch (e, s) {
+      _log.severe('Client not found', e, s);
       return null;
     }
     final roomId = state.uri.queryParameters['roomId'];
-    if (await client.hasConvo(roomId!)) {
-      // this is a chat
-      return state.namedLocation(
-        Routes.chatroom.name,
-        pathParameters: {'roomId': roomId},
+    if (roomId == null) {
+      _log.severe(
+        'Received forward without roomId failed: ${state.uri.queryParameters}.',
       );
-    } else {
+      return state.namedLocation(Routes.main.name);
+    }
+
+    final room = await client.room(roomId);
+    if (!room.isJoined()) {
+      // we haven't joined yet or have been kicked
+      // either way, we are to be shown the thing on the activities page
+      return state.namedLocation(
+        Routes.activities.name,
+        queryParameters: state.uri.queryParameters,
+      );
+    }
+
+    if (room.isSpace()) {
       // final eventId = state.uri.queryParameters['eventId'];
       // with the event ID or further information we could figure out the specific action
       return state.namedLocation(
@@ -94,14 +102,16 @@ Future<String?> forwardRedirect(
         pathParameters: {'spaceId': roomId},
       );
     }
-  } catch (error, trace) {
-    // ignore: deprecated_member_use, avoid_print
-    print('Fatal error: $error');
-    // ignore: avoid_print
-    print('Stack: $trace');
+    // so we assume this is a chat
+    return state.namedLocation(
+      Routes.chatroom.name,
+      pathParameters: {'roomId': roomId},
+    );
+  } catch (e, s) {
+    _log.severe('Forward fail', e, s);
     return state.namedLocation(
       Routes.fatalFail.name,
-      queryParameters: {'error': error.toString(), 'trace': trace.toString()},
+      queryParameters: {'error': e.toString(), 'trace': s.toString()},
     );
   }
 }
@@ -110,7 +120,7 @@ final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
 );
 
-final homeShellKey = GlobalKey(debugLabel: 'home-shell');
+final appShellKey = GlobalKey(debugLabel: 'home-shell');
 
 final GlobalKey<NavigatorState> homeTabNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'homeTabNavKey',
@@ -128,9 +138,36 @@ final GlobalKey<NavigatorState> searchTabNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'searchTabNavKey',
 );
 
-List<RouteBase> makeRoutes(Ref ref) {
-  return [
-    ...makeGeneralRoutes(),
+final shellBranches = [
+  StatefulShellBranch(
+    navigatorKey: homeTabNavKey,
+    routes: homeShellRoutes,
+  ),
+  StatefulShellBranch(
+    navigatorKey: updateTabNavKey,
+    routes: updateShellRoutes,
+  ),
+  StatefulShellBranch(
+    navigatorKey: chatTabNavKey,
+    routes: chatShellRoutes,
+  ),
+  StatefulShellBranch(
+    navigatorKey: activitiesTabNavKey,
+    routes: activitiesShellRoutes,
+  ),
+  StatefulShellBranch(
+    navigatorKey: searchTabNavKey,
+    routes: searchShellRoutes,
+  ),
+];
+
+final goRouter = GoRouter(
+  errorBuilder: (context, state) => NotFoundPage(routerState: state),
+  navigatorKey: rootNavKey,
+  initialLocation: Routes.main.route,
+  restorationScopeId: 'acter-routes',
+  routes: [
+    ...generalRoutes,
     StatefulShellRoute.indexedStack(
       parentNavigatorKey: rootNavKey,
       builder: (
@@ -138,44 +175,9 @@ List<RouteBase> makeRoutes(Ref ref) {
         GoRouterState state,
         StatefulNavigationShell navigationShell,
       ) {
-        return HomeShell(key: homeShellKey, navigationShell: navigationShell);
+        return AppShell(key: appShellKey, navigationShell: navigationShell);
       },
-      branches: shellBranches(ref),
+      branches: shellBranches,
     ),
-  ];
-}
-
-List<StatefulShellBranch> shellBranches(Ref ref) {
-  return [
-    StatefulShellBranch(
-      navigatorKey: homeTabNavKey,
-      routes: makeHomeShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: updateTabNavKey,
-      routes: makeUpdateShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: chatTabNavKey,
-      routes: makeChatShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: activitiesTabNavKey,
-      routes: makeActivitiesShellRoutes(ref),
-    ),
-    StatefulShellBranch(
-      navigatorKey: searchTabNavKey,
-      routes: makeSearchShellRoutes(ref),
-    ),
-  ];
-}
-
-GoRouter makeRouter(Ref ref) {
-  return GoRouter(
-    errorBuilder: (context, state) => NotFoundPage(routerState: state),
-    navigatorKey: rootNavKey,
-    initialLocation: '/',
-    debugLogDiagnostics: true,
-    routes: makeRoutes(ref),
-  );
-}
+  ],
+);

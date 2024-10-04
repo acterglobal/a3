@@ -2,8 +2,7 @@ use chrono_tz::Tz;
 use core::result::Result as CoreResult;
 use derive_builder::Builder;
 use derive_getters::Getters;
-use ruma_events::room::message::TextMessageEventContent;
-use ruma_macros::EventContent;
+use matrix_sdk_base::ruma::events::{macros::EventContent, room::message::TextMessageEventContent};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use tracing::trace;
@@ -12,7 +11,7 @@ use tracing::trace;
 /// modeled after [JMAP Tasks](https://jmap.io/spec-tasks.html), extensions to
 /// [ietf rfc8984](https://www.rfc-editor.org/rfc/rfc8984.html#name-task).
 ///
-use super::{BelongsTo, Color, Date, Update, UtcDateTime};
+use super::{BelongsTo, Date, Display, Update, UtcDateTime};
 use crate::{util::deserialize_some, Result as ActerResult};
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -65,7 +64,7 @@ pub struct TaskListEventContent {
 
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub color: Option<Color>,
+    pub display: Option<Display>,
 
     #[builder(default)]
     #[serde(default)]
@@ -96,6 +95,7 @@ pub struct TaskListUpdateEventContent {
     #[serde(rename = "m.relates_to")]
     pub task_list: Update,
 
+    #[builder(default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
@@ -125,7 +125,7 @@ pub struct TaskListUpdateEventContent {
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
-    pub color: Option<Option<Color>>,
+    pub display: Option<Option<Display>>,
 
     #[builder(default)]
     #[serde(
@@ -176,8 +176,8 @@ impl TaskListUpdateEventContent {
             task_list.description.clone_from(description);
             updated = true;
         }
-        if let Some(color) = &self.color {
-            task_list.color = *color;
+        if let Some(display) = &self.display {
+            task_list.display.clone_from(display);
             updated = true;
         }
         if let Some(sort_order) = &self.sort_order {
@@ -260,10 +260,10 @@ pub struct TaskEventContent {
     #[serde(default, skip_serializing_if = "Priority::is_undefinied")]
     pub priority: Priority,
 
-    /// Color this task
+    /// Display this task
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub color: Option<Color>,
+    pub display: Option<Display>,
 
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
     #[builder(setter(into), default)]
@@ -279,7 +279,7 @@ impl TaskBuilder {
     fn validate(&self) -> CoreResult<(), String> {
         if let Some(Some(percent)) = &self.progress_percent {
             if *percent > 100 {
-                return Err("Progress percent can't be higher than 100".to_string());
+                return Err("Progress percent can’t be higher than 100".to_string());
             }
         }
         Ok(())
@@ -372,14 +372,14 @@ pub struct TaskUpdateEventContent {
     )]
     pub priority: Option<Priority>,
 
-    /// Color this task
+    /// Display this task
     #[builder(default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
-    pub color: Option<Option<Color>>,
+    pub display: Option<Option<Display>>,
 
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
     #[builder(default)]
@@ -434,8 +434,8 @@ impl TaskUpdateEventContent {
             task.priority = priority.clone();
             updated = true;
         }
-        if let Some(color) = &self.color {
-            task.color = *color;
+        if let Some(display) = &self.display {
+            task.display.clone_from(display);
             updated = true;
         }
         if let Some(keywords) = &self.keywords {

@@ -1,7 +1,8 @@
 import 'dart:io';
+
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::onboarding::upload_avatar');
 
 class UploadAvatarPage extends ConsumerWidget {
   static const selectUserAvatar = Key('reg-select-user-avtar');
@@ -22,7 +26,6 @@ class UploadAvatarPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       body: _buildBody(context, ref),
     );
   }
@@ -54,17 +57,14 @@ class UploadAvatarPage extends ConsumerWidget {
     return Text(
       L10n.of(context).avatarAddTitle,
       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: greenColor,
+            color: Theme.of(context).colorScheme.secondary,
           ),
       textAlign: TextAlign.center,
     );
   }
 
-  Future<void> pickAvtar(BuildContext context, WidgetRef ref) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      dialogTitle: L10n.of(context).uploadAvatar,
-      type: FileType.image,
-    );
+  Future<void> onSelectAvatar(BuildContext context, WidgetRef ref) async {
+    FilePickerResult? result = await pickAvatar(context: context);
     if (result != null && result.files.isNotEmpty) {
       setUserAvatar(result.files.first);
     }
@@ -77,7 +77,7 @@ class UploadAvatarPage extends ConsumerWidget {
   Widget _buildAvatarUI(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       key: UploadAvatarPage.selectUserAvatar,
-      onTap: () => pickAvtar(context, ref),
+      onTap: () => onSelectAvatar(context, ref),
       child: Center(
         child: Container(
           height: 150,
@@ -132,7 +132,7 @@ class UploadAvatarPage extends ConsumerWidget {
 
   Future<void> uploadAvatar(BuildContext context, WidgetRef ref) async {
     try {
-      final accountProfile = await ref.watch(accountProfileProvider.future);
+      final account = ref.watch(accountProvider);
       if (selectedUserAvatar.value == null ||
           selectedUserAvatar.value?.path == null) {
         if (context.mounted) {
@@ -143,16 +143,18 @@ class UploadAvatarPage extends ConsumerWidget {
       if (context.mounted) {
         EasyLoading.show(status: L10n.of(context).avatarUploading);
       }
-      await accountProfile.account
-          .uploadAvatar(selectedUserAvatar.value!.path!);
-      ref.invalidate(accountProfileProvider);
+      await account.uploadAvatar(selectedUserAvatar.value!.path!);
+      ref.invalidate(accountProvider);
+      EasyLoading.dismiss(); // close loading
       if (context.mounted) context.goNamed(Routes.main.name);
-      // close loading
-      EasyLoading.dismiss();
-    } catch (error) {
-      if (!context.mounted) return;
+    } catch (e, s) {
+      _log.severe('Failed to upload avatar', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        L10n.of(context).avatarUploadFailed(error),
+        L10n.of(context).avatarUploadFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -172,7 +174,7 @@ class UploadAvatarPage extends ConsumerWidget {
   Widget _buildSkipActionButton(BuildContext context) {
     return OutlinedButton(
       key: UploadAvatarPage.skipBtn,
-      onPressed: () => context.goNamed(Routes.main.name),
+      onPressed: () => context.goNamed(Routes.analyticsOptIn.name),
       child: Text(
         L10n.of(context).skip,
         style: Theme.of(context).textTheme.bodyMedium,

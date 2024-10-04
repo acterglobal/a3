@@ -1,16 +1,21 @@
 use acter_core::events::{
     attachments::{AttachmentContent, FallbackAttachmentContent},
     rsvp::RsvpStatus,
-    ColorizeBuilder, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder,
+    ColorizeBuilder, Display, DisplayBuilder, ObjRefBuilder, Position, RefDetails,
+    RefDetailsBuilder,
 };
 use anyhow::{Context, Result};
 use core::time::Duration;
-use matrix_sdk::media::{MediaFormat, MediaThumbnailSize};
-use ruma::UInt;
-use ruma_client_api::media::get_content_thumbnail;
-use ruma_common::{EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedMxcUri, OwnedUserId};
-use ruma_events::{
-    room::{
+use matrix_sdk::{
+    media::{MediaFormat, MediaThumbnailSettings, MediaThumbnailSize},
+    ComposerDraft, ComposerDraftType, HttpError, RumaApiError,
+};
+use matrix_sdk_base::ruma::{
+    api::{
+        client::{error::ErrorBody, media::get_content_thumbnail},
+        error::FromHttpResponseError,
+    },
+    events::room::{
         message::{
             AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
             FileMessageEventContent, ImageMessageEventContent, LocationInfo,
@@ -19,10 +24,12 @@ use ruma_events::{
         },
         ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
     },
-    sticker::StickerEventContent,
+    EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedEventId, OwnedMxcUri, OwnedUserId,
+    UInt,
 };
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
+use tracing::error;
 
 use super::api::FfiBuffer;
 
@@ -73,6 +80,20 @@ impl OptionRsvpStatus {
 
     pub fn status_str(&self) -> Option<String> {
         self.status.as_ref().map(|x| x.to_string())
+    }
+}
+#[derive(Clone)]
+pub struct OptionComposeDraft {
+    draft: Option<ComposeDraft>,
+}
+
+impl OptionComposeDraft {
+    pub(crate) fn new(draft: Option<ComposeDraft>) -> Self {
+        OptionComposeDraft { draft }
+    }
+
+    pub fn draft(&self) -> Option<ComposeDraft> {
+        self.draft.clone()
     }
 }
 
@@ -144,6 +165,10 @@ pub enum MsgContent {
         body: String,
         geo_uri: String,
         info: Option<LocationInfo>,
+    },
+    Link {
+        name: Option<String>,
+        link: String,
     },
 }
 
@@ -226,16 +251,6 @@ impl From<&EmoteMessageEventContent> for MsgContent {
     }
 }
 
-impl From<&StickerEventContent> for MsgContent {
-    fn from(value: &StickerEventContent) -> Self {
-        MsgContent::Image {
-            body: value.body.clone(),
-            source: SdkMediaSource::Plain(value.url.clone()),
-            info: Some(value.info.clone()),
-        }
-    }
-}
-
 impl From<&AttachmentContent> for MsgContent {
     fn from(value: &AttachmentContent) -> Self {
         match value {
@@ -281,6 +296,10 @@ impl From<&AttachmentContent> for MsgContent {
                     info: content.info.as_ref().map(|x| *x.clone()),
                 }
             }
+            AttachmentContent::Link(content) => MsgContent::Link {
+                name: content.name.clone(),
+                link: content.link.clone(),
+            },
         }
     }
 }
@@ -309,6 +328,7 @@ impl MsgContent {
             MsgContent::Video { body, .. } => body.clone(),
             MsgContent::File { body, .. } => body.clone(),
             MsgContent::Location { body, .. } => body.clone(),
+            MsgContent::Link { link, .. } => link.clone(),
         }
     }
 
@@ -462,6 +482,72 @@ impl MsgContent {
             _ => None,
         }
     }
+
+    pub fn link(&self) -> Option<String> {
+        match self {
+            MsgContent::Link { link, .. } => Some(link.clone()),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct ComposeDraft {
+    inner: ComposerDraft,
+}
+
+impl ComposeDraft {
+    pub fn new(
+        plain_text: String,
+        html_text: Option<String>,
+        msg_type: String,
+        event_id: Option<OwnedEventId>,
+    ) -> Self {
+        let m_type = msg_type.clone();
+        let draft_type = match (m_type.as_str(), event_id) {
+            ("new", None) => ComposerDraftType::NewMessage,
+            ("edit", Some(id)) => ComposerDraftType::Edit { event_id: id },
+            ("reply", Some(id)) => ComposerDraftType::Reply { event_id: id },
+            _ => ComposerDraftType::NewMessage,
+        };
+
+        ComposeDraft {
+            inner: ComposerDraft {
+                plain_text,
+                html_text,
+                draft_type,
+            },
+        }
+    }
+
+    pub fn inner(&self) -> ComposerDraft {
+        self.inner.clone()
+    }
+
+    pub fn plain_text(&self) -> String {
+        self.inner.plain_text.clone()
+    }
+
+    pub fn html_text(&self) -> Option<String> {
+        self.inner.html_text.clone()
+    }
+
+    // only valid for reply and edit drafts
+    pub fn event_id(&self) -> Option<String> {
+        match &(self.inner.draft_type) {
+            ComposerDraftType::Edit { event_id } => Some(event_id.to_string()),
+            ComposerDraftType::Reply { event_id } => Some(event_id.to_string()),
+            ComposerDraftType::NewMessage => None,
+        }
+    }
+
+    pub fn draft_type(&self) -> String {
+        match &(self.inner.draft_type) {
+            ComposerDraftType::NewMessage => "new".to_string(),
+            ComposerDraftType::Edit { event_id } => "edit".to_string(),
+            ComposerDraftType::Reply { event_id } => "reply".to_string(),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -589,11 +675,11 @@ impl ThumbnailSize {
 
 impl From<Box<ThumbnailSize>> for MediaFormat {
     fn from(val: Box<ThumbnailSize>) -> Self {
-        MediaFormat::Thumbnail(MediaThumbnailSize {
-            method: get_content_thumbnail::v3::Method::Scale,
-            width: val.width,
-            height: val.height,
-        })
+        MediaFormat::Thumbnail(MediaThumbnailSettings::new(
+            get_content_thumbnail::v3::Method::Scale,
+            val.width,
+            val.height,
+        ))
     }
 }
 
@@ -670,7 +756,6 @@ pub fn new_link_ref_builder(title: String, uri: String) -> Result<RefDetailsBuil
     Ok(builder)
 }
 
-#[allow(clippy::boxed_local)]
 pub fn new_obj_ref_builder(
     position: Option<String>,
     reference: Box<RefDetails>,
@@ -681,4 +766,38 @@ pub fn new_obj_ref_builder(
     } else {
         Ok(ObjRefBuilder::new(None, *reference))
     }
+}
+
+pub fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
+    if let matrix_sdk::Error::Http(HttpError::Api(api_error)) = &err {
+        match api_error {
+            FromHttpResponseError::Deserialization(des) => {
+                return anyhow::anyhow!("Deserialization failed: {des}");
+            }
+            FromHttpResponseError::Server(inner) => match inner {
+                RumaApiError::ClientApi(error) => {
+                    if let ErrorBody::Standard { kind, message } = &error.body {
+                        return anyhow::anyhow!("{message} [{kind}]");
+                    }
+                    return anyhow::anyhow!("{0:?} [{1}]", error.body, error.status_code);
+                }
+                RumaApiError::Uiaa(uiaa_error) => {
+                    if let Some(err) = &uiaa_error.auth_error {
+                        return anyhow::anyhow!("{0} [{1}]", err.message, err.kind);
+                    }
+                    error!(?uiaa_error, "Other UIAA response");
+                    return anyhow::anyhow!("Unsupported User Interaction needed.");
+                }
+                RumaApiError::Other(err) => {
+                    return anyhow::anyhow!("{0:?} [{1}]", err.body, err.status_code);
+                }
+            },
+            _ => {}
+        }
+    }
+    err.into()
+}
+
+pub fn new_display_builder() -> DisplayBuilder {
+    DisplayBuilder::default()
 }

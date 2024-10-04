@@ -1,49 +1,99 @@
-import 'dart:async';
+import 'dart:typed_data';
 
-import 'package:acter/common/models/profile_data.dart';
 import 'package:acter/common/providers/notifiers/notification_settings_notifier.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::common::providers');
+final _log = Logger('a3::common::common_providers');
 
-// Loading Providers
-final loadingProvider = StateProvider<bool>((ref) => false);
+final genericUpdatesStream =
+    StreamProvider.family<int, String>((ref, key) async* {
+  final client = ref.watch(alwaysClientProvider);
+  int counter = 0; // to ensure the value updates
 
-// Account Profile Providers
-class AccountProfile {
-  final Account account;
-  final ProfileData profile;
+  // ignore: unused_local_variable
+  await for (final value in client.subscribeStream(key)) {
+    yield counter;
+    counter += 1;
+  }
+});
 
-  const AccountProfile(this.account, this.profile);
-}
-
-Future<ProfileData> getProfileData(Account account) async {
-  // FIXME: how to get informed about updates!?!
-  final displayName = await account.displayName();
-  final avatar = await account.avatar(null);
-  return ProfileData(displayName.text(), avatar.data());
-}
-
-final myUserIdStrProvider = StateProvider(
+final myUserIdStrProvider = Provider(
   (ref) => ref.watch(
     alwaysClientProvider.select((client) => client.userId().toString()),
   ),
 );
 
-final accountProvider = StateProvider(
+final accountProvider = Provider(
   (ref) => ref.watch(
     alwaysClientProvider.select((client) => client.account()),
   ),
 );
 
-final accountProfileProvider = FutureProvider((ref) async {
+final hasFirstSyncedProvider = Provider(
+  (ref) => ref.watch(syncStateProvider.select((v) => !v.initialSync)),
+);
+
+final isGuestProvider =
+    Provider((ref) => ref.watch(alwaysClientProvider).isGuest());
+
+final deviceIdProvider = Provider(
+  (ref) => ref.watch(
+    alwaysClientProvider.select(
+      (v) => v.deviceId().toString(),
+    ),
+  ),
+);
+
+/// Gives [AvatarInfo] object for user account. Stays up-to-date internally.
+final accountAvatarInfoProvider = StateProvider.autoDispose<AvatarInfo>((ref) {
   final account = ref.watch(accountProvider);
-  final profile = await getProfileData(account);
-  return AccountProfile(account, profile);
+  final userId = account.userId().toString();
+
+  final displayName = ref.watch(accountDisplayNameProvider).valueOrNull;
+  final avatar = ref.watch(_accountAvatarProvider).valueOrNull;
+  final fallback = AvatarInfo(
+    uniqueId: userId,
+    displayName: displayName,
+  );
+
+  if (avatar == null) {
+    return fallback;
+  }
+
+  return AvatarInfo(
+    uniqueId: userId,
+    displayName: displayName,
+    avatar: avatar,
+  );
+});
+
+/// Caching the name of each Room
+final accountDisplayNameProvider =
+    FutureProvider.autoDispose<String?>((ref) async {
+  final account = ref.watch(accountProvider);
+  return (await account.displayName()).text();
+});
+
+final _accountAvatarProvider =
+    FutureProvider.autoDispose<MemoryImage?>((ref) async {
+  final sdk = await ref.watch(sdkProvider.future);
+  final account = ref.watch(accountProvider);
+  final thumbSize = sdk.api.newThumbSize(48, 48);
+  final avatar = await account.avatar(thumbSize);
+  // Only call data() once as it will consume the value and any subsequent
+  // call will come back with `null`.
+  final avatarData = avatar.data();
+  if (avatarData != null) {
+    return MemoryImage(Uint8List.fromList(avatarData.asTypedList()));
+  }
+  return null;
 });
 
 final notificationSettingsProvider = AsyncNotifierProvider<
@@ -52,9 +102,8 @@ final notificationSettingsProvider = AsyncNotifierProvider<
 
 final appContentNotificationSetting =
     FutureProvider.family<bool, String>((ref, appKey) async {
-  final notificationsSettings =
-      await ref.watch(notificationSettingsProvider.future);
-  return await notificationsSettings.globalContentSetting(appKey);
+  final settings = await ref.watch(notificationSettingsProvider.future);
+  return await settings.globalContentSetting(appKey);
 });
 
 // Email addresses that registered by user
@@ -66,18 +115,13 @@ class EmailAddresses {
 }
 
 final emailAddressesProvider = FutureProvider((ref) async {
-  final client = ref.watch(alwaysClientProvider);
-  final threePidManager = client.threePidManager();
-  final confirmed =
-      asDartStringList(await threePidManager.confirmedEmailAddresses());
-  final requested =
-      asDartStringList(await threePidManager.requestedEmailAddresses());
-  final List<String> unconfirmed = [];
-  for (var i = 0; i < requested.length; i++) {
-    if (!confirmed.contains(requested[i])) {
-      unconfirmed.add(requested[i]);
-    }
-  }
+  final account = ref.watch(accountProvider);
+  // ensure we are updated if the upgrade comes down the wire.
+  ref.watch(genericUpdatesStream('global.acter.dev.three_pid'));
+  final confirmed = asDartStringList(await account.confirmedEmailAddresses());
+  final requested = asDartStringList(await account.requestedEmailAddresses());
+  final unconfirmed =
+      requested.where((email) => !confirmed.contains(email)).toList();
   return EmailAddresses(confirmed, unconfirmed);
 });
 
@@ -85,8 +129,8 @@ final canRedactProvider = FutureProvider.autoDispose.family<bool, dynamic>(
   ((ref, arg) async {
     try {
       return await arg.canRedact();
-    } catch (error) {
-      _log.severe('Fetching canRedact failed for $arg', error);
+    } catch (e, s) {
+      _log.severe('Fetching canRedact failed for $arg', e, s);
       return false;
     }
   }),

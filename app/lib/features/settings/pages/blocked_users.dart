@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
@@ -23,7 +22,8 @@ class AddUserToBlock extends StatefulWidget {
 
 class _AddUserToBlockState extends State<AddUserToBlock> {
   final TextEditingController userName = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey =
+      GlobalKey<FormState>(debugLabel: 'blocked user form');
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +38,11 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
               padding: const EdgeInsets.all(5),
               child: TextFormField(
                 controller: userName,
-                validator: (value) => value?.startsWith('@') == true &&
-                        value?.contains(':') == true
-                    ? null
-                    : L10n.of(context).formatMustBe,
+                // required field, custom format
+                validator: (val) =>
+                    val == null || !val.startsWith('@') || !val.contains(':')
+                        ? L10n.of(context).formatMustBe
+                        : null,
               ),
             ),
           ],
@@ -69,62 +70,62 @@ class BlockedUsersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final users = ref.watch(ignoredUsersProvider);
+    final usersLoader = ref.watch(ignoredUsersProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const AppBarTheme().backgroundColor,
-          elevation: 0.0,
+          automaticallyImplyLeading: !context.isLargeScreen,
           title: Text(L10n.of(context).blockedUsers),
           centerTitle: true,
           actions: [
             IconButton(
-              icon: Icon(
-                Atlas.plus_circle_thin,
-                color: Theme.of(context).colorScheme.neutral5,
-              ),
+              icon: const Icon(Atlas.plus_circle_thin),
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
               onPressed: () async => await onAdd(context, ref),
             ),
           ],
         ),
-        body: users.when(
-          data: (users) => users.isNotEmpty
-              ? CustomScrollView(
-                  slivers: [
-                    SliverList.builder(
-                      itemBuilder: (BuildContext context, int index) {
-                        final userId = users[index].toString();
-                        return Card(
-                          margin: const EdgeInsets.all(5),
-                          child: ListTile(
-                            title: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Text(userId),
-                            ),
-                            trailing: OutlinedButton(
-                              child: Text(L10n.of(context).unblock),
-                              onPressed: () async => await onDelete(
-                                context,
-                                ref,
-                                userId,
-                              ),
-                            ),
+        body: usersLoader.when(
+          data: (users) {
+            if (users.isEmpty) {
+              return Center(
+                child: Text(L10n.of(context).hereYouCanSeeAllUsersYouBlocked),
+              );
+            }
+            return CustomScrollView(
+              slivers: [
+                SliverList.builder(
+                  itemBuilder: (BuildContext context, int index) {
+                    final userId = users[index].toString();
+                    return Card(
+                      margin: const EdgeInsets.all(5),
+                      child: ListTile(
+                        title: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(userId),
+                        ),
+                        trailing: OutlinedButton(
+                          child: Text(L10n.of(context).unblock),
+                          onPressed: () async => await onDelete(
+                            context,
+                            ref,
+                            userId,
                           ),
-                        );
-                      },
-                      itemCount: users.length,
-                    ),
-                  ],
-                )
-              : Center(
-                  child: Text(L10n.of(context).hereYouCanSeeAllUsersYouBlocked),
+                        ),
+                      ),
+                    );
+                  },
+                  itemCount: users.length,
                 ),
-          error: (error, stack) {
+              ],
+            );
+          },
+          error: (e, s) {
+            _log.severe('Failed to load the ignored users', e, s);
             return Center(
-              child: Text(L10n.of(context).failedToLoad(error)),
+              child: Text(L10n.of(context).loadingFailed(e)),
             );
           },
           loading: () => const Center(
@@ -154,8 +155,8 @@ class BlockedUsersPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).userAddedToBlockList(userToAdd));
-    } catch (e, st) {
-      _log.severe('Failed to block user', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to block user', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -181,8 +182,8 @@ class BlockedUsersPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).userRemovedFromList);
-    } catch (e, st) {
-      _log.severe('Failed to unblock user', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to unblock user', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

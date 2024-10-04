@@ -4,31 +4,40 @@ import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/providers/spaces.dart';
 import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+final _log = Logger('a3::search::spaces_builder');
+
 class SpacesBuilder extends ConsumerWidget {
+  final bool popBeforeRoute;
+
   const SpacesBuilder({
     super.key,
+    this.popBeforeRoute = false,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final foundSpaces = ref.watch(spacesFoundProvider);
-    return foundSpaces.when(
+    final spacesLoader = ref.watch(spacesFoundProvider);
+    return spacesLoader.when(
       loading: () => renderLoading(context),
-      error: (e, st) => inBox(
-        context,
-        Text(L10n.of(context).error(e)),
-      ),
-      data: (data) {
-        if (data.isEmpty) {
-          return renderEmpty(context, ref);
-        }
-        return renderItems(context, ref, data);
+      error: (e, s) {
+        _log.severe('Failed to search spaces', e, s);
+        return inBox(
+          context,
+          Text(L10n.of(context).searchingFailed(e)),
+        );
       },
+      data: (spaces) {
+        if (spaces.isEmpty) return renderEmpty(context, ref);
+        return renderItems(context, ref, spaces);
+      },
+      skipLoadingOnRefresh: true,
+      skipLoadingOnReload: true,
     );
   }
 
@@ -43,9 +52,13 @@ class SpacesBuilder extends ConsumerWidget {
             padding: const EdgeInsets.all(10),
             child: const Column(
               children: [
-                Skeletonizer(child: Icon(Icons.abc)),
+                Skeletonizer(
+                  child: Icon(Icons.abc),
+                ),
                 SizedBox(height: 3),
-                Skeletonizer(child: Text('space name')),
+                Skeletonizer(
+                  child: Text('space name'),
+                ),
               ],
             ),
           ),
@@ -57,33 +70,31 @@ class SpacesBuilder extends ConsumerWidget {
   Widget renderItems(
     BuildContext context,
     WidgetRef ref,
-    List<SpaceDetails> items,
+    List<SpaceDetails> spaces,
   ) {
     return inBox(
       context,
       SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: items
-              .map(
-                (e) => InkWell(
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        e.icon,
-                        const SizedBox(height: 3),
-                        Text(e.name),
-                      ],
-                    ),
-                  ),
-                  onTap: () {
-                    if (context.canPop()) context.pop();
-                    goToSpace(context, e.navigationTargetId);
-                  },
+          children: spaces.map((space) {
+            return InkWell(
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    space.icon,
+                    const SizedBox(height: 3),
+                    Text(space.name),
+                  ],
                 ),
-              )
-              .toList(),
+              ),
+              onTap: () {
+                if (popBeforeRoute) Navigator.pop(context);
+                goToSpace(context, space.navigationTargetId);
+              },
+            );
+          }).toList(),
         ),
       ),
     );
@@ -95,9 +106,7 @@ class SpacesBuilder extends ConsumerWidget {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            L10n.of(context).noSpacesFound,
-          ),
+          Text(L10n.of(context).noSpacesFound),
           ActerInlineTextButton(
             onPressed: () {
               final query = ref.read(searchValueProvider);

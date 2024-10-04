@@ -1,12 +1,13 @@
 import 'dart:async';
 
-import 'package:acter/common/themes/app_theme.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::common::html_editor');
 
 AppFlowyEditorHTMLCodec defaultHtmlCodec = const AppFlowyEditorHTMLCodec(
   encodeParsers: [
@@ -49,27 +50,48 @@ extension ActerEditorStateHelpers on EditorState {
 }
 
 extension ActerDocumentHelpers on Document {
-  static Document fromHtml(
+  static Document? _fromHtml(
     String content, {
     AppFlowyEditorHTMLCodec? codec,
   }) {
-    return (codec ?? defaultHtmlCodec).decode(content);
+    if (content.isEmpty) {
+      return null;
+    }
+
+    Document document = (codec ?? defaultHtmlCodec).decode(content);
+    if (document.isEmpty) {
+      return null;
+    }
+    return document;
   }
 
-  static Document fromMarkdown(
+  static Document _fromMarkdown(
     String content, {
     AppFlowyEditorMarkdownCodec? codec,
   }) {
     return (codec ?? defaultMarkdownCodec).decode(content);
   }
 
-  static Document fromMsgContent(MsgContent msgContent) {
-    final formattedBody = msgContent.formattedBody();
-    if (formattedBody != null) {
-      return ActerDocumentHelpers.fromHtml(formattedBody);
-    } else {
-      return ActerDocumentHelpers.fromMarkdown(msgContent.body());
+  static Document parse(
+    String content, {
+    String? htmlContent,
+    AppFlowyEditorMarkdownCodec? codec,
+  }) {
+    if (htmlContent != null) {
+      final document = ActerDocumentHelpers._fromHtml(htmlContent);
+      if (document != null) {
+        return document;
+      }
     }
+    // fallback: parse from markdown
+    return ActerDocumentHelpers._fromMarkdown(content);
+  }
+
+  static Document fromMsgContent(MsgContent msgContent) {
+    return ActerDocumentHelpers.parse(
+      msgContent.body(),
+      htmlContent: msgContent.formattedBody(),
+    );
   }
 }
 
@@ -143,9 +165,17 @@ class HtmlEditorState extends State<HtmlEditor> {
 
       _changeListener?.cancel();
       if (widget.onChanged != null) {
-        _changeListener = editorState.transactionStream.listen((event) {
-          _triggerExport(widget.onChanged!);
-        });
+        _changeListener = editorState.transactionStream.listen(
+          (data) {
+            _triggerExport(widget.onChanged!);
+          },
+          onError: (e, s) {
+            _log.severe('tx stream errored', e, s);
+          },
+          onDone: () {
+            _log.info('tx stream ended');
+          },
+        );
       }
     });
   }
@@ -234,7 +264,7 @@ class HtmlEditorState extends State<HtmlEditor> {
       editorState: editorState,
       editorScrollController: editorScrollController,
       style: FloatingToolbarStyle(
-        backgroundColor: Theme.of(context).colorScheme.neutral2,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         toolbarActiveColor: Theme.of(context).colorScheme.tertiary,
       ),
       child: Directionality(
@@ -310,7 +340,7 @@ class HtmlEditorState extends State<HtmlEditor> {
     return EditorStyle.desktop(
       padding: widget.editorPadding,
       cursorColor: Theme.of(context).colorScheme.primary,
-      selectionColor: Theme.of(context).colorScheme.neutral,
+      selectionColor: Theme.of(context).colorScheme.secondaryContainer,
       textStyleConfiguration: widget.textStyleConfiguration ??
           TextStyleConfiguration(
             text: Theme.of(context).textTheme.bodySmall!,
@@ -322,7 +352,7 @@ class HtmlEditorState extends State<HtmlEditor> {
     return EditorStyle.mobile(
       padding: widget.editorPadding,
       cursorColor: Theme.of(context).colorScheme.primary,
-      selectionColor: Theme.of(context).colorScheme.neutral,
+      selectionColor: Theme.of(context).colorScheme.secondaryContainer,
       textStyleConfiguration: widget.textStyleConfiguration ??
           TextStyleConfiguration(
             text: Theme.of(context).textTheme.bodySmall!,

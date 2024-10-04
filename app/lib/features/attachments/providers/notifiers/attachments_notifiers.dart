@@ -2,12 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Attachment, AttachmentsManager;
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::common::attachments');
+final _log = Logger('a3::attachments::notifiers');
 
 class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
     AttachmentsManager, Future<AttachmentsManager>> {
@@ -20,15 +21,16 @@ class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
     _listener = manager.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen(
       (e) async {
-        _log.info('attempting to reload');
-        final newManager = await manager.reload();
-        _log.info(
-          'manager updated. attachments: ${newManager.attachmentsCount()}',
-        );
-        state = AsyncValue.data(newManager);
+        state = await AsyncValue.guard(() async {
+          _log.info('attempting to reload');
+          final newManager = await manager.reload();
+          final count = newManager.attachmentsCount();
+          _log.info('manager updated. attachments: $count');
+          return newManager;
+        });
       },
-      onError: (e, stack) {
-        _log.severe('stream errored.', e, stack);
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
       },
       onDone: () {
         _log.info('stream ended');
@@ -42,6 +44,7 @@ class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
 class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
   final Ref ref;
   final Attachment attachment;
+
   AttachmentMediaNotifier({
     required this.attachment,
     required this.ref,
@@ -82,10 +85,7 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
     state = state.copyWith(isDownloading: true);
     //Download media if media path is not available
     final tempDir = await getTemporaryDirectory();
-    final result = await attachment.downloadMedia(
-      null,
-      tempDir.path,
-    );
+    final result = await attachment.downloadMedia(null, tempDir.path);
     String? mediaPath = result.text();
     if (mediaPath != null) {
       state = state.copyWith(

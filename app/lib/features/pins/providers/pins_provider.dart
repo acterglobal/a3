@@ -1,40 +1,45 @@
-import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/pins/models/create_pin_state/create_pin_state.dart';
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
+import 'package:acter/features/pins/providers/notifiers/create_pin_notifier.dart';
 import 'package:acter/features/pins/providers/notifiers/edit_state_notifier.dart';
 import 'package:acter/features/pins/providers/notifiers/pins_notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
-final pinsProvider =
-    AsyncNotifierProvider.autoDispose<AsyncPinsNotifier, List<ActerPin>>(
-  () => AsyncPinsNotifier(),
+//SpaceId == null : GET LIST OF ALL PINs
+//SpaceId != null : GET LIST OF SPACE PINs
+final pinListProvider =
+    AsyncNotifierProvider.family<AsyncPinListNotifier, List<ActerPin>, String?>(
+  () => AsyncPinListNotifier(),
 );
 
+//Search any pins
+typedef AllPinsSearchParams = ({String? spaceId, String searchText});
+
+final pinListSearchProvider = FutureProvider.autoDispose
+    .family<List<ActerPin>, AllPinsSearchParams>((ref, params) async {
+  final pinList = await ref.watch(pinListProvider(params.spaceId).future);
+  final search = params.searchText.toLowerCase();
+  if (search.isEmpty) return pinList;
+  return pinList
+      .where((pin) => pin.title().toLowerCase().contains(search))
+      .toList();
+});
+
+//Get single pin details
 final pinProvider = AsyncNotifierProvider.autoDispose
     .family<AsyncPinNotifier, ActerPin, String>(
   () => AsyncPinNotifier(),
 );
 
-final spacePinsProvider = AsyncNotifierProvider.autoDispose
-    .family<AsyncSpacePinsNotifier, List<ActerPin>, Space>(
-  () => AsyncSpacePinsNotifier(),
-);
-
-final pinnedProvider = FutureProvider.autoDispose
-    .family<List<ActerPin>, String>((ref, spaceId) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
-  return await ref.watch(spacePinsProvider(space).future);
-});
-
-final pinnedLinksProvider = FutureProvider.autoDispose
-    .family<List<ActerPin>, String>((ref, spaceId) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
-  final pins = await ref.watch(spacePinsProvider(space).future);
-  return pins.where((element) => element.isLink()).toList();
-});
-
+//Update single pin details
 final pinEditProvider = StateNotifierProvider.family
     .autoDispose<PinEditNotifier, PinEditState, ActerPin>(
   (ref, pin) => PinEditNotifier(pin: pin, ref: ref),
 );
 
+// Create Pin State
+final createPinStateProvider =
+    StateNotifierProvider.autoDispose<CreatePinNotifier, CreatePinState>(
+  (ref) => CreatePinNotifier(),
+);

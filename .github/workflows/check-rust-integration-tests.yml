@@ -1,0 +1,92 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+name: Rust Integration Tests
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    name: Rust Integration Tests
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install supported toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - uses: jlumbroso/free-disk-space@main
+        name: Free Disk Space (Ubuntu)
+        with:
+          tool-cache: false
+          large-packages: false # keep clang around
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Install & Run MailHog
+        run: |
+          wget -q https://github.com/mailhog/MailHog/releases/download/v1.0.1/MailHog_linux_amd64
+          sudo chmod +x MailHog_linux_amd64
+          ./MailHog_linux_amd64 &
+
+      - uses: michaelkaye/setup-matrix-synapse@main
+        with:
+          installer: poetry
+          uploadLogs: false
+          httpPort: 8118
+          disableRateLimiting: true
+          customModules: synapse_super_invites
+          customConfig: |
+            email:
+              smtp_host: localhost
+              smtp_port: 1025
+              force_tls: false
+              require_transport_security: false
+              enable_tls: false
+              notif_from: "Your Friendly %(app)s homeserver <noreply@example.org>"
+              can_verify_email: true
+
+            modules:
+              - module: "synapse_super_invites.SynapseSuperInvites"
+                config:
+                  sql_url: "sqlite://"
+                  generate_registration_token: true
+
+      - uses: rui314/setup-mold@v1
+        name: "Setup mold linker"
+
+      - uses: taiki-e/install-action@nextest
+
+      - name: Initialize e2ee mock data
+        run: cargo run -p acter-cli -- mock
+        env:
+          DEFAULT_HOMESERVER_NAME: "localhost"
+          DEFAULT_HOMESERVER_URL: "http://localhost:8118"
+
+      - name: run cargo integration tests
+        env:
+          DEFAULT_HOMESERVER_URL: "http://localhost:8118"
+          DEFAULT_HOMESERVER_NAME: "localhost"
+        run: cargo nextest run --config-file .github/nextest-config.toml -p acter-test
+
+      # file an error if this failed on `main` post-merge
+      - name: Report issue
+        if: ${{ github.ref == 'refs/heads/main' && failure() }}
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NAME: Rust Integration Tests
+          TAG: main
+          FAILED_RUN_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+          ARTIFACT_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{env.GITHUB_RUN_ID}}
+        with:
+          assignees: gnunicorn
+          filename: .github/templates/failure-report-template.md.tmpl
+          update_existing: true

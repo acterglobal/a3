@@ -21,6 +21,7 @@ extension ActerNews on ConvenientTest {
     await navigateTo([
       Keys.mainNav,
       MainNavKeys.quickJump,
+      MainNavKeys.quickJump,
       QuickJumpKeys.createUpdateAction,
     ]);
   }

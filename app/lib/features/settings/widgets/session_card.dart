@@ -1,8 +1,8 @@
-import 'package:acter/common/themes/app_theme.dart';
-
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/cross_signing/providers/verification_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/settings/providers/session_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:breadcrumbs/breadcrumbs.dart';
@@ -27,7 +27,7 @@ class SessionCard extends ConsumerWidget {
         lastSeenTs,
         isUtc: true,
       );
-      fields.add(dateTime.toString());
+      fields.add(dateTime.toLocal().toString());
     }
     final lastSeenIp = deviceRecord.lastSeenIp();
     if (lastSeenIp != null) {
@@ -52,9 +52,9 @@ class SessionCard extends ConsumerWidget {
           separator: ' - ',
         ),
         trailing: PopupMenuButton(
-          itemBuilder: (BuildContext ctx) => <PopupMenuEntry>[
+          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
             PopupMenuItem(
-              onTap: () async => await onLogout(ctx, ref),
+              onTap: () async => await onLogout(context, ref),
               child: Row(
                 children: [
                   const Icon(Atlas.exit_thin),
@@ -62,7 +62,7 @@ class SessionCard extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
                       L10n.of(context).logOut,
-                      style: Theme.of(ctx).textTheme.labelSmall,
+                      style: Theme.of(context).textTheme.labelSmall,
                       softWrap: false,
                     ),
                   ),
@@ -70,7 +70,7 @@ class SessionCard extends ConsumerWidget {
               ),
             ),
             PopupMenuItem(
-              onTap: () async => await onVerify(ctx, ref),
+              onTap: () async => await onVerify(context, ref),
               child: Row(
                 children: [
                   const Icon(Atlas.shield_exclamation_thin),
@@ -78,7 +78,7 @@ class SessionCard extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
                       L10n.of(context).verifySession,
-                      style: Theme.of(ctx).textTheme.labelSmall,
+                      style: Theme.of(context).textTheme.labelSmall,
                       softWrap: false,
                     ),
                   ),
@@ -95,8 +95,9 @@ class SessionCard extends ConsumerWidget {
     TextEditingController passwordController = TextEditingController();
     final result = await showDialog<bool>(
       context: context,
-      builder: (BuildContext ctx) {
+      builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Theme.of(context).colorScheme.surface,
           title: Text(L10n.of(context).authenticationRequired),
           content: Wrap(
             children: [
@@ -114,8 +115,8 @@ class SessionCard extends ConsumerWidget {
             OutlinedButton(
               child: Text(L10n.of(context).cancel),
               onPressed: () {
-                if (ctx.mounted) {
-                  Navigator.of(context).pop(false);
+                if (context.mounted) {
+                  Navigator.pop(context, false);
                 }
               },
             ),
@@ -125,8 +126,8 @@ class SessionCard extends ConsumerWidget {
                 if (passwordController.text.isEmpty) {
                   return;
                 }
-                if (ctx.mounted) {
-                  Navigator.of(context).pop(true);
+                if (context.mounted) {
+                  Navigator.pop(context, true);
                 }
               },
             ),
@@ -139,11 +140,12 @@ class SessionCard extends ConsumerWidget {
     }
     final client = ref.read(alwaysClientProvider);
     final manager = client.sessionManager();
-    await manager.deleteDevices(
-      [deviceRecord.deviceId().toString()] as FfiListFfiString,
+    await manager.deleteDevice(
+      deviceRecord.deviceId().toString(),
       client.userId().toString(),
       passwordController.text,
     );
+    ref.invalidate(allSessionsProvider); // DeviceUpdates doesn’t cover logout
   }
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {

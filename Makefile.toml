@@ -2,7 +2,7 @@
 CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
 CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS = ["native/acter"]
 ANDROID_PLATFORM_VERSION = "23"
-TARGET_PLUGIN = "app/packages/rust_sdk"
+TARGET_PLUGIN = "packages/rust_sdk"
 LIB_OUT_DIR = "debug"
 TARGET_OS = "unknown"
 DEV = true
@@ -16,7 +16,7 @@ LIB_OUT_DIR = "release"
 [tasks.setup-android]
 # set up the system for android
 script = [
-    "cargo install cargo-ndk@3.2.0",
+    "cargo install cargo-ndk",
 ]
 
 [tasks.setup-ios]
@@ -109,17 +109,6 @@ dependencies = [
     "post-android",
 ]
 
-[tasks.android-arm]
-# build android ARM64 for actual device
-dependencies = [
-    "pre-android",
-    "android-aarch64",
-    "android-aarch64-release",
-    "post-android-aarch64",
-    "post-android",
-]
-
-
 [tasks.mock-data]
 command = "cargo"
 args = ["run", "-p", "acter-cli", "mock", "--homeserver-url",  "http://localhost:8118", "--homeserver-name", "localhost"]
@@ -144,6 +133,8 @@ args = ["clippy", "--all", "--tests", "--allow-dirty", "--allow-staged", "--fix"
 script_runner = "@shell"
 script = [
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}",
+    "dart fix --apply",
+    "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/acter_notifify",
     "dart fix --apply",
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app",
     "dart fix --apply",
@@ -422,6 +413,18 @@ script = [
     """,
 ]
 
+[tasks.android-arm]
+# Build android targets.
+dependencies = [
+    "pre-android",
+    "android-aarch64",
+    "android-aarch64-release",
+    "post-android-aarch64",
+    "android-armv7",
+    "android-armv7-release",
+    "post-android-armv7",
+]
+
 [tasks.android]
 # Build android targets.
 dependencies = [
@@ -444,7 +447,6 @@ dependencies = [
 [tasks.android-build]
 private = true
 condition = { env_true = ["DEV"], env_set = ["ANDROID_BUILD_TARGET"] }
-env = { CARGO_BUILD_RUSTFLAGS = "-C strip=debuginfo" }
 command = "cargo"
 args = [
     "ndk",
@@ -702,6 +704,7 @@ script = [
 [tasks.ui-test-manager]
 # condition = { platforms = ["mac"], env_true = ["RELEASE"] }
 script_runner = "@duckscript"
+category = "UI Test"
 script = [
     """
     os = os_family
@@ -725,6 +728,7 @@ dependencies = [
 ]
 
 [tasks.ui-test-app-android-emulator]
+category = "UI Test"
 script = [
     """
     cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app
@@ -733,14 +737,16 @@ script = [
         --disable-service-auth-codes \
         --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
         --dart-define CONVENIENT_TEST_MANAGER_HOST=10.0.2.2 \
+        --dart-define MAILHOG_URL=http://10.0.2.2:8025 \
         --dart-define RAGESHAKE_URL=http://10.0.2.2:9110/api/submit \
         --dart-define RAGESHAKE_LISTING_URL=http://10.0.2.2:9110/api/listing \
-        --dart-define DEFAULT_HOMESERVER_URL=http:/10.0.2.2:8118/ \
+        --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118 \
         --dart-define DEFAULT_HOMESERVER_NAME=localhost
     """
 ]
 
 [tasks.ui-test-app-local]
+category = "UI Test"
 script = [
     """
     cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app
@@ -750,8 +756,9 @@ script = [
         --dart-define CONVENIENT_TEST_APP_CODE_DIR=lib \
         --dart-define CONVENIENT_TEST_MANAGER_HOST=localhost \
         --dart-define RAGESHAKE_URL=http://localhost:9110/api/submit \
+        --dart-define MAILHOG_URL=http://localhost:8025 \
         --dart-define RAGESHAKE_LISTING_URL=http://localhost:9110/api/listing \
-        --dart-define DEFAULT_HOMESERVER_URL=http:/localhost:8118/ \
+        --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118 \
         --dart-define DEFAULT_HOMESERVER_NAME=localhost
     """
 ]

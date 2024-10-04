@@ -1,23 +1,34 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/blinking_text.dart';
+import 'package:acter/features/events/actions/get_event_type.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show CalendarEvent;
+    show CalendarEvent, RsvpStatusTag;
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::cal_event::event_item');
 
 class EventItem extends StatelessWidget {
   final CalendarEvent event;
+  final EdgeInsetsGeometry? margin;
   final Function(String)? onTapEventItem;
   final bool isShowRsvp;
+  final bool isShowSpaceName;
 
   const EventItem({
     super.key,
     required this.event,
+    this.margin,
     this.onTapEventItem,
     this.isShowRsvp = true,
+    this.isShowSpaceName = false,
   });
 
   @override
@@ -33,49 +44,36 @@ class EventItem extends StatelessWidget {
           pathParameters: {'calendarId': event.eventId().toString()},
         );
       },
-      child: Card(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _buildEventDate(context),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildEventTitle(context),
-                  _buildEventSubtitle(context),
-                ],
-              ),
+      child: Stack(
+        alignment: Alignment.topLeft,
+        children: [
+          Card(
+            margin: margin,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                EventDateWidget(calendarEvent: event),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildEventTitle(context),
+                      Consumer(builder: _buildEventSubtitle),
+                      const SizedBox(height: 4),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                if (getEventType(event) == EventFilters.ongoing)
+                  _buildHappeningIndication(context),
+                const SizedBox(width: 10),
+                if (isShowRsvp) _buildRsvpStatus(context),
+                const SizedBox(width: 10),
+              ],
             ),
-            const SizedBox(width: 10),
-            if (isShowRsvp) _buildRsvpStatus(context),
-            const SizedBox(width: 10),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEventDate(BuildContext context) {
-    final day = getDayFromDate(event.utcStart());
-    final month = getMonthFromDate(event.utcStart());
-
-    return Card(
-      margin: const EdgeInsets.all(12),
-      color: Theme.of(context).colorScheme.surface,
-      child: Container(
-        height: 70,
-        width: 70,
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(month),
-            Text(day, style: Theme.of(context).textTheme.titleLarge),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -89,10 +87,18 @@ class EventItem extends StatelessWidget {
     );
   }
 
-  Widget _buildEventSubtitle(BuildContext context) {
+  Widget _buildEventSubtitle(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    String eventSpaceName =
+        ref.watch(roomDisplayNameProvider(event.roomIdStr())).valueOrNull ??
+            L10n.of(context).unknown;
+    String eventDateTime = '${formatDate(event)} (${formatTime(event)})';
     return Text(
-      '${formatDate(event)} (${formatTime(event)})',
-      style: Theme.of(context).textTheme.labelMedium,
+      isShowSpaceName ? eventSpaceName : eventDateTime,
+      style: Theme.of(context).textTheme.labelLarge,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );
@@ -100,20 +106,23 @@ class EventItem extends StatelessWidget {
 
   Widget _buildRsvpStatus(BuildContext context) {
     return Consumer(
-      builder: (ctx, ref, child) {
+      builder: (context, ref, child) {
         final eventId = event.eventId().toString();
-        final myRsvpStatus = ref.watch(myRsvpStatusProvider(eventId));
-        return myRsvpStatus.when(
-          data: (data) {
-            final status = data.statusStr(); // kebab-case
-            return Chip(label: Text(_getStatusLabel(context, status)));
+        final rsvpLoader = ref.watch(myRsvpStatusProvider(eventId));
+        return rsvpLoader.when(
+          data: (status) {
+            final widget = _getRsvpStatus(context, status); // kebab-case
+            return widget ?? const SizedBox.shrink();
           },
-          error: (e, st) => Chip(
-            label: Text(
-              L10n.of(context).errorLoadingRsvpStatus(e),
-              softWrap: true,
-            ),
-          ),
+          error: (e, s) {
+            _log.severe('Failed to load RSVP status', e, s);
+            return Chip(
+              label: Text(
+                L10n.of(context).errorLoadingRsvpStatus(e),
+                softWrap: true,
+              ),
+            );
+          },
           loading: () => Chip(
             label: Text(L10n.of(context).loadingRsvpStatus),
           ),
@@ -122,17 +131,34 @@ class EventItem extends StatelessWidget {
     );
   }
 
-  String _getStatusLabel(BuildContext context, String? status) {
-    if (status != null) {
-      switch (status) {
-        case 'yes':
-          return L10n.of(context).going;
-        case 'no':
-          return L10n.of(context).notGoing;
-        case 'maybe':
-          return L10n.of(context).maybe;
-      }
-    }
-    return L10n.of(context).pending;
+  Widget? _getRsvpStatus(BuildContext context, RsvpStatusTag? status) {
+    return switch (status) {
+      RsvpStatusTag.Yes => Icon(
+          Icons.check_circle,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+      RsvpStatusTag.No => Icon(
+          Icons.cancel,
+          color: Theme.of(context).colorScheme.error,
+        ),
+      RsvpStatusTag.Maybe => const Icon(Icons.question_mark_rounded),
+      _ => null,
+    };
+  }
+
+  Widget _buildHappeningIndication(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
+        borderRadius: const BorderRadius.all(Radius.circular(100)),
+      ),
+      child: BlinkText(
+        L10n.of(context).live,
+        style: Theme.of(context).textTheme.labelLarge,
+        beginColor: Colors.white,
+        endColor: Theme.of(context).colorScheme.secondary,
+      ),
+    );
   }
 }

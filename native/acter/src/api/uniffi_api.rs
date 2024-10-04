@@ -1,9 +1,6 @@
 use matrix_sdk_ui::notification_client::{
     NotificationEvent, NotificationItem as SdkNotificationItem,
 };
-use ruma_events::{
-    room::message::MessageType, AnySyncMessageLikeEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
-};
 
 use crate::{api::NotificationItem as ApiNotificationItem, login_with_token};
 

@@ -50,7 +50,7 @@ class ImageView extends ConsumerWidget {
             context: context,
             barrierDismissible: false,
             useRootNavigator: false,
-            builder: (ctx) => ImageDialog(
+            builder: (context) => ImageDialog(
               title: msgContent.body(),
               imageFile: mediaState.mediaFile!,
             ),
@@ -105,7 +105,7 @@ class ImageView extends ConsumerWidget {
                 context: context,
                 barrierDismissible: false,
                 useRootNavigator: false,
-                builder: (ctx) => ImageDialog(
+                builder: (context) => ImageDialog(
                   title: msgContent.body(),
                   imageFile: mediaState.mediaFile!,
                 ),

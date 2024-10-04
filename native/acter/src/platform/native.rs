@@ -3,9 +3,8 @@ use chrono::Local;
 use lazy_static::lazy_static;
 use log::{log_enabled, Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
-use matrix_sdk_base::store::StoreConfig;
+use matrix_sdk_base::{event_cache_store::EventCacheStoreError, store::StoreConfig};
 use matrix_sdk_sqlite::{OpenStoreError, SqliteCryptoStore, SqliteStateStore};
-use matrix_sdk_store_media_cache_wrapper::StoreCacheWrapperError;
 use parse_env_filter::eager::{filters, Filter};
 use std::{
     fmt::{Display, Error},
@@ -208,7 +207,7 @@ pub fn rotate_log_file() -> Result<String> {
             }
         }
         None => {
-            bail!("You didn't set up file logger.");
+            bail!("You didn’t set up file logger.");
         }
     }
     Ok("".to_string())
@@ -278,7 +277,7 @@ fn get_log_filter(level: &str) -> Option<LevelFilter> {
 #[derive(Debug)]
 enum MakeStoreConfigError {
     OpenStoreError(OpenStoreError),
-    StoreCacheWrapperError(StoreCacheWrapperError),
+    EventCacheStoreError(EventCacheStoreError),
 }
 
 impl Display for MakeStoreConfigError {
@@ -287,8 +286,8 @@ impl Display for MakeStoreConfigError {
             MakeStoreConfigError::OpenStoreError(i) => {
                 write!(f, "MakeStoreConfigError::OpenStoreError {}", i)
             }
-            MakeStoreConfigError::StoreCacheWrapperError(i) => {
-                write!(f, "MakeStoreConfigError::StoreCacheWrapperError {}", i)
+            MakeStoreConfigError::EventCacheStoreError(i) => {
+                write!(f, "MakeStoreConfigError::EventCacheStoreError {}", i)
             }
         }
     }
@@ -302,9 +301,9 @@ impl From<OpenStoreError> for MakeStoreConfigError {
     }
 }
 
-impl From<StoreCacheWrapperError> for MakeStoreConfigError {
-    fn from(value: StoreCacheWrapperError) -> Self {
-        MakeStoreConfigError::StoreCacheWrapperError(value)
+impl From<EventCacheStoreError> for MakeStoreConfigError {
+    fn from(value: EventCacheStoreError) -> Self {
+        MakeStoreConfigError::EventCacheStoreError(value)
     }
 }
 
@@ -320,11 +319,17 @@ async fn make_store_config(
         return Ok(config.state_store(sql_state_store));
     };
 
-    let wrapped_state_store = matrix_sdk_store_media_cache_wrapper::wrap_with_file_cache(
-        sql_state_store,
+    let event_cache_store = matrix_sdk_store_file_event_cache::wrap_with_file_cache_and_limits(
+        &sql_state_store,
         media_cache_path,
         passphrase,
+        #[cfg(target_os = "ios")]
+        50,
+        #[cfg(not(target_os = "ios"))]
+        200,
     )
     .await?;
-    Ok(config.state_store(wrapped_state_store))
+    Ok(config
+        .state_store(sql_state_store)
+        .event_cache_store(event_cache_store))
 }

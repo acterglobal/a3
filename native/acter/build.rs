@@ -18,18 +18,29 @@ fn main() {
 
     setup_x86_64_android_workaround();
 
+    // whether the target is 32bits or 64bits
+    let is32bit = std::env::var("CARGO_CFG_TARGET_POINTER_WIDTH")
+        .unwrap_or("64".to_string())
+        .as_str()
+        == "32";
+
+    // building the rust source for reuse in cbindgen later
     if std::env::var("SKIP_FFIGEN").is_err() && std::env::var("CARGO_FEATURE_DART").is_ok() {
         // general FFI-gen
         let ffigen = FfiGen::new(&path).expect("Could not parse api.rsh");
         let dart = crate_dir.join(API_DART_FILENAME);
-        // building the rust source for reuse in cbindgen later
+        let target_abi = if is32bit {
+            ffi_gen::Abi::Native32
+        } else {
+            ffi_gen::Abi::Native64
+        };
         let rst = ffigen
-            .generate_rust(ffi_gen::Abi::Native64)
+            .generate_rust(target_abi)
             .expect("Failure generating rust side of ffigen");
         std::fs::write(crate_dir.join("src").join(API_RUST_FILENAME), rst)
             .expect("Writing rust file failed.");
 
-        // then let's build the dart API
+        // then let’s build the dart API
         ffigen
             .generate_dart(dart, "acter", "acter")
             .expect("Failure generating dart side of ffigen");
@@ -40,7 +51,7 @@ fn main() {
     }
 
     if std::env::var("SKIP_CBINDGEN").is_err() {
-        // once the setup is ready, let's create the c-headers
+        // once the setup is ready, let’s create the c-headers
         // this needs the rust API to be generated first, as it
         // imports that via the `cbindings`-feature to scan an build the headers
         let config = cbindgen::Config::from_file(crate_dir.join(API_CBINDGEN_CONFIG_FILENAME))
@@ -48,6 +59,11 @@ fn main() {
 
         cbindgen::Builder::new()
             .with_config(config)
+            .with_after_include(if is32bit {
+                "#define __ACTER_32BITS__ 1"
+            } else {
+                "#define __ACTER_64BITS__ 1"
+            })
             .with_crate(crate_dir)
             .generate()
             .expect("Unable to generate C-headers")

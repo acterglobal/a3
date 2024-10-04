@@ -1,6 +1,7 @@
-import 'package:acter/common/notifications/notifications.dart';
-import 'package:acter/common/notifications/util.dart';
+import 'dart:io';
+
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:app_settings/app_settings.dart';
@@ -11,7 +12,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
 
-final _log = Logger('a3::settings::labs_notifications_settings_tile');
+final _log = Logger('a3::settings::labs_notifications');
+
+final isOnSupportedPlatform = Platform.isAndroid || Platform.isIOS;
 
 class _LabNotificationSettingsTile extends ConsumerWidget {
   final String? title;
@@ -20,18 +23,17 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final canPush = (isOnSupportedPlatform && pushServer.isNotEmpty) ||
+        (!isOnSupportedPlatform && ntfyServer.isNotEmpty);
     return SettingsTile.switchTile(
       title: Text(title ?? L10n.of(context).mobilePushNotifications),
-      description: !isOnSupportedPlatform
-          ? Text(L10n.of(context).onlySupportedIosAndAndroid)
-          : (pushServer.isEmpty
-              ? Text(L10n.of(context).noPushServerConfigured)
-              : null),
-      initialValue: isOnSupportedPlatform &&
+      description:
+          !canPush ? Text(L10n.of(context).noPushServerConfigured) : null,
+      initialValue: canPush &&
           ref.watch(
             isActiveProvider(LabsFeature.mobilePushNotifications),
           ),
-      enabled: isOnSupportedPlatform && pushServer.isNotEmpty,
+      enabled: canPush,
       onToggle: (newVal) => onToggle(context, ref, newVal),
     );
   }
@@ -41,10 +43,11 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
     WidgetRef ref,
     bool newVal,
   ) async {
-    updateFeatureState(ref, LabsFeature.mobilePushNotifications, newVal);
+    final lang = L10n.of(context);
+    await updateFeatureState(ref, LabsFeature.mobilePushNotifications, newVal);
     if (!newVal) return;
     final client = ref.read(alwaysClientProvider);
-    EasyLoading.show(status: L10n.of(context).changingSettings);
+    EasyLoading.show(status: lang.changingSettings);
     try {
       var granted = await setupPushNotifications(client, forced: true);
       if (granted) {
@@ -58,23 +61,23 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
         return;
       }
       // second attempt, even sending the user to the settings, they do not
-      // approve. Let's kick it back off
-      updateFeatureState(ref, LabsFeature.mobilePushNotifications, false);
+      // approve. Let’s kick it back off
+      await updateFeatureState(ref, LabsFeature.mobilePushNotifications, false);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showToast(
-        L10n.of(context).changedPushNotificationSettingsSuccessfully,
+        lang.changedPushNotificationSettingsSuccessfully,
       );
-    } catch (e, st) {
-      _log.severe('Failed to change settings', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to change settings of push notification', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToChangePushNotificationSettings(e),
+        lang.failedToChangePushNotificationSettings(e),
         duration: const Duration(seconds: 3),
       );
     }

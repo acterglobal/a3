@@ -1,15 +1,19 @@
+import 'package:acter/common/actions/show_parent_space_list.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/spaces/space_info.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/space/widgets/space_info.dart';
+import 'package:acter/features/space/actions/set_space_title.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
-import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+
+final _log = Logger('a3::space::space_header_profile');
 
 class SpaceHeaderProfile extends ConsumerWidget {
   static const headerKey = Key('space-header');
@@ -20,67 +24,64 @@ class SpaceHeaderProfile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileData = ref.watch(spaceProfileDataForSpaceIdProvider(spaceId));
-    final canonicalParent = ref.watch(canonicalParentProvider(spaceId));
-    return profileData.when(
-      data: (spaceProfile) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Row(
-            children: <Widget>[
-              ActerAvatar(
-                options: AvatarOptions(
-                  AvatarInfo(
-                    uniqueId: spaceId,
-                    displayName: spaceProfile.profile.displayName,
-                    avatar: spaceProfile.profile.getAvatarImage(),
-                  ),
-                  parentBadges: canonicalParent.valueOrNull != null
-                      ? [
-                          AvatarInfo(
-                            uniqueId: canonicalParent.valueOrNull!.space
-                                .getRoomIdStr(),
-                            displayName: canonicalParent
-                                .valueOrNull!.profile.displayName,
-                            avatar: canonicalParent.valueOrNull!.profile
-                                .getAvatarImage(),
-                          ),
-                        ]
-                      : [],
-                  size: 80,
-                  badgesSize: 30,
-                ),
-                onAvatarTap: () => goToSpace(context, spaceId),
-                onParentBadgesTap: () => goToSpace(
-                  context,
-                  canonicalParent.valueOrNull!.space.getRoomIdStr(),
-                ),
+    final spaceAvatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
+    final parentBadges =
+        ref.watch(parentAvatarInfosProvider(spaceId)).valueOrNull;
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 10),
+      child: Row(
+        children: <Widget>[
+          ActerAvatar(
+            options: AvatarOptions(
+              AvatarInfo(
+                uniqueId: spaceId,
+                displayName: spaceAvatarInfo.displayName,
+                avatar: spaceAvatarInfo.avatar,
+                onAvatarTap: () => openAvatar(context, ref, spaceId),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(
-                      spaceProfile.profile.displayName ?? spaceId,
-                      style: Theme.of(context).textTheme.titleMedium,
+              parentBadges: parentBadges,
+              size: 100,
+              badgesSize: 30,
+              onTapParentBadges: () => showParentSpaceList(context, spaceId),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SelectionArea(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (membership?.canString('CanSetName') == true) {
+                        showEditSpaceNameBottomSheet(
+                          context: context,
+                          ref: ref,
+                          spaceId: spaceId,
+                        );
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        spaceAvatarInfo.displayName ?? spaceId,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10, left: 10),
-                    child: SpaceInfo(spaceId: spaceId),
-                  ),
-                  Consumer(builder: spaceMembersBuilder),
-                ],
-              ),
-            ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 6, left: 10),
+                  child: SpaceInfo(spaceId: spaceId),
+                ),
+                Consumer(builder: spaceMembersBuilder),
+              ],
+            ),
           ),
-        );
-      },
-      error: (error, stack) => Text(
-        L10n.of(context).loadingFailed(error),
+        ],
       ),
-      loading: () => Skeletonizer(child: Text(L10n.of(context).loading)),
     );
   }
 
@@ -89,8 +90,8 @@ class SpaceHeaderProfile extends ConsumerWidget {
     WidgetRef ref,
     Widget? child,
   ) {
-    final spaceMembers = ref.watch(membersIdsProvider(spaceId));
-    return spaceMembers.when(
+    final membersLoader = ref.watch(membersIdsProvider(spaceId));
+    return membersLoader.when(
       data: (members) {
         final membersCount = members.length;
         if (membersCount > 5) {
@@ -100,21 +101,23 @@ class SpaceHeaderProfile extends ConsumerWidget {
         return Padding(
           padding: const EdgeInsets.only(left: 10),
           child: GestureDetector(
-            onTap: () => context.goNamed(
+            onTap: () => context.pushNamed(
               Routes.spaceMembers.name,
               pathParameters: {'spaceId': spaceId},
             ),
             child: Wrap(
               direction: Axis.horizontal,
-              spacing: -12,
+              spacing: -8,
               children: [
                 ...members.map(
                   (a) => MemberAvatar(memberId: a, roomId: spaceId),
                 ),
                 if (membersCount > 5)
-                  CircleAvatar(
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
+                  SizedBox(
+                    height: 30,
+                    width: 30,
+                    child: CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       child: Text(
                         '+${membersCount - 5}',
                         textAlign: TextAlign.center,
@@ -128,9 +131,10 @@ class SpaceHeaderProfile extends ConsumerWidget {
           ),
         );
       },
-      error: (error, stack) => Text(
-        L10n.of(context).loadingMembersFailed(error),
-      ),
+      error: (e, s) {
+        _log.severe('Failed to load members in space', e, s);
+        return Text(L10n.of(context).loadingMembersFailed(e));
+      },
       loading: () => const Skeletonizer(
         child: Wrap(
           direction: Axis.horizontal,

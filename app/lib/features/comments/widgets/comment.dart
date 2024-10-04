@@ -5,7 +5,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/features/comments/widgets/skeletons/comment_item_skeleton_widget.dart';
 
 class CommentWidget extends ConsumerWidget {
   final Comment comment;
@@ -23,61 +22,52 @@ class CommentWidget extends ConsumerWidget {
     final userId = comment.sender().toString();
     final msgContent = comment.msgContent();
     final formatted = msgContent.formattedBody();
-    var commentTime =
-        DateTime.fromMillisecondsSinceEpoch(comment.originServerTs());
-    final time = commentTime.timeago();
-    final memberInfo = ref.watch(
-      roomMemberProvider((roomId: roomID, userId: userId)),
+    final commentTime = DateTime.fromMillisecondsSinceEpoch(
+      comment.originServerTs(),
+      isUtc: true,
+    );
+    final time = commentTime.toLocal().timeago();
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider((roomId: roomID, userId: userId)),
     );
 
-    return memberInfo.when(
-      data: (data) {
-        final displayName = data.profile.displayName;
-        final avatarImage = data.profile.getAvatarImage();
-        return Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ListTile(
-                leading: ActerAvatar(
-                  options: AvatarOptions.DM(
-                    AvatarInfo(
-                      uniqueId: userId,
-                      displayName: displayName ?? userId,
-                      avatar: avatarImage,
-                    ),
-                    size: 18,
-                  ),
-                ),
-                title: Text(
-                  displayName ?? userId,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                subtitle: displayName == null ? null : Text(userId),
+    final displayName = avatarInfo.displayName;
+    return Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ListTile(
+            leading: ActerAvatar(
+              options: AvatarOptions.DM(
+                avatarInfo,
+                size: 18,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: formatted != null
-                    ? RenderHtml(
-                        text: formatted,
-                      )
-                    : Text(msgContent.body()),
-              ),
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  time.toString(),
-                  style: Theme.of(context).textTheme.labelMedium,
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
+            ),
+            title: Text(
+              displayName ?? userId,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            subtitle: displayName == null ? null : Text(userId),
           ),
-        );
-      },
-      error: (err, stackTrace) => const CommentItemSkeleton(),
-      loading: () => const CommentItemSkeleton(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: formatted != null
+                ? RenderHtml(
+                    text: formatted,
+                  )
+                : Text(msgContent.body()),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              time.toString(),
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
     );
   }
 }

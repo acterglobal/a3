@@ -1,28 +1,61 @@
+import 'dart:async';
+
 import 'package:acter/common/utils/feature_flagger.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SharedPrefFeaturesNotifier extends FeaturesNotifier<LabsFeature> {
-  late SharedPreferences prefInstance;
-  late VoidCallback listener;
-  late String instanceKey;
-  SharedPrefFeaturesNotifier(this.instanceKey, initState) : super(initState) {
+class SharedPrefFeaturesNotifier extends StateNotifier<Features<LabsFeature>> {
+  late ProviderSubscription<AsyncValue<Features<LabsFeature>>> listener;
+  final String instanceKey;
+  final Ref ref;
+
+  SharedPrefFeaturesNotifier(this.instanceKey, this.ref)
+      : super(
+          Features<LabsFeature>(
+            flags: const [],
+            defaultOn: LabsFeature.defaults,
+          ),
+        ) {
     _init();
   }
 
-  void _init() async {
-    prefInstance = await sharedPrefs();
-    final currentData = prefInstance.getString(instanceKey) ?? '[]';
-    final features = featureFlagsFromJson<LabsFeature>(
-      json.decode(currentData),
-      (name) => LabsFeature.values.byName(name),
-    );
-    resetFeatures(features);
-    listener = addListener((s) {
-      prefInstance.setString(instanceKey, s.toJson());
+  void _init() {
+    listener = ref.listen(asyncFeaturesProvider, (prev, next) {
+      if (!next.hasValue) {
+        // ignore and wait until it has loaded, debounce in-between
+        return;
+      }
+      final val = next.value;
+      if (val == null) throw 'next features not available';
+      state = val;
     });
+  }
+
+  Future<void> newState(Features<LabsFeature> s) async {
+    final prefInstance = await sharedPrefs();
+    prefInstance.setString(instanceKey, s.toJson());
+    final completer = Completer();
+    final removeListener = addListener((_) {
+      completer.complete();
+    });
+    final future = completer.future;
+    future.whenComplete(() {
+      // ensure we only fire once
+      removeListener();
+    });
+    ref.invalidate(asyncFeaturesProvider);
+    return future;
+  }
+
+  // Let’s the UI update the state of a flag
+  Future<void> setActive(LabsFeature f, bool active) {
+    return newState(state.updateFlag(f, active));
+  }
+
+  // Allow higher level to reset the features flagged
+  Future<void> resetFeatures(List<FeatureFlag<LabsFeature>> features) {
+    return newState(Features(flags: features, defaultOn: state.defaultOn));
   }
 }

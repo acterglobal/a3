@@ -8,15 +8,16 @@ class LanguageModel {
   });
 
   factory LanguageModel.fromCode(String? locale) {
-    switch (locale) {
-      case 'de':
-        return const LanguageModel.german();
-      case 'pl':
-        return const LanguageModel.polish();
-      case 'en':
-      default:
-        return const LanguageModel.english();
-    }
+    return switch (locale) {
+      'ar' => const LanguageModel.arabic(),
+      'de' => const LanguageModel.german(),
+      'en' => const LanguageModel.english(),
+      'es' => const LanguageModel.spanish(),
+      'pl' => const LanguageModel.polish(),
+      'fr' => const LanguageModel.french(),
+      'sw' => const LanguageModel.swahili(),
+      _ => const LanguageModel.english(), // english is fallback
+    };
   }
 
   // We show each language in their native tongue
@@ -28,14 +29,34 @@ class LanguageModel {
       : languageName = 'Deutsch',
         languageCode = 'de';
 
+  const LanguageModel.french()
+      : languageName = 'Français',
+        languageCode = 'fr';
+
   const LanguageModel.polish()
       : languageName = 'Polski',
         languageCode = 'pl';
 
+  const LanguageModel.spanish()
+      : languageName = 'Espanol',
+        languageCode = 'es';
+
+  const LanguageModel.arabic()
+      : languageName = 'اَلْعَرَبِيَّةُ',
+        languageCode = 'ar';
+
+  const LanguageModel.swahili()
+      : languageName = 'Swahili',
+        languageCode = 'sw';
+
   static const allLanguagesList = [
-    // we show them in ehm... alphabetical order
+    // we show them in ehm... alphabetical order of the name in their own language
     LanguageModel.german(),
     LanguageModel.english(),
+    LanguageModel.spanish(),
+    LanguageModel.french(),
     LanguageModel.polish(),
+    LanguageModel.arabic(),
+    LanguageModel.swahili(),
   ];
 }

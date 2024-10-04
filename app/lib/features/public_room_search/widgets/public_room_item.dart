@@ -3,10 +3,10 @@ import 'package:acter/features/public_room_search/providers/public_space_info_pr
 import 'package:acter/features/public_room_search/types.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::public_room_search::public_room_item');
@@ -22,29 +22,27 @@ class _JoinBtn extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(roomMembershipProvider(item.roomIdStr())).when(
-          data: (data) =>
-              data == null ? noMember(context) : alreadyMember(context),
-          error: (error, st) {
-            _log.severe('loading membership info failed', error, st);
-            return Text(L10n.of(context).loadingFailed(error));
-          },
-          loading: () => Skeletonizer(
-            child: OutlinedButton(
-              onPressed: () => onSelected(
-                item,
-              ),
-              child: Text(L10n.of(context).requestToJoin),
-            ),
-          ),
-        );
+    final roomId = item.roomIdStr();
+    final membershipLoader = ref.watch(roomMembershipProvider(roomId));
+    return membershipLoader.when(
+      data: (membership) =>
+          membership == null ? noMember(context) : alreadyMember(context),
+      error: (e, s) {
+        _log.severe('Failed to load room membership', e, s);
+        return Text(L10n.of(context).loadingFailed(e));
+      },
+      loading: () => Skeletonizer(
+        child: OutlinedButton(
+          onPressed: () => onSelected(item),
+          child: Text(L10n.of(context).requestToJoin),
+        ),
+      ),
+    );
   }
 
   Widget alreadyMember(BuildContext context) {
     return OutlinedButton(
-      onPressed: () => onSelected(
-        item,
-      ),
+      onPressed: () => onSelected(item),
       child: Text(L10n.of(context).member),
     );
   }
@@ -52,16 +50,12 @@ class _JoinBtn extends ConsumerWidget {
   Widget noMember(BuildContext context) {
     if (item.joinRuleStr() == 'Public') {
       return OutlinedButton(
-        onPressed: () => onSelected(
-          item,
-        ),
+        onPressed: () => onSelected(item),
         child: Text(L10n.of(context).join),
       );
     } else {
       return OutlinedButton(
-        onPressed: () => onSelected(
-          item,
-        ),
+        onPressed: () => onSelected(item),
         child: Text(L10n.of(context).requestToJoin),
       );
     }
@@ -80,7 +74,7 @@ class PublicRoomItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileInfo = ref.watch(searchItemProfileData(item));
+    final avatarLoader = ref.watch(searchItemProfileData(item));
     final topic = item.topic();
 
     return Card(
@@ -93,21 +87,13 @@ class PublicRoomItem extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: ListTile(
-                onTap: () => onSelected(
-                  item,
-                ),
-                leading: profileInfo.when(
-                  data: (profile) => ActerAvatar(
-                    options: AvatarOptions(
-                      AvatarInfo(
-                        uniqueId: item.roomIdStr(),
-                        displayName: profile.displayName,
-                        avatar: profile.getAvatarImage(),
-                      ),
-                    ),
+                onTap: () => onSelected(item),
+                leading: avatarLoader.when(
+                  data: (avatar) => ActerAvatar(
+                    options: AvatarOptions(avatar),
                   ),
                   error: (e, s) {
-                    _log.severe('loading failed', e, s);
+                    _log.severe('Failed to load avatar info', e, s);
                     return fallbackAvatar();
                   },
                   loading: fallbackAvatar,
@@ -132,8 +118,10 @@ class PublicRoomItem extends ConsumerWidget {
           if (topic != null)
             Flexible(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 child: Text(
                   topic,
                   style: Theme.of(context).textTheme.labelMedium,

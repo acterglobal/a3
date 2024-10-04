@@ -1,3 +1,4 @@
+import 'package:acter/config/env.g.dart';
 import 'package:flutter/foundation.dart';
 
 const String heart = '\u{2764}';
@@ -17,7 +18,6 @@ class LoginPageKeys {
   static const forgotPassBtn = Key('forgot-pass-btn');
   static const usernameField = Key('login-username-txt');
   static const passwordField = Key('login-password-txt');
-  static const nameField = Key('login-username-txt');
   static const snackbarSuccess = Key('login-snackbar-success');
   static const snackbarFailed = Key('login-snackbar-failed');
 }
@@ -28,41 +28,22 @@ class Keys {
   static const bottomBar = Key('bottom-bar');
   static const newsSectionBtn = Key('news-section-btn');
   static const sidebarBtn = Key('sidebar-btn');
-  static const logoutBtn = Key('login-btn');
+  static const logoutBtn = Key('logout-btn');
   static const exploreBtn = Key('explore-btn');
-  static const skipBtn = Key('skip-btn');
   static const loginBtn = Key('login-btn');
   static const avatar = Key('user-avatar');
   static const usernameLabel = Key('username-lbl');
 }
 
-const inCI = bool.fromEnvironment(
-  'CI',
-  defaultValue: false,
-);
+const canGuestLogin = Env.canLoginAsGuest;
 
-const canGuestLogin = bool.fromEnvironment(
-  'CAN_LOGIN_AS_GUEST',
-  defaultValue: false,
-);
+const autoGuestLogin = Env.autoLoginAsGuest;
 
-const autoGuestLogin = bool.fromEnvironment(
-  'AUTO_LOGIN_AS_GUEST',
-  defaultValue: false,
-);
+const inCI = Env.isCI;
+const isDemo = Env.isDemo;
+const isNightly = Env.isNightly;
 
-const giphyKey = String.fromEnvironment(
-  'GIPHY_KEY',
-  defaultValue: 'C4dMA7Q19nqEGdpfj82T8ssbOeZIylD4',
-);
-
-const defaultServersStr = String.fromEnvironment(
-  'DEFAULT_SEARCH_SERVER',
-  defaultValue:
-      'acter.global=Acter.global,matrix.org=Matrix.org,matrixrooms.info=Global Search,the-apothecary.club=The Apothecary Club,systemausfall.org=Systemausfall,gitter.im=Gitter.IM',
-);
-
-final defaultServers = parseServers(defaultServersStr);
+final defaultServers = parseServers(Env.defaultSearchServers);
 
 const List<TargetPlatform> desktopPlatforms = [
   TargetPlatform.macOS,

@@ -1,12 +1,19 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/rooms.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/router/utils.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:html/parser.dart';
 
 //Check for mentioned user link
 final mentionedUserLinkRegex = RegExp(
@@ -112,7 +119,7 @@ UserMentionMessageData parseUserMentionMessage(
     // Replace displayName with @displayName
     msg = msg.replaceAll(
       aTagElement.outerHtml,
-      '@$displayName',
+      displayName,
     );
   }
   return UserMentionMessageData(
@@ -192,7 +199,7 @@ void askToJoinRoom(
         topLeft: Radius.circular(20),
       ),
     ),
-    builder: (ctx) => Container(
+    builder: (context) => Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -206,7 +213,7 @@ void askToJoinRoom(
           const SizedBox(height: 20),
           ActerPrimaryActionButton(
             onPressed: () async {
-              Navigator.of(context).pop();
+              Navigator.pop(context);
               final server = roomId.split(':').last;
               await joinRoom(
                 context,
@@ -223,4 +230,165 @@ void askToJoinRoom(
       ),
     ),
   );
+}
+
+final matrixLinks = RegExp(
+  '(matrix:|https://matrix.to/#/)([\\S]*)',
+  caseSensitive: false,
+);
+
+String prepareMsg(MsgContent? content) {
+  if (content == null) return '';
+  final formatted = content.formattedBody();
+  if (formatted != null) {
+    return formatted;
+  }
+  final body = content.body();
+  // replace all matrix-style links with a hrefs
+  return body.replaceAllMapped(
+    matrixLinks,
+    (match) => '<a href="${match.group(0)}">${match.group(0)}</a>',
+  );
+}
+
+String parseEditMsg(types.Message message) {
+  if (message is types.TextMessage) {
+    // Parse String Data to HTML document
+    final document = parse(message.text);
+
+    if (document.body != null) {
+      // Get message data
+      String msg = message.text.trim();
+
+      // Get list of 'A Tags' values
+      final aTagElementList = document.getElementsByTagName('a');
+
+      for (final aTagElement in aTagElementList) {
+        final userMentionMessageData =
+            parseUserMentionMessage(msg, aTagElement);
+        msg = userMentionMessageData.parsedMessage;
+      }
+
+      // Parse data
+      final messageDocument = parse(msg);
+      return messageDocument.body?.text ?? '';
+    }
+  }
+  return '';
+}
+
+Future<void> parseUserMentionText(
+  String htmlText,
+  String roomId,
+  ActerTriggerAutoCompleteTextController controller,
+  WidgetRef ref,
+) async {
+  final roomMentions = await ref.read(membersIdsProvider(roomId).future);
+  final inputNotifier = ref.read(chatInputProvider.notifier);
+  // Regular expression to match mention links
+  final mentionRegex = RegExp(r'\[@([^\]]+)\]\(https://matrix\.to/#/([^)]+)\)');
+  List<TaggedText> tags = [];
+  String parsedText = htmlText;
+  // Find all matches
+  final matches = mentionRegex.allMatches(htmlText);
+
+  int offset = 0;
+  for (final match in matches) {
+    final linkedName = match.group(1);
+    final userId = match.group(2);
+
+    String? displayName;
+    bool isValidMention = false;
+
+    if (linkedName != null && userId != null) {
+      displayName = linkedName;
+      isValidMention = roomMentions.any(
+        (uId) => uId == userId,
+      );
+    }
+    if (isValidMention && displayName != null) {
+      final simpleMention = '@$displayName';
+      final startIndex = match.start - offset;
+      final endIndex = startIndex + simpleMention.length;
+      // restore mention state of input
+      inputNotifier.addMention(displayName, userId!);
+      // restore tags
+      tags.add(
+        TaggedText(
+          trigger: '@',
+          displayText: simpleMention,
+          start: startIndex,
+          end: endIndex,
+        ),
+      );
+
+      // Replace the mention in parsed text
+      parsedText = parsedText.replaceRange(
+        startIndex,
+        match.end - offset,
+        simpleMention,
+      );
+      offset += (match.end - match.start) - simpleMention.length;
+    }
+  }
+
+  // Set the parsed text to the text controller
+  controller.text = parsedText;
+
+  // Apply the tags to the text controller
+  for (final tag in tags) {
+    controller.addTag(tag);
+  }
+}
+
+// save composer draft object handler
+Future<void> saveDraft(
+  String text,
+  String roomId,
+  WidgetRef ref,
+) async {
+  // get the convo object to initiate draft
+  final chat = await ref.read(chatProvider(roomId).future);
+  final messageId = ref.read(chatInputProvider).selectedMessage?.id;
+  final mentions = ref.read(chatInputProvider).mentions;
+  final userMentions = [];
+  String? htmlText = text;
+  if (mentions.isNotEmpty) {
+    mentions.forEach((key, value) {
+      userMentions.add(value);
+      htmlText = htmlText?.replaceAll(
+        '@$key',
+        '[@$key](https://matrix.to/#/$value)',
+      );
+    });
+  }
+
+  if (chat != null) {
+    if (messageId != null) {
+      final selectedMessageState =
+          ref.read(chatInputProvider).selectedMessageState;
+      if (selectedMessageState == SelectedMessageState.edit) {
+        await chat.saveMsgDraft(text, htmlText, 'edit', messageId);
+      } else if (selectedMessageState == SelectedMessageState.replyTo) {
+        await chat.saveMsgDraft(text, htmlText, 'reply', messageId);
+      }
+    } else {
+      await chat.saveMsgDraft(text, htmlText, 'new', null);
+    }
+  }
+}
+
+Future<void> onMessageLinkTap(Uri uri, BuildContext context) async {
+  final roomId = getRoomIdFromLink(uri);
+
+  ///If link is type of matrix room link
+  if (roomId != null) {
+    goToChat(context, roomId);
+  }
+
+  ///If link is other than matrix room link
+  ///Then open it on browser
+  else {
+    await openLink(uri.toString(), context);
+  }
 }

@@ -1,6 +1,9 @@
 import 'package:acter/common/providers/notifiers/client_pref_notifier.dart';
 import 'package:acter/features/chat/models/room_list_filter_state/room_list_filter_state.dart';
+import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
+
+final _log = Logger('a3::chat::room_list_filter_provider');
 
 final persistentRoomListFilterSelector = createMapPrefProvider<FilterSelection>(
   prefKey: 'chatRoomFilterSelection',
@@ -15,17 +18,22 @@ final roomListFilterProvider =
       RoomListFilterNotifier(ref.read(persistentRoomListFilterSelector), ref),
 );
 
-final hasRoomFilters = StateProvider((ref) {
+final hasRoomFilters = Provider((ref) {
   final state = ref.watch(roomListFilterProvider);
   if (state.searchTerm != null && state.searchTerm!.isNotEmpty) {
+    _log.info('has search term');
     return true;
   }
   return state.selection != FilterSelection.all;
 });
 
 class RoomListFilterNotifier extends StateNotifier<RoomListFilterState> {
-  RoomListFilterNotifier(FilterSelection selection, this.ref)
-      : super(RoomListFilterState(selection: selection)) {
+  final Ref ref;
+
+  RoomListFilterNotifier(
+    FilterSelection selection,
+    this.ref,
+  ) : super(RoomListFilterState(selection: selection)) {
     ref.listen(persistentRoomListFilterSelector, (previous, next) {
       // the persistance loader might come back a little late ...
       if (state.selection != next) {
@@ -34,8 +42,6 @@ class RoomListFilterNotifier extends StateNotifier<RoomListFilterState> {
       }
     });
   }
-
-  final Ref ref;
 
   Future<void> setSelection(FilterSelection newFilter) async {
     state = state.copyWith(selection: newFilter);

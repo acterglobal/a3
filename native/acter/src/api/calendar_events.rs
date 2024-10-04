@@ -14,9 +14,11 @@ use chrono::DateTime;
 use futures::stream::StreamExt;
 use icalendar::Calendar as iCalendar;
 use matrix_sdk::{room::Room, RoomState};
-use ruma::serde::PartialEqAsRefStr;
-use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
+use matrix_sdk_base::ruma::{
+    events::{room::message::TextMessageEventContent, MessageLikeEventType},
+    serde::PartialEqAsRefStr,
+    OwnedEventId, OwnedRoomId, OwnedUserId,
+};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,

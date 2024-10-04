@@ -1,8 +1,7 @@
-import 'package:acter/common/notifications/notifications.dart';
-import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/config/notifications/init.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
@@ -13,6 +12,7 @@ import 'package:acter/features/settings/widgets/app_notifications_settings_tile.
 import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
 import 'package:acter/features/settings/widgets/settings_section_with_title_actions.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_notifify/util.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -84,8 +84,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const AppBarTheme().backgroundColor,
-          elevation: 0.0,
+          automaticallyImplyLeading: !context.isLargeScreen,
           title: Text(L10n.of(context).notifications),
         ),
         body: SettingsList(
@@ -201,8 +200,8 @@ class NotificationsSettingsPage extends ConsumerWidget {
   ) async {
     EasyLoading.show(status: L10n.of(context).changingNotificationMode);
     try {
-      final notifier = ref.read(notificationSettingsProvider).valueOrNull!;
-      await notifier.setDefaultNotificationMode(
+      final settings = await ref.read(notificationSettingsProvider.future);
+      await settings.setDefaultNotificationMode(
         isEncrypted,
         isOneToOne,
         newMode,
@@ -212,8 +211,8 @@ class NotificationsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
-    } catch (e, st) {
-      _log.severe('Failed to update notification status', e, st);
+    } catch (e, s) {
+      _log.severe('Failed to update notification status', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -229,52 +228,56 @@ class NotificationsSettingsPage extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    final potentialEmails = ref.watch(possibleEmailToAddForPushProvider);
+    final emailsLoader = ref.watch(possibleEmailToAddForPushProvider);
+    final pushersLoader = ref.watch(pushersProvider);
     return SettingsSectionWithTitleActions(
       title: Text(L10n.of(context).notificationTargets),
-      actions: potentialEmails.maybeWhen(
-        orElse: () => [],
-        data: (emails) {
-          if (emails.isEmpty) {
-            return [];
-          }
-          return [
+      actions: [
+        IconButton(
+          onPressed: () {
+            ref.invalidate(pushersProvider);
+            EasyLoading.showToast(L10n.of(context).refreshing);
+          },
+          icon: const Icon(Atlas.refresh_account_arrows_thin),
+        ),
+        emailsLoader.maybeWhen(
+          orElse: () => const SizedBox.shrink(),
+          data: (emails) => emails.isEmpty ? const SizedBox.shrink():
             IconButton(
-              icon: Icon(
-                Atlas.plus_circle_thin,
-                color: Theme.of(context).colorScheme.neutral5,
+                icon: const Icon(Atlas.plus_circle_thin),
+                iconSize: 20,
+                color: Theme.of(context).colorScheme.surface,
+                onPressed: () => _onTargetAdd(context, ref, emails),
               ),
-              iconSize: 20,
-              color: Theme.of(context).colorScheme.surface,
-              onPressed: () => _onTargetAdd(context, ref, emails),
+        ),
+      ],
+      tiles: pushersLoader.when(
+        data: (pushers) {
+          if (pushers.isEmpty) {
+            return [
+              SettingsTile(
+                title: Text(L10n.of(context).noPushTargetsAddedYet),
+              ),
+            ];
+          }
+          return pushers
+              .map((pusher) => _pusherTile(context, ref, pusher))
+              .toList();
+        },
+        error: (e, s) {
+          _log.severe('Failed to load pushers', e, s);
+          return [
+            SettingsTile(
+              title: Text(L10n.of(context).failedToLoadPushTargets(e)),
             ),
           ];
         },
-      ),
-      tiles: ref.watch(pushersProvider).when(
-            data: (items) {
-              if (items.isEmpty) {
-                return [
-                  SettingsTile(
-                    title: Text(L10n.of(context).noPushTargetsAddedYet),
-                  ),
-                ];
-              }
-              return items
-                  .map((item) => _pusherTile(context, ref, item))
-                  .toList();
-            },
-            error: (e, s) => [
-              SettingsTile(
-                title: Text(L10n.of(context).failedToLoadPushTargets(e)),
-              ),
-            ],
-            loading: () => [
-              SettingsTile(
-                title: Text(L10n.of(context).loadingTargets),
-              ),
-            ],
+        loading: () => [
+          SettingsTile(
+            title: Text(L10n.of(context).loadingTargets),
           ),
+        ],
+      ),
     );
   }
 
@@ -296,18 +299,19 @@ class NotificationsSettingsPage extends ConsumerWidget {
     try {
       await client.addEmailPusher(
         appIdPrefix,
-        (await deviceName()),
+        await deviceName(),
         emailToAdd,
         null,
       );
       ref.invalidate(possibleEmailToAddForPushProvider);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to add email pusher', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToAdd('$emailToAdd: $e'),
+        L10n.of(context).failedToAdd(emailToAdd, e),
         duration: const Duration(seconds: 3),
       );
       return;
@@ -368,9 +372,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
             ),
             ActerDangerActionButton(
               onPressed: () => _onTargetDelete(context, ref, item),
-              child: Text(
-                L10n.of(context).deleteTarget,
-              ),
+              child: Text(L10n.of(context).deleteTarget),
             ),
           ],
         ),
@@ -394,7 +396,8 @@ class NotificationsSettingsPage extends ConsumerWidget {
       EasyLoading.showToast(L10n.of(context).pushTargetDeleted);
       ref.invalidate(possibleEmailToAddForPushProvider);
       ref.invalidate(pushersProvider);
-    } catch (e) {
+    } catch (e, s) {
+      _log.severe('Failed to delete email pusher', e, s);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

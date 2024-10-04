@@ -7,9 +7,11 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class MessageUserButton extends ConsumerWidget {
   final Member member;
+
   const MessageUserButton({super.key, required this.member});
 
   @override
@@ -21,10 +23,10 @@ class MessageUserButton extends ConsumerWidget {
         child: OutlinedButton.icon(
           icon: const Icon(Atlas.chats_thin),
           onPressed: () async {
-            context.pop();
+            Navigator.pop(context);
             goToChat(context, dmId);
           },
-          label: const Text('Message'),
+          label: Text(L10n.of(context).message),
         ),
       );
     } else {
@@ -36,12 +38,10 @@ class MessageUserButton extends ConsumerWidget {
             ref.read(createChatSelectedUsersProvider.notifier).state = [
               profile,
             ];
-            context.pop();
-            context.pushNamed(
-              Routes.createChat.name,
-            );
+            Navigator.pop(context);
+            context.pushNamed(Routes.createChat.name);
           },
-          label: const Text('Start DM'),
+          label: Text(L10n.of(context).startDM),
         ),
       );
     }

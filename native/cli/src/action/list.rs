@@ -30,7 +30,7 @@ impl List {
         let sync_state = client.start_sync();
 
         let mut is_synced = sync_state.first_synced_rx();
-        while is_synced.next().await != Some(true) {} // let's wait for it to have synced
+        while is_synced.next().await != Some(true) {} // let’s wait for it to have synced
         info!(" - First Sync finished - ");
 
         if self.await_history_sync {
@@ -44,7 +44,7 @@ impl List {
             let room_id = sp.room_id();
             let is_acter_space = sp.is_acter_space().await?;
             let acter_space = if is_acter_space { 'x' } else { ' ' };
-            let display_name = sp.computed_display_name().await?;
+            let display_name = sp.compute_display_name().await?;
             println!(" ## [{acter_space}] {room_id}: {display_name}");
             if self.details {
                 let aliases = {
@@ -155,7 +155,7 @@ impl List {
                 println!(
                     " * {} : {}",
                     convo.room_id(),
-                    convo.computed_display_name().await?
+                    convo.compute_display_name().await?
                 );
             }
         }

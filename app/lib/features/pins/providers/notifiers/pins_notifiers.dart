@@ -1,71 +1,90 @@
 import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show ActerPin, Client;
+import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-class AsyncPinsNotifier extends AutoDisposeAsyncNotifier<List<ActerPin>> {
-  late Stream<bool> _listener;
-  late StreamSubscription<bool> _poller;
+final _log = Logger('a3::pins::pins_notifier');
 
-  Future<List<ActerPin>> _getPins() async {
-    final client = ref.read(alwaysClientProvider);
-    return (await client.pins()).toList(); // this might throw internally
-  }
-
-  @override
-  Future<List<ActerPin>> build() async {
-    final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream('pins'); // keep it resident in memory
-    _poller = _listener.listen((e) async {
-      state = await AsyncValue.guard(_getPins);
-    });
-    ref.onDispose(() => _poller.cancel());
-    return await _getPins();
-  }
-}
-
+//Get single pin details
 class AsyncPinNotifier
     extends AutoDisposeFamilyAsyncNotifier<ActerPin, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
-  Future<ActerPin> _getPin() async {
-    final client = ref.read(alwaysClientProvider);
-    return await client.waitForPin(arg, null);
+  Future<ActerPin> _getPin(Client client, String pinId) async {
+    return await client.waitForPin(pinId, null);
   }
 
   @override
   Future<ActerPin> build(String arg) async {
+    final pinId = arg;
     final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(arg); // keep it resident in memory
-    _poller = _listener.listen((e) async {
-      state = await AsyncValue.guard(_getPin);
-    }); // stay up to date
+    _listener = client.subscribeStream(pinId); // keep it resident in memory
+    _poller = _listener.listen(
+      (data) async {
+        state = await AsyncValue.guard(
+          () async => await _getPin(client, pinId),
+        );
+      },
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('stream ended');
+      },
+    ); // stay up to date
     ref.onDispose(() => _poller.cancel());
-    return await _getPin();
+    return await _getPin(client, pinId);
   }
 }
 
-class AsyncSpacePinsNotifier
-    extends AutoDisposeFamilyAsyncNotifier<List<ActerPin>, Space> {
+//Get pin list details
+class AsyncPinListNotifier
+    extends FamilyAsyncNotifier<List<ActerPin>, String?> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
-  Future<List<ActerPin>> _getPins() async {
-    return (await arg.pins()).toList(); // this might throw internally
+  @override
+  Future<List<ActerPin>> build(String? arg) async {
+    final spaceId = arg;
+    final client = ref.watch(alwaysClientProvider);
+
+    //GET ALL PINS
+    if (spaceId == null) {
+      _listener = client.subscribeStream('pins');
+    } else {
+      //GET SPACE PINS
+      _listener = client.subscribeStream('$spaceId::pins');
+    }
+
+    _poller = _listener.listen(
+      (data) async {
+        state = await AsyncValue.guard(
+          () async => await _getPinList(client, spaceId),
+        );
+      },
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('stream ended');
+      },
+    );
+    ref.onDispose(() => _poller.cancel());
+    return await _getPinList(client, spaceId);
   }
 
-  @override
-  Future<List<ActerPin>> build(Space arg) async {
-    final client = ref.watch(alwaysClientProvider);
-    final spaceId = arg.getRoomId();
-    _listener =
-        client.subscribeStream('$spaceId::pins'); // keep it resident in memory
-    _poller = _listener.listen((e) async {
-      state = await AsyncValue.guard(_getPins);
-    });
-    ref.onDispose(() => _poller.cancel());
-    return await _getPins();
+  Future<List<ActerPin>> _getPinList(Client client, String? spaceId) async {
+    //GET ALL PINS
+    if (spaceId == null) {
+      return (await client.pins()).toList(); // this might throw internally
+    } else {
+      //GET SPACE PINS
+      final space = await client.space(spaceId);
+      return (await space.pins()).toList(); // this might throw internally
+    }
   }
 }

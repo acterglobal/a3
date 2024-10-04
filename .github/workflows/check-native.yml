@@ -1,0 +1,103 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+name: Native
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  clippy:
+    runs-on: ubuntu-latest
+    name: Clippy ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: Core
+            package: acter-core
+            clippy_extras: --tests
+          - name: SDK
+            package: acter
+            needs_flutter: true
+            clippy_extras: --tests
+          - name: file-event-cache
+            package: matrix-sdk-store-file-event-cache
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy
+      - uses: subosito/flutter-action@v2
+        if: ${{matrix.needs_flutter}}
+        with:
+          flutter-version: '3.24'
+          channel: 'stable'
+      - name: Run Clippy
+        run: cargo clippy  -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
+
+  test:
+    runs-on: ubuntu-latest
+    name: Test ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: Core
+            package: acter-core
+            clippy_extras: --tests
+          - name: file-event-cache
+            package: matrix-sdk-store-file-event-cache
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: taiki-e/install-action@nextest
+      - name: Test
+        run: cargo nextest run -p ${{matrix.package}}
+
+  release:
+    runs-on: ubuntu-latest
+    name: Release Build ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: SDK
+            package: acter
+            needs_flutter: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: subosito/flutter-action@v2
+        if: ${{matrix.needs_flutter}}
+        with:
+          flutter-version: '3.24'
+          channel: 'stable'
+      - name: Release Build
+        run: cargo build -p ${{matrix.package}} --release
+
+
+  ffigen:
+    name: FFI-Gen up-to-date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24'
+          channel: 'stable'
+      - name: Install supported rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Install cargo-make
+        uses: davidB/rust-cargo-make@v1
+      - name: "Build FFI interface"
+        run: cargo make ffigen
+      - name: "Check file is no different"
+        run: git diff --exit-code packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart

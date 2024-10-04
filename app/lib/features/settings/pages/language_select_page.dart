@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/language.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/model/language_model.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -23,8 +23,7 @@ class LanguageSelectPage extends ConsumerWidget {
 
   AppBar _buildAppbar(BuildContext context) {
     return AppBar(
-      backgroundColor: const AppBarTheme().backgroundColor,
-      elevation: 0.0,
+      automaticallyImplyLeading: !context.isLargeScreen,
       title: Text(L10n.of(context).selectLanguage),
       centerTitle: true,
     );
@@ -45,12 +44,12 @@ class LanguageSelectPage extends ConsumerWidget {
     return Card(
       child: RadioListTile(
         value: language.languageCode,
-        groupValue: ref.watch(languageProvider),
+        groupValue: ref.watch(localeProvider),
         title: Text(language.languageName),
-        onChanged: (value) async {
-          if (value != null) {
-            await setLanguage(value);
-            ref.read(languageProvider.notifier).update((state) => value);
+        onChanged: (val) async {
+          if (val != null) {
+            final notifier = ref.read(localeProvider.notifier);
+            await notifier.setLanguage(val);
           }
         },
       ),

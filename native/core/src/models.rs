@@ -18,26 +18,27 @@ pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use common::*;
 pub use core::fmt::Debug;
 use enum_dispatch::enum_dispatch;
+use matrix_sdk::room::Room;
+use matrix_sdk_base::ruma::{
+    events::{
+        reaction::ReactionEventContent,
+        room::redaction::{OriginalRoomRedactionEvent, RoomRedactionEventContent},
+        AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent,
+        UnsignedRoomRedactionEvent,
+    },
+    serde::Raw,
+    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId, UserId,
+};
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 pub use reactions::{Reaction, ReactionManager, ReactionStats};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
-use ruma::RoomId;
-use ruma_common::{
-    serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, UserId,
-};
-use ruma_events::{
-    reaction::ReactionEventContent,
-    room::redaction::{OriginalRoomRedactionEvent, RoomRedactionEventContent},
-    AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent,
-    UnsignedRoomRedactionEvent,
-};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{
     Task, TaskList, TaskListUpdate, TaskSelfAssign, TaskSelfUnassign, TaskStats, TaskUpdate,
 };
-use tracing::{error, trace};
+use tracing::{info, trace, warn};
 
 #[cfg(test)]
 pub use test::{TestModel, TestModelBuilder, TestModelBuilderError};
@@ -134,7 +135,7 @@ pub trait ActerModel: Debug {
 
     /// handle transition from an external Item upon us
     fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
-        error!(?self, ?model, "Transition has not been implemented");
+        warn!(?self, ?model, "Transition has not been implemented");
         Ok(false)
     }
     /// The execution to run when this model is found.
@@ -250,6 +251,13 @@ impl ActerModel for RedactedActerModel {
     async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
         default_model_execute(store, self.into()).await
     }
+
+    fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
+        // Transitions aren’t possible anymore when the source has been redacted
+        // so we eat up the content and just log that we had to do that.
+        info!(?self, ?model, "Transition on Redaction Swallowed");
+        Ok(false)
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -285,10 +293,10 @@ impl EventMeta {
     }
 }
 
-pub async fn can_redact(room: &matrix_sdk::Room, sender_id: &UserId) -> crate::error::Result<bool> {
+pub async fn can_redact(room: &Room, sender_id: &UserId) -> crate::error::Result<bool> {
     let client = room.client();
     let Some(user_id) = client.user_id() else {
-        // not logged in means we can't redact
+        // not logged in means we can’t redact
         return Ok(false);
     };
     Ok(if sender_id == user_id {
@@ -673,7 +681,7 @@ impl TryFrom<&Raw<AnySyncTimelineEvent>> for AnyActerModel {
 mod tests {
     use super::*;
     use crate::Result;
-    use ruma_common::owned_event_id;
+    use matrix_sdk_base::ruma::owned_event_id;
     #[test]
     fn ensure_minimal_tasklist_parses() -> Result<()> {
         let json_raw = r#"{"type":"global.acter.dev.tasklist",
@@ -765,7 +773,7 @@ mod tests {
                     ..
                 })
             ),
-            "Didn't receive expected error: {acter_ev_result:?}"
+            "Didn’t receive expected error: {acter_ev_result:?}"
         );
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())
@@ -835,7 +843,7 @@ mod tests {
                     ..
                 })
             ),
-            "Didn't receive expected error: {acter_ev_result:?}"
+            "Didn’t receive expected error: {acter_ev_result:?}"
         );
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())

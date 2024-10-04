@@ -14,13 +14,16 @@ use futures::{
 use matrix_sdk::{
     media::{MediaRequest, UniqueKey},
     room::Room as SdkRoom,
-    Client as SdkClient, RoomState,
+    Client as SdkClient,
 };
-use ruma_common::{
-    device_id, IdParseError, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
-    OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
+use matrix_sdk_base::{
+    ruma::{
+        device_id, events::room::MediaSource, IdParseError, OwnedDeviceId, OwnedMxcUri,
+        OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId,
+        RoomAliasId, RoomId, RoomOrAliasId, UserId,
+    },
+    RoomStateFilter,
 };
-use ruma_events::room::MediaSource;
 use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tokio::{
     sync::{broadcast::Receiver, RwLock},
@@ -85,7 +88,7 @@ impl Client {
         source: MediaSource,
         thumb_size: Option<Box<ThumbnailSize>>,
     ) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         let request = MediaRequest { source, format };
@@ -105,7 +108,7 @@ impl Client {
         tmp_path: String,
         file_suffix: &str,
     ) -> Result<String> {
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         let request = MediaRequest { source, format };
@@ -119,7 +122,7 @@ impl Client {
             "tasked to get source binary and store to file"
         );
         if !path.exists() {
-            // only download if the temp isn't already there.
+            // only download if the temp isn’t already there.
             let target_path = path.clone();
             RUNTIME
                 .spawn(async move {
@@ -137,22 +140,33 @@ impl Client {
             .context("Path was generated from strings. Must be string");
     }
 
-    pub(crate) async fn join_room(
+    pub async fn join_room(
         &self,
         room_id_or_alias: String,
-        server_names: Vec<String>,
+        server_name: Option<String>,
     ) -> Result<Room> {
-        let alias = RoomOrAliasId::parse(room_id_or_alias)?;
-        let server_names = server_names
-            .into_iter()
-            .map(OwnedServerName::try_from)
-            .collect::<Result<Vec<OwnedServerName>, IdParseError>>()?;
+        let parsed = RoomOrAliasId::parse(room_id_or_alias)?;
+        let server_names = match server_name {
+            Some(inner) => vec![OwnedServerName::try_from(inner)?],
+            None => parsed
+                .server_name()
+                .map(|i| vec![i.to_owned()])
+                .unwrap_or_default(),
+        };
+
+        self.join_room_typed(parsed, server_names).await
+    }
+    pub async fn join_room_typed(
+        &self,
+        room_id_or_alias: OwnedRoomOrAliasId,
+        server_names: Vec<OwnedServerName>,
+    ) -> Result<Room> {
         let core = self.core.clone();
         RUNTIME
             .spawn(async move {
                 let joined = core
                     .client()
-                    .join_room_by_id_or_alias(alias.as_ref(), server_names.as_slice())
+                    .join_room_by_id_or_alias(&room_id_or_alias, server_names.as_slice())
                     .await?;
                 Ok(Room::new(core.clone(), joined))
             })
@@ -196,10 +210,9 @@ impl Client {
 
     async fn get_spaces_and_chats(&self) -> (Vec<Room>, Vec<Room>) {
         let client = self.core.clone();
-        self.rooms()
+        // only include items we are ourselves are currently joined in
+        self.rooms_filtered(RoomStateFilter::JOINED)
             .into_iter()
-            .filter(|room| matches!(room.state(), RoomState::Joined))
-            // only include items we are ourselves are currently joined in
             .fold(
                 (Vec::new(), Vec::new()),
                 move |(mut spaces, mut convos), room| {
@@ -237,6 +250,7 @@ impl Client {
         let engine = self.core.template_engine(template).await?;
         Ok(engine)
     }
+
     /// Is this a guest account?
     pub fn is_guest(&self) -> bool {
         match self.state.try_read() {
@@ -280,7 +294,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().context("don't know mime type")?;
+                let content_type = guess.first().context("don’t know mime type")?;
                 let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf).await?;
                 Ok(response.content_uri)

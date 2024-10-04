@@ -22,35 +22,40 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     notification_settings::{IsEncrypted, IsOneToOne},
     room::{Room as SdkRoom, RoomMember},
-    RoomMemberships, RoomState,
+    DisplayName, RoomMemberships, RoomState,
 };
-use ruma::{assign, Int};
-use ruma_client_api::{
-    room::report_content,
-    space::{get_hierarchy, SpaceHierarchyRoomsChunk},
-};
-use ruma_common::{
-    room::RoomType, serde::Raw, space::SpaceRoomJoinRule, EventId, IdParseError, OwnedEventId,
-    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedTransactionId, OwnedUserId, RoomId,
-    ServerName, UserId,
-};
-use ruma_events::{
-    room::{
-        avatar::ImageInfo as AvatarImageInfo,
-        join_rules::{AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership},
-        message::{MessageType, RoomMessageEvent},
-        MediaSource,
+use matrix_sdk_base::ruma::{
+    api::client::{
+        room::report_content,
+        space::{get_hierarchy, SpaceHierarchyRoomsChunk},
     },
-    space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
-    MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
+    assign,
+    events::{
+        room::{
+            avatar::ImageInfo as AvatarImageInfo,
+            join_rules::{
+                AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
+            },
+            message::{MessageType, RoomMessageEvent},
+            MediaSource,
+        },
+        space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
+        MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
+    },
+    room::RoomType,
+    serde::Raw,
+    space::SpaceRoomJoinRule,
+    EventId, IdParseError, Int, OwnedEventId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
+    OwnedTransactionId, OwnedUserId, RoomId, ServerName, UserId,
 };
-use std::{io::Write, ops::Deref, path::PathBuf};
+use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
+use tokio::fs;
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
 
-use crate::{
-    OptionBuffer, OptionString, RoomMessage, RoomProfile, ThumbnailSize, UserProfile, RUNTIME,
-};
+mod account_data;
+
+use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
 
 use super::{
     api::FfiBuffer,
@@ -269,7 +274,7 @@ impl Member {
                 if self.acter_app_settings.is_some() {
                     PermissionTest::StateEvent(ActerAppSettingsContent::TYPE.into())
                 } else {
-                    // not an acter space, you can't set setting here
+                    // not an acter space, you can’t set setting here
                     return false;
                 }
             }
@@ -355,6 +360,7 @@ impl Member {
 pub struct SpaceHierarchyRoomInfo {
     chunk: SpaceHierarchyRoomsChunk,
     core: CoreClient,
+    suggested: bool,
 }
 
 impl SpaceHierarchyRoomInfo {
@@ -365,6 +371,11 @@ impl SpaceHierarchyRoomInfo {
     /// The name of the room, if any.
     pub fn name(&self) -> Option<String> {
         self.chunk.name.clone()
+    }
+
+    /// whether or not this room is suggested to join
+    pub fn suggested(&self) -> bool {
+        self.suggested
     }
 
     /// The number of members joined to the room.
@@ -461,32 +472,12 @@ impl SpaceHierarchyRoomInfo {
 }
 
 impl SpaceHierarchyRoomInfo {
-    pub(crate) async fn new(chunk: SpaceHierarchyRoomsChunk, core: CoreClient) -> Self {
-        SpaceHierarchyRoomInfo { chunk, core }
-    }
-}
-
-pub struct SpaceHierarchyListResult {
-    resp: get_hierarchy::v1::Response,
-    core: CoreClient,
-}
-
-impl SpaceHierarchyListResult {
-    pub fn next_batch(&self) -> Option<String> {
-        self.resp.next_batch.clone()
-    }
-
-    pub async fn rooms(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
-        let core = self.core.clone();
-        let chunks = self.resp.rooms.clone();
-        RUNTIME
-            .spawn(async move {
-                let iter = chunks
-                    .into_iter()
-                    .map(|chunk| SpaceHierarchyRoomInfo::new(chunk, core.clone()));
-                Ok(futures::future::join_all(iter).await)
-            })
-            .await?
+    pub(crate) fn new(chunk: SpaceHierarchyRoomsChunk, core: CoreClient, suggested: bool) -> Self {
+        SpaceHierarchyRoomInfo {
+            chunk,
+            core,
+            suggested,
+        }
     }
 }
 
@@ -557,14 +548,38 @@ impl SpaceRelations {
         self.room.room_id().to_string()
     }
 
-    pub async fn query_hierarchy(&self, from: Option<String>) -> Result<SpaceHierarchyListResult> {
+    pub async fn query_hierarchy(&self) -> Result<Vec<SpaceHierarchyRoomInfo>> {
         let c = self.room.core.clone();
+        let suggested_rooms = self
+            .core
+            .children
+            .iter()
+            .filter(|c| c.suggested())
+            .map(|c| c.room_id())
+            .collect::<Vec<_>>();
         let room_id = self.room.room_id().to_owned();
         RUNTIME
             .spawn(async move {
-                let request = assign!(get_hierarchy::v1::Request::new(room_id), { from, max_depth: Some(1u32.into()) });
-                let resp = c.client().send(request, None).await?;
-                Ok(SpaceHierarchyListResult { resp, core: c.clone() })
+                let mut next : Option<String> = Some("".to_owned());
+                let mut rooms = Vec::new();
+                while next.is_some() {
+                    let request = assign!(get_hierarchy::v1::Request::new(room_id.clone()), { from: next.clone(), max_depth: Some(1u32.into()) });
+                    let resp = c.client().send(request, None).await?;
+                    if (resp.rooms.is_empty()) {
+                        break; // we are done
+                    }
+                    next = resp.next_batch;
+                    rooms.extend(resp.rooms
+                        .into_iter()
+                        .filter_map(|chunk| {
+                            if chunk.room_id == room_id {
+                                return None;
+                            }
+                            let suggested = suggested_rooms.contains(&chunk.room_id);
+                            Some(SpaceHierarchyRoomInfo::new(chunk, c.clone(), suggested))
+                        }));
+                    }
+                Ok(rooms)
             })
             .await?
     }
@@ -578,6 +593,37 @@ pub struct Room {
 impl Room {
     pub fn new(core: CoreClient, room: SdkRoom) -> Self {
         Room { core, room }
+    }
+
+    pub fn has_avatar(&self) -> bool {
+        self.room.avatar_url().is_some()
+    }
+
+    pub async fn avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
+        let room = self.room.clone();
+        let format = ThumbnailSize::parse_into_media_format(thumb_size);
+        RUNTIME
+            .spawn(async move {
+                let buf = room.avatar(format).await?;
+                Ok(OptionBuffer::new(buf))
+            })
+            .await?
+    }
+
+    pub async fn display_name(&self) -> Result<OptionString> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let result = room.compute_display_name().await?;
+                match result {
+                    DisplayName::Named(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Aliased(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Calculated(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::EmptyWas(name) => Ok(OptionString::new(Some(name))),
+                    DisplayName::Empty => Ok(OptionString::new(None)),
+                }
+            })
+            .await?
     }
 
     pub fn subscribe_to_updates(&self) -> impl Stream<Item = bool> {
@@ -613,7 +659,7 @@ impl Room {
 
     pub async fn add_parent_room(&self, room_id: String, canonical: bool) -> Result<String> {
         if !self.is_joined() {
-            bail!("Unable to update a room you aren't part of");
+            bail!("Unable to update a room you aren’t part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -654,7 +700,7 @@ impl Room {
         reason: Option<String>,
     ) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Unable to update a room you aren't part of");
+            bail!("Unable to update a room you aren’t part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -730,10 +776,6 @@ impl Room {
             .await?
     }
 
-    pub fn get_profile(&self) -> RoomProfile {
-        RoomProfile::new(self.room.clone())
-    }
-
     pub async fn upload_avatar(&self, uri: String) -> Result<OwnedMxcUri> {
         if !self.is_joined() {
             bail!("Unable to upload avatar to a room we are not in");
@@ -753,7 +795,7 @@ impl Room {
                 }
 
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().context("don't know mime type")?;
+                let content_type = guess.first().context("don’t know mime type")?;
                 let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf).await?;
 
@@ -1083,11 +1125,11 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&event_id).await?;
+                let evt = room.event(&event_id, None).await?;
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .context("Couldn't get original msg")?;
+                    .context("Couldn’t get original msg")?;
                 let (source, format) = match thumb_size {
                     Some(thumb_size) => {
                         let source = match &original.content.msgtype {
@@ -1282,7 +1324,7 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&evt_id).await?;
+                let evt = room.event(&evt_id, None).await?;
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
@@ -1441,7 +1483,7 @@ impl Room {
                     warn!("Content info or thumbnail source not found");
                     return Ok(OptionString::new(None));
                 };
-                let data = client.media().get_media_content(&request, false).await?;
+                let data = client.media().get_media_content(&request, true).await?;
                 // infer file extension via parsing of file binary
                 if filename.is_none() {
                     if let Some(kind) = infer::get(&data) {
@@ -1488,11 +1530,11 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&evt_id).await?;
+                let evt = room.event(&evt_id, None).await?;
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
-                    .context("Couldn't get original msg")?;
+                    .context("Couldn’t get original msg")?;
                 if is_thumb {
                     let available = matches!(
                         &original.content.msgtype,
@@ -1526,12 +1568,18 @@ impl Room {
                 } else {
                     [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat()
                 };
-                let path = client.store().get_custom_value(&key).await?;
-                let text = match path {
-                    Some(path) => Some(std::str::from_utf8(&path)?.to_string()),
-                    None => None,
+                let Some(path_vec) = client.store().get_custom_value(&key).await? else {
+                    return Ok(OptionString::new(None));
                 };
-                Ok(OptionString::new(text))
+                let path_str = std::str::from_utf8(&path_vec)?.to_string();
+                if matches!(exists(&path_str), Ok(true)) {
+                    return Ok(OptionString::new(Some(path_str)));
+                }
+
+                // file wasn’t existing, clear cache.
+
+                client.store().remove_custom_value(&key).await?;
+                Ok(OptionString::new(None))
             })
             .await?
     }
@@ -1683,7 +1731,7 @@ impl Room {
     }
 
     /// sent a redaction message for this content
-    /// it's the callers job to ensure the person has the privileges to
+    /// it’s the callers job to ensure the person has the privileges to
     /// redact that content.
     pub async fn redact_content(
         &self,

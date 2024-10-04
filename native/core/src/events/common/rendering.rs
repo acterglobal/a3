@@ -1,8 +1,8 @@
 use super::color::Color;
-use ruma_events::room::ImageInfo;
+use matrix_sdk_base::ruma::events::room::ImageInfo;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use strum::Display;
+use strum::{Display, EnumString};
 
 #[derive(Clone, Debug, Display, Deserialize, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
@@ -42,7 +42,7 @@ impl FromStr for Position {
 }
 
 /// Customize the color scheme
-#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize, Default)]
 pub struct Colorize {
     /// The foreground color to be used, as HEX
     color: Option<Color>,
@@ -90,30 +90,200 @@ impl ColorizeBuilder {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(rename_all = "lowercase")]
-pub enum BrandIcon {
-    Matrix,
-    Twitter,
-    Facebook,
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize, EnumString, Display)]
+#[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
+pub enum BrandLogo {
+    Discord,
     Email,
-    Youtube,
-    Whatsapp,
-    Reddit,
-    Skype,
-    Zoom,
+    Facebook,
+    Ferdiverse,
+    Figma,
+    Github,
+    Gitlab,
+    Googledrive,
+    Googleplay,
+    Instagram,
     Jitsi,
+    Linkedin,
+    Matrix,
+    Mastodon,
+    Medium,
+    Meta,
+    Notion,
+    Reddit,
+    Slack,
+    Skype,
+    Snapchat,
+    #[serde(alias = "stackoverflow", alias = "stack-overflow")]
+    StackOverflow,
     Telegram,
-    GoogleDrive,
+    Twitter,
+    Whatsapp,
+    Wechat,
+    Youtube,
+    X,
+    Zoom,
+    Custom(String),
+    // FIXME: support for others?
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize, EnumString, Display)]
+#[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
+pub enum ActerIcon {
+    // subset of https://phosphoricons.com
+    Acorn,
+    Alien,
+    Ambulance,
+    Anchor,
+    Archive,
+    Armchair,
+    Axe,
+    Backpack,
+    Balloon,
+    Binoculars,
+    Bird,
+    Fire,
+    Flower,
+    FlowerLotus,
+    FlowerTulip,
+    GameController,
+    Ghost,
+    Globe,
+    Guitar,
+    Heart,
+    HeartBeat,
+    Home,
+    Island,
+    Lego,
+    LegoSmile,
+    Megaphone,
+    Newspaper,
+    Rocket,
+    RocketLaunch,
     Custom(String),
     // FIXME: support for others?
 }
 
 /// Customize the color scheme
 #[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "type")]
+#[serde(tag = "type", rename_all = "kebab-case")]
 pub enum Icon {
     Emoji { key: String },
-    BrandIcon { icon: BrandIcon },
+    BrandLogo { icon: BrandLogo },
+    ActerIcon { icon: ActerIcon },
     Image(ImageInfo),
+}
+
+impl Icon {
+    pub fn parse(typ: String, key: String) -> Icon {
+        match typ.to_lowercase().as_str() {
+            "emoji" => Icon::Emoji { key },
+            "logo" | "brand" | "brand-logo" => Icon::BrandLogo {
+                icon: BrandLogo::from_str(&key).unwrap_or(BrandLogo::Custom(key)),
+            },
+            _ => Icon::ActerIcon {
+                icon: ActerIcon::from_str(&key).unwrap_or(ActerIcon::Custom(key)),
+            },
+        }
+    }
+    pub fn icon_type_str(&self) -> String {
+        match self {
+            Icon::Emoji { .. } => "emoji".to_owned(),
+            Icon::BrandLogo { .. } => "brand-logo".to_owned(),
+            Icon::ActerIcon { .. } => "acter-icon".to_owned(),
+            Icon::Image(_) => "image".to_owned(),
+        }
+    }
+    pub fn icon_str(&self) -> String {
+        match self {
+            Icon::Emoji { key } => key.clone(),
+            Icon::BrandLogo {
+                icon: BrandLogo::Custom(inner),
+            }
+            | Icon::ActerIcon {
+                icon: ActerIcon::Custom(inner),
+            } => inner.clone(),
+            Icon::BrandLogo { icon } => icon.to_string(),
+            Icon::ActerIcon { icon } => icon.to_string(),
+            Icon::Image(_) => "image".to_owned(),
+        }
+    }
+}
+
+impl PartialEq for Icon {
+    fn eq(&self, other: &Self) -> bool {
+        match (&self, &other) {
+            (Icon::Emoji { key: a }, Icon::Emoji { key: b }) => a == b,
+            (Icon::BrandLogo { icon: a }, Icon::BrandLogo { icon: b }) => a == b,
+            (Icon::ActerIcon { icon: a }, Icon::ActerIcon { icon: b }) => a == b,
+            _ => false, // we can’t match images unfortunately
+        }
+    }
+}
+impl Eq for Icon {}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    pub fn test_emoji() {
+        let emoji = Icon::Emoji {
+            key: "A".to_owned(),
+        };
+        assert_eq!(emoji.icon_type_str(), "emoji".to_owned());
+        assert_eq!(emoji.icon_str(), "A".to_owned());
+
+        let emoji = Icon::Emoji {
+            key: "🚀".to_owned(),
+        };
+        assert_eq!(emoji.icon_type_str(), "emoji".to_owned());
+        assert_eq!(emoji.icon_str(), "🚀".to_owned());
+
+        let emoji = Icon::parse("emoji".to_owned(), "asdf".to_owned());
+        assert_eq!(emoji.icon_type_str(), "emoji".to_owned());
+        assert_eq!(emoji.icon_str(), "asdf".to_owned());
+    }
+
+    #[test]
+    pub fn test_custom_brand_gives_custom() {
+        let icon = Icon::parse("brand".to_owned(), "acter".to_owned());
+        assert_eq!(icon.icon_type_str(), "brand-logo".to_owned());
+        assert_eq!(icon.icon_str(), "acter".to_owned());
+
+        let icon = Icon::parse("logo".to_owned(), "email".to_owned());
+        assert_eq!(icon.icon_type_str(), "brand-logo".to_owned());
+        assert_eq!(icon.icon_str(), "email".to_owned());
+
+        let icon = Icon::parse("brand-logo".to_owned(), "email".to_owned());
+        assert_eq!(icon.icon_type_str(), "brand-logo".to_owned());
+        assert_eq!(icon.icon_str(), "email".to_owned());
+
+        // for sure a custom one
+        let icon = Icon::BrandLogo {
+            icon: BrandLogo::Custom("actOR".to_owned()),
+        };
+        assert_eq!(icon.icon_type_str(), "brand-logo".to_owned());
+        assert_eq!(icon.icon_str(), "actOR".to_owned());
+    }
+
+    #[test]
+    pub fn test_custom_acter_gives_custom() {
+        let icon = Icon::parse("acter-icon".to_owned(), "acorn".to_owned());
+        assert_eq!(icon.icon_type_str(), "acter-icon".to_owned());
+        assert_eq!(icon.icon_str(), "acorn".to_owned());
+
+        let icon = Icon::parse("acter".to_owned(), "bird".to_owned());
+        assert_eq!(icon.icon_type_str(), "acter-icon".to_owned());
+        assert_eq!(icon.icon_str(), "bird".to_owned());
+
+        // for sure a custom one
+        let icon = Icon::ActerIcon {
+            icon: ActerIcon::Custom("lacasa".to_owned()),
+        };
+        assert_eq!(icon.icon_type_str(), "acter-icon".to_owned());
+        assert_eq!(icon.icon_str(), "lacasa".to_owned());
+    }
 }

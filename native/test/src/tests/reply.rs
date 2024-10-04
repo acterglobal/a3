@@ -1,4 +1,4 @@
-use acter::{api::RoomMessage, ruma_common::OwnedEventId};
+use acter::api::RoomMessage;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -114,7 +114,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     })
     .await?;
 
-    let draft = kyra.text_plain_draft("Sorry, it's my bad".to_string());
+    let draft = kyra.text_plain_draft("Sorry, it’s my bad".to_string());
     kyra_timeline
         .reply_message(received.to_string(), Box::new(draft))
         .await?;
@@ -131,7 +131,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
                     .value()
                     .expect("diff pushback action should have valid value");
                 info!("diff pushback - {:?}", value);
-                if match_room_msg(&value, "Sorry, it's my bad").is_some() {
+                if match_room_msg(&value, "Sorry, it’s my bad").is_some() {
                     found = true;
                 }
             }
@@ -150,14 +150,14 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     Ok(())
 }
 
-fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
+fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(msg_content) = event_item.msg_content() {
             if msg_content.body() == body {
                 // exclude the pending msg
-                if let Some(event_id) = event_item.evt_id() {
+                if let Some(event_id) = event_item.event_id() {
                     return Some(event_id);
                 }
             }

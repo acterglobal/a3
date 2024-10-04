@@ -1,6 +1,5 @@
 import 'package:acter/common/dialogs/nuke_confirmation.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-
 import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -69,23 +68,21 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                         ? Icons.toggle_off_outlined
                         : Icons.toggle_on_outlined,
                   ),
-                  label: showStack
-                      ? Text(L10n.of(context).hideStacktrace)
-                      : Text(L10n.of(context).showStacktrace),
+                  label: Text(
+                    showStack
+                        ? L10n.of(context).hideStacktrace
+                        : L10n.of(context).showStacktrace,
+                  ),
                 ),
               ],
             ),
             if (showStack) Text(stack),
-            ButtonBar(
-              alignment: MainAxisAlignment.center,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ActerDangerActionButton.icon(
-                  icon: const Icon(
-                    Atlas.bomb_thin,
-                  ),
-                  label: Text(
-                    L10n.of(context).nukeLocalData,
-                  ),
+                  icon: const Icon(Atlas.bomb_thin),
+                  label: Text(L10n.of(context).nukeLocalData),
                   onPressed: onNukePressed,
                   onLongPress: () => nukeConfirmationDialog(context, ref),
                 ),
@@ -103,9 +100,8 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
   }
 
   void onCopy() {
-    Clipboard.setData(
-      ClipboardData(text: '${widget.error}\n$stack'),
-    );
+    final data = ClipboardData(text: '${widget.error}\n$stack');
+    Clipboard.setData(data);
     EasyLoading.showToast(L10n.of(context).errorCopiedToClipboard);
   }
 

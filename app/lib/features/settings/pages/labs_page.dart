@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
@@ -19,7 +20,10 @@ class SettingsLabsPage extends ConsumerWidget {
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
-        appBar: AppBar(title: Text(L10n.of(context).labs)),
+        appBar: AppBar(
+          title: Text(L10n.of(context).labs),
+          automaticallyImplyLeading: !context.isLargeScreen,
+        ),
         body: SettingsList(
           sections: [
             SettingsSection(
@@ -51,39 +55,52 @@ class SettingsLabsPage extends ConsumerWidget {
                 ),
               ],
             ),
-            SettingsSection(title: Text(L10n.of(context).chat), tiles: [
-              SettingsTile.switchTile(
-                title: Text(L10n.of(context).unreadMarkerFeatureTitle),
-                description: Text(
-                  L10n.of(context).unreadMarkerFeatureDescription,
+            SettingsSection(
+              title: Text(L10n.of(context).chat),
+              tiles: [
+                SettingsTile.switchTile(
+                  title: Text(L10n.of(context).unreadMarkerFeatureTitle),
+                  description: Text(
+                    L10n.of(context).unreadMarkerFeatureDescription,
+                  ),
+                  initialValue:
+                      ref.watch(isActiveProvider(LabsFeature.chatUnread)),
+                  onToggle: (newVal) =>
+                      updateFeatureState(ref, LabsFeature.chatUnread, newVal),
                 ),
-                initialValue:
-                    ref.watch(isActiveProvider(LabsFeature.chatUnread)),
-                onToggle: (newVal) =>
-                    updateFeatureState(ref, LabsFeature.chatUnread, newVal),
-              ),
-            ],),
+              ],
+            ),
+            SettingsSection(
+              title: Text(L10n.of(context).calendar),
+              tiles: [
+                SettingsTile.switchTile(
+                  enabled: isSupportedPlatform,
+                  title: Text(L10n.of(context).calendarSyncFeatureTitle),
+                  description: Text(
+                    L10n.of(context).calendarSyncFeatureDesc,
+                  ),
+                  initialValue: isSupportedPlatform &&
+                      ref.watch(
+                        isActiveProvider(LabsFeature.deviceCalendarSync),
+                      ),
+                  onToggle: (newVal) async {
+                    await updateFeatureState(
+                      ref,
+                      LabsFeature.deviceCalendarSync,
+                      newVal,
+                    );
+                    if (newVal) {
+                      initCalendarSync(ignoreRejection: true);
+                    } else {
+                      clearActerCalendars();
+                    }
+                  },
+                ),
+              ],
+            ),
             SettingsSection(
               title: Text(L10n.of(context).apps),
               tiles: [
-                SettingsTile.switchTile(
-                  key: tasksLabSwitch,
-                  title: Text(L10n.of(context).tasks),
-                  description: Text(
-                    L10n.of(context).manageTasksListsAndToDosTogether,
-                  ),
-                  initialValue: ref.watch(isActiveProvider(LabsFeature.tasks)),
-                  onToggle: (newVal) =>
-                      updateFeatureState(ref, LabsFeature.tasks, newVal),
-                ),
-                SettingsTile.switchTile(
-                  title: const Text('Comments'),
-                  description: const Text('Commenting on space objects'),
-                  initialValue:
-                      ref.watch(isActiveProvider(LabsFeature.comments)),
-                  onToggle: (newVal) =>
-                      updateFeatureState(ref, LabsFeature.comments, newVal),
-                ),
                 SettingsTile.switchTile(
                   title: Text(L10n.of(context).polls),
                   description: Text(L10n.of(context).pollsAndSurveys),

@@ -2,7 +2,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:flutter/material.dart';
 
 var inputDecorationTheme = InputDecorationTheme(
-  fillColor: darkBlueColor,
+  fillColor: surfaceColor,
   filled: true,
   focusedBorder: OutlineInputBorder(
     borderSide: const BorderSide(
@@ -11,13 +11,25 @@ var inputDecorationTheme = InputDecorationTheme(
     borderRadius: BorderRadius.circular(12),
   ),
   enabledBorder: OutlineInputBorder(
-    borderSide: BorderSide(
-      color: brandColor,
+    borderSide: const BorderSide(
+      color: Colors.white30,
     ),
     borderRadius: BorderRadius.circular(12),
   ),
   border: OutlineInputBorder(
     borderSide: BorderSide.none,
+    borderRadius: BorderRadius.circular(12),
+  ),
+  errorBorder: OutlineInputBorder(
+    borderSide: const BorderSide(
+      color: Colors.red,
+    ),
+    borderRadius: BorderRadius.circular(12),
+  ),
+  focusedErrorBorder: OutlineInputBorder(
+    borderSide: const BorderSide(
+      color: Colors.red,
+    ),
     borderRadius: BorderRadius.circular(12),
   ),
   hintStyle: const TextStyle(

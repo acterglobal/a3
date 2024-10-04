@@ -1,5 +1,7 @@
 use acter_core::{
-    events::attachments::{AttachmentBuilder, AttachmentContent, FallbackAttachmentContent},
+    events::attachments::{
+        AttachmentBuilder, AttachmentContent, FallbackAttachmentContent, LinkAttachmentContent,
+    },
     models::{self, can_redact, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Context, Result};
@@ -9,9 +11,11 @@ use matrix_sdk::{
     room::Room,
     RoomState,
 };
-use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
-use ruma_events::{room::message::RoomMessageEvent, MessageLikeEventType};
-use std::{io::Write, ops::Deref, path::PathBuf, str::FromStr};
+use matrix_sdk_base::ruma::{
+    events::{room::message::RoomMessageEvent, MessageLikeEventType},
+    EventId, OwnedEventId, OwnedTransactionId,
+};
+use std::{fs::exists, io::Write, ops::Deref, path::PathBuf, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
 use tracing::warn;
@@ -59,6 +63,14 @@ impl Deref for Attachment {
 }
 
 impl Attachment {
+    pub fn name(&self) -> Option<String> {
+        self.inner.content.name()
+    }
+
+    pub fn link(&self) -> Option<String> {
+        self.inner.content.link()
+    }
+
     pub fn attachment_id_str(&self) -> String {
         self.inner.meta.event_id.to_string()
     }
@@ -127,7 +139,7 @@ impl Attachment {
                                 });
                             (request, filename)
                         }
-                        AttachmentContent::Video(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content))=> {
+                        AttachmentContent::Video(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
                             let request = content
                                 .info
                                 .as_ref()
@@ -147,7 +159,7 @@ impl Attachment {
                                 });
                             (request, filename)
                         }
-                        AttachmentContent::File(content) | AttachmentContent::Fallback(FallbackAttachmentContent::File(content))=> {
+                        AttachmentContent::File(content) | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
                             let request = content
                                 .info
                                 .as_ref()
@@ -206,7 +218,7 @@ impl Attachment {
                                 });
                             (Some(request), filename)
                         }
-                        AttachmentContent::Audio(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content))=> {
+                        AttachmentContent::Audio(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
                             let request = MediaRequest {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
@@ -339,12 +351,18 @@ impl Attachment {
                 } else {
                     [room.room_id().as_str().as_bytes(), evt_id.as_bytes()].concat()
                 };
-                let path = client.store().get_custom_value(&key).await?;
-                let text = match path {
-                    Some(path) => Some(std::str::from_utf8(&path)?.to_string()),
-                    None => None,
+                let Some(path_vec) = client.store().get_custom_value(&key).await? else {
+                    return Ok(OptionString::new(None));
                 };
-                Ok(OptionString::new(text))
+                let path_str = std::str::from_utf8(&path_vec)?.to_string();
+                if matches!(exists(&path_str), Ok(true)) {
+                    return Ok(OptionString::new(Some(path_str)));
+                }
+
+                // file wasn’t existing, clear cache.
+
+                client.store().remove_custom_value(&key).await?;
+                Ok(OptionString::new(None))
             })
             .await?
     }
@@ -465,7 +483,7 @@ impl AttachmentsManager {
             .any(|inner| inner == attachment_id);
 
         if !has_entry {
-            bail!("attachment doesn't exist");
+            bail!("attachment doesn’t exist");
         }
 
         let event_id = EventId::parse(&attachment_id)?;
@@ -473,7 +491,7 @@ impl AttachmentsManager {
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&event_id).await?;
+                let evt = room.event(&event_id, None).await?;
                 let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
                 let permitted = if event_content.sender() == my_id {
                     room.can_user_redact_own(&my_id).await?
@@ -524,6 +542,21 @@ impl AttachmentsManager {
                 }
             })
             .await??;
+
+        let mut builder = self.inner.draft_builder();
+        builder.content(content);
+        Ok(AttachmentDraft {
+            client: self.client.clone(),
+            room: self.room.clone(),
+            inner: builder,
+        })
+    }
+
+    pub async fn link_draft(&self, url: String, name: Option<String>) -> Result<AttachmentDraft> {
+        let room = self.room.clone();
+        let client = self.client.deref().clone();
+
+        let content = AttachmentContent::Link(LinkAttachmentContent { link: url, name });
 
         let mut builder = self.inner.draft_builder();
         builder.content(content);

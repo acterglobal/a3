@@ -1,94 +1,11 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use ruma_events::room::message::TextMessageEventContent;
-use ruma_macros::EventContent;
+use matrix_sdk_base::ruma::events::{macros::EventContent, room::message::TextMessageEventContent};
 use serde::{Deserialize, Serialize};
 use tracing::trace;
 
-use super::{Color, Icon, Update};
+use super::{Display, Update};
 use crate::{util::deserialize_some, Result};
-
-#[derive(Clone, Debug, Deserialize, Serialize, Builder)]
-#[builder(name = "PinDisplayInfoBuilder", derive(Debug))]
-pub struct PinDisplayInfo {
-    /// Colorize the item
-    #[builder(setter(into), default)]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub color: Option<Color>,
-
-    /// Show this icon
-    #[builder(setter(into), default)]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub icon: Option<Icon>,
-
-    /// show it in particular sections only
-    #[builder(setter(into), default)]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub section: Option<String>,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize, Builder)]
-#[builder(name = "PinDisplayInfoUpdateBuilder", derive(Debug))]
-pub struct PinDisplayInfoUpdate {
-    /// Colorize the item
-    #[builder(setter(into), default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    color: Option<Option<Color>>,
-
-    /// Show this icon
-    #[builder(setter(into), default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    icon: Option<Option<Icon>>,
-
-    /// show it in particular sections only
-    #[builder(setter(into), default)]
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_some"
-    )]
-    section: Option<Option<String>>,
-}
-
-impl PinDisplayInfoUpdate {
-    pub fn apply(&self, info: &mut PinDisplayInfo) -> Result<bool> {
-        let mut updated = false;
-        if let Some(color) = &self.color {
-            info.color = *color;
-            updated = true;
-        }
-        if let Some(icon) = &self.icon {
-            info.icon.clone_from(icon);
-            updated = true;
-        }
-        if let Some(section) = &self.section {
-            info.section.clone_from(section);
-            updated = true;
-        }
-
-        trace!(update = ?self, ?updated, ?info, "Info updated");
-
-        Ok(updated)
-    }
-}
-
-impl From<&PinDisplayInfoUpdate> for PinDisplayInfo {
-    fn from(val: &PinDisplayInfoUpdate) -> Self {
-        PinDisplayInfo {
-            color: val.color.unwrap_or_default(),
-            icon: val.icon.clone().unwrap_or_default(),
-            section: val.section.clone().unwrap_or_default(),
-        }
-    }
-}
 
 /// The Pin Event
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
@@ -111,7 +28,7 @@ pub struct PinEventContent {
     /// Optionally, a pin can be colored
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub display: Option<PinDisplayInfo>,
+    pub display: Option<Display>,
 }
 
 /// The Pin Event
@@ -150,14 +67,14 @@ pub struct PinUpdateEventContent {
     )]
     pub url: Option<Option<String>>,
 
-    /// Optionally, a pin can be colored
+    /// Optionally some displaying parameters
     #[builder(setter(into), default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
-    pub display: Option<Option<PinDisplayInfoUpdate>>,
+    pub display: Option<Option<Display>>,
 }
 
 impl PinUpdateEventContent {
@@ -175,23 +92,9 @@ impl PinUpdateEventContent {
             pin.url.clone_from(url);
             updated = true;
         }
-
         if let Some(display) = &self.display {
-            match (&mut pin.display, display) {
-                (Some(_), None) => {
-                    pin.display = None;
-                    updated = true;
-                }
-                (None, Some(new)) => {
-                    pin.display = Some(new.into());
-                    updated = true;
-                }
-                (Some(current), Some(new)) => {
-                    new.apply(current)?;
-                    updated = true;
-                }
-                _ => {}
-            }
+            pin.display.clone_from(display);
+            updated = true;
         }
 
         trace!(update = ?self, ?updated, ?pin, "Pin updated");

@@ -1,18 +1,19 @@
 use derive_builder::Builder;
-use matrix_sdk::room::Room;
-use ruma::assign;
-use ruma_client_api::room::{create_room, Visibility};
-use ruma_common::{
-    room::RoomType, serde::Raw, MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId,
-    ServerName, UserId,
-};
-use ruma_events::{
-    room::{
-        avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-        join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+use matrix_sdk::{room::Room, RoomState};
+use matrix_sdk_base::ruma::{
+    api::client::room::{create_room, Visibility},
+    assign,
+    events::{
+        room::{
+            avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+            join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+        },
+        space::{child::SpaceChildEventContent, parent::SpaceParentEventContent},
+        InitialStateEvent,
     },
-    space::{child::SpaceChildEventContent, parent::SpaceParentEventContent},
-    InitialStateEvent,
+    room::RoomType,
+    serde::Raw,
+    MxcUri, OwnedRoomId, OwnedServerName, OwnedUserId, RoomId, ServerName, UserId,
 };
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -22,6 +23,7 @@ use tracing::error;
 use crate::{
     client::CoreClient,
     error::{Error, Result},
+    events::settings::ActerAppSettingsContent,
     statics::{default_acter_space_states, PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
 };
 
@@ -71,6 +73,10 @@ pub struct CreateSpaceSettings {
 
     #[builder(setter(strip_option), default)]
     parent: Option<OwnedRoomId>,
+
+    #[builder(setter(strip_option), default = "ActerAppSettingsContent::off()")]
+    #[serde(default = "ActerAppSettingsContent::off")]
+    app_settings: ActerAppSettingsContent,
 }
 
 // helper for built-in setters
@@ -161,7 +167,7 @@ impl SpaceRelation {
 pub struct SpaceRelations {
     main_parent: Option<SpaceRelation>,
     other_parents: Vec<SpaceRelation>,
-    children: Vec<SpaceRelation>,
+    pub children: Vec<SpaceRelation>,
 }
 
 impl SpaceRelations {
@@ -192,8 +198,11 @@ impl CoreClient {
             topic,
             avatar_uri, // remote or local
             parent,
+            app_settings,
         } = settings;
         let mut initial_states = default_acter_space_states();
+        // the space app settings as configured
+        initial_states.push(InitialStateEvent::new(app_settings).to_raw_any());
 
         if let Some(avatar_uri) = avatar_uri {
             let uri = Box::<MxcUri>::from(avatar_uri.as_str());
@@ -206,7 +215,7 @@ impl CoreClient {
                 // local uri
                 let path = PathBuf::from(avatar_uri);
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().expect("don't know mime type");
+                let content_type = guess.first().expect("don’t know mime type");
                 let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf).await?;
 
@@ -349,7 +358,10 @@ impl CoreClient {
             let target = ev.state_key();
             let target_type = match self.client().get_room(target) {
                 Some(child) => {
-                    if !child.is_space() {
+                    if !matches!(child.state(), RoomState::Joined) {
+                        // we count rooms we are not currently in as unknown
+                        RelationTargetType::Unknown
+                    } else if !child.is_space() {
                         RelationTargetType::ChatRoom
                     } else if is_acter_space(&child).await {
                         RelationTargetType::ActerSpace

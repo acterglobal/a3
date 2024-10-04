@@ -41,17 +41,12 @@ class _EmojiContainerState extends State<EmojiContainer>
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> reactions = {};
-    List<String> keys = [];
-    final metadata = widget.message.metadata;
-    if (metadata == null || !metadata.containsKey('reactions')) {
-      return const SizedBox();
-    }
-    reactions = metadata['reactions'];
-    keys = reactions.keys.toList();
+    Map<String, dynamic>? reactions = widget.message.metadata?['reactions'];
+    if (reactions == null) return const SizedBox();
+    List<String> keys = reactions.keys.toList();
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-      color: Theme.of(context).colorScheme.neutral2,
+      color: Theme.of(context).colorScheme.surface,
       child: Wrap(
         direction: Axis.horizontal,
         runSpacing: 3,
@@ -73,8 +68,8 @@ class _EmojiContainerState extends State<EmojiContainer>
                   ? const EdgeInsets.only(right: 4)
                   : const EdgeInsets.symmetric(horizontal: 2),
               backgroundColor: sentByMe
-                  ? Theme.of(context).colorScheme.neutral3
-                  : Theme.of(context).colorScheme.neutral2,
+                  ? Theme.of(context).colorScheme.secondaryContainer
+                  : Theme.of(context).colorScheme.surface,
               visualDensity: VisualDensity.compact,
               labelPadding: const EdgeInsets.all(0),
               shape: const StadiumBorder(
@@ -201,7 +196,7 @@ class _EmojiContainerState extends State<EmojiContainer>
                       users: allUsers,
                       usersMap: reactionsByUsers,
                     ),
-                    for (var key in keys)
+                    for (final key in keys)
                       _ReactionListing(
                         roomId: roomId,
                         users: usersByReaction[key]!,

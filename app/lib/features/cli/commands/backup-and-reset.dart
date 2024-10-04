@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:acter/config/env.g.dart';
 import 'package:acter/features/cli/util.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:args/command_runner.dart';
@@ -51,17 +52,17 @@ class BackupAndResetCommand extends Command {
     if (appInfo.accounts.isEmpty) {
       print('⚠️ No account data found.');
     } else {
-      for (final a in appInfo.accounts) {
-        final oldPath = p.join(appInfo.appDocPath, a);
-        final newPath = p.join(appInfo.appDocPath, '${a}_backup_$stamper');
+      for (final acc in appInfo.accounts) {
+        final oldPath = p.join(appInfo.appDocPath, acc);
+        final newPath = p.join(appInfo.appDocPath, '${acc}_backup_$stamper');
         if (!isDry) await Directory(oldPath).rename(newPath);
-        print('✔️ $a backed up: $newPath');
+        print('✔️ $acc backed up: $newPath');
       }
     }
 
     if (!isDry) {
       await ActerSdk.storage.write(
-        key: defaultSessionKey,
+        key: Env.defaultActerSession,
         value: json.encode([]),
       );
     }

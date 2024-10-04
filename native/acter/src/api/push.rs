@@ -11,22 +11,25 @@ use futures::stream::StreamExt;
 use matrix_sdk::notification_settings::{
     IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings, RoomNotificationMode,
 };
+use matrix_sdk_base::ruma::{
+    api::client::{
+        device,
+        push::{
+            get_pushers, get_pushrules_all, set_pusher, set_pushrule, EmailPusherData,
+            Pusher as RumaPusher, PusherIds, PusherInit, PusherKind, RuleScope,
+        },
+    },
+    assign,
+    events::{
+        room::{message::MessageType, MediaSource},
+        AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
+    },
+    push::{HttpPusherData, PushFormat, RuleKind, Ruleset},
+    EventId, OwnedMxcUri, OwnedRoomId, RoomId,
+};
 use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup, RawNotificationEvent,
-};
-use ruma::{assign, push::HttpPusherData};
-use ruma_client_api::{
-    device,
-    push::{
-        get_pushers, get_pushrules_all, set_pusher, set_pushrule, EmailPusherData,
-        Pusher as RumaPusher, PusherIds, PusherInit, PusherKind, RuleScope,
-    },
-};
-use ruma_common::{EventId, OwnedMxcUri, OwnedRoomId, RoomId};
-use ruma_events::{
-    room::{message::MessageType, MediaSource},
-    AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
 };
 use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -472,11 +475,31 @@ impl Client {
         let device_id = self.device_id()?;
         let push_data = if with_ios_defaults {
             assign!(HttpPusherData::new(server_url), {
+                // we only send over the event id & room id, preventing the service from
+                // leaking any further information to apple
+                // additionally this prevents sygnal (the push relayer) from adding
+                // further information in the json that will then be displayed as fallback
+                format: Some(PushFormat::EventIdOnly),
                 default_payload: serde_json::json!({
                     "aps": {
+                        // specific tags to ensure the iOS notifications work as expected
+                        //
+                        // allows us to change the content in the extension:
                         "mutable-content": 1,
-                        "content-available": 1
+                        // make sure this goes to the foreground process, too:
+                        "content-available": 1,
+                        // the fallback message if the extension fails to load:
+                        "alert": {
+                            "title": "Acter",
+                            "body": "New messages available",
+                        },
+
+                        // Further information: by sending only the event-id and including the `alert`
+                        // text in the aps payload, apple will regard this as _important_ messages
+                        // that have to be delivered and processed by the background services
                     },
+                    // include the device-id allowing us to identify _which_ client we
+                    // need to process that with
                     "device_id": device_id,
                 })
             })
@@ -541,7 +564,7 @@ impl Client {
             .await?
     }
 
-    pub async fn push_rules(&self) -> Result<ruma::push::Ruleset> {
+    pub async fn push_rules(&self) -> Result<Ruleset> {
         let client = self.core.client().clone();
         RUNTIME
             .spawn(async move {
@@ -613,13 +636,14 @@ impl NotificationSettings {
 
     pub async fn global_content_setting(&self, content_key: String) -> Result<bool> {
         let inner = self.inner.clone();
-        Ok(RUNTIME
+        RUNTIME
             .spawn(async move {
-                inner
-                    .is_push_rule_enabled(ruma_common::push::RuleKind::Underride, content_key)
-                    .await
+                let result = inner
+                    .is_push_rule_enabled(RuleKind::Underride, content_key)
+                    .await?;
+                Ok(result)
             })
-            .await??)
+            .await?
     }
 
     pub async fn set_global_content_setting(
@@ -631,11 +655,7 @@ impl NotificationSettings {
         RUNTIME
             .spawn(async move {
                 inner
-                    .set_push_rule_enabled(
-                        ruma_common::push::RuleKind::Underride,
-                        content_key,
-                        enabled,
-                    )
+                    .set_push_rule_enabled(RuleKind::Underride, content_key, enabled)
                     .await?;
                 Ok(enabled)
             })

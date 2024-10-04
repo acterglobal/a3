@@ -3,6 +3,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::member::kick_user');
 
 Future<void> showKickUserDialog(BuildContext context, Member member) async {
   final userId = member.userId().toString();
@@ -33,7 +36,7 @@ Future<void> showKickUserDialog(BuildContext context, Member member) async {
         actionsAlignment: MainAxisAlignment.spaceEvenly,
         actions: <Widget>[
           OutlinedButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            onPressed: () => Navigator.pop(context),
             child: Text(L10n.of(context).no),
           ),
           ActerPrimaryActionButton(
@@ -47,14 +50,15 @@ Future<void> showKickUserDialog(BuildContext context, Member member) async {
                   return;
                 }
                 EasyLoading.showToast(L10n.of(context).kickSuccess);
-                Navigator.of(context, rootNavigator: true).pop();
-              } catch (error) {
+                Navigator.pop(context);
+              } catch (e, s) {
+                _log.severe('Failed to kick user', e, s);
                 if (!context.mounted) {
                   EasyLoading.dismiss();
                   return;
                 }
                 EasyLoading.showError(
-                  L10n.of(context).kickFailed(error),
+                  L10n.of(context).kickFailed(e),
                   duration: const Duration(seconds: 3),
                 );
               }

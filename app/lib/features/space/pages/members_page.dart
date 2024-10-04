@@ -2,16 +2,15 @@ import 'dart:math';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/member/widgets/member_list_entry.dart';
-import 'package:acter/features/space/widgets/space_header.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::space::members_page');
 
 class SpaceMembersPage extends ConsumerWidget {
   final String spaceIdOrAlias;
@@ -20,95 +19,74 @@ class SpaceMembersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final space = ref.watch(spaceProvider(spaceIdOrAlias)).requireValue;
-    final members = ref.watch(membersIdsProvider(spaceIdOrAlias));
-    final myMembership = ref.watch(roomMembershipProvider(spaceIdOrAlias));
-    final List<Widget> topMenu = [
-      Expanded(
-        child: Text(
-          L10n.of(context).members,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-      ),
-    ];
+    final membersLoader = ref.watch(membersIdsProvider(spaceIdOrAlias));
+    final membership =
+        ref.watch(roomMembershipProvider(spaceIdOrAlias)).valueOrNull;
+    final invited =
+        ref.watch(spaceInvitedMembersProvider(spaceIdOrAlias)).valueOrNull ??
+            [];
+    final showInviteBtn = membership?.canString('CanInvite') == true;
 
-    if (myMembership.hasValue) {
-      final membership = myMembership.value!;
-      if (membership.canString('CanInvite')) {
-        topMenu.add(
-          IconButton(
-            icon: Icon(
-              Atlas.plus_circle_thin,
-              color: Theme.of(context).colorScheme.neutral5,
-            ),
-            iconSize: 28,
-            color: Theme.of(context).colorScheme.surface,
-            onPressed: () => context.pushNamed(
-              Routes.spaceInvite.name,
-              pathParameters: {'spaceId': spaceIdOrAlias},
-            ),
-          ),
-        );
-      }
-    }
-    // get platform of context.
-
-    return DecoratedBox(
-      decoration: const BoxDecoration(gradient: primaryGradient),
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: SpaceHeader(spaceIdOrAlias: spaceIdOrAlias),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Row(
-                children: topMenu,
-              ),
-            ),
-          ),
-          members.when(
-            data: (members) {
-              final widthCount =
-                  (MediaQuery.of(context).size.width ~/ 300).toInt();
-              const int minCount = 4;
-              if (members.isEmpty) {
-                return SliverToBoxAdapter(
-                  child: Center(
-                    child: Text(
-                      L10n.of(context).noMembersFound,
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          actions: [
+            showInviteBtn && invited.length <= 100
+                ? OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                     ),
-                  ),
-                );
-              }
-              return SliverGrid.builder(
-                itemCount: members.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: max(1, min(widthCount, minCount)),
-                  childAspectRatio: 5.0,
+                    onPressed: () => context.pushNamed(
+                      Routes.spaceInvite.name,
+                      pathParameters: {'spaceId': spaceIdOrAlias},
+                    ),
+                    child: Text(L10n.of(context).invite),
+                  )
+                : const SizedBox.shrink(),
+          ],
+        ),
+        membersLoader.when(
+          data: (members) {
+            final widthCount =
+                (MediaQuery.of(context).size.width ~/ 300).toInt();
+            const int minCount = 4;
+            if (members.isEmpty) {
+              return SliverToBoxAdapter(
+                child: Center(
+                  child: Text(L10n.of(context).noMembersFound),
                 ),
-                itemBuilder: (context, index) {
-                  return MemberListEntry(
-                    memberId: members[index],
-                    roomId: space.getRoomIdStr(),
-                  );
-                },
               );
-            },
-            error: (error, stack) => SliverToBoxAdapter(
-              child: Center(
-                child: Text(L10n.of(context).loadingFailed(error)),
+            }
+            return SliverGrid.builder(
+              itemCount: members.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: max(1, min(widthCount, minCount)),
+                childAspectRatio: 5.0,
               ),
-            ),
-            loading: () => SliverToBoxAdapter(
-              child: Center(
-                child: Text(L10n.of(context).loading),
+              itemBuilder: (context, index) => MemberListEntry(
+                memberId: members[index],
+                roomId: spaceIdOrAlias,
               ),
+            );
+          },
+          error: (e, s) {
+            _log.severe('Failed to load space members', e, s);
+            return SliverToBoxAdapter(
+              child: Center(
+                child: Text(L10n.of(context).loadingFailed(e)),
+              ),
+            );
+          },
+          loading: () => SliverToBoxAdapter(
+            child: Center(
+              child: Text(L10n.of(context).loading),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

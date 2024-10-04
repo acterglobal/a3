@@ -2,23 +2,24 @@ use acter_core::{statics::default_acter_convo_states, Error};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{executor::JoinHandle, RoomMemberships};
-use matrix_sdk_ui::{timeline::RoomExt, Timeline};
-use ruma::assign;
-use ruma_client_api::room::{create_room, Visibility};
-use ruma_common::{
-    serde::Raw, MxcUri, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomAliasId, RoomId,
+use matrix_sdk::{executor::JoinHandle, ComposerDraft, ComposerDraftType, RoomMemberships};
+use matrix_sdk_base::ruma::{
+    api::client::room::{create_room, Visibility},
+    assign,
+    events::{
+        receipt::{ReceiptThread, ReceiptType},
+        room::{
+            avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+            join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+        },
+        space::parent::SpaceParentEventContent,
+        InitialStateEvent,
+    },
+    serde::Raw,
+    MxcUri, OwnedEventId, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomAliasId, RoomId,
     RoomOrAliasId, ServerName, UserId,
 };
-use ruma_events::{
-    receipt::{ReceiptThread, ReceiptType},
-    room::{
-        avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-        join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
-    },
-    space::parent::SpaceParentEventContent,
-    InitialStateEvent,
-};
+use matrix_sdk_ui::{timeline::RoomExt, Timeline};
 use std::{
     ops::Deref,
     path::PathBuf,
@@ -35,7 +36,7 @@ use super::{
     receipt::ReceiptRecord,
     room::Room,
     utils::{remap_for_diff, ApiVectorDiff},
-    RUNTIME,
+    ComposeDraft, OptionComposeDraft, RUNTIME,
 };
 
 pub type ConvoDiff = ApiVectorDiff<Convo>;
@@ -102,6 +103,7 @@ async fn set_latest_msg(
     }
 
     client.store().set_raw(&key, &new_msg).await;
+    info!("******************** changed latest msg: {:?}", key.clone());
     client.executor().notify(vec![key]);
 }
 
@@ -112,7 +114,7 @@ impl Convo {
                 .room
                 .timeline()
                 .await
-                .expect("Creating a timeline builder doesn't fail"),
+                .expect("Creating a timeline builder doesn’t fail"),
         );
         let latest_message_content: Option<RoomMessage> = client
             .store()
@@ -151,7 +153,7 @@ impl Convo {
                 }
             }
             if !event_found && !has_latest_msg {
-                // let's trigger a back pagination in hope that helps us...
+                // let’s trigger a back pagination in hope that helps us...
                 if let Err(error) = last_msg_tl.paginate_backwards(10).await {
                     error!(?error, room_id=?latest_msg_room.room_id(), "backpagination failed");
                 }
@@ -160,14 +162,14 @@ impl Convo {
                 let Some(msg) = last_msg_tl.latest_event().await else {
                     continue;
                 };
-                let full_event = RoomMessage::from((msg, user_id.clone()));
-                set_latest_msg(
-                    &latest_msg_client,
-                    latest_msg_room.room_id(),
-                    &last_msg_lock_tl,
-                    full_event,
-                )
-                .await;
+                let room_id = latest_msg_room.room_id();
+
+                let full_event = RoomMessage::new_event_item(
+                    user_id.clone(),
+                    &msg,
+                    format!("{room_id}:latest_msg"),
+                );
+                set_latest_msg(&latest_msg_client, room_id, &last_msg_lock_tl, full_event).await;
             }
             warn!(room_id=?latest_msg_room.room_id(), "Timeline stopped")
         });
@@ -312,6 +314,90 @@ impl Convo {
             })
             .await?
     }
+
+    pub async fn msg_draft(&self) -> Result<OptionComposeDraft> {
+        if !self.is_joined() {
+            bail!("Unable to fetch composer draft of a room we are not in");
+        }
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let draft = room.load_composer_draft().await?;
+
+                Ok(OptionComposeDraft::new(draft.map(|composer_draft| {
+                    let (msg_type, event_id) = match composer_draft.draft_type {
+                        ComposerDraftType::NewMessage => ("new".to_string(), None),
+                        ComposerDraftType::Edit { event_id } => {
+                            ("edit".to_string(), Some(event_id))
+                        }
+                        ComposerDraftType::Reply { event_id } => {
+                            ("reply".to_string(), Some(event_id))
+                        }
+                    };
+                    ComposeDraft::new(
+                        composer_draft.plain_text,
+                        composer_draft.html_text,
+                        msg_type,
+                        event_id,
+                    )
+                })))
+            })
+            .await?
+    }
+
+    pub async fn save_msg_draft(
+        &self,
+        text: String,
+        html: Option<String>,
+        draft_type: String,
+        event_id: Option<String>,
+    ) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("Unable to save composer draft of a room we are not in");
+        }
+        let room = self.room.clone();
+
+        let draft_type = match (draft_type.as_str(), event_id) {
+            ("new", None) => ComposerDraftType::NewMessage,
+            ("edit", Some(id)) => ComposerDraftType::Edit {
+                event_id: OwnedEventId::try_from(id)?,
+            },
+
+            ("reply", Some(id)) => ComposerDraftType::Reply {
+                event_id: OwnedEventId::try_from(id)?,
+            },
+
+            ("reply", _) | ("edit", _) => bail!("Invalid event id"),
+
+            (draft_type, _) => bail!("Invalid draft type {draft_type}"),
+        };
+
+        let msg_draft = ComposerDraft {
+            plain_text: text,
+            html_text: html,
+            draft_type,
+        };
+
+        RUNTIME
+            .spawn(async move {
+                room.save_composer_draft(msg_draft).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn clear_msg_draft(&self) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("Unable to remove composer draft of a room we are not in");
+        }
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let draft = room.clear_composer_draft();
+                Ok(true)
+            })
+            .await?
+    }
 }
 
 impl Deref for Convo {
@@ -405,7 +491,7 @@ impl Client {
                         // local uri
                         let path = PathBuf::from(avatar_uri);
                         let guess = mime_guess::from_path(path.clone());
-                        let content_type = guess.first().context("don't know mime type")?;
+                        let content_type = guess.first().context("don’t know mime type")?;
                         let buf = std::fs::read(path)?;
                         let response = client.media().upload(&content_type, buf).await?;
 
@@ -458,20 +544,6 @@ impl Client {
             .await?
     }
 
-    pub async fn join_convo(
-        &self,
-        room_id_or_alias: String,
-        server_name: Option<String>,
-    ) -> Result<Convo> {
-        let room = self
-            .join_room(
-                room_id_or_alias,
-                server_name.map(|s| vec![s]).unwrap_or_default(),
-            )
-            .await?;
-        Ok(Convo::new(self.clone(), room).await)
-    }
-
     // ***_typed fn accepts rust-typed input, not string-based one
     async fn convo_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Convo> {
         let convo = self
@@ -519,7 +591,7 @@ impl Client {
             let room_alias = RoomAliasId::parse(either.as_str())?;
             self.convo_by_alias_typed(room_alias).await
         } else {
-            bail!("{room_id_or_alias} isn't a valid room id or alias...");
+            bail!("{room_id_or_alias} isn’t a valid room id or alias...");
         }
     }
 

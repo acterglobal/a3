@@ -6,10 +6,13 @@ import 'package:acter/features/backups/providers/backup_state_providers.dart';
 import 'package:acter/features/backups/types.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::backups::widgets::backup_state');
 
 class BackupStateWidget extends ConsumerWidget {
   final bool allowDisabling;
@@ -17,21 +20,14 @@ class BackupStateWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    switch (ref.watch(backupStateProvider)) {
-      case RecoveryState.enabled:
-        if (allowDisabling) {
-          return renderCanResetAction(context, ref);
-        } else {
-          // nothing to see here. all good.
-          return const SizedBox.shrink();
-        }
-      case RecoveryState.incomplete:
-        return renderRecoverAction(context, ref);
-      case RecoveryState.disabled:
-        return renderStartAction(context, ref);
-      default:
-        return renderUnknown(context, ref);
-    }
+    return switch (ref.watch(backupStateProvider)) {
+      RecoveryState.enabled => allowDisabling
+          ? renderCanResetAction(context, ref)
+          : const SizedBox.shrink(), // nothing to see here. all good.
+      RecoveryState.incomplete => renderRecoverAction(context, ref),
+      RecoveryState.disabled => renderStartAction(context, ref),
+      _ => renderUnknown(context, ref),
+    };
   }
 
   Widget renderUnknown(BuildContext context, WidgetRef ref) {
@@ -108,15 +104,19 @@ class BackupStateWidget extends ConsumerWidget {
     try {
       final manager = ref.read(backupManagerProvider);
       secret = await manager.enable();
-      EasyLoading.dismiss();
-    } catch (error) {
+    } catch (e, s) {
+      _log.severe('Failed to enable backup', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
       EasyLoading.showError(
-        // ignore: use_build_context_synchronously
-        L10n.of(context).encryptionBackupEnablingFailed(error),
+        L10n.of(context).encryptionBackupEnablingFailed(e),
         duration: const Duration(seconds: 5),
       );
       return;
     }
+    EasyLoading.dismiss();
     if (context.mounted) {
       showRecoveryKeyDialog(context, ref, secret);
     }

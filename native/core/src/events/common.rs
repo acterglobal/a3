@@ -1,19 +1,26 @@
 use chrono::{DateTime, Utc};
-use ruma_common::OwnedEventId;
+use matrix_sdk_base::ruma::OwnedEventId;
 use serde::{Deserialize, Serialize};
 
+mod categories;
 mod color;
+mod display;
 mod labels;
 mod object_reference;
 mod rendering;
 
+pub use categories::{
+    CategoriesStateEvent, CategoriesStateEventContent, Category, CategoryBuilder,
+};
 pub use color::Color;
 pub use labels::Labels;
 pub use object_reference::{
     CalendarEventAction, ObjRef, ObjRefBuilder, RefDetails, RefDetailsBuilder, TaskAction,
     TaskListAction,
 };
-pub use rendering::{BrandIcon, Colorize, ColorizeBuilder, Icon, Position};
+pub use rendering::{ActerIcon, BrandLogo, Colorize, ColorizeBuilder, Icon, Position};
+
+pub use display::{Display, DisplayBuilder};
 
 /// Default UTC DateTime Object
 pub type UtcDateTime = DateTime<Utc>;

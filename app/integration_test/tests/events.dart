@@ -1,7 +1,7 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/events/model/keys.dart';
-import 'package:acter/features/events/pages/create_edit_event_page.dart';
+import 'package:acter/features/events/pages/create_event_page.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -51,7 +51,7 @@ extension ActerNews on ConvenientTest {
     final createEditEventFinder = find.byKey(createEditEventKey);
     await createEditEventFinder.should(findsOneWidget);
     final editorState = (tester.firstState(createEditEventFinder)
-            as CreateEditEventPageConsumerState)
+            as CreateEventPageConsumerState)
         .textEditorState;
     assert(editorState.editable, 'Not editable');
     assert(editorState.selection != null, 'No selection');

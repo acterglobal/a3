@@ -3,11 +3,6 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-
-final _log = Logger('a3::chat::emoji_reaction_item');
 
 class EmojiReactionItem extends ConsumerWidget {
   final List<String> emojis;
@@ -22,44 +17,17 @@ class EmojiReactionItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile =
-        ref.watch(roomMemberProvider((userId: userId, roomId: roomId)));
+    final avatarInfo =
+        ref.watch(memberAvatarInfoProvider((userId: userId, roomId: roomId)));
 
     return ListTile(
-      leading: profile.when(
-        data: (data) => ActerAvatar(
-          options: AvatarOptions.DM(
-            AvatarInfo(
-              uniqueId: userId,
-              displayName: data.profile.displayName,
-              avatar: data.profile.getAvatarImage(),
-            ),
-            size: 18,
-          ),
+      leading: ActerAvatar(
+        options: AvatarOptions.DM(
+          avatarInfo,
+          size: 18,
         ),
-        loading: () => Skeletonizer(
-          child: ActerAvatar(
-            options: AvatarOptions.DM(
-              AvatarInfo(uniqueId: userId),
-              size: 24,
-            ),
-          ),
-        ),
-        error: (e, s) {
-          _log.severe('loading avatar failed', e, s);
-          return ActerAvatar(
-            options: AvatarOptions(
-              AvatarInfo(uniqueId: userId, displayName: userId),
-              size: 18,
-            ),
-          );
-        },
       ),
-      title: profile.when(
-        data: (data) => Text(data.profile.displayName ?? userId),
-        loading: () => Skeletonizer(child: Text(userId)),
-        error: (e, s) => Text(L10n.of(context).loadingProfileFailed(e)),
-      ),
+      title: Text(avatarInfo.displayName ?? userId),
       subtitle: Text(userId),
       trailing: Wrap(
         children: emojis

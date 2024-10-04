@@ -74,7 +74,7 @@ class EmojiRow extends StatelessWidget {
             direction: Axis.horizontal,
             spacing: 5.0,
             children: [
-              for (var emoji in emojiList)
+              for (final emoji in emojiList)
                 InkWell(
                   onTap: () => onEmojiTap(message.id, emoji),
                   child: Text(
@@ -85,11 +85,10 @@ class EmojiRow extends StatelessWidget {
                 ),
               InkWell(
                 onTap: () => _showBottomSheet(context),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 3),
+                child: const Padding(
+                  padding: EdgeInsets.only(top: 3),
                   child: Icon(
                     Atlas.dots_horizontal_thin,
-                    color: Theme.of(context).colorScheme.neutral5,
                     size: 18,
                   ),
                 ),
@@ -110,6 +109,7 @@ class EmojiRow extends StatelessWidget {
             onEmojiTap(message.id, emoji.emoji);
             Navigator.pop(context);
           },
+          onClosePicker: () => Navigator.pop(context),
         ),
       );
 }

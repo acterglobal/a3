@@ -1,8 +1,8 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/rooms.dart';
+import 'package:acter/features/room/actions/join_room.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RoomHierarchyJoinButton extends ConsumerWidget {
   final Function(String) forward;
@@ -23,22 +23,21 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final maybeRoom = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
-    if (maybeRoom != null) {
+    if (maybeRoom != null && maybeRoom.isJoined()) {
       // we know that room already \o/
       return OutlinedButton(
         onPressed: () => forward(roomId),
         child: Text(L10n.of(context).joined),
       );
     }
-    switch (joinRule) {
-      case 'private':
-      case 'invite':
-        return Tooltip(
+    return switch (joinRule) {
+      'private' || 'invite' => Tooltip(
           message: L10n.of(context).youNeedBeInvitedToJoinThisRoom,
-          child: Chip(label: Text(L10n.of(context).private)),
-        );
-      case 'restricted':
-        return Tooltip(
+          child: Chip(
+            label: Text(L10n.of(context).private),
+          ),
+        ),
+      'restricted' => Tooltip(
           message: L10n.of(context).youAreAbleToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
@@ -53,9 +52,8 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
             },
             child: Text(L10n.of(context).join),
           ),
-        );
-      case 'public':
-        return Tooltip(
+        ),
+      'public' => Tooltip(
           message: L10n.of(context).youAreAbleToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
@@ -70,12 +68,13 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
             },
             child: Text(L10n.of(context).join),
           ),
-        );
-      default:
-        return Tooltip(
+        ),
+      _ => Tooltip(
           message: L10n.of(context).unclearJoinRule(joinRule),
-          child: Chip(label: Text(L10n.of(context).unknown)),
-        );
-    }
+          child: Chip(
+            label: Text(L10n.of(context).unknown),
+          ),
+        ),
+    };
   }
 }

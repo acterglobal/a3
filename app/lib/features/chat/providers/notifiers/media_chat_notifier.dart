@@ -6,10 +6,10 @@ import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dar
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::chat::media_chat_notifier');
 
@@ -33,14 +33,21 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       );
       try {
         //Get media path if already downloaded
-        final mediaPath = await _convo!.mediaPath(messageInfo.messageId, false);
-        if (mediaPath.text() != null) {
-          final videoThumbnailFile = await getThumbnailData(mediaPath.text()!);
+        final mediaPath =
+            (await _convo!.mediaPath(messageInfo.messageId, false)).text();
+
+        if (mediaPath != null) {
           state = state.copyWith(
-            mediaFile: File(mediaPath.text()!),
-            videoThumbnailFile: videoThumbnailFile,
+            mediaFile: File(mediaPath),
+            videoThumbnailFile: null,
             mediaChatLoadingState: const MediaChatLoadingState.loaded(),
           );
+          final videoThumbnailFile = await getThumbnailData(mediaPath);
+          if (videoThumbnailFile != null) {
+            if (state.mediaFile?.path == mediaPath) {
+              state = state.copyWith(videoThumbnailFile: videoThumbnailFile);
+            }
+          }
         } else {
           // FIXME: this does not react if yet if we switched the network ...
           if (await ref
@@ -79,21 +86,26 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
           null,
           tempDir.path,
         );
-        String? mediaPath = result.text();
+        final mediaPath = result.text();
         if (mediaPath != null) {
-          final videoThumbnailFile = await getThumbnailData(mediaPath);
           state = state.copyWith(
             mediaFile: File(mediaPath),
-            videoThumbnailFile: videoThumbnailFile,
+            videoThumbnailFile: null,
             isDownloading: false,
           );
+          final videoThumbnailFile = await getThumbnailData(mediaPath);
+          if (videoThumbnailFile != null) {
+            if (state.mediaFile?.path == mediaPath) {
+              state = state.copyWith(videoThumbnailFile: videoThumbnailFile);
+            }
+          }
         }
-      } catch (error, stackTrace) {
-        _log.severe('Error downloading media:', error, stackTrace);
+      } catch (e, s) {
+        _log.severe('Error downloading media:', e, s);
         state = state.copyWith(
           isDownloading: false,
           mediaChatLoadingState: MediaChatLoadingState.error(
-            'Some error occurred ${error.toString()}',
+            'Some error occurred ${e.toString()}',
           ),
         );
       }
@@ -106,7 +118,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
   static Future<File?> getThumbnailData(String mediaPath) async {
     try {
       final tempDir = await getTemporaryDirectory();
-      final videoName = mediaPath.split('/').last.split('.').first;
+      final videoName = p.basenameWithoutExtension(mediaPath);
       final destPath = p.join(tempDir.path, '$videoName.jpg');
       final destFile = File(destPath);
 
@@ -120,7 +132,6 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
         destFile: destPath,
         width: 300,
         height: 300,
-        keepAspectRatio: true,
         format: 'jpeg',
         quality: 90,
       );
@@ -128,9 +139,9 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       if (thumbnailGenerated) {
         return destFile;
       }
-    } catch (err, s) {
+    } catch (e, s) {
       // Handle platform errors.
-      _log.severe('Error', err, s);
+      _log.severe('Failed to extract video thumbnail', e, s);
     }
     return null;
   }

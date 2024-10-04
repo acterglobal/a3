@@ -1,7 +1,8 @@
 use derive_getters::Getters;
-use ruma::RoomId;
-use ruma_common::{EventId, OwnedEventId, OwnedUserId, UserId};
-use ruma_events::{reaction::ReactionEventContent, relation::Annotation, OriginalMessageLikeEvent};
+use matrix_sdk_base::ruma::{
+    events::{reaction::ReactionEventContent, relation::Annotation, OriginalMessageLikeEvent},
+    EventId, OwnedEventId, OwnedUserId, RoomId, UserId,
+};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref};
 use tracing::{error, info, trace};
@@ -230,7 +231,7 @@ impl Reaction {
         let manager = {
             let model = store.get(&belongs_to).await?;
             if !model.capabilities().contains(&Capability::Reactable) {
-                error!(?model, reaction = ?self, "doesn't support entries. can't apply");
+                error!(?model, reaction = ?self, "doesn’t support entries. can’t apply");
                 None
             } else {
                 let mut manager =

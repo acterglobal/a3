@@ -1,5 +1,5 @@
+import 'package:acter/config/env.g.dart';
 import 'package:args/command_runner.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter/features/cli/util.dart';
 
 import 'dart:io';
@@ -15,9 +15,9 @@ class InfoCommand extends Command {
 
   @override
   Future<void> run() async {
-    print('Acter $versionName');
-    print(' - Default Homeserver: $defaultServerName');
-    print(' - Default Homeserver URL: $defaultServerUrl');
+    print('Acter ${Env.rageshakeAppVersion}');
+    print(' - Default Homeserver: ${Env.defaultHomeserverName}');
+    print(' - Default Homeserver URL: ${Env.defaultHomeserverUrl}');
     final appInfo = await AppInfo.make();
     print('Locally:');
     print(' - App Folder: ${appInfo.appDocPath}');
@@ -29,8 +29,8 @@ class InfoCommand extends Command {
     print(' - Number of current sessions found: ${appInfo.sessions.length}');
     if (appInfo.accounts.isNotEmpty) {
       print(' - Data of sessions found: ${appInfo.accounts.length}');
-      for (final a in appInfo.accounts) {
-        print('    * $a');
+      for (final acc in appInfo.accounts) {
+        print('    * $acc');
       }
     }
     exit(0);

@@ -1,5 +1,4 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/icons/tasks_icon.dart';
 import 'package:acter/features/public_room_search/widgets/maybe_direct_room_action_widget.dart';
 import 'package:acter/features/search/model/keys.dart';
@@ -7,7 +6,6 @@ import 'package:acter/features/search/providers/search.dart';
 import 'package:acter/features/search/widgets/pins_builder.dart';
 import 'package:acter/features/search/widgets/quick_actions_builder.dart';
 import 'package:acter/features/search/widgets/spaces_builder.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,10 +14,12 @@ import 'package:go_router/go_router.dart';
 
 class QuickJump extends ConsumerStatefulWidget {
   final bool expand;
+  final bool popBeforeRoute;
 
   const QuickJump({
     super.key,
     this.expand = false,
+    this.popBeforeRoute = false,
   });
 
   @override
@@ -30,8 +30,6 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
   final searchTextController = TextEditingController();
 
   List<Widget> primaryButtons(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(featuresProvider);
-    bool isActive(f) => provider.isActive(f);
     return [
       Wrap(
         alignment: WrapAlignment.center,
@@ -101,23 +99,19 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                 child: Icon(Atlas.calendar_dots_thin, size: 24),
               ),
             ),
-            isActive(LabsFeature.tasks)
-                ? IconButton(
-                    key: QuickJumpKeys.tasks,
-                    style: IconButton.styleFrom(
-                      side: BorderSide(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.12),
-                      ),
-                    ),
-                    onPressed: () => routeTo(Routes.tasks),
+            IconButton(
+              key: QuickJumpKeys.tasks,
+              style: IconButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
+                ),
+              ),
+              onPressed: () => routeTo(Routes.tasks),
 
-                    // this is slightly differently sized and padded to look the same as the others
-                    icon: const TasksIcon(),
-                  )
-                : null,
+              // this is slightly differently sized and padded to look the same as the others
+              icon: const TasksIcon(),
+            ),
             IconButton(
               style: IconButton.styleFrom(
                 side: BorderSide(
@@ -147,14 +141,16 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
                 child: Icon(Atlas.audio_wave_thin, size: 24),
               ),
             ),
-          ].where((element) => element != null),
+          ],
         ),
       ),
     ];
   }
 
   void routeTo(Routes route) {
-    if (context.canPop()) context.pop();
+    if (widget.popBeforeRoute) {
+      Navigator.pop(context);
+    }
     context.pushNamed(route.name);
   }
 
@@ -167,8 +163,8 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
 
     List<Widget> body = [
       MaybeDirectRoomActionWidget(searchVal: searchValue),
-      const SpacesBuilder(),
-      const PinsBuilder(),
+      SpacesBuilder(popBeforeRoute: widget.popBeforeRoute),
+      PinsBuilder(popBeforeRoute: widget.popBeforeRoute),
     ];
     if (!hasSearchTerm) {
       body.add(
@@ -182,7 +178,11 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
           const Divider(indent: 24, endIndent: 24),
         );
       }
-      body.add(const QuickActionsBuilder());
+      body.add(
+        QuickActionsBuilder(
+          popBeforeRoute: widget.popBeforeRoute,
+        ),
+      );
     }
 
     return Scaffold(

@@ -16,6 +16,7 @@ class ActivitiesIcon extends ConsumerWidget {
       child: const Icon(
         Atlas.audio_wave_thin,
         key: MainNavKeys.activities,
+        size: 18,
       ),
     );
   }

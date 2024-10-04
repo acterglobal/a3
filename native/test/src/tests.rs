@@ -1,5 +1,8 @@
 mod auth;
+mod blurhash;
+mod bookmarks;
 mod calendar;
+mod categories;
 mod formatted_body;
 mod invitation;
 mod msg_edit;
@@ -16,5 +19,6 @@ mod spaces;
 mod super_invites;
 mod tasks;
 mod templates;
+mod thumbnail;
 mod typing;
 mod verification;

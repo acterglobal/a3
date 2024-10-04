@@ -3,8 +3,7 @@ use matrix_sdk::{
     room::Room,
     Client as SdkClient,
 };
-use ruma_common::{OwnedRoomId, OwnedUserId};
-use ruma_events::typing::SyncTypingEvent;
+use matrix_sdk_base::ruma::{events::typing::SyncTypingEvent, OwnedRoomId, OwnedUserId};
 use scc::hash_map::{Entry, HashMap};
 use std::sync::Arc;
 use tokio::sync::broadcast::{channel, Receiver, Sender};

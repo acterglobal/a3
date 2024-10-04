@@ -209,7 +209,7 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
   void onVerificationRequest(VerificationEvent event) {
     _log.info('emitter verification.request');
 
-    // starting of verifiee's flow
+    // starting of verifiee’s flow
     setState(() {
       isVerifier = false;
       flowId = event.flowId();
@@ -353,6 +353,7 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
         if (!context.mounted) return;
         // open sas.keys_exchanged dialog
         showModalBottomSheet(
+          // ignore: use_build_context_synchronously
           context: context,
           builder: (BuildContext context) => SasKeysExchangedView(
             sender: event.sender(),

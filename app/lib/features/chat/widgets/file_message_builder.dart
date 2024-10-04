@@ -1,25 +1,23 @@
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/download_button.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/features/files/actions/file_share.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:path/path.dart' as p;
 
 class FileMessageBuilder extends ConsumerWidget {
   final types.FileMessage message;
   final int messageWidth;
   final bool isReplyContent;
-  final Convo convo;
+  final String roomId;
 
   const FileMessageBuilder({
     super.key,
-    required this.convo,
+    required this.roomId,
     required this.message,
     required this.messageWidth,
     this.isReplyContent = false,
@@ -28,20 +26,21 @@ class FileMessageBuilder extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ChatMessageInfo messageInfo =
-        (messageId: message.id, roomId: convo.getRoomIdStr());
+        (messageId: message.remoteId ?? message.id, roomId: roomId);
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     return InkWell(
       onTap: () async {
-        if (mediaState.mediaFile != null) {
-          if (isDesktop) {
-            downloadFile(context, mediaState.mediaFile!);
-          } else {
-            Share.shareXFiles([XFile(mediaState.mediaFile!.path)]);
-          }
+        final mediaFile =
+            ref.read(mediaChatStateProvider(messageInfo)).mediaFile;
+        if (mediaFile != null) {
+          await openFileShareDialog(
+            context: context,
+            file: mediaFile,
+          );
         } else {
-          await ref
-              .read(mediaChatStateProvider(messageInfo).notifier)
-              .downloadMedia();
+          final notifier =
+              ref.read(mediaChatStateProvider(messageInfo).notifier);
+          await notifier.downloadMedia();
         }
       },
       child: Container(
@@ -65,32 +64,16 @@ class FileMessageBuilder extends ConsumerWidget {
   }
 
   Widget getFileIcon(BuildContext context) {
-    final extension = message.name.split('.').last;
-    IconData iconData;
-    switch (extension) {
-      case 'png':
-      case 'jpg':
-      case 'jpeg':
-        iconData = Atlas.file_image;
-        break;
-      case 'pdf':
-        iconData = Icons.picture_as_pdf;
-        break;
-      case 'doc':
-        iconData = Atlas.file;
-        break;
-      case 'mp4':
-        iconData = Atlas.file_video;
-        break;
-      case 'mp3':
-        iconData = Atlas.music_file;
-        break;
-      case 'rtf':
-      case 'txt':
-      default:
-        iconData = Atlas.lines_file;
-        break;
-    }
+    final extension = p.extension(message.name);
+    IconData iconData = switch (extension) {
+      '.png' || '.jpg' || '.jpeg' => Atlas.file_image,
+      '.pdf' => Icons.picture_as_pdf,
+      '.doc' => Atlas.file,
+      '.mp4' => Atlas.file_video,
+      '.mp3' => Atlas.music_file,
+      '.rtf' || '.txt' => Atlas.lines_file,
+      _ => Atlas.lines_file,
+    };
     return Icon(iconData, size: 28);
   }
 
