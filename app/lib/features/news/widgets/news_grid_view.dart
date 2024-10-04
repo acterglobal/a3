@@ -45,6 +45,8 @@ class NewsGridView extends StatelessWidget {
   Widget newsItemUI(NewsEntry newsEntry) {
     final List<NewsSlide> newsSlides = newsEntry.slides().toList();
     final slideCount = newsSlides.length;
+
+    if (newsSlides.isEmpty) return const SizedBox.shrink();
     final slide = newsSlides[0];
 
     return Container(
