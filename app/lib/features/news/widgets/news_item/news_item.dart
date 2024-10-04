@@ -60,26 +60,25 @@ class _NewsItemState extends ConsumerState<NewsItem> {
 
   Widget buildSelectedSlideIndicators(int slideCount) {
     return Positioned.fill(
-      child: Visibility(
-        visible: slideCount > 1,
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: ValueListenableBuilder(
-            valueListenable: currentSlideIndex,
-            builder: (context, value, child) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 50),
-                child: CarouselIndicator(
-                  count: slideCount,
-                  index: value,
-                  width: 10,
-                  height: 10,
-                ),
-              );
-            },
-          ),
-        ),
-      ),
+      child: slideCount <= 1
+          ? const SizedBox.shrink()
+          : Align(
+              alignment: Alignment.bottomCenter,
+              child: ValueListenableBuilder(
+                valueListenable: currentSlideIndex,
+                builder: (context, value, child) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 50),
+                    child: CarouselIndicator(
+                      count: slideCount,
+                      index: value,
+                      width: 10,
+                      height: 10,
+                    ),
+                  );
+                },
+              ),
+            ),
     );
   }
 }
