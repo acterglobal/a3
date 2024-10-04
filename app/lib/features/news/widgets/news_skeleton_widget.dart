@@ -47,7 +47,7 @@ class NewsSkeletonWidget extends StatelessWidget {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );
