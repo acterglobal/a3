@@ -22,6 +22,12 @@ class _NewsItemState extends ConsumerState<NewsItem> {
   final ValueNotifier<int> currentSlideIndex = ValueNotifier(0);
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    currentSlideIndex.value = 0;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final slides = widget.news.slides().toList();
 
