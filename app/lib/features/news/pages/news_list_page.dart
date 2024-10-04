@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_full_view.dart';
 import 'package:acter/features/news/widgets/news_grid_view.dart';
+import 'package:acter/features/news/widgets/news_skeleton_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -116,17 +117,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
               );
       },
       error: (e, s) => newsErrorUI(context, e, s),
-      loading: () => newsLoadingUI(),
-    );
-  }
-
-  Widget newsLoadingUI() {
-    return const Center(
-      child: SizedBox(
-        height: 50,
-        width: 50,
-        child: CircularProgressIndicator(),
-      ),
+      loading: () => const NewsSkeletonWidget(),
     );
   }
 
