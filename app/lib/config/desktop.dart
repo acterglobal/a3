@@ -14,7 +14,10 @@ final _log = Logger('a3::desktop');
 class DesktopSupport extends StatefulWidget {
   final Widget child;
 
-  const DesktopSupport({super.key, required this.child});
+  const DesktopSupport({
+    super.key,
+    required this.child,
+  });
 
   @override
   State<DesktopSupport> createState() => _DesktopSupportState();
