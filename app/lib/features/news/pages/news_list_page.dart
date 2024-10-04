@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
@@ -121,10 +122,16 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
     );
   }
 
-  Widget newsErrorUI(BuildContext context, e, s) {
-    _log.severe('Failed to load news list', e, s);
-    return Center(
-      child: Text(L10n.of(context).couldNotFetchNews),
+  Widget newsErrorUI(BuildContext context, error, stack) {
+    _log.severe('Failed to load boost list', error, stack);
+    return ErrorPage(
+      background: const NewsSkeletonWidget(),
+      error: error,
+      stack: stack,
+      textBuilder: L10n.of(context).loadingFailed,
+      onRetryTap: () {
+        ref.invalidate(newsListProvider(widget.spaceId));
+      },
     );
   }
 
