@@ -440,6 +440,8 @@
   "@encryptionBackupRecoveryExplainer": {},
   "encryptionBackupRecoveryCopiedToClipboard": "Recovery Key copied to clipboard",
   "@encryptionBackupRecoveryCopiedToClipboard": {},
+  "refreshing": "Refreshing",
+  "@refreshing": {},
   "encryptionBackupDisable": "Disable your Key Backup?",
   "@encryptionBackupDisable": {},
   "encryptionBackupDisableExplainer": "Resetting the key backup will destroy it locally and on your homeserver. This can’t be undone. Are you sure you want to continue?",

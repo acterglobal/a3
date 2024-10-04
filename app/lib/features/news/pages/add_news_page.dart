@@ -62,7 +62,9 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
 
         setState(() {
           selectedNewsPost = next;
-          textEditorState = EditorState(document: document);
+          if (!document.isEmpty) {
+            textEditorState = EditorState(document: document);
+          }
         });
 
         if (autoFocus) {

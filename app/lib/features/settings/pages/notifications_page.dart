@@ -232,20 +232,25 @@ class NotificationsSettingsPage extends ConsumerWidget {
     final pushersLoader = ref.watch(pushersProvider);
     return SettingsSectionWithTitleActions(
       title: Text(L10n.of(context).notificationTargets),
-      actions: emailsLoader.maybeWhen(
-        orElse: () => [],
-        data: (emails) {
-          if (emails.isEmpty) return [];
-          return [
+      actions: [
+        IconButton(
+          onPressed: () {
+            ref.invalidate(pushersProvider);
+            EasyLoading.showToast(L10n.of(context).refreshing);
+          },
+          icon: const Icon(Atlas.refresh_account_arrows_thin),
+        ),
+        emailsLoader.maybeWhen(
+          orElse: () => const SizedBox.shrink(),
+          data: (emails) => emails.isEmpty ? const SizedBox.shrink():
             IconButton(
-              icon: const Icon(Atlas.plus_circle_thin),
-              iconSize: 20,
-              color: Theme.of(context).colorScheme.surface,
-              onPressed: () => _onTargetAdd(context, ref, emails),
-            ),
-          ];
-        },
-      ),
+                icon: const Icon(Atlas.plus_circle_thin),
+                iconSize: 20,
+                color: Theme.of(context).colorScheme.surface,
+                onPressed: () => _onTargetAdd(context, ref, emails),
+              ),
+        ),
+      ],
       tiles: pushersLoader.when(
         data: (pushers) {
           if (pushers.isEmpty) {
