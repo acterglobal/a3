@@ -52,6 +52,7 @@ void main() {
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
           pinListProvider.overrideWith(() => mockedPinListNotifier),
+          roomMembershipProvider.overrideWith((a, b) => null),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const PinsListPage(
