@@ -46,7 +46,7 @@ Future<bool> handleMatrixMessage(
     await _showNotification(notification);
     return true;
   } catch (e, s) {
-    _log.severe('Parsing Notification failed', e, s);
+    _log.severe('Parsing Notification failed: $message', e, s);
   }
   return false;
 }
