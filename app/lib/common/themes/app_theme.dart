@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
@@ -25,8 +26,7 @@ String? selectEmojiFont() {
 
 final emojiFont = selectEmojiFont();
 // non-noto-emoji we just fallback to the system fonts.
-final List<String>? emojiFallbackFonts =
-    emojiFont != null ? [emojiFont!] : null;
+final emojiFallbackFonts = emojiFont.let((p0) => [p0]);
 
 class EmojiConfig {
   static TextStyle? emojiTextStyle =

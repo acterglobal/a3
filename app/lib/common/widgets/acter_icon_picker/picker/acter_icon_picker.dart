@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:flutter/material.dart';
@@ -67,12 +68,9 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
           Expanded(child: _buildIconSelector()),
           ActerPrimaryActionButton(
             onPressed: () {
-              if (widget.onIconSelection != null) {
-                widget.onIconSelection!(
-                  selectedColor.value,
-                  selectedIcon.value,
-                );
-              }
+              widget.onIconSelection.let((cb) {
+                cb(selectedColor.value, selectedIcon.value);
+              });
               Navigator.pop(context);
             },
             child: Text(L10n.of(context).select),

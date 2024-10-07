@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:acter/common/models/sync_state/sync_state.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
 
@@ -31,13 +32,12 @@ class SyncNotifier extends StateNotifier<SyncState> {
   }
 
   void _tickSyncState() {
-    if (state.countDown == null || state.countDown == 0) {
+    final countDown = state.countDown;
+    if (countDown == null || countDown == 0) {
       _restartSync();
     } else {
       // just count down.
-      state = state.copyWith(
-        countDown: (state.countDown ?? 0) > 0 ? (state.countDown! - 1) : null,
-      );
+      state = state.copyWith(countDown: countDown - 1);
     }
   }
 
@@ -66,7 +66,7 @@ class SyncNotifier extends StateNotifier<SyncState> {
           state = SyncState(initialSync: false, errorMsg: msg);
         } else {
           final retry = min(
-            (state.nextRetry == null ? 5 : state.nextRetry! * 2),
+            state.nextRetry.let((p0) => p0 * 2) ?? 5,
             300,
           ); // we double this to a max of 5min.
           state = state.copyWith(

@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/picker/acter_icon_picker.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:flutter/material.dart';
@@ -26,28 +27,22 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.color != null) {
-      color.value = widget.color!;
-    }
-    if (widget.icon != null) {
-      icon.value = widget.icon!;
-    }
+    widget.color.let((p0) => color.value = p0);
+    widget.icon.let((p0) => icon.value = p0);
     return InkWell(
       borderRadius: BorderRadius.circular(100),
-      onTap: widget.onIconSelection == null
-          ? null
-          : () => showActerIconPicker(
-                context: context,
-                selectedColor: color.value,
-                selectedIcon: icon.value,
-                onIconSelection: (selectedColor, selectedIcon) {
-                  color.value = selectedColor;
-                  icon.value = selectedIcon;
-                  if (widget.onIconSelection != null) {
-                    widget.onIconSelection!(selectedColor, selectedIcon);
-                  }
-                },
-              ),
+      onTap: () => widget.onIconSelection.let(
+        (cb) => showActerIconPicker(
+          context: context,
+          selectedColor: color.value,
+          selectedIcon: icon.value,
+          onIconSelection: (selectedColor, selectedIcon) {
+            color.value = selectedColor;
+            icon.value = selectedIcon;
+            cb(selectedColor, selectedIcon);
+          },
+        ),
+      ),
       child: _buildIconUI(),
     );
   }
