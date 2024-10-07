@@ -19,7 +19,7 @@ final eventsToSyncProvider = FutureProvider.autoDispose((ref) async {
   for (final event in upcomingAndOngoing) {
     final eventId = event.eventId().toString();
     final myRsvpStatus = await ref.watch(myRsvpStatusProvider(eventId).future);
-    if (myRsvpStatus == RsvpStatusTag.No) {
+    if (myRsvpStatus != RsvpStatusTag.No) {
       // we sync all that aren’t denied yet
       final event = await ref.watch(
         calendarEventProvider(eventId).future,
