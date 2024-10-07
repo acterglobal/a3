@@ -61,9 +61,9 @@ class AppShellState extends ConsumerState<AppShell> {
     initShake();
 
     // these want to be sure to execute in order
-    await initNotifications();
+    await _initNotifications();
     // calendar sync
-    await initCalendarSync();
+    await _initCalendarSync();
   }
 
   Future<void> initShake() async {
@@ -78,7 +78,7 @@ class AppShellState extends ConsumerState<AppShell> {
     }
   }
 
-  Future<void> initNotifications() async {
+  Future<void> _initNotifications() async {
     final client = ref.read(clientProvider);
     if (client != null) {
       _initPushForClient(client);
@@ -86,6 +86,19 @@ class AppShellState extends ConsumerState<AppShell> {
     ref.listenManual(clientProvider, (previous, next) {
       if (next != null) {
         _initPushForClient(next);
+      }
+    });
+  }
+
+  Future<void> _initCalendarSync() async {
+    final client = ref.read(clientProvider);
+    if (client != null) {
+      // calendar sync only works if we have a client
+      await initCalendarSync();
+    }
+    ref.listenManual(clientProvider, (previous, next) {
+      if (next != null) {
+        initCalendarSync();
       }
     });
   }

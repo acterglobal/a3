@@ -5,6 +5,7 @@ import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -90,9 +91,11 @@ class SettingsLabsPage extends ConsumerWidget {
                       newVal,
                     );
                     if (newVal) {
-                      initCalendarSync(ignoreRejection: true);
+                      await initCalendarSync(ignoreRejection: true);
+                      EasyLoading.showToast('Acter Calendars synced');
                     } else {
-                      clearActerCalendars();
+                      await clearActerCalendars();
+                      EasyLoading.showToast('Acter Calendars removes');
                     }
                   },
                 ),
