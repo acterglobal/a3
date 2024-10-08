@@ -1,3 +1,5 @@
+import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/search/widgets/quick_search_spaces.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -34,6 +36,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           padding: const EdgeInsets.only(left: 8),
           child: filterChipsButtons(),
         ),
+        const QuickSearchSpaces(),
       ],
     );
   }
@@ -54,6 +57,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 onTap: () {
                   searchTextController.clear();
                   ref.read(searchValueProvider.notifier).state = '';
+                  ref.read(roomSearchValueProvider.notifier).state = '';
                 },
                 child: const Icon(Icons.clear),
               ),
@@ -61,6 +65,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           : null,
       onChanged: (value) {
         ref.read(searchValueProvider.notifier).state = value;
+        ref.read(roomSearchValueProvider.notifier).state = value;
       },
     );
   }
