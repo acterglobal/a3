@@ -1,7 +1,7 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -47,17 +47,30 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
   final ValueNotifier<Color> selectedColor = ValueNotifier(Colors.blueGrey);
   final ValueNotifier<ActerIcon> selectedIcon = ValueNotifier(ActerIcon.list);
 
+  void _setWidgetValues() {
+    widget.selectedColor.let((p0) => selectedColor.value = p0);
+    widget.selectedIcon.let((p0) => selectedIcon.value = p0);
+  }
+
   @override
   void initState() {
     super.initState();
-    selectedColor.value = widget.selectedColor;
-    selectedIcon.value = widget.selectedIcon;
+    _setWidgetValues();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _setWidgetValues();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      padding: const EdgeInsets.symmetric(
+        vertical: 24,
+        horizontal: 16,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -104,16 +117,14 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
   }
 
   Widget _buildColorSelector() {
+    final colorBoxes =
+        iconPickerColors.map((color) => _buildColorBoxItem(color)).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(L10n.of(context).selectColor),
         const SizedBox(height: 12),
-        Wrap(
-          children: iconPickerColors
-              .map((color) => _buildColorBoxItem(color))
-              .toList(),
-        ),
+        Wrap(children: colorBoxes),
       ],
     );
   }
@@ -144,6 +155,9 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
   }
 
   Widget _buildIconSelector() {
+    final iconBoxes = ActerIcon.values
+        .map((acterIcon) => _buildIconBoxItem(acterIcon))
+        .toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -151,11 +165,7 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
         const SizedBox(height: 12),
         Expanded(
           child: SingleChildScrollView(
-            child: Wrap(
-              children: ActerIcon.values
-                  .map((acterIcon) => _buildIconBoxItem(acterIcon))
-                  .toList(),
-            ),
+            child: Wrap(children: iconBoxes),
           ),
         ),
       ],

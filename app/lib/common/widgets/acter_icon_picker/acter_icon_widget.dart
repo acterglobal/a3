@@ -25,10 +25,25 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
   final ValueNotifier<Color> color = ValueNotifier(Colors.grey);
   final ValueNotifier<ActerIcon> icon = ValueNotifier(ActerIcon.list);
 
-  @override
-  Widget build(BuildContext context) {
+  void _setWidgetValues() {
     widget.color.let((p0) => color.value = p0);
     widget.icon.let((p0) => icon.value = p0);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _setWidgetValues();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _setWidgetValues();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(100),
       onTap: widget.onIconSelection.let(
