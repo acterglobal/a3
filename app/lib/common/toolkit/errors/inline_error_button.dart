@@ -43,10 +43,12 @@ class ActerInlineErrorButton extends StatelessWidget {
             title: dialogTitle,
             text: text,
             textBuilder: textBuilder,
-            onRetryTap: () => onRetryTap.let((cb) {
-              cb();
-              Navigator.pop(context);
-            }),
+            onRetryTap: onRetryTap.let(
+              (cb) => () {
+                cb();
+                Navigator.pop(context);
+              },
+            ),
             includeBugReportButton: includeBugReportButton,
           ),
           child: Text(L10n.of(context).fatalError),
@@ -75,10 +77,12 @@ class ActerInlineErrorButton extends StatelessWidget {
         title: dialogTitle,
         text: text,
         textBuilder: textBuilder,
-        onRetryTap: () => onRetryTap.let((cb) {
-          cb();
-          Navigator.pop(context);
-        }),
+        onRetryTap: onRetryTap.let(
+          (cb) => () {
+            cb();
+            Navigator.pop(context);
+          },
+        ),
         includeBugReportButton: includeBugReportButton,
       ),
     );
