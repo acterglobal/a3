@@ -369,15 +369,12 @@ Color getUserAvatarNameColor(types.User user, List<Color> colors) {
 
 String getUserInitials(types.User user) {
   var initials = '';
-
-  if ((user.firstName ?? '').isNotEmpty) {
-    initials += user.firstName![0].toUpperCase();
-  }
-
-  if ((user.lastName ?? '').isNotEmpty) {
-    initials += user.lastName![0].toUpperCase();
-  }
-
+  user.firstName.let((p0) {
+    if (p0.isNotEmpty) initials += p0[0].toUpperCase();
+  });
+  user.lastName.let((p0) {
+    if (p0.isNotEmpty) initials += p0[0].toLowerCase();
+  });
   return initials.trim();
 }
 

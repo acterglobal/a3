@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/errors/util.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +90,7 @@ class ActerErrorDialog extends StatelessWidget {
             ErrorCode.notFound => lang.notFound,
             _ => lang.fatalError,
           },
-      text: text ?? (textBuilder != null ? textBuilder!(error) : null),
+      text: text ?? textBuilder.let((cb) => cb(error)),
       type: switch (err) {
         ErrorCode.notFound => QuickAlertType.warning,
         _ => QuickAlertType.error,
@@ -99,14 +100,12 @@ class ActerErrorDialog extends StatelessWidget {
       cancelBtnText: lang.back,
       borderRadius: borderRadius,
     );
-    if (onRetryTap != null) {
+    onRetryTap.let((cb) {
       options.showConfirmBtn = true;
       options.confirmBtnColor = theme.primaryColor;
       options.confirmBtnText = lang.retry;
-      options.onConfirmBtnTap = () {
-        onRetryTap!();
-      };
-    }
+      options.onConfirmBtnTap = cb;
+    });
 
     return _ActerErrorAlert(
       error: error,
@@ -197,7 +196,8 @@ class _ActerErrorActionButtons extends QuickAlertButtons {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
-      color: options.confirmBtnColor ?? Theme.of(context!).primaryColor,
+      color: options.confirmBtnColor ??
+          context.let((ctx) => Theme.of(ctx).primaryColor),
       onPressed: onTap,
       child: Center(
         child: Padding(

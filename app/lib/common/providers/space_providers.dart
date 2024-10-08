@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/notifiers/relations_notifier.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -35,11 +36,12 @@ final otherSpacesForInviteMembersProvider = FutureProvider.autoDispose
 
   //GET PARENT SPACE
   final parentSpaces = ref.watch(parentIdsProvider(spaceId)).valueOrNull;
+  if (parentSpaces == null) throw 'Parent spaces not available';
 
   //GET LIST OF SPACES EXCLUDING PARENT SPACES && EXCLUDING CURRENT SPACE
   final spacesExcludingParentSpacesAndCurrentSpace = allSpaces.where((space) {
     final roomId = space.getRoomIdStr();
-    return !(parentSpaces!.any((p) => p == roomId)) && roomId != spaceId;
+    return !parentSpaces.any((p) => p == roomId) && roomId != spaceId;
   }).toList();
 
   return spacesExcludingParentSpacesAndCurrentSpace;
@@ -401,9 +403,7 @@ final remoteSubspaceRelationsProvider =
         await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
     final toIgnore = List.of(relatedSpaces.knownSubspaces);
     toIgnore.addAll(relatedSpaces.parents.map((e) => e.getRoomIdStr()));
-    if (relatedSpaces.mainParent != null) {
-      toIgnore.add(relatedSpaces.mainParent!.getRoomIdStr());
-    }
+    relatedSpaces.mainParent.let((p) => toIgnore.add(p.getRoomIdStr()));
     toIgnore.add(spaceId); // the hierarchy also gives us ourselfes ...
 
     final roomHierarchy =
