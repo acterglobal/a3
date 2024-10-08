@@ -66,7 +66,7 @@ class SyncNotifier extends StateNotifier<SyncState> {
           state = SyncState(initialSync: false, errorMsg: msg);
         } else {
           final retry = min(
-            state.nextRetry.let((p0) => p0 * 2) ?? 5,
+            state.nextRetry.let((nextRetry) => nextRetry * 2) ?? 5,
             300,
           ); // we double this to a max of 5min.
           state = state.copyWith(

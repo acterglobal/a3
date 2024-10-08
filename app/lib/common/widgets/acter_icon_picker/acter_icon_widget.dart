@@ -26,8 +26,8 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
   final ValueNotifier<ActerIcon> icon = ValueNotifier(ActerIcon.list);
 
   void _setWidgetValues() {
-    widget.color.let((p0) => color.value = p0);
-    widget.icon.let((p0) => icon.value = p0);
+    widget.color.let((clr) => color.value = clr);
+    widget.icon.let((icn) => icon.value = icn);
   }
 
   @override

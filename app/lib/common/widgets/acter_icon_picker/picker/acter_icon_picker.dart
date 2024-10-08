@@ -48,8 +48,8 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
   final ValueNotifier<ActerIcon> selectedIcon = ValueNotifier(ActerIcon.list);
 
   void _setWidgetValues() {
-    widget.selectedColor.let((p0) => selectedColor.value = p0);
-    widget.selectedIcon.let((p0) => selectedIcon.value = p0);
+    widget.selectedColor.let((color) => selectedColor.value = color);
+    widget.selectedIcon.let((icon) => selectedIcon.value = icon);
   }
 
   @override

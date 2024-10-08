@@ -26,7 +26,7 @@ String? selectEmojiFont() {
 
 final emojiFont = selectEmojiFont();
 // non-noto-emoji we just fallback to the system fonts.
-final emojiFallbackFonts = emojiFont.let((p0) => [p0]);
+final emojiFallbackFonts = emojiFont.let((font) => [font]);
 
 class EmojiConfig {
   static TextStyle? emojiTextStyle =

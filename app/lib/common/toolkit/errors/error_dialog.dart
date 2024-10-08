@@ -197,7 +197,7 @@ class _ActerErrorActionButtons extends QuickAlertButtons {
         borderRadius: BorderRadius.circular(15.0),
       ),
       color: options.confirmBtnColor ??
-          context.let((p0) => Theme.of(p0).primaryColor),
+          context.let((ctx) => Theme.of(ctx).primaryColor),
       onPressed: onTap,
       child: Center(
         child: Padding(
