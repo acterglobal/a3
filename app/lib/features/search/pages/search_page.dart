@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/search/widgets/quick_search_pins.dart';
 import 'package:acter/features/search/widgets/quick_search_spaces.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -26,18 +27,25 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   }
 
   Widget _buildBodyUI() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: searchBarUI(),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 8),
-          child: filterChipsButtons(),
-        ),
-        const QuickSearchSpaces(),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: searchBarUI(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: filterChipsButtons(),
+          ),
+          if (searchFilterValue == SearchFilters.all ||
+              searchFilterValue == SearchFilters.spaces)
+            const QuickSearchSpaces(),
+          if (searchFilterValue == SearchFilters.all ||
+              searchFilterValue == SearchFilters.pins)
+            const QuickSearchPins(),
+        ],
+      ),
     );
   }
 
