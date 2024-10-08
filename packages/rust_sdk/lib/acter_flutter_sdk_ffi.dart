@@ -17586,6 +17586,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _newsEntryOriginServerTsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.IntPtr,
+          )>>("__NewsEntry_origin_server_ts");
+
+  late final _newsEntryOriginServerTs = _newsEntryOriginServerTsPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _newsEntryCanRedactPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -36833,6 +36843,18 @@ class NewsEntry {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_EventId");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = EventId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// get timestamp of this event
+  int originServerTs() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryOriginServerTs(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
     return tmp2;
   }
 
