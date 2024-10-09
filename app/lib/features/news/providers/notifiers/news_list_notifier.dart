@@ -43,13 +43,24 @@ class AsyncNewsListNotifier
   Future<List<NewsEntry>> _fetchNews(Client client) async {
     //GET ALL NEWS
     if (arg == null) {
-      return (await client.latestNewsEntries(25))
-          .toList(); // this might throw internally
+      return sortNewsListDscTime(
+        (await client.latestNewsEntries(25)).toList(),
+      ); // this might throw internally
     } else {
       //GET SPACE NEWS
       final space = await client.space(arg!);
-      return (await space.latestNewsEntries(100))
-          .toList(); // this might throw internally
+      return sortNewsListDscTime(
+        (await space.latestNewsEntries(100)).toList(),
+      ); // this might throw internally
     }
   }
+}
+
+Future<List<NewsEntry>> sortNewsListDscTime(
+  List<NewsEntry> newsList,
+) async {
+  newsList.sort(
+    (a, b) => b.originServerTs().compareTo(a.originServerTs()),
+  );
+  return newsList;
 }

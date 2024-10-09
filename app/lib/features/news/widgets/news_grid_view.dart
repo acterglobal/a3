@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/features/news/widgets/news_item/news_post_time_widget.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -53,24 +54,41 @@ class NewsGridView extends StatelessWidget {
       height: 300,
       margin: const EdgeInsets.all(6),
       child: Stack(
-        alignment: Alignment.bottomLeft,
         children: [
           NewsSlideItem(slide: slide, showRichContent: false),
           if (slideCount > 1) slideStackCountView(slideCount),
+          newsPostTime(newsEntry.originServerTs()),
         ],
       ),
     );
   }
 
   Widget slideStackCountView(int slideCount) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Icon(PhosphorIcons.stack(), size: 32),
-          const SizedBox(width: 4),
-          Text(slideCount.toString()),
-        ],
+    return Positioned.fill(
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Icon(PhosphorIcons.stack(), size: 32),
+              const SizedBox(width: 4),
+              Text(slideCount.toString()),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget newsPostTime(int timestamp) {
+    return Positioned.fill(
+      child: Align(
+        alignment: Alignment.bottomLeft,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: NewsPostTimeWidget(originServerTs: timestamp),
+        ),
       ),
     );
   }
