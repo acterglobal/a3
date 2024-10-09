@@ -7,6 +7,7 @@ import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/space/widgets/space_info.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
+import 'package:acter/features/space/widgets/space_sections/spaces_section.dart';
 import 'package:acter/features/spaces/pages/sub_spaces_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -140,6 +141,120 @@ void main() {
           spaceProvider.overrideWith((a, b) => MockSpace()),
         ],
         child: const SubSpacesPage(spaceId: '!spaceId'),
+      );
+
+      // a doesn't show, b and c do
+      expect(find.byType(RoomCard), findsExactly(1));
+      expect(find.byType(RoomHierarchyCard), findsExactly(1));
+    });
+  });
+
+  group('Subspaces Overview Section unaccessible items', () {
+    testWidgets('Known show only', (tester) async {
+      await tester.pumpProviderWidget(
+        overrides: [
+          ...spaceOverrides(),
+          spaceRemoteRelationsProvider.overrideWith((a, b) => []),
+          spaceRelationsOverviewProvider.overrideWith(
+            (a, b) => SpaceRelationsOverview(
+              parents: [],
+              knownChats: [],
+              knownSubspaces: ['b', 'c'], // those are known
+              otherRelations: [],
+              mainParent: null,
+              hasMore: false,
+              suggestedIds: [],
+            ),
+          ),
+          localCategoryListProvider.overrideWith(
+            (a, b) => CategoryUtils().getCategorisedList(
+              [],
+              ['a', 'b', 'c'], // uncategorized subspaces
+            ),
+          ),
+
+          // the actual failing ones
+          spaceProvider.overrideWith((a, b) => MockSpace()),
+        ],
+        child: const SpacesSection(spaceId: '!spaceId', limit: 3),
+      );
+
+      // a doesn't show, b and c do because they are known
+      expect(find.byType(RoomCard), findsExactly(2));
+    });
+
+    testWidgets('Unaccessible not shown', (tester) async {
+      await tester.pumpProviderWidget(
+        overrides: [
+          ...spaceOverrides(),
+          spaceRelationsProvider.overrideWith((a, b) => null), // no remote
+          spaceRelationsOverviewProvider.overrideWith(
+            (a, b) => SpaceRelationsOverview(
+              parents: [],
+              knownChats: [],
+              knownSubspaces: [], // those aren't known
+              otherRelations: [],
+              mainParent: null,
+              hasMore: false,
+              suggestedIds: [],
+            ),
+          ),
+          localCategoryListProvider.overrideWith(
+            (a, b) => CategoryUtils().getCategorisedList(
+              [],
+              ['a', 'b', 'c'], // uncategorized subspaces
+            ),
+          ),
+
+          // the actual failing ones
+          spaceProvider.overrideWith((a, b) => MockSpace()),
+        ],
+        child: const SpacesSection(spaceId: '!spaceId', limit: 3),
+      );
+
+      // None of the items are accessible, do not show
+      expect(find.byType(RoomCard), findsNothing);
+      expect(find.byType(RoomHierarchyCard), findsNothing);
+    });
+
+    testWidgets('Remote is shown, too', (tester) async {
+      await tester.pumpProviderWidget(
+        overrides: [
+          ...spaceOverrides(),
+          maybeRoomProvider.overrideWith(() => MockAsyncMaybeRoomNotifier()),
+          suggestedSpacesProvider.overrideWith((a, b) async {
+            return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
+          }),
+          roomHierarchyAvatarProvider.overrideWith((a, b) => null),
+          remoteSubspaceRelationsProvider.overrideWith(
+            (a, b) => [
+              MockSpaceHierarchyRoomInfo(roomId: 'c', joinRule: 'Public'),
+            ],
+          ),
+          spaceRelationsOverviewProvider.overrideWith(
+            (a, b) => SpaceRelationsOverview(
+              parents: [],
+              knownChats: [],
+              knownSubspaces: [
+                'b',
+              ], // those are known, 'c' is a known remote one
+              otherRelations: [],
+              mainParent: null,
+              hasMore: false,
+              suggestedIds: [],
+            ),
+          ),
+          localCategoryListProvider.overrideWith(
+            (a, b) => CategoryUtils().getCategorisedList(
+              [],
+              ['a', 'b', 'c'], // uncategorized subspaces
+            ),
+          ),
+
+          // the actual failing ones
+          spaceProvider.overrideWith((a, b) => MockSpace()),
+        ],
+        child: const SpacesSection(spaceId: '!spaceId', limit: 3),
       );
 
       // a doesn't show, b and c do
