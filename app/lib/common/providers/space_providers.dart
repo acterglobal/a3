@@ -115,7 +115,6 @@ class SpaceItem {
 
 class SpaceRelationsOverview {
   bool hasMore;
-  SpaceRelations rel;
   List<String> knownSubspaces;
   List<String> knownChats;
   List<String> suggestedIds;
@@ -124,7 +123,6 @@ class SpaceRelationsOverview {
   List<Space> otherRelations;
 
   SpaceRelationsOverview({
-    required this.rel,
     required this.knownSubspaces,
     required this.knownChats,
     required this.suggestedIds,
@@ -280,7 +278,6 @@ final spaceRelationsOverviewProvider =
     }
   }
   return SpaceRelationsOverview(
-    rel: relatedSpaces,
     parents: parents,
     knownChats: knownChats,
     knownSubspaces: knownSubspaces,
