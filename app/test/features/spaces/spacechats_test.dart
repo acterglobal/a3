@@ -44,8 +44,8 @@ void main() {
           spaceRelationsOverviewProvider.overrideWith(
             (a, b) => SpaceRelationsOverview(
               parents: [],
-              knownChats: [],
-              knownSubspaces: ['b', 'c'], // those are known
+              knownChats: ['b', 'c'],
+              knownSubspaces: [], // those are known
               otherRelations: [],
               mainParent: null,
               hasMore: false,
@@ -120,10 +120,8 @@ void main() {
           spaceRelationsOverviewProvider.overrideWith(
             (a, b) => SpaceRelationsOverview(
               parents: [],
-              knownChats: [],
-              knownSubspaces: [
-                'b',
-              ], // those are known, 'c' is a known remote one
+              knownChats: ['b'],
+              knownSubspaces: [], // those are known, 'c' is a known remote one
               otherRelations: [],
               mainParent: null,
               hasMore: false,

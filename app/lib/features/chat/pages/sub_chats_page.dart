@@ -3,6 +3,8 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/skeletons/general_list_skeleton_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
@@ -156,8 +158,36 @@ class SubChatsPage extends ConsumerWidget {
     WidgetRef ref,
     CategoryModelLocal categoryModelLocal,
   ) {
-    final entries = categoryModelLocal.entries;
+    final knownSubspaces = ref
+            .watch(spaceRelationsOverviewProvider(spaceId))
+            .valueOrNull
+            ?.knownChats ??
+        [];
+    final remoteSubchats =
+        ref.watch(remoteChatRelationsProvider(spaceId)).valueOrNull ?? [];
+    final entries = [];
 
+    for (final subSpaceId in categoryModelLocal.entries) {
+      if (knownSubspaces.contains(subSpaceId)) {
+        // user already knows this one
+        entries.add((null, subSpaceId));
+      } else {
+        for (final r in remoteSubchats) {
+          if (r.roomIdStr() == subSpaceId) {
+            if (r.joinRuleStr().toLowerCase() != 'private') {
+              // we ignore private cases
+              entries.add((r, subSpaceId));
+            }
+
+            break; // room was found but ignored
+          }
+        }
+      }
+    }
+    if (entries.isEmpty) {
+      // nothing to show, hide category
+      return const SizedBox.shrink();
+    }
     final suggestedChats =
         ref.watch(suggestedChatsProvider(spaceId)).valueOrNull;
     final suggestedChatIds = [];
@@ -175,7 +205,40 @@ class SubChatsPage extends ConsumerWidget {
         collapsedBackgroundColor: Colors.transparent,
         title: CategoryHeaderView(categoryModelLocal: categoryModelLocal),
         children: List<Widget>.generate(entries.length, (index) {
-          final roomId = entries[index];
+          final roomEntry = entries[index];
+          final roomInfo = roomEntry.$1;
+          final roomId = roomEntry.$2;
+          if (roomInfo != null) {
+            // we don't have this room yet, need to show via room hierarchy
+            final parentId = spaceId;
+            return RoomHierarchyCard(
+              key: Key('subspace-list-item-$roomId'),
+              roomInfo: roomInfo,
+              parentId: parentId,
+              indicateIfSuggested: true,
+              trailing: Wrap(
+                children: [
+                  RoomHierarchyJoinButton(
+                    joinRule: roomInfo.joinRuleStr().toLowerCase(),
+                    roomId: roomId,
+                    roomName: roomInfo.name() ?? roomId,
+                    viaServerName: roomInfo.viaServerName(),
+                    forward: (spaceId) {
+                      goToSpace(context, spaceId);
+                      ref.invalidate(spaceRelationsProvider(parentId));
+                      ref.invalidate(spaceRemoteRelationsProvider(parentId));
+                    },
+                  ),
+                  RoomHierarchyOptionsMenu(
+                    isSuggested: roomInfo.suggested(),
+                    childId: roomId,
+                    parentId: parentId,
+                  ),
+                ],
+              ),
+            );
+          }
+
           final isSuggested = suggestedChatIds.contains(roomId);
           return RoomCard(
             roomId: roomId,
