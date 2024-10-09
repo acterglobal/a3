@@ -6,11 +6,13 @@ class CategoryModelLocal {
   final Color? color;
   final ActerIcon? icon;
   final List<String> entries;
+  final bool isUncategorized;
 
   const CategoryModelLocal({
     required this.title,
     this.color,
     this.icon,
     required this.entries,
+    this.isUncategorized = false,
   });
 }
