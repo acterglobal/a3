@@ -1,8 +1,9 @@
 import 'dart:core';
 
 import 'package:acter/common/widgets/space_name_widget.dart';
-import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
+import 'package:acter/features/news/widgets/news_item/news_post_time_widget.dart';
 import 'package:acter/features/news/widgets/news_item/news_side_bar.dart';
+import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:carousel_indicator/carousel_indicator.dart';
@@ -34,7 +35,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     return Stack(
       children: [
         buildSlidesUI(slides),
-        buildSpaceName(),
+        buildSpaceNameAndPostTime(),
         NewsSideBar(news: widget.news),
         buildSelectedSlideIndicators(slides.length),
       ],
@@ -50,15 +51,23 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     );
   }
 
-  Widget buildSpaceName() {
+  Widget buildSpaceNameAndPostTime() {
     final roomId = widget.news.roomId().toString();
+
     return Align(
       alignment: Alignment.bottomLeft,
-      child: InkWell(
-        onTap: () => goToSpace(context, roomId),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SpaceNameWidget(spaceId: roomId, isShowBrackets: false),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              onTap: () => goToSpace(context, roomId),
+              child: SpaceNameWidget(spaceId: roomId, isShowBrackets: false),
+            ),
+            NewsPostTimeWidget(originServerTs: widget.news.originServerTs()),
+          ],
         ),
       ),
     );
