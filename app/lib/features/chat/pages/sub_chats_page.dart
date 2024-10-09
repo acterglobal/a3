@@ -201,9 +201,14 @@ class SubChatsPage extends ConsumerWidget {
       child: ExpansionTile(
         tilePadding: const EdgeInsets.only(right: 16),
         initiallyExpanded: true,
+        showTrailingIcon: !categoryModelLocal.isUncategorized,
+        enabled: !categoryModelLocal.isUncategorized,
+        minTileHeight: categoryModelLocal.isUncategorized ? 0 : null,
         shape: const Border(),
         collapsedBackgroundColor: Colors.transparent,
-        title: CategoryHeaderView(categoryModelLocal: categoryModelLocal),
+        title: categoryModelLocal.isUncategorized
+            ? const SizedBox.shrink()
+            : CategoryHeaderView(categoryModelLocal: categoryModelLocal),
         children: List<Widget>.generate(entries.length, (index) {
           final roomEntry = entries[index];
           final roomInfo = roomEntry.$1;
