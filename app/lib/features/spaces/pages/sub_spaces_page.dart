@@ -8,7 +8,6 @@ import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
-import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
 import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter/router/utils.dart';
@@ -147,18 +146,13 @@ class SubSpacesPage extends ConsumerWidget {
     );
 
     return localCategoryList.when(
-      data: (localCategoryListData) {
-        final categoryList = CategoryUtils()
-            .getCategorisedListWithoutEmptyEntries(localCategoryListData);
-        return ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: categoryList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return _buildCategoriesList(context, ref, categoryList[index]);
-          },
-        );
-      },
+      data: (categoryList) => ListView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: categoryList.length,
+        itemBuilder: (BuildContext context, int index) =>
+            _buildCategoriesList(context, ref, categoryList[index]),
+      ),
       error: (e, s) {
         _log.severe('Failed to load the sub-spaces', e, s);
         return Center(child: Text(L10n.of(context).loadingFailed(e)));
@@ -219,6 +213,7 @@ class SubSpacesPage extends ConsumerWidget {
         enabled: !categoryModelLocal.isUncategorized,
         minTileHeight: categoryModelLocal.isUncategorized ? 0 : null,
         shape: const Border(),
+        initiallyExpanded: true,
         collapsedBackgroundColor: Colors.transparent,
         title: categoryModelLocal.isUncategorized
             ? const SizedBox.shrink()

@@ -25,19 +25,6 @@ class CategoryUtils {
     return category.color != null && category.icon != null;
   }
 
-  ///GET LIST OF LOCAL CATEGORY WHICH EXCLUDE ITEM WITH EMPTY ENTRIES
-  List<CategoryModelLocal> getCategorisedListWithoutEmptyEntries(
-    List<CategoryModelLocal> categoryList,
-  ) {
-    List<CategoryModelLocal> categoryListLocalWithoutEmptyEntries = [];
-    for (var categoryListLocal in categoryList) {
-      if (categoryListLocal.entries.isNotEmpty) {
-        categoryListLocalWithoutEmptyEntries.add(categoryListLocal);
-      }
-    }
-    return categoryListLocalWithoutEmptyEntries;
-  }
-
   ///GET CATEGORIES LOCAL LIST BASED ON ITEM ENTRIES
   List<CategoryModelLocal> getCategorisedList(
     List<Category> categoryList,
