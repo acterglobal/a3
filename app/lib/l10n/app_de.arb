@@ -525,7 +525,7 @@
   "@noUsersFoundWithSpecifiedSearchTerm": {},
   "encryptedSpace": "Verschlüsselter Space",
   "@encryptedSpace": {},
-  "invite": "Einlading",
+  "invite": "Einladen",
   "@invite": {},
   "kickAndBanFailed": "Entfernen & Verbannen des User fehlgeschlagen:\n{error}",
   "@kickAndBanFailed": {},
