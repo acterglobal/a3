@@ -105,7 +105,12 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const ActerSearchWidget(),
+        ActerSearchWidget(
+          onChanged: (value) {
+            ref.read(searchValueProvider.notifier).state = value;
+          },
+          onClear: () => ref.read(searchValueProvider.notifier).state = '',
+        ),
         Expanded(
           child: tasklistsLoader.when(
             data: (tasklists) => _buildTasklists(tasklists),

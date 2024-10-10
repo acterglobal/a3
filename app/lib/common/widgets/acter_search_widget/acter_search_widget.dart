@@ -1,30 +1,28 @@
-import 'package:acter/common/widgets/acter_search_widget/providers/acter_search_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ActerSearchWidget extends ConsumerStatefulWidget {
-  final TextEditingController? searchTextController;
+class ActerSearchWidget extends StatefulWidget {
   final String? hintText;
   final Widget? leading;
   final Iterable<Widget>? trailing;
-  final ValueChanged<String>? onChanged;
+  final ValueChanged<String> onChanged;
+  final VoidCallback onClear;
 
   const ActerSearchWidget({
     super.key,
-    this.searchTextController,
     this.hintText,
     this.leading,
     this.trailing,
-    this.onChanged,
+    required this.onChanged,
+    required this.onClear,
   });
 
   @override
-  ConsumerState<ActerSearchWidget> createState() => _ActerSearchWidgetState();
+  State<ActerSearchWidget> createState() => _ActerSearchWidgetState();
 }
 
-class _ActerSearchWidgetState extends ConsumerState<ActerSearchWidget> {
+class _ActerSearchWidgetState extends State<ActerSearchWidget> {
   final TextEditingController searchTextController = TextEditingController();
 
   @override
@@ -32,13 +30,11 @@ class _ActerSearchWidgetState extends ConsumerState<ActerSearchWidget> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       child: SearchBar(
-        controller: widget.searchTextController ?? searchTextController,
+        controller: searchTextController,
         leading: widget.leading ?? searchLeadingUIWidget(),
         hintText: widget.hintText ?? L10n.of(context).search,
         trailing: widget.trailing ?? searchTrailingUIWidget(),
-        onChanged: (value) => widget.onChanged != null
-            ? widget.onChanged!(value)
-            : onChangeSearchText(value),
+        onChanged: (value) => widget.onChanged(value),
       ),
     );
   }
@@ -56,16 +52,13 @@ class _ActerSearchWidgetState extends ConsumerState<ActerSearchWidget> {
             IconButton(
               onPressed: () {
                 FocusManager.instance.primaryFocus?.unfocus();
-                ref.read(searchValueProvider.notifier).state = '';
+                widget.onClear;
                 searchTextController.clear();
+                setState(() {});
               },
               icon: const Icon(Icons.clear),
             ),
           ]
         : null;
-  }
-
-  void onChangeSearchText(String value) {
-    ref.read(searchValueProvider.notifier).state = value;
   }
 }

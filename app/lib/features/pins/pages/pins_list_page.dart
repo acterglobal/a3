@@ -84,7 +84,12 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const ActerSearchWidget(),
+        ActerSearchWidget(
+          onChanged: (value) {
+            ref.read(searchValueProvider.notifier).state = value;
+          },
+          onClear: () => ref.read(searchValueProvider.notifier).state = '',
+        ),
         Expanded(
           child: pinsLoader.when(
             data: (pins) => _buildPinsList(pins),
