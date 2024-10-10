@@ -1,2 +1,0 @@
-- [New] : Introducing news list view. Now you can view news in two modes i.e. Full Screen and Grid Mode for better accessibility. 
-- [New] : Now you can also view space specific news from space details screen.
