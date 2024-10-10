@@ -52,7 +52,7 @@ class _ActerSearchWidgetState extends State<ActerSearchWidget> {
             IconButton(
               onPressed: () {
                 FocusManager.instance.primaryFocus?.unfocus();
-                widget.onClear;
+                widget.onClear();
                 searchTextController.clear();
                 setState(() {});
               },
