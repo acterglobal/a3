@@ -84,9 +84,8 @@ class _EventListPageState extends ConsumerState<EventListPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
-          onChanged: (value) {
-            ref.read(searchValueProvider.notifier).state = value;
-          },
+          onChanged: (value) =>
+              ref.read(searchValueProvider.notifier).state = value,
           onClear: () => ref.read(searchValueProvider.notifier).state = '',
         ),
         filterChipsButtons(),
