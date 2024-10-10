@@ -39,7 +39,7 @@ final otherSpacesForInviteMembersProvider = FutureProvider.autoDispose
   //GET LIST OF SPACES EXCLUDING PARENT SPACES && EXCLUDING CURRENT SPACE
   final spacesExcludingParentSpacesAndCurrentSpace = allSpaces.where((space) {
     final roomId = space.getRoomIdStr();
-    return !(parentSpaces!.any((p) => p == roomId)) && roomId != spaceId;
+    return !parentSpaces!.any((p) => p == roomId) && roomId != spaceId;
   }).toList();
 
   return spacesExcludingParentSpacesAndCurrentSpace;

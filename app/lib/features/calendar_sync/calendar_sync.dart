@@ -68,7 +68,7 @@ Future<void> initCalendarSync({bool ignoreRejection = false}) async {
   final hasPermission = await deviceCalendar.hasPermissions();
 
   if (hasPermission.data == false) {
-    if (!ignoreRejection && (preferences.getBool(rejectionKey) ?? false)) {
+    if (!ignoreRejection && preferences.getBool(rejectionKey) == true) {
       _log.warning('user previously rejected calendar sync. quitting');
       return;
     }
