@@ -37,22 +37,20 @@ class FullScreenAvatarPage extends ConsumerWidget {
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
     final profileData = ref.watch(roomAvatarInfoProvider(roomId));
-
-    if (profileData.avatar == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Center(
-      child: PinchZoomReleaseUnzoomWidget(
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.fitWidth,
-              image: profileData.avatar!,
+    return profileData.avatar.let(
+          (data) => Center(
+            child: PinchZoomReleaseUnzoomWidget(
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.fitWidth,
+                    image: data,
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ) ??
+        const SizedBox.shrink();
   }
 }

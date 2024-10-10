@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -105,8 +106,9 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayName = avatarInfo.displayName;
-    final title = displayName?.isNotEmpty == true ? displayName! : roomId;
+    final title =
+        avatarInfo.displayName.let((name) => name.isNotEmpty ? name : roomId) ??
+            roomId;
 
     final avatar = ActerAvatar(
       options: AvatarOptions(
@@ -141,7 +143,10 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, overflow: TextOverflow.ellipsis),
+                  Text(
+                    title,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   buildSubtitle(context) ?? const SizedBox.shrink(),
                 ],
               ),
@@ -178,10 +183,10 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
       subtitles.add(suggestedWidget);
 
       //ADD CUSTOM SUBTITLE IF AVAILABLE
-      if (subtitle != null) {
+      subtitle.let((t) {
         subtitles.add(const Text(' - '));
-        subtitles.add(subtitle!);
-      }
+        subtitles.add(t);
+      });
     }
 
     return Row(children: subtitles);

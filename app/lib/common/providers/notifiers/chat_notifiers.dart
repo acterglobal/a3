@@ -100,41 +100,73 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
   void _handleDiff(ConvoDiff diff) {
     switch (diff.action()) {
       case 'Append':
+        final values = diff.values();
+        if (values == null) {
+          _log.severe('On append action, values should be available');
+          return;
+        }
         final newList = listCopy();
-        List<Convo> items = diff.values()!.toList();
-        newList.addAll(items);
+        newList.addAll(values.toList());
         state = newList;
         break;
       case 'Insert':
-        Convo m = diff.value()!;
-        final index = diff.index()!;
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On insert action, value should be available');
+          return;
+        }
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On insert action, index should be available');
+          return;
+        }
         final newList = listCopy();
-        newList.insert(index, m);
+        newList.insert(index, value);
         state = newList;
         break;
       case 'Set':
-        Convo m = diff.value()!;
-        final index = diff.index()!;
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On set action, value should be available');
+          return;
+        }
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On set action, index should be available');
+          return;
+        }
         final newList = listCopy();
-        newList[index] = m;
+        newList[index] = value;
         state = newList;
         break;
       case 'Remove':
-        final index = diff.index()!;
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On remove action, index should be available');
+          return;
+        }
         final newList = listCopy();
         newList.removeAt(index);
         state = newList;
         break;
       case 'PushBack':
-        Convo m = diff.value()!;
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On push back action, value should be available');
+          return;
+        }
         final newList = listCopy();
-        newList.add(m);
+        newList.add(value);
         state = newList;
         break;
       case 'PushFront':
-        Convo m = diff.value()!;
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On push front action, value should be available');
+          return;
+        }
         final newList = listCopy();
-        newList.insert(0, m);
+        newList.insert(0, value);
         state = newList;
         break;
       case 'PopBack':
@@ -151,12 +183,21 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
         state = [];
         break;
       case 'Reset':
-        state = diff.values()!.toList();
+        final values = diff.values();
+        if (values == null) {
+          _log.severe('On reset action, values should be available');
+          return;
+        }
+        state = values.toList();
         break;
       case 'Truncate':
-        final length = diff.index()!;
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On truncate action, index should be available');
+          return;
+        }
         final newList = listCopy();
-        state = newList.take(length).toList();
+        state = newList.take(index).toList();
         break;
       default:
         break;
