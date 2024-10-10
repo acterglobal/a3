@@ -1,7 +1,5 @@
-import 'dart:math' as math;
-import 'dart:ui' show lerpDouble;
-
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 /// ActionButton for dangerous actions
@@ -71,18 +69,10 @@ class _IconLabelChild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double gap = calcGap(context);
+    final double gap = calcGap(context) ?? 8;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [icon, SizedBox(width: gap), Flexible(child: label)],
     );
-  }
-
-  double calcGap(BuildContext context) {
-    // ignore: deprecated_member_use
-    final double scale = MediaQuery.textScalerOf(context).textScaleFactor;
-    if (scale <= 1) return 8;
-    final interpolated = lerpDouble(8, 4, math.min(scale - 1, 1));
-    return interpolated ?? 8;
   }
 }

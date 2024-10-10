@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/constants.dart';
@@ -392,6 +393,13 @@ String? getIssueId(String url) {
 List<String> asDartStringList(FfiListFfiString data) {
   if (data.isEmpty) return [];
   return data.toList().map((e) => e.toDartString()).toList();
+}
+
+double? calcGap(BuildContext context) {
+  // ignore: deprecated_member_use
+  final double scale = MediaQuery.textScalerOf(context).textScaleFactor;
+  if (scale <= 1) return 8;
+  return lerpDouble(8, 4, min(scale - 1, 1));
 }
 
 // ignore: constant_identifier_names
