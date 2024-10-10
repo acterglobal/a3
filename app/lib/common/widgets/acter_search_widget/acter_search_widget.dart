@@ -9,7 +9,7 @@ class ActerSearchWidget extends ConsumerStatefulWidget {
   final String? hintText;
   final Widget? leading;
   final Iterable<Widget>? trailing;
-  final Function(String)? onChanged;
+  final ValueChanged<String>? onChanged;
 
   const ActerSearchWidget({
     super.key,
