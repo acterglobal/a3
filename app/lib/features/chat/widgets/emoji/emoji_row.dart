@@ -35,6 +35,7 @@ class EmojiRow extends StatelessWidget {
   final String roomId;
   final bool isAuthor;
   final Function(String messageId, String emoji) onEmojiTap;
+
   EmojiRow({
     super.key,
     required this.isAuthor,
