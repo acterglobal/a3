@@ -368,14 +368,14 @@ Color getUserAvatarNameColor(types.User user, List<Color> colors) {
 }
 
 String getUserInitials(types.User user) {
-  var initials = '';
-  user.firstName.let((p0) {
-    if (p0.isNotEmpty) initials += p0[0].toUpperCase();
+  final initials = [];
+  user.firstName.let((firstName) {
+    if (firstName.isNotEmpty) initials.add(firstName[0].toUpperCase());
   });
-  user.lastName.let((p0) {
-    if (p0.isNotEmpty) initials += p0[0].toLowerCase();
+  user.lastName.let((lastName) {
+    if (lastName.isNotEmpty) initials.add(lastName[0].toLowerCase());
   });
-  return initials.trim();
+  return initials.join().trim();
 }
 
 String? getIssueId(String url) {
