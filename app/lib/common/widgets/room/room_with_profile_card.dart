@@ -107,7 +107,7 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title =
-        avatarInfo.displayName.let((p0) => p0.isNotEmpty ? p0 : roomId) ??
+        avatarInfo.displayName.let((name) => name.isNotEmpty ? name : roomId) ??
             roomId;
 
     final avatar = ActerAvatar(
