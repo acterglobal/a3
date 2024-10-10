@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/acter_search_widget/providers/acter_search_providers.dart';
 import 'package:acter/features/pins/pages/pin_details_page.dart';
 import 'package:acter/features/pins/pages/pins_list_page.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
