@@ -50,11 +50,7 @@ class BriefRoomEntry extends ConsumerWidget {
       title: Text(roomName),
       subtitle: subtitle,
       trailing: trailing,
-      onTap: onSelect.let(
-        (cb) => () {
-          if (canLink) cb(roomId);
-        },
-      ),
+      onTap: canLink ? onSelect.let((cb) => () => cb(roomId)) : null,
     );
   }
 }
