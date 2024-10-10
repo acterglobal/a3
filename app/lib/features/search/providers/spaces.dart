@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/search/model/search_term_delegate.dart';
-import 'package:acter/features/search/providers/search_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';

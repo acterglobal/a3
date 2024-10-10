@@ -1,6 +1,6 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/search/providers/search_providers.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/search/providers/spaces.dart';
 import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';

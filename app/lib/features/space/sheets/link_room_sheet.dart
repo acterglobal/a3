@@ -5,6 +5,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
@@ -112,7 +113,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   Widget searchUI() {
     return Search(
       onChanged: (value) {
-        ref.read(roomSearchValueProvider.notifier).update((state) => value);
+        ref.read(searchValueProvider.notifier).update((state) => value);
       },
       searchController: searchTextEditingController,
     );
@@ -151,8 +152,8 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //List of chats excluding DMs that can be linked according to the selected parent space
   Widget chatsList() {
-    final searchValue = ref.watch(roomSearchValueProvider);
-    if (searchValue?.isNotEmpty == true) {
+    final searchValue = ref.watch(searchValueProvider);
+    if (searchValue.isNotEmpty == true) {
       return searchedChatsList();
     }
 
@@ -208,8 +209,8 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //List of spaces that can be linked according to the selected parent space
   Widget spacesList() {
-    final searchValue = ref.watch(roomSearchValueProvider);
-    if (searchValue?.isNotEmpty == true) {
+    final searchValue = ref.watch(searchValueProvider);
+    if (searchValue.isNotEmpty == true) {
       return searchedSpaceList();
     }
 

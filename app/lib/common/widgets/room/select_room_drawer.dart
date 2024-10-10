@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -53,7 +54,7 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // ensure we are synced up
-    searchTextController.text = ref.read(roomSearchValueProvider) ?? '';
+    searchTextController.text = ref.read(searchValueProvider) ?? '';
   }
 
   @override
@@ -99,7 +100,7 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
       return const SizedBox.shrink();
     }
 
-    final hasSearchTerm = (ref.read(roomSearchValueProvider) ?? '').isNotEmpty;
+    final hasSearchTerm = ref.read(searchValueProvider).isNotEmpty;
 
     return SearchBar(
       controller: searchTextController,
@@ -113,14 +114,14 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
               InkWell(
                 onTap: () {
                   searchTextController.clear();
-                  ref.read(roomSearchValueProvider.notifier).state = '';
+                  ref.read(searchValueProvider.notifier).state = '';
                 },
                 child: const Icon(Icons.clear),
               ),
             ]
           : null,
       onChanged: (value) {
-        ref.read(roomSearchValueProvider.notifier).state = value;
+        ref.read(searchValueProvider.notifier).state = value;
       },
     );
   }
@@ -140,8 +141,8 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
   }
 
   Widget roomsList(BuildContext context) {
-    final searchValue = ref.watch(roomSearchValueProvider);
-    if (searchValue?.isNotEmpty == true) {
+    final searchValue = ref.watch(searchValueProvider);
+    if (searchValue.isNotEmpty == true) {
       return searchedRoomsList(context);
     }
 

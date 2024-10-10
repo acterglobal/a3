@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/notifiers/relations_notifier.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -168,10 +169,10 @@ typedef _SpaceIdAndName = (String, String?);
 
 final searchedSpacesProvider =
     FutureProvider.autoDispose<List<String>>((ref) async {
-  final searchValue = ref.watch(roomSearchValueProvider);
+  final searchValue = ref.watch(searchValueProvider);
   final allSpaces = await ref.watch(_spaceIdAndNames.future);
 
-  if (searchValue == null || searchValue.isEmpty) {
+  if (searchValue.isEmpty) {
     return allSpaces
         .map(
           (e) => e.$1,

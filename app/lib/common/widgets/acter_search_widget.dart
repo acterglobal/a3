@@ -19,6 +19,7 @@ class ActerSearchWidget extends ConsumerWidget {
   }
 
   Widget _buildSearchBar(BuildContext context, WidgetRef ref) {
+    final searchValue = ref.watch(searchValueProvider);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       child: SearchBar(
@@ -28,7 +29,7 @@ class ActerSearchWidget extends ConsumerWidget {
           child: Icon(Atlas.magnifying_glass),
         ),
         hintText: L10n.of(context).search,
-        trailing: searchTextController.text.isNotEmpty
+        trailing: searchValue.isNotEmpty
             ? [
                 IconButton(
                   onPressed: () {
@@ -40,8 +41,9 @@ class ActerSearchWidget extends ConsumerWidget {
                 ),
               ]
             : null,
-        onChanged: (value) =>
-            ref.read(searchValueProvider.notifier).state = value,
+        onChanged: (value) {
+          ref.read(searchValueProvider.notifier).state = value;
+        },
       ),
     );
   }

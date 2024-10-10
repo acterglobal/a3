@@ -8,6 +8,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -73,9 +74,6 @@ final roomInvitedMembersProvider = FutureProvider.autoDispose
   return members.toList();
 });
 
-final roomSearchValueProvider =
-    StateProvider.autoDispose<String?>((ref) => null);
-
 typedef _RoomIdAndName = (String, String?);
 
 final _briefGroupChatsWithName =
@@ -96,9 +94,9 @@ final roomSearchedChatsProvider =
     FutureProvider.autoDispose<List<String>>((ref) async {
   final allRoomList = await ref.watch(_briefGroupChatsWithName.future);
   final foundRooms = List<String>.empty(growable: true);
-  final searchValue = ref.watch(roomSearchValueProvider);
+  final searchValue = ref.watch(searchValueProvider);
 
-  if (searchValue == null || searchValue.isEmpty) {
+  if (searchValue.isEmpty) {
     return allRoomList.map((i) {
       return i.$1;
     }).toList();

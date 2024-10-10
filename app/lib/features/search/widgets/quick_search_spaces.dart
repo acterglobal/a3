@@ -41,6 +41,7 @@ class QuickSearchSpaces extends ConsumerWidget {
     return spaceList.isEmpty
         ? const SizedBox.shrink()
         : Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

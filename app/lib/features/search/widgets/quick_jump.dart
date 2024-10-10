@@ -1,8 +1,8 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/icons/tasks_icon.dart';
 import 'package:acter/features/public_room_search/widgets/maybe_direct_room_action_widget.dart';
 import 'package:acter/features/search/model/keys.dart';
-import 'package:acter/features/search/providers/search_providers.dart';
 import 'package:acter/features/search/widgets/pins_builder.dart';
 import 'package:acter/features/search/widgets/quick_actions_builder.dart';
 import 'package:acter/features/search/widgets/spaces_builder.dart';

@@ -31,7 +31,7 @@ void main() {
         overrides: [
           searchValueProvider
               .overrideWith((_) => 'some string'), // set a search string
-          pinListSearchProvider.overrideWith((_, params) async {
+          pinListWithSearchProvider.overrideWith((_, params) async {
             if (shouldFail) {
               shouldFail = false;
               throw 'Some Error';
@@ -68,7 +68,7 @@ void main() {
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
           searchValueProvider
               .overrideWith((_) => 'some other string'), // set a search string
-          pinListSearchProvider.overrideWith((_, params) async {
+          pinListWithSearchProvider.overrideWith((_, params) async {
             if (shouldFail) {
               shouldFail = false;
               throw 'Some Error';

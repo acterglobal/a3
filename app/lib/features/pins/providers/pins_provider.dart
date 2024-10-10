@@ -1,3 +1,4 @@
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/pins/models/create_pin_state/create_pin_state.dart';
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
 import 'package:acter/features/pins/providers/notifiers/create_pin_notifier.dart';
@@ -16,13 +17,13 @@ final pinListProvider =
 //Search any pins
 typedef AllPinsSearchParams = ({String? spaceId, String searchText});
 
-final pinListSearchProvider = FutureProvider.autoDispose
-    .family<List<ActerPin>, AllPinsSearchParams>((ref, params) async {
-  final pinList = await ref.watch(pinListProvider(params.spaceId).future);
-  final search = params.searchText.toLowerCase();
-  if (search.isEmpty) return pinList;
+final pinListWithSearchProvider = FutureProvider.autoDispose
+    .family<List<ActerPin>, String?>((ref, spaceId) async {
+  final pinList = await ref.watch(pinListProvider(spaceId).future);
+  final searchValue = ref.watch(searchValueProvider).toLowerCase();
+  if (searchValue.isEmpty) return pinList;
   return pinList
-      .where((pin) => pin.title().toLowerCase().contains(search))
+      .where((pin) => pin.title().toLowerCase().contains(searchValue))
       .toList();
 });
 
