@@ -10,7 +10,6 @@ class LikeButton extends StatefulWidget {
   final int likeCount;
   final TextStyle style;
   final Color color;
-  final int index;
   final Future<void> Function() onTap;
 
   const LikeButton({
@@ -18,7 +17,6 @@ class LikeButton extends StatefulWidget {
     required this.likeCount,
     required this.style,
     required this.color,
-    required this.index,
     this.isLiked = false,
     required this.onTap,
   });

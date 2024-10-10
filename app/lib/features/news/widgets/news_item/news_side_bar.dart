@@ -11,6 +11,7 @@ import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -20,13 +21,11 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::news::sidebar');
 
 class NewsSideBar extends ConsumerWidget {
-  final ffi.NewsEntry news;
-  final int index;
+  final NewsEntry news;
 
   const NewsSideBar({
     super.key,
     required this.news,
-    required this.index,
   });
 
   @override
@@ -38,60 +37,63 @@ class NewsSideBar extends ConsumerWidget {
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        const Spacer(),
-        LikeButton(
-          isLiked: isLikedByMe.valueOrNull ?? false,
-          likeCount: likesCount.valueOrNull ?? 0,
-          style: style,
-          color: Theme.of(context).colorScheme.textColor,
-          index: index,
-          onTap: () async {
-            final manager = await ref.read(newsReactionsProvider(news).future);
-            final status = manager.likedByMe();
-            _log.info('my like status: $status');
-            if (!status) {
-              await manager.sendLike();
-            } else {
-              await manager.redactLike(null, null);
-            }
-          },
-        ),
-        const SizedBox(height: 10),
-        InkWell(
-          key: NewsUpdateKeys.newsSidebarActionBottomSheet,
-          onTap: () => showModalBottomSheet(
-            context: context,
-            builder: (context) => DefaultBottomSheet(
-              content: ActionBox(
-                news: news,
-                userId: userId,
-                roomId: roomId,
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          const Spacer(),
+          LikeButton(
+            isLiked: isLikedByMe.valueOrNull ?? false,
+            likeCount: likesCount.valueOrNull ?? 0,
+            style: style,
+            color: Theme.of(context).colorScheme.textColor,
+            onTap: () async {
+              final manager =
+                  await ref.read(newsReactionsProvider(news).future);
+              final status = manager.likedByMe();
+              _log.info('my like status: $status');
+              if (!status) {
+                await manager.sendLike();
+              } else {
+                await manager.redactLike(null, null);
+              }
+            },
+          ),
+          const SizedBox(height: 10),
+          InkWell(
+            key: NewsUpdateKeys.newsSidebarActionBottomSheet,
+            onTap: () => showModalBottomSheet(
+              context: context,
+              builder: (context) => DefaultBottomSheet(
+                content: ActionBox(
+                  news: news,
+                  userId: userId,
+                  roomId: roomId,
+                ),
               ),
             ),
-          ),
-          child: _SideBarItem(
-            icon: const Icon(Atlas.dots_horizontal_thin),
-            label: '',
-            style: style,
-          ),
-        ),
-        const SizedBox(height: 10),
-        ActerAvatar(
-          options: AvatarOptions(
-            AvatarInfo(
-              uniqueId: roomId,
-              displayName: space.avatarInfo.displayName,
-              avatar: space.avatarInfo.avatar,
-              onAvatarTap: () => goToSpace(context, roomId),
+            child: _SideBarItem(
+              icon: const Icon(Atlas.dots_horizontal_thin),
+              label: '',
+              style: style,
             ),
-            size: 42,
           ),
-        ),
-        const SizedBox(height: 15),
-      ],
+          const SizedBox(height: 10),
+          ActerAvatar(
+            options: AvatarOptions(
+              AvatarInfo(
+                uniqueId: roomId,
+                displayName: space.avatarInfo.displayName,
+                avatar: space.avatarInfo.avatar,
+                onAvatarTap: () => goToSpace(context, roomId),
+              ),
+              size: 42,
+            ),
+          ),
+          const SizedBox(height: 15),
+        ],
+      ),
     );
   }
 }

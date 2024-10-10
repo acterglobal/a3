@@ -30,7 +30,7 @@ Future<bool> offerToActivateFeature({
     }
 
     final featureTitle = switch (feature) {
-      SpaceFeature.updates => lang.updates,
+      SpaceFeature.boosts => lang.boosts,
       SpaceFeature.pins => lang.pins,
       SpaceFeature.events => lang.events,
       SpaceFeature.tasks => lang.tasks,
@@ -40,20 +40,20 @@ Future<bool> offerToActivateFeature({
     final maxPowerLevel = powerLevels.maxPowerLevel();
 
     final currentPowerLevel = switch (feature) {
-      SpaceFeature.updates => powerLevels.news(),
+      SpaceFeature.boosts => powerLevels.news(),
       SpaceFeature.events => powerLevels.events(),
       SpaceFeature.pins => powerLevels.pins(),
       SpaceFeature.tasks => powerLevels.tasks(),
     };
 
     final isAlreadyActive = switch (feature) {
-      SpaceFeature.updates => appSettings.news().active(),
+      SpaceFeature.boosts => appSettings.news().active(),
       SpaceFeature.events => appSettings.events().active(),
       SpaceFeature.pins => appSettings.pins().active(),
       SpaceFeature.tasks => appSettings.tasks().active(),
     };
     final levelKey = switch (feature) {
-      SpaceFeature.updates => powerLevels.newsKey(),
+      SpaceFeature.boosts => powerLevels.newsKey(),
       SpaceFeature.pins => powerLevels.pinsKey(),
       SpaceFeature.events => powerLevels.eventsKey(),
       SpaceFeature.tasks => powerLevels.tasksKey(),

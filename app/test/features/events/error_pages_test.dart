@@ -60,6 +60,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
+          roomMembershipProvider.overrideWith((a, b) => null),
           eventListSearchFilterProvider.overrideWith((a, b) {
             if (shouldFail) {
               // toggle failure so the retry works
@@ -82,6 +83,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
+          roomMembershipProvider.overrideWith((a, b) => null),
           searchValueProvider
               .overrideWith((_) => 'some search'), // set a search string
           eventListSearchFilterProvider.overrideWith((a, b) {

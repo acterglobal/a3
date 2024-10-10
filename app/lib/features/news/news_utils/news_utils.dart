@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -86,5 +88,21 @@ class NewsUtils {
       );
       ref.read(newsStateProvider.notifier).addSlide(slide);
     }
+  }
+
+  static Color getBackgroundColor(BuildContext context, NewsSlide newsSlide) {
+    final color = newsSlide.colors();
+    return convertColor(
+      color?.background(),
+      Theme.of(context).colorScheme.surface,
+    );
+  }
+
+  static Color getForegroundColor(BuildContext context, NewsSlide newsSlide) {
+    final color = newsSlide.colors();
+    return convertColor(
+      color?.color(),
+      Theme.of(context).colorScheme.onPrimary,
+    );
   }
 }

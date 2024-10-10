@@ -438,6 +438,9 @@ object NewsEntry {
     /// get event id
     fn event_id() -> EventId;
 
+    /// get timestamp of this event
+    fn origin_server_ts() -> u64;
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 

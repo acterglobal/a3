@@ -29,3 +29,35 @@ class RetryMockAsyncSpaceNotifier extends FamilyAsyncNotifier<Space?, String>
 }
 
 class MockSpace extends Fake implements Space {}
+
+class MockSpaceHierarchyRoomInfo extends Fake
+    implements SpaceHierarchyRoomInfo {
+  final String roomId;
+  final String? roomName;
+  final String joinRule;
+  final String serverName;
+  final bool isSuggested;
+
+  MockSpaceHierarchyRoomInfo({
+    required this.roomId,
+    this.roomName,
+    this.joinRule = 'Private',
+    this.isSuggested = false,
+    this.serverName = '',
+  });
+
+  @override
+  String roomIdStr() => roomId;
+
+  @override
+  String? name() => roomName;
+
+  @override
+  String joinRuleStr() => joinRule;
+
+  @override
+  String viaServerName() => serverName;
+
+  @override
+  bool suggested() => isSuggested;
+}

@@ -2,6 +2,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:flutter/material.dart';
@@ -133,9 +134,7 @@ class _RedactContentWidget extends ConsumerWidget {
       }
       EasyLoading.showToast(L10n.of(context).contentSuccessfullyRemoved);
       Navigator.pop(context, true);
-      if (onSuccess != null) {
-        onSuccess!();
-      }
+      onSuccess.let((cb) => cb());
     } catch (e, s) {
       _log.severe('Failed to redact content', e, s);
       if (!context.mounted) {
