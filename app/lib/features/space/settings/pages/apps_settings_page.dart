@@ -93,13 +93,14 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 : 'Custom ($currentPw)';
             moreSections.add(
               SettingsSection(
-                title: Text(L10n.of(context).updates),
+                title: Text(L10n.of(context).boosts),
                 tiles: [
                   SettingsTile(
                     enabled: canEdit,
-                    title: const Text('Required PowerLevel'),
-                    description: const Text(
-                      'Minimum power level required to post news updates',
+                    title: Text(L10n.of(context).requiredPowerLevel),
+                    description: Text(
+                      L10n.of(context)
+                          .minPowerLevelError(L10n.of(context).boost),
                     ),
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
@@ -111,12 +112,12 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       space,
                       powerLevels,
                       powerLevels.newsKey(),
-                      L10n.of(context).updates,
+                      L10n.of(context).boosts,
                     ),
                   ),
                   SettingsTile.switchTile(
-                    title: const Text('Comments on Updates'),
-                    description: const Text('not yet supported'),
+                    title: Text(L10n.of(context).commentsOnBoost),
+                    description: Text(L10n.of(context).notYetSupported),
                     enabled: false,
                     initialValue: false,
                     onToggle: (newVal) {},
@@ -132,13 +133,13 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 : 'Custom ($currentPw)';
             moreSections.add(
               SettingsSection(
-                title: const Text('Pin'),
+                title: Text(L10n.of(context).pin),
                 tiles: [
                   SettingsTile(
                     enabled: canEdit,
-                    title: const Text('Required PowerLevel'),
-                    description: const Text(
-                      'Minimum power level required to post and edit pins',
+                    title: Text(L10n.of(context).requiredPowerLevel),
+                    description: Text(
+                      L10n.of(context).minPowerLevelError(L10n.of(context).pin),
                     ),
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
@@ -154,8 +155,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     ),
                   ),
                   SettingsTile.switchTile(
-                    title: const Text('Comments on Pins'),
-                    description: const Text('not yet supported'),
+                    title: Text(L10n.of(context).commentsOnPin),
+                    description: Text(L10n.of(context).notYetSupported),
                     enabled: false,
                     initialValue: false,
                     onToggle: (newVal) {},
@@ -171,13 +172,14 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 : 'Custom ($currentPw)';
             moreSections.add(
               SettingsSection(
-                title: const Text('Calendar Events'),
+                title: Text(L10n.of(context).events),
                 tiles: [
                   SettingsTile(
                     enabled: canEdit,
-                    title: const Text('Admin PowerLevel'),
-                    description: const Text(
-                      'Minimum power level required to post calendar events',
+                    title: Text(L10n.of(context).adminPowerLevel),
+                    description: Text(
+                      L10n.of(context)
+                          .minPowerLevelError(L10n.of(context).event),
                     ),
                     trailing:
                         currentPw != null ? Text(pwText) : Text(defaultDesc),
@@ -194,15 +196,15 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                   ),
                   SettingsTile(
                     enabled: false,
-                    title: const Text('RSVP PowerLevel'),
-                    description: const Text(
-                      'Minimum power level to RSVP to calendar events',
+                    title: Text(L10n.of(context).rsvpPowerLevel),
+                    description: Text(
+                      L10n.of(context).minPowerLevelRsvp,
                     ),
-                    trailing: const Text('not yet implemented'),
+                    trailing: Text(L10n.of(context).notYetSupported),
                   ),
                   SettingsTile.switchTile(
-                    title: const Text('Comments'),
-                    description: const Text('not yet supported'),
+                    title: Text(L10n.of(context).comments),
+                    description: Text(L10n.of(context).notYetSupported),
                     enabled: false,
                     initialValue: false,
                     onToggle: (newVal) {},
@@ -223,13 +225,14 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 : 'Custom ($tasksCurrentPw)';
             moreSections.add(
               SettingsSection(
-                title: const Text('Tasks'),
+                title: Text(L10n.of(context).tasks),
                 tiles: [
                   SettingsTile(
                     enabled: canEdit,
-                    title: const Text('TaskList PowerLevel'),
-                    description: const Text(
-                      'Minimum power level required to create & manage task lists',
+                    title: Text(L10n.of(context).taskListPowerLevel),
+                    description: Text(
+                      L10n.of(context)
+                          .minPowerLevelError(L10n.of(context).taskList),
                     ),
                     trailing: taskListCurrentPw != null
                         ? Text(pwTextTL)
@@ -247,9 +250,10 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                   ),
                   SettingsTile(
                     enabled: canEdit,
-                    title: const Text('Tasks PowerLevel'),
-                    description: const Text(
-                      'Minimum power level required to interact with tasks',
+                    title: Text(L10n.of(context).tasksPowerLevel),
+                    description: Text(
+                      L10n.of(context)
+                          .minPowerLevelError(L10n.of(context).tasks),
                     ),
                     trailing: tasksCurrentPw != null
                         ? Text(pwTextT)
@@ -266,8 +270,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     ),
                   ),
                   SettingsTile.switchTile(
-                    title: const Text('Comments'),
-                    description: const Text('not yet supported'),
+                    title: Text(L10n.of(context).comments),
+                    description: Text(L10n.of(context).notYetSupported),
                     enabled: false,
                     initialValue: false,
                     onToggle: (newVal) {},
@@ -279,32 +283,33 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
 
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Apps Settings'),
+              title: Text(L10n.of(context).appSettings),
               automaticallyImplyLeading: !context.isLargeScreen,
             ),
             body: SettingsList(
               sections: [
                 SettingsSection(
-                  title: const Text('Active Apps'),
+                  title: Text(L10n.of(context).activeApps),
                   tiles: [
                     SettingsTile.switchTile(
-                      title: const Text('Updates'),
+                      title: Text(L10n.of(context).boost),
                       enabled: canEdit,
-                      description: const Text('Post space-wide updates'),
+                      description: Text(L10n.of(context).postSpaceWiseBoost),
                       initialValue: news.active(),
                       onToggle: (newVal) async => await setActerFeature(
                         context,
                         newVal,
                         appSettings,
                         space,
-                        SpaceFeature.updates,
-                        L10n.of(context).updates,
+                        SpaceFeature.boosts,
+                        L10n.of(context).boosts,
                       ),
                     ),
                     SettingsTile.switchTile(
-                      title: const Text('Pins'),
+                      title: Text(L10n.of(context).pin),
                       enabled: canEdit,
-                      description: const Text('Pin important information'),
+                      description:
+                          Text(L10n.of(context).pinImportantInformation),
                       initialValue: pins.active(),
                       onToggle: (newVal) async => await setActerFeature(
                         context,
@@ -316,9 +321,9 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       ),
                     ),
                     SettingsTile.switchTile(
-                      title: const Text('Events Calendar'),
+                      title: Text(L10n.of(context).events),
                       enabled: canEdit,
-                      description: const Text('Calender with Events'),
+                      description: Text(L10n.of(context).calenderWithEvents),
                       initialValue: events.active(),
                       onToggle: (newVal) async => await setActerFeature(
                         context,
@@ -330,10 +335,10 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       ),
                     ),
                     SettingsTile.switchTile(
-                      title: const Text('Tasks'),
+                      title: Text(L10n.of(context).tasks),
                       key: tasksSwitch,
                       enabled: canEdit,
-                      description: const Text('ToDo-Lists & Tasks'),
+                      description: Text(L10n.of(context).taskList),
                       initialValue: tasks.active(),
                       onToggle: (newVal) async => await setActerFeature(
                         context,
@@ -352,7 +357,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: Text('loading')),
+        loading: () => Center(child: Text(L10n.of(context).loading)),
         error: (e, s) {
           _log.severe('Failed to load space settings', e, s);
           return Center(

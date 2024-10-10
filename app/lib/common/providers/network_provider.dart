@@ -13,11 +13,11 @@ final networkConnectivityProvider =
 // Network/Connectivity Providers
 final hasNetworkProvider = StateProvider<bool>((ref) {
   final val = ref.watch(networkConnectivityProvider).valueOrNull ?? [];
-  return (!val.contains(ConnectivityResult.none));
+  return !val.contains(ConnectivityResult.none);
 });
 
 // Network/Connectivity Providers
 final hasWifiNetworkProvider = StateProvider<bool>((ref) {
   final val = ref.watch(networkConnectivityProvider).valueOrNull ?? [];
-  return (val.contains(ConnectivityResult.wifi));
+  return val.contains(ConnectivityResult.wifi);
 });

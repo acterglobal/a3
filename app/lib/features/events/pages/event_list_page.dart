@@ -62,6 +62,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
       actions: [
         AddButtonWithCanPermission(
           canString: 'CanPostEvent',
+          spaceId: widget.spaceId,
           onPressed: () => context.pushNamed(
             Routes.createEvent.name,
             queryParameters: {'spaceId': widget.spaceId},

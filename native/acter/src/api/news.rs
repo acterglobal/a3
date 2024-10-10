@@ -465,6 +465,10 @@ impl NewsEntry {
     pub fn event_id(&self) -> OwnedEventId {
         self.content.event_id().to_owned()
     }
+
+    pub fn origin_server_ts(&self) -> u64 {
+        self.content.meta.origin_server_ts.get().into()
+    }
 }
 
 #[derive(Clone)]

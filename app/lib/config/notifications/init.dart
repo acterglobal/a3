@@ -10,6 +10,7 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/acter_notifify.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
@@ -21,7 +22,7 @@ const pushServer = Env.pushServer;
 const ntfyServer = Env.ntfyServer;
 
 Future<String?> initializeNotifications() async {
-  return await initializeNotifify(
+  final initialLocationFromNotification = await initializeNotifify(
     androidFirebaseOptions: DefaultFirebaseOptions.android,
     handleMessageTap: _handleMessageTap,
     isEnabledCheck: _isEnabled,
@@ -34,6 +35,14 @@ Future<String?> initializeNotifications() async {
         Env.windowsApplicationId.isNotEmpty ? Env.windowsApplicationId : null,
     currentClientsGen: _genCurrentClients,
   );
+
+  if (initialLocationFromNotification != null) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      // push after the next render to ensure we still have the "initial" location
+      goRouter.push(initialLocationFromNotification);
+    });
+  }
+  return initialLocationFromNotification;
 }
 
 Future<bool> setupPushNotifications(

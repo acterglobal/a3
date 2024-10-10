@@ -239,10 +239,12 @@ final generalRoutes = [
     path: Routes.actionAddUpdate.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final String? spaceId = state.uri.queryParameters['spaceId'];
       return NoTransitionPage(
         key: state.pageKey,
         child: AddNewsPage(
-          initialSelectedSpace: state.uri.queryParameters['spaceId'],
+          initialSelectedSpace:
+              (spaceId != null && spaceId.isNotEmpty) ? spaceId : null,
         ),
       );
     },

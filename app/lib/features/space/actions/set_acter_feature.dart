@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::space::topic');
 
 enum SpaceFeature {
-  updates,
+  boosts,
   pins,
   events,
   tasks;
@@ -20,7 +20,7 @@ extension SpaceFeatureActivator on ActerAppSettings {
   ) {
     final builder = updateBuilder();
     switch (feature) {
-      case SpaceFeature.updates:
+      case SpaceFeature.boosts:
         final updated = news().updater();
         updated.active(newVal);
         builder.news(updated.build());

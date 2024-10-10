@@ -3,12 +3,14 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/skeletons/general_list_skeleton_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
+import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
-import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
 import 'package:acter/features/spaces/providers/space_list_provider.dart';
+import 'package:acter/router/utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -144,18 +146,13 @@ class SubSpacesPage extends ConsumerWidget {
     );
 
     return localCategoryList.when(
-      data: (localCategoryListData) {
-        final categoryList = CategoryUtils()
-            .getCategorisedListWithoutEmptyEntries(localCategoryListData);
-        return ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: categoryList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return _buildCategoriesList(context, ref, categoryList[index]);
-          },
-        );
-      },
+      data: (categoryList) => ListView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: categoryList.length,
+        itemBuilder: (BuildContext context, int index) =>
+            _buildCategoriesList(context, ref, categoryList[index]),
+      ),
       error: (e, s) {
         _log.severe('Failed to load the sub-spaces', e, s);
         return Center(child: Text(L10n.of(context).loadingFailed(e)));
@@ -169,7 +166,36 @@ class SubSpacesPage extends ConsumerWidget {
     WidgetRef ref,
     CategoryModelLocal categoryModelLocal,
   ) {
-    final entries = categoryModelLocal.entries;
+    final knownSubspaces = ref
+            .watch(spaceRelationsOverviewProvider(spaceId))
+            .valueOrNull
+            ?.knownSubspaces ??
+        [];
+    final remoteSubSpaces =
+        ref.watch(remoteSubspaceRelationsProvider(spaceId)).valueOrNull ?? [];
+    final entries = [];
+
+    for (final subSpaceId in categoryModelLocal.entries) {
+      if (knownSubspaces.contains(subSpaceId)) {
+        // user already knows this one
+        entries.add((null, subSpaceId));
+      } else {
+        for (final r in remoteSubSpaces) {
+          if (r.roomIdStr() == subSpaceId) {
+            if (r.joinRuleStr().toLowerCase() != 'private') {
+              // we ignore private cases
+              entries.add((r, subSpaceId));
+            }
+
+            break; // room was found but ignored
+          }
+        }
+      }
+    }
+    if (entries.isEmpty) {
+      // nothing to show, hide category
+      return const SizedBox.shrink();
+    }
 
     final suggestedSpaces =
         ref.watch(suggestedSpacesProvider(spaceId)).valueOrNull;
@@ -183,12 +209,50 @@ class SubSpacesPage extends ConsumerWidget {
     return Card(
       child: ExpansionTile(
         tilePadding: const EdgeInsets.only(right: 16),
-        initiallyExpanded: true,
+        showTrailingIcon: !categoryModelLocal.isUncategorized,
+        enabled: !categoryModelLocal.isUncategorized,
+        minTileHeight: categoryModelLocal.isUncategorized ? 0 : null,
         shape: const Border(),
+        initiallyExpanded: true,
         collapsedBackgroundColor: Colors.transparent,
-        title: CategoryHeaderView(categoryModelLocal: categoryModelLocal),
+        title: categoryModelLocal.isUncategorized
+            ? const SizedBox.shrink()
+            : CategoryHeaderView(categoryModelLocal: categoryModelLocal),
         children: List<Widget>.generate(entries.length, (index) {
-          final roomId = entries[index];
+          final roomEntry = entries[index];
+          final roomInfo = roomEntry.$1;
+          final roomId = roomEntry.$2;
+          if (roomInfo != null) {
+            // we don't have this room yet, need to show via room hierarchy
+            final parentId = spaceId;
+            return RoomHierarchyCard(
+              key: Key('subspace-list-item-$roomId'),
+              roomInfo: roomInfo,
+              parentId: parentId,
+              indicateIfSuggested: true,
+              trailing: Wrap(
+                children: [
+                  RoomHierarchyJoinButton(
+                    joinRule: roomInfo.joinRuleStr().toLowerCase(),
+                    roomId: roomId,
+                    roomName: roomInfo.name() ?? roomId,
+                    viaServerName: roomInfo.viaServerName(),
+                    forward: (spaceId) {
+                      goToSpace(context, spaceId);
+                      ref.invalidate(spaceRelationsProvider(parentId));
+                      ref.invalidate(spaceRemoteRelationsProvider(parentId));
+                    },
+                  ),
+                  RoomHierarchyOptionsMenu(
+                    isSuggested: roomInfo.suggested(),
+                    childId: roomId,
+                    parentId: parentId,
+                  ),
+                ],
+              ),
+            );
+          }
+
           final isSuggested = suggestedSpaceIds.contains(roomId);
           return RoomCard(
             roomId: roomId,

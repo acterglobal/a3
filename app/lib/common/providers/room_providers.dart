@@ -81,7 +81,7 @@ typedef _RoomIdAndName = (String, String?);
 final _briefGroupChatsWithName =
     FutureProvider.autoDispose<List<_RoomIdAndName>>((ref) async {
   final chatList =
-      ref.watch(chatsProvider).where((element) => (!element.isDm())).toList();
+      ref.watch(chatsProvider).where((element) => !element.isDm()).toList();
 
   List<_RoomIdAndName> items = [];
   for (final convo in chatList) {

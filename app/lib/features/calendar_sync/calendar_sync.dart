@@ -68,7 +68,7 @@ Future<void> initCalendarSync({bool ignoreRejection = false}) async {
   final hasPermission = await deviceCalendar.hasPermissions();
 
   if (hasPermission.data == false) {
-    if (!ignoreRejection && (preferences.getBool(rejectionKey) ?? false)) {
+    if (!ignoreRejection && preferences.getBool(rejectionKey) == true) {
       _log.warning('user previously rejected calendar sync. quitting');
       return;
     }
@@ -106,6 +106,7 @@ Future<void> _refreshCalendar(
   String calendarId,
   List<EventAndRsvp> events,
 ) async {
+  _log.info('Refreshing calendar $calendarId with ${events.length} items');
   final preferences = await sharedPrefs();
   final Map<String, String> currentLinks = {};
   // reading the existing  linking
@@ -117,6 +118,7 @@ Future<void> _refreshCalendar(
   final currentLinkKeys = currentLinks.values;
   List<Event> foundEvents = [];
   if (currentLinkKeys.isNotEmpty) {
+    _log.info('Current links: $calendarId: ${currentLinkKeys.length}');
     final foundEventsResult = await deviceCalendar.retrieveEvents(
       calendarId,
       RetrieveEventsParams(eventIds: currentLinks.values.toList()),
@@ -143,8 +145,10 @@ Future<void> _refreshCalendar(
     }
 
     if (localEvent == null) {
+      _log.info('$calendarId: creating new items for $calEventId');
       localEvent = Event(calendarId);
     } else {
+      _log.info('$calendarId: updating item for $calEventId');
       foundEventIds.add(localEvent.eventId);
     }
 

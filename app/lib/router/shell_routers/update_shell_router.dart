@@ -1,5 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/news/pages/news_page.dart';
+import 'package:acter/features/news/pages/news_list_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,7 +11,7 @@ final updateShellRoutes = [
     pageBuilder: (context, state) {
       return NoTransitionPage(
         key: state.pageKey,
-        child: const NewsPage(),
+        child: const NewsListPage(newsViewMode: NewsViewMode.fullView),
       );
     },
   ),
