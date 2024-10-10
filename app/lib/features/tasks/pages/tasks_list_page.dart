@@ -3,7 +3,8 @@ import 'dart:math';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
-import 'package:acter/common/widgets/acter_search_widget.dart';
+import 'package:acter/common/widgets/acter_search_widget/acter_search_widget.dart';
+import 'package:acter/common/widgets/acter_search_widget/providers/acter_search_providers.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
@@ -104,9 +105,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActerSearchWidget(
-          searchTextController: searchTextController,
-        ),
+        const ActerSearchWidget(),
         Expanded(
           child: tasklistsLoader.when(
             data: (tasklists) => _buildTasklists(tasklists),
