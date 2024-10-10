@@ -1,12 +1,19 @@
 import 'dart:math';
 
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class EmojiPickerWidget extends StatelessWidget {
+  final Size? size;
+  final bool withBoarder;
+  final OnEmojiSelected? onEmojiSelected;
+  final OnBackspacePressed? onBackspacePressed;
+  final VoidCallback onClosePicker;
+
   const EmojiPickerWidget({
     super.key,
     this.size,
@@ -16,18 +23,12 @@ class EmojiPickerWidget extends StatelessWidget {
     this.withBoarder = false,
   });
 
-  final Size? size;
-  final bool withBoarder;
-  final OnEmojiSelected? onEmojiSelected;
-  final OnBackspacePressed? onBackspacePressed;
-  final VoidCallback onClosePicker;
-
   @override
   Widget build(BuildContext context) {
     final height =
-        size == null ? MediaQuery.of(context).size.height / 3 : size!.height;
+        size.let((val) => val.height) ?? MediaQuery.of(context).size.height / 3;
     final width =
-        size == null ? MediaQuery.of(context).size.width : size!.width;
+        size.let((val) => val.width) ?? MediaQuery.of(context).size.width;
     final cols = min(width / (EmojiConfig.emojiSizeMax * 2), 12).floor();
 
     final emojiConfig = EmojiViewConfig(

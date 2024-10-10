@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
@@ -164,11 +165,9 @@ class HtmlEditorState extends State<HtmlEditor> {
       );
 
       _changeListener?.cancel();
-      if (widget.onChanged != null) {
+      widget.onChanged.let((cb) {
         _changeListener = editorState.transactionStream.listen(
-          (data) {
-            _triggerExport(widget.onChanged!);
-          },
+          (data) => _triggerExport(cb),
           onError: (e, s) {
             _log.severe('tx stream errored', e, s);
           },
@@ -176,7 +175,7 @@ class HtmlEditorState extends State<HtmlEditor> {
             _log.info('tx stream ended');
           },
         );
-      }
+      });
     });
   }
 
@@ -226,15 +225,15 @@ class HtmlEditorState extends State<HtmlEditor> {
         width: 10,
       ),
     );
-    if (widget.onSave != null) {
+    widget.onSave.let((cb) {
       children.add(
         ActerPrimaryActionButton(
           key: HtmlEditor.saveEditKey,
-          onPressed: () => _triggerExport(widget.onSave!),
+          onPressed: () => _triggerExport(cb),
           child: const Text('Save'),
         ),
       );
-    }
+    });
 
     if (children.isNotEmpty) {
       return Padding(

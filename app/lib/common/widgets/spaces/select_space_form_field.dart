@@ -66,21 +66,22 @@ class SelectSpaceFormField extends ConsumerWidget {
             )
           : Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: state.hasError
-                  ? Column(
+              child: state.errorText.let(
+                    (err) => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         emptyButton,
                         Text(
-                          state.errorText!,
+                          err,
                           style:
                               Theme.of(context).textTheme.bodySmall!.copyWith(
                                     color: Theme.of(context).colorScheme.error,
                                   ),
                         ),
                       ],
-                    )
-                  : emptyButton,
+                    ),
+                  ) ??
+                  emptyButton,
             ),
       validator: (val) =>
           !mandatory || ref.read(selectedSpaceIdProvider) != null

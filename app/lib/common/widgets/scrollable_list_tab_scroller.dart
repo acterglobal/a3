@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:scrolls_to_top/scrolls_to_top.dart';
@@ -297,12 +298,13 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
               });
               return ScrollsToTop(
                 onScrollsToTop: _onScrollsToTop,
-                child: widget.onRefresh != null
-                    ? RefreshIndicator(
-                        onRefresh: widget.onRefresh!,
+                child: widget.onRefresh.let(
+                      (cb) => RefreshIndicator(
+                        onRefresh: cb,
                         child: buildScrollabelPositionedList(),
-                      )
-                    : buildScrollabelPositionedList(),
+                      ),
+                    ) ??
+                    buildScrollabelPositionedList(),
               );
             },
           ),
@@ -377,11 +379,12 @@ class _DefaultHeaderWidgetState extends State<DefaultHeaderWidget>
   void _setController() {
     _tabController?.dispose();
     widget.selectedTabIndex.removeListener(externalTabChangeListener);
-    _tabController = TabController(
+    final controller = TabController(
       length: widget.itemCount,
       vsync: this,
     );
-    _tabController!.addListener(tabChangeListener);
+    controller.addListener(tabChangeListener);
+    _tabController = controller;
     widget.selectedTabIndex.addListener(externalTabChangeListener);
   }
 
@@ -401,15 +404,19 @@ class _DefaultHeaderWidgetState extends State<DefaultHeaderWidget>
   }
 
   void tabChangeListener() {
-    widget.onTapTab(_tabController!.index);
+    _tabController.let((controller) => widget.onTapTab(controller.index));
   }
 
   void externalTabChangeListener() {
-    _tabController!.index = widget.selectedTabIndex.value;
+    _tabController.let((controller) {
+      controller.index = widget.selectedTabIndex.value;
+    });
   }
 
   void _onTapTab(_) {
-    _tabController!.index = widget.selectedTabIndex.value;
+    _tabController.let((controller) {
+      controller.index = widget.selectedTabIndex.value;
+    });
   }
 
   @override

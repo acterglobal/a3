@@ -19,6 +19,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class BlinkText extends StatefulWidget {
@@ -135,23 +136,22 @@ class BlinkTextState extends State<BlinkText>
   late AnimationController _controller;
   late Animation<Color?> _colorAnimation;
   int _counter = 0;
-  Duration? duration = const Duration(milliseconds: 500);
+  Duration duration = const Duration(milliseconds: 500);
   Color? beginColor = Colors.black;
 
   @override
   void initState() {
     super.initState();
     //default duration
-    if (widget.duration != null) {
-      duration = widget.duration;
-    }
+    widget.duration.let((val) => duration = val);
 
     //default beginColor
     if (widget.beginColor != null) {
       beginColor = widget.beginColor;
     } else {
-      if (widget.style != null && widget.style!.inherit) {
-        beginColor = widget.style!.color;
+      final style = widget.style;
+      if (style != null && style.inherit) {
+        beginColor = style.color;
       }
     }
 
@@ -178,9 +178,8 @@ class BlinkTextState extends State<BlinkText>
     _controller.forward();
   }
 
-  Future<void> _endTween() => Future.delayed(duration!, () {
-        _controller.stop();
-      });
+  Future<void> _endTween() =>
+      Future.delayed(duration, () => _controller.stop());
 
   @override
   void dispose() {
@@ -205,12 +204,9 @@ class BlinkTextState extends State<BlinkText>
 
   @override
   Widget build(BuildContext context) {
-    var defaultTextStyle = DefaultTextStyle.of(context);
-    var style = defaultTextStyle.style;
-
-    if (widget.style != null) {
-      style = defaultTextStyle.style.merge(widget.style!);
-    }
+    final defaultStyle = DefaultTextStyle.of(context);
+    var style = defaultStyle.style;
+    widget.style.let((val) => style = defaultStyle.style.merge(val));
     if (MediaQuery.boldTextOf(context)) {
       style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
     }
