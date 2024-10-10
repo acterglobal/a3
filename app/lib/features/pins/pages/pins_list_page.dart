@@ -8,7 +8,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class PinsListPage extends ConsumerStatefulWidget {
+class PinsListPage extends ConsumerWidget {
   final String? spaceId;
 
   const PinsListPage({
@@ -17,24 +17,14 @@ class PinsListPage extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<PinsListPage> createState() => _AllPinsPageConsumerState();
-}
-
-class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
-  final TextEditingController searchTextController = TextEditingController();
-
-  String get searchValue => ref.watch(searchValueProvider);
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(context, ref),
       body: _buildBody(),
     );
   }
 
-  AppBar _buildAppBar() {
-    final spaceId = widget.spaceId;
+  AppBar _buildAppBar(BuildContext context, WidgetRef ref) {
     return AppBar(
       centerTitle: false,
       title: Column(
@@ -42,7 +32,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(L10n.of(context).pins),
-          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
+          if (spaceId != null) SpaceNameWidget(spaceId: spaceId!),
         ],
       ),
       actions: [
@@ -50,7 +40,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
           canString: 'CanPostPin',
           onPressed: () => context.pushNamed(
             Routes.createPin.name,
-            queryParameters: {'spaceId': widget.spaceId},
+            queryParameters: {'spaceId': spaceId},
           ),
         ),
       ],
@@ -61,10 +51,8 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActerSearchWidget(searchTextController: searchTextController),
-        Expanded(
-          child: PinListWidget(spaceId: widget.spaceId, shrinkWrap: false),
-        ),
+        const ActerSearchWidget(),
+        Expanded(child: PinListWidget(spaceId: spaceId, shrinkWrap: false)),
       ],
     );
   }

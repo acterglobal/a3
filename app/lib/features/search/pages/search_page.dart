@@ -32,7 +32,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ActerSearchWidget(searchTextController: searchTextController),
+          const ActerSearchWidget(),
           Padding(
             padding: const EdgeInsets.only(left: 8),
             child: filterChipsButtons(),

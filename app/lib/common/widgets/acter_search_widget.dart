@@ -5,21 +5,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final searchValueProvider = StateProvider.autoDispose<String>((ref) => '');
 
-class ActerSearchWidget extends ConsumerWidget {
-  final TextEditingController searchTextController;
+class ActerSearchWidget extends ConsumerStatefulWidget {
+  final bool clearInitialSearch;
 
-  const ActerSearchWidget({
-    super.key,
-    required this.searchTextController,
-  });
+  const ActerSearchWidget({super.key, this.clearInitialSearch = true});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return _buildSearchBar(context, ref);
+  ConsumerState<ActerSearchWidget> createState() => _ActerSearchWidgetState();
+}
+
+class _ActerSearchWidgetState extends ConsumerState<ActerSearchWidget> {
+  final TextEditingController searchTextController = TextEditingController();
+
+  String get searchValue => ref.watch(searchValueProvider);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      if (widget.clearInitialSearch) {
+        searchTextController.text = '';
+        ref.read(searchValueProvider.notifier).state = '';
+      }
+    });
   }
 
-  Widget _buildSearchBar(BuildContext context, WidgetRef ref) {
-    final searchValue = ref.watch(searchValueProvider);
+  @override
+  Widget build(BuildContext context) {
+    searchTextController.text = searchValue;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       child: SearchBar(

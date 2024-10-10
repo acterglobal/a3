@@ -32,7 +32,6 @@ class TasksListPage extends ConsumerStatefulWidget {
 }
 
 class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
-  final TextEditingController searchTextController = TextEditingController();
 
   String get searchValue => ref.watch(searchValueProvider);
   final ValueNotifier<bool> showCompletedTask = ValueNotifier(false);
@@ -103,9 +102,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActerSearchWidget(
-          searchTextController: searchTextController,
-        ),
+        const ActerSearchWidget(),
         Expanded(
           child: tasklistsLoader.when(
             data: (tasklists) => _buildTasklists(tasklists),
