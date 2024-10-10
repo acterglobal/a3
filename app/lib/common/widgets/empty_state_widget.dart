@@ -22,6 +22,10 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final aTitle = title;
+    final aSubtitle = subtitle;
+    final aPrimaryButton = primaryButton;
+    final aSecondaryButton = secondaryButton;
     return Container(
       margin: const EdgeInsets.symmetric(
         horizontal: 20,
@@ -37,31 +41,23 @@ class EmptyState extends StatelessWidget {
               height: imageSize,
               width: imageSize,
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            if (title != null)
+            const SizedBox(height: 10),
+            if (aTitle != null)
               Text(
-                title!,
+                aTitle,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-            const SizedBox(
-              height: 10,
-            ),
-            if (subtitle != null)
+            const SizedBox(height: 10),
+            if (aSubtitle != null)
               Text(
-                subtitle!,
+                aSubtitle,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
-            const SizedBox(
-              height: 10,
-            ),
-            if (primaryButton != null) primaryButton!,
-            const SizedBox(
-              height: 10,
-            ),
-            if (secondaryButton != null) secondaryButton!,
+            const SizedBox(height: 10),
+            if (aPrimaryButton != null) aPrimaryButton,
+            const SizedBox(height: 10),
+            if (aSecondaryButton != null) aSecondaryButton,
           ],
         ),
       ),
