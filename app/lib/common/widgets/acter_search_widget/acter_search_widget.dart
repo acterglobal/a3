@@ -5,7 +5,20 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ActerSearchWidget extends ConsumerStatefulWidget {
-  const ActerSearchWidget({super.key});
+  final TextEditingController? searchTextController;
+  final String? hintText;
+  final Widget? leading;
+  final Iterable<Widget>? trailing;
+  final Function(String)? onChanged;
+
+  const ActerSearchWidget({
+    super.key,
+    this.searchTextController,
+    this.hintText,
+    this.leading,
+    this.trailing,
+    this.onChanged,
+  });
 
   @override
   ConsumerState<ActerSearchWidget> createState() => _ActerSearchWidgetState();
@@ -19,11 +32,13 @@ class _ActerSearchWidgetState extends ConsumerState<ActerSearchWidget> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       child: SearchBar(
-        controller: searchTextController,
-        leading: searchLeadingUIWidget(),
-        hintText: L10n.of(context).search,
-        trailing: searchTrailingUIWidget(),
-        onChanged: (value) => onChangeSearchText(value),
+        controller: widget.searchTextController ?? searchTextController,
+        leading: widget.leading ?? searchLeadingUIWidget(),
+        hintText: widget.hintText ?? L10n.of(context).search,
+        trailing: widget.trailing ?? searchTrailingUIWidget(),
+        onChanged: (value) => widget.onChanged != null
+            ? widget.onChanged!(value)
+            : onChangeSearchText(value),
       ),
     );
   }
