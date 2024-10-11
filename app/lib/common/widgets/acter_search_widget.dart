@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ActerSearchWidget extends StatefulWidget {
+  static const searchBarKey = Key('acter-search-bar');
+
   final String? hintText;
   final String? initialText;
   final Widget? leading;
@@ -42,7 +44,7 @@ class _ActerSearchWidgetState extends State<ActerSearchWidget> {
     return Container(
       padding: widget.padding,
       child: SearchBar(
-        key: widget.key,
+        key: ActerSearchWidget.searchBarKey,
         controller: searchTextController,
         leading: widget.leading ?? searchLeadingUIWidget(),
         hintText: widget.hintText ?? L10n.of(context).search,

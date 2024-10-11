@@ -24,7 +24,6 @@ class RoomsListWidget extends ConsumerStatefulWidget {
       Key('chat-rooms-list-close-search-action-btn');
   static const clearSearchActionButtonKey =
       Key('chat-rooms-list-clear-search-action-btn');
-  static const searchBarKey = Key('chat-rooms-list-search-bar');
 
   const RoomsListWidget({
     required this.onSelected,
@@ -106,7 +105,6 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
       children: [
         const SizedBox(height: 5),
         ActerSearchWidget(
-          key: RoomsListWidget.searchBarKey,
           initialText: searchTerm,
           padding: EdgeInsets.zero,
           hintText: L10n.of(context).searchChats,
