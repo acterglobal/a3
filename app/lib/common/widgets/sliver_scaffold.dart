@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class SliverScaffold extends StatelessWidget {
@@ -148,7 +149,10 @@ class _SliverHeader extends StatelessWidget {
                 Navigator.pop(context);
               },
               tooltip: closeButtonTooltip,
-              icon: const Icon(Icons.close, key: SliverScaffold.closeKey),
+              icon: const Icon(
+                Icons.close,
+                key: SliverScaffold.closeKey,
+              ),
             ),
           ),
         ],
@@ -179,6 +183,8 @@ class _SliverFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cancelTitle = cancelActionTitle;
+    final confirmTitle = confirmActionTitle;
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -187,33 +193,31 @@ class _SliverFooter extends StatelessWidget {
           child: const Divider(indent: 24, endIndent: 24),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(24.0, 16, 24, 24),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: actions ??
                 [
-                  if (cancelActionTitle != null)
+                  if (cancelTitle != null)
                     OutlinedButton(
-                      onPressed: () {
-                        if (cancelActionOnPressed == null) {
-                          Navigator.pop(context);
-                        } else {
-                          cancelActionOnPressed!();
-                        }
-                      },
-                      child: Text(cancelActionTitle!),
+                      onPressed: () => onCancel(context),
+                      child: Text(cancelTitle),
                     ),
                   const SizedBox(width: 12),
-                  if (confirmActionTitle != null)
+                  if (confirmTitle != null)
                     ActerPrimaryActionButton(
                       key: confirmActionKey,
                       onPressed: confirmActionOnPressed,
-                      child: Text(confirmActionTitle!),
+                      child: Text(confirmTitle),
                     ),
                 ],
           ),
         ),
       ],
     );
+  }
+
+  void onCancel(BuildContext context) {
+    cancelActionOnPressed.let((cb) => cb()) ?? Navigator.pop(context);
   }
 }

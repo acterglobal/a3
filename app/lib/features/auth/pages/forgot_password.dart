@@ -2,6 +2,7 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/utils/validation_utils.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -44,15 +45,12 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
         ),
       );
     }
-    if (tokenResponse != null) {
-      return _NewPassword(tokenResponse: tokenResponse!, sdk: sdk);
-    }
-    return _AskForEmail(
-      sdk: sdk,
-      onSubmit: (tokenResp) => setState(() {
-        tokenResponse = tokenResp;
-      }),
-    );
+    return tokenResponse
+            .let((resp) => _NewPassword(tokenResponse: resp, sdk: sdk)) ??
+        _AskForEmail(
+          sdk: sdk,
+          onSubmit: (resp) => setState(() => tokenResponse = resp),
+        );
   }
 }
 
@@ -60,7 +58,10 @@ class _AskForEmail extends StatelessWidget {
   final void Function(PasswordChangeEmailTokenResponse) onSubmit;
   final ActerSdk sdk;
 
-  _AskForEmail({required this.onSubmit, required this.sdk});
+  _AskForEmail({
+    required this.onSubmit,
+    required this.sdk,
+  });
 
   final formKey = GlobalKey<FormState>(debugLabel: 'ask for email form');
   final TextEditingController emailController = TextEditingController();
@@ -74,9 +75,7 @@ class _AskForEmail extends StatelessWidget {
   }
 
   AppBar _buildAppbar() {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-    );
+    return AppBar(backgroundColor: Colors.transparent);
   }
 
   Widget _buildBody(BuildContext context) {
@@ -127,8 +126,8 @@ class _AskForEmail extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context) {
-    var screenHeight = MediaQuery.of(context).size.height;
-    var imageSize = screenHeight / 4;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final imageSize = screenHeight / 4;
     return SvgPicture.asset(
       'assets/images/forgot_password.svg',
       height: imageSize,
@@ -151,9 +150,7 @@ class _AskForEmail extends StatelessWidget {
           TextFormField(
             key: ForgotPassword.emailFieldKey,
             controller: emailController,
-            decoration: InputDecoration(
-              hintText: L10n.of(context).hintEmail,
-            ),
+            decoration: InputDecoration(hintText: L10n.of(context).hintEmail),
             style: Theme.of(context).textTheme.labelLarge,
             validator: (val) => validateEmail(context, val),
           ),
@@ -202,7 +199,10 @@ class _NewPassword extends StatelessWidget {
   final PasswordChangeEmailTokenResponse tokenResponse;
   final ActerSdk sdk;
 
-  _NewPassword({required this.tokenResponse, required this.sdk});
+  _NewPassword({
+    required this.tokenResponse,
+    required this.sdk,
+  });
 
   final formKey = GlobalKey<FormState>(debugLabel: 'new password form');
   final TextEditingController passwordController = TextEditingController();
@@ -216,9 +216,7 @@ class _NewPassword extends StatelessWidget {
   }
 
   AppBar _buildAppbar() {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-    );
+    return AppBar(backgroundColor: Colors.transparent);
   }
 
   Widget _buildBody(BuildContext context) {

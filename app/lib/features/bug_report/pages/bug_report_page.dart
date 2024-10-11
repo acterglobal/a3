@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/bug_report/actions/submit_bug_report.dart';
@@ -206,33 +207,31 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   }
 
   List<Widget> renderForScreenShot() {
-    if (widget.imagePath == null) return [];
-    return [
-      const SizedBox(height: 10),
-      CheckboxListTile(
-        key: BugReportPage.includeScreenshot,
-        title: Text(L10n.of(context).includeScreenshot),
-        value: withScreenshot,
-        onChanged: (bool? value) => setState(() {
-          withScreenshot = value ?? true;
-        }),
-        controlAffinity: ListTileControlAffinity.leading,
-      ),
-      const SizedBox(height: 10),
-      if (withScreenshot)
-        Image.file(
-          File(widget.imagePath!),
-          key: BugReportPage.screenshot,
-          width: MediaQuery.of(context).size.width * 0.8,
-          errorBuilder: (
-            BuildContext context,
-            Object error,
-            StackTrace? stackTrace,
-          ) {
-            return Text(L10n.of(context).couldNotLoadImage(error));
-          },
-        ),
-      if (withScreenshot) const SizedBox(height: 10),
-    ];
+    return widget.imagePath.let(
+          (path) => [
+            const SizedBox(height: 10),
+            CheckboxListTile(
+              key: BugReportPage.includeScreenshot,
+              title: Text(L10n.of(context).includeScreenshot),
+              value: withScreenshot,
+              onChanged: (bool? value) => setState(() {
+                withScreenshot = value ?? true;
+              }),
+              controlAffinity: ListTileControlAffinity.leading,
+            ),
+            const SizedBox(height: 10),
+            if (withScreenshot)
+              Image.file(
+                File(path),
+                key: BugReportPage.screenshot,
+                width: MediaQuery.of(context).size.width * 0.8,
+                errorBuilder: (context, error, stackTrace) {
+                  return Text(L10n.of(context).couldNotLoadImage(error));
+                },
+              ),
+            if (withScreenshot) const SizedBox(height: 10),
+          ],
+        ) ??
+        [];
   }
 }

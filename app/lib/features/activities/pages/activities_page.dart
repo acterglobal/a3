@@ -30,9 +30,8 @@ class ActivitiesPage extends ConsumerWidget {
   Widget? renderSyncingState(BuildContext context, WidgetRef ref) {
     final syncState = ref.watch(syncStateProvider);
     final errorMsg = syncState.errorMsg;
-    final retryDuration = syncState.countDown != null
-        ? Duration(seconds: syncState.countDown!)
-        : null;
+    final retryDuration =
+        syncState.countDown.let((countDown) => Duration(seconds: countDown));
     if (!ref.watch(hasFirstSyncedProvider)) {
       return SliverToBoxAdapter(
         child: Card(
@@ -103,49 +102,44 @@ class ActivitiesPage extends ConsumerWidget {
 
   Widget? renderSessions(BuildContext context, WidgetRef ref) {
     final allSessions = ref.watch(unknownSessionsProvider);
-    if (allSessions.error != null) {
+    final err = allSessions.error;
+    if (err != null) {
       return SliverToBoxAdapter(
-        child: Text(
-          L10n.of(context)
-              .errorUnverifiedSessions(allSessions.error.toString()),
-        ),
+        child: Text(L10n.of(context).errorUnverifiedSessions(err.toString())),
       );
-    } else if (!allSessions.hasValue) {
-      // we can ignore
-      return null;
     }
-
-    final sessions =
-        allSessions.value!.where((session) => !session.isVerified()).toList();
-    if (sessions.isEmpty) {
-      return null;
-    } else if (sessions.length == 1) {
-      return SliverToBoxAdapter(
-        child: SessionCard(
-          key: oneUnverifiedSessionsCard,
-          deviceRecord: sessions[0],
-        ),
-      );
-    } else {
-      return SliverToBoxAdapter(
-        child: Card(
-          key: unverifiedSessionsCard,
-          child: ListTile(
-            leading: const Icon(Atlas.warning_bold),
-            title: Text(
-              L10n.of(context).unverifiedSessionsTitle(sessions.length),
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            trailing: OutlinedButton(
-              onPressed: () {
-                context.pushNamed(Routes.settingSessions.name);
-              },
-              child: Text(L10n.of(context).review),
+    return allSessions.value.let((val) {
+      final sessions = val.where((session) => !session.isVerified()).toList();
+      if (sessions.isEmpty) {
+        return null;
+      } else if (sessions.length == 1) {
+        return SliverToBoxAdapter(
+          child: SessionCard(
+            key: oneUnverifiedSessionsCard,
+            deviceRecord: sessions[0],
+          ),
+        );
+      } else {
+        return SliverToBoxAdapter(
+          child: Card(
+            key: unverifiedSessionsCard,
+            child: ListTile(
+              leading: const Icon(Atlas.warning_bold),
+              title: Text(
+                L10n.of(context).unverifiedSessionsTitle(sessions.length),
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              trailing: OutlinedButton(
+                onPressed: () {
+                  context.pushNamed(Routes.settingSessions.name);
+                },
+                child: Text(L10n.of(context).review),
+              ),
             ),
           ),
-        ),
-      );
-    }
+        );
+      }
+    });
   }
 
   Widget? renderBackupSection(BuildContext context, WidgetRef ref) {
