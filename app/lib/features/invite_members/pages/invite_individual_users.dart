@@ -1,8 +1,8 @@
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:acter/features/member/providers/invite_providers.dart';
 import 'package:acter/features/invite_members/widgets/direct_invite.dart';
 import 'package:acter/features/member/widgets/user_search_results.dart';
-import 'package:acter/features/member/widgets/user_search_text_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -41,8 +41,17 @@ class InviteIndividualUsers extends ConsumerWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
-            UserSearchTextField(
-              hintText: L10n.of(context).searchUser,
+            ActerSearchWidget(
+              initialText: ref.read(userSearchValueProvider),
+              hintText: L10n.of(context).searchUsernameToStartDM,
+              onChanged: (value) {
+                ref
+                    .read(userSearchValueProvider.notifier)
+                    .update((state) => value);
+              },
+              onClear: () {
+                ref.read(userSearchValueProvider.notifier).state = null;
+              },
             ),
             const SizedBox(height: 10),
             _buildUserDirectInvite(ref),
