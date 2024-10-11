@@ -32,7 +32,6 @@ class EventListPage extends ConsumerStatefulWidget {
 }
 
 class _EventListPageState extends ConsumerState<EventListPage> {
-  final TextEditingController searchTextController = TextEditingController();
 
   String get searchValue => ref.watch(searchValueProvider);
 

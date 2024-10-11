@@ -33,7 +33,6 @@ class TasksListPage extends ConsumerStatefulWidget {
 }
 
 class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
-  final TextEditingController searchTextController = TextEditingController();
 
   String get searchValue => ref.watch(searchValueProvider);
   final ValueNotifier<bool> showCompletedTask = ValueNotifier(false);

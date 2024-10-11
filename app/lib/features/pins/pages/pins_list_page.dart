@@ -35,7 +35,6 @@ class PinsListPage extends ConsumerStatefulWidget {
 }
 
 class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
-  final TextEditingController searchTextController = TextEditingController();
 
   String get searchValue => ref.watch(searchValueProvider);
 

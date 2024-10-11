@@ -48,14 +48,6 @@ class SelectRoomDrawer extends ConsumerStatefulWidget {
 }
 
 class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
-  final TextEditingController searchTextController = TextEditingController();
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // ensure we are synced up
-    searchTextController.text = ref.read(roomSearchValueProvider) ?? '';
-  }
 
   @override
   Widget build(BuildContext context) {
