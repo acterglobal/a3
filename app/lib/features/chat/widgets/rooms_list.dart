@@ -38,7 +38,6 @@ class RoomsListWidget extends ConsumerStatefulWidget {
 
 class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   final ScrollController controller = ScrollController();
-  final TextEditingController searchTextController = TextEditingController();
   final FocusNode searchFocus = FocusNode();
 
   bool _isSearchVisible = false;
@@ -47,15 +46,6 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   void initState() {
     super.initState();
     controller.addListener(_onScroll);
-    searchTextController.text =
-        ref.read(roomListFilterProvider).searchTerm ?? '';
-  }
-
-  @override
-  void didUpdateWidget(RoomsListWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    searchTextController.text =
-        ref.read(roomListFilterProvider).searchTerm ?? '';
   }
 
   void _onScroll() {
@@ -109,8 +99,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget filterBox(BuildContext context) {
-    final searchTerm =
-        ref.watch(roomListFilterProvider.select((value) => value.searchTerm));
+    final searchTerm = ref.read(roomListFilterProvider).searchTerm ?? '';
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
