@@ -38,8 +38,7 @@ class SelectSpaceFormField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final selectedSpace = currentSelectedSpace != null;
+    final currentSpaceId = ref.watch(selectedSpaceIdProvider);
 
     final emptyButton = OutlinedButton(
       key: openKey,
@@ -48,7 +47,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     );
 
     return FormField(
-      builder: (state) => selectedSpace
+      builder: (state) => currentSpaceId != null
           ? InkWell(
               key: openKey,
               onTap: () => selectSpace(context, ref),
@@ -60,27 +59,32 @@ class SelectSpaceFormField extends ConsumerWidget {
                       title ?? L10n.of(context).space,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                  Consumer(builder: spaceBuilder),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      return spaceBuilder(context, ref, child, currentSpaceId);
+                    },
+                  ),
                 ],
               ),
             )
           : Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: state.hasError
-                  ? Column(
+              child: state.errorText.let(
+                    (err) => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         emptyButton,
                         Text(
-                          state.errorText!,
+                          err,
                           style:
                               Theme.of(context).textTheme.bodySmall!.copyWith(
                                     color: Theme.of(context).colorScheme.error,
                                   ),
                         ),
                       ],
-                    )
-                  : emptyButton,
+                    ),
+                  ) ??
+                  emptyButton,
             ),
       validator: (val) =>
           !mandatory || ref.read(selectedSpaceIdProvider) != null
@@ -89,9 +93,13 @@ class SelectSpaceFormField extends ConsumerWidget {
     );
   }
 
-  Widget spaceBuilder(BuildContext context, WidgetRef ref, Widget? child) {
+  Widget spaceBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+    String currentSpaceId,
+  ) {
     final space = ref.watch(selectedSpaceDetailsProvider);
-    final currentId = ref.watch(selectedSpaceIdProvider);
     return space.let(
           (p0) => SpaceChip(
             spaceId: p0.roomId,
@@ -102,6 +110,6 @@ class SelectSpaceFormField extends ConsumerWidget {
             },
           ),
         ) ??
-        Text(currentId!);
+        Text(currentSpaceId);
   }
 }
