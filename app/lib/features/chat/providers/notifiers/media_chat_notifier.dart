@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -26,32 +27,34 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
   }
 
   void _init() async {
-    _convo = await ref.read(chatProvider(messageInfo.roomId).future);
-    if (_convo != null) {
+    final convo = await ref.read(chatProvider(messageInfo.roomId).future);
+    if (convo != null) {
+      _convo = convo;
       state = state.copyWith(
         mediaChatLoadingState: const MediaChatLoadingState.notYetStarted(),
       );
       try {
         //Get media path if already downloaded
-        final mediaPath =
-            (await _convo!.mediaPath(messageInfo.messageId, false)).text();
+        final result = await convo.mediaPath(messageInfo.messageId, false);
+        final path = result.text();
 
-        if (mediaPath != null) {
+        if (path != null) {
           state = state.copyWith(
-            mediaFile: File(mediaPath),
+            mediaFile: File(path),
             videoThumbnailFile: null,
             mediaChatLoadingState: const MediaChatLoadingState.loaded(),
           );
-          final videoThumbnailFile = await getThumbnailData(mediaPath);
+          final videoThumbnailFile = await getThumbnailData(path);
           if (videoThumbnailFile != null) {
-            if (state.mediaFile?.path == mediaPath) {
+            if (state.mediaFile?.path == path) {
               state = state.copyWith(videoThumbnailFile: videoThumbnailFile);
             }
           }
         } else {
           // FIXME: this does not react if yet if we switched the network ...
-          if (await ref
-              .read(autoDownloadMediaProvider(messageInfo.roomId).future)) {
+          final autoDownload = await ref
+              .read(autoDownloadMediaProvider(messageInfo.roomId).future);
+          if (autoDownload) {
             await downloadMedia();
           } else {
             state = state.copyWith(
@@ -76,30 +79,29 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
   }
 
   Future<void> downloadMedia() async {
-    if (_convo != null) {
+    await _convo.letAsync((convo) async {
       state = state.copyWith(isDownloading: true);
       try {
         //Download media if media path is not available
         final tempDir = await getTemporaryDirectory();
-        final result = await _convo!.downloadMedia(
+        final result = await convo.downloadMedia(
           messageInfo.messageId,
           null,
           tempDir.path,
         );
-        final mediaPath = result.text();
-        if (mediaPath != null) {
+        await result.text().letAsync((path) async {
           state = state.copyWith(
-            mediaFile: File(mediaPath),
+            mediaFile: File(path),
             videoThumbnailFile: null,
             isDownloading: false,
           );
-          final videoThumbnailFile = await getThumbnailData(mediaPath);
+          final videoThumbnailFile = await getThumbnailData(path);
           if (videoThumbnailFile != null) {
-            if (state.mediaFile?.path == mediaPath) {
+            if (state.mediaFile?.path == path) {
               state = state.copyWith(videoThumbnailFile: videoThumbnailFile);
             }
           }
-        }
+        });
       } catch (e, s) {
         _log.severe('Error downloading media:', e, s);
         state = state.copyWith(
@@ -109,7 +111,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
           ),
         );
       }
-    }
+    });
   }
 
   //FIXME : This is temporarily solution for media thumb management which lead to security issue.

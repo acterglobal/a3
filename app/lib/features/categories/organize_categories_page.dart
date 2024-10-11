@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/categories/actions/save_categories.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
@@ -204,28 +205,29 @@ class _DraggableCategoriesListState
 
   //DRAG AND DROP LIST VIEW
   Widget _buildSubSpacesUIWithDrag() {
-    return dragAndDropList == null
-        ? const Center(child: CircularProgressIndicator())
-        : DragAndDropLists(
-            children: dragAndDropList!,
+    return dragAndDropList.let(
+          (list) => DragAndDropLists(
+            children: list,
             onListReorder: _onListReorder,
             onItemReorder: _onItemReorder,
-          );
+          ),
+        ) ??
+        const Center(
+          child: CircularProgressIndicator(),
+        );
   }
 
   //ON HEADER ITEM REORDER
-  Future<void> _onListReorder(
-    int oldListIndex,
-    int newListIndex,
-  ) async {
-    if (dragAndDropList == null) return;
-    var movedList = dragAndDropList!.removeAt(oldListIndex);
-    dragAndDropList!.insert(newListIndex, movedList);
+  Future<void> _onListReorder(int oldListIndex, int newListIndex) async {
+    dragAndDropList.let((list) {
+      final movedList = list.removeAt(oldListIndex);
+      list.insert(newListIndex, movedList);
 
-    var movedCategoryList = categoryList.removeAt(oldListIndex);
-    categoryList.insert(newListIndex, movedCategoryList);
+      final movedCategoryList = categoryList.removeAt(oldListIndex);
+      categoryList.insert(newListIndex, movedCategoryList);
 
-    setDragAndDropListData();
+      setDragAndDropListData();
+    });
   }
 
   //ON SUB ITEM REORDER
@@ -235,16 +237,16 @@ class _DraggableCategoriesListState
     int newItemIndex,
     int newListIndex,
   ) async {
-    if (dragAndDropList == null) return;
-    var movedItem =
-        dragAndDropList![oldListIndex].children.removeAt(oldItemIndex);
-    dragAndDropList![newListIndex].children.insert(newItemIndex, movedItem);
+    dragAndDropList.let((list) {
+      final movedItem = list[oldListIndex].children.removeAt(oldItemIndex);
+      list[newListIndex].children.insert(newItemIndex, movedItem);
 
-    var movedEntryItem =
-        categoryList[oldListIndex].entries.removeAt(oldItemIndex);
-    categoryList[newListIndex].entries.insert(newItemIndex, movedEntryItem);
+      final movedEntryItem =
+          categoryList[oldListIndex].entries.removeAt(oldItemIndex);
+      categoryList[newListIndex].entries.insert(newItemIndex, movedEntryItem);
 
-    setDragAndDropListData();
+      setDragAndDropListData();
+    });
   }
 
   //SAVE ORGANIZED CATEGORIES
