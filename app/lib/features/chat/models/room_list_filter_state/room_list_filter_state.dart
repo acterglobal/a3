@@ -12,14 +12,11 @@ Future<bool> roomListFilterStateAppliesToRoom(
   switch (state.selection) {
     case FilterSelection.dmsOnly:
       final isDm = await ref.watch(isDirectChatProvider(convoId).future);
-      if (!isDm) {
-        return false;
-      }
+      if (!isDm) return false;
       break;
     case FilterSelection.favorites:
-      if (!await ref.watch(isConvoBookmarked(convoId).future)) {
-        return false;
-      }
+      final bookmarked = await ref.watch(isConvoBookmarked(convoId).future);
+      if (!bookmarked) return false;
       break;
     default: // all other case just continue
       break;

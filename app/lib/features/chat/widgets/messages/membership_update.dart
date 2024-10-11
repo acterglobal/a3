@@ -7,7 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class MembershipUpdateWidget extends ConsumerWidget {
   final CustomMessage message;
 
-  const MembershipUpdateWidget({super.key, required this.message});
+  const MembershipUpdateWidget({
+    super.key,
+    required this.message,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

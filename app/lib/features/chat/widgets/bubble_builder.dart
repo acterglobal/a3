@@ -156,7 +156,6 @@ class _ChatBubble extends ConsumerWidget {
   }
 
   Bubble renderBubble(BuildContext context, bool isAuthor) {
-    bool hasRepliedMessage = message.repliedMessage != null;
     Widget bubbleChild = message.repliedMessage.let(
           (replied) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,9 +210,10 @@ class _ChatBubble extends ConsumerWidget {
             ? const BubbleEdges.symmetric(horizontal: 2)
             : null,
         radius: const Radius.circular(22),
-        padding: (message is types.ImageMessage && !hasRepliedMessage)
-            ? const BubbleEdges.all(0)
-            : null,
+        padding:
+            (message is types.ImageMessage && message.repliedMessage == null)
+                ? const BubbleEdges.all(0)
+                : null,
         nip: (nextMessageInGroup || message is types.ImageMessage)
             ? BubbleNip.no
             : !isAuthor
