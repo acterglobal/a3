@@ -149,7 +149,10 @@ class _SliverHeader extends StatelessWidget {
                 Navigator.pop(context);
               },
               tooltip: closeButtonTooltip,
-              icon: const Icon(Icons.close, key: SliverScaffold.closeKey),
+              icon: const Icon(
+                Icons.close,
+                key: SliverScaffold.closeKey,
+              ),
             ),
           ),
         ],
@@ -190,7 +193,7 @@ class _SliverFooter extends StatelessWidget {
           child: const Divider(indent: 24, endIndent: 24),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(24.0, 16, 24, 24),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: actions ??
