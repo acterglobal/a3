@@ -96,7 +96,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget filterBox(BuildContext context) {
-    final searchTerm = ref.read(roomListFilterProvider).searchTerm;
+    final searchTerm = ref.watch(roomListFilterProvider).searchTerm;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -42,6 +42,13 @@ class _ActerSearchWidgetState extends State<ActerSearchWidget> {
   }
 
   @override
+  void dispose() {
+    searchTextController.dispose();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: widget.padding,
