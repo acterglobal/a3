@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -156,45 +157,49 @@ class _ChatBubble extends ConsumerWidget {
 
   Bubble renderBubble(BuildContext context, bool isAuthor) {
     bool hasRepliedMessage = message.repliedMessage != null;
-    Widget bubbleChild = child;
-    if (hasRepliedMessage) {
-      bubbleChild = Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              color: isAuthor
-                  ? Theme.of(context).colorScheme.surface.withOpacity(0.3)
-                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 10,
-                    top: 15,
-                  ),
-                  child: Consumer(
-                    builder: (context, ref, child) => replyProfileBuilder(
-                      context,
-                      ref,
+    Widget bubbleChild = message.repliedMessage.let(
+          (replied) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(
+                  color: isAuthor
+                      ? Theme.of(context).colorScheme.surface.withOpacity(0.3)
+                      : Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 10,
+                        top: 15,
+                      ),
+                      child: Consumer(
+                        builder: (context, ref, child) => replyProfileBuilder(
+                          context,
+                          ref,
+                          replied,
+                        ),
+                      ),
                     ),
-                  ),
+                    _OriginalMessageBuilder(
+                      roomId: roomId,
+                      message: message,
+                    ),
+                  ],
                 ),
-                _OriginalMessageBuilder(
-                  roomId: roomId,
-                  message: message,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 5),
+              child,
+            ],
           ),
-          const SizedBox(height: 5),
-          child,
-        ],
-      );
-    }
+        ) ??
+        child;
 
     return Bubble(
       color: isAuthor
@@ -222,8 +227,12 @@ class _ChatBubble extends ConsumerWidget {
     );
   }
 
-  Widget replyProfileBuilder(BuildContext context, WidgetRef ref) {
-    final authorId = message.repliedMessage!.author.id;
+  Widget replyProfileBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    types.Message replied,
+  ) {
+    final authorId = replied.author.id;
     final replyProfile =
         ref.watch(memberAvatarInfoProvider((userId: authorId, roomId: roomId)));
     return Row(

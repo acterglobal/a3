@@ -1,12 +1,13 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::save_categories');
@@ -43,8 +44,12 @@ Future<void> saveCategories(
         newCategoryItem.title(categoryList[i].title);
 
         //ADD COLOR AND ICON
-        displayBuilder.color(categoryList[i].color!.value);
-        displayBuilder.icon('acter-icon', categoryList[i].icon!.name);
+        categoryList[i].color.let((clr) {
+          displayBuilder.color(clr.value);
+        });
+        categoryList[i].icon.let((icn) {
+          displayBuilder.icon('acter-icon', icn.name);
+        });
         newCategoryItem.display(displayBuilder.build());
 
         //ADD ENTRIES
