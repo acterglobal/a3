@@ -46,6 +46,8 @@ class _ActerSearchWidgetState extends State<ActerSearchWidget> {
         controller: searchTextController,
         leading: widget.leading ?? searchLeadingUIWidget(),
         hintText: widget.hintText ?? L10n.of(context).search,
+        hintStyle:
+            WidgetStateProperty.all(Theme.of(context).textTheme.bodyMedium),
         trailing: widget.trailing ?? searchTrailingUIWidget(),
         onChanged: (value) => widget.onChanged(value),
       ),
