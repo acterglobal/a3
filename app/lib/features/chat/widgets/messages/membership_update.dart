@@ -14,21 +14,20 @@ class MembershipUpdateWidget extends ConsumerWidget {
     final myUserId = ref.watch(myUserIdStrProvider);
     String? textMsg;
     final msgType = message.metadata?['msgType'];
+    final firstName = message.author.firstName;
     if (msgType == 'Joined') {
       if (message.author.id == myUserId) {
         textMsg = L10n.of(context).chatYouJoined;
-      } else if (message.author.firstName != null) {
-        textMsg =
-            L10n.of(context).chatJoinedDisplayName(message.author.firstName!);
+      } else if (firstName != null) {
+        textMsg = L10n.of(context).chatJoinedDisplayName(firstName);
       } else {
         textMsg = L10n.of(context).chatJoinedUserId(message.author.id);
       }
     } else if (msgType == 'InvitationAccepted') {
       if (message.author.id == myUserId) {
         textMsg = L10n.of(context).chatYouAcceptedInvite;
-      } else if (message.author.firstName != null) {
-        textMsg = L10n.of(context)
-            .chatInvitationAcceptedDisplayName(message.author.firstName!);
+      } else if (firstName != null) {
+        textMsg = L10n.of(context).chatInvitationAcceptedDisplayName(firstName);
       } else {
         textMsg =
             L10n.of(context).chatInvitationAcceptedUserId(message.author.id);
@@ -36,9 +35,8 @@ class MembershipUpdateWidget extends ConsumerWidget {
     } else if (msgType == 'Invited') {
       if (message.author.id == myUserId) {
         textMsg = L10n.of(context).chatYouInvited;
-      } else if (message.author.firstName != null) {
-        textMsg =
-            L10n.of(context).chatInvitedDisplayName(message.author.firstName!);
+      } else if (firstName != null) {
+        textMsg = L10n.of(context).chatInvitedDisplayName(firstName);
       } else {
         textMsg = L10n.of(context).chatInvitedUserId(message.author.id);
       }

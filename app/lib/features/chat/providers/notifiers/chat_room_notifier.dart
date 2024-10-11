@@ -219,12 +219,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           await fetchOriginalContent(repliedTo, message.id);
         }
         RoomEventItem? eventItem = m.eventItem();
-        if (eventItem != null && message.remoteId != null) {
-          await fetchMediaBinary(
-            eventItem.msgType(),
-            message.remoteId!,
-            message.id,
-          );
+        final remoteId = message.remoteId;
+        if (eventItem != null && remoteId != null) {
+          await fetchMediaBinary(eventItem.msgType(), remoteId, message.id);
         }
       }
     }

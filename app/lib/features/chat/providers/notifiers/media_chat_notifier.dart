@@ -27,32 +27,34 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
   }
 
   void _init() async {
-    _convo = await ref.read(chatProvider(messageInfo.roomId).future);
-    if (_convo != null) {
+    final convo = await ref.read(chatProvider(messageInfo.roomId).future);
+    if (convo != null) {
+      _convo = convo;
       state = state.copyWith(
         mediaChatLoadingState: const MediaChatLoadingState.notYetStarted(),
       );
       try {
         //Get media path if already downloaded
-        final mediaPath =
-            (await _convo!.mediaPath(messageInfo.messageId, false)).text();
+        final result = await convo.mediaPath(messageInfo.messageId, false);
+        final path = result.text();
 
-        if (mediaPath != null) {
+        if (path != null) {
           state = state.copyWith(
-            mediaFile: File(mediaPath),
+            mediaFile: File(path),
             videoThumbnailFile: null,
             mediaChatLoadingState: const MediaChatLoadingState.loaded(),
           );
-          final videoThumbnailFile = await getThumbnailData(mediaPath);
+          final videoThumbnailFile = await getThumbnailData(path);
           if (videoThumbnailFile != null) {
-            if (state.mediaFile?.path == mediaPath) {
+            if (state.mediaFile?.path == path) {
               state = state.copyWith(videoThumbnailFile: videoThumbnailFile);
             }
           }
         } else {
           // FIXME: this does not react if yet if we switched the network ...
-          if (await ref
-              .read(autoDownloadMediaProvider(messageInfo.roomId).future)) {
+          final autoDownload = await ref
+              .read(autoDownloadMediaProvider(messageInfo.roomId).future);
+          if (autoDownload) {
             await downloadMedia();
           } else {
             state = state.copyWith(
