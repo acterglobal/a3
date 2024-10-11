@@ -1,7 +1,9 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +14,6 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/features/chat/widgets/room_avatar.dart';
 
 final _log = Logger('a3::chat::convo_card');
 
@@ -45,13 +45,14 @@ class ConvoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (animation != null) {
-      return SizeTransition(
-        sizeFactor: animation!,
-        child: buildInner(context, ref),
-      );
-    }
-    return buildInner(context, ref);
+    final inner = buildInner(context, ref);
+    return animation.let(
+          (val) => SizeTransition(
+            sizeFactor: val,
+            child: inner,
+          ),
+        ) ??
+        inner;
   }
 
   Widget buildInner(BuildContext context, WidgetRef ref) {

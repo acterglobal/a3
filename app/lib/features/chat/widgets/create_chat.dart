@@ -6,12 +6,12 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
-import 'package:acter/features/files/actions/pick_avatar.dart';
-import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/chat/providers/create_chat_providers.dart';
+import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/member/providers/invite_providers.dart';
+import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:acter/features/member/widgets/user_search_results.dart';
 import 'package:acter/features/member/widgets/user_search_text_field.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -580,15 +580,17 @@ class _CreateRoomFormWidgetConsumerState
   }
 
   void _handleTitleChange(String? value) {
-    ref.read(_titleProvider.notifier).update((state) => value!);
+    value.let((val) {
+      ref.read(_titleProvider.notifier).update((state) => val);
+    });
   }
 
-  void _handleAvatarUpload() async {
+  Future<void> _handleAvatarUpload() async {
     FilePickerResult? result = await pickAvatar(context: context);
     if (result != null) {
-      File file = File(result.files.single.path!);
-      String filepath = file.path;
-      ref.read(_avatarProvider.notifier).update((state) => filepath);
+      result.files.single.path.let((path) {
+        ref.read(_avatarProvider.notifier).update((state) => path);
+      });
     } else {
       // user cancelled the picker
     }
