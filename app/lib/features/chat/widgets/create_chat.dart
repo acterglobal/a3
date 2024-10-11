@@ -4,6 +4,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
@@ -13,7 +14,6 @@ import 'package:acter/features/chat/providers/create_chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/member/providers/invite_providers.dart';
 import 'package:acter/features/member/widgets/user_search_results.dart';
-import 'package:acter/features/member/widgets/user_search_text_field.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:atlas_icons/atlas_icons.dart';
@@ -161,14 +161,6 @@ class _CreateChatWidget extends ConsumerStatefulWidget {
 }
 
 class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
-  final searchTextController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    searchTextController.text = ref.read(userSearchValueProvider) ?? '';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -179,8 +171,17 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           const SizedBox(height: 15),
-          UserSearchTextField(
+          ActerSearchWidget(
+            initialText: ref.read(userSearchValueProvider),
             hintText: L10n.of(context).searchUsernameToStartDM,
+            onChanged: (value) {
+              ref
+                  .read(userSearchValueProvider.notifier)
+                  .update((state) => value);
+            },
+            onClear: () {
+              ref.read(userSearchValueProvider.notifier).state = null;
+            },
           ),
           const SizedBox(height: 15),
           renderSelectedUsers(context),

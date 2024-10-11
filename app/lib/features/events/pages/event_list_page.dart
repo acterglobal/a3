@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
@@ -31,7 +32,6 @@ class EventListPage extends ConsumerStatefulWidget {
 }
 
 class _EventListPageState extends ConsumerState<EventListPage> {
-  final TextEditingController searchTextController = TextEditingController();
 
   String get searchValue => ref.watch(searchValueProvider);
 
@@ -82,7 +82,11 @@ class _EventListPageState extends ConsumerState<EventListPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActerSearchWidget(searchTextController: searchTextController),
+        ActerSearchWidget(
+          onChanged: (value) =>
+              ref.read(searchValueProvider.notifier).state = value,
+          onClear: () => ref.read(searchValueProvider.notifier).state = '',
+        ),
         filterChipsButtons(),
         Expanded(
           child: calEventsLoader.when(

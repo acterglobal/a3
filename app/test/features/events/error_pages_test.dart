@@ -1,6 +1,6 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/events/pages/event_list_page.dart';

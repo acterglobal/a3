@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
@@ -34,7 +35,6 @@ class PinsListPage extends ConsumerStatefulWidget {
 }
 
 class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
-  final TextEditingController searchTextController = TextEditingController();
 
   String get searchValue => ref.watch(searchValueProvider);
 
@@ -83,7 +83,11 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActerSearchWidget(searchTextController: searchTextController),
+        ActerSearchWidget(
+          onChanged: (value) =>
+              ref.read(searchValueProvider.notifier).state = value,
+          onClear: () => ref.read(searchValueProvider.notifier).state = '',
+        ),
         Expanded(
           child: pinsLoader.when(
             data: (pins) => _buildPinsList(pins),

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
@@ -32,7 +33,6 @@ class TasksListPage extends ConsumerStatefulWidget {
 }
 
 class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
-  final TextEditingController searchTextController = TextEditingController();
 
   String get searchValue => ref.watch(searchValueProvider);
   final ValueNotifier<bool> showCompletedTask = ValueNotifier(false);
@@ -105,7 +105,9 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
-          searchTextController: searchTextController,
+          onChanged: (value) =>
+              ref.read(searchValueProvider.notifier).state = value,
+          onClear: () => ref.read(searchValueProvider.notifier).state = '',
         ),
         Expanded(
           child: tasklistsLoader.when(
