@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/chat/models/room_list_filter_state/room_list_filter_state.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
@@ -108,45 +109,23 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget filterBox(BuildContext context) {
-    final hasSearchTerm = ref
-            .watch(roomListFilterProvider.select((value) => value.searchTerm))
-            ?.isNotEmpty ==
-        true;
+    final searchTerm =
+        ref.watch(roomListFilterProvider.select((value) => value.searchTerm));
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 5),
-        SearchBar(
+        ActerSearchWidget(
           key: RoomsListWidget.searchBarKey,
-          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-            const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-            ),
-          ),
-          focusNode: searchFocus,
-          controller: searchTextController,
-          leading: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(Atlas.magnifying_glass),
-          ),
+          initialText: searchTerm,
+          padding: EdgeInsets.zero,
           hintText: L10n.of(context).searchChats,
-          trailing: hasSearchTerm
-              ? [
-                  InkWell(
-                    key: RoomsListWidget.clearSearchActionButtonKey,
-                    onTap: () {
-                      searchTextController.clear();
-                      ref
-                          .read(roomListFilterProvider.notifier)
-                          .updateSearchTerm(null);
-                    },
-                    child: const Icon(Icons.clear),
-                  ),
-                ]
-              : null,
-          onChanged: (value) {
+          onChanged: (String value) {
             ref.read(roomListFilterProvider.notifier).updateSearchTerm(value);
+          },
+          onClear: () {
+            ref.read(roomListFilterProvider.notifier).updateSearchTerm(null);
           },
         ),
         filterChipsButtons(),

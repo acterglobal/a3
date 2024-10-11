@@ -4,16 +4,20 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ActerSearchWidget extends StatefulWidget {
   final String? hintText;
+  final String? initialText;
   final Widget? leading;
   final Iterable<Widget>? trailing;
+  final EdgeInsetsGeometry padding;
   final ValueChanged<String> onChanged;
   final VoidCallback onClear;
 
   const ActerSearchWidget({
     super.key,
     this.hintText,
+    this.initialText,
     this.leading,
     this.trailing,
+    this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
     required this.onChanged,
     required this.onClear,
   });
@@ -26,10 +30,19 @@ class _ActerSearchWidgetState extends State<ActerSearchWidget> {
   final TextEditingController searchTextController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.initialText != null) {
+      searchTextController.text = widget.initialText!;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+      padding: widget.padding,
       child: SearchBar(
+        key: widget.key,
         controller: searchTextController,
         leading: widget.leading ?? searchLeadingUIWidget(),
         hintText: widget.hintText ?? L10n.of(context).search,
