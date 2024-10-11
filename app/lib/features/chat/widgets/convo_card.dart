@@ -491,7 +491,7 @@ class _SubtitleWidget extends ConsumerWidget {
     } else {
       final u1 = simplifyUserId(userIds[0].id.toString());
       return Text(
-        L10n.of(context).typingUser3(u1!, {userIds.length - 1}),
+        L10n.of(context).typingUserN(u1!, {userIds.length - 1}),
         style: textStyle,
       );
     }
