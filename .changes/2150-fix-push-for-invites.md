@@ -1,1 +1,0 @@
-- [Fix] forward to the activities screen if the push was for a room invite
