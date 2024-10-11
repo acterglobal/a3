@@ -2,6 +2,7 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/utils/validation_utils.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -44,15 +45,12 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
         ),
       );
     }
-    if (tokenResponse != null) {
-      return _NewPassword(tokenResponse: tokenResponse!, sdk: sdk);
-    }
-    return _AskForEmail(
-      sdk: sdk,
-      onSubmit: (tokenResp) => setState(() {
-        tokenResponse = tokenResp;
-      }),
-    );
+    return tokenResponse
+            .let((resp) => _NewPassword(tokenResponse: resp, sdk: sdk)) ??
+        _AskForEmail(
+          sdk: sdk,
+          onSubmit: (resp) => setState(() => tokenResponse = resp),
+        );
   }
 }
 
