@@ -97,7 +97,8 @@ class _VisibilityAccessibilityPageState
             EasyLoading.showToast(L10n.of(context).visibilityNoPermission);
             return;
           }
-          if (value == RoomVisibility.SpaceVisible) {
+          if (value == RoomVisibility.SpaceVisible &&
+              allowedSpaces.valueOrNull?.isEmpty == true) {
             selectSpace(spaceId);
           } else {
             updateSpaceVisibility(
@@ -143,17 +144,14 @@ class _VisibilityAccessibilityPageState
             ],
           ),
           allowedSpacesLoader.when(
-            data: (allowedSpaces) {
-              print('${allowedSpaces.length}');
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: allowedSpaces.length,
-                itemBuilder: (context, index) {
-                  return _spaceItemUI(allowedSpaces[index], hasPermission);
-                },
-              );
-            },
+            data: (allowedSpaces) => ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: allowedSpaces.length,
+              itemBuilder: (context, index) {
+                return _spaceItemUI(allowedSpaces[index], hasPermission);
+              },
+            ),
             error: (e, s) {
               _log.severe('Failed to load the allowed rooms', e, s);
               return _spaceItemCard(
@@ -275,7 +273,6 @@ class _VisibilityAccessibilityPageState
     RoomVisibility value, {
     List<String>? spaceIds,
   }) async {
-    debugPrint('LIST:$spaceIds');
     try {
       EasyLoading.show(
         status: 'Updating space settings',
