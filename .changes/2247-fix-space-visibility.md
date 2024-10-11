@@ -1,0 +1,1 @@
+- Visibility and Accessibility in Space Settings now shows correct number of linked spaces after selecting and removing allowed spaces.
