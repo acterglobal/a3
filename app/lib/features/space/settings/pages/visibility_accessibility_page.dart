@@ -97,8 +97,7 @@ class _VisibilityAccessibilityPageState
             EasyLoading.showToast(L10n.of(context).visibilityNoPermission);
             return;
           }
-          if (value == RoomVisibility.SpaceVisible &&
-              allowedSpaces.valueOrNull?.isEmpty == true) {
+          if (value == RoomVisibility.SpaceVisible) {
             selectSpace(spaceId);
           } else {
             updateSpaceVisibility(
@@ -144,14 +143,17 @@ class _VisibilityAccessibilityPageState
             ],
           ),
           allowedSpacesLoader.when(
-            data: (allowedSpaces) => ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: allowedSpaces.length,
-              itemBuilder: (context, index) {
-                return _spaceItemUI(allowedSpaces[index], hasPermission);
-              },
-            ),
+            data: (allowedSpaces) {
+              print('${allowedSpaces.length}');
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: allowedSpaces.length,
+                itemBuilder: (context, index) {
+                  return _spaceItemUI(allowedSpaces[index], hasPermission);
+                },
+              );
+            },
             error: (e, s) {
               _log.severe('Failed to load the allowed rooms', e, s);
               return _spaceItemCard(
@@ -236,7 +238,7 @@ class _VisibilityAccessibilityPageState
 
   Future<void> removeSpace(String spaceId) async {
     final newList =
-        (await ref.read(joinRulesAllowedRoomsProvider(spaceId).future))
+        (await ref.read(joinRulesAllowedRoomsProvider(widget.roomId).future))
             .where((id) => id != spaceId)
             .toList();
     final visibility =
@@ -249,7 +251,7 @@ class _VisibilityAccessibilityPageState
       final spaceId = await selectSpaceDrawer(context: context);
       if (spaceId != null) {
         final spaceList =
-            await ref.read(joinRulesAllowedRoomsProvider(spaceId).future);
+            await ref.read(joinRulesAllowedRoomsProvider(roomId).future);
         final isAlreadyAdded = spaceList.any((roomId) => roomId == spaceId);
         if (!isAlreadyAdded) {
           spaceList.add(spaceId);
@@ -273,6 +275,7 @@ class _VisibilityAccessibilityPageState
     RoomVisibility value, {
     List<String>? spaceIds,
   }) async {
+    debugPrint('LIST:$spaceIds');
     try {
       EasyLoading.show(
         status: 'Updating space settings',
