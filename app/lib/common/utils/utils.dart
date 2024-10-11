@@ -414,6 +414,7 @@ enum LabsFeature {
 
   // specific features
   chatUnread,
+  chatNG,
 
   // system features
   deviceCalendarSync,
@@ -440,6 +441,7 @@ enum LabsFeature {
         LabsFeature.encryptionBackup,
         LabsFeature.deviceCalendarSync,
         LabsFeature.mobilePushNotifications,
+        LabsFeature.chatNG,
       ];
 }
 
