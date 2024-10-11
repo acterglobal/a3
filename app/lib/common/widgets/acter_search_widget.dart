@@ -4,6 +4,8 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ActerSearchWidget extends StatefulWidget {
   static const searchBarKey = Key('acter-search-bar');
+  static const clearSearchActionButtonKey =
+      Key('acter-search-bar-clear-action-btn');
 
   final String? hintText;
   final String? initialText;
@@ -67,6 +69,7 @@ class _ActerSearchWidgetState extends State<ActerSearchWidget> {
     return searchTextController.text.isNotEmpty
         ? [
             IconButton(
+              key: ActerSearchWidget.clearSearchActionButtonKey,
               onPressed: () {
                 FocusManager.instance.primaryFocus?.unfocus();
                 widget.onClear();

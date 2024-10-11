@@ -134,7 +134,7 @@ void main() {
 
         // and we clear
         await tester
-            .tap(find.byKey(RoomsListWidget.clearSearchActionButtonKey));
+            .tap(find.byKey(ActerSearchWidget.clearSearchActionButtonKey));
         // and we close
         await tester
             .tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
@@ -227,7 +227,7 @@ void main() {
 
         // and we clear
         await tester
-            .tap(find.byKey(RoomsListWidget.clearSearchActionButtonKey));
+            .tap(find.byKey(ActerSearchWidget.clearSearchActionButtonKey));
         // and we close
         await tester
             .tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
