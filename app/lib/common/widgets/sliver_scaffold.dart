@@ -180,6 +180,8 @@ class _SliverFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cancelTitle = cancelActionTitle;
+    final confirmTitle = confirmActionTitle;
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -193,17 +195,17 @@ class _SliverFooter extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: actions ??
                 [
-                  if (cancelActionTitle != null)
+                  if (cancelTitle != null)
                     OutlinedButton(
                       onPressed: () => onCancel(context),
-                      child: Text(cancelActionTitle!),
+                      child: Text(cancelTitle),
                     ),
                   const SizedBox(width: 12),
-                  if (confirmActionTitle != null)
+                  if (confirmTitle != null)
                     ActerPrimaryActionButton(
                       key: confirmActionKey,
                       onPressed: confirmActionOnPressed,
-                      child: Text(confirmActionTitle!),
+                      child: Text(confirmTitle),
                     ),
                 ],
           ),

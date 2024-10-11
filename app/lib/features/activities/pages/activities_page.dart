@@ -102,12 +102,10 @@ class ActivitiesPage extends ConsumerWidget {
 
   Widget? renderSessions(BuildContext context, WidgetRef ref) {
     final allSessions = ref.watch(unknownSessionsProvider);
-    if (allSessions.error != null) {
+    final err = allSessions.error;
+    if (err != null) {
       return SliverToBoxAdapter(
-        child: Text(
-          L10n.of(context)
-              .errorUnverifiedSessions(allSessions.error.toString()),
-        ),
+        child: Text(L10n.of(context).errorUnverifiedSessions(err.toString())),
       );
     }
     return allSessions.value.let((val) {

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/common/models/types.dart';
@@ -25,7 +27,7 @@ class AttachmentItem extends ConsumerWidget {
     super.key,
     required this.attachment,
     this.canEdit = false,
-    this.openView = true,
+    this.openView,
   });
 
   @override
@@ -48,7 +50,7 @@ class AttachmentItem extends ConsumerWidget {
           ref,
           context,
           attachmentType,
-          mediaState,
+          mediaState.mediaFile,
         ),
         title: title(context, attachmentType),
         trailing: Row(
@@ -59,11 +61,12 @@ class AttachmentItem extends ConsumerWidget {
               mediaState.mediaLoadingState.isLoading || mediaState.isDownloading
                   ? loadingIndication()
                   : IconButton(
-                      onPressed: () => ref
-                          .read(
-                            attachmentMediaStateProvider(attachment).notifier,
-                          )
-                          .downloadMedia(),
+                      onPressed: () async {
+                        final notifier = ref.read(
+                          attachmentMediaStateProvider(attachment).notifier,
+                        );
+                        await notifier.downloadMedia();
+                      },
                       icon: Icon(
                         Icons.download,
                         color: Theme.of(context).primaryColor,
@@ -157,12 +160,12 @@ class AttachmentItem extends ConsumerWidget {
     WidgetRef ref,
     BuildContext context,
     AttachmentType attachmentType,
-    AttachmentMediaState mediaState,
+    File? mediaFile,
   ) async {
     // Open attachment link
     if (attachmentType == AttachmentType.link) {
       openLink(attachment.link() ?? '', context);
-    } else if (mediaState.mediaFile == null) {
+    } else if (mediaFile == null) {
       // If attachment is media then check media is downloaded
       // If attachment not downloaded
       ref
@@ -181,12 +184,12 @@ class AttachmentItem extends ConsumerWidget {
             if (attachmentType == AttachmentType.image) {
               return ImageDialog(
                 title: msgContent.body(),
-                imageFile: mediaState.mediaFile!,
+                imageFile: mediaFile,
               );
             } else {
               return VideoDialog(
                 title: msgContent.body(),
-                videoFile: mediaState.mediaFile!,
+                videoFile: mediaFile,
               );
             }
           },
@@ -194,7 +197,7 @@ class AttachmentItem extends ConsumerWidget {
       }
       // If attachment is downloaded and file or others
       else {
-        openFileShareDialog(context: context, file: mediaState.mediaFile!);
+        openFileShareDialog(context: context, file: mediaFile);
       }
     }
   }
