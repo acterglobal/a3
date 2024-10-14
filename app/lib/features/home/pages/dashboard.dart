@@ -73,22 +73,20 @@ class Dashboard extends ConsumerWidget {
           ? Text(L10n.of(context).myDashboard)
           : Text(L10n.of(context).acter),
       actions: <Widget>[
-        Visibility(
-          // FIXME: Only show mobile / when bottom bar shown...
-          visible: !client.isGuest(),
-          replacement: InkWell(
+        if (client.isGuest())
+          InkWell(
             onTap: () => context.pushNamed(Routes.authLogin.name),
             child: ActerAvatar(
               options: AvatarOptions.DM(
                 AvatarInfo(uniqueId: UniqueKey().toString()),
               ),
             ),
-          ),
-          child: InkWell(
+          )
+        else
+          InkWell(
             onTap: () => context.pushNamed(Routes.settings.name),
             child: const UserAvatarWidget(size: 20),
           ),
-        ),
       ],
     );
   }
