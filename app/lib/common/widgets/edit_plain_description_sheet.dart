@@ -47,12 +47,13 @@ class _EditPlainDescriptionSheetState extends State<EditPlainDescriptionSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
-            Text(L10n.of(context).editDescription),
+            Text(lang.editDescription),
             const SizedBox(height: 20),
             TextFormField(
               keyboardType: TextInputType.multiline,
@@ -61,9 +62,7 @@ class _EditPlainDescriptionSheetState extends State<EditPlainDescriptionSheet> {
               minLines: 4,
               autofocus: true,
               maxLines: 4,
-              decoration: InputDecoration(
-                hintText: L10n.of(context).description,
-              ),
+              decoration: InputDecoration(hintText: lang.description),
             ),
             const SizedBox(height: 20),
             Row(
@@ -71,7 +70,7 @@ class _EditPlainDescriptionSheetState extends State<EditPlainDescriptionSheet> {
               children: [
                 OutlinedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text(L10n.of(context).cancel),
+                  child: Text(lang.cancel),
                 ),
                 const SizedBox(width: 20),
                 ActerPrimaryActionButton(
@@ -86,7 +85,7 @@ class _EditPlainDescriptionSheetState extends State<EditPlainDescriptionSheet> {
                     // Need to update change of tile
                     widget.onSave(newDescription);
                   },
-                  child: Text(L10n.of(context).save),
+                  child: Text(lang.save),
                 ),
               ],
             ),
