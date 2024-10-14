@@ -19,7 +19,10 @@ final _log = Logger('a3::chat::message_actions');
 class MessageActions extends ConsumerWidget {
   final String roomId;
 
-  const MessageActions({super.key, required this.roomId});
+  const MessageActions({
+    super.key,
+    required this.roomId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,6 +34,7 @@ class MessageActions extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
+    final lang = L10n.of(context);
     final myId = ref.watch(myUserIdStrProvider);
     final isAuthor = (myId == message.author.id);
     bool isTextMessage = false;
@@ -55,26 +59,26 @@ class MessageActions extends ConsumerWidget {
           makeMenuItem(
             pressed: () =>
                 ref.read(chatInputProvider.notifier).setReplyToMessage(message),
-            text: Text(L10n.of(context).reply),
+            text: Text(lang.reply),
             icon: const Icon(Icons.reply_rounded, size: 18),
           ),
           if (isTextMessage)
             makeMenuItem(
               pressed: () => onCopyMessage(context, ref, message),
-              text: Text(L10n.of(context).copyMessage),
+              text: Text(lang.copyMessage),
               icon: const Icon(Icons.copy_all_outlined, size: 14),
             ),
           if (isAuthor)
             makeMenuItem(
               pressed: () => onPressEditMessage(context, ref, roomId, message),
-              text: Text(L10n.of(context).edit),
+              text: Text(lang.edit),
               icon: const Icon(Atlas.pencil_box_bold, size: 14),
             ),
           if (!isAuthor)
             makeMenuItem(
               pressed: () => onReportMessage(context, message, roomId),
               text: Text(
-                L10n.of(context).report,
+                lang.report,
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
               icon: Icon(
@@ -93,7 +97,7 @@ class MessageActions extends ConsumerWidget {
                 roomId,
               ),
               text: Text(
-                L10n.of(context).delete,
+                lang.delete,
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
               icon: Icon(
@@ -137,10 +141,11 @@ class MessageActions extends ConsumerWidget {
   }
 
   void onReportMessage(BuildContext context, Message message, String roomId) {
+    final lang = L10n.of(context);
     openReportContentDialog(
       context,
-      title: L10n.of(context).reportThisMessage,
-      description: L10n.of(context).reportMessageContent,
+      title: lang.reportThisMessage,
+      description: lang.reportMessageContent,
       senderId: message.author.id,
       roomId: roomId,
       eventId: message.remoteId ?? message.id,
@@ -154,14 +159,15 @@ class MessageActions extends ConsumerWidget {
     String roomId,
   ) {
     final chatInputNotifier = ref.watch(chatInputProvider.notifier);
+    final lang = L10n.of(context);
     showAdaptiveDialog(
       context: context,
       builder: (context) => DefaultDialog(
-        title: Text(L10n.of(context).areYouSureYouWantToDeleteThisMessage),
+        title: Text(lang.areYouSureYouWantToDeleteThisMessage),
         actions: <Widget>[
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(L10n.of(context).no),
+            child: Text(lang.no),
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
@@ -184,13 +190,13 @@ class MessageActions extends ConsumerWidget {
                 _log.severe('Redacting message failed', e, s);
                 if (!context.mounted) return;
                 EasyLoading.showError(
-                  L10n.of(context).redactionFailed(e),
+                  lang.redactionFailed(e),
                   duration: const Duration(seconds: 3),
                 );
                 Navigator.pop(context);
               }
             },
-            child: Text(L10n.of(context).yes),
+            child: Text(lang.yes),
           ),
         ],
       ),

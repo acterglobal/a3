@@ -81,13 +81,14 @@ class _CommentsListState extends ConsumerState<CommentsList> {
 
   Widget commentEmptyState(BuildContext context) {
     if (editorOpened) return createComment();
+    final lang = L10n.of(context);
     return Row(
       children: [
-        Text(L10n.of(context).commentEmptyStateTitle),
+        Text(lang.commentEmptyStateTitle),
         if (!editorOpened)
           ActerInlineTextButton(
             onPressed: () => setState(() => editorOpened = true),
-            child: Text(L10n.of(context).commentEmptyStateAction),
+            child: Text(lang.commentEmptyStateAction),
           ),
       ],
     );

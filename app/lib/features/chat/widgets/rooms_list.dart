@@ -16,12 +16,13 @@ import 'package:go_router/go_router.dart';
 final bucketGlobal = PageStorageBucket();
 
 class RoomsListWidget extends ConsumerStatefulWidget {
-  final Function(String) onSelected;
   static const roomListMenuKey = Key('chat-room-list');
   static const openSearchActionButtonKey =
       Key('chat-rooms-list-open-search-action-btn');
   static const closeSearchActionButtonKey =
       Key('chat-rooms-list-close-search-action-btn');
+
+  final Function(String) onSelected;
 
   const RoomsListWidget({
     required this.onSelected,
@@ -61,20 +62,21 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget roomListTitle(BuildContext context) {
+    final lang = L10n.of(context);
     String? title;
 
     if (ref.watch(hasRoomFilters)) {
       final selection =
           ref.watch(roomListFilterProvider.select((value) => value.selection));
       title = switch (selection) {
-        FilterSelection.dmsOnly => L10n.of(context).dms,
-        FilterSelection.favorites => L10n.of(context).bookmarked,
+        FilterSelection.dmsOnly => lang.dms,
+        FilterSelection.favorites => lang.bookmarked,
         _ => null,
       };
     }
 
     return Text(
-      title ?? L10n.of(context).chat,
+      title ?? lang.chat,
       style: Theme.of(context).textTheme.headlineSmall,
     );
   }
@@ -121,13 +123,14 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   Widget filterChipsButtons() {
     final selected =
         ref.watch(roomListFilterProvider.select((value) => value.selection));
+    final lang = L10n.of(context);
     return Container(
       padding: const EdgeInsets.all(10),
       child: Wrap(
         children: [
           FilterChip(
             selected: selected == FilterSelection.all,
-            label: Text(L10n.of(context).all),
+            label: Text(lang.all),
             onSelected: (value) async {
               await ref
                   .read(roomListFilterProvider.notifier)
@@ -137,7 +140,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           const SizedBox(width: 10),
           FilterChip(
             selected: selected == FilterSelection.favorites,
-            label: Text(L10n.of(context).bookmarked),
+            label: Text(lang.bookmarked),
             onSelected: (value) async {
               await ref
                   .read(roomListFilterProvider.notifier)
@@ -147,7 +150,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           const SizedBox(width: 10),
           FilterChip(
             selected: selected == FilterSelection.dmsOnly,
-            label: Text(L10n.of(context).dms),
+            label: Text(lang.dms),
             onSelected: (value) async {
               await ref
                   .read(roomListFilterProvider.notifier)

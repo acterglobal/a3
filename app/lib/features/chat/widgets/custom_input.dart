@@ -874,6 +874,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     TextEditingController ctrl,
     FocusNode chatFocus,
   ) {
+    final lang = L10n.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       constraints: BoxConstraints(
@@ -910,9 +911,8 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
             ),
             child: const Icon(Icons.emoji_emotions),
           ),
-          hintText: widget.isEncrypted
-              ? L10n.of(context).newEncryptedMessage
-              : L10n.of(context).newMessage,
+          hintText:
+              widget.isEncrypted ? lang.newEncryptedMessage : lang.newMessage,
           hintMaxLines: 1,
           focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(width: 0.5),
