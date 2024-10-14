@@ -19,11 +19,12 @@ class MemberList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final membersLoader = ref.watch(membersIdsProvider(roomId));
+    final lang = L10n.of(context);
     return membersLoader.when(
       data: (members) {
         if (members.isEmpty) {
           return Center(
-            child: Text(L10n.of(context).noMembersFound),
+            child: Text(lang.noMembersFound),
           );
         }
         return ListView.builder(
@@ -43,7 +44,7 @@ class MemberList extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to load room members', e, s);
         return Center(
-          child: Text(L10n.of(context).loadingFailed(e)),
+          child: Text(lang.loadingFailed(e)),
         );
       },
       loading: () => const MembersListSkeleton(),

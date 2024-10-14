@@ -73,15 +73,16 @@ class CustomChatInput extends ConsumerWidget {
       return loadingState(context);
     }
     if (canSend) {
-      return _ChatInput(roomId: roomId, onTyping: onTyping);
+      return _ChatInput(
+        roomId: roomId,
+        onTyping: onTyping,
+      );
     }
 
     return FrostEffect(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 15),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-        ),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
@@ -96,7 +97,10 @@ class CustomChatInput extends ConsumerWidget {
               Text(
                 key: noAccessKey,
                 L10n.of(context).chatMissingPermissionsToSend,
-                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
@@ -111,9 +115,8 @@ class CustomChatInput extends ConsumerWidget {
         child: Container(
           key: loadingKey,
           padding: const EdgeInsets.symmetric(vertical: 15),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-          ),
+          decoration:
+              BoxDecoration(color: Theme.of(context).colorScheme.surface),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
@@ -370,8 +373,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
   Widget renderChatInputArea(BuildContext context, Widget? child) {
     final roomId = widget.roomId;
-    final isEncrypted =
-        ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
+    final isEncrypted = ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull;
     final emojiPickerVisible = ref
         .watch(chatInputProvider.select((value) => value.emojiPickerVisible));
     return Column(
@@ -395,7 +397,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
                       controller: textController,
                       chatFocus: chatFocus,
                       onSendButtonPressed: () => onSendButtonPressed(ref),
-                      isEncrypted: isEncrypted,
+                      isEncrypted: isEncrypted == true,
                       onTyping: widget.onTyping,
                     ),
                   ),
@@ -633,7 +635,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         const SizedBox(width: 5),
         Text(
           L10n.of(context).replyTo(toBeginningOfSentenceCase(authorId)),
-          style: const TextStyle(color: Colors.grey, fontSize: 12),
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+          ),
         ),
         const Spacer(),
         GestureDetector(
@@ -664,7 +669,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         const SizedBox(width: 4),
         Text(
           L10n.of(context).editMessage,
-          style: const TextStyle(color: Colors.grey, fontSize: 12),
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+          ),
         ),
         const Spacer(),
         GestureDetector(
@@ -711,9 +719,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
       // actually send it out
       final inputState = ref.read(chatInputProvider);
-      final stream = await ref.read(
-        timelineStreamProvider(widget.roomId).future,
-      );
+      final stream =
+          await ref.read(timelineStreamProvider(widget.roomId).future);
 
       if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
         await stream.replyMessage(inputState.selectedMessage!.remoteId!, draft);
@@ -728,7 +735,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       textController.clear();
       // also clear composed state
       final convo = await ref.read(chatProvider(widget.roomId).future);
-      await convo?.saveMsgDraft(textController.text, null, 'new', null);
+      if (convo != null) {
+        await convo.saveMsgDraft(textController.text, null, 'new', null);
+      }
     } catch (e, s) {
       _log.severe('Sending chat message failed', e, s);
       EasyLoading.showError(
@@ -768,6 +777,7 @@ class _TextInputWidget extends ConsumerStatefulWidget {
 
 class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
   EditorState textEditorState = EditorState.blank(withInitialText: true);
+
   @override
   void initState() {
     super.initState();
@@ -874,6 +884,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     TextEditingController ctrl,
     FocusNode chatFocus,
   ) {
+    final lang = L10n.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       constraints: BoxConstraints(
@@ -910,9 +921,8 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
             ),
             child: const Icon(Icons.emoji_emotions),
           ),
-          hintText: widget.isEncrypted
-              ? L10n.of(context).newEncryptedMessage
-              : L10n.of(context).newMessage,
+          hintText:
+              widget.isEncrypted ? lang.newEncryptedMessage : lang.newMessage,
           hintMaxLines: 1,
           focusedBorder: OutlineInputBorder(
             borderSide: const BorderSide(width: 0.5),
@@ -966,12 +976,13 @@ class _ReplyContentWidget extends StatelessWidget {
             required String identifier,
             required String url,
             OnPillTap? onTap,
-          }) =>
-              ActerPillBuilder(
-            identifier: identifier,
-            uri: url,
-            roomId: roomId,
-          ),
+          }) {
+            return ActerPillBuilder(
+              identifier: identifier,
+              uri: url,
+              roomId: roomId,
+            );
+          },
           defaultTextStyle: Theme.of(context)
               .textTheme
               .bodySmall!

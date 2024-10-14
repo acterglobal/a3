@@ -7,12 +7,12 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
-import 'package:acter/features/files/actions/pick_avatar.dart';
-import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/chat/providers/create_chat_providers.dart';
+import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/member/providers/invite_providers.dart';
+import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:acter/features/member/widgets/user_search_results.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
@@ -35,6 +35,7 @@ final _avatarProvider = StateProvider.autoDispose<String>((ref) => '');
 class CreateChatPage extends ConsumerStatefulWidget {
   static const chatTitleKey = Key('create-chat-title');
   static const submiteKey = Key('create-chat-submit');
+
   final String? initialSelectedSpaceId;
   final int? initialPage;
 
@@ -163,9 +164,10 @@ class _CreateChatWidget extends ConsumerStatefulWidget {
 class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(L10n.of(context).newChat),
+        title: Text(lang.newChat),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,7 +175,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
           const SizedBox(height: 15),
           ActerSearchWidget(
             initialText: ref.read(userSearchValueProvider),
-            hintText: L10n.of(context).searchUsernameToStartDM,
+            hintText: lang.searchUsernameToStartDM,
             onChanged: (value) {
               ref
                   .read(userSearchValueProvider.notifier)
@@ -196,27 +198,26 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   }
 
   String _makeTitle(WidgetRef ref) {
+    final lang = L10n.of(context);
     final selectedUsers = ref.watch(createChatSelectedUsersProvider);
     if (selectedUsers.isEmpty) {
-      return L10n.of(context).createGroupChat;
+      return lang.createGroupChat;
     } else if (selectedUsers.length > 1) {
-      return L10n.of(context).startGroupDM;
+      return lang.startGroupDM;
     } else {
+      final otherUserId = selectedUsers[0].userId().toString();
       final client = ref.watch(alwaysClientProvider);
-      if (checkUserDMExists(selectedUsers[0].userId().toString(), client) !=
-          null) {
-        return L10n.of(context).goToDM;
+      if (checkUserDMExists(otherUserId, client) != null) {
+        return lang.goToDM;
       } else {
-        return L10n.of(context).startDM;
+        return lang.startDM;
       }
     }
   }
 
   // checks whether user DM already exists or needs created
   String? checkUserDMExists(String userId, ffi.Client client) {
-    final id = client.dmWithUser(userId).text();
-    if (id != null) return id;
-    return null;
+    return client.dmWithUser(userId).text();
   }
 
   Widget renderSelectedUsers(BuildContext context) {
@@ -302,7 +303,10 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         leading: selectedUsers.isEmpty
             ? ActerAvatar(
                 options: const AvatarOptions(
-                  AvatarInfo(uniqueId: '#', tooltip: TooltipStyle.None),
+                  AvatarInfo(
+                    uniqueId: '#',
+                    tooltip: TooltipStyle.None,
+                  ),
                   size: 48,
                 ),
               )
@@ -312,43 +316,51 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                     radius: 28,
                     child: const Icon(Atlas.team_group),
                   )
-                : ActerAvatar(
-                    options: AvatarOptions.DM(
-                      AvatarInfo(
-                        uniqueId: selectedUsers[0].userId().toString(),
-                        displayName: selectedUsers[0].displayName(),
-                        avatar: ref
-                            .watch(userAvatarProvider(selectedUsers[0]))
-                            .valueOrNull,
-                      ),
-                      size: 20,
-                    ),
-                  ),
+                : renderSingleAvatar(selectedUsers[0]),
         title: Text(
           _makeTitle(ref),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        trailing: const Icon(Icons.chevron_right_outlined, size: 24),
+        trailing: const Icon(
+          Icons.chevron_right_outlined,
+          size: 24,
+        ),
+      ),
+    );
+  }
+
+  Widget renderSingleAvatar(ffi.UserProfile profile) {
+    final avatar = ref.watch(userAvatarProvider(profile)).valueOrNull;
+    return ActerAvatar(
+      options: AvatarOptions.DM(
+        AvatarInfo(
+          uniqueId: profile.userId().toString(),
+          displayName: profile.displayName(),
+          avatar: avatar,
+        ),
+        size: 20,
       ),
     );
   }
 
   Widget renderFoundUsers(BuildContext context) {
     return UserSearchResults(
-      userItemBuilder: ({required isSuggestion, required profile}) =>
-          UserBuilder(
-        userId: profile.userId().toString(),
-        userProfile: profile,
-        onTap: () {
-          final users = ref.read(createChatSelectedUsersProvider);
-          if (!users.contains(profile)) {
-            final notifier = ref.read(createChatSelectedUsersProvider.notifier);
-            notifier.update((state) => [...state, profile]);
-          }
-        },
-        includeSharedRooms: isSuggestion,
-        includeUserJoinState: false,
-      ),
+      userItemBuilder: ({required isSuggestion, required profile}) {
+        return UserBuilder(
+          userId: profile.userId().toString(),
+          userProfile: profile,
+          onTap: () {
+            final users = ref.read(createChatSelectedUsersProvider);
+            if (!users.contains(profile)) {
+              final notifier =
+                  ref.read(createChatSelectedUsersProvider.notifier);
+              notifier.update((state) => [...state, profile]);
+            }
+          },
+          includeSharedRooms: isSuggestion,
+          includeUserJoinState: false,
+        );
+      },
     );
   }
 
@@ -361,11 +373,9 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   }
 
   Future<void> onPrimaryAction(List<ffi.UserProfile> selectedUsers) async {
-    if (selectedUsers.isEmpty) {
-      return;
-    }
-
-    EasyLoading.show(status: L10n.of(context).creatingChat);
+    if (selectedUsers.isEmpty) return;
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.creatingChat);
     try {
       if (selectedUsers.length > 1) {
         final userIds =
@@ -382,20 +392,20 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         return;
       }
 
-      final othersUserId = selectedUsers[0].userId().toString();
+      final otherUserId = selectedUsers[0].userId().toString();
       final client = ref.read(alwaysClientProvider);
-      String? id = checkUserDMExists(othersUserId, client);
-      if (id != null) {
+      String? roomId = checkUserDMExists(otherUserId, client);
+      if (roomId != null) {
         EasyLoading.dismiss();
         Navigator.pop(context);
         context.pushNamed(
           Routes.chatroom.name,
-          pathParameters: {'roomId': id},
+          pathParameters: {'roomId': roomId},
         );
         return;
       }
 
-      final convo = await widget.onCreateConvo(null, null, [othersUserId]);
+      final convo = await widget.onCreateConvo(null, null, [otherUserId]);
       EasyLoading.dismiss();
       if (!mounted) return;
       Navigator.pop(context);
@@ -411,7 +421,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToCreateChat(e),
+        lang.failedToCreateChat(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -461,6 +471,7 @@ class _CreateRoomFormWidgetConsumerState
     final titleInput = ref.watch(_titleProvider);
     final avatarUpload = ref.watch(_avatarProvider);
     final currentParentSpace = ref.watch(selectedSpaceIdProvider);
+    final lang = L10n.of(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
@@ -483,7 +494,7 @@ class _CreateRoomFormWidgetConsumerState
               ),
               const Spacer(),
               Text(
-                L10n.of(context).createGroupChat,
+                lang.createGroupChat,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const Spacer(),
@@ -498,7 +509,7 @@ class _CreateRoomFormWidgetConsumerState
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),
-                    child: Text(L10n.of(context).avatar),
+                    child: Text(lang.avatar),
                   ),
                   GestureDetector(
                     onTap: _handleAvatarUpload,
@@ -526,11 +537,11 @@ class _CreateRoomFormWidgetConsumerState
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.only(bottom: 5),
-                      child: Text(L10n.of(context).name),
+                      child: Text(lang.name),
                     ),
                     InputTextField(
                       key: CreateChatPage.chatTitleKey,
-                      hintText: L10n.of(context).whatToCallThisChat,
+                      hintText: lang.whatToCallThisChat,
                       textInputType: TextInputType.multiline,
                       controller: _titleController,
                       onInputChanged: _handleTitleChange,
@@ -543,11 +554,11 @@ class _CreateRoomFormWidgetConsumerState
           const SizedBox(height: 15),
           Padding(
             padding: const EdgeInsets.only(bottom: 5),
-            child: Text(L10n.of(context).about),
+            child: Text(lang.about),
           ),
           InputTextField(
             controller: _descriptionController,
-            hintText: L10n.of(context).description,
+            hintText: lang.description,
             textInputType: TextInputType.multiline,
             maxLines: 10,
           ),
@@ -555,9 +566,9 @@ class _CreateRoomFormWidgetConsumerState
           SelectSpaceFormField(
             canCheck: 'CanLinkSpaces',
             mandatory: true,
-            title: L10n.of(context).parentSpace,
-            emptyText: L10n.of(context).optionalParentSpace,
-            selectTitle: L10n.of(context).selectParentSpace,
+            title: lang.parentSpace,
+            emptyText: lang.optionalParentSpace,
+            selectTitle: lang.selectParentSpace,
           ),
           const SizedBox(height: 15),
           Row(
@@ -565,13 +576,13 @@ class _CreateRoomFormWidgetConsumerState
             children: <Widget>[
               OutlinedButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(L10n.of(context).cancel),
+                child: Text(lang.cancel),
               ),
               const SizedBox(width: 10),
               ActerPrimaryActionButton(
                 key: CreateChatPage.submiteKey,
                 onPressed: () => _handleSubmit(titleInput, currentParentSpace),
-                child: Text(L10n.of(context).create),
+                child: Text(lang.create),
               ),
             ],
           ),
@@ -601,14 +612,15 @@ class _CreateRoomFormWidgetConsumerState
   ) async {
     String title = titleInput.trim();
     if (title.isEmpty) return;
+    final lang = L10n.of(context);
     if (isSpaceRoom && currentParentSpace == null) {
       EasyLoading.showError(
-        L10n.of(context).parentSpaceMustBeSelected,
+        lang.parentSpaceMustBeSelected,
         duration: const Duration(seconds: 2),
       );
       return;
     }
-    EasyLoading.show(status: L10n.of(context).creatingChat);
+    EasyLoading.show(status: lang.creatingChat);
     try {
       final description = _descriptionController.text.trim();
       final convo = await widget.onCreateConvo(title, description, []);
@@ -627,7 +639,7 @@ class _CreateRoomFormWidgetConsumerState
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToCreateChat(e),
+        lang.failedToCreateChat(e),
         duration: const Duration(seconds: 3),
       );
     }
