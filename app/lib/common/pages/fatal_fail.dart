@@ -38,9 +38,10 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height / 4;
+    final lang = L10n.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(L10n.of(context).fatalError),
+        title: Text(lang.fatalError),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -54,12 +55,12 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                   width: height,
                   child: SvgPicture.asset('assets/images/genericError.svg'),
                 ),
-                Text(L10n.of(context).somethingWrong),
+                Text(lang.somethingWrong),
                 Text(widget.error),
                 TextButton.icon(
                   onPressed: onCopy,
                   icon: const Icon(Icons.copy_all_outlined),
-                  label: Text(L10n.of(context).copyToClipboard),
+                  label: Text(lang.copyToClipboard),
                 ),
                 TextButton.icon(
                   onPressed: onStacktraceToggle,
@@ -69,9 +70,7 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
                         : Icons.toggle_on_outlined,
                   ),
                   label: Text(
-                    showStack
-                        ? L10n.of(context).hideStacktrace
-                        : L10n.of(context).showStacktrace,
+                    showStack ? lang.hideStacktrace : lang.showStacktrace,
                   ),
                 ),
               ],
@@ -82,13 +81,13 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
               children: [
                 ActerDangerActionButton.icon(
                   icon: const Icon(Atlas.bomb_thin),
-                  label: Text(L10n.of(context).nukeLocalData),
+                  label: Text(lang.nukeLocalData),
                   onPressed: onNukePressed,
                   onLongPress: () => nukeConfirmationDialog(context, ref),
                 ),
                 OutlinedButton.icon(
                   icon: const Icon(Atlas.bug_clipboard_thin),
-                  label: Text(L10n.of(context).reportBug),
+                  label: Text(lang.reportBug),
                   onPressed: () => context.pushNamed(Routes.bugReport.name),
                 ),
               ],

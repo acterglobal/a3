@@ -40,6 +40,7 @@ class _CloseRoomConfirmation extends ConsumerStatefulWidget {
   final String roomId;
   final Key? cancelBtnKey;
   final Key? confirmBtnKey;
+
   const _CloseRoomConfirmation({
     required this.roomId,
     this.cancelBtnKey,
@@ -55,6 +56,7 @@ class _CloseRoomConfirmationState
     extends ConsumerState<_CloseRoomConfirmation> {
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -77,18 +79,16 @@ class _CloseRoomConfirmationState
                     OutlinedButton(
                       key: widget.cancelBtnKey,
                       onPressed: () => Navigator.pop(context, false),
-                      child: Text(L10n.of(context).cancel),
+                      child: Text(lang.cancel),
                     ),
                     const SizedBox(width: 5),
                     ActerDangerActionButton(
                       key: widget.confirmBtnKey,
                       onPressed: () {
-                        EasyLoading.showToast(
-                          L10n.of(context).longPressToActivate,
-                        );
+                        EasyLoading.showToast(lang.longPressToActivate);
                       },
                       onLongPress: () => _closeRoom(context, ref),
-                      child: Text(L10n.of(context).close),
+                      child: Text(lang.close),
                     ),
                   ],
                 ),
@@ -101,13 +101,14 @@ class _CloseRoomConfirmationState
   }
 
   Widget _buildHeader(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         RoomProfileHeader(roomId: widget.roomId),
         const SizedBox(height: 10),
         Text(
-          L10n.of(context).closingRoomTitle,
+          lang.closingRoomTitle,
           style: Theme.of(context)
               .textTheme
               .titleLarge
@@ -115,7 +116,7 @@ class _CloseRoomConfirmationState
         ),
         const SizedBox(height: 5),
         Text(
-          L10n.of(context).closingRoomTitleDescription,
+          lang.closingRoomTitleDescription,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ],
@@ -173,25 +174,19 @@ class _CloseRoomConfirmationState
 
       var skippedParents = 0;
       if (parents.isNotEmpty) {
-        var currentParent = 0;
-        final totalParents = parents.length;
-        for (final parentId in parents) {
-          currentParent += 1;
+        for (var i = 1; i <= parents.length; i++) {
           EasyLoading.showProgress(
-            currentParent / totalParents,
-            status: lang.closingRoomRemovingFromParents(
-              currentParent,
-              totalParents,
-            ),
+            i / parents.length,
+            status: lang.closingRoomRemovingFromParents(i, parents.length),
           );
-          final parent = await ref.read(maybeSpaceProvider(parentId).future);
+          final parent = await ref.read(maybeSpaceProvider(parents[i]).future);
 
           if (parent == null) {
             skippedParents += 1;
             continue;
           }
           final myParentMembership =
-              await ref.read(roomMembershipProvider(parentId).future);
+              await ref.read(roomMembershipProvider(parents[i]).future);
 
           if (myParentMembership?.canString('CanLinkSpaces') != true) {
             skippedParents += 1;
@@ -203,7 +198,7 @@ class _CloseRoomConfirmationState
             lang.closingRoomMatrixMsg,
           );
 
-          ref.invalidate(spaceRelationsProvider(parentId));
+          ref.invalidate(spaceRelationsProvider(parents[i]));
         }
       }
 
@@ -232,7 +227,7 @@ class _CloseRoomConfirmationState
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).closingRoomFailed(error),
+        lang.closingRoomFailed(error),
         duration: const Duration(seconds: 3),
       );
     }
