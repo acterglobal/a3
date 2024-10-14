@@ -148,6 +148,8 @@
   "changeYourDisplayName": "Change your display name",
   "@changeYourDisplayName": {},
   "chat": "Chat",
+  "chatNG": "Next-Generation Chat",
+  "chatNGExplainer": "Switch to next generation Chat. Features might not be stable",
   "@chat": {},
   "chatMissingPermissionsToSend": "You don’t have permissions to sent messages here",
   "@chatMissingPermissionsToSend": {},

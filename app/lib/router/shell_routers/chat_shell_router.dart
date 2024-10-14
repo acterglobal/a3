@@ -1,6 +1,8 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/chat-ng/pages/ng_profile_page.dart';
+import 'package:acter/features/chat/chat-ng/pages/room_page_ng.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/widgets/chat_layout_builder.dart';
@@ -50,7 +52,6 @@ final chatShellRoutes = [
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       final roomId = state.pathParameters['roomId']!;
-
       rootNavKey.currentContext
           ?.read(selectedChatIdProvider.notifier)
           .select(roomId);
@@ -81,6 +82,71 @@ final chatShellRoutes = [
         key: state.pageKey,
         child: ChatLayoutBuilder(
           centerChild: RoomPage(
+            roomId: roomId,
+          ),
+          expandedChild: VisibilityAccessibilityPage(
+            roomId: roomId,
+            impliedClose: true,
+          ),
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.chatNGRoom.name,
+    path: Routes.chatNGRoom.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      final roomId = state.pathParameters['roomId']!;
+
+      rootNavKey.currentContext
+          ?.read(selectedChatIdProvider.notifier)
+          .select(roomId);
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: ChatLayoutBuilder(
+          centerChild: ChatNGRoomPage(
+            roomId: roomId,
+          ),
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.chatNGProfile.name,
+    path: Routes.chatNGProfile.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      final roomId = state.pathParameters['roomId']!;
+
+      rootNavKey.currentContext
+          ?.read(selectedChatIdProvider.notifier)
+          .select(roomId);
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: ChatLayoutBuilder(
+          centerChild: ChatNGRoomPage(roomId: roomId),
+          expandedChild: ChatNGProfilePage(
+            roomId: roomId,
+          ),
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.chatNGSettingsVisibility.name,
+    path: Routes.chatNGSettingsVisibility.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      final roomId = state.pathParameters['roomId']!;
+
+      rootNavKey.currentContext
+          ?.read(selectedChatIdProvider.notifier)
+          .select(roomId);
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: ChatLayoutBuilder(
+          centerChild: ChatNGRoomPage(
             roomId: roomId,
           ),
           expandedChild: VisibilityAccessibilityPage(
