@@ -75,7 +75,8 @@ enum Routes {
   subSpaces('/:spaceId([!#][^/]+)/subSpaces'),
   subChats('/:spaceId([!#][^/]+)/subChats'),
   organizeCategories(
-      '/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)'),
+    '/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)',
+  ),
   spaceMembers('/:spaceId([!#][^/]+)/members'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
   spaceEvents('/:spaceId([!#][^/]+)/events'),

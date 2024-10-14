@@ -23,7 +23,7 @@ class ChatLayoutBuilder extends ConsumerWidget {
     final center = centerChild;
     final isChatNG = ref.watch(isActiveProvider(LabsFeature.chatNG));
     final roomRoute = isChatNG ? Routes.chatNGRoom.name : Routes.chatroom.name;
-    print('$isChatNG');
+
     if (!context.isLargeScreen) {
       // we only have space to show the deepest child:
       if (expanded != null) return expanded;
