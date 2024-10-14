@@ -55,13 +55,17 @@ class _CommentsListState extends ConsumerState<CommentsList> {
   }
 
   Widget commentListUI(BuildContext context, List<Comment> comments) {
+    final commentList = comments
+        .map(
+          (c) => CommentWidget(
+            comment: c,
+            manager: widget.manager,
+          ),
+        )
+        .toList();
     return Column(
       children: [
-        Column(
-          children: comments
-              .map((c) => CommentWidget(comment: c, manager: widget.manager))
-              .toList(),
-        ),
+        Column(children: commentList),
         if (editorOpened)
           createComment()
         else

@@ -36,18 +36,13 @@ class MessageActions extends ConsumerWidget {
 
     final lang = L10n.of(context);
     final myId = ref.watch(myUserIdStrProvider);
-    final isAuthor = (myId == message.author.id);
-    bool isTextMessage = false;
-    if (message is TextMessage) {
-      isTextMessage = true;
-    }
+    final isAuthor = myId == message.author.id;
+    final isTextMessage = message is TextMessage;
 
     return Container(
       padding: const EdgeInsets.all(8),
       constraints: const BoxConstraints(maxWidth: 200),
-      margin: !isAuthor
-          ? const EdgeInsets.only(top: 4)
-          : const EdgeInsets.only(top: 4),
+      margin: const EdgeInsets.only(top: 4),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(5)),
         color: Theme.of(context).colorScheme.surface,
@@ -57,22 +52,32 @@ class MessageActions extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           makeMenuItem(
-            pressed: () =>
-                ref.read(chatInputProvider.notifier).setReplyToMessage(message),
+            pressed: () {
+              ref.read(chatInputProvider.notifier).setReplyToMessage(message);
+            },
             text: Text(lang.reply),
-            icon: const Icon(Icons.reply_rounded, size: 18),
+            icon: const Icon(
+              Icons.reply_rounded,
+              size: 18,
+            ),
           ),
           if (isTextMessage)
             makeMenuItem(
               pressed: () => onCopyMessage(context, ref, message),
               text: Text(lang.copyMessage),
-              icon: const Icon(Icons.copy_all_outlined, size: 14),
+              icon: const Icon(
+                Icons.copy_all_outlined,
+                size: 14,
+              ),
             ),
           if (isAuthor)
             makeMenuItem(
-              pressed: () => onPressEditMessage(context, ref, roomId, message),
+              pressed: () => onPressEditMessage(ref, message),
               text: Text(lang.edit),
-              icon: const Icon(Atlas.pencil_box_bold, size: 14),
+              icon: const Icon(
+                Atlas.pencil_box_bold,
+                size: 14,
+              ),
             ),
           if (!isAuthor)
             makeMenuItem(
@@ -119,7 +124,10 @@ class MessageActions extends ConsumerWidget {
     return InkWell(
       onTap: pressed,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 3,
+          vertical: 5,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -131,18 +139,28 @@ class MessageActions extends ConsumerWidget {
     );
   }
 
-  void onCopyMessage(BuildContext context, WidgetRef ref, Message message) {
+  Future<void> onCopyMessage(
+    BuildContext context,
+    WidgetRef ref,
+    Message message,
+  ) async {
     String msg = (message as TextMessage).text.trim();
-    Clipboard.setData(
+    await Clipboard.setData(
       ClipboardData(text: msg),
     );
-    EasyLoading.showToast(L10n.of(context).messageCopiedToClipboard);
+    if (context.mounted) {
+      EasyLoading.showToast(L10n.of(context).messageCopiedToClipboard);
+    }
     ref.read(chatInputProvider.notifier).unsetActions();
   }
 
-  void onReportMessage(BuildContext context, Message message, String roomId) {
+  Future<void> onReportMessage(
+    BuildContext context,
+    Message message,
+    String roomId,
+  ) async {
     final lang = L10n.of(context);
-    openReportContentDialog(
+    await openReportContentDialog(
       context,
       title: lang.reportThisMessage,
       description: lang.reportMessageContent,
@@ -152,15 +170,15 @@ class MessageActions extends ConsumerWidget {
     );
   }
 
-  void onDeleteOwnMessage(
+  Future<void> onDeleteOwnMessage(
     BuildContext context,
     WidgetRef ref,
     String messageId,
     String roomId,
-  ) {
+  ) async {
     final chatInputNotifier = ref.watch(chatInputProvider.notifier);
     final lang = L10n.of(context);
-    showAdaptiveDialog(
+    await showAdaptiveDialog(
       context: context,
       builder: (context) => DefaultDialog(
         title: Text(lang.areYouSureYouWantToDeleteThisMessage),
@@ -173,9 +191,7 @@ class MessageActions extends ConsumerWidget {
             onPressed: () async {
               try {
                 final convo = await ref.read(chatProvider(roomId).future);
-                if (convo == null) {
-                  throw RoomNotFound();
-                }
+                if (convo == null) throw RoomNotFound();
                 await convo.redactMessage(
                   messageId,
                   ref.read(myUserIdStrProvider),
@@ -203,12 +219,7 @@ class MessageActions extends ConsumerWidget {
     );
   }
 
-  void onPressEditMessage(
-    BuildContext context,
-    WidgetRef ref,
-    String roomId,
-    Message message,
-  ) {
+  void onPressEditMessage(WidgetRef ref, Message message) {
     ref.read(chatInputProvider.notifier).setEditMessage(message);
   }
 }

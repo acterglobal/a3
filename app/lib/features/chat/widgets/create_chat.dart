@@ -205,9 +205,9 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
     } else if (selectedUsers.length > 1) {
       return lang.startGroupDM;
     } else {
+      final otherUserId = selectedUsers[0].userId().toString();
       final client = ref.watch(alwaysClientProvider);
-      if (checkUserDMExists(selectedUsers[0].userId().toString(), client) !=
-          null) {
+      if (checkUserDMExists(otherUserId, client) != null) {
         return lang.goToDM;
       } else {
         return lang.startDM;
@@ -217,9 +217,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
 
   // checks whether user DM already exists or needs created
   String? checkUserDMExists(String userId, ffi.Client client) {
-    final id = client.dmWithUser(userId).text();
-    if (id != null) return id;
-    return null;
+    return client.dmWithUser(userId).text();
   }
 
   Widget renderSelectedUsers(BuildContext context) {
@@ -305,7 +303,10 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         leading: selectedUsers.isEmpty
             ? ActerAvatar(
                 options: const AvatarOptions(
-                  AvatarInfo(uniqueId: '#', tooltip: TooltipStyle.None),
+                  AvatarInfo(
+                    uniqueId: '#',
+                    tooltip: TooltipStyle.None,
+                  ),
                   size: 48,
                 ),
               )
@@ -315,43 +316,51 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                     radius: 28,
                     child: const Icon(Atlas.team_group),
                   )
-                : ActerAvatar(
-                    options: AvatarOptions.DM(
-                      AvatarInfo(
-                        uniqueId: selectedUsers[0].userId().toString(),
-                        displayName: selectedUsers[0].displayName(),
-                        avatar: ref
-                            .watch(userAvatarProvider(selectedUsers[0]))
-                            .valueOrNull,
-                      ),
-                      size: 20,
-                    ),
-                  ),
+                : renderSingleAvatar(selectedUsers[0]),
         title: Text(
           _makeTitle(ref),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        trailing: const Icon(Icons.chevron_right_outlined, size: 24),
+        trailing: const Icon(
+          Icons.chevron_right_outlined,
+          size: 24,
+        ),
+      ),
+    );
+  }
+
+  Widget renderSingleAvatar(ffi.UserProfile profile) {
+    final avatar = ref.watch(userAvatarProvider(profile)).valueOrNull;
+    return ActerAvatar(
+      options: AvatarOptions.DM(
+        AvatarInfo(
+          uniqueId: profile.userId().toString(),
+          displayName: profile.displayName(),
+          avatar: avatar,
+        ),
+        size: 20,
       ),
     );
   }
 
   Widget renderFoundUsers(BuildContext context) {
     return UserSearchResults(
-      userItemBuilder: ({required isSuggestion, required profile}) =>
-          UserBuilder(
-        userId: profile.userId().toString(),
-        userProfile: profile,
-        onTap: () {
-          final users = ref.read(createChatSelectedUsersProvider);
-          if (!users.contains(profile)) {
-            final notifier = ref.read(createChatSelectedUsersProvider.notifier);
-            notifier.update((state) => [...state, profile]);
-          }
-        },
-        includeSharedRooms: isSuggestion,
-        includeUserJoinState: false,
-      ),
+      userItemBuilder: ({required isSuggestion, required profile}) {
+        return UserBuilder(
+          userId: profile.userId().toString(),
+          userProfile: profile,
+          onTap: () {
+            final users = ref.read(createChatSelectedUsersProvider);
+            if (!users.contains(profile)) {
+              final notifier =
+                  ref.read(createChatSelectedUsersProvider.notifier);
+              notifier.update((state) => [...state, profile]);
+            }
+          },
+          includeSharedRooms: isSuggestion,
+          includeUserJoinState: false,
+        );
+      },
     );
   }
 
@@ -383,20 +392,20 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
         return;
       }
 
-      final othersUserId = selectedUsers[0].userId().toString();
+      final otherUserId = selectedUsers[0].userId().toString();
       final client = ref.read(alwaysClientProvider);
-      String? id = checkUserDMExists(othersUserId, client);
-      if (id != null) {
+      String? roomId = checkUserDMExists(otherUserId, client);
+      if (roomId != null) {
         EasyLoading.dismiss();
         Navigator.pop(context);
         context.pushNamed(
           Routes.chatroom.name,
-          pathParameters: {'roomId': id},
+          pathParameters: {'roomId': roomId},
         );
         return;
       }
 
-      final convo = await widget.onCreateConvo(null, null, [othersUserId]);
+      final convo = await widget.onCreateConvo(null, null, [otherUserId]);
       EasyLoading.dismiss();
       if (!mounted) return;
       Navigator.pop(context);

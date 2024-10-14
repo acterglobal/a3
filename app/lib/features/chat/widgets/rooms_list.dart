@@ -51,13 +51,9 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
     final outOfRange = controller.position.outOfRange;
     final offset = controller.offset;
     if (topPosition && outOfRange && offset <= -80) {
-      setState(() {
-        _isSearchVisible = true;
-      });
+      setState(() => _isSearchVisible = true);
     } else if (!topPosition && !outOfRange) {
-      setState(() {
-        _isSearchVisible = false;
-      });
+      setState(() => _isSearchVisible = false);
     }
   }
 
@@ -82,15 +78,12 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget searchTerms(BuildContext context) {
-    String searchFilterText = '';
-
     final searchTerm =
         ref.watch(roomListFilterProvider.select((value) => value.searchTerm));
     if (searchTerm != null && searchTerm.isNotEmpty) {
-      searchFilterText = L10n.of(context).searchResultFor(searchTerm);
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Text(searchFilterText),
+        child: Text(L10n.of(context).searchResultFor(searchTerm)),
       );
     } else {
       return const SizedBox.shrink();
@@ -132,9 +125,8 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             selected: selected == FilterSelection.all,
             label: Text(lang.all),
             onSelected: (value) async {
-              await ref
-                  .read(roomListFilterProvider.notifier)
-                  .setSelection(FilterSelection.all);
+              final notifier = ref.read(roomListFilterProvider.notifier);
+              await notifier.setSelection(FilterSelection.all);
             },
           ),
           const SizedBox(width: 10),
@@ -142,9 +134,8 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             selected: selected == FilterSelection.favorites,
             label: Text(lang.bookmarked),
             onSelected: (value) async {
-              await ref
-                  .read(roomListFilterProvider.notifier)
-                  .setSelection(FilterSelection.favorites);
+              final notifier = ref.read(roomListFilterProvider.notifier);
+              await notifier.setSelection(FilterSelection.favorites);
             },
           ),
           const SizedBox(width: 10),
@@ -152,9 +143,8 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             selected: selected == FilterSelection.dmsOnly,
             label: Text(lang.dms),
             onSelected: (value) async {
-              await ref
-                  .read(roomListFilterProvider.notifier)
-                  .setSelection(FilterSelection.dmsOnly);
+              final notifier = ref.read(roomListFilterProvider.notifier);
+              await notifier.setSelection(FilterSelection.dmsOnly);
             },
           ),
           const SizedBox(width: 10),
@@ -201,9 +191,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           ),
           ref.watch(isGuestProvider)
               ? empty
-              : ChatsList(
-                  onSelected: widget.onSelected,
-                ),
+              : ChatsList(onSelected: widget.onSelected),
         ],
       ),
     );
@@ -221,9 +209,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
               TextButton(
                 key: RoomsListWidget.closeSearchActionButtonKey,
                 onPressed: () {
-                  setState(() {
-                    _isSearchVisible = false;
-                  });
+                  setState(() => _isSearchVisible = false);
                 },
                 child: Text(L10n.of(context).close),
               ),
@@ -242,7 +228,10 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
               searchFocus.requestFocus();
             });
           },
-          padding: const EdgeInsets.only(right: 10, left: 5),
+          padding: const EdgeInsets.only(
+            right: 10,
+            left: 5,
+          ),
           icon: const Icon(Atlas.magnifying_glass),
         ),
       if (hasFilters)
@@ -253,16 +242,17 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
               _isSearchVisible = true;
             });
           },
-          padding: const EdgeInsets.only(right: 10, left: 5),
+          padding: const EdgeInsets.only(
+            right: 10,
+            left: 5,
+          ),
           icon: Badge(
             backgroundColor: Theme.of(context).colorScheme.badgeImportant,
             child: const Icon(Atlas.filter_thin),
           ),
         ),
       PlusIconWidget(
-        onPressed: () async => context.pushNamed(
-          Routes.createChat.name,
-        ),
+        onPressed: () => context.pushNamed(Routes.createChat.name),
       ),
     ];
   }
