@@ -2,8 +2,8 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void showAddEditCategoryBottomSheet({
   required BuildContext context,
@@ -69,6 +69,7 @@ class _AddEditCategoryBottomSheet
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
       child: Form(
@@ -80,7 +81,7 @@ class _AddEditCategoryBottomSheet
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                widget.bottomSheetTitle ?? L10n.of(context).editCategory,
+                widget.bottomSheetTitle ?? lang.editCategory,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
@@ -88,10 +89,10 @@ class _AddEditCategoryBottomSheet
               ActerIconWidget(
                 color: color,
                 icon: icon,
-                onIconSelection: (color, icon) {
+                onIconSelection: (clr, icn) {
                   setState(() {
-                    this.color = color;
-                    this.icon = icon;
+                    color = clr;
+                    icon = icn;
                   });
                 },
               ),
@@ -103,7 +104,7 @@ class _AddEditCategoryBottomSheet
                 children: [
                   OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text(L10n.of(context).cancel),
+                    child: Text(lang.cancel),
                   ),
                   const SizedBox(width: 20),
                   ActerPrimaryActionButton(
@@ -111,8 +112,8 @@ class _AddEditCategoryBottomSheet
                       if (!_formKey.currentState!.validate()) return;
 
                       // no changes to submit
-                      if (_titleController.text.trim() ==
-                              widget.title?.trim() &&
+                      final title = _titleController.text.trim();
+                      if (title == widget.title?.trim() &&
                           color == widget.color &&
                           icon == widget.icon) {
                         Navigator.pop(context);
@@ -120,14 +121,10 @@ class _AddEditCategoryBottomSheet
                       }
 
                       // Need to update change of tile
-                      widget.onSave(
-                        _titleController.text.trim(),
-                        color,
-                        icon,
-                      );
+                      widget.onSave(title, color, icon);
                       Navigator.pop(context);
                     },
-                    child: Text(L10n.of(context).save),
+                    child: Text(lang.save),
                   ),
                 ],
               ),

@@ -19,8 +19,9 @@ Future<void> saveCategories(
   CategoriesFor categoriesFor,
   List<CategoryModelLocal> categoryList,
 ) async {
+  final lang = L10n.of(context);
   // Show loading message
-  EasyLoading.show(status: L10n.of(context).updatingCategories);
+  EasyLoading.show(status: lang.updatingCategories);
   try {
     //Get category manager
     final categoriesManager = await ref.read(
@@ -72,7 +73,7 @@ Future<void> saveCategories(
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).updatingCategoriesFailed(e),
+      lang.updatingCategoriesFailed(e),
       duration: const Duration(seconds: 3),
     );
   }

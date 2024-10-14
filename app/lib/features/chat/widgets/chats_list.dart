@@ -40,6 +40,7 @@ class ChatsList extends ConsumerWidget {
   }
 
   Widget _renderFiltered(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final filteredChats = ref.watch(filteredChatsProvider);
     return filteredChats.when(
       data: (chatsIds) {
@@ -47,7 +48,7 @@ class ChatsList extends ConsumerWidget {
           return SliverToBoxAdapter(
             child: Center(
               heightFactor: 10,
-              child: Text(L10n.of(context).noChatsFoundMatchingYourFilter),
+              child: Text(lang.noChatsFoundMatchingYourFilter),
             ),
           );
         }
@@ -64,7 +65,7 @@ class ChatsList extends ConsumerWidget {
         return SliverToBoxAdapter(
           child: Center(
             heightFactor: 10,
-            child: Text(L10n.of(context).searchingFailed(e)),
+            child: Text(lang.searchingFailed(e)),
           ),
         );
       },
@@ -74,12 +75,13 @@ class ChatsList extends ConsumerWidget {
   }
 
   Widget _renderSyncing(BuildContext context) {
+    final lang = L10n.of(context);
     return SliverToBoxAdapter(
       child: Center(
         heightFactor: 1.5,
         child: EmptyState(
-          title: L10n.of(context).noChatsStillSyncing,
-          subtitle: L10n.of(context).noChatsStillSyncingSubtitle,
+          title: lang.noChatsStillSyncing,
+          subtitle: lang.noChatsStillSyncingSubtitle,
           image: 'assets/images/empty_chat.svg',
         ),
       ),
@@ -87,16 +89,17 @@ class ChatsList extends ConsumerWidget {
   }
 
   Widget _renderEmpty(BuildContext context) {
+    final lang = L10n.of(context);
     return SliverToBoxAdapter(
       child: Center(
         heightFactor: 1.5,
         child: EmptyState(
-          title: L10n.of(context).youHaveNoDMsAtTheMoment,
-          subtitle: L10n.of(context).getInTouchWithOtherChangeMakers,
+          title: lang.youHaveNoDMsAtTheMoment,
+          subtitle: lang.getInTouchWithOtherChangeMakers,
           image: 'assets/images/empty_chat.svg',
           primaryButton: ActerPrimaryActionButton(
             onPressed: () => context.pushNamed(Routes.createChat.name),
-            child: Text(L10n.of(context).sendDM),
+            child: Text(lang.sendDM),
           ),
         ),
       ),
@@ -145,9 +148,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
     if (_listKey.currentState == null) {
       _log.fine('no state, hard reset');
       // we can ignore the diffing as we aren’t live, just reset
-      setState(() {
-        _reset();
-      });
+      setState(_reset);
       return;
     } else {
       refreshList();

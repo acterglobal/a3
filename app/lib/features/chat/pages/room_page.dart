@@ -38,6 +38,7 @@ final _log = Logger('a3::chat::room');
 
 class RoomPage extends ConsumerWidget {
   static const roomPageKey = Key('chat-room-page');
+
   final String roomId;
 
   const RoomPage({
@@ -46,6 +47,7 @@ class RoomPage extends ConsumerWidget {
   });
 
   Widget appBar(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final membersLoader = ref.watch(membersIdsProvider(roomId));
     final isEncrypted =
@@ -75,16 +77,16 @@ class RoomPage extends ConsumerWidget {
             const SizedBox(height: 5),
             membersLoader.when(
               data: (members) => Text(
-                L10n.of(context).membersCount(members.length),
+                lang.membersCount(members.length),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               skipLoadingOnReload: false,
               error: (e, s) {
                 _log.severe('Failed to load active members', e, s);
-                return Text(L10n.of(context).errorLoadingMembersCount(e));
+                return Text(lang.errorLoadingMembersCount(e));
               },
               loading: () => Skeletonizer(
-                child: Text(L10n.of(context).membersCount(100)),
+                child: Text(lang.membersCount(100)),
               ),
             ),
           ],
@@ -93,8 +95,7 @@ class RoomPage extends ConsumerWidget {
       actions: [
         if (!isEncrypted)
           IconButton(
-            onPressed: () =>
-                EasyLoading.showInfo(L10n.of(context).chatNotEncrypted),
+            onPressed: () => EasyLoading.showInfo(lang.chatNotEncrypted),
             icon: Icon(
               PhosphorIcons.shieldWarning(),
               color: Theme.of(context).colorScheme.error,
@@ -178,8 +179,9 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         if (scrollController.offset == 0) {
           final message = ref.read(latestTrackableMessageId(roomId));
           if (message != null) {
-            await (await ref.read(timelineStreamProvider(roomId).future))
-                .sendSingleReceipt('Read', 'Main', message);
+            final timeline =
+                await ref.read(timelineStreamProvider(roomId).future);
+            await timeline.sendSingleReceipt('Read', 'Main', message);
           }
 
           // FIXME: this is the proper API, but it doesn’t seem to
@@ -246,13 +248,13 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         customBottomWidget: const SizedBox.shrink(),
         scrollController: scrollController,
         textMessageBuilder: (
-          types.TextMessage m, {
+          types.TextMessage msg, {
           required int messageWidth,
           required bool showName,
         }) {
           return TextMessageBuilder(
             roomId: widget.roomId,
-            message: m,
+            message: msg,
             messageWidth: messageWidth,
           );
         },
