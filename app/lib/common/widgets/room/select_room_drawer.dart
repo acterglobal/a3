@@ -48,7 +48,6 @@ class SelectRoomDrawer extends ConsumerStatefulWidget {
 }
 
 class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -123,12 +122,13 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
       RoomType.space => ref.watch(searchedSpacesProvider),
       RoomType.groupChat => ref.watch(roomSearchedChatsProvider),
     };
+    final lang = L10n.of(context);
     return roomsLoader.when(
       data: (rooms) {
         if (rooms.isEmpty) {
           return Center(
             heightFactor: 10,
-            child: Text(L10n.of(context).noChatsFoundMatchingYourSearchTerm),
+            child: Text(lang.noChatsFoundMatchingYourSearchTerm),
           );
         }
         return roomsListUI(rooms);
@@ -140,7 +140,7 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
       error: (e, s) {
         _log.severe('Failed to search space or convo', e, s);
         return Center(
-          child: Text(L10n.of(context).searchingFailed(e)),
+          child: Text(lang.searchingFailed(e)),
         );
       },
     );

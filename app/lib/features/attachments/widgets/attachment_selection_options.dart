@@ -27,6 +27,7 @@ class AttachmentSelectionOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     final onSelectLink = onLinkSelected;
     return ListView(
       shrinkWrap: true,
@@ -38,38 +39,38 @@ class AttachmentSelectionOptions extends StatelessWidget {
             if (onSelectLink != null)
               _attachmentOptionItem(
                 context: context,
-                title: L10n.of(context).link,
+                title: lang.link,
                 iconData: Atlas.link,
                 onTap: () => onTapLink(context, onSelectLink),
               ),
             if (!isDesktop)
               _attachmentOptionItem(
                 context: context,
-                title: L10n.of(context).camera,
+                title: lang.camera,
                 iconData: Atlas.camera,
                 onTap: () => onTapCamera(context),
               ),
             _attachmentOptionItem(
               context: context,
-              title: L10n.of(context).image,
+              title: lang.image,
               iconData: Atlas.file_image,
               onTap: () => onTapImage(context),
             ),
             _attachmentOptionItem(
               context: context,
-              title: L10n.of(context).video,
+              title: lang.video,
               iconData: Atlas.file_video,
               onTap: () => onTapVideo(context),
             ),
             _attachmentOptionItem(
               context: context,
-              title: L10n.of(context).audio,
+              title: lang.audio,
               iconData: Atlas.audio_headphones,
               onTap: () => onTapAudio(context),
             ),
             _attachmentOptionItem(
               context: context,
-              title: L10n.of(context).file,
+              title: lang.file,
               iconData: Atlas.file,
               onTap: () => onTapFile(context),
             ),
@@ -249,6 +250,7 @@ class _FileWidget extends StatelessWidget {
   }
 
   Widget _buildActionBtns(BuildContext context) {
+    final lang = L10n.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
@@ -258,14 +260,14 @@ class _FileWidget extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text(L10n.of(context).cancel),
+            child: Text(lang.cancel),
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
               Navigator.pop(context);
               handleFileUpload(selectedFiles, type);
             },
-            child: Text(L10n.of(context).send),
+            child: Text(lang.send),
           ),
         ],
       ),
@@ -277,7 +279,11 @@ class _FileWidget extends StatelessWidget {
     if (type == AttachmentType.camera || type == AttachmentType.image) {
       return AttachmentContainer(
         name: fileName,
-        child: Image.file(file, height: 200, fit: BoxFit.cover),
+        child: Image.file(
+          file,
+          height: 200,
+          fit: BoxFit.cover,
+        ),
       );
     } else if (type == AttachmentType.audio) {
       return AttachmentContainer(

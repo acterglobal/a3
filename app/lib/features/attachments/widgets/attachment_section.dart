@@ -44,10 +44,11 @@ class AttachmentSectionWidget extends ConsumerWidget {
   }
 
   Widget onError(BuildContext context, Object error) {
+    final lang = L10n.of(context);
     return Column(
       children: [
-        Text(L10n.of(context).attachments),
-        Text(L10n.of(context).loadingFailed(error)),
+        Text(lang.attachments),
+        Text(lang.loadingFailed(error)),
       ],
     );
   }
@@ -120,13 +121,14 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
   }
 
   Widget attachmentHeader(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final attachmentTitleTextStyle = Theme.of(context).textTheme.labelLarge;
     return Row(
       children: [
         const Icon(Atlas.paperclip_attachment_thin, size: 14),
         const SizedBox(width: 5),
         Text(
-          L10n.of(context).attachments,
+          lang.attachments,
           style: attachmentTitleTextStyle,
         ),
         const Spacer(),
@@ -155,7 +157,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
               );
             },
           ),
-          child: Text(L10n.of(context).add),
+          child: Text(lang.add),
         ),
       ],
     );

@@ -32,6 +32,7 @@ class AttachmentItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final containerColor = Theme.of(context).colorScheme.surface;
     final attachmentType = AttachmentType.values.byName(attachment.typeStr());
     final eventId = attachment.attachmentIdStr();
@@ -84,14 +85,14 @@ class AttachmentItem extends ConsumerWidget {
                         context,
                         eventId: eventId,
                         roomId: roomId,
-                        title: L10n.of(context).deleteAttachment,
-                        description: L10n.of(context)
-                            .areYouSureYouWantToRemoveAttachmentFromPin,
+                        title: lang.deleteAttachment,
+                        description:
+                            lang.areYouSureYouWantToRemoveAttachmentFromPin,
                         isSpace: true,
                       );
                     },
                     child: Text(
-                      L10n.of(context).delete,
+                      lang.delete,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.error,
                       ),
@@ -164,19 +165,19 @@ class AttachmentItem extends ConsumerWidget {
   ) async {
     // Open attachment link
     if (attachmentType == AttachmentType.link) {
-      openLink(attachment.link() ?? '', context);
+      await openLink(attachment.link() ?? '', context);
     } else if (mediaFile == null) {
       // If attachment is media then check media is downloaded
       // If attachment not downloaded
-      ref
-          .read(attachmentMediaStateProvider(attachment).notifier)
-          .downloadMedia();
+      final notifier =
+          ref.read(attachmentMediaStateProvider(attachment).notifier);
+      await notifier.downloadMedia();
     } else {
       // If attachment is downloaded and image or video
       if (attachmentType == AttachmentType.image ||
           attachmentType == AttachmentType.video) {
         final msgContent = attachment.msgContent();
-        showAdaptiveDialog(
+        await showAdaptiveDialog(
           context: context,
           barrierDismissible: false,
           useRootNavigator: false,
@@ -197,7 +198,10 @@ class AttachmentItem extends ConsumerWidget {
       }
       // If attachment is downloaded and file or others
       else {
-        openFileShareDialog(context: context, file: mediaFile);
+        await openFileShareDialog(
+          context: context,
+          file: mediaFile,
+        );
       }
     }
   }
@@ -206,7 +210,9 @@ class AttachmentItem extends ConsumerWidget {
     return const SizedBox(
       width: 20,
       height: 20,
-      child: Center(child: CircularProgressIndicator()),
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 }
