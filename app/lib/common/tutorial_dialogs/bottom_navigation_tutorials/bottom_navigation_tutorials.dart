@@ -4,8 +4,8 @@ import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or
 import 'package:acter/common/tutorial_dialogs/target_focus.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 final dashboardKey = GlobalKey(debugLabel: 'dashboard');
 final updateKey = GlobalKey(debugLabel: 'updae');
@@ -27,6 +27,7 @@ void showCreateOrJoinSpaceTutorials(BuildContext context) {
 }
 
 void bottomNavigationTutorials({required BuildContext context}) async {
+  final lang = L10n.of(context);
   final prefs = await sharedPrefs();
   final isShow = prefs.getBool(bottomNavigationPrefKey) ?? true;
 
@@ -49,8 +50,8 @@ void bottomNavigationTutorials({required BuildContext context}) async {
           keyTarget: dashboardKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_home.svg',
-          contentTitle: L10n.of(context).homeTabTutorialTitle,
-          contentDescription: L10n.of(context).homeTabTutorialDescription,
+          contentTitle: lang.homeTabTutorialTitle,
+          contentDescription: lang.homeTabTutorialDescription,
           isFirst: true,
         ),
         if (!isDesktop)
@@ -59,32 +60,32 @@ void bottomNavigationTutorials({required BuildContext context}) async {
             keyTarget: updateKey,
             contentAlign: ContentAlign.top,
             contentImageUrl: 'assets/images/empty_updates.svg',
-            contentTitle: L10n.of(context).updatesTabTutorialTitle,
-            contentDescription: L10n.of(context).updatesTabTutorialDescription,
+            contentTitle: lang.updatesTabTutorialTitle,
+            contentDescription: lang.updatesTabTutorialDescription,
           ),
         targetFocus(
           identify: 'chatsKey',
           keyTarget: chatsKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_chat.svg',
-          contentTitle: L10n.of(context).chatsTabTutorialTitle,
-          contentDescription: L10n.of(context).chatsTabTutorialDescription,
+          contentTitle: lang.chatsTabTutorialTitle,
+          contentDescription: lang.chatsTabTutorialDescription,
         ),
         targetFocus(
           identify: 'activityKey',
           keyTarget: activityKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_activity.svg',
-          contentTitle: L10n.of(context).activityTabTutorialTitle,
-          contentDescription: L10n.of(context).activityTabTutorialDescription,
+          contentTitle: lang.activityTabTutorialTitle,
+          contentDescription: lang.activityTabTutorialDescription,
         ),
         targetFocus(
           identify: 'jumpToKey',
           keyTarget: jumpToKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           iconData: Icons.search,
-          contentTitle: L10n.of(context).jumpToTabTutorialTitle,
-          contentDescription: L10n.of(context).jumpToTabTutorialDescription,
+          contentTitle: lang.jumpToTabTutorialTitle,
+          contentDescription: lang.jumpToTabTutorialDescription,
           isLast: true,
         ),
       ],
