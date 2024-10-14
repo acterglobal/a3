@@ -76,7 +76,7 @@ class PinListWidget extends ConsumerWidget {
       itemBuilder: (context, index) {
         return PinListItemWidget(
           pinId: pinList[index].eventIdStr(),
-          showSpace: true,
+          showSpace: spaceId == null,
         );
       },
     );
