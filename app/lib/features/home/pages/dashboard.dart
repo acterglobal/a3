@@ -55,6 +55,10 @@ class Dashboard extends ConsumerWidget {
                   : emptyState(context),
             ),
           ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+            child: const Icon(Icons.add),
+          ),
         ),
       ),
     );
