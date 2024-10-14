@@ -96,7 +96,6 @@ class _ChatNGRoomConsumerState extends ConsumerState<ChatNGRoom> {
   Widget build(BuildContext context) {
     final roomId = widget.roomId;
     final messages = ref.watch(chatMessagesProvider(roomId));
-
     if (messages.isEmpty) {
       return _renderLoading(context);
     }

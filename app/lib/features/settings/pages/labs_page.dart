@@ -73,8 +73,12 @@ class SettingsLabsPage extends ConsumerWidget {
                   title: Text(L10n.of(context).chatNG),
                   description: Text(L10n.of(context).chatNGExplainer),
                   initialValue: ref.watch(isActiveProvider(LabsFeature.chatNG)),
-                  onToggle: (newVal) =>
-                      updateFeatureState(ref, LabsFeature.chatNG, newVal),
+                  onToggle: (newVal) {
+                    updateFeatureState(ref, LabsFeature.chatNG, newVal);
+                    EasyLoading.showToast(
+                      'Changes will affect after app restart',
+                    );
+                  },
                 ),
               ],
             ),

@@ -7,7 +7,6 @@ import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
-import 'package:acter/features/chat/chat-ng/widgets/chat_room_ng.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/avatar_builder.dart';
 import 'package:acter/features/chat/widgets/bubble_builder.dart';
@@ -22,7 +21,6 @@ import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/chat/widgets/video_message_builder.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -121,14 +119,13 @@ class RoomPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isChatNG = ref.watch(isActiveProvider(LabsFeature.chatNG));
     return OrientationBuilder(
       builder: (context, orientation) => Scaffold(
         resizeToAvoidBottomInset: orientation == Orientation.portrait,
         body: Column(
           children: [
             appBar(context, ref),
-            isChatNG ? ChatNGRoom(roomId: roomId) : ChatRoom(roomId: roomId),
+            ChatRoom(roomId: roomId),
             chatInput(context, ref),
           ],
         ),
