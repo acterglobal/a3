@@ -14,13 +14,13 @@ final pinListProvider =
 );
 
 //Search any pins
-typedef AllPinsSearchParams = ({String? spaceId, String searchText});
+typedef AllPinsSearchParams = ({String? spaceId, String? searchText});
 
 final pinListSearchProvider = FutureProvider.autoDispose
     .family<List<ActerPin>, AllPinsSearchParams>((ref, params) async {
   final pinList = await ref.watch(pinListProvider(params.spaceId).future);
-  final search = params.searchText.toLowerCase();
-  if (search.isEmpty) return pinList;
+  if (params.searchText?.isEmpty == true) return pinList;
+  final search = params.searchText!.toLowerCase();
   return pinList
       .where((pin) => pin.title().toLowerCase().contains(search))
       .toList();
