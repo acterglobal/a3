@@ -22,57 +22,58 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final maybeRoom = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
     if (maybeRoom != null && maybeRoom.isJoined()) {
       // we know that room already \o/
       return OutlinedButton(
         onPressed: () => forward(roomId),
-        child: Text(L10n.of(context).joined),
+        child: Text(lang.joined),
       );
     }
     return switch (joinRule) {
       'private' || 'invite' => Tooltip(
-          message: L10n.of(context).youNeedBeInvitedToJoinThisRoom,
+          message: lang.youNeedBeInvitedToJoinThisRoom,
           child: Chip(
-            label: Text(L10n.of(context).private),
+            label: Text(lang.private),
           ),
         ),
       'restricted' => Tooltip(
-          message: L10n.of(context).youAreAbleToJoinThisRoom,
+          message: lang.youAreAbleToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
               await joinRoom(
                 context,
                 ref,
-                L10n.of(context).tryingToJoin(roomName),
+                lang.tryingToJoin(roomName),
                 roomId,
                 viaServerName,
                 forward,
               );
             },
-            child: Text(L10n.of(context).join),
+            child: Text(lang.join),
           ),
         ),
       'public' => Tooltip(
-          message: L10n.of(context).youAreAbleToJoinThisRoom,
+          message: lang.youAreAbleToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
               await joinRoom(
                 context,
                 ref,
-                L10n.of(context).tryingToJoin(roomName),
+                lang.tryingToJoin(roomName),
                 roomId,
                 viaServerName,
                 forward,
               );
             },
-            child: Text(L10n.of(context).join),
+            child: Text(lang.join),
           ),
         ),
       _ => Tooltip(
-          message: L10n.of(context).unclearJoinRule(joinRule),
+          message: lang.unclearJoinRule(joinRule),
           child: Chip(
-            label: Text(L10n.of(context).unknown),
+            label: Text(lang.unknown),
           ),
         ),
     };

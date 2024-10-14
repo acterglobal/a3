@@ -60,21 +60,20 @@ class _EditHtmlDescriptionSheetState
       widget.descriptionMarkdownValue ?? '',
       htmlContent: widget.descriptionHtmlValue,
     );
-    if (document.isEmpty) {
-      textEditorState = EditorState.blank();
-    } else {
+    if (!document.isEmpty) {
       textEditorState = EditorState(document: document);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(widget.bottomSheetTitle ?? L10n.of(context).editDescription),
+          Text(widget.bottomSheetTitle ?? lang.editDescription),
           const SizedBox(height: 20),
           Container(
             height: 200,
@@ -94,7 +93,7 @@ class _EditHtmlDescriptionSheetState
             children: [
               OutlinedButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(L10n.of(context).cancel),
+                child: Text(lang.cancel),
               ),
               const SizedBox(width: 20),
               ActerPrimaryActionButton(
@@ -110,7 +109,7 @@ class _EditHtmlDescriptionSheetState
 
                   widget.onSave(htmlBodyDescription, plainDescription);
                 },
-                child: Text(L10n.of(context).save),
+                child: Text(lang.save),
               ),
             ],
           ),
