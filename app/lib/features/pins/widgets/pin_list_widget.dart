@@ -33,7 +33,7 @@ class PinListWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pinsLoader = ref.watch(
-      pinListSearchProvider((spaceId: spaceId, searchText: searchValue)),
+      pinListSearchProvider((spaceId: spaceId, searchText: searchValue ?? '')),
     );
 
     return pinsLoader.when(
