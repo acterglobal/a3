@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/main/models/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
 import 'package:acter/features/super_invites/pages/create.dart';

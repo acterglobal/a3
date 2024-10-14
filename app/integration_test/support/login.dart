@@ -1,6 +1,6 @@
 import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/main/models/keys.dart';
 import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/auth/pages/register_page.dart';

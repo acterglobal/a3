@@ -3,7 +3,7 @@ import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/main/providers/client_providers.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/notifications_mode_provider.dart';
@@ -242,13 +242,14 @@ class NotificationsSettingsPage extends ConsumerWidget {
         ),
         emailsLoader.maybeWhen(
           orElse: () => const SizedBox.shrink(),
-          data: (emails) => emails.isEmpty ? const SizedBox.shrink():
-            IconButton(
-                icon: const Icon(Atlas.plus_circle_thin),
-                iconSize: 20,
-                color: Theme.of(context).colorScheme.surface,
-                onPressed: () => _onTargetAdd(context, ref, emails),
-              ),
+          data: (emails) => emails.isEmpty
+              ? const SizedBox.shrink()
+              : IconButton(
+                  icon: const Icon(Atlas.plus_circle_thin),
+                  iconSize: 20,
+                  color: Theme.of(context).colorScheme.surface,
+                  onPressed: () => _onTargetAdd(context, ref, emails),
+                ),
         ),
       ],
       tiles: pushersLoader.when(

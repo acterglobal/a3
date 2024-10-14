@@ -9,7 +9,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/setup.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/main/providers/client_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';

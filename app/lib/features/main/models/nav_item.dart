@@ -1,16 +1,16 @@
 import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
 
-class BottomBarNavigationItem extends BottomNavigationBarItem {
+class BottomBarNavigationItem extends NavigationDestination {
   final String initialLocation;
   final GlobalKey tutorialGlobalKey;
 
-  const BottomBarNavigationItem({
+  const BottomBarNavigationItem({super.key, 
     required this.initialLocation,
     required this.tutorialGlobalKey,
     required super.icon,
-    super.label,
-    super.activeIcon,
+    required super.label,
+    super.selectedIcon,
   });
 }
 

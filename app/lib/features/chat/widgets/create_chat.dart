@@ -11,7 +11,7 @@ import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/chat/providers/create_chat_providers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/main/providers/client_providers.dart';
 import 'package:acter/features/member/providers/invite_providers.dart';
 import 'package:acter/features/member/widgets/user_search_results.dart';
 import 'package:acter_avatar/acter_avatar.dart';

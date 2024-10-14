@@ -1,6 +1,6 @@
 import 'package:acter/features/activities/providers/activities_providers.dart';
-import 'package:acter/features/home/data/keys.dart';
-import 'package:acter/features/home/widgets/badged_icon.dart';
+import 'package:acter/features/main/models/keys.dart';
+import 'package:acter/features/main/widgets/badged_icon.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

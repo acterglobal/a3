@@ -1,9 +1,9 @@
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/home/data/keys.dart';
-import 'package:acter/features/home/data/models/nav_item.dart';
-import 'package:acter/features/home/widgets/activities_icon.dart';
-import 'package:acter/features/home/widgets/chats_icon.dart';
+import 'package:acter/features/main/models/keys.dart';
+import 'package:acter/features/main/models/nav_item.dart';
+import 'package:acter/features/main/widgets/activities_icon.dart';
+import 'package:acter/features/main/widgets/chats_icon.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ final bottomBarItems = [
       Atlas.home_thin,
       key: MainNavKeys.dashboardHome,
     ),
-    activeIcon: const CustomSelectedIcon(
+    selectedIcon: const CustomSelectedIcon(
       icon: Icon(Atlas.home_bold),
       key: MainNavKeys.dashboardHome,
     ),
@@ -29,7 +29,7 @@ final bottomBarItems = [
       key: MainNavKeys.updates,
       Atlas.megaphone_thin,
     ),
-    activeIcon: const CustomSelectedIcon(
+    selectedIcon: const CustomSelectedIcon(
       icon: Icon(Atlas.megaphone_thin),
       key: MainNavKeys.updates,
     ),
@@ -39,14 +39,14 @@ final bottomBarItems = [
   ),
   BottomBarNavigationItem(
     icon: const ChatsIcon(),
-    activeIcon: const CustomSelectedIcon(icon: ChatsIcon()),
+    selectedIcon: const CustomSelectedIcon(icon: ChatsIcon()),
     label: 'Chat',
     initialLocation: Routes.chat.route,
     tutorialGlobalKey: chatsKey,
   ),
   BottomBarNavigationItem(
     icon: const ActivitiesIcon(),
-    activeIcon: const CustomSelectedIcon(
+    selectedIcon: const CustomSelectedIcon(
       icon: ActivitiesIcon(),
     ),
     label: 'Activities',
@@ -58,7 +58,7 @@ final bottomBarItems = [
       Atlas.magnifying_glass_thin,
       key: MainNavKeys.quickJump,
     ),
-    activeIcon: const CustomSelectedIcon(
+    selectedIcon: const CustomSelectedIcon(
       key: MainNavKeys.quickJump,
       icon: Icon(
         Atlas.magnifying_glass_thin,

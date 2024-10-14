@@ -4,7 +4,7 @@ import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/common/widgets/visibility/room_visibility_item.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
-import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/main/models/keys.dart';
 import 'package:acter/features/invite_members/pages/invite_page.dart';
 import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
 import 'package:acter/features/spaces/model/keys.dart';

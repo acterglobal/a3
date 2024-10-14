@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
-import 'package:acter/features/home/data/keys.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/main/models/keys.dart';
+import 'package:acter/features/main/providers/client_providers.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show AttachmentDraft;

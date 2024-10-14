@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/main/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

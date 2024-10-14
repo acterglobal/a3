@@ -9,7 +9,7 @@ import 'package:acter/features/cross_signing/views/sas_cancelled.dart';
 import 'package:acter/features/cross_signing/views/sas_keys_exchanged.dart';
 import 'package:acter/features/cross_signing/views/sas_started.dart';
 import 'package:acter/features/cross_signing/views/verification_request.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/main/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

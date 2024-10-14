@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/config/env.g.dart';
-import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/main/models/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/settings/widgets/email_address_card.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';

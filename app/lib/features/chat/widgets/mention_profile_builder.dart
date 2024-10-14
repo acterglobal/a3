@@ -1,7 +1,7 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/main/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';

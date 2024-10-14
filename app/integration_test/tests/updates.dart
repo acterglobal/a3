@@ -1,5 +1,5 @@
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/main/models/keys.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/pages/add_news_page.dart';

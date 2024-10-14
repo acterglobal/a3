@@ -1,7 +1,7 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/activities/providers/invitations_providers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/main/providers/client_providers.dart';
 import 'package:riverpod/riverpod.dart';
 
 final hasActivitiesProvider = StateProvider((ref) {
