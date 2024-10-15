@@ -164,6 +164,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     final tlId = widget.taskList.eventIdStr();
     return Form(
       key: _formKey,
@@ -178,7 +179,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
           focusedBorder: InputBorder.none,
           errorBorder: InputBorder.none,
           enabledBorder: InputBorder.none,
-          hintText: L10n.of(context).titleTheNewTask,
+          hintText: lang.titleTheNewTask,
           suffix: IconButton(
             onPressed: () => showCreateUpdateTaskItemBottomSheet(
               context,
@@ -208,9 +209,8 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
           }
         },
         // required field, space not allowed
-        validator: (val) => val == null || val.trim().isEmpty
-            ? L10n.of(context).aTaskMustHaveATitle
-            : null,
+        validator: (val) =>
+            val == null || val.trim().isEmpty ? lang.aTaskMustHaveATitle : null,
       ),
     );
   }
