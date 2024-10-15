@@ -13,6 +13,7 @@ void showEditDescriptionBottomSheet({
   required WidgetRef ref,
   required String spaceId,
 }) async {
+  final lang = L10n.of(context);
   final space = await ref.read(spaceProvider(spaceId).future);
   if (!context.mounted) return;
   showEditPlainDescriptionBottomSheet(
@@ -20,7 +21,7 @@ void showEditDescriptionBottomSheet({
     descriptionValue: space.topic() ?? '',
     onSave: (newDescription) async {
       try {
-        EasyLoading.show(status: L10n.of(context).updateDescription);
+        EasyLoading.show(status: lang.updateDescription);
         await space.setTopic(newDescription);
         EasyLoading.dismiss();
         if (!context.mounted) return;
@@ -32,7 +33,7 @@ void showEditDescriptionBottomSheet({
           return;
         }
         EasyLoading.showError(
-          L10n.of(context).updateDescriptionFailed(e),
+          lang.updateDescriptionFailed(e),
           duration: const Duration(seconds: 3),
         );
       }

@@ -80,6 +80,7 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Widget userProfileMenuSkeletonUI(BuildContext context) {
+    final lang = L10n.of(context);
     return Skeletonizer(
       child: Card(
         child: Padding(
@@ -94,8 +95,8 @@ class SettingsPage extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).displayName),
-                  Text(L10n.of(context).username),
+                  Text(lang.displayName),
+                  Text(lang.username),
                 ],
               ),
             ],

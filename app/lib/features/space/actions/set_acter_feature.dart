@@ -69,14 +69,15 @@ Future<void> setActerFeatureForBuilder(
   Space space,
   String featureName,
 ) async {
-  EasyLoading.show(status: L10n.of(context).changingSettingOf(featureName));
+  final lang = L10n.of(context);
+  EasyLoading.show(status: lang.changingSettingOf(featureName));
   try {
     await space.updateAppSettings(builder);
     if (!context.mounted) {
       EasyLoading.dismiss();
       return;
     }
-    EasyLoading.showToast(L10n.of(context).changedSettingOf(featureName));
+    EasyLoading.showToast(lang.changedSettingOf(featureName));
   } catch (e, s) {
     _log.severe('Failed to change setting of $featureName', e, s);
     if (!context.mounted) {
@@ -84,7 +85,7 @@ Future<void> setActerFeatureForBuilder(
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).failedToToggleSettingOf(featureName, e),
+      lang.failedToToggleSettingOf(featureName, e),
       duration: const Duration(seconds: 3),
     );
   }

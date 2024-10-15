@@ -17,9 +17,10 @@ class SessionCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     bool isVerified = deviceRecord.isVerified();
     final fields = [
-      isVerified ? L10n.of(context).verified : L10n.of(context).unverified,
+      isVerified ? lang.verified : lang.unverified,
     ];
     final lastSeenTs = deviceRecord.lastSeenTs();
     if (lastSeenTs != null) {
@@ -61,7 +62,7 @@ class SessionCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      L10n.of(context).logOut,
+                      lang.logOut,
                       style: Theme.of(context).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -77,7 +78,7 @@ class SessionCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
-                      L10n.of(context).verifySession,
+                      lang.verifySession,
                       style: Theme.of(context).textTheme.labelSmall,
                       softWrap: false,
                     ),
@@ -96,24 +97,25 @@ class SessionCard extends ConsumerWidget {
     final result = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
+        final lang = L10n.of(context);
         return AlertDialog(
           backgroundColor: Theme.of(context).colorScheme.surface,
-          title: Text(L10n.of(context).authenticationRequired),
+          title: Text(lang.authenticationRequired),
           content: Wrap(
             children: [
-              Text(L10n.of(context).pleaseProvideYourUserPassword),
+              Text(lang.pleaseProvideYourUserPassword),
               TextField(
                 controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  hintText: L10n.of(context).password,
+                  hintText: lang.password,
                 ),
               ),
             ],
           ),
           actions: [
             OutlinedButton(
-              child: Text(L10n.of(context).cancel),
+              child: Text(lang.cancel),
               onPressed: () {
                 if (context.mounted) {
                   Navigator.pop(context, false);
@@ -121,7 +123,7 @@ class SessionCard extends ConsumerWidget {
               },
             ),
             ActerPrimaryActionButton(
-              child: Text(L10n.of(context).ok),
+              child: Text(lang.ok),
               onPressed: () {
                 if (passwordController.text.isEmpty) {
                   return;

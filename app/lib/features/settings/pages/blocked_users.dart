@@ -27,8 +27,9 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return AlertDialog(
-      title: Text(L10n.of(context).blockUserWithUsername),
+      title: Text(lang.blockUserWithUsername),
       content: Form(
         key: _formKey,
         child: Column(
@@ -41,7 +42,7 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
                 // required field, custom format
                 validator: (val) =>
                     val == null || !val.startsWith('@') || !val.contains(':')
-                        ? L10n.of(context).formatMustBe
+                        ? lang.formatMustBe
                         : null,
               ),
             ),
@@ -51,14 +52,14 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
-          child: Text(L10n.of(context).cancel),
+          child: Text(lang.cancel),
         ),
         ActerPrimaryActionButton(
           onPressed: () {
             if (!_formKey.currentState!.validate()) return;
             Navigator.pop(context, userName.text);
           },
-          child: Text(L10n.of(context).block),
+          child: Text(lang.block),
         ),
       ],
     );
@@ -70,13 +71,14 @@ class BlockedUsersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final usersLoader = ref.watch(ignoredUsersProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: !context.isLargeScreen,
-          title: Text(L10n.of(context).blockedUsers),
+          title: Text(lang.blockedUsers),
           centerTitle: true,
           actions: [
             IconButton(
@@ -91,7 +93,7 @@ class BlockedUsersPage extends ConsumerWidget {
           data: (users) {
             if (users.isEmpty) {
               return Center(
-                child: Text(L10n.of(context).hereYouCanSeeAllUsersYouBlocked),
+                child: Text(lang.hereYouCanSeeAllUsersYouBlocked),
               );
             }
             return CustomScrollView(
@@ -107,7 +109,7 @@ class BlockedUsersPage extends ConsumerWidget {
                           child: Text(userId),
                         ),
                         trailing: OutlinedButton(
-                          child: Text(L10n.of(context).unblock),
+                          child: Text(lang.unblock),
                           onPressed: () async => await onDelete(
                             context,
                             ref,
@@ -125,7 +127,7 @@ class BlockedUsersPage extends ConsumerWidget {
           error: (e, s) {
             _log.severe('Failed to load the ignored users', e, s);
             return Center(
-              child: Text(L10n.of(context).loadingFailed(e)),
+              child: Text(lang.loadingFailed(e)),
             );
           },
           loading: () => const Center(
@@ -137,6 +139,7 @@ class BlockedUsersPage extends ConsumerWidget {
   }
 
   Future<void> onAdd(BuildContext context, WidgetRef ref) async {
+    final lang = L10n.of(context);
     final userToAdd = await showDialog<String?>(
       context: context,
       builder: (BuildContext context) => const AddUserToBlock(),
@@ -146,7 +149,7 @@ class BlockedUsersPage extends ConsumerWidget {
       EasyLoading.dismiss();
       return;
     }
-    EasyLoading.show(status: L10n.of(context).blockingUserProgress);
+    EasyLoading.show(status: lang.blockingUserProgress);
     try {
       final account = ref.read(accountProvider);
       await account.ignoreUser(userToAdd);
@@ -154,7 +157,7 @@ class BlockedUsersPage extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).userAddedToBlockList(userToAdd));
+      EasyLoading.showToast(lang.userAddedToBlockList(userToAdd));
     } catch (e, s) {
       _log.severe('Failed to block user', e, s);
       if (!context.mounted) {
@@ -162,7 +165,7 @@ class BlockedUsersPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).blockingUserFailed(e),
+        lang.blockingUserFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -173,7 +176,8 @@ class BlockedUsersPage extends ConsumerWidget {
     WidgetRef ref,
     String userId,
   ) async {
-    EasyLoading.show(status: L10n.of(context).unblockingUser);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.unblockingUser);
     try {
       final account = ref.read(accountProvider);
       await account.unignoreUser(userId);
@@ -181,7 +185,7 @@ class BlockedUsersPage extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).userRemovedFromList);
+      EasyLoading.showToast(lang.userRemovedFromList);
     } catch (e, s) {
       _log.severe('Failed to unblock user', e, s);
       if (!context.mounted) {
@@ -189,7 +193,7 @@ class BlockedUsersPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).unblockingUserFailed(e),
+        lang.unblockingUserFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

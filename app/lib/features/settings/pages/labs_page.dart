@@ -18,22 +18,23 @@ class SettingsLabsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(L10n.of(context).labs),
+          title: Text(lang.labs),
           automaticallyImplyLeading: !context.isLargeScreen,
         ),
         body: SettingsList(
           sections: [
             SettingsSection(
-              title: Text(L10n.of(context).labsAppFeatures),
+              title: Text(lang.labsAppFeatures),
               tiles: [
                 const LabsNotificationsSettingsTile(),
                 SettingsTile.switchTile(
-                  title: Text(L10n.of(context).encryptionBackupKeyBackup),
-                  description: Text(L10n.of(context).sharedCalendarAndEvents),
+                  title: Text(lang.encryptionBackupKeyBackup),
+                  description: Text(lang.sharedCalendarAndEvents),
                   initialValue:
                       ref.watch(isActiveProvider(LabsFeature.encryptionBackup)),
                   onToggle: (newVal) => updateFeatureState(
@@ -45,11 +46,11 @@ class SettingsLabsPage extends ConsumerWidget {
               ],
             ),
             SettingsSection(
-              title: Text(L10n.of(context).spaces),
+              title: Text(lang.spaces),
               tiles: [
                 SettingsTile.switchTile(
-                  title: Text(L10n.of(context).encryptedSpace),
-                  description: Text(L10n.of(context).notYetSupported),
+                  title: Text(lang.encryptedSpace),
+                  description: Text(lang.notYetSupported),
                   enabled: false,
                   initialValue: false,
                   onToggle: (newVal) {},
@@ -57,12 +58,12 @@ class SettingsLabsPage extends ConsumerWidget {
               ],
             ),
             SettingsSection(
-              title: Text(L10n.of(context).chat),
+              title: Text(lang.chat),
               tiles: [
                 SettingsTile.switchTile(
-                  title: Text(L10n.of(context).unreadMarkerFeatureTitle),
+                  title: Text(lang.unreadMarkerFeatureTitle),
                   description: Text(
-                    L10n.of(context).unreadMarkerFeatureDescription,
+                    lang.unreadMarkerFeatureDescription,
                   ),
                   initialValue:
                       ref.watch(isActiveProvider(LabsFeature.chatUnread)),
@@ -72,13 +73,13 @@ class SettingsLabsPage extends ConsumerWidget {
               ],
             ),
             SettingsSection(
-              title: Text(L10n.of(context).calendar),
+              title: Text(lang.calendar),
               tiles: [
                 SettingsTile.switchTile(
                   enabled: isSupportedPlatform,
-                  title: Text(L10n.of(context).calendarSyncFeatureTitle),
+                  title: Text(lang.calendarSyncFeatureTitle),
                   description: Text(
-                    L10n.of(context).calendarSyncFeatureDesc,
+                    lang.calendarSyncFeatureDesc,
                   ),
                   initialValue: isSupportedPlatform &&
                       ref.watch(
@@ -102,20 +103,19 @@ class SettingsLabsPage extends ConsumerWidget {
               ],
             ),
             SettingsSection(
-              title: Text(L10n.of(context).apps),
+              title: Text(lang.apps),
               tiles: [
                 SettingsTile.switchTile(
-                  title: Text(L10n.of(context).polls),
-                  description: Text(L10n.of(context).pollsAndSurveys),
+                  title: Text(lang.polls),
+                  description: Text(lang.pollsAndSurveys),
                   initialValue: ref.watch(isActiveProvider(LabsFeature.polls)),
                   onToggle: (newVal) =>
                       updateFeatureState(ref, LabsFeature.polls, newVal),
                   enabled: false,
                 ),
                 SettingsTile.switchTile(
-                  title: Text(L10n.of(context).coBudget),
-                  description:
-                      Text(L10n.of(context).manageBudgetsCooperatively),
+                  title: Text(lang.coBudget),
+                  description: Text(lang.manageBudgetsCooperatively),
                   initialValue: ref.watch(
                     isActiveProvider(LabsFeature.cobudget),
                   ),

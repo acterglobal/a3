@@ -44,6 +44,7 @@ class SettingsMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final isBackupEnabled =
         ref.watch(featuresProvider).isActive(LabsFeature.encryptionBackup);
 
@@ -52,13 +53,13 @@ class SettingsMenu extends ConsumerWidget {
       children: [
         _settingMenuSection(
           context: context,
-          sectionTitle: L10n.of(context).account,
+          sectionTitle: lang.account,
           children: [
             MenuItemWidget(
               iconData: Atlas.bell_mobile_thin,
               iconColor: routedColor(context, ref, Routes.settingNotifications),
-              title: L10n.of(context).notifications,
-              subTitle: L10n.of(context).notificationsSettingsAndTargets,
+              title: lang.notifications,
+              subTitle: lang.notificationsSettingsAndTargets,
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.settingNotifications),
               ),
@@ -75,8 +76,8 @@ class SettingsMenu extends ConsumerWidget {
               innerKey: SettingsMenu.emailAddresses,
               iconData: Atlas.envelope_paper_email_thin,
               iconColor: routedColor(context, ref, Routes.emailAddresses),
-              title: L10n.of(context).emailAddresses,
-              subTitle: L10n.of(context).connectedToYourAccount,
+              title: lang.emailAddresses,
+              subTitle: lang.connectedToYourAccount,
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.emailAddresses),
               ),
@@ -92,13 +93,13 @@ class SettingsMenu extends ConsumerWidget {
         ),
         _settingMenuSection(
           context: context,
-          sectionTitle: L10n.of(context).securityAndPrivacy,
+          sectionTitle: lang.securityAndPrivacy,
           children: [
             MenuItemWidget(
               iconData: Atlas.key_monitor_thin,
               iconColor: routedColor(context, ref, Routes.settingSessions),
-              title: L10n.of(context).sessions,
-              subTitle: L10n.of(context).yourActiveDevices,
+              title: lang.sessions,
+              subTitle: lang.yourActiveDevices,
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.settingSessions),
               ),
@@ -114,8 +115,8 @@ class SettingsMenu extends ConsumerWidget {
               MenuItemWidget(
                 iconData: Atlas.key_website_thin,
                 iconColor: routedColor(context, ref, Routes.settingBackup),
-                title: L10n.of(context).settingsKeyBackUpTitle,
-                subTitle: L10n.of(context).settingsKeyBackUpDesc,
+                title: lang.settingsKeyBackUpTitle,
+                subTitle: lang.settingsKeyBackUpDesc,
                 titleStyles: TextStyle(
                   color: routedColor(context, ref, Routes.settingBackup),
                 ),
@@ -130,8 +131,8 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               iconData: Atlas.users_thin,
               iconColor: routedColor(context, ref, Routes.blockedUsers),
-              title: L10n.of(context).blockedUsers,
-              subTitle: L10n.of(context).usersYouBlocked,
+              title: lang.blockedUsers,
+              subTitle: lang.usersYouBlocked,
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.blockedUsers),
               ),
@@ -146,8 +147,8 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               iconData: Atlas.passcode,
               iconColor: routedColor(context, ref, Routes.changePassword),
-              title: L10n.of(context).changePassword,
-              subTitle: L10n.of(context).changePasswordDescription,
+              title: lang.changePassword,
+              subTitle: lang.changePasswordDescription,
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.changePassword),
               ),
@@ -163,15 +164,15 @@ class SettingsMenu extends ConsumerWidget {
         ),
         _settingMenuSection(
           context: context,
-          sectionTitle: L10n.of(context).community,
+          sectionTitle: lang.community,
           children: [
             MenuItemWidget(
               innerKey: SettingsMenu.superInvitations,
               iconData: Atlas.plus_envelope_thin,
               enabled: ref.watch(hasSuperTokensAccess).valueOrNull == true,
               iconColor: routedColor(context, ref, Routes.settingsSuperInvites),
-              title: L10n.of(context).superInvitations,
-              subTitle: L10n.of(context).manageYourInvitationCodes,
+              title: lang.superInvitations,
+              subTitle: lang.manageYourInvitationCodes,
               titleStyles: TextStyle(
                 color: routedColor(
                   context,
@@ -193,14 +194,14 @@ class SettingsMenu extends ConsumerWidget {
         ),
         _settingMenuSection(
           context: context,
-          sectionTitle: L10n.of(context).acterApp,
+          sectionTitle: lang.acterApp,
           children: [
             MenuItemWidget(
               key: SettingsMenu.chat,
               iconData: Atlas.chat_conversation_thin,
               iconColor: routedColor(context, ref, Routes.settingsChat),
-              title: L10n.of(context).chat,
-              subTitle: L10n.of(context).chatSettingsExplainer,
+              title: lang.chat,
+              subTitle: lang.chatSettingsExplainer,
               titleStyles: TextStyle(
                 color: routedColor(
                   context,
@@ -219,8 +220,8 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               iconData: Atlas.language_translation,
               iconColor: routedColor(context, ref, Routes.settingLanguage),
-              title: L10n.of(context).language,
-              subTitle: L10n.of(context).changeAppLanguage,
+              title: lang.language,
+              subTitle: lang.changeAppLanguage,
               titleStyles: TextStyle(
                 color: routedColor(
                   context,
@@ -240,8 +241,8 @@ class SettingsMenu extends ConsumerWidget {
               key: SettingsMenu.labs,
               iconData: Atlas.lab_appliance_thin,
               iconColor: routedColor(context, ref, Routes.settingsLabs),
-              title: L10n.of(context).labs,
-              subTitle: L10n.of(context).experimentalActerFeatures,
+              title: lang.labs,
+              subTitle: lang.experimentalActerFeatures,
               titleStyles: TextStyle(
                 color: routedColor(
                   context,
@@ -260,7 +261,7 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               iconData: Atlas.info_circle_thin,
               iconColor: routedColor(context, ref, Routes.info),
-              title: L10n.of(context).info,
+              title: lang.info,
               titleStyles: TextStyle(
                 color: routedColor(
                   context,
@@ -279,8 +280,8 @@ class SettingsMenu extends ConsumerWidget {
             if (helpUrl != null)
               MenuItemWidget(
                 iconData: PhosphorIcons.question(),
-                title: L10n.of(context).helpCenterTitle,
-                subTitle: L10n.of(context).helpCenterDesc,
+                title: lang.helpCenterTitle,
+                subTitle: lang.helpCenterDesc,
                 trailing: Icon(PhosphorIcons.arrowSquareOut()),
                 onTap: () => launchUrl(helpUrl!),
               ),
@@ -288,15 +289,15 @@ class SettingsMenu extends ConsumerWidget {
         ),
         _settingMenuSection(
           context: context,
-          sectionTitle: L10n.of(context).dangerZone,
+          sectionTitle: lang.dangerZone,
           isDanderZone: true,
           children: [
             MenuItemWidget(
               key: SettingsMenu.logoutAccount,
               iconData: Atlas.exit_thin,
               iconColor: Theme.of(context).colorScheme.error,
-              title: L10n.of(context).logOut,
-              subTitle: L10n.of(context).closeSessionAndDeleteData,
+              title: lang.logOut,
+              subTitle: lang.closeSessionAndDeleteData,
               titleStyles: TextStyle(
                 color: Theme.of(context).colorScheme.error,
               ),
@@ -306,8 +307,8 @@ class SettingsMenu extends ConsumerWidget {
               key: SettingsMenu.deactivateAccount,
               iconData: Atlas.trash_can_thin,
               iconColor: Theme.of(context).colorScheme.error,
-              title: L10n.of(context).deactivateAccount,
-              subTitle: L10n.of(context).irreversiblyDeactivateAccount,
+              title: lang.deactivateAccount,
+              subTitle: lang.irreversiblyDeactivateAccount,
               titleStyles: TextStyle(
                 color: Theme.of(context).colorScheme.error,
               ),

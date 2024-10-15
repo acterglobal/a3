@@ -43,8 +43,9 @@ class __AddEmailState extends State<_AddEmail> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return AlertDialog(
-      title: Text(L10n.of(context).emailAddressToAdd),
+      title: Text(lang.emailAddressToAdd),
       content: DropdownMenu<String>(
         initialSelection: widget.emails.first,
         onSelected: (String? value) {
@@ -62,13 +63,13 @@ class __AddEmailState extends State<_AddEmail> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
-          child: Text(L10n.of(context).cancel),
+          child: Text(lang.cancel),
         ),
         ActerPrimaryActionButton(
           onPressed: () {
             Navigator.pop(context, emailAddr);
           },
-          child: Text(L10n.of(context).add),
+          child: Text(lang.add),
         ),
       ],
     );
@@ -80,57 +81,58 @@ class NotificationsSettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: !context.isLargeScreen,
-          title: Text(L10n.of(context).notifications),
+          title: Text(lang.notifications),
         ),
         body: SettingsList(
           shrinkWrap: true,
           sections: [
             SettingsSection(
-              title: Text(L10n.of(context).notifications),
+              title: Text(lang.notifications),
               tiles: [
                 LabsNotificationsSettingsTile(
-                  title: L10n.of(context).pushToThisDevice,
+                  title: lang.pushToThisDevice,
                 ),
                 AppsNotificationsSettingsTile(
-                  title: L10n.of(context).boosts,
-                  description: L10n.of(context).notifyAboutSpaceUpdates,
+                  title: lang.boosts,
+                  description: lang.notifyAboutSpaceUpdates,
                   appKey: 'global.acter.dev.news',
                 ),
               ],
             ),
             SettingsSection(
-              title: Text(L10n.of(context).defaultModes),
+              title: Text(lang.defaultModes),
               tiles: [
                 _notifSection(
                   context,
                   ref,
-                  L10n.of(context).regularSpaceOrChat,
+                  lang.regularSpaceOrChat,
                   false,
                   false,
                 ),
                 _notifSection(
                   context,
                   ref,
-                  L10n.of(context).encryptedSpaceOrChat,
+                  lang.encryptedSpaceOrChat,
                   true,
                   false,
                 ),
                 _notifSection(
                   context,
                   ref,
-                  L10n.of(context).dmChat,
+                  lang.dmChat,
                   false,
                   true,
                 ),
                 _notifSection(
                   context,
                   ref,
-                  L10n.of(context).encryptedDMChat,
+                  lang.encryptedDMChat,
                   true,
                   true,
                 ),
@@ -150,6 +152,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
     bool isEncrypted,
     bool isOneToOne,
   ) {
+    final lang = L10n.of(context);
     final curNotifStatus = ref
             .watch(
               currentNotificationModeProvider(
@@ -161,7 +164,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
     return SettingsTile(
       title: Text(title),
       description: Text(
-        notifToText(context, curNotifStatus) ?? '(${L10n.of(context).unset})',
+        notifToText(context, curNotifStatus) ?? '(${lang.unset})',
       ),
       trailing: PopupMenuButton<String>(
         initialValue: curNotifStatus,
@@ -176,15 +179,15 @@ class NotificationsSettingsPage extends ConsumerWidget {
         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
           PopupMenuItem<String>(
             value: 'all',
-            child: Text(L10n.of(context).allMessages),
+            child: Text(lang.allMessages),
           ),
           PopupMenuItem<String>(
             value: 'mentions',
-            child: Text(L10n.of(context).mentionsAndKeywordsOnly),
+            child: Text(lang.mentionsAndKeywordsOnly),
           ),
           PopupMenuItem<String>(
             value: 'muted',
-            child: Text(L10n.of(context).muted),
+            child: Text(lang.muted),
           ),
         ],
       ),
@@ -198,7 +201,8 @@ class NotificationsSettingsPage extends ConsumerWidget {
     bool isOneToOne,
     String newMode,
   ) async {
-    EasyLoading.show(status: L10n.of(context).changingNotificationMode);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.changingNotificationMode);
     try {
       final settings = await ref.read(notificationSettingsProvider.future);
       await settings.setDefaultNotificationMode(
@@ -210,7 +214,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
+      EasyLoading.showToast(lang.notificationStatusSubmitted);
     } catch (e, s) {
       _log.severe('Failed to update notification status', e, s);
       if (!context.mounted) {
@@ -218,7 +222,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).notificationStatusUpdateFailed(e),
+        lang.notificationStatusUpdateFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -228,27 +232,29 @@ class NotificationsSettingsPage extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
+    final lang = L10n.of(context);
     final emailsLoader = ref.watch(possibleEmailToAddForPushProvider);
     final pushersLoader = ref.watch(pushersProvider);
     return SettingsSectionWithTitleActions(
-      title: Text(L10n.of(context).notificationTargets),
+      title: Text(lang.notificationTargets),
       actions: [
         IconButton(
           onPressed: () {
             ref.invalidate(pushersProvider);
-            EasyLoading.showToast(L10n.of(context).refreshing);
+            EasyLoading.showToast(lang.refreshing);
           },
           icon: const Icon(Atlas.refresh_account_arrows_thin),
         ),
         emailsLoader.maybeWhen(
           orElse: () => const SizedBox.shrink(),
-          data: (emails) => emails.isEmpty ? const SizedBox.shrink():
-            IconButton(
-                icon: const Icon(Atlas.plus_circle_thin),
-                iconSize: 20,
-                color: Theme.of(context).colorScheme.surface,
-                onPressed: () => _onTargetAdd(context, ref, emails),
-              ),
+          data: (emails) => emails.isEmpty
+              ? const SizedBox.shrink()
+              : IconButton(
+                  icon: const Icon(Atlas.plus_circle_thin),
+                  iconSize: 20,
+                  color: Theme.of(context).colorScheme.surface,
+                  onPressed: () => _onTargetAdd(context, ref, emails),
+                ),
         ),
       ],
       tiles: pushersLoader.when(
@@ -256,7 +262,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
           if (pushers.isEmpty) {
             return [
               SettingsTile(
-                title: Text(L10n.of(context).noPushTargetsAddedYet),
+                title: Text(lang.noPushTargetsAddedYet),
               ),
             ];
           }
@@ -268,13 +274,13 @@ class NotificationsSettingsPage extends ConsumerWidget {
           _log.severe('Failed to load pushers', e, s);
           return [
             SettingsTile(
-              title: Text(L10n.of(context).failedToLoadPushTargets(e)),
+              title: Text(lang.failedToLoadPushTargets(e)),
             ),
           ];
         },
         loading: () => [
           SettingsTile(
-            title: Text(L10n.of(context).loadingTargets),
+            title: Text(lang.loadingTargets),
           ),
         ],
       ),
@@ -286,13 +292,14 @@ class NotificationsSettingsPage extends ConsumerWidget {
     WidgetRef ref,
     List<String> emails,
   ) async {
+    final lang = L10n.of(context);
     final emailToAdd = await showDialog<String?>(
       context: context,
       builder: (BuildContext context) => _AddEmail(emails),
     );
     if (!context.mounted) return;
     if (emailToAdd == null) return;
-    EasyLoading.show(status: L10n.of(context).adding(emailToAdd));
+    EasyLoading.show(status: lang.adding(emailToAdd));
     final client = ref.read(
       alwaysClientProvider,
     ); // is guaranteed because of the ignoredUsersProvider using it
@@ -311,7 +318,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToAdd(emailToAdd, e),
+        lang.failedToAdd(emailToAdd, e),
         duration: const Duration(seconds: 3),
       );
       return;
@@ -321,10 +328,11 @@ class NotificationsSettingsPage extends ConsumerWidget {
       EasyLoading.dismiss();
       return;
     }
-    EasyLoading.showToast(L10n.of(context).addedToPusherList(emailToAdd));
+    EasyLoading.showToast(lang.addedToPusherList(emailToAdd));
   }
 
   SettingsTile _pusherTile(BuildContext context, WidgetRef ref, Pusher item) {
+    final lang = L10n.of(context);
     final isEmail = item.isEmailPusher();
     return SettingsTile(
       leading: Icon(isEmail ? Atlas.envelope : Atlas.mobile_portrait_thin),
@@ -334,30 +342,30 @@ class NotificationsSettingsPage extends ConsumerWidget {
       onPressed: (context) => showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(L10n.of(context).pushTargetDetails),
+          title: Text(lang.pushTargetDetails),
           content: SizedBox(
             width: 300,
             child: ListView(
               shrinkWrap: true,
               children: [
                 ListTile(
-                  title: Text(L10n.of(context).appId),
+                  title: Text(lang.appId),
                   subtitle: Text(item.appId()),
                 ),
                 ListTile(
-                  title: Text(L10n.of(context).pushKey),
+                  title: Text(lang.pushKey),
                   subtitle: Text(item.pushkey()),
                 ),
                 ListTile(
-                  title: Text(L10n.of(context).appName),
+                  title: Text(lang.appName),
                   subtitle: Text(item.appDisplayName()),
                 ),
                 ListTile(
-                  title: Text(L10n.of(context).deviceName),
+                  title: Text(lang.deviceName),
                   subtitle: Text(item.deviceDisplayName()),
                 ),
                 ListTile(
-                  title: Text(L10n.of(context).language),
+                  title: Text(lang.language),
                   subtitle: Text(item.lang()),
                 ),
               ],
@@ -368,11 +376,11 @@ class NotificationsSettingsPage extends ConsumerWidget {
           actions: <Widget>[
             OutlinedButton(
               onPressed: () => Navigator.pop(context, null),
-              child: Text(L10n.of(context).closeDialog),
+              child: Text(lang.closeDialog),
             ),
             ActerDangerActionButton(
               onPressed: () => _onTargetDelete(context, ref, item),
-              child: Text(L10n.of(context).deleteTarget),
+              child: Text(lang.deleteTarget),
             ),
           ],
         ),
@@ -385,15 +393,16 @@ class NotificationsSettingsPage extends ConsumerWidget {
     WidgetRef ref,
     Pusher item,
   ) async {
+    final lang = L10n.of(context);
     Navigator.pop(context, null);
-    EasyLoading.show(status: L10n.of(context).deletingPushTarget);
+    EasyLoading.show(status: lang.deletingPushTarget);
     try {
       await item.delete();
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).pushTargetDeleted);
+      EasyLoading.showToast(lang.pushTargetDeleted);
       ref.invalidate(possibleEmailToAddForPushProvider);
       ref.invalidate(pushersProvider);
     } catch (e, s) {
@@ -403,7 +412,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).deletionFailed(e),
+        lang.deletionFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

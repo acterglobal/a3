@@ -23,6 +23,7 @@ class EmailAddressCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
       child: ListTile(
@@ -44,7 +45,7 @@ class EmailAddressCard extends ConsumerWidget {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Text(
-                            L10n.of(context).remove,
+                            lang.remove,
                             style: Theme.of(context).textTheme.labelSmall,
                             softWrap: false,
                           ),
@@ -73,7 +74,7 @@ class EmailAddressCard extends ConsumerWidget {
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 10,
                                 ),
-                                child: Text(L10n.of(context).alreadyConfirmed),
+                                child: Text(lang.alreadyConfirmed),
                               ),
                             ],
                           ),
@@ -87,7 +88,7 @@ class EmailAddressCard extends ConsumerWidget {
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 10,
                                 ),
-                                child: Text(L10n.of(context).confirmWithToken),
+                                child: Text(lang.confirmWithToken),
                               ),
                             ],
                           ),
@@ -102,7 +103,7 @@ class EmailAddressCard extends ConsumerWidget {
                                   horizontal: 10,
                                 ),
                                 child: Text(
-                                  L10n.of(context).remove,
+                                  lang.remove,
                                   style: Theme.of(context).textTheme.labelSmall,
                                   softWrap: false,
                                 ),
@@ -120,14 +121,15 @@ class EmailAddressCard extends ConsumerWidget {
   }
 
   void onUnregister(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     showAdaptiveDialog(
       context: context,
       builder: (context) => DefaultDialog(
-        title: Text(L10n.of(context).areYouSureYouWantToUnregisterEmailAddress),
+        title: Text(lang.areYouSureYouWantToUnregisterEmailAddress),
         actions: <Widget>[
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(L10n.of(context).no),
+            child: Text(lang.no),
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
@@ -138,7 +140,7 @@ class EmailAddressCard extends ConsumerWidget {
               if (!context.mounted) return;
               Navigator.pop(context);
             },
-            child: Text(L10n.of(context).yes),
+            child: Text(lang.yes),
           ),
         ],
       ),
@@ -149,6 +151,7 @@ class EmailAddressCard extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
+    final lang = L10n.of(context);
     final account = ref.read(accountProvider);
     final newValue = await showDialog<String>(
       context: context,
@@ -156,7 +159,7 @@ class EmailAddressCard extends ConsumerWidget {
     );
     if (!context.mounted) return;
     if (newValue == null) return;
-    EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
+    EasyLoading.show(status: lang.tryingToConfirmToken);
     try {
       await account.tryConfirmEmailStatus(emailAddress, newValue);
       ref.invalidate(emailAddressesProvider);
@@ -164,7 +167,7 @@ class EmailAddressCard extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
+      EasyLoading.showToast(lang.looksGoodAddressConfirmed);
     } catch (e, s) {
       _log.severe('Failed to confirm token', e, s);
       if (!context.mounted) {
@@ -172,7 +175,7 @@ class EmailAddressCard extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToConfirmToken(e),
+        lang.failedToConfirmToken(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -182,6 +185,7 @@ class EmailAddressCard extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
+    final lang = L10n.of(context);
     final account = ref.read(accountProvider);
     final newValue = await showDialog<EmailConfirm>(
       context: context,
@@ -189,7 +193,7 @@ class EmailAddressCard extends ConsumerWidget {
     );
     if (!context.mounted) return;
     if (newValue == null) return;
-    EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
+    EasyLoading.show(status: lang.tryingToConfirmToken);
     try {
       final result = await account.submitTokenFromEmail(
         emailAddress,
@@ -202,11 +206,11 @@ class EmailAddressCard extends ConsumerWidget {
       }
       if (result) {
         ref.invalidate(emailAddressesProvider);
-        EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
+        EasyLoading.showToast(lang.looksGoodAddressConfirmed);
       } else {
         _log.severe('Invalid token or password');
         EasyLoading.showError(
-          L10n.of(context).invalidTokenOrPassword,
+          lang.invalidTokenOrPassword,
           duration: const Duration(seconds: 3),
         );
       }
@@ -217,7 +221,7 @@ class EmailAddressCard extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToConfirmToken(e),
+        lang.failedToConfirmToken(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -248,8 +252,9 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return AlertDialog(
-      title: Text(L10n.of(context).needYourPasswordToConfirm),
+      title: Text(lang.needYourPasswordToConfirm),
       // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
@@ -262,7 +267,7 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
                 key: PasswordConfirm.passwordConfirmTxt,
                 controller: newPassword,
                 decoration: InputDecoration(
-                  hintText: L10n.of(context).yourPassword,
+                  hintText: lang.yourPassword,
                   suffixIcon: IconButton(
                     onPressed: togglePassword,
                     icon: Icon(
@@ -281,12 +286,12 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
-          child: Text(L10n.of(context).cancel),
+          child: Text(lang.cancel),
         ),
         ActerPrimaryActionButton(
           key: PasswordConfirm.passwordConfirmBtn,
           onPressed: () => onSubmit(context),
-          child: Text(L10n.of(context).submit),
+          child: Text(lang.submit),
         ),
       ],
     );
@@ -320,8 +325,9 @@ class _TokenConfirmState extends State<TokenConfirm> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return AlertDialog(
-      title: Text(L10n.of(context).confirmationToken),
+      title: Text(lang.confirmationToken),
       // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
@@ -332,7 +338,7 @@ class _TokenConfirmState extends State<TokenConfirm> {
               padding: const EdgeInsets.all(5),
               child: TextFormField(
                 controller: tokenField,
-                decoration: InputDecoration(hintText: L10n.of(context).token),
+                decoration: InputDecoration(hintText: lang.token),
               ),
             ),
             Padding(
@@ -340,7 +346,7 @@ class _TokenConfirmState extends State<TokenConfirm> {
               child: TextFormField(
                 controller: newPassword,
                 decoration: InputDecoration(
-                  hintText: L10n.of(context).yourPassword,
+                  hintText: lang.yourPassword,
                   suffixIcon: IconButton(
                     onPressed: togglePassword,
                     icon: Icon(
@@ -359,11 +365,11 @@ class _TokenConfirmState extends State<TokenConfirm> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
-          child: Text(L10n.of(context).cancel),
+          child: Text(lang.cancel),
         ),
         ActerPrimaryActionButton(
           onPressed: () => onSubmit(context),
-          child: Text(L10n.of(context).submit),
+          child: Text(lang.submit),
         ),
       ],
     );
