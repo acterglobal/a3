@@ -80,13 +80,12 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   AppBar _buildAppbar() {
+    final lang = L10n.of(context);
     final currentParentSpace = ref.watch(selectedSpaceIdProvider);
     final parentSelected = currentParentSpace != null;
     return AppBar(
       title: Text(
-        parentSelected
-            ? L10n.of(context).createSubspace
-            : L10n.of(context).createSpace,
+        parentSelected ? lang.createSubspace : lang.createSpace,
       ),
       centerTitle: true,
     );
@@ -157,20 +156,21 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   Widget _buildSpaceNameTextField() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(L10n.of(context).spaceName),
+        Text(lang.spaceName),
         const SizedBox(height: 5),
         InputTextField(
-          hintText: L10n.of(context).typeName,
+          hintText: lang.typeName,
           key: CreateSpaceKeys.titleField,
           textInputType: TextInputType.multiline,
           controller: _spaceNameController,
         ),
         const SizedBox(height: 3),
         Text(
-          L10n.of(context).egGlobalMovement,
+          lang.egGlobalMovement,
           style: Theme.of(context).textTheme.labelSmall!,
         ),
       ],
@@ -199,14 +199,15 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   Widget _buildSpaceDescriptionTextField() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(L10n.of(context).about),
+        Text(lang.about),
         const SizedBox(height: 5),
         InputTextField(
           controller: _spaceDescriptionController,
-          hintText: L10n.of(context).description,
+          hintText: lang.description,
           textInputType: TextInputType.multiline,
           maxLines: 10,
         ),
@@ -215,25 +216,27 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   Widget _buildParentSpace() {
+    final lang = L10n.of(context);
     return SelectSpaceFormField(
       canCheck: 'CanLinkSpaces',
       mandatory: false,
-      title: L10n.of(context).parentSpace,
-      selectTitle: L10n.of(context).selectParentSpace,
-      emptyText: L10n.of(context).optionalParentSpace,
+      title: lang.parentSpace,
+      selectTitle: lang.selectParentSpace,
+      emptyText: lang.optionalParentSpace,
     );
   }
 
   Widget _buildVisibility() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          L10n.of(context).visibilityTitle,
+          lang.visibilityTitle,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         Text(
-          L10n.of(context).visibilitySubtitle,
+          lang.visibilitySubtitle,
           style: Theme.of(context).textTheme.bodySmall!,
         ),
         const SizedBox(height: 10),
@@ -260,47 +263,49 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   Widget selectedVisibility() {
+    final lang = L10n.of(context);
     return switch (ref.watch(_selectedVisibilityProvider)) {
       RoomVisibility.Public => RoomVisibilityItem(
           iconData: Icons.language,
-          title: L10n.of(context).public,
-          subtitle: L10n.of(context).publicVisibilitySubtitle,
+          title: lang.public,
+          subtitle: lang.publicVisibilitySubtitle,
           isShowRadio: false,
         ),
       RoomVisibility.Private => RoomVisibilityItem(
           iconData: Icons.lock,
-          title: L10n.of(context).private,
-          subtitle: L10n.of(context).privateVisibilitySubtitle,
+          title: lang.private,
+          subtitle: lang.privateVisibilitySubtitle,
           isShowRadio: false,
         ),
       RoomVisibility.SpaceVisible => RoomVisibilityItem(
           iconData: Atlas.users,
-          title: L10n.of(context).limited,
-          subtitle: L10n.of(context).limitedVisibilitySubtitle,
+          title: lang.limited,
+          subtitle: lang.limitedVisibilitySubtitle,
           isShowRadio: false,
         ),
       _ => RoomVisibilityItem(
           iconData: Icons.lock,
-          title: L10n.of(context).private,
-          subtitle: L10n.of(context).privateVisibilitySubtitle,
+          title: lang.private,
+          subtitle: lang.privateVisibilitySubtitle,
           isShowRadio: false,
         ),
     };
   }
 
   Widget _buildSpaceActionButtons() {
+    final lang = L10n.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         OutlinedButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(L10n.of(context).cancel),
+          child: Text(lang.cancel),
         ),
         const SizedBox(width: 20),
         ActerPrimaryActionButton(
           key: CreateSpaceKeys.submitBtn,
           onPressed: _handleCreateSpace,
-          child: Text(L10n.of(context).createSpace),
+          child: Text(lang.createSpace),
         ),
       ],
     );

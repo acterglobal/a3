@@ -25,6 +25,7 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Card(
       child: Form(
         key: _formKey,
@@ -33,15 +34,15 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
             key: RedeemToken.redeemTokenField,
             decoration: InputDecoration(
               icon: const Icon(Atlas.plus_ticket_thin),
-              hintText: L10n.of(context).anInviteCodeYouWantToRedeem,
-              labelText: L10n.of(context).inviteCode,
+              hintText: lang.anInviteCodeYouWantToRedeem,
+              labelText: lang.inviteCode,
             ),
             controller: _tokenController,
           ),
           trailing: ActerPrimaryActionButton(
             key: RedeemToken.redeemTokenSubmit,
             onPressed: _submit,
-            child: Text(L10n.of(context).redeem),
+            child: Text(lang.redeem),
           ),
         ),
       ),

@@ -69,6 +69,7 @@ class SubSpacesPage extends ConsumerWidget {
   }
 
   Widget _buildMenuOptions(BuildContext context) {
+    final lang = L10n.of(context);
     return PopupMenuButton(
       icon: Icon(PhosphorIcons.dotsThreeVertical()),
       iconSize: 28,
@@ -84,7 +85,7 @@ class SubSpacesPage extends ConsumerWidget {
             children: <Widget>[
               Icon(PhosphorIcons.plus()),
               const SizedBox(width: 6),
-              Text(L10n.of(context).createSubspace),
+              Text(lang.createSubspace),
             ],
           ),
         ),
@@ -98,7 +99,7 @@ class SubSpacesPage extends ConsumerWidget {
             children: <Widget>[
               Icon(PhosphorIcons.link()),
               const SizedBox(width: 6),
-              Text(L10n.of(context).linkExistingSpace),
+              Text(lang.linkExistingSpace),
             ],
           ),
         ),
@@ -111,7 +112,7 @@ class SubSpacesPage extends ConsumerWidget {
             children: [
               const Icon(Atlas.link_select, size: 18),
               const SizedBox(width: 8),
-              Text(L10n.of(context).recommendedSpaces),
+              Text(lang.recommendedSpaces),
             ],
           ),
         ),
@@ -127,7 +128,7 @@ class SubSpacesPage extends ConsumerWidget {
             children: [
               Icon(PhosphorIcons.dotsSixVertical()),
               const SizedBox(width: 6),
-              Text(L10n.of(context).organize),
+              Text(lang.organize),
             ],
           ),
         ),

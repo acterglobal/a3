@@ -26,6 +26,7 @@ class SpaceToolbar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final isBookmarked =
         ref.watch(spaceIsBookmarkedProvider(spaceId)).valueOrNull ?? false;
@@ -43,7 +44,7 @@ class SpaceToolbar extends ConsumerWidget {
               spaceId: spaceId,
             );
           },
-          child: Text(L10n.of(context).editTitle),
+          child: Text(lang.editTitle),
         ),
       );
     }
@@ -57,7 +58,7 @@ class SpaceToolbar extends ConsumerWidget {
               spaceId: spaceId,
             );
           },
-          child: Text(L10n.of(context).editDescription),
+          child: Text(lang.editDescription),
         ),
       );
     }
@@ -69,14 +70,14 @@ class SpaceToolbar extends ConsumerWidget {
           Routes.spaceSettings.name,
           pathParameters: {'spaceId': spaceId},
         ),
-        child: Text(L10n.of(context).settings),
+        child: Text(lang.settings),
       ),
       const PopupMenuDivider(),
       PopupMenuItem(
         key: leaveMenu,
         onTap: () => showLeaveSpaceDialog(context, ref, spaceId),
         child: Text(
-          L10n.of(context).leaveSpace,
+          lang.leaveSpace,
           style: TextStyle(
             color: Theme.of(context).colorScheme.error,
           ),
@@ -87,7 +88,7 @@ class SpaceToolbar extends ConsumerWidget {
         PopupMenuItem(
           onTap: () => openCloseRoomDialog(context: context, roomId: spaceId),
           child: Text(
-            L10n.of(context).closeSpace,
+            lang.closeSpace,
             style: TextStyle(
               color: Theme.of(context).colorScheme.error,
             ),
@@ -111,7 +112,7 @@ class SpaceToolbar extends ConsumerWidget {
                   Routes.spaceInvite.name,
                   pathParameters: {'spaceId': spaceId},
                 ),
-                child: Text(L10n.of(context).invite),
+                child: Text(lang.invite),
               )
             : const SizedBox.shrink(),
         IconButton(

@@ -21,6 +21,7 @@ class SpacesPage extends ConsumerStatefulWidget {
 class _SpacesPageState extends ConsumerState<SpacesPage> {
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
@@ -39,7 +40,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                     onTap: () => context.pushNamed(Routes.createSpace.name),
                     child: Row(
                       children: <Widget>[
-                        Text(L10n.of(context).createSpace),
+                        Text(lang.createSpace),
                         const Spacer(),
                         const Icon(Atlas.connection),
                       ],
@@ -50,7 +51,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                         context.pushNamed(Routes.searchPublicDirectory.name),
                     child: Row(
                       children: <Widget>[
-                        Text(L10n.of(context).joinSpace),
+                        Text(lang.joinSpace),
                         const Spacer(),
                         const Icon(Atlas.calendar_dots),
                       ],
@@ -59,7 +60,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                 ],
               ),
             ],
-            title: L10n.of(context).spaces,
+            title: lang.spaces,
           ),
           renderSpaceList(context),
         ],
