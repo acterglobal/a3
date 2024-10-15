@@ -299,7 +299,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                   curve: Curves.ease,
                 )
             : () => onPrimaryAction(selectedUsers),
-        contentPadding: const EdgeInsets.only(left: 0),
+        contentPadding: EdgeInsets.zero,
         leading: selectedUsers.isEmpty
             ? ActerAvatar(
                 options: const AvatarOptions(
