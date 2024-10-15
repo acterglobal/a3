@@ -20,7 +20,7 @@ class SasCancelledView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fallbackMsg = L10n.of(context).verificationConclusionCompromised;
+    final lang = L10n.of(context);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -38,13 +38,13 @@ class SasCancelledView extends StatelessWidget {
           const Spacer(),
           Padding(
             padding: const EdgeInsets.all(8),
-            child: Text(message ?? fallbackMsg),
+            child: Text(message ?? lang.verificationConclusionCompromised),
           ),
           const Spacer(),
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.40,
             child: ActerPrimaryActionButton(
-              child: Text(L10n.of(context).sasGotIt),
+              child: Text(lang.sasGotIt),
               onPressed: () => onDone(context),
             ),
           ),
@@ -55,6 +55,7 @@ class SasCancelledView extends StatelessWidget {
   }
 
   Widget buildTitleBar(BuildContext context) {
+    final lang = L10n.of(context);
     // has no close button
     return Row(
       children: [
@@ -63,11 +64,7 @@ class SasCancelledView extends StatelessWidget {
           child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
         ),
         const SizedBox(width: 5),
-        Text(
-          isVerifier
-              ? L10n.of(context).verifyOtherSession
-              : L10n.of(context).verifyThisSession,
-        ),
+        Text(isVerifier ? lang.verifyOtherSession : lang.verifyThisSession),
       ],
     );
   }
