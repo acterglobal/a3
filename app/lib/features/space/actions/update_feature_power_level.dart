@@ -118,9 +118,15 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     final memberStatus = widget.currentPowerLevelName;
     final currentPowerLevel = widget.currentPowerLevel;
-    final lang = L10n.of(context);
+    final label = currentPowerLevel != null
+        ? lang.updateFeaturePowerLevelDialogFromTo(
+            memberStatus,
+            currentPowerLevel,
+          )
+        : lang.updateFeaturePowerLevelDialogFromDefaultTo;
     return AlertDialog(
       title: Text(lang.updateFeaturePowerLevelDialogTitle(widget.featureName)),
       content: Form(
@@ -128,14 +134,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            currentPowerLevel != null
-                ? Text(
-                    lang.updateFeaturePowerLevelDialogFromTo(
-                      memberStatus,
-                      currentPowerLevel,
-                    ),
-                  )
-                : Text(lang.updateFeaturePowerLevelDialogFromDefaultTo),
+            Text(label),
             Padding(
               padding: const EdgeInsets.all(5),
               child: DropdownButtonFormField(

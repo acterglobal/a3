@@ -89,12 +89,13 @@ class SpaceSettingsMenu extends ConsumerWidget {
                   SettingsTile(
                     key: appsMenu,
                     title: Text(lang.notificationsOverwrites),
-                    description: Text(
-                      lang.notificationsOverwritesDescription,
+                    description: Text(lang.notificationsOverwritesDescription),
+                    leading: Icon(
+                      curNotifStatus == 'muted'
+                          ? Atlas.bell_dash_bold
+                          : Atlas.bell_thin,
+                      size: 18,
                     ),
-                    leading: curNotifStatus == 'muted'
-                        ? const Icon(Atlas.bell_dash_bold, size: 18)
-                        : const Icon(Atlas.bell_thin, size: 18),
                     onPressed: (context) {
                       if (!isFullPage && context.isLargeScreen) {
                         context.pushReplacementNamed(
@@ -116,9 +117,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
                 tiles: <SettingsTile>[
                   SettingsTile(
                     title: Text(lang.accessAndVisibility),
-                    description: Text(
-                      lang.spaceConfigurationDescription,
-                    ),
+                    description: Text(lang.spaceConfigurationDescription),
                     leading: const Icon(Atlas.lab_appliance_thin),
                     onPressed: (context) {
                       if (!isFullPage && context.isLargeScreen) {
@@ -137,9 +136,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
                   SettingsTile(
                     key: appsMenu,
                     title: Text(lang.apps),
-                    description: Text(
-                      lang.customizeAppsAndTheirFeatures,
-                    ),
+                    description: Text(lang.customizeAppsAndTheirFeatures),
                     leading: const Icon(Atlas.info_circle_thin),
                     onPressed: (context) {
                       if (!isFullPage && context.isLargeScreen) {

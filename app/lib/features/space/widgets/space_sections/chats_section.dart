@@ -135,12 +135,7 @@ class ChatsSection extends ConsumerWidget {
           showOptions: false,
         ),
         if (config.renderRemote)
-          renderFurther(
-            context,
-            ref,
-            spaceId,
-            config.remoteCount,
-          ),
+          renderFurther(context, ref, spaceId, config.remoteCount),
       ],
     );
   }

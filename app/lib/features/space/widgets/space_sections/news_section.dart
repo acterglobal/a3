@@ -86,8 +86,7 @@ class NewsSection extends ConsumerWidget {
   }
 
   Widget newsItemUI(BuildContext context, NewsEntry newsEntry) {
-    final List<NewsSlide> newsSlides = newsEntry.slides().toList();
-
+    final newsSlides = newsEntry.slides().toList();
     if (newsSlides.isEmpty) return const SizedBox.shrink();
     final slide = newsSlides[0];
 
@@ -99,7 +98,10 @@ class NewsSection extends ConsumerWidget {
       child: Container(
         height: 100,
         margin: const EdgeInsets.all(6),
-        child: NewsSlideItem(slide: slide, showRichContent: false),
+        child: NewsSlideItem(
+          slide: slide,
+          showRichContent: false,
+        ),
       ),
     );
   }

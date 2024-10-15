@@ -70,9 +70,7 @@ class EventsSection extends ConsumerWidget {
       itemCount: count,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return EventItem(event: events[index]);
-      },
+      itemBuilder: (context, index) => EventItem(event: events[index]),
     );
   }
 }

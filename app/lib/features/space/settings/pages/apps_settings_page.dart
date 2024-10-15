@@ -51,9 +51,13 @@ final spaceAppSettingsProvider = FutureProvider.autoDispose
 
 class SpaceAppsSettingsPage extends ConsumerWidget {
   static const tasksSwitch = Key('space-settings-tasks');
+
   final String spaceId;
 
-  const SpaceAppsSettingsPage({super.key, required this.spaceId});
+  const SpaceAppsSettingsPage({
+    super.key,
+    required this.spaceId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -99,13 +103,9 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                   SettingsTile(
                     enabled: canEdit,
                     title: Text(lang.requiredPowerLevel),
-                    description: Text(
-                      lang.minPowerLevelError(lang.boost),
-                    ),
-                    trailing:
-                        currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    description: Text(lang.minPowerLevelError(lang.boost)),
+                    trailing: Text(currentPw != null ? pwText : defaultDesc),
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       currentPw,
@@ -141,10 +141,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     description: Text(
                       lang.minPowerLevelError(lang.pin),
                     ),
-                    trailing:
-                        currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    trailing: Text(currentPw != null ? pwText : defaultDesc),
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       currentPw,
@@ -180,10 +178,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                     description: Text(
                       lang.minPowerLevelError(lang.event),
                     ),
-                    trailing:
-                        currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    trailing: Text(currentPw != null ? pwText : defaultDesc),
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       currentPw,
@@ -196,9 +192,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                   SettingsTile(
                     enabled: false,
                     title: Text(lang.rsvpPowerLevel),
-                    description: Text(
-                      lang.minPowerLevelRsvp,
-                    ),
+                    description: Text(lang.minPowerLevelRsvp),
                     trailing: Text(lang.notYetSupported),
                   ),
                   SettingsTile.switchTile(
@@ -229,14 +223,11 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                   SettingsTile(
                     enabled: canEdit,
                     title: Text(lang.taskListPowerLevel),
-                    description: Text(
-                      lang.minPowerLevelError(lang.taskList),
-                    ),
+                    description: Text(lang.minPowerLevelError(lang.taskList)),
                     trailing: taskListCurrentPw != null
                         ? Text(pwTextTL)
                         : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       taskListCurrentPw,
@@ -249,14 +240,11 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                   SettingsTile(
                     enabled: canEdit,
                     title: Text(lang.tasksPowerLevel),
-                    description: Text(
-                      lang.minPowerLevelError(lang.tasks),
-                    ),
+                    description: Text(lang.minPowerLevelError(lang.tasks)),
                     trailing: tasksCurrentPw != null
                         ? Text(pwTextT)
                         : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       tasksCurrentPw,
@@ -293,7 +281,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       enabled: canEdit,
                       description: Text(lang.postSpaceWiseBoost),
                       initialValue: news.active(),
-                      onToggle: (newVal) async => await setActerFeature(
+                      onToggle: (newVal) => setActerFeature(
                         context,
                         newVal,
                         appSettings,
@@ -307,7 +295,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       enabled: canEdit,
                       description: Text(lang.pinImportantInformation),
                       initialValue: pins.active(),
-                      onToggle: (newVal) async => await setActerFeature(
+                      onToggle: (newVal) => setActerFeature(
                         context,
                         newVal,
                         appSettings,
@@ -321,7 +309,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       enabled: canEdit,
                       description: Text(lang.calenderWithEvents),
                       initialValue: events.active(),
-                      onToggle: (newVal) async => await setActerFeature(
+                      onToggle: (newVal) => setActerFeature(
                         context,
                         newVal,
                         appSettings,
@@ -336,7 +324,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       enabled: canEdit,
                       description: Text(lang.taskList),
                       initialValue: tasks.active(),
-                      onToggle: (newVal) async => await setActerFeature(
+                      onToggle: (newVal) => setActerFeature(
                         context,
                         newVal,
                         appSettings,
@@ -353,7 +341,9 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             ),
           );
         },
-        loading: () => Center(child: Text(lang.loading)),
+        loading: () => Center(
+          child: Text(lang.loading),
+        ),
         error: (e, s) {
           _log.severe('Failed to load space settings', e, s);
           return Center(

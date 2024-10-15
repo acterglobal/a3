@@ -27,6 +27,7 @@ final _log = Logger('a3::space::space_details');
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
   static const headerKey = Key('space-menus-header');
+
   final String spaceId;
 
   const SpaceDetailsPage({
@@ -176,27 +177,25 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         //Header Content UI
         ValueListenableBuilder(
           valueListenable: showHeader,
-          builder: (context, showHeader, child) {
-            return Stack(
-              children: [
-                AnimatedContainer(
-                  height: showHeader ? null : 0,
-                  curve: Curves.easeIn,
-                  duration: const Duration(seconds: 1),
-                  child: SpaceHeader(spaceIdOrAlias: widget.spaceId),
+          builder: (context, showHeader, child) => Stack(
+            children: [
+              AnimatedContainer(
+                height: showHeader ? null : 0,
+                curve: Curves.easeIn,
+                duration: const Duration(seconds: 1),
+                child: SpaceHeader(spaceIdOrAlias: widget.spaceId),
+              ),
+              AnimatedContainer(
+                height: !showHeader ? null : 0,
+                curve: Curves.easeOut,
+                duration: const Duration(seconds: 1),
+                child: SpaceToolbar(
+                  spaceId: widget.spaceId,
+                  spaceTitle: Text(displayName ?? ''),
                 ),
-                AnimatedContainer(
-                  height: !showHeader ? null : 0,
-                  curve: Curves.easeOut,
-                  duration: const Duration(seconds: 1),
-                  child: SpaceToolbar(
-                    spaceId: widget.spaceId,
-                    spaceTitle: Text(displayName ?? ''),
-                  ),
-                ),
-              ],
-            );
-          },
+              ),
+            ],
+          ),
         ),
         //Append menu bar widget
         menuBarWidget,
@@ -207,7 +206,12 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceAvatar() {
     final avatarData =
         ref.watch(roomAvatarProvider(widget.spaceId)).valueOrNull;
-    if (avatarData == null) return Container(height: 200, color: Colors.red);
+    if (avatarData == null) {
+      return Container(
+        height: 200,
+        color: Colors.red,
+      );
+    }
     return Image.memory(
       avatarData.bytes,
       height: 300,
@@ -219,8 +223,15 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceTabMenuUI(BuildContext context, TabEntry tabItem, bool active) {
     return Container(
       key: Key(tabItem.name),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      margin: const EdgeInsets.only(left: 12, top: 12, bottom: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
+      ),
+      margin: const EdgeInsets.only(
+        left: 12,
+        top: 12,
+        bottom: 12,
+      ),
       decoration: BoxDecoration(
         color: active ? Theme.of(context).colorScheme.primary : null,
         borderRadius: BorderRadius.circular(100),

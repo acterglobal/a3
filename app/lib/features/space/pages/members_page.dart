@@ -15,7 +15,10 @@ final _log = Logger('a3::space::members_page');
 class SpaceMembersPage extends ConsumerWidget {
   final String spaceIdOrAlias;
 
-  const SpaceMembersPage({super.key, required this.spaceIdOrAlias});
+  const SpaceMembersPage({
+    super.key,
+    required this.spaceIdOrAlias,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

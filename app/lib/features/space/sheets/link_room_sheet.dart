@@ -30,12 +30,12 @@ enum ChildRoomType {
 }
 
 class LinkRoomPage extends ConsumerStatefulWidget {
+  static const confirmJoinRuleUpdateKey = Key('link-room-confirm-join-rule');
+  static const denyJoinRuleUpdateKey = Key('link-room-deny-join-rule');
+
   final String parentSpaceId;
   final String pageTitle;
   final ChildRoomType childRoomType;
-
-  static const confirmJoinRuleUpdateKey = Key('link-room-confirm-join-rule');
-  static const denyJoinRuleUpdateKey = Key('link-room-deny-join-rule');
 
   const LinkRoomPage({
     super.key,
@@ -112,7 +112,8 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   Widget searchUI() {
     return Search(
       onChanged: (value) {
-        ref.read(roomSearchValueProvider.notifier).update((state) => value);
+        final notifier = ref.read(roomSearchValueProvider.notifier);
+        notifier.update((state) => value);
       },
       searchController: searchTextEditingController,
     );
@@ -214,9 +215,8 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       return searchedSpaceList();
     }
 
-    final spaces =
-        ref.watch(spacesProvider).map((space) => space.getRoomIdStr()).toList();
-    return spaceListUI(spaces);
+    final spaces = ref.watch(spacesProvider);
+    return spaceListUI(spaces.map((space) => space.getRoomIdStr()).toList());
   }
 
 //Show space list based on the search term
@@ -338,15 +338,12 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
     if (!parentCanSee) {
       final spaceAvatarInfo = ref.read(roomAvatarInfoProvider(parentSpaceId));
-      if (!mounted) return;
       final parentSpaceName =
-          // ignore: use_build_context_synchronously
           spaceAvatarInfo.displayName ?? lang.theParentSpace;
       final roomName =
           // ignore: use_build_context_synchronously
           spaceAvatarInfo.displayName ?? lang.theSelectedRooms;
       bool shouldChange = await showDialog(
-        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -400,16 +397,16 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
     //Fetch selected parent space data and add given roomId as child
     final space = await ref.read(spaceProvider(spaceId).future);
-    space.addChildRoom(roomId, false);
+    await space.addChildRoom(roomId, false);
 
     //Make subspace
     if (widget.childRoomType == ChildRoomType.space) {
       //Fetch selected room data and add given parentSpaceId as parent
       final room = await ref.read(maybeRoomProvider(roomId).future);
       if (room != null) {
-        room.addParentRoom(spaceId, true);
-        // ignore: use_build_context_synchronously
-        checkJoinRule(context, room, spaceId);
+        await room.addParentRoom(spaceId, true);
+        if (!context.mounted) return;
+        await checkJoinRule(context, room, spaceId);
       }
     }
 

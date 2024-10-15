@@ -11,7 +11,10 @@ final _log = Logger('a3::space::sections::about');
 class AboutSection extends ConsumerWidget {
   final String spaceId;
 
-  const AboutSection({super.key, required this.spaceId});
+  const AboutSection({
+    super.key,
+    required this.spaceId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,8 +51,8 @@ class AboutSection extends ConsumerWidget {
         return SelectionArea(
           child: GestureDetector(
             onTap: () async {
-              if (await editDescriptionPermissionCheck(ref) &&
-                  context.mounted) {
+              final permitted = await editDescriptionPermissionCheck(ref);
+              if (permitted && context.mounted) {
                 showEditDescriptionBottomSheet(
                   context: context,
                   ref: ref,

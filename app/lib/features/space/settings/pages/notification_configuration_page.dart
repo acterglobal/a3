@@ -10,15 +10,16 @@ import 'package:settings_ui/settings_ui.dart';
 class SpaceNotificationConfigurationPage extends ConsumerWidget {
   final String spaceId;
 
-  const SpaceNotificationConfigurationPage({super.key, required this.spaceId});
+  const SpaceNotificationConfigurationPage({
+    super.key,
+    required this.spaceId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     return WithSidebar(
-      sidebar: SpaceSettingsMenu(
-        spaceId: spaceId,
-      ),
+      sidebar: SpaceSettingsMenu(spaceId: spaceId),
       child: Scaffold(
         appBar: AppBar(
           title: Text(lang.spaceNotifications),

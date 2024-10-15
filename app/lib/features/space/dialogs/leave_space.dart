@@ -14,8 +14,12 @@ final _log = Logger('a3::spaces::leave_space');
 
 const leaveSpaceYesBtn = Key('leave-space-yes-btn');
 
-void showLeaveSpaceDialog(BuildContext context, WidgetRef ref, String spaceId) {
-  showAdaptiveDialog(
+Future<void> showLeaveSpaceDialog(
+  BuildContext context,
+  WidgetRef ref,
+  String spaceId,
+) async {
+  await showAdaptiveDialog(
     barrierDismissible: true,
     context: context,
     useRootNavigator: false,

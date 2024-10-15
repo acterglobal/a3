@@ -64,12 +64,10 @@ class MembersSection extends ConsumerWidget {
       itemCount: count,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return MemberListEntry(
-          memberId: members[index],
-          roomId: spaceId,
-        );
-      },
+      itemBuilder: (context, index) => MemberListEntry(
+        memberId: members[index],
+        roomId: spaceId,
+      ),
     );
   }
 }

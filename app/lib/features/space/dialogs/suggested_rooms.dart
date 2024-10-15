@@ -16,9 +16,8 @@ final _log = Logger('a3::spaces::suggested_rooms');
 
 class _SuggestedRooms extends ConsumerStatefulWidget {
   final String spaceId;
-  const _SuggestedRooms({
-    required this.spaceId,
-  });
+
+  const _SuggestedRooms({required this.spaceId});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -67,18 +66,14 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
               if (selectedRooms != [])
                 ActerInlineTextButton(
                   onPressed: () {
-                    setState(() {
-                      selectedRooms = [];
-                    });
+                    setState(() => selectedRooms = []);
                   },
                   child: Text(lang.unselectAll),
                 ),
               if (selectedRooms != null)
                 ActerInlineTextButton(
                   onPressed: () {
-                    setState(() {
-                      selectedRooms = null;
-                    });
+                    setState(() => selectedRooms = null);
                   },
                   child: Text(lang.selectAll),
                 ),
@@ -112,22 +107,18 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
   }
 
   void _toggle(String roomId) {
-    List<String> newSelectedRooms = selectedRooms ?? [];
-    if (selectedRooms == null) {
-      // we had been an _all_ selection, but now we need to take one out.
-      newSelectedRooms =
-          chatsFound.followedBy(spacesFound).map((e) => e.roomIdStr()).toList();
-    }
+    List<String> newSelectedRooms = selectedRooms != null
+        ? List.from(selectedRooms!)
+        // we had been an _all_ selection, but now we need to take one out.
+        : chatsFound.followedBy(spacesFound).map((e) => e.roomIdStr()).toList();
     if (!newSelectedRooms.remove(roomId)) {
       // was not in, add it new
       newSelectedRooms.add(roomId);
     }
-    setState(() {
-      selectedRooms = newSelectedRooms;
-    });
+    setState(() => selectedRooms = newSelectedRooms);
   }
 
-  void _joinSelected(BuildContext context) async {
+  Future<void> _joinSelected(BuildContext context) async {
     final allRooms = chatsFound.followedBy(spacesFound).toList();
     List<SpaceHierarchyRoomInfo> roomsToJoin = selectedRooms.let(
           (p0) => p0
@@ -230,17 +221,15 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
   }
 }
 
-void showSuggestRoomsDialog(
+Future<void> showSuggestRoomsDialog(
   BuildContext context,
   WidgetRef ref,
   String spaceId,
-) {
-  showAdaptiveDialog(
+) async {
+  await showAdaptiveDialog(
     barrierDismissible: true,
     context: context,
     useRootNavigator: false,
-    builder: (context) => _SuggestedRooms(
-      spaceId: spaceId,
-    ),
+    builder: (context) => _SuggestedRooms(spaceId: spaceId),
   );
 }
