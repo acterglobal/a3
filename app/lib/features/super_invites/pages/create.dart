@@ -32,7 +32,10 @@ class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
 
   final SuperInviteToken? token;
 
-  const CreateSuperInviteTokenPage({super.key, this.token});
+  const CreateSuperInviteTokenPage({
+    super.key,
+    this.token,
+  });
 
   @override
   ConsumerState<CreateSuperInviteTokenPage> createState() =>
@@ -87,7 +90,10 @@ class _CreateSuperInviteTokenPageConsumerState
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 15,
+            vertical: 10,
+          ),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,9 +102,7 @@ class _CreateSuperInviteTokenPageConsumerState
                 isEdit
                     ? ListTile(
                         title: Text(_tokenController.text),
-                        subtitle: Text(
-                          lang.claimedTimes(_acceptedCount),
-                        ),
+                        subtitle: Text(lang.claimedTimes(_acceptedCount)),
                         trailing: IconButton(
                           key: CreateSuperInviteTokenPage.deleteBtn,
                           icon: const Icon(Atlas.trash_can_thin),
@@ -125,13 +129,9 @@ class _CreateSuperInviteTokenPageConsumerState
                 const SizedBox(height: 10),
                 ..._spacesSection(context, spaces),
                 ..._chatsSection(context, chats),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 const Divider(),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 _actionBar(context),
               ],
             ),
@@ -153,9 +153,7 @@ class _CreateSuperInviteTokenPageConsumerState
       if (newSpace != null) {
         if (!_roomIds.contains(newSpace)) {
           tokenUpdater.addRoom(newSpace);
-          setState(
-            () => _roomIds = List.from(_roomIds)..add(newSpace),
-          );
+          setState(() => _roomIds = List.from(_roomIds)..add(newSpace));
         }
       }
     });
@@ -173,9 +171,7 @@ class _CreateSuperInviteTokenPageConsumerState
       if (newSpace != null) {
         if (!_roomIds.contains(newSpace)) {
           tokenUpdater.addRoom(newSpace);
-          setState(
-            () => _roomIds = List.from(_roomIds)..add(newSpace),
-          );
+          setState(() => _roomIds = List.from(_roomIds)..add(newSpace));
         }
       }
     });
@@ -203,9 +199,7 @@ class _CreateSuperInviteTokenPageConsumerState
             ),
         ],
       ),
-      const SizedBox(
-        height: 10,
-      ),
+      const SizedBox(height: 10),
       if (rooms.isNotEmpty)
         _roomsList(context, rooms)
       else
@@ -230,9 +224,7 @@ class _CreateSuperInviteTokenPageConsumerState
           trailing: InkWell(
             onTap: () {
               tokenUpdater.removeRoom(roomId);
-              setState(
-                () => _roomIds = List.from(_roomIds)..remove(roomId),
-              );
+              setState(() => _roomIds = List.from(_roomIds)..remove(roomId));
             },
             child: Icon(
               Atlas.trash_can_thin,
@@ -259,17 +251,13 @@ class _CreateSuperInviteTokenPageConsumerState
               }
             }
           },
-          child: Text(
-            lang.cancel,
-          ),
+          child: Text(lang.cancel),
         ),
         const SizedBox(width: 10),
         ActerPrimaryActionButton(
           key: CreateSuperInviteTokenPage.submitBtn,
           onPressed: _submit,
-          child: Text(
-            isEdit ? lang.save : lang.createCode,
-          ),
+          child: Text(isEdit ? lang.save : lang.createCode),
         ),
       ],
     );
@@ -278,9 +266,7 @@ class _CreateSuperInviteTokenPageConsumerState
   AppBar _buildAppBar(BuildContext context) {
     final lang = L10n.of(context);
     return AppBar(
-      title: Text(
-        isEdit ? lang.editInviteCode : lang.createInviteCode,
-      ),
+      title: Text(isEdit ? lang.editInviteCode : lang.createInviteCode),
     );
   }
 
@@ -294,8 +280,8 @@ class _CreateSuperInviteTokenPageConsumerState
         tokenUpdater.token(tokenTxt);
       }
       // all other changes happen on the object itself;
-      final provider = ref.read(superInvitesProvider);
-      await provider.createOrUpdateToken(tokenUpdater);
+      final superInvites = ref.read(superInvitesProvider);
+      await superInvites.createOrUpdateToken(tokenUpdater);
       ref.invalidate(superInvitesTokensProvider);
       EasyLoading.dismiss();
       if (!mounted) return;
@@ -328,25 +314,19 @@ class _CreateSuperInviteTokenPageConsumerState
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(lang.deleteCode),
-          content: Text(
-            lang.doYouWantToDeleteInviteCode,
-          ),
+          content: Text(lang.doYouWantToDeleteInviteCode),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(
-                lang.no,
-              ),
+              child: Text(lang.no),
             ),
             ActerDangerActionButton(
               key: CreateSuperInviteTokenPage.deleteConfirm,
               onPressed: () async {
                 Navigator.pop(context, true);
               },
-              child: Text(
-                lang.delete,
-              ),
+              child: Text(lang.delete),
             ),
           ],
         );

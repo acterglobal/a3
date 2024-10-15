@@ -25,9 +25,13 @@ class SubSpacesPage extends ConsumerWidget {
   static const moreOptionKey = Key('sub-spaces-more-actions');
   static const createSubspaceKey = Key('sub-spaces-more-create-subspace');
   static const linkSubspaceKey = Key('sub-spaces-more-link-subspace');
+
   final String spaceId;
 
-  const SubSpacesPage({super.key, required this.spaceId});
+  const SubSpacesPage({
+    super.key,
+    required this.spaceId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -110,7 +114,10 @@ class SubSpacesPage extends ConsumerWidget {
           ),
           child: Row(
             children: [
-              const Icon(Atlas.link_select, size: 18),
+              const Icon(
+                Atlas.link_select,
+                size: 18,
+              ),
               const SizedBox(width: 8),
               Text(lang.recommendedSpaces),
             ],
@@ -151,12 +158,14 @@ class SubSpacesPage extends ConsumerWidget {
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
         itemCount: categoryList.length,
-        itemBuilder: (BuildContext context, int index) =>
+        itemBuilder: (context, index) =>
             _buildCategoriesList(context, ref, categoryList[index]),
       ),
       error: (e, s) {
         _log.severe('Failed to load the sub-spaces', e, s);
-        return Center(child: Text(L10n.of(context).loadingFailed(e)));
+        return Center(
+          child: Text(L10n.of(context).loadingFailed(e)),
+        );
       },
       loading: () => const GeneralListSkeletonWidget(),
     );
@@ -265,7 +274,10 @@ class SubSpacesPage extends ConsumerWidget {
               parentId: spaceId,
               isSuggested: isSuggested,
             ),
-            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+            margin: const EdgeInsets.symmetric(
+              vertical: 2,
+              horizontal: 8,
+            ),
           );
         }),
       ),

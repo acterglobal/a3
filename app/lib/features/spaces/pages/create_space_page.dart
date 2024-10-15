@@ -24,9 +24,13 @@ final _selectedVisibilityProvider =
 
 class CreateSpacePage extends ConsumerStatefulWidget {
   static const permissionsKey = Key('create-space-permissions-key');
+
   final String? initialParentsSpaceId;
 
-  const CreateSpacePage({super.key, this.initialParentsSpaceId});
+  const CreateSpacePage({
+    super.key,
+    this.initialParentsSpaceId,
+  });
 
   @override
   ConsumerState<CreateSpacePage> createState() =>
@@ -55,18 +59,20 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       //Set default visibility based on the parent space selection
       // PRIVATE : If no parent is selected
       // SPACE VISIBLE : If parent space is selected
-      ref.read(_selectedVisibilityProvider.notifier).update(
-            (state) => widget.initialParentsSpaceId != null
-                ? RoomVisibility.SpaceVisible
-                : RoomVisibility.Private,
-          );
+      final visibleNotifier = ref.read(_selectedVisibilityProvider.notifier);
+      visibleNotifier.update(
+        (state) => widget.initialParentsSpaceId != null
+            ? RoomVisibility.SpaceVisible
+            : RoomVisibility.Private,
+      );
       //LISTEN for changes on parent space selection
       ref.listenManual(selectedSpaceIdProvider, (previous, next) {
-        ref.read(_selectedVisibilityProvider.notifier).update(
-              (state) => next != null
-                  ? RoomVisibility.SpaceVisible
-                  : RoomVisibility.Private,
-            );
+        final visibleNotifier = ref.read(_selectedVisibilityProvider.notifier);
+        visibleNotifier.update(
+          (state) => next != null
+              ? RoomVisibility.SpaceVisible
+              : RoomVisibility.Private,
+        );
       });
     });
   }
@@ -84,9 +90,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     final currentParentSpace = ref.watch(selectedSpaceIdProvider);
     final parentSelected = currentParentSpace != null;
     return AppBar(
-      title: Text(
-        parentSelected ? lang.createSubspace : lang.createSpace,
-      ),
+      title: Text(parentSelected ? lang.createSubspace : lang.createSpace),
       centerTitle: true,
     );
   }
@@ -95,7 +99,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     return SingleChildScrollView(
       child: Center(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           constraints: const BoxConstraints(maxWidth: 500),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,17 +184,15 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   Widget _buildDefaultChatField() {
     return InkWell(
       onTap: () {
-        setState(() {
-          createDefaultChat = !createDefaultChat;
-        });
+        setState(() => createDefaultChat = !createDefaultChat);
       },
       child: Row(
         children: [
           Switch(
             value: createDefaultChat,
-            onChanged: (newValue) => setState(() {
-              createDefaultChat = newValue;
-            }),
+            onChanged: (newValue) {
+              setState(() => createDefaultChat = newValue);
+            },
           ),
           Text(L10n.of(context).createDefaultChat),
         ],
@@ -244,16 +246,15 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
           key: CreateSpacePage.permissionsKey,
           onTap: () async {
             final spaceVisibility = ref.read(_selectedVisibilityProvider);
+            final selectedSpace = ref.read(selectedSpaceIdProvider);
             final selected = await selectVisibilityDrawer(
               context: context,
               selectedVisibilityEnum: spaceVisibility,
-              isLimitedVisibilityShow:
-                  ref.read(selectedSpaceIdProvider) != null,
+              isLimitedVisibilityShow: selectedSpace != null,
             );
             if (selected != null) {
-              ref
-                  .read(_selectedVisibilityProvider.notifier)
-                  .update((state) => selected);
+              final notifier = ref.read(_selectedVisibilityProvider.notifier);
+              notifier.update((state) => selected);
             }
           },
           child: selectedVisibility(),

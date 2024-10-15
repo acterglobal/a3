@@ -26,9 +26,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
     return AlertDialog(
       title: Text(lang.redeem),
       content: Container(
-        constraints: const BoxConstraints(
-          maxWidth: 500,
-        ),
+        constraints: const BoxConstraints(maxWidth: 500),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
@@ -40,9 +38,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
                 final errorStr = e.toString();
                 if (errorStr.contains('error: [404]')) {
                   // Server doesn’t yet support previewing
-                  return Text(
-                    lang.superInvitesPreviewMissing(token),
-                  );
+                  return Text(lang.superInvitesPreviewMissing(token));
                 }
                 if (errorStr.contains('error: [403]')) {
                   // 403 means we can’t use that anymore
@@ -86,16 +82,13 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
     final lang = L10n.of(context);
     final displayName = info.inviterDisplayNameStr();
     final userId = info.inviterUserIdStr();
+    final inviter = displayName != null ? '$displayName ($userId)' : userId;
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Card(
         child: ListTile(
           key: redeemInfoKey,
-          title: Text(
-            lang.superInvitedBy(
-              displayName != null ? '$displayName ($userId)' : userId,
-            ),
-          ),
+          title: Text(lang.superInvitedBy(inviter)),
           subtitle: Text(lang.superInvitedTo(info.roomsCount())),
           leading: ActerAvatar(
             options: AvatarOptions.DM(
@@ -122,10 +115,11 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(
-        lang.addedToSpacesAndChats(rooms.length),
-      );
-      Navigator.of(context, rootNavigator: true).pop(true);
+      EasyLoading.showToast(lang.addedToSpacesAndChats(rooms.length));
+      Navigator.of(
+        context,
+        rootNavigator: true,
+      ).pop(true);
     } catch (e, s) {
       _log.severe('Failed to redeem', e, s);
       if (!context.mounted) {

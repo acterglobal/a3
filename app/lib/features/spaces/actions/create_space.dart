@@ -50,7 +50,8 @@ Future<String?> createSpace(
       config.setVisibility(roomVisibility.name);
     }
     final client = ref.read(alwaysClientProvider);
-    final roomId = (await client.createActerSpace(config.build())).toString();
+    final result = await client.createActerSpace(config.build());
+    final roomId = result.toString();
     if (parentRoomId != null) {
       final space = await ref.read(spaceProvider(parentRoomId).future);
       await space.addChildRoom(roomId, false);

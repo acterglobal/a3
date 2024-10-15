@@ -9,9 +9,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class RedeemToken extends ConsumerStatefulWidget {
   static Key redeemTokenField = const Key('super-invites-redeem-txt');
   static Key redeemTokenSubmit = const Key('super-invites-redeem-submit');
+
   final SuperInvitesTokenUpdateBuilder? tokenUpdater;
 
-  const RedeemToken({super.key, this.tokenUpdater});
+  const RedeemToken({
+    super.key,
+    this.tokenUpdater,
+  });
 
   @override
   ConsumerState<RedeemToken> createState() => _RedeemTokenConsumerState();

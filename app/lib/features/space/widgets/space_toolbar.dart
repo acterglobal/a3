@@ -78,20 +78,19 @@ class SpaceToolbar extends ConsumerWidget {
         onTap: () => showLeaveSpaceDialog(context, ref, spaceId),
         child: Text(
           lang.leaveSpace,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.error,
-          ),
+          style: TextStyle(color: Theme.of(context).colorScheme.error),
         ),
       ),
       if (membership?.canString('CanKick') == true &&
           membership?.canString('CanUpdateJoinRule') == true)
         PopupMenuItem(
-          onTap: () => openCloseRoomDialog(context: context, roomId: spaceId),
+          onTap: () => openCloseRoomDialog(
+            context: context,
+            roomId: spaceId,
+          ),
           child: Text(
             lang.closeSpace,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.error,
-            ),
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
         ),
     ]);
@@ -119,8 +118,7 @@ class SpaceToolbar extends ConsumerWidget {
           icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
           onPressed: () async {
             final bookmarked =
-                ref.read(spaceIsBookmarkedProvider(spaceId)).valueOrNull ??
-                    false;
+                await ref.read(spaceIsBookmarkedProvider(spaceId).future);
             final space = await ref.read(spaceProvider(spaceId).future);
             await space.setBookmarked(!bookmarked);
           },

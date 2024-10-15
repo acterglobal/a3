@@ -24,11 +24,11 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
     final lang = L10n.of(context);
     return Scaffold(
       body: CustomScrollView(
-        slivers: <Widget>[
+        slivers: [
           PageHeaderWidget(
             centerTitle: true,
             expandedHeight: 0,
-            actions: <Widget>[
+            actions: [
               PopupMenuButton(
                 key: SpacesKeys.mainActions,
                 icon: const Icon(Atlas.plus_circle),
@@ -47,8 +47,9 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                     ),
                   ),
                   PopupMenuItem(
-                    onTap: () =>
-                        context.pushNamed(Routes.searchPublicDirectory.name),
+                    onTap: () {
+                      context.pushNamed(Routes.searchPublicDirectory.name);
+                    },
                     child: Row(
                       children: <Widget>[
                         Text(lang.joinSpace),
@@ -83,12 +84,9 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
         childAspectRatio: 4,
       ),
       itemBuilder: (context, index) {
-        String roomId;
-        if (index < bookmarked.length) {
-          roomId = bookmarked[index].getRoomIdStr();
-        } else {
-          roomId = others[index - bookmarked.length].getRoomIdStr();
-        }
+        String roomId = index < bookmarked.length
+            ? bookmarked[index].getRoomIdStr()
+            : others[index - bookmarked.length].getRoomIdStr();
         return RoomCard(
           onTap: () => context.pushNamed(
             Routes.space.name,
