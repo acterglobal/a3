@@ -52,6 +52,7 @@ bool isJoined(String userId, List<String> joined) {
 
 class _RoomName extends ConsumerWidget {
   final String roomId;
+
   const _RoomName({required this.roomId});
 
   @override
@@ -61,9 +62,7 @@ class _RoomName extends ConsumerWidget {
     if (isDirectChat) {
       return Text(
         L10n.of(context).dmChat,
-        style: const TextStyle(
-          fontStyle: FontStyle.italic,
-        ),
+        style: const TextStyle(fontStyle: FontStyle.italic),
       );
     }
     return Text(
@@ -209,7 +208,10 @@ class UserBuilder extends ConsumerWidget {
       children: [
         tile,
         Padding(
-          padding: const EdgeInsets.only(left: 25, bottom: 10),
+          padding: const EdgeInsets.only(
+            left: 25,
+            bottom: 10,
+          ),
           child: sharedRoomsRow,
         ),
       ],

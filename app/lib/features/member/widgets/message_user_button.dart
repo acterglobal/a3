@@ -12,7 +12,10 @@ import 'package:go_router/go_router.dart';
 class MessageUserButton extends ConsumerWidget {
   final Member member;
 
-  const MessageUserButton({super.key, required this.member});
+  const MessageUserButton({
+    super.key,
+    required this.member,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,9 +39,8 @@ class MessageUserButton extends ConsumerWidget {
           icon: const Icon(Atlas.chats_thin),
           onPressed: () {
             final profile = member.getProfile();
-            ref.read(createChatSelectedUsersProvider.notifier).state = [
-              profile,
-            ];
+            final notifier = ref.read(createChatSelectedUsersProvider.notifier);
+            notifier.state = [profile];
             Navigator.pop(context);
             context.pushNamed(Routes.createChat.name);
           },

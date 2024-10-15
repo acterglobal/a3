@@ -21,9 +21,7 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
             text: lang.youAreAboutToUnblock(userId),
             style: Theme.of(context).textTheme.headlineMedium,
             children: <TextSpan>[
-              TextSpan(
-                text: lang.thisWillAllowThemToContactYouAgain,
-              ),
+              TextSpan(text: lang.thisWillAllowThemToContactYouAgain),
               TextSpan(text: lang.continueQuestion),
             ],
           ),

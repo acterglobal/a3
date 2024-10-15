@@ -68,9 +68,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
           children: [
             Text(lang.changeThePowerLevelOf),
             Text(member.userId().toString()),
-            Text(
-              lang.changeThePowerFromTo(memberStatus, currentPowerLevel),
-            ),
+            Text(lang.changeThePowerFromTo(memberStatus, currentPowerLevel)),
             Padding(
               padding: const EdgeInsets.all(5),
               child: DropdownButtonFormField(
@@ -113,9 +111,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                   keyboardType:
                       const TextInputType.numberWithOptions(signed: true),
                   // Only numbers
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   // required field under custom
                   validator: (val) {
                     if (currentMemberStatus == 'Custom') {
@@ -126,9 +122,9 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                       if (level == null) {
                         return lang.youNeedToEnterCustomValueAsNumber;
                       }
-                      if (level > widget.maxPowerLevel) {
-                        return lang
-                            .youCantExceedPowerLevel(widget.maxPowerLevel);
+                      final maxPowerLevel = widget.maxPowerLevel;
+                      if (level > maxPowerLevel) {
+                        return lang.youCantExceedPowerLevel(maxPowerLevel);
                       }
                     }
                     return null;

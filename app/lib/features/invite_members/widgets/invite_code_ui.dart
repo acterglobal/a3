@@ -19,7 +19,11 @@ final _log = Logger('a3::invite::invite_code');
 
 class InviteCodeUI extends ConsumerStatefulWidget {
   final String roomId;
-  const InviteCodeUI({super.key, required this.roomId});
+
+  const InviteCodeUI({
+    super.key,
+    required this.roomId,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _InviteCodeUIState();
@@ -100,13 +104,11 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
                 ),
               ),
               IconButton(
-                onPressed: () {
-                  Clipboard.setData(
+                onPressed: () async {
+                  await Clipboard.setData(
                     ClipboardData(text: inviteCode),
                   );
-                  EasyLoading.showToast(
-                    lang.inviteCopiedToClipboard,
-                  );
+                  EasyLoading.showToast(lang.inviteCopiedToClipboard);
                 },
                 icon: const Icon(Icons.copy),
               ),
@@ -131,9 +133,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
                 extra: token,
               );
             },
-            child: Text(
-              lang.manage,
-            ),
+            child: Text(lang.manage),
           ),
         ),
         const SizedBox(height: 10),
@@ -199,9 +199,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
                       title: Text(invite.token()),
                       subtitle: Text(lang.moreRooms(otherRoomsCount)),
                       onTap: () {
-                        setState(() {
-                          selectedToken = invite;
-                        });
+                        setState(() => selectedToken = invite);
                         Navigator.pop(context, null);
                       },
                     );

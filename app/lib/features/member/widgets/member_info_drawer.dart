@@ -77,7 +77,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     );
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -283,7 +283,8 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     return GestureDetector(
       onTap: () async {
         Navigator.pop(context); // close the drawer
-        Clipboard.setData(ClipboardData(text: memberId));
+        await Clipboard.setData(ClipboardData(text: memberId));
+        if (!context.mounted) return;
         EasyLoading.showToast(L10n.of(context).usernameCopiedToClipboard);
       },
       child: Row(
@@ -324,7 +325,7 @@ class MemberInfoDrawer extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to load room member', e, s);
         return Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20),
           child: Text(L10n.of(context).errorLoadingProfile(e)),
         );
       },
