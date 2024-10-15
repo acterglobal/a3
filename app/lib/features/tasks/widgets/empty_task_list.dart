@@ -17,7 +17,10 @@ class EmptyTaskList extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 40),
-            const Icon(Atlas.list, size: 50.0),
+            const Icon(
+              Atlas.list,
+              size: 50,
+            ),
             const SizedBox(height: 20),
             Text(
               lang.emptyTaskList,

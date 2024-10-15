@@ -53,7 +53,10 @@ class TaskItem extends ConsumerWidget {
         horizontalTitleGap: 0,
         minVerticalPadding: 0,
         contentPadding: const EdgeInsets.all(3),
-        visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+        visualDensity: const VisualDensity(
+          horizontal: 0,
+          vertical: -4,
+        ),
         minLeadingWidth: 35,
         leading: leadingWidget(task),
         title: takeItemTitle(context, task),
