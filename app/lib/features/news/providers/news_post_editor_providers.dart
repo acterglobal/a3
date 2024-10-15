@@ -49,6 +49,14 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     state = state.copyWith(newsPostSpaceId: spaceId);
   }
 
+  void clear() {
+    state = const NewsPostState();
+  }
+
+  bool isEmpty() {
+    return state == const NewsPostState();
+  }
+
   Future<void> selectEventToShare(BuildContext context) async {
     final lang = L10n.of(context);
     final newsPostSpaceId = state.newsPostSpaceId ??

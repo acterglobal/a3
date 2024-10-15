@@ -39,4 +39,6 @@ class NewsUpdateKeys {
 
   // Remove Button
   static const removeButton = Key('news-remove-btn');
+
+  static const closeEditor = Key('news-editor-close');
 }
