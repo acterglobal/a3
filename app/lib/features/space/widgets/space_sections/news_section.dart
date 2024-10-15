@@ -26,17 +26,18 @@ class NewsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final newsLoader = ref.watch(newsListProvider(spaceId));
     return newsLoader.when(
       data: (news) => buildNewsSectionUI(context, news),
       error: (e, s) {
         _log.severe('Failed to load boosts in space', e, s);
         return Center(
-          child: Text(L10n.of(context).loadingFailed(e)),
+          child: Text(lang.loadingFailed(e)),
         );
       },
       loading: () => Center(
-        child: Text(L10n.of(context).loading),
+        child: Text(lang.loading),
       ),
     );
   }
@@ -85,8 +86,7 @@ class NewsSection extends ConsumerWidget {
   }
 
   Widget newsItemUI(BuildContext context, NewsEntry newsEntry) {
-    final List<NewsSlide> newsSlides = newsEntry.slides().toList();
-
+    final newsSlides = newsEntry.slides().toList();
     if (newsSlides.isEmpty) return const SizedBox.shrink();
     final slide = newsSlides[0];
 
@@ -98,7 +98,10 @@ class NewsSection extends ConsumerWidget {
       child: Container(
         height: 100,
         margin: const EdgeInsets.all(6),
-        child: NewsSlideItem(slide: slide, showRichContent: false),
+        child: NewsSlideItem(
+          slide: slide,
+          showRichContent: false,
+        ),
       ),
     );
   }

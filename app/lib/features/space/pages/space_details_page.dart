@@ -29,6 +29,7 @@ final _log = Logger('a3::space::space_details');
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
   static const headerKey = Key('space-menus-header');
+
   final String spaceId;
 
   const SpaceDetailsPage({
@@ -178,27 +179,25 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         //Header Content UI
         ValueListenableBuilder(
           valueListenable: showHeader,
-          builder: (context, showHeader, child) {
-            return Stack(
-              children: [
-                AnimatedContainer(
-                  height: showHeader ? null : 0,
-                  curve: Curves.easeIn,
-                  duration: const Duration(seconds: 1),
-                  child: SpaceHeader(spaceIdOrAlias: widget.spaceId),
+          builder: (context, showHeader, child) => Stack(
+            children: [
+              AnimatedContainer(
+                height: showHeader ? null : 0,
+                curve: Curves.easeIn,
+                duration: const Duration(seconds: 1),
+                child: SpaceHeader(spaceIdOrAlias: widget.spaceId),
+              ),
+              AnimatedContainer(
+                height: !showHeader ? null : 0,
+                curve: Curves.easeOut,
+                duration: const Duration(seconds: 1),
+                child: SpaceToolbar(
+                  spaceId: widget.spaceId,
+                  spaceTitle: Text(displayName ?? ''),
                 ),
-                AnimatedContainer(
-                  height: !showHeader ? null : 0,
-                  curve: Curves.easeOut,
-                  duration: const Duration(seconds: 1),
-                  child: SpaceToolbar(
-                    spaceId: widget.spaceId,
-                    spaceTitle: Text(displayName ?? ''),
-                  ),
-                ),
-              ],
-            );
-          },
+              ),
+            ],
+          ),
         ),
         //Append menu bar widget
         menuBarWidget,
@@ -209,7 +208,12 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceAvatar() {
     final avatarData =
         ref.watch(roomAvatarProvider(widget.spaceId)).valueOrNull;
-    if (avatarData == null) return Container(height: 200, color: Colors.red);
+    if (avatarData == null) {
+      return Container(
+        height: 200,
+        color: Colors.red,
+      );
+    }
     return Image.memory(
       avatarData.bytes,
       height: 300,
@@ -221,8 +225,15 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceTabMenuUI(BuildContext context, TabEntry tabItem, bool active) {
     return Container(
       key: Key(tabItem.name),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      margin: const EdgeInsets.only(left: 12, top: 12, bottom: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
+      ),
+      margin: const EdgeInsets.only(
+        left: 12,
+        top: 12,
+        bottom: 12,
+      ),
       decoration: BoxDecoration(
         color: active ? Theme.of(context).colorScheme.primary : null,
         borderRadius: BorderRadius.circular(100),
@@ -232,15 +243,16 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   }
 
   String itemLabel(BuildContext context, TabEntry tabItem) {
+    final lang = L10n.of(context);
     return switch (tabItem) {
-      TabEntry.overview => L10n.of(context).overview,
-      TabEntry.pins => L10n.of(context).pins,
-      TabEntry.tasks => L10n.of(context).tasks,
-      TabEntry.events => L10n.of(context).events,
-      TabEntry.news => L10n.of(context).boosts,
-      TabEntry.chats => L10n.of(context).chats,
-      TabEntry.spaces => L10n.of(context).spaces,
-      TabEntry.members => L10n.of(context).members,
+      TabEntry.overview => lang.overview,
+      TabEntry.pins => lang.pins,
+      TabEntry.tasks => lang.tasks,
+      TabEntry.events => lang.events,
+      TabEntry.news => lang.boosts,
+      TabEntry.chats => lang.chats,
+      TabEntry.spaces => lang.spaces,
+      TabEntry.members => lang.members,
       TabEntry.actions => '...',
     };
   }

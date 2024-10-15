@@ -51,12 +51,17 @@ final spaceAppSettingsProvider = FutureProvider.autoDispose
 
 class SpaceAppsSettingsPage extends ConsumerWidget {
   static const tasksSwitch = Key('space-settings-tasks');
+
   final String spaceId;
 
-  const SpaceAppsSettingsPage({super.key, required this.spaceId});
+  const SpaceAppsSettingsPage({
+    super.key,
+    required this.spaceId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final settingsLoader = ref.watch(spaceAppSettingsProvider(spaceId));
 
     return WithSidebar(
@@ -93,31 +98,26 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 : 'Custom ($currentPw)';
             moreSections.add(
               SettingsSection(
-                title: Text(L10n.of(context).boosts),
+                title: Text(lang.boosts),
                 tiles: [
                   SettingsTile(
                     enabled: canEdit,
-                    title: Text(L10n.of(context).requiredPowerLevel),
-                    description: Text(
-                      L10n.of(context)
-                          .minPowerLevelError(L10n.of(context).boost),
-                    ),
-                    trailing:
-                        currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    title: Text(lang.requiredPowerLevel),
+                    description: Text(lang.minPowerLevelError(lang.boost)),
+                    trailing: Text(currentPw != null ? pwText : defaultDesc),
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       currentPw,
                       space,
                       powerLevels,
                       powerLevels.newsKey(),
-                      L10n.of(context).boosts,
+                      lang.boosts,
                     ),
                   ),
                   SettingsTile.switchTile(
-                    title: Text(L10n.of(context).commentsOnBoost),
-                    description: Text(L10n.of(context).notYetSupported),
+                    title: Text(lang.commentsOnBoost),
+                    description: Text(lang.notYetSupported),
                     enabled: false,
                     initialValue: false,
                     onToggle: (newVal) {},
@@ -133,30 +133,28 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 : 'Custom ($currentPw)';
             moreSections.add(
               SettingsSection(
-                title: Text(L10n.of(context).pin),
+                title: Text(lang.pin),
                 tiles: [
                   SettingsTile(
                     enabled: canEdit,
-                    title: Text(L10n.of(context).requiredPowerLevel),
+                    title: Text(lang.requiredPowerLevel),
                     description: Text(
-                      L10n.of(context).minPowerLevelError(L10n.of(context).pin),
+                      lang.minPowerLevelError(lang.pin),
                     ),
-                    trailing:
-                        currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    trailing: Text(currentPw != null ? pwText : defaultDesc),
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       currentPw,
                       space,
                       powerLevels,
                       powerLevels.pinsKey(),
-                      L10n.of(context).pins,
+                      lang.pins,
                     ),
                   ),
                   SettingsTile.switchTile(
-                    title: Text(L10n.of(context).commentsOnPin),
-                    description: Text(L10n.of(context).notYetSupported),
+                    title: Text(lang.commentsOnPin),
+                    description: Text(lang.notYetSupported),
                     enabled: false,
                     initialValue: false,
                     onToggle: (newVal) {},
@@ -172,39 +170,34 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 : 'Custom ($currentPw)';
             moreSections.add(
               SettingsSection(
-                title: Text(L10n.of(context).events),
+                title: Text(lang.events),
                 tiles: [
                   SettingsTile(
                     enabled: canEdit,
-                    title: Text(L10n.of(context).adminPowerLevel),
+                    title: Text(lang.adminPowerLevel),
                     description: Text(
-                      L10n.of(context)
-                          .minPowerLevelError(L10n.of(context).event),
+                      lang.minPowerLevelError(lang.event),
                     ),
-                    trailing:
-                        currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    trailing: Text(currentPw != null ? pwText : defaultDesc),
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       currentPw,
                       space,
                       powerLevels,
                       powerLevels.eventsKey(),
-                      L10n.of(context).events,
+                      lang.events,
                     ),
                   ),
                   SettingsTile(
                     enabled: false,
-                    title: Text(L10n.of(context).rsvpPowerLevel),
-                    description: Text(
-                      L10n.of(context).minPowerLevelRsvp,
-                    ),
-                    trailing: Text(L10n.of(context).notYetSupported),
+                    title: Text(lang.rsvpPowerLevel),
+                    description: Text(lang.minPowerLevelRsvp),
+                    trailing: Text(lang.notYetSupported),
                   ),
                   SettingsTile.switchTile(
-                    title: Text(L10n.of(context).comments),
-                    description: Text(L10n.of(context).notYetSupported),
+                    title: Text(lang.comments),
+                    description: Text(lang.notYetSupported),
                     enabled: false,
                     initialValue: false,
                     onToggle: (newVal) {},
@@ -225,53 +218,45 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 : 'Custom ($tasksCurrentPw)';
             moreSections.add(
               SettingsSection(
-                title: Text(L10n.of(context).tasks),
+                title: Text(lang.tasks),
                 tiles: [
                   SettingsTile(
                     enabled: canEdit,
-                    title: Text(L10n.of(context).taskListPowerLevel),
-                    description: Text(
-                      L10n.of(context)
-                          .minPowerLevelError(L10n.of(context).taskList),
-                    ),
+                    title: Text(lang.taskListPowerLevel),
+                    description: Text(lang.minPowerLevelError(lang.taskList)),
                     trailing: taskListCurrentPw != null
                         ? Text(pwTextTL)
                         : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       taskListCurrentPw,
                       space,
                       powerLevels,
                       powerLevels.taskListsKey(),
-                      L10n.of(context).taskList,
+                      lang.taskList,
                     ),
                   ),
                   SettingsTile(
                     enabled: canEdit,
-                    title: Text(L10n.of(context).tasksPowerLevel),
-                    description: Text(
-                      L10n.of(context)
-                          .minPowerLevelError(L10n.of(context).tasks),
-                    ),
+                    title: Text(lang.tasksPowerLevel),
+                    description: Text(lang.minPowerLevelError(lang.tasks)),
                     trailing: tasksCurrentPw != null
                         ? Text(pwTextT)
                         : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await updateFeatureLevelChangeDialog(
+                    onPressed: (context) => updateFeatureLevelChangeDialog(
                       context,
                       maxPowerLevel,
                       tasksCurrentPw,
                       space,
                       powerLevels,
                       powerLevels.tasksKey(),
-                      L10n.of(context).tasks,
+                      lang.tasks,
                     ),
                   ),
                   SettingsTile.switchTile(
-                    title: Text(L10n.of(context).comments),
-                    description: Text(L10n.of(context).notYetSupported),
+                    title: Text(lang.comments),
+                    description: Text(lang.notYetSupported),
                     enabled: false,
                     initialValue: false,
                     onToggle: (newVal) {},
@@ -283,70 +268,69 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
 
           return Scaffold(
             appBar: AppBar(
-              title: Text(L10n.of(context).appSettings),
+              title: Text(lang.appSettings),
               automaticallyImplyLeading: !context.isLargeScreen,
             ),
             body: SettingsList(
               sections: [
                 SettingsSection(
-                  title: Text(L10n.of(context).activeApps),
+                  title: Text(lang.activeApps),
                   tiles: [
                     SettingsTile.switchTile(
-                      title: Text(L10n.of(context).boost),
+                      title: Text(lang.boost),
                       enabled: canEdit,
-                      description: Text(L10n.of(context).postSpaceWiseBoost),
+                      description: Text(lang.postSpaceWiseBoost),
                       initialValue: news.active(),
-                      onToggle: (newVal) async => await setActerFeature(
+                      onToggle: (newVal) => setActerFeature(
                         context,
                         newVal,
                         appSettings,
                         space,
                         SpaceFeature.boosts,
-                        L10n.of(context).boosts,
+                        lang.boosts,
                       ),
                     ),
                     SettingsTile.switchTile(
-                      title: Text(L10n.of(context).pin),
+                      title: Text(lang.pin),
                       enabled: canEdit,
-                      description:
-                          Text(L10n.of(context).pinImportantInformation),
+                      description: Text(lang.pinImportantInformation),
                       initialValue: pins.active(),
-                      onToggle: (newVal) async => await setActerFeature(
+                      onToggle: (newVal) => setActerFeature(
                         context,
                         newVal,
                         appSettings,
                         space,
                         SpaceFeature.pins,
-                        L10n.of(context).pins,
+                        lang.pins,
                       ),
                     ),
                     SettingsTile.switchTile(
-                      title: Text(L10n.of(context).events),
+                      title: Text(lang.events),
                       enabled: canEdit,
-                      description: Text(L10n.of(context).calenderWithEvents),
+                      description: Text(lang.calenderWithEvents),
                       initialValue: events.active(),
-                      onToggle: (newVal) async => await setActerFeature(
+                      onToggle: (newVal) => setActerFeature(
                         context,
                         newVal,
                         appSettings,
                         space,
                         SpaceFeature.events,
-                        L10n.of(context).event,
+                        lang.event,
                       ),
                     ),
                     SettingsTile.switchTile(
-                      title: Text(L10n.of(context).tasks),
+                      title: Text(lang.tasks),
                       key: tasksSwitch,
                       enabled: canEdit,
-                      description: Text(L10n.of(context).taskList),
+                      description: Text(lang.taskList),
                       initialValue: tasks.active(),
-                      onToggle: (newVal) async => await setActerFeature(
+                      onToggle: (newVal) => setActerFeature(
                         context,
                         newVal,
                         appSettings,
                         space,
                         SpaceFeature.tasks,
-                        L10n.of(context).tasks,
+                        lang.tasks,
                       ),
                     ),
                     ...labActions,
@@ -357,11 +341,13 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             ),
           );
         },
-        loading: () => Center(child: Text(L10n.of(context).loading)),
+        loading: () => Center(
+          child: Text(lang.loading),
+        ),
         error: (e, s) {
           _log.severe('Failed to load space settings', e, s);
           return Center(
-            child: Text(L10n.of(context).loadingFailed(e)),
+            child: Text(lang.loadingFailed(e)),
           );
         },
       ),

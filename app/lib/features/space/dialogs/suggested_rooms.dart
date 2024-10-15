@@ -16,9 +16,8 @@ final _log = Logger('a3::spaces::suggested_rooms');
 
 class _SuggestedRooms extends ConsumerStatefulWidget {
   final String spaceId;
-  const _SuggestedRooms({
-    required this.spaceId,
-  });
+
+  const _SuggestedRooms({required this.spaceId});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -50,36 +49,33 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return DefaultDialog(
       width: MediaQuery.of(context).size.width * 0.8,
       height: MediaQuery.of(context).size.height * 0.8,
       title: Text(
-        L10n.of(context).suggestedRoomsTitle,
+        lang.suggestedRoomsTitle,
         style: Theme.of(context).textTheme.titleMedium,
       ),
       subtitle: Column(
         children: [
-          Text(L10n.of(context).suggestedRoomsSubtitle),
+          Text(lang.suggestedRoomsSubtitle),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               if (selectedRooms != [])
                 ActerInlineTextButton(
                   onPressed: () {
-                    setState(() {
-                      selectedRooms = [];
-                    });
+                    setState(() => selectedRooms = []);
                   },
-                  child: Text(L10n.of(context).unselectAll),
+                  child: Text(lang.unselectAll),
                 ),
               if (selectedRooms != null)
                 ActerInlineTextButton(
                   onPressed: () {
-                    setState(() {
-                      selectedRooms = null;
-                    });
+                    setState(() => selectedRooms = null);
                   },
-                  child: Text(L10n.of(context).selectAll),
+                  child: Text(lang.selectAll),
                 ),
             ],
           ),
@@ -99,34 +95,30 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
             markHasSeenSuggested(ref, widget.spaceId);
             Navigator.pop(context);
           },
-          child: Text(L10n.of(context).skip),
+          child: Text(lang.skip),
         ),
         if (selectedRooms != [])
           ActerPrimaryActionButton(
             onPressed: () => _joinSelected(context),
-            child: Text(L10n.of(context).join),
+            child: Text(lang.join),
           ),
       ],
     );
   }
 
   void _toggle(String roomId) {
-    List<String> newSelectedRooms = selectedRooms ?? [];
-    if (selectedRooms == null) {
-      // we had been an _all_ selection, but now we need to take one out.
-      newSelectedRooms =
-          chatsFound.followedBy(spacesFound).map((e) => e.roomIdStr()).toList();
-    }
+    List<String> newSelectedRooms = selectedRooms != null
+        ? List.from(selectedRooms!)
+        // we had been an _all_ selection, but now we need to take one out.
+        : chatsFound.followedBy(spacesFound).map((e) => e.roomIdStr()).toList();
     if (!newSelectedRooms.remove(roomId)) {
       // was not in, add it new
       newSelectedRooms.add(roomId);
     }
-    setState(() {
-      selectedRooms = newSelectedRooms;
-    });
+    setState(() => selectedRooms = newSelectedRooms);
   }
 
-  void _joinSelected(BuildContext context) async {
+  Future<void> _joinSelected(BuildContext context) async {
     final allRooms = chatsFound.followedBy(spacesFound).toList();
     List<SpaceHierarchyRoomInfo> roomsToJoin = selectedRooms.let(
           (p0) => p0
@@ -229,17 +221,15 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
   }
 }
 
-void showSuggestRoomsDialog(
+Future<void> showSuggestRoomsDialog(
   BuildContext context,
   WidgetRef ref,
   String spaceId,
-) {
-  showAdaptiveDialog(
+) async {
+  await showAdaptiveDialog(
     barrierDismissible: true,
     context: context,
     useRootNavigator: false,
-    builder: (context) => _SuggestedRooms(
-      spaceId: spaceId,
-    ),
+    builder: (context) => _SuggestedRooms(spaceId: spaceId),
   );
 }

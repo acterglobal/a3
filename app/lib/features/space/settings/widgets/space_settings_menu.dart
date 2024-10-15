@@ -25,6 +25,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final spaceAvatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
     final parentBadges =
         ref.watch(parentAvatarInfosProvider(spaceId)).valueOrNull;
@@ -65,7 +66,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).settings),
+                  Text(lang.settings),
                   Text(
                     '($spaceName)',
                     overflow: TextOverflow.ellipsis,
@@ -83,17 +84,18 @@ class SpaceSettingsMenu extends ConsumerWidget {
           child: SettingsList(
             sections: [
               SettingsSection(
-                title: Text(L10n.of(context).personalSettings),
+                title: Text(lang.personalSettings),
                 tiles: [
                   SettingsTile(
                     key: appsMenu,
-                    title: Text(L10n.of(context).notificationsOverwrites),
-                    description: Text(
-                      L10n.of(context).notificationsOverwritesDescription,
+                    title: Text(lang.notificationsOverwrites),
+                    description: Text(lang.notificationsOverwritesDescription),
+                    leading: Icon(
+                      curNotifStatus == 'muted'
+                          ? Atlas.bell_dash_bold
+                          : Atlas.bell_thin,
+                      size: 18,
                     ),
-                    leading: curNotifStatus == 'muted'
-                        ? const Icon(Atlas.bell_dash_bold, size: 18)
-                        : const Icon(Atlas.bell_thin, size: 18),
                     onPressed: (context) {
                       if (!isFullPage && context.isLargeScreen) {
                         context.pushReplacementNamed(
@@ -111,13 +113,11 @@ class SpaceSettingsMenu extends ConsumerWidget {
                 ],
               ),
               SettingsSection(
-                title: Text(L10n.of(context).spaceConfiguration),
+                title: Text(lang.spaceConfiguration),
                 tiles: <SettingsTile>[
                   SettingsTile(
-                    title: Text(L10n.of(context).accessAndVisibility),
-                    description: Text(
-                      L10n.of(context).spaceConfigurationDescription,
-                    ),
+                    title: Text(lang.accessAndVisibility),
+                    description: Text(lang.spaceConfigurationDescription),
                     leading: const Icon(Atlas.lab_appliance_thin),
                     onPressed: (context) {
                       if (!isFullPage && context.isLargeScreen) {
@@ -135,10 +135,8 @@ class SpaceSettingsMenu extends ConsumerWidget {
                   ),
                   SettingsTile(
                     key: appsMenu,
-                    title: Text(L10n.of(context).apps),
-                    description: Text(
-                      L10n.of(context).customizeAppsAndTheirFeatures,
-                    ),
+                    title: Text(lang.apps),
+                    description: Text(lang.customizeAppsAndTheirFeatures),
                     leading: const Icon(Atlas.info_circle_thin),
                     onPressed: (context) {
                       if (!isFullPage && context.isLargeScreen) {
