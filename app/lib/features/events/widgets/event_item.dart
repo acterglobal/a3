@@ -149,7 +149,10 @@ class EventItem extends StatelessWidget {
 
   Widget _buildHappeningIndication(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 2,
+      ),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondary,
         borderRadius: const BorderRadius.all(Radius.circular(100)),

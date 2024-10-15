@@ -22,12 +22,10 @@ void showChangeDateBottomSheet({
     useSafeArea: true,
     context: context,
     constraints: const BoxConstraints(maxHeight: 500),
-    builder: (context) {
-      return ChangeDateSheet(
-        bottomSheetTitle: bottomSheetTitle,
-        calendarId: calendarId,
-      );
-    },
+    builder: (context) => ChangeDateSheet(
+      bottomSheetTitle: bottomSheetTitle,
+      calendarId: calendarId,
+    ),
   );
 }
 
@@ -60,13 +58,13 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) async {
       _setEditEventData();
     });
   }
 
   // Apply existing data to fields
-  void _setEditEventData() async {
+  Future<void> _setEditEventData() async {
     final calendarEvent =
         await ref.read(calendarEventProvider(widget.calendarId).future);
     if (!mounted) return;

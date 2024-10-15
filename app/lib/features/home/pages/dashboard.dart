@@ -31,7 +31,11 @@ class Dashboard extends ConsumerWidget {
         child: Scaffold(
           appBar: _buildDashboardAppBar(context, client),
           body: Padding(
-            padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+            padding: const EdgeInsets.only(
+              top: 20,
+              left: 20,
+              right: 20,
+            ),
             child: SingleChildScrollView(
               child: hasSpaces
                   ? Column(
@@ -184,7 +188,10 @@ class Dashboard extends ConsumerWidget {
                   color: color,
                   borderRadius: const BorderRadius.all(Radius.circular(100)),
                 ),
-                child: Icon(iconData, size: 16),
+                child: Icon(
+                  iconData,
+                  size: 16,
+                ),
               ),
               const SizedBox(width: 8),
               Text(title),

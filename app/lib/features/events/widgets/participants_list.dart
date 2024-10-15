@@ -20,7 +20,10 @@ class ParticipantsList extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
           child: Row(
             children: [
               Expanded(
@@ -37,13 +40,12 @@ class ParticipantsList extends ConsumerWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                ...participants.map(
-                  (a) => MemberListEntry(
-                    memberId: a,
+                for (final memberId in participants)
+                  MemberListEntry(
+                    memberId: memberId,
                     roomId: roomId,
                     isShowActions: false,
                   ),
-                ),
               ],
             ),
           ),
