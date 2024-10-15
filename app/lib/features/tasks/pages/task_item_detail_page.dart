@@ -49,6 +49,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     WidgetRef ref,
     AsyncValue<Task> taskLoader,
   ) {
+    final lang = L10n.of(context);
     return taskLoader.when(
       data: (task) => AppBar(
         title: SelectionArea(
@@ -76,7 +77,7 @@ class TaskItemDetailPage extends ConsumerWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      L10n.of(context).taskList,
+                      lang.taskList,
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ],
@@ -94,21 +95,21 @@ class TaskItemDetailPage extends ConsumerWidget {
                   onTap: () {
                     showEditTitleBottomSheet(
                       context: context,
-                      bottomSheetTitle: L10n.of(context).editName,
+                      bottomSheetTitle: lang.editName,
                       titleValue: task.title(),
                       onSave: (newName) =>
                           saveTitle(context, ref, task, newName),
                     );
                   },
                   child: Text(
-                    L10n.of(context).editTitle,
+                    lang.editTitle,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
                   onTap: () => showEditDescriptionSheet(context, ref, task),
                   child: Text(
-                    L10n.of(context).editDescription,
+                    lang.editDescription,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
@@ -119,14 +120,14 @@ class TaskItemDetailPage extends ConsumerWidget {
                     task: task,
                   ),
                   child: Text(
-                    L10n.of(context).delete,
+                    lang.delete,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
                   onTap: () => showReportDialog(context: context, task: task),
                   child: Text(
-                    L10n.of(context).report,
+                    lang.report,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
@@ -138,11 +139,11 @@ class TaskItemDetailPage extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to load task', e, s);
         return AppBar(
-          title: Text(L10n.of(context).loadingFailed(e)),
+          title: Text(lang.loadingFailed(e)),
         );
       },
       loading: () => AppBar(
-        title: Text(L10n.of(context).loading),
+        title: Text(lang.loading),
       ),
     );
   }
@@ -170,10 +171,11 @@ class TaskItemDetailPage extends ConsumerWidget {
     required BuildContext context,
     required Task task,
   }) {
+    final lang = L10n.of(context);
     openReportContentDialog(
       context,
-      title: L10n.of(context).reportTaskItem,
-      description: L10n.of(context).reportThisContent,
+      title: lang.reportTaskItem,
+      description: lang.reportThisContent,
       eventId: task.eventIdStr(),
       senderId: task.authorStr(),
       roomId: task.roomIdStr(),
@@ -284,7 +286,8 @@ class TaskItemDetailPage extends ConsumerWidget {
     String htmlBodyDescription,
     String plainDescription,
   ) async {
-    EasyLoading.show(status: L10n.of(context).updatingDescription);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.updatingDescription);
     try {
       final updater = task.updateBuilder();
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
@@ -298,18 +301,19 @@ class TaskItemDetailPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).errorUpdatingDescription(e),
+        lang.errorUpdatingDescription(e),
         duration: const Duration(seconds: 3),
       );
     }
   }
 
   Widget _widgetTaskDate(BuildContext context, Task task) {
+    final lang = L10n.of(context);
     return ListTile(
       dense: true,
       leading: const Icon(Atlas.calendar_date_thin),
       title: Text(
-        L10n.of(context).dueDate,
+        lang.dueDate,
         style: Theme.of(context).textTheme.bodyMedium,
       ),
       trailing: Padding(
@@ -317,7 +321,7 @@ class TaskItemDetailPage extends ConsumerWidget {
         child: Text(
           task.dueDate() != null
               ? taskDueDateFormat(DateTime.parse(task.dueDate()!))
-              : L10n.of(context).noDueDate,
+              : lang.noDueDate,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
@@ -326,6 +330,7 @@ class TaskItemDetailPage extends ConsumerWidget {
   }
 
   Future<void> duePickerAction(BuildContext context, Task task) async {
+    final lang = L10n.of(context);
     final newDue = await showDuePicker(
       context: context,
       initialDate: task.dueDate() != null
@@ -334,7 +339,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     );
     if (!context.mounted) return;
     if (newDue == null) return;
-    EasyLoading.show(status: L10n.of(context).updatingDue);
+    EasyLoading.show(status: lang.updatingDue);
     try {
       final updater = task.updateBuilder();
       updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
@@ -353,7 +358,7 @@ class TaskItemDetailPage extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).dueSuccess);
+      EasyLoading.showToast(lang.dueSuccess);
     } catch (e, s) {
       _log.severe('Failed to change due date of task', e, s);
       if (!context.mounted) {
@@ -361,20 +366,21 @@ class TaskItemDetailPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).updatingDueFailed(e),
+        lang.updatingDueFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
   }
 
   Widget _widgetTaskAssignment(BuildContext context, Task task, WidgetRef ref) {
+    final lang = L10n.of(context);
     return ListTile(
       dense: true,
       leading: const Icon(Atlas.business_man_thin),
       title: Row(
         children: [
           Text(
-            L10n.of(context).assignment,
+            lang.assignment,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const Spacer(),
@@ -383,9 +389,7 @@ class TaskItemDetailPage extends ConsumerWidget {
                 ? onUnAssign(context, task)
                 : onAssign(context, task),
             child: Text(
-              task.isAssignedToMe()
-                  ? L10n.of(context).removeMyself
-                  : L10n.of(context).assignMyself,
+              task.isAssignedToMe() ? lang.removeMyself : lang.assignMyself,
             ),
           ),
         ],
@@ -393,7 +397,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       subtitle: task.isAssignedToMe()
           ? assigneeName(context, task, ref)
           : Text(
-              L10n.of(context).noAssignment,
+              lang.noAssignment,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
     );
@@ -424,11 +428,12 @@ class TaskItemDetailPage extends ConsumerWidget {
   }
 
   Future<void> onAssign(BuildContext context, Task task) async {
-    EasyLoading.show(status: L10n.of(context).assigningSelf);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.assigningSelf);
     try {
       await task.assignSelf();
       if (!context.mounted) return;
-      EasyLoading.showToast(L10n.of(context).assignedYourself);
+      EasyLoading.showToast(lang.assignedYourself);
     } catch (e, s) {
       _log.severe('Failed to self-assign task', e, s);
       if (!context.mounted) {
@@ -436,18 +441,19 @@ class TaskItemDetailPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToAssignSelf(e),
+        lang.failedToAssignSelf(e),
         duration: const Duration(seconds: 3),
       );
     }
   }
 
   Future<void> onUnAssign(BuildContext context, Task task) async {
-    EasyLoading.show(status: L10n.of(context).unassigningSelf);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.unassigningSelf);
     try {
       await task.unassignSelf();
       if (!context.mounted) return;
-      EasyLoading.showToast(L10n.of(context).assignmentWithdrawn);
+      EasyLoading.showToast(lang.assignmentWithdrawn);
     } catch (e, s) {
       _log.severe('Failed to self-unassign task', e, s);
       if (!context.mounted) {
@@ -455,7 +461,7 @@ class TaskItemDetailPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToUnassignSelf(e),
+        lang.failedToUnassignSelf(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -481,7 +487,8 @@ class TaskItemDetailPage extends ConsumerWidget {
     Task task,
     String newName,
   ) async {
-    EasyLoading.show(status: L10n.of(context).updatingTask);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.updatingTask);
     final updater = task.updateBuilder();
     updater.title(newName);
     try {
@@ -496,7 +503,7 @@ class TaskItemDetailPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).updatingTaskFailed(e),
+        lang.updatingTaskFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

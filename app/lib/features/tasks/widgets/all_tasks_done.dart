@@ -8,13 +8,14 @@ class AllTasksDone extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return SizedBox(
       height: 450,
       child: Center(
         child: Column(
           children: [
             Text(
-              L10n.of(context).congrats,
+              lang.congrats,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Padding(
@@ -26,13 +27,13 @@ class AllTasksDone extends StatelessWidget {
               ),
             ),
             Text(
-              L10n.of(context).youAreDoneWithAllYourTasks,
+              lang.youAreDoneWithAllYourTasks,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Text(
-                L10n.of(context).seeOpenTasks,
+                lang.seeOpenTasks,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ),

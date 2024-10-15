@@ -33,7 +33,6 @@ class TasksListPage extends ConsumerStatefulWidget {
 }
 
 class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
-
   String get searchValue => ref.watch(searchValueProvider);
   final ValueNotifier<bool> showCompletedTask = ValueNotifier(false);
 
@@ -46,13 +45,14 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   }
 
   AppBar _buildAppBar() {
+    final lang = L10n.of(context);
     return AppBar(
       centerTitle: false,
       title: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(L10n.of(context).tasks),
+          Text(lang.tasks),
           if (widget.spaceId != null)
             SpaceNameWidget(
               spaceId: widget.spaceId!,
@@ -72,9 +72,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
                 size: 18,
               ),
               label: Text(
-                value
-                    ? L10n.of(context).hideCompleted
-                    : L10n.of(context).showCompleted,
+                value ? lang.hideCompleted : lang.showCompleted,
               ),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -157,6 +155,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   }
 
   Widget _buildTasklistsEmptyState() {
+    final lang = L10n.of(context);
     var canAdd = false;
     if (searchValue.isEmpty) {
       final canPostLoader = ref.watch(
@@ -168,9 +167,9 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
       heightFactor: 1,
       child: EmptyState(
         title: searchValue.isNotEmpty
-            ? L10n.of(context).noMatchingTasksListFound
-            : L10n.of(context).noTasksListAvailableYet,
-        subtitle: L10n.of(context).noTasksListAvailableDescription,
+            ? lang.noMatchingTasksListFound
+            : lang.noTasksListAvailableYet,
+        subtitle: lang.noTasksListAvailableDescription,
         image: 'assets/images/tasks.svg',
         primaryButton: canAdd
             ? ActerPrimaryActionButton(
@@ -178,7 +177,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
                   context,
                   initialSelectedSpace: widget.spaceId,
                 ),
-                child: Text(L10n.of(context).createTaskList),
+                child: Text(lang.createTaskList),
               )
             : null,
       ),

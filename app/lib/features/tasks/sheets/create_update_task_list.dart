@@ -121,11 +121,12 @@ class _CreateUpdateTaskListConsumerState
   }
 
   Widget _widgetTaskListName() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          L10n.of(context).taskListName,
+          lang.taskListName,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 5),
@@ -133,14 +134,13 @@ class _CreateUpdateTaskListConsumerState
           autofocus: true,
           key: CreateUpdateTaskList.titleKey,
           decoration: InputDecoration(
-            hintText: L10n.of(context).name,
+            hintText: lang.name,
           ),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _titleController,
           // required field, space not allowed
-          validator: (val) => val == null || val.trim().isEmpty
-              ? L10n.of(context).pleaseEnterAName
-              : null,
+          validator: (val) =>
+              val == null || val.trim().isEmpty ? lang.pleaseEnterAName : null,
         ),
       ],
     );
@@ -210,8 +210,9 @@ class _CreateUpdateTaskListConsumerState
   }
 
   Future<void> submitForm() async {
+    final lang = L10n.of(context);
     if (!_formKey.currentState!.validate()) return;
-    EasyLoading.show(status: L10n.of(context).postingTaskList);
+    EasyLoading.show(status: lang.postingTaskList);
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);
       final space = await ref.read(spaceProvider(spaceId!).future);
@@ -248,7 +249,7 @@ class _CreateUpdateTaskListConsumerState
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToCreateTaskList(e),
+        lang.failedToCreateTaskList(e),
         duration: const Duration(seconds: 3),
       );
     }

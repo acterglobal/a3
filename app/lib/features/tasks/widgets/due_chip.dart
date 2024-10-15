@@ -58,6 +58,7 @@ class _DueChipState extends State<DueChip> {
   }
 
   Widget inner(BuildContext context) {
+    final lang = L10n.of(context);
     final textStyle =
         widget.baseTextStyle ?? Theme.of(context).textTheme.bodySmall!;
     if (dueDate == null) {
@@ -68,9 +69,9 @@ class _DueChipState extends State<DueChip> {
     TextStyle? dueTheme;
 
     if (dueDate!.isToday) {
-      label = L10n.of(context).dueToday;
+      label = lang.dueToday;
     } else if (dueDate!.isTomorrow) {
-      label = L10n.of(context).dueTomorrow;
+      label = lang.dueTomorrow;
     } else if (dueDate!.isPast) {
       label = dueDate!.timeago();
       dueTheme = textStyle.copyWith(
@@ -84,20 +85,21 @@ class _DueChipState extends State<DueChip> {
       visualDensity: widget.visualDensity,
       label: Text(
         // FIXME: tooltip to show the full date?
-        label ?? L10n.of(context).due(dateText),
+        label ?? lang.due(dateText),
         style: widget.task.isDone() ? null : dueTheme,
       ),
     );
   }
 
   Future<void> duePickerAction(BuildContext context) async {
+    final lang = L10n.of(context);
     final newDue = await showDuePicker(
       context: context,
       initialDate: dueDate,
     ); // FIXME: add unsetting support
     if (!context.mounted) return;
     if (newDue == null) return;
-    EasyLoading.show(status: L10n.of(context).updatingDue);
+    EasyLoading.show(status: lang.updatingDue);
     try {
       final updater = widget.task.updateBuilder();
       updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
@@ -116,7 +118,7 @@ class _DueChipState extends State<DueChip> {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).dueSuccess);
+      EasyLoading.showToast(lang.dueSuccess);
     } catch (e, s) {
       _log.severe('Failed to change due date of task', e, s);
       if (!context.mounted) {
@@ -124,7 +126,7 @@ class _DueChipState extends State<DueChip> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).updatingDueFailed(e),
+        lang.updatingDueFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
