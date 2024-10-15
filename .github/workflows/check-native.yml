@@ -70,8 +70,9 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           files: lcov.info
-          name: rust-integration-tests
+          name: rust-unit-tests
           token: ${{ secrets.CODECOV_TOKEN }}
+
   release:
     runs-on: ubuntu-latest
     name: Release Build ${{ matrix.name }}
