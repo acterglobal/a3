@@ -42,22 +42,21 @@ class _NotificationSettingsTile extends ConsumerWidget {
         ref.watch(roomNotificationStatusProvider(roomId)).valueOrNull;
     final defNotifStatus =
         ref.watch(roomDefaultNotificationStatusProvider(roomId)).valueOrNull;
+    final defStatusText = notifToText(context, defNotifStatus ?? '');
     final defNotifText = defaultTitle ??
-        lang.defaultNotification(
-          '(${notifToText(context, defNotifStatus ?? '') ?? lang.undefined})',
-        );
+        lang.defaultNotification('(${defStatusText ?? lang.undefined})');
     final tileTextTheme = Theme.of(context).textTheme.bodySmall;
     return SettingsTile(
       title: Text(
         title ?? lang.notifications,
         style: tileTextTheme,
       ),
-      description: Text(
-        notifToText(context, curNotifStatus ?? '') ?? defNotifText,
+      description:
+          Text(notifToText(context, curNotifStatus ?? '') ?? defNotifText),
+      leading: Icon(
+        curNotifStatus == 'muted' ? Atlas.bell_dash_bold : Atlas.bell_thin,
+        size: 18,
       ),
-      leading: curNotifStatus == 'muted'
-          ? const Icon(Atlas.bell_dash_bold, size: 18)
-          : const Icon(Atlas.bell_thin, size: 18),
       trailing: PopupMenuButton<String>(
         initialValue: curNotifStatus,
         // Callback that sets the selected popup menu item.

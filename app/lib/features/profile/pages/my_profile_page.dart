@@ -82,10 +82,7 @@ class MyProfilePage extends StatelessWidget {
 
   const MyProfilePage({super.key});
 
-  Future<void> updateDisplayName(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
+  Future<void> updateDisplayName(BuildContext context, WidgetRef ref) async {
     final lang = L10n.of(context);
     final TextEditingController newName = TextEditingController();
     final avatarInfo = ref.read(accountAvatarInfoProvider);
@@ -93,15 +90,17 @@ class MyProfilePage extends StatelessWidget {
 
     final newText = await showDialog<String>(
       context: context,
-      builder: (BuildContext context) =>
-          ChangeDisplayName(currentName: avatarInfo.displayName),
+      builder: (context) {
+        return ChangeDisplayName(currentName: avatarInfo.displayName);
+      },
     );
 
     if (!context.mounted) return;
     if (newText == null) return;
 
     EasyLoading.show(status: lang.updatingDisplayName);
-    await ref.read(accountProvider).setDisplayName(newText);
+    final account = ref.read(accountProvider);
+    await account.setDisplayName(newText);
     ref.invalidate(accountProvider);
 
     if (!context.mounted) {
@@ -118,7 +117,8 @@ class MyProfilePage extends StatelessWidget {
       EasyLoading.show(status: L10n.of(context).updatingProfileImage);
       final filePath = result.files.first.path;
       if (filePath == null) throw 'avatar path not available';
-      await ref.read(accountProvider).uploadAvatar(filePath);
+      final account = ref.read(accountProvider);
+      await account.uploadAvatar(filePath);
       ref.invalidate(accountProvider);
       // close loading
       EasyLoading.dismiss();
@@ -158,7 +158,7 @@ class MyProfilePage extends StatelessWidget {
 
         return SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -224,7 +224,10 @@ class MyProfilePage extends StatelessWidget {
                       ),
                       color: Theme.of(context).colorScheme.surface,
                     ),
-                    child: const Icon(Icons.edit, size: 16),
+                    child: const Icon(
+                      Icons.edit,
+                      size: 16,
+                    ),
                   ),
                 ),
               ),
@@ -252,7 +255,10 @@ class MyProfilePage extends StatelessWidget {
           style: Theme.of(context).textTheme.labelMedium,
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 5,
+            vertical: 10,
+          ),
           child: Text(
             subTitle,
             style: Theme.of(context).textTheme.titleSmall,
@@ -266,8 +272,9 @@ class MyProfilePage extends StatelessWidget {
     );
   }
 
-  void _onCopy(String userId, BuildContext context) {
-    Clipboard.setData(ClipboardData(text: userId));
+  Future<void> _onCopy(String userId, BuildContext context) async {
+    await Clipboard.setData(ClipboardData(text: userId));
+    if (!context.mounted) return;
     EasyLoading.showToast(L10n.of(context).usernameCopiedToClipboard);
   }
 }

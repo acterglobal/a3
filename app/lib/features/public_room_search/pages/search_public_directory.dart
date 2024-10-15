@@ -11,7 +11,11 @@ import 'package:go_router/go_router.dart';
 
 class SearchPublicDirectory extends ConsumerWidget {
   final String? query;
-  const SearchPublicDirectory({super.key, this.query});
+
+  const SearchPublicDirectory({
+    super.key,
+    this.query,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,7 +31,7 @@ class SearchPublicDirectory extends ConsumerWidget {
     );
   }
 
-  void onSelectedKnown(
+  Future<void> onSelectedKnown(
     BuildContext context,
     WidgetRef ref,
     PublicSearchResultItem spaceSearchResult,
@@ -35,16 +39,16 @@ class SearchPublicDirectory extends ConsumerWidget {
   ) async {
     final lang = L10n.of(context);
     final roomId = spaceSearchResult.roomIdStr();
-    if ((await ref.read(roomMembershipProvider(roomId).future)) != null) {
+    final membership = await ref.read(roomMembershipProvider(roomId).future);
+    if (!context.mounted) return;
+    if (membership != null) {
       // we know the space, user just wants to enter it
       if (spaceSearchResult.roomTypeStr() == 'Space') {
-        // ignore: use_build_context_synchronously
         context.pushNamed(
           Routes.space.name,
           pathParameters: {'spaceId': roomId},
         );
       } else {
-        // ignore: use_build_context_synchronously
         context.pushNamed(
           Routes.chatroom.name,
           pathParameters: {'roomId': roomId},
@@ -56,15 +60,12 @@ class SearchPublicDirectory extends ConsumerWidget {
     // we don’t know the space yet, the user wants to join.
     final joinRule = spaceSearchResult.joinRuleStr();
     if (joinRule != 'Public') {
-      // ignore: use_build_context_synchronously
       EasyLoading.showToast(lang.joinRuleNotSupportedYet(joinRule));
       return;
     }
     await joinRoom(
-      // ignore: use_build_context_synchronously
       context,
       ref,
-      // ignore: use_build_context_synchronously
       lang.tryingToJoin(spaceSearchResult.name().toString()),
       roomId,
       searchServer,

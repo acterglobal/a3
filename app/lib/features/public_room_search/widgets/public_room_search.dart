@@ -72,14 +72,12 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
                 padding: EdgeInsets.zero,
                 hintText: L10n.of(context).jumpTo,
                 onChanged: (String value) {
-                  ref
-                      .read(searchFilterProvider.notifier)
-                      .updateSearchTerm(value);
+                  final notifier = ref.read(searchFilterProvider.notifier);
+                  notifier.updateSearchTerm(value);
                 },
                 onClear: () {
-                  ref
-                      .read(searchFilterProvider.notifier)
-                      .updateSearchTerm(null);
+                  final notifier = ref.read(searchFilterProvider.notifier);
+                  notifier.updateSearchTerm(null);
                 },
               ),
               Container(
@@ -120,9 +118,8 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
       textStyle: TextStyle(color: Theme.of(context).hintColor),
       menuStyle: const MenuStyle(visualDensity: VisualDensity.compact),
       onSelected: (FilterBy? newFilter) {
-        ref
-            .read(searchFilterProvider.notifier)
-            .updateFilters(newFilter ?? FilterBy.both);
+        final notifier = ref.read(searchFilterProvider.notifier);
+        notifier.updateFilters(newFilter ?? FilterBy.both);
       },
       dropdownMenuEntries: const [
         DropdownMenuEntry<FilterBy>(
@@ -150,8 +147,10 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
           loadingPage(context),
       itemBuilder: (context, item, index) => PublicRoomItem(
         item: item,
-        onSelected: (item) =>
-            widget.onSelected(item, ref.read(searchFilterProvider).server),
+        onSelected: (item) {
+          final serverName = ref.read(searchFilterProvider).server;
+          return widget.onSelected(item, serverName);
+        },
       ),
       noItemsFoundIndicatorBuilder: (context, controller) {
         if (ref.read(publicSearchProvider.notifier).isLoading()) {
@@ -228,6 +227,8 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
 
   @override
   Widget build(BuildContext context) {
+    final searchVal =
+        ref.watch(searchFilterProvider.select((v) => v.searchTerm ?? ''));
     return Scaffold(
       appBar: AppBar(
         title: Text(buildSearchTitle(context)),
@@ -237,9 +238,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
           _searchBar(context),
           SliverToBoxAdapter(
             child: MaybeDirectRoomActionWidget(
-              searchVal: ref.watch(
-                searchFilterProvider.select((v) => v.searchTerm ?? ''),
-              ),
+              searchVal: searchVal,
               canMatchAlias: true,
               canMatchId: true,
             ),
@@ -254,9 +253,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
     String? currentSelection = ref.watch(searchFilterProvider).server;
     if (currentSelection != null) {
       final foundEntry = defaultServers
-          .where(
-            (element) => element.value == currentSelection,
-          )
+          .where((element) => element.value == currentSelection)
           .firstOrNull;
       if (foundEntry != null) {
         currentSelection = foundEntry.name ?? foundEntry.value;
@@ -270,9 +267,10 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
           options: defaultServers,
           autofocus: true,
           currentSelection: currentSelection ?? 'Acter.global',
-          onSelect: (newServer) => ref
-              .read(searchFilterProvider.notifier)
-              .updateSearchServer(newServer),
+          onSelect: (newServer) {
+            final notifier = ref.read(searchFilterProvider.notifier);
+            notifier.updateSearchServer(newServer);
+          },
         ),
       ),
     );

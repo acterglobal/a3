@@ -13,7 +13,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class PinAttachmentOptions extends ConsumerWidget {
   final bool isBottomSheetOpen;
 
-  const PinAttachmentOptions({super.key, this.isBottomSheetOpen = false});
+  const PinAttachmentOptions({
+    super.key,
+    this.isBottomSheetOpen = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -127,11 +130,13 @@ class PinAttachmentOptions extends ConsumerWidget {
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           children: [
-            Expanded(child: Icon(iconData)),
+            Expanded(
+              child: Icon(iconData),
+            ),
             Text(title),
           ],
         ),

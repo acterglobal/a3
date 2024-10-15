@@ -8,6 +8,7 @@ class ServerSelectionField extends StatefulWidget {
   final void Function(String) onSelect;
   final String currentSelection;
   final bool autofocus;
+
   const ServerSelectionField({
     super.key,
     required this.options,
@@ -24,12 +25,6 @@ class ServerSelectionField extends StatefulWidget {
 class _ServerSelectionFieldState extends State<ServerSelectionField> {
   bool editMode = false;
 
-  void setEditing() {
-    setState(() {
-      editMode = true;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
@@ -38,14 +33,15 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
         initialValue: widget.currentSelection,
         style: TextStyle(color: Theme.of(context).hintColor),
         onTap: () {
-          setState(() {
-            editMode = true;
-          });
+          setState(() => editMode = true);
         },
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           labelText: lang.server,
-          suffix: Icon(Icons.edit, color: Theme.of(context).hintColor),
+          suffix: Icon(
+            Icons.edit,
+            color: Theme.of(context).hintColor,
+          ),
         ),
       );
     }
@@ -63,18 +59,14 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
           focusNode: focusNode,
           onTapOutside: (pointer) {
             // close edit mode when the user clicks elsewhere
-            setState(() {
-              editMode = false;
-            });
+            setState(() => editMode = false);
           },
           autofocus: widget.autofocus,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             labelText: lang.server,
             suffix: InkWell(
-              onTap: () {
-                onSubmit(controller.text);
-              },
+              onTap: () => onSubmit(controller.text),
               child: const Icon(Icons.send),
             ),
           ),
@@ -87,16 +79,16 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
             subtitle: Text(entry.value),
           );
         }
-        return ListTile(title: Text(entry.value));
+        return ListTile(
+          title: Text(entry.value),
+        );
       },
       onSelected: (entry) => onSubmit(entry.value),
     );
   }
 
   void onSubmit(String selected) {
-    setState(() {
-      editMode = false;
-    });
+    setState(() => editMode = false);
     widget.onSelect(selected);
   }
 }

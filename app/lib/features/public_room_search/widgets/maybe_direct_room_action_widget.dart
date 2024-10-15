@@ -37,12 +37,21 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
       ),
       child: Card(
         child: ListTile(
-          onTap: () => onSelectedMatch(context, ref, [server], alias: alias),
+          onTap: () => onSelectedMatch(
+            context,
+            ref,
+            [server],
+            alias: alias,
+          ),
           title: Text(alias),
           subtitle: Text('${lang.on} $server'),
           trailing: OutlinedButton.icon(
-            onPressed: () =>
-                onSelectedMatch(context, ref, [server], alias: alias),
+            onPressed: () => onSelectedMatch(
+              context,
+              ref,
+              [server],
+              alias: alias,
+            ),
             icon: const Icon(Atlas.entrance_thin),
             label: Text(lang.tryToJoin),
           ),
@@ -202,18 +211,20 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     return const SizedBox.shrink();
   }
 
-  void onSelectedMatch(
+  Future<void> onSelectedMatch(
     BuildContext context,
     WidgetRef ref,
     List<String> serverNames, {
     String? roomId,
     String? alias,
   }) async {
+    final roomIdOrAlias = alias ?? roomId;
+    if (roomIdOrAlias == null) throw 'neither room id nor alias available';
     await joinRoom(
       context,
       ref,
-      L10n.of(context).tryingToJoin('${alias ?? roomId}'),
-      (alias ?? roomId)!,
+      L10n.of(context).tryingToJoin(roomIdOrAlias),
+      roomIdOrAlias,
       serverNames.first,
       (roomId) => context.pushNamed(
         Routes.forward.name,
