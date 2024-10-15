@@ -10,8 +10,7 @@ import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -123,7 +122,7 @@ class _SideBarItem extends StatelessWidget {
 
 class ActionBox extends ConsumerWidget {
   final String userId;
-  final ffi.NewsEntry news;
+  final NewsEntry news;
   final String roomId;
 
   const ActionBox({
@@ -135,11 +134,13 @@ class ActionBox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final senderId = news.sender().toString();
+    final eventId = news.eventId().toString();
     final canRedact = ref.watch(canRedactProvider(news));
     final isAuthor = senderId == userId;
     List<Widget> actions = [
-      Text(L10n.of(context).actions),
+      Text(lang.actions),
       const Divider(),
     ];
 
@@ -149,8 +150,8 @@ class ActionBox extends ConsumerWidget {
           key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
           onPressed: () => openRedactContentDialog(
             context,
-            title: L10n.of(context).removeThisPost,
-            eventId: news.eventId().toString(),
+            title: lang.removeThisPost,
+            eventId: eventId,
             onSuccess: () async {
               if (!await Navigator.maybePop(context)) {
                 if (context.mounted) {
@@ -164,7 +165,7 @@ class ActionBox extends ConsumerWidget {
             removeBtnKey: NewsUpdateKeys.removeButton,
           ),
           icon: const Icon(Atlas.trash_thin),
-          label: Text(L10n.of(context).remove),
+          label: Text(lang.remove),
         ),
       );
     } else if (!isAuthor) {
@@ -173,15 +174,15 @@ class ActionBox extends ConsumerWidget {
           key: NewsUpdateKeys.newsSidebarActionReportBtn,
           onPressed: () => openReportContentDialog(
             context,
-            title: L10n.of(context).reportThisPost,
-            eventId: news.eventId().toString(),
-            description: L10n.of(context).reportPostContent,
+            title: lang.reportThisPost,
+            eventId: eventId,
+            description: lang.reportPostContent,
             senderId: senderId,
             roomId: roomId,
             isSpace: true,
           ),
           icon: const Icon(Atlas.exclamation_chat_thin),
-          label: Text(L10n.of(context).reportThis),
+          label: Text(lang.reportThis),
         ),
       );
     }

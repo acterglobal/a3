@@ -136,14 +136,15 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
   }
 
   Widget newsEmptyStateUI(BuildContext context) {
+    final lang = L10n.of(context);
     return Center(
       child: EmptyState(
-        title: L10n.of(context).youHaveNoUpdates,
-        subtitle: L10n.of(context).createPostsAndEngageWithinSpace,
+        title: lang.youHaveNoUpdates,
+        subtitle: lang.createPostsAndEngageWithinSpace,
         image: 'assets/images/empty_updates.svg',
         primaryButton: ActerPrimaryActionButton(
           onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
-          child: Text(L10n.of(context).addBoost),
+          child: Text(lang.addBoost),
         ),
       ),
     );

@@ -17,12 +17,13 @@ class PostAttachmentOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return ListView(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
         ListTile(
-          title: Text(L10n.of(context).newUpdate),
+          title: Text(lang.newUpdate),
         ),
         ListTile(
           key: NewsUpdateKeys.addTextSlide,
@@ -31,7 +32,7 @@ class PostAttachmentOptions extends StatelessWidget {
             if (onTapAddText != null) onTapAddText!();
           },
           leading: const Icon(Atlas.size_text),
-          title: Text(L10n.of(context).addTextSlide),
+          title: Text(lang.addTextSlide),
         ),
         ListTile(
           key: NewsUpdateKeys.addImageSlide,
@@ -40,7 +41,7 @@ class PostAttachmentOptions extends StatelessWidget {
             if (onTapImage != null) onTapImage!();
           },
           leading: const Icon(Atlas.file_image),
-          title: Text(L10n.of(context).selectPicture),
+          title: Text(lang.selectPicture),
         ),
         ListTile(
           key: NewsUpdateKeys.addVideoSlide,
@@ -49,13 +50,16 @@ class PostAttachmentOptions extends StatelessWidget {
             if (onTapVideo != null) onTapVideo!();
           },
           leading: const Icon(Atlas.file_video),
-          title: Text(L10n.of(context).selectVideo),
+          title: Text(lang.selectVideo),
         ),
         ListTile(
           key: NewsUpdateKeys.cancelButton,
           onTap: () => Navigator.pop(context),
           contentPadding: const EdgeInsets.all(0),
-          title: Text(L10n.of(context).cancel, textAlign: TextAlign.center),
+          title: Text(
+            lang.cancel,
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );
