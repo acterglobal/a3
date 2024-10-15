@@ -22,6 +22,7 @@ class BugReportPage extends ConsumerStatefulWidget {
   static const includeUserId = Key('bug-report-include-user-id');
   static const submitBtn = Key('bug-report-submit');
   static const pageKey = Key('bug-report');
+
   final String? imagePath;
   final String? error;
   final String? stack;
@@ -49,6 +50,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
 
   Future<bool> reportBug(BuildContext context) async {
     final loadingNotifier = ref.read(bugReporterLoadingProvider.notifier);
+    final lang = L10n.of(context);
     try {
       loadingNotifier.update((state) => true);
       final Map<String, String> extraFields = {};
@@ -75,8 +77,8 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       loadingNotifier.update((state) => false);
       if (context.mounted) {
         final status = issueId != null
-            ? L10n.of(context).reportedBugSuccessful(issueId)
-            : L10n.of(context).thanksForReport;
+            ? lang.reportedBugSuccessful(issueId)
+            : lang.thanksForReport;
         EasyLoading.showToast(status);
       }
       return true;
@@ -85,7 +87,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       loadingNotifier.update((state) => false);
       if (!context.mounted) return false;
       EasyLoading.showError(
-        L10n.of(context).bugReportingError(e),
+        lang.bugReportingError(e),
         duration: const Duration(seconds: 3),
       );
       return false;
@@ -94,13 +96,16 @@ class _BugReportState extends ConsumerState<BugReportPage> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     final isLoading = ref.watch(bugReporterLoadingProvider);
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 350),
       child: Form(
         key: formKey,
         child: Scaffold(
-          appBar: AppBar(title: Text(L10n.of(context).bugReportTitle)),
+          appBar: AppBar(
+            title: Text(lang.bugReportTitle),
+          ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -111,13 +116,11 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                 TextFormField(
                   key: BugReportPage.titleField,
                   controller: titleController,
-                  decoration: InputDecoration(
-                    hintText: L10n.of(context).bugReportDescription,
-                  ),
+                  decoration:
+                      InputDecoration(hintText: lang.bugReportDescription),
                   // required field, space allowed
-                  validator: (val) => val == null || val.isEmpty
-                      ? L10n.of(context).emptyDescription
-                      : null,
+                  validator: (val) =>
+                      val == null || val.isEmpty ? lang.emptyDescription : null,
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
@@ -127,28 +130,34 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                   minLines: 4,
                   autofocus: true,
                   maxLines: 4,
-                  decoration: InputDecoration(
-                    hintText: L10n.of(context).description,
-                  ),
+                  decoration: InputDecoration(hintText: lang.description),
                 ),
                 const SizedBox(height: 10),
                 CheckboxListTile(
                   key: BugReportPage.includeUserId,
-                  title: Text(L10n.of(context).includeUserId),
+                  title: Text(lang.includeUserId),
                   value: withUserId,
                   onChanged: (bool? value) => setState(() {
                     withUserId = value ?? true;
                   }),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
-                const Divider(endIndent: 10, indent: 10),
+                const Divider(
+                  endIndent: 10,
+                  indent: 10,
+                ),
                 ...renderErrorOptions(),
                 ...renderLogOptions(),
                 ...renderForScreenShot(),
-                const Divider(endIndent: 10, indent: 10),
+                const Divider(
+                  endIndent: 10,
+                  indent: 10,
+                ),
                 const SizedBox(height: 10),
                 isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
                     : ActerPrimaryActionButton(
                         key: BugReportPage.submitBtn,
                         onPressed: () async {
@@ -159,7 +168,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                             Navigator.pop(context);
                           }
                         },
-                        child: Text(L10n.of(context).submit),
+                        child: Text(lang.submit),
                       ),
               ],
             ),
@@ -184,10 +193,11 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   }
 
   List<Widget> renderLogOptions() {
+    final lang = L10n.of(context);
     return [
       CheckboxListTile(
         key: BugReportPage.includeLog,
-        title: Text(L10n.of(context).includeLog),
+        title: Text(lang.includeLog),
         value: withLogFile,
         onChanged: (bool? value) => setState(() {
           withLogFile = value ?? true;
@@ -196,7 +206,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       ),
       CheckboxListTile(
         key: BugReportPage.includePrevLog,
-        title: Text(L10n.of(context).includePrevLog),
+        title: Text(lang.includePrevLog),
         value: withPrevLogFile,
         onChanged: (bool? value) => setState(() {
           withPrevLogFile = value ?? true;
@@ -207,12 +217,13 @@ class _BugReportState extends ConsumerState<BugReportPage> {
   }
 
   List<Widget> renderForScreenShot() {
+    final lang = L10n.of(context);
     return widget.imagePath.let(
           (path) => [
             const SizedBox(height: 10),
             CheckboxListTile(
               key: BugReportPage.includeScreenshot,
-              title: Text(L10n.of(context).includeScreenshot),
+              title: Text(lang.includeScreenshot),
               value: withScreenshot,
               onChanged: (bool? value) => setState(() {
                 withScreenshot = value ?? true;
@@ -226,7 +237,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                 key: BugReportPage.screenshot,
                 width: MediaQuery.of(context).size.width * 0.8,
                 errorBuilder: (context, error, stackTrace) {
-                  return Text(L10n.of(context).couldNotLoadImage(error));
+                  return Text(lang.couldNotLoadImage(error));
                 },
               ),
             if (withScreenshot) const SizedBox(height: 10),

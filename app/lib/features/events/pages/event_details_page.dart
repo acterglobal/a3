@@ -93,11 +93,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Future<void> updateEventParticipantsList(CalendarEvent ev) async {
-    final ffiListFfiString = await ev.participants();
-    final participantsList = asDartStringList(ffiListFfiString);
-    _log.info('Event Participants => $participantsList');
+    final participants = asDartStringList(await ev.participants());
+    _log.info('Event Participants => $participants');
     if (!mounted) return;
-    eventParticipantsList.value = participantsList;
+    eventParticipantsList.value = participants;
   }
 
   Widget _buildEventAppBar(CalendarEvent calendarEvent) {
@@ -112,13 +111,17 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       flexibleSpace: Container(
         padding: const EdgeInsets.only(top: 20),
         child: const FlexibleSpaceBar(
-          background: Icon(Atlas.calendar_dots, size: 80),
+          background: Icon(
+            Atlas.calendar_dots,
+            size: 80,
+          ),
         ),
       ),
     );
   }
 
   Widget _buildActionMenu(CalendarEvent event) {
+    final lang = L10n.of(context);
     //Get membership details
     final spaceId = event.roomIdStr();
     final canRedact = ref.watch(canRedactProvider(event));
@@ -141,7 +144,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               children: <Widget>[
                 const Icon(Atlas.pencil_edit_thin),
                 const SizedBox(width: 10),
-                Text(L10n.of(context).editTitle),
+                Text(lang.editTitle),
               ],
             ),
           ),
@@ -156,7 +159,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               children: <Widget>[
                 const Icon(Atlas.pencil_edit_thin),
                 const SizedBox(width: 10),
-                Text(L10n.of(context).editDescription),
+                Text(lang.editDescription),
               ],
             ),
           ),
@@ -172,7 +175,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                 children: <Widget>[
                   const Icon(Atlas.pencil_edit_thin),
                   const SizedBox(width: 10),
-                  Text(L10n.of(context).changeDate),
+                  Text(lang.changeDate),
                 ],
               ),
             ),
@@ -183,13 +186,16 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         actions.add(
           PopupMenuItem(
             onTap: () {
-              context.pushNamed(Routes.createEvent.name, extra: event);
+              context.pushNamed(
+                Routes.createEvent.name,
+                extra: event,
+              );
             },
             child: Row(
               children: <Widget>[
                 Icon(PhosphorIcons.calendarPlus()),
                 const SizedBox(width: 10),
-                Text(L10n.of(context).createAcopy),
+                Text(lang.createAcopy),
               ],
             ),
           ),
@@ -205,7 +211,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           onTap: () => openRedactContentDialog(
             context,
             removeBtnKey: EventsKeys.eventRemoveBtn,
-            title: L10n.of(context).removeThisPost,
+            title: lang.removeThisPost,
             eventId: event.eventId().toString(),
             onSuccess: () {
               Navigator.pop(context);
@@ -220,7 +226,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                 color: Theme.of(context).colorScheme.error,
               ),
               const SizedBox(width: 10),
-              Text(L10n.of(context).eventRemove),
+              Text(lang.eventRemove),
             ],
           ),
         ),
@@ -232,8 +238,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       PopupMenuItem(
         onTap: () => openReportContentDialog(
           context,
-          title: L10n.of(context).reportThisEvent,
-          description: L10n.of(context).reportThisContent,
+          title: lang.reportThisEvent,
+          description: lang.reportThisContent,
           eventId: widget.calendarId,
           roomId: spaceId,
           senderId: event.sender().toString(),
@@ -246,7 +252,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               color: Theme.of(context).colorScheme.error,
             ),
             const SizedBox(width: 10),
-            Text(L10n.of(context).eventReport),
+            Text(lang.eventReport),
           ],
         ),
       ),
@@ -321,9 +327,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                   ValueListenableBuilder(
                     valueListenable: eventParticipantsList,
                     builder: (context, eventParticipantsList, child) {
+                      final lang = L10n.of(context);
                       return Text(
-                        L10n.of(context)
-                            .peopleGoing(eventParticipantsList.length),
+                        lang.peopleGoing(eventParticipantsList.length),
                       );
                     },
                   ),
@@ -351,7 +357,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Future<void> onRsvp(RsvpStatusTag status, WidgetRef ref) async {
-    EasyLoading.show(status: L10n.of(context).updatingRSVP);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.updatingRSVP);
     try {
       final event =
           await ref.read(calendarEventProvider(widget.calendarId).future);
@@ -376,13 +383,14 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).sendingRsvpFailed(e),
+        lang.sendingRsvpFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
   }
 
   Widget _buildEventRsvpActions(CalendarEvent calendarEvent) {
+    final lang = L10n.of(context);
     final rsvp = ref.watch(myRsvpStatusProvider(widget.calendarId)).valueOrNull;
 
     return Container(
@@ -395,7 +403,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             calendarEvent: calendarEvent,
             onTap: () => onRsvp(RsvpStatusTag.Yes, ref),
             iconData: Icons.check,
-            actionName: L10n.of(context).going,
+            actionName: lang.going,
             rsvpStatusColor: Theme.of(context).colorScheme.secondary,
             isSelected: rsvp == RsvpStatusTag.Yes,
           ),
@@ -405,7 +413,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             calendarEvent: calendarEvent,
             onTap: () => onRsvp(RsvpStatusTag.No, ref),
             iconData: Icons.close,
-            actionName: L10n.of(context).notGoing,
+            actionName: lang.notGoing,
             rsvpStatusColor: Theme.of(context).colorScheme.error,
             isSelected: rsvp == RsvpStatusTag.No,
           ),
@@ -415,7 +423,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             calendarEvent: calendarEvent,
             onTap: () => onRsvp(RsvpStatusTag.Maybe, ref),
             iconData: Icons.question_mark,
-            actionName: L10n.of(context).maybe,
+            actionName: lang.maybe,
             rsvpStatusColor: Colors.white,
             isSelected: rsvp == RsvpStatusTag.Maybe,
           ),
@@ -432,6 +440,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Future<void> onShareEvent(CalendarEvent event) async {
+    final lang = L10n.of(context);
     try {
       final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
       final tempDir = await getTemporaryDirectory();
@@ -443,7 +452,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           // ignore: use_build_context_synchronously
           context: context,
           // ignore: use_build_context_synchronously
-          header: Text(L10n.of(context).shareIcal),
+          header: Text(lang.shareIcal),
           file: File(icalPath),
           mimeType: 'text/calendar',
         );
@@ -452,7 +461,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       _log.severe('Creating iCal Share Event failed', e, s);
       if (!mounted) return;
       EasyLoading.showError(
-        L10n.of(context).shareFailed(e),
+        lang.shareFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -502,6 +511,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventDataSet(CalendarEvent ev) {
+    final lang = L10n.of(context);
     final agoTime =
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
             .endOf(Unit.hour)
@@ -510,9 +520,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     String eventDateTime = '${formatDate(ev)} (${formatTime(ev)})';
 
     String eventTimingTitle = switch (getEventType(ev)) {
-      EventFilters.ongoing => '${L10n.of(context).eventStarted} $agoTime',
-      EventFilters.upcoming => '${L10n.of(context).eventStarts} $agoTime',
-      EventFilters.past => '${L10n.of(context).eventEnded} $agoTime',
+      EventFilters.ongoing => '${lang.eventStarted} $agoTime',
+      EventFilters.upcoming => '${lang.eventStarts} $agoTime',
+      EventFilters.past => '${lang.eventEnded} $agoTime',
       _ => '',
     };
     final canChangeDate = getEventType(ev) == EventFilters.upcoming;

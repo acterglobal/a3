@@ -60,7 +60,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
                   lang.deactivateAccountPasswordTitle,
                   style: TextStyle(

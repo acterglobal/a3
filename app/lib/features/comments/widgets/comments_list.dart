@@ -55,13 +55,17 @@ class _CommentsListState extends ConsumerState<CommentsList> {
   }
 
   Widget commentListUI(BuildContext context, List<Comment> comments) {
+    final commentList = comments
+        .map(
+          (c) => CommentWidget(
+            comment: c,
+            manager: widget.manager,
+          ),
+        )
+        .toList();
     return Column(
       children: [
-        Column(
-          children: comments
-              .map((c) => CommentWidget(comment: c, manager: widget.manager))
-              .toList(),
-        ),
+        Column(children: commentList),
         if (editorOpened)
           createComment()
         else
@@ -81,13 +85,14 @@ class _CommentsListState extends ConsumerState<CommentsList> {
 
   Widget commentEmptyState(BuildContext context) {
     if (editorOpened) return createComment();
+    final lang = L10n.of(context);
     return Row(
       children: [
-        Text(L10n.of(context).commentEmptyStateTitle),
+        Text(lang.commentEmptyStateTitle),
         if (!editorOpened)
           ActerInlineTextButton(
             onPressed: () => setState(() => editorOpened = true),
-            child: Text(L10n.of(context).commentEmptyStateAction),
+            child: Text(lang.commentEmptyStateAction),
           ),
       ],
     );

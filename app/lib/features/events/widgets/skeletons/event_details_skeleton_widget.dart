@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class EventDetailsSkeleton extends StatelessWidget {
   const EventDetailsSkeleton({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -35,6 +36,7 @@ class EventDetailsSkeleton extends StatelessWidget {
   }
 
   Widget _buildEventBasicInfoSkeletonUI(BuildContext context) {
+    final lang = L10n.of(context);
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -48,12 +50,12 @@ class EventDetailsSkeleton extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(L10n.of(context).eventTitleData),
-              Text(L10n.of(context).eventDescriptionsData),
+              Text(lang.eventTitleData),
+              Text(lang.eventDescriptionsData),
             ],
           ),
           const SizedBox(width: 20),
-          Text(L10n.of(context).rsvp),
+          Text(lang.rsvp),
         ],
       ),
     );

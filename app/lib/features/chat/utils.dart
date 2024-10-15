@@ -9,16 +9,15 @@ import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:html/parser.dart';
 
 //Check for mentioned user link
-final mentionedUserLinkRegex = RegExp(
-  r'https://matrix.to/#/(?<alias>@.+):(?<server>.+)',
-);
+final mentionedUserLinkRegex =
+    RegExp(r'https://matrix.to/#/(?<alias>@.+):(?<server>.+)');
 
 bool renderCustomMessageBubble(types.CustomMessage message) {
   switch (message.metadata?['eventType']) {
@@ -117,10 +116,7 @@ UserMentionMessageData parseUserMentionMessage(
     displayName = aTagElement.text;
 
     // Replace displayName with @displayName
-    msg = msg.replaceAll(
-      aTagElement.outerHtml,
-      displayName,
-    );
+    msg = msg.replaceAll(aTagElement.outerHtml, displayName);
   }
   return UserMentionMessageData(
     parsedMessage: msg,
@@ -185,12 +181,12 @@ Future<void> navigateToRoomOrAskToJoin(
   }
 }
 
-void askToJoinRoom(
+Future<void> askToJoinRoom(
   BuildContext context,
   WidgetRef ref,
   String roomId,
 ) async {
-  showModalBottomSheet(
+  await showModalBottomSheet(
     context: context,
     isDismissible: true,
     shape: const RoundedRectangleBorder(
@@ -199,36 +195,37 @@ void askToJoinRoom(
         topLeft: Radius.circular(20),
       ),
     ),
-    builder: (context) => Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            L10n.of(context).youAreNotPartOfThisGroup,
-          ),
-          const SizedBox(height: 20),
-          ActerPrimaryActionButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              final server = roomId.split(':').last;
-              await joinRoom(
-                context,
-                ref,
-                L10n.of(context).tryingToJoin(roomId),
-                roomId,
-                server,
-                (roomId) => navigateToRoomOrAskToJoin(context, ref, roomId),
-              );
-            },
-            child: Text(L10n.of(context).joinRoom),
-          ),
-        ],
-      ),
-    ),
+    builder: (context) {
+      final lang = L10n.of(context);
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(lang.youAreNotPartOfThisGroup),
+            const SizedBox(height: 20),
+            ActerPrimaryActionButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                final server = roomId.split(':').last;
+                await joinRoom(
+                  context,
+                  ref,
+                  lang.tryingToJoin(roomId),
+                  roomId,
+                  server,
+                  (roomId) => navigateToRoomOrAskToJoin(context, ref, roomId),
+                );
+              },
+              child: Text(lang.joinRoom),
+            ),
+          ],
+        ),
+      );
+    },
   );
 }
 
@@ -302,9 +299,7 @@ Future<void> parseUserMentionText(
 
     if (linkedName != null && userId != null) {
       displayName = linkedName;
-      isValidMention = roomMentions.any(
-        (uId) => uId == userId,
-      );
+      isValidMention = roomMentions.any((uId) => uId == userId);
     }
     if (isValidMention && displayName != null) {
       final simpleMention = '@$displayName';
@@ -342,11 +337,7 @@ Future<void> parseUserMentionText(
 }
 
 // save composer draft object handler
-Future<void> saveDraft(
-  String text,
-  String roomId,
-  WidgetRef ref,
-) async {
+Future<void> saveDraft(String text, String roomId, WidgetRef ref) async {
   // get the convo object to initiate draft
   final chat = await ref.read(chatProvider(roomId).future);
   final messageId = ref.read(chatInputProvider).selectedMessage?.id;

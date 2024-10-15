@@ -21,17 +21,17 @@ class UserSearchResults extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final suggestedUsers =
         ref.watch(filteredSuggestedUsersProvider(roomId)).valueOrNull ?? [];
-
     final foundUsers = ref.watch(searchResultProvider).valueOrNull ?? [];
 
     if (suggestedUsers.isEmpty && foundUsers.isEmpty) {
       // nothing found
       return Center(
         child: EmptyState(
-          title: L10n.of(context).noUserFoundTitle,
-          subtitle: L10n.of(context).noUserFoundSubtitle,
+          title: lang.noUserFoundTitle,
+          subtitle: lang.noUserFoundSubtitle,
           image: 'assets/images/empty_activity.svg',
         ),
       );
@@ -48,17 +48,21 @@ class UserSearchResults extends ConsumerWidget {
           showRooms = true;
         }
 
-        final userWidget =
-            userItemBuilder(isSuggestion: showRooms, profile: user);
+        final userWidget = userItemBuilder(
+          isSuggestion: showRooms,
+          profile: user,
+        );
         if (position == 0 && suggestedUsers.isNotEmpty) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 child: Text(
-                  L10n.of(context).suggestedUsers,
+                  lang.suggestedUsers,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
@@ -71,10 +75,12 @@ class UserSearchResults extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 child: Text(
-                  L10n.of(context).usersfoundDirectory,
+                  lang.usersfoundDirectory,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),

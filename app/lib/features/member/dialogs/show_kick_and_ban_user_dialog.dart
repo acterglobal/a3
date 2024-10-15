@@ -16,24 +16,25 @@ Future<void> showKickAndBanUserDialog(
   await showDialog(
     context: context,
     builder: (BuildContext context) {
+      final lang = L10n.of(context);
       final reason = TextEditingController();
       return AlertDialog(
-        title: Text(L10n.of(context).kickAndBanUserTitle(userId)),
+        title: Text(lang.kickAndBanUserTitle(userId)),
         content: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(L10n.of(context).kickAndBanUserDescription(userId, roomId)),
-              Text(L10n.of(context).theyWontBeAbleToJoinAgain),
+              Text(lang.kickAndBanUserDescription(userId, roomId)),
+              Text(lang.theyWontBeAbleToJoinAgain),
               TextFormField(
                 controller: reason,
                 decoration: InputDecoration(
-                  hintText: L10n.of(context).reasonHint,
-                  labelText: L10n.of(context).reasonLabel,
+                  hintText: lang.reasonHint,
+                  labelText: lang.reasonLabel,
                 ),
               ),
-              Text(L10n.of(context).continueQuestion),
+              Text(lang.continueQuestion),
             ],
           ),
         ),
@@ -41,11 +42,11 @@ Future<void> showKickAndBanUserDialog(
         actions: <Widget>[
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(L10n.of(context).no),
+            child: Text(lang.no),
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
-              EasyLoading.show(status: L10n.of(context).kickAndBanProgress);
+              EasyLoading.show(status: lang.kickAndBanProgress);
               try {
                 final maybeReason = reason.text.isNotEmpty ? reason.text : null;
                 await member.kick(maybeReason);
@@ -54,7 +55,7 @@ Future<void> showKickAndBanUserDialog(
                   EasyLoading.dismiss();
                   return;
                 }
-                EasyLoading.showToast(L10n.of(context).kickAndBanSuccess);
+                EasyLoading.showToast(lang.kickAndBanSuccess);
                 Navigator.pop(context);
               } catch (e, s) {
                 _log.severe('Failed to kick and ban user', e, s);
@@ -63,12 +64,12 @@ Future<void> showKickAndBanUserDialog(
                   return;
                 }
                 EasyLoading.showError(
-                  L10n.of(context).kickAndBanFailed(e),
+                  lang.kickAndBanFailed(e),
                   duration: const Duration(seconds: 3),
                 );
               }
             },
-            child: Text(L10n.of(context).yes),
+            child: Text(lang.yes),
           ),
         ],
       );

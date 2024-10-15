@@ -9,6 +9,7 @@ class RoomHierarchyOptionsMenu extends ConsumerWidget {
   final String childId;
   final String parentId;
   final bool isSuggested;
+
   const RoomHierarchyOptionsMenu({
     super.key,
     required this.childId,
@@ -18,11 +19,8 @@ class RoomHierarchyOptionsMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canEdit = ref
-            .watch(roomMembershipProvider(parentId))
-            .valueOrNull
-            ?.canString('CanLinkSpaces') ==
-        true;
+    final membership = ref.watch(roomMembershipProvider(parentId)).valueOrNull;
+    final canEdit = membership?.canString('CanLinkSpaces') == true;
     if (!canEdit) {
       // user doesn’t have the permission. disappear
       return const SizedBox.shrink();
@@ -34,6 +32,7 @@ class RoomHierarchyOptionsMenu extends ConsumerWidget {
   }
 
   List<PopupMenuEntry> _menu(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return [
       PopupMenuItem(
         onTap: () => setChildRoomSuggested(
@@ -47,11 +46,7 @@ class RoomHierarchyOptionsMenu extends ConsumerWidget {
           children: [
             Icon(isSuggested ? Icons.star : Icons.star_border_rounded),
             const SizedBox(width: 4),
-            Text(
-              isSuggested
-                  ? L10n.of(context).removeSuggested
-                  : L10n.of(context).addSuggested,
-            ),
+            Text(isSuggested ? lang.removeSuggested : lang.addSuggested),
           ],
         ),
       ),
@@ -64,7 +59,10 @@ class RoomHierarchyOptionsMenu extends ConsumerWidget {
           roomId: childId,
         ),
         child: Row(
-          children: [const Icon(Icons.link_off), Text(L10n.of(context).unlink)],
+          children: [
+            const Icon(Icons.link_off),
+            Text(lang.unlink),
+          ],
         ),
       ),
     ];

@@ -16,6 +16,7 @@ class AnalyticsOptInPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     // ensure we are triggering a sync and do not delay this process
     // ignore: unused_local_variable, no_leading_underscores_for_local_identifiers
     final _syncState = ref.read(syncStateProvider);
@@ -29,7 +30,7 @@ class AnalyticsOptInPage extends ConsumerWidget {
             children: [
               const Spacer(),
               Text(
-                L10n.of(context).analyticsTitle,
+                lang.analyticsTitle,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Theme.of(context).colorScheme.secondary,
                     ),
@@ -37,12 +38,12 @@ class AnalyticsOptInPage extends ConsumerWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                L10n.of(context).analyticsDescription1,
+                lang.analyticsDescription1,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 10),
               Text(
-                L10n.of(context).analyticsDescription2,
+                lang.analyticsDescription2,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               _buildCrashAnalytics(context, ref),
@@ -57,6 +58,7 @@ class AnalyticsOptInPage extends ConsumerWidget {
   }
 
   Widget _buildCrashAnalytics(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final allowReportSending =
         ref.watch(allowSentryReportingProvider).valueOrNull ?? isNightly;
 
@@ -67,8 +69,8 @@ class AnalyticsOptInPage extends ConsumerWidget {
 
     return ListTile(
       onTap: () => toggle(null),
-      title: Text(L10n.of(context).sendCrashReportsTitle),
-      subtitle: Text(L10n.of(context).sendCrashReportsInfo),
+      title: Text(lang.sendCrashReportsTitle),
+      subtitle: Text(lang.sendCrashReportsInfo),
       leading: Switch(
         value: allowReportSending,
         onChanged: (value) => toggle(value),

@@ -24,9 +24,13 @@ class SubChatsPage extends ConsumerWidget {
   static const moreOptionKey = Key('sub-chats-more-actions');
   static const createSubChatKey = Key('sub-chats-more-create-subChat');
   static const linkSubChatKey = Key('sub-chats-more-link-subChat');
+
   final String spaceId;
 
-  const SubChatsPage({super.key, required this.spaceId});
+  const SubChatsPage({
+    super.key,
+    required this.spaceId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -68,6 +72,7 @@ class SubChatsPage extends ConsumerWidget {
   }
 
   Widget _buildMenuOptions(BuildContext context) {
+    final lang = L10n.of(context);
     return PopupMenuButton(
       icon: Icon(PhosphorIcons.dotsThreeVertical()),
       iconSize: 28,
@@ -83,7 +88,7 @@ class SubChatsPage extends ConsumerWidget {
             children: <Widget>[
               Icon(PhosphorIcons.plus()),
               const SizedBox(width: 6),
-              Text(L10n.of(context).createChat),
+              Text(lang.createChat),
             ],
           ),
         ),
@@ -97,7 +102,7 @@ class SubChatsPage extends ConsumerWidget {
             children: <Widget>[
               Icon(PhosphorIcons.link()),
               const SizedBox(width: 6),
-              Text(L10n.of(context).linkExistingChat),
+              Text(lang.linkExistingChat),
             ],
           ),
         ),
@@ -113,7 +118,7 @@ class SubChatsPage extends ConsumerWidget {
             children: [
               Icon(PhosphorIcons.dotsSixVertical()),
               const SizedBox(width: 6),
-              Text(L10n.of(context).organize),
+              Text(lang.organize),
             ],
           ),
         ),
@@ -141,7 +146,9 @@ class SubChatsPage extends ConsumerWidget {
       ),
       error: (e, s) {
         _log.severe('Failed to load the sub-spaces', e, s);
-        return Center(child: Text(L10n.of(context).loadingFailed(e)));
+        return Center(
+          child: Text(L10n.of(context).loadingFailed(e)),
+        );
       },
       loading: () => const GeneralListSkeletonWidget(),
     );
@@ -250,7 +257,10 @@ class SubChatsPage extends ConsumerWidget {
               isSuggested: isSuggested,
             ),
             onTap: () => goToChat(context, roomId),
-            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+            margin: const EdgeInsets.symmetric(
+              vertical: 2,
+              horizontal: 8,
+            ),
           );
         }),
       ),

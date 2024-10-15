@@ -15,7 +15,10 @@ final _log = Logger('a3::news::widget::video_slide');
 class VideoSlide extends StatelessWidget {
   final NewsSlide slide;
 
-  const VideoSlide({super.key, required this.slide});
+  const VideoSlide({
+    super.key,
+    required this.slide,
+  });
 
   Future<File> getNewsVideoFile() async {
     final newsVideo = await slide.sourceBinary(null);
@@ -61,7 +64,12 @@ class VideoSlide extends StatelessWidget {
   }
 
   Widget buildVideoLoadingUI() {
-    return Center(child: Icon(PhosphorIcons.video(), size: 100));
+    return Center(
+      child: Icon(
+        PhosphorIcons.video(),
+        size: 100,
+      ),
+    );
   }
 
   Widget buildVideoLoadingErrorUI(

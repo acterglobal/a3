@@ -19,8 +19,9 @@ Future<void> saveCategories(
   CategoriesFor categoriesFor,
   List<CategoryModelLocal> categoryList,
 ) async {
+  final lang = L10n.of(context);
   // Show loading message
-  EasyLoading.show(status: L10n.of(context).updatingCategories);
+  EasyLoading.show(status: lang.updatingCategories);
   try {
     //Get category manager
     final categoriesManager = await ref.read(
@@ -36,28 +37,27 @@ Future<void> saveCategories(
 
     //Clear category builder data and Add new
     categoriesBuilder.clear();
-    for (int i = 0; i < categoryList.length; i++) {
-      bool isValidCategory = CategoryUtils().isValidCategory(categoryList[i]);
-      if (isValidCategory) {
-        final newCategoryItem = categoriesManager.newCategoryBuilder();
-        //ADD TITLE
-        newCategoryItem.title(categoryList[i].title);
+    for (final category in categoryList) {
+      bool isValidCategory = CategoryUtils().isValidCategory(category);
+      if (!isValidCategory) continue;
+      final newCategoryItem = categoriesManager.newCategoryBuilder();
+      //ADD TITLE
+      newCategoryItem.title(category.title);
 
-        //ADD COLOR AND ICON
-        categoryList[i].color.let((clr) {
-          displayBuilder.color(clr.value);
-        });
-        categoryList[i].icon.let((icn) {
-          displayBuilder.icon('acter-icon', icn.name);
-        });
-        newCategoryItem.display(displayBuilder.build());
+      //ADD COLOR AND ICON
+      category.color.let((color) {
+        displayBuilder.color(color.value);
+      });
+      category.icon.let((icon) {
+        displayBuilder.icon('acter-icon', icon.name);
+      });
+      newCategoryItem.display(displayBuilder.build());
 
-        //ADD ENTRIES
-        for (int j = 0; j < categoryList[i].entries.length; j++) {
-          newCategoryItem.addEntry(categoryList[i].entries[j]);
-        }
-        categoriesBuilder.add(newCategoryItem.build());
+      //ADD ENTRIES
+      for (final entry in category.entries) {
+        newCategoryItem.addEntry(entry);
       }
+      categoriesBuilder.add(newCategoryItem.build());
     }
 
     //Save category builder
@@ -72,7 +72,7 @@ Future<void> saveCategories(
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).updatingCategoriesFailed(e),
+      lang.updatingCategoriesFailed(e),
       duration: const Duration(seconds: 3),
     );
   }

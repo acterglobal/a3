@@ -1,7 +1,7 @@
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class MembersListSkeleton extends StatelessWidget {
   const MembersListSkeleton({super.key});
@@ -22,6 +22,7 @@ class MembersListSkeleton extends StatelessWidget {
   }
 
   Widget _buildMemberItemSkeletonUI(BuildContext context) {
+    final lang = L10n.of(context);
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -36,8 +37,8 @@ class MembersListSkeleton extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(L10n.of(context).memberTitleData),
-                Text(L10n.of(context).memberDescriptionsData),
+                Text(lang.memberTitleData),
+                Text(lang.memberDescriptionsData),
               ],
             ),
           ),

@@ -69,7 +69,7 @@ class MentionProfileBuilder extends ConsumerWidget {
             ),
             child: ListView.builder(
               shrinkWrap: true,
-              padding: const EdgeInsets.all(0),
+              padding: EdgeInsets.zero,
               itemCount: users.length,
               itemBuilder: (context, index) {
                 final userId = users.keys.elementAt(index);

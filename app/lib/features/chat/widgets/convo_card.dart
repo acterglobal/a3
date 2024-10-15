@@ -1,7 +1,9 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +14,6 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/features/chat/widgets/room_avatar.dart';
 
 final _log = Logger('a3::chat::convo_card');
 
@@ -183,19 +183,20 @@ class ConvoCard extends ConsumerWidget {
   }
 
   Future<void> onUnmute(BuildContext context, WidgetRef ref) async {
+    final lang = L10n.of(context);
     final room = await ref.read(maybeRoomProvider(roomId).future);
     if (room == null) {
       _log.severe('Room not found: $roomId');
       if (!context.mounted) return;
       EasyLoading.showError(
-        L10n.of(context).roomNotFound,
+        lang.roomNotFound,
         duration: const Duration(seconds: 3),
       );
       return;
     }
     await room.unmute();
     if (!context.mounted) return;
-    EasyLoading.showToast(L10n.of(context).notificationsUnmuted);
+    EasyLoading.showToast(lang.notificationsUnmuted);
     await Future.delayed(const Duration(seconds: 1), () {
       // FIXME: we want to refresh the view but don’t know
       //        when the event was confirmed form sync :(
@@ -226,6 +227,7 @@ class _SubtitleWidget extends ConsumerWidget {
 
     String sender = eventItem.sender();
     String eventType = eventItem.eventType();
+    final lang = L10n.of(context);
     // message event
     switch (eventType) {
       case 'm.call.answer':
@@ -374,7 +376,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                L10n.of(context).thisMessageHasBeenDeleted,
+                lang.thisMessageHasBeenDeleted,
                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.w700,
@@ -400,7 +402,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Expanded(
               child: Text(
-                L10n.of(context).failedToDecryptMessage,
+                lang.failedToDecryptMessage,
                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       fontStyle: FontStyle.italic,
                     ),
@@ -477,21 +479,25 @@ class _SubtitleWidget extends ConsumerWidget {
     List<User> userIds,
     WidgetRef ref,
   ) {
+    final lang = L10n.of(context);
     final textStyle = Theme.of(context).textTheme.bodySmall!;
     if (userIds.length == 1) {
       final userName = simplifyUserId(userIds[0].id.toString());
-      return Text(L10n.of(context).typingUser1(userName!), style: textStyle);
+      return Text(
+        lang.typingUser1(userName!),
+        style: textStyle,
+      );
     } else if (userIds.length == 2) {
       final u1 = simplifyUserId(userIds[0].id.toString());
       final u2 = simplifyUserId(userIds[1].id.toString());
       return Text(
-        L10n.of(context).typingUser2(u1!, u2!),
+        lang.typingUser2(u1!, u2!),
         style: textStyle,
       );
     } else {
       final u1 = simplifyUserId(userIds[0].id.toString());
       return Text(
-        L10n.of(context).typingUserN(u1!, {userIds.length - 1}),
+        lang.typingUserN(u1!, {userIds.length - 1}),
         style: textStyle,
       );
     }
