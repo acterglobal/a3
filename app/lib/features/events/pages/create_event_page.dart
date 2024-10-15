@@ -151,22 +151,21 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
   // Event name field
   Widget _eventNameField() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(L10n.of(context).eventName),
+        Text(lang.eventName),
         const SizedBox(height: 10),
         TextFormField(
           key: EventsKeys.eventNameTextField,
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,
           controller: _eventNameController,
-          decoration: InputDecoration(
-            hintText: L10n.of(context).nameOfTheEvent,
-          ),
+          decoration: InputDecoration(hintText: lang.nameOfTheEvent),
           // required field, space not allowed
           validator: (val) => val == null || val.trim().isEmpty
-              ? L10n.of(context).pleaseEnterEventName
+              ? lang.pleaseEnterEventName
               : null,
         ),
       ],
@@ -175,6 +174,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
   // Event date and time field
   Widget _eventDateAndTime() {
+    final lang = L10n.of(context);
     return Column(
       children: [
         Row(
@@ -183,7 +183,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).startDate),
+                  Text(lang.startDate),
                   const SizedBox(height: 10),
                   TextFormField(
                     key: EventsKeys.eventStartDate,
@@ -191,13 +191,13 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                     keyboardType: TextInputType.text,
                     controller: _startDateController,
                     decoration: InputDecoration(
-                      hintText: L10n.of(context).selectDate,
+                      hintText: lang.selectDate,
                       suffixIcon: const Icon(Icons.calendar_month_outlined),
                     ),
                     onTap: () => _selectDate(isStartDate: true),
                     // required field, space not allowed
                     validator: (val) => val == null || val.trim().isEmpty
-                        ? L10n.of(context).startDateRequired
+                        ? lang.startDateRequired
                         : null,
                   ),
                 ],
@@ -208,7 +208,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).startTime),
+                  Text(lang.startTime),
                   const SizedBox(height: 10),
                   TextFormField(
                     key: EventsKeys.eventStartTime,
@@ -216,13 +216,13 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                     keyboardType: TextInputType.text,
                     controller: _startTimeController,
                     decoration: InputDecoration(
-                      hintText: L10n.of(context).selectTime,
+                      hintText: lang.selectTime,
                       suffixIcon: const Icon(Icons.access_time_outlined),
                     ),
                     onTap: () => _selectTime(isStartTime: true),
                     // required field, space not allowed
                     validator: (val) => val == null || val.trim().isEmpty
-                        ? L10n.of(context).startTimeRequired
+                        ? lang.startTimeRequired
                         : null,
                   ),
                 ],
@@ -237,7 +237,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).endDate),
+                  Text(lang.endDate),
                   const SizedBox(height: 10),
                   TextFormField(
                     key: EventsKeys.eventEndDate,
@@ -245,13 +245,13 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                     keyboardType: TextInputType.text,
                     controller: _endDateController,
                     decoration: InputDecoration(
-                      hintText: L10n.of(context).selectDate,
+                      hintText: lang.selectDate,
                       suffixIcon: const Icon(Icons.calendar_month_outlined),
                     ),
                     onTap: () => _selectDate(isStartDate: false),
                     // required field, space not allowed
                     validator: (val) => val == null || val.trim().isEmpty
-                        ? L10n.of(context).endDateRequired
+                        ? lang.endDateRequired
                         : null,
                   ),
                 ],
@@ -262,7 +262,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).endTime),
+                  Text(lang.endTime),
                   const SizedBox(height: 10),
                   TextFormField(
                     key: EventsKeys.eventEndTime,
@@ -270,13 +270,13 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                     keyboardType: TextInputType.text,
                     controller: _endTimeController,
                     decoration: InputDecoration(
-                      hintText: L10n.of(context).selectTime,
+                      hintText: lang.selectTime,
                       suffixIcon: const Icon(Icons.access_time_outlined),
                     ),
                     onTap: () => _selectTime(isStartTime: false),
                     // required field, space not allowed
                     validator: (val) => val == null || val.trim().isEmpty
-                        ? L10n.of(context).endTimeRequired
+                        ? lang.endTimeRequired
                         : null,
                   ),
                 ],
@@ -390,18 +390,19 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
   // Action buttons
   Widget _eventActionButtons() {
+    final lang = L10n.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         OutlinedButton(
           onPressed: context.pop,
-          child: Text(L10n.of(context).cancel),
+          child: Text(lang.cancel),
         ),
         const SizedBox(width: 10),
         ActerPrimaryActionButton(
           key: EventsKeys.eventCreateEditBtn,
           onPressed: _handleCreateEvent,
-          child: Text(L10n.of(context).eventCreate),
+          child: Text(lang.eventCreate),
         ),
       ],
     );
@@ -409,13 +410,14 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
   // Create event handler
   Future<void> _handleCreateEvent() async {
+    final lang = L10n.of(context);
     String? spaceId = ref.read(selectedSpaceIdProvider);
     spaceId ??= await selectSpace();
     if (!mounted) return;
 
     if (spaceId == null) {
       EasyLoading.showError(
-        L10n.of(context).pleaseSelectSpace,
+        lang.pleaseSelectSpace,
         duration: const Duration(seconds: 2),
       );
       return;
@@ -423,7 +425,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
     if (!_formKey.currentState!.validate()) return;
 
-    EasyLoading.show(status: L10n.of(context).creatingCalendarEvent);
+    EasyLoading.show(status: lang.creatingCalendarEvent);
     try {
       // Replacing hours and minutes from DateTime
       // Start Date
@@ -448,17 +450,16 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       draft.utcStartFromRfc3339(utcStartDateTime);
       draft.utcEndFromRfc3339(utcEndDateTime);
       draft.descriptionHtml(plainDescription, htmlBodyDescription);
-      final eventId = await draft.send();
+      final eventId = (await draft.send()).toString();
       final client = ref.read(alwaysClientProvider);
-      final calendarEvent =
-          await client.waitForCalendarEvent(eventId.toString(), null);
+      final calendarEvent = await client.waitForCalendarEvent(eventId, null);
 
       /// Event is created, set RSVP status to `Yes` by default for host.
       final rsvpManager = await calendarEvent.rsvps();
       final rsvpDraft = rsvpManager.rsvpDraft();
       rsvpDraft.status('yes');
       await rsvpDraft.send();
-      _log.info('Created Calendar Event: ${eventId.toString()}');
+      _log.info('Created Calendar Event: $eventId');
 
       EasyLoading.dismiss();
 
@@ -466,7 +467,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
         Navigator.pop(context);
         context.pushNamed(
           Routes.calendarEvent.name,
-          pathParameters: {'calendarId': eventId.toString()},
+          pathParameters: {'calendarId': eventId},
         );
       }
     } catch (e, s) {
@@ -476,7 +477,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).errorCreatingCalendarEvent(e),
+        lang.errorCreatingCalendarEvent(e),
         duration: const Duration(seconds: 3),
       );
     }
