@@ -93,11 +93,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Future<void> updateEventParticipantsList(CalendarEvent ev) async {
-    final ffiListFfiString = await ev.participants();
-    final participantsList = asDartStringList(ffiListFfiString);
-    _log.info('Event Participants => $participantsList');
+    final participants = asDartStringList(await ev.participants());
+    _log.info('Event Participants => $participants');
     if (!mounted) return;
-    eventParticipantsList.value = participantsList;
+    eventParticipantsList.value = participants;
   }
 
   Widget _buildEventAppBar(CalendarEvent calendarEvent) {
@@ -112,7 +111,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       flexibleSpace: Container(
         padding: const EdgeInsets.only(top: 20),
         child: const FlexibleSpaceBar(
-          background: Icon(Atlas.calendar_dots, size: 80),
+          background: Icon(
+            Atlas.calendar_dots,
+            size: 80,
+          ),
         ),
       ),
     );
@@ -184,7 +186,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         actions.add(
           PopupMenuItem(
             onTap: () {
-              context.pushNamed(Routes.createEvent.name, extra: event);
+              context.pushNamed(
+                Routes.createEvent.name,
+                extra: event,
+              );
             },
             child: Row(
               children: <Widget>[

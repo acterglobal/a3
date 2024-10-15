@@ -95,27 +95,28 @@ class SasKeysExchangedView extends StatelessWidget {
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       padding: EdgeInsets.zero,
-      children: List.generate(emojis.length, (index) {
-        final emoji = emojis.elementAt(index);
-        return GridTile(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Text(
-                String.fromCharCode(emoji.symbol()),
-                style: const TextStyle(fontSize: 32),
-                textAlign: TextAlign.center,
+      children: emojis
+          .map(
+            (emoji) => GridTile(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    String.fromCharCode(emoji.symbol()),
+                    style: const TextStyle(fontSize: 32),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    emoji.description(),
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-              Text(
-                emoji.description(),
-                maxLines: 1,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        );
-      }),
+            ),
+          )
+          .toList(),
     );
   }
 
