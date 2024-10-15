@@ -101,12 +101,13 @@ class SpacesBuilder extends ConsumerWidget {
   }
 
   Widget renderEmpty(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return inBox(
       context,
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(L10n.of(context).noSpacesFound),
+          Text(lang.noSpacesFound),
           ActerInlineTextButton(
             onPressed: () {
               final query = ref.read(searchValueProvider);
@@ -115,7 +116,7 @@ class SpacesBuilder extends ConsumerWidget {
                 queryParameters: {'query': query},
               );
             },
-            child: Text(L10n.of(context).searchPublicDirectory),
+            child: Text(lang.searchPublicDirectory),
           ),
         ],
       ),
