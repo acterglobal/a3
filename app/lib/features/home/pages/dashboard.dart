@@ -14,10 +14,10 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class Dashboard extends ConsumerWidget {
   const Dashboard({super.key});
@@ -61,6 +61,7 @@ class Dashboard extends ConsumerWidget {
   }
 
   AppBar _buildDashboardAppBar(BuildContext context, Client client) {
+    final lang = L10n.of(context);
     return AppBar(
       leading: !isDesktop
           ? Padding(
@@ -69,9 +70,7 @@ class Dashboard extends ConsumerWidget {
             )
           : const SizedBox.shrink(),
       centerTitle: true,
-      title: isDesktop
-          ? Text(L10n.of(context).myDashboard)
-          : Text(L10n.of(context).acter),
+      title: Text(isDesktop ? lang.myDashboard : lang.acter),
       actions: <Widget>[
         Visibility(
           // FIXME: Only show mobile / when bottom bar shown...
@@ -114,6 +113,7 @@ class Dashboard extends ConsumerWidget {
   }
 
   Widget featuresNav(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       children: [
         const SizedBox(height: 20),
@@ -121,7 +121,7 @@ class Dashboard extends ConsumerWidget {
           children: [
             featuresNavItem(
               context: context,
-              title: L10n.of(context).pins,
+              title: lang.pins,
               iconData: Atlas.pin,
               color: const Color(0xff7c4a4a),
               onTap: () => context.pushNamed(Routes.pins.name),
@@ -129,7 +129,7 @@ class Dashboard extends ConsumerWidget {
             const SizedBox(width: 20),
             featuresNavItem(
               context: context,
-              title: L10n.of(context).events,
+              title: lang.events,
               iconData: Atlas.calendar_dots,
               color: const Color(0xff206a9a),
               onTap: () => context.pushNamed(Routes.calendarEvents.name),
@@ -141,7 +141,7 @@ class Dashboard extends ConsumerWidget {
           children: [
             featuresNavItem(
               context: context,
-              title: L10n.of(context).tasks,
+              title: lang.tasks,
               iconData: Atlas.list,
               color: const Color(0xff406c6e),
               onTap: () => context.pushNamed(Routes.tasks.name),
@@ -149,7 +149,7 @@ class Dashboard extends ConsumerWidget {
             const SizedBox(width: 20),
             featuresNavItem(
               context: context,
-              title: L10n.of(context).boosts,
+              title: lang.boosts,
               iconData: Atlas.megaphone_thin,
               color: Colors.blueGrey,
               onTap: () => context.pushNamed(Routes.updateList.name),
@@ -196,19 +196,20 @@ class Dashboard extends ConsumerWidget {
   }
 
   Widget emptyState(BuildContext context) {
+    final lang = L10n.of(context);
     return Center(
       heightFactor: 1.5,
       child: EmptyState(
-        title: L10n.of(context).youAreNotAMemberOfAnySpaceYet,
-        subtitle: L10n.of(context).createOrJoinSpaceDescription,
+        title: lang.youAreNotAMemberOfAnySpaceYet,
+        subtitle: lang.createOrJoinSpaceDescription,
         image: 'assets/images/empty_home.svg',
         primaryButton: ActerPrimaryActionButton(
           onPressed: () => context.pushNamed(Routes.createSpace.name),
-          child: Text(L10n.of(context).createNewSpace),
+          child: Text(lang.createNewSpace),
         ),
         secondaryButton: OutlinedButton(
           onPressed: () => context.pushNamed(Routes.searchPublicDirectory.name),
-          child: Text(L10n.of(context).joinExistingSpace),
+          child: Text(lang.joinExistingSpace),
         ),
       ),
     );

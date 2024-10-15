@@ -15,6 +15,7 @@ class ParticipantsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -23,11 +24,11 @@ class ParticipantsList extends ConsumerWidget {
           child: Row(
             children: [
               Expanded(
-                child: Text(L10n.of(context).eventParticipants),
+                child: Text(lang.eventParticipants),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(L10n.of(context).close),
+                child: Text(lang.close),
               ),
             ],
           ),
