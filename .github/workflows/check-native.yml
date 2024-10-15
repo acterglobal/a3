@@ -63,7 +63,7 @@ jobs:
       - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
       - name: Test
-        run: cargo llvm-cov --lcov --output-path lcov.info nextest run -p ${{matrix.package}}
+        run: cargo llvm-cov --lcov --output-path lcov.info nextest -p ${{matrix.package}}
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
