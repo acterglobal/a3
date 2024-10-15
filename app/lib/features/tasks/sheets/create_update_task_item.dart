@@ -11,26 +11,24 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::tasks::create_update_task_item');
 
-void showCreateUpdateTaskItemBottomSheet(
+Future<void> showCreateUpdateTaskItemBottomSheet(
   BuildContext context, {
   required TaskList taskList,
   required String taskName,
   Task? task,
   Function()? cancel,
-}) {
-  showModalBottomSheet(
+}) async {
+  await showModalBottomSheet(
     context: context,
     showDragHandle: false,
     useSafeArea: true,
     isScrollControlled: true,
-    builder: (context) {
-      return CreateUpdateTaskItemList(
-        taskList: taskList,
-        taskName: taskName,
-        task: task,
-        cancel: cancel,
-      );
-    },
+    builder: (context) => CreateUpdateTaskItemList(
+      taskList: taskList,
+      taskName: taskName,
+      task: task,
+      cancel: cancel,
+    ),
   );
 }
 
@@ -89,8 +87,9 @@ class _CreateUpdateItemListConsumerState
   }
 
   Widget _buildBody(BuildContext context) {
+    final lang = L10n.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -106,9 +105,7 @@ class _CreateUpdateItemListConsumerState
               ),
               const SizedBox(height: 20),
               Text(
-                widget.task == null
-                    ? L10n.of(context).addTask
-                    : L10n.of(context).updateTask,
+                widget.task == null ? lang.addTask : lang.updateTask,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
@@ -129,43 +126,40 @@ class _CreateUpdateItemListConsumerState
   }
 
   Widget _widgetTaskName() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          L10n.of(context).taskName,
+          lang.taskName,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 5),
         TextFormField(
           autofocus: true,
-          decoration: InputDecoration(
-            hintText: L10n.of(context).name,
-          ),
+          decoration: InputDecoration(hintText: lang.name),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _taskNameController,
           // required field, space not allowed
-          validator: (val) => val == null || val.trim().isEmpty
-              ? L10n.of(context).pleaseEnterAName
-              : null,
+          validator: (val) =>
+              val == null || val.trim().isEmpty ? lang.pleaseEnterAName : null,
         ),
       ],
     );
   }
 
   Widget _widgetDescriptionName() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          L10n.of(context).description,
+          lang.description,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 5),
         TextFormField(
-          decoration: InputDecoration(
-            hintText: L10n.of(context).description,
-          ),
+          decoration: InputDecoration(hintText: lang.description),
           minLines: 4,
           maxLines: 4,
           controller: _taskDescriptionController,
@@ -175,18 +169,19 @@ class _CreateUpdateItemListConsumerState
   }
 
   Widget _widgetDueDate() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          L10n.of(context).dueDate,
+          lang.dueDate,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 5),
         TextFormField(
           readOnly: true,
           decoration: InputDecoration(
-            hintText: L10n.of(context).dueDate,
+            hintText: lang.dueDate,
             suffixIcon: IconButton(
               onPressed: selectDueDate,
               icon: const Icon(Icons.calendar_month),
@@ -203,14 +198,14 @@ class _CreateUpdateItemListConsumerState
                 selectedDate = DateTime.now();
                 _taskDueDateController.text = taskDueDateFormat(selectedDate!);
               }),
-              child: Text(L10n.of(context).today),
+              child: Text(lang.today),
             ),
             ActerInlineTextButton(
               onPressed: () => setState(() {
                 selectedDate = DateTime.now().addDays(1);
                 _taskDueDateController.text = taskDueDateFormat(selectedDate!);
               }),
-              child: Text(L10n.of(context).tomorrow),
+              child: Text(lang.tomorrow),
             ),
           ],
         ),
@@ -232,19 +227,17 @@ class _CreateUpdateItemListConsumerState
   }
 
   Widget _widgetAddButton() {
+    final lang = L10n.of(context);
     return ElevatedButton(
       onPressed: widget.task == null ? addTask : updateTask,
-      child: Text(
-        widget.task == null
-            ? L10n.of(context).addTask
-            : L10n.of(context).updateTask,
-      ),
+      child: Text(widget.task == null ? lang.addTask : lang.updateTask),
     );
   }
 
   Future<void> addTask() async {
+    final lang = L10n.of(context);
     if (!_formKey.currentState!.validate()) return;
-    EasyLoading.show(status: L10n.of(context).addingTask);
+    EasyLoading.show(status: lang.addingTask);
     final taskDraft = widget.taskList.taskBuilder();
     taskDraft.title(_taskNameController.text);
     if (_taskDescriptionController.text.isNotEmpty) {
@@ -270,15 +263,16 @@ class _CreateUpdateItemListConsumerState
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).creatingTaskFailed(e),
+        lang.creatingTaskFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
   }
 
   Future<void> updateTask() async {
+    final lang = L10n.of(context);
     if (!_formKey.currentState!.validate() || widget.task == null) return;
-    EasyLoading.show(status: L10n.of(context).updatingTask);
+    EasyLoading.show(status: lang.updatingTask);
     final updater = widget.task!.updateBuilder();
     updater.title(_taskNameController.text);
     if (_taskDescriptionController.text.isNotEmpty) {
@@ -303,7 +297,7 @@ class _CreateUpdateItemListConsumerState
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).updatingTaskFailed(e),
+        lang.updatingTaskFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
