@@ -29,7 +29,10 @@ class IntroProfile extends StatelessWidget {
             child: Column(
               children: [
                 const Spacer(),
-                LogoWidget(height: imageSize, width: imageSize),
+                LogoWidget(
+                  height: imageSize,
+                  width: imageSize,
+                ),
                 const SizedBox(height: 30),
                 _buildHeadlineText(context),
                 const SizedBox(height: 10),

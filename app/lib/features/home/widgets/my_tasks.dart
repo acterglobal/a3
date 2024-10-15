@@ -43,9 +43,7 @@ class MyTasksSection extends ConsumerWidget {
                   taskListId: tasks[index].taskListIdStr(),
                   taskId: tasks[index].eventIdStr(),
                   showBreadCrumb: true,
-                  onDone: () => EasyLoading.showToast(
-                    lang.markedAsDone,
-                  ),
+                  onDone: () => EasyLoading.showToast(lang.markedAsDone),
                 );
               },
             ),

@@ -89,9 +89,7 @@ class _InviteSpaceMembersConsumerState
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          parentSpaceIds.length > 1 ? lang.parentSpaces : lang.parentSpace,
-        ),
+        Text(parentSpaceIds.length > 1 ? lang.parentSpaces : lang.parentSpace),
         for (final roomId in parentSpaceIds)
           SpaceMemberInviteCard(
             roomId: roomId,
@@ -194,13 +192,11 @@ class _InviteSpaceMembersConsumerState
         );
         return;
       }
+      final invitedMemebers =
+          await ref.read(roomInvitedMembersProvider(widget.roomId).future);
       final invited =
-          (ref.read(roomInvitedMembersProvider(widget.roomId)).valueOrNull ??
-                  [])
-              .map((e) => e.userId().toString())
-              .toList();
-      final joined =
-          ref.read(membersIdsProvider(widget.roomId)).valueOrNull ?? [];
+          invitedMemebers.map((e) => e.userId().toString()).toList();
+      final joined = await ref.read(membersIdsProvider(widget.roomId).future);
       var total = 0;
       var inviteCount = 0;
       for (final roomId in selectedSpaces) {

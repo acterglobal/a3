@@ -130,7 +130,10 @@ class _SidebarItem extends StatelessWidget {
       height: 40,
       width: 40,
       key: tutorialGlobalKey,
-      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
+      ),
       child: inner,
     );
   }
@@ -197,7 +200,10 @@ class SidebarWidget extends ConsumerWidget {
 
   List<Widget> _bugReporter(BuildContext context) {
     return [
-      const Divider(indent: 18, endIndent: 18),
+      const Divider(
+        indent: 18,
+        endIndent: 18,
+      ),
       InkWell(
         onTap: () => openBugReport(context),
         child: Padding(
@@ -284,7 +290,10 @@ class SidebarWidget extends ConsumerWidget {
               softWrap: false,
             ),
             const SizedBox(height: 10),
-            const Divider(indent: 10, endIndent: 10),
+            const Divider(
+              indent: 10,
+              endIndent: 10,
+            ),
           ],
         ),
         onTap: () => goToBranch(ShellBranch.activitiesShell),
@@ -321,8 +330,12 @@ class SidebarWidget extends ConsumerWidget {
           style: Theme.of(context).textTheme.labelSmall,
           softWrap: false,
         ),
-        onTap: () => context
-            .goNamed(Routes.space.name, pathParameters: {'spaceId': roomId}),
+        onTap: () {
+          context.goNamed(
+            Routes.space.name,
+            pathParameters: {'spaceId': roomId},
+          );
+        },
       );
     }).toList();
   }

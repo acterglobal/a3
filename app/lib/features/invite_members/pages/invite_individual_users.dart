@@ -11,7 +11,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class InviteIndividualUsers extends ConsumerWidget {
   final String roomId;
 
-  const InviteIndividualUsers({super.key, required this.roomId});
+  const InviteIndividualUsers({
+    super.key,
+    required this.roomId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,12 +49,12 @@ class InviteIndividualUsers extends ConsumerWidget {
               initialText: ref.read(userSearchValueProvider),
               hintText: lang.searchUsernameToStartDM,
               onChanged: (value) {
-                ref
-                    .read(userSearchValueProvider.notifier)
-                    .update((state) => value);
+                final notifier = ref.read(userSearchValueProvider.notifier);
+                notifier.update((state) => value);
               },
               onClear: () {
-                ref.read(userSearchValueProvider.notifier).state = null;
+                final notifier = ref.read(userSearchValueProvider.notifier);
+                notifier.state = null;
               },
             ),
             const SizedBox(height: 10),
@@ -62,13 +65,14 @@ class InviteIndividualUsers extends ConsumerWidget {
                 userItemBuilder: ({
                   required bool isSuggestion,
                   required UserProfile profile,
-                }) =>
-                    UserBuilder(
-                  userId: profile.userId().toString(),
-                  roomId: roomId,
-                  userProfile: profile,
-                  includeSharedRooms: isSuggestion,
-                ),
+                }) {
+                  return UserBuilder(
+                    userId: profile.userId().toString(),
+                    roomId: roomId,
+                    userProfile: profile,
+                    includeSharedRooms: isSuggestion,
+                  );
+                },
               ),
             ),
           ],

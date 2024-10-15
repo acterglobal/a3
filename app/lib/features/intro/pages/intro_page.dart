@@ -49,9 +49,7 @@ class IntroPage extends StatelessWidget {
                   color: Theme.of(context).colorScheme.textHighlight,
                 ),
             children: <TextSpan>[
-              TextSpan(
-                text: lang.acter,
-              ),
+              TextSpan(text: lang.acter),
             ],
           ),
         ),

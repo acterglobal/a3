@@ -103,12 +103,10 @@ class _RenderSpacesSection extends ConsumerWidget {
           shrinkWrap: true,
           itemCount: limit,
           physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            return RoomCard(
-              roomId: spaces[index].getRoomIdStr(),
-              margin: const EdgeInsets.only(bottom: 14),
-            );
-          },
+          itemBuilder: (context, index) => RoomCard(
+            roomId: spaces[index].getRoomIdStr(),
+            margin: const EdgeInsets.only(bottom: 14),
+          ),
         ),
         if (showActions)
           Padding(
@@ -125,9 +123,9 @@ class _RenderSpacesSection extends ConsumerWidget {
                 ),
                 const SizedBox(height: 10),
                 ActerPrimaryActionButton(
-                  onPressed: () => context.pushNamed(
-                    Routes.searchPublicDirectory.name,
-                  ),
+                  onPressed: () {
+                    context.pushNamed(Routes.searchPublicDirectory.name);
+                  },
                   child: Text(lang.joinSpace),
                 ),
               ],
