@@ -21,13 +21,14 @@ class SpacesPage extends ConsumerStatefulWidget {
 class _SpacesPageState extends ConsumerState<SpacesPage> {
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Scaffold(
       body: CustomScrollView(
-        slivers: <Widget>[
+        slivers: [
           PageHeaderWidget(
             centerTitle: true,
             expandedHeight: 0,
-            actions: <Widget>[
+            actions: [
               PopupMenuButton(
                 key: SpacesKeys.mainActions,
                 icon: const Icon(Atlas.plus_circle),
@@ -39,18 +40,19 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                     onTap: () => context.pushNamed(Routes.createSpace.name),
                     child: Row(
                       children: <Widget>[
-                        Text(L10n.of(context).createSpace),
+                        Text(lang.createSpace),
                         const Spacer(),
                         const Icon(Atlas.connection),
                       ],
                     ),
                   ),
                   PopupMenuItem(
-                    onTap: () =>
-                        context.pushNamed(Routes.searchPublicDirectory.name),
+                    onTap: () {
+                      context.pushNamed(Routes.searchPublicDirectory.name);
+                    },
                     child: Row(
                       children: <Widget>[
-                        Text(L10n.of(context).joinSpace),
+                        Text(lang.joinSpace),
                         const Spacer(),
                         const Icon(Atlas.calendar_dots),
                       ],
@@ -59,7 +61,7 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
                 ],
               ),
             ],
-            title: L10n.of(context).spaces,
+            title: lang.spaces,
           ),
           renderSpaceList(context),
         ],
@@ -82,12 +84,9 @@ class _SpacesPageState extends ConsumerState<SpacesPage> {
         childAspectRatio: 4,
       ),
       itemBuilder: (context, index) {
-        String roomId;
-        if (index < bookmarked.length) {
-          roomId = bookmarked[index].getRoomIdStr();
-        } else {
-          roomId = others[index - bookmarked.length].getRoomIdStr();
-        }
+        String roomId = index < bookmarked.length
+            ? bookmarked[index].getRoomIdStr()
+            : others[index - bookmarked.length].getRoomIdStr();
         return RoomCard(
           onTap: () => context.pushNamed(
             Routes.space.name,
