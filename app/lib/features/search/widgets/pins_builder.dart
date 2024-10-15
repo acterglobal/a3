@@ -18,21 +18,22 @@ class PinsBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final pinsLoader = ref.watch(pinsFoundProvider);
     return pinsLoader.when(
-      loading: () => Text(L10n.of(context).loading),
+      loading: () => Text(lang.loading),
       error: (e, s) {
         _log.severe('Failed to search pins', e, s);
-        return Text(L10n.of(context).searchingFailed(e));
+        return Text(lang.searchingFailed(e));
       },
       data: (pins) => Padding(
         padding: const EdgeInsets.only(top: 10),
         child: Column(
           children: [
-            Text(L10n.of(context).pins),
+            Text(lang.pins),
             const SizedBox(height: 15),
             if (pins.isEmpty)
-              Text(L10n.of(context).noMatchingPinsFound)
+              Text(lang.noMatchingPinsFound)
             else
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,

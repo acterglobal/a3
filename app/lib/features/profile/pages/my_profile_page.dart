@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/common_providers.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
@@ -38,9 +37,10 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      title: Text(L10n.of(context).changeYourDisplayName),
+      title: Text(lang.changeYourDisplayName),
       content: Form(
         key: _formKey,
         child: Column(
@@ -57,7 +57,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
-          child: Text(L10n.of(context).cancel),
+          child: Text(lang.cancel),
         ),
         ActerPrimaryActionButton(
           onPressed: () {
@@ -70,7 +70,7 @@ class _ChangeDisplayNameState extends State<ChangeDisplayName> {
               Navigator.pop(context, null);
             }
           },
-          child: Text(L10n.of(context).submit),
+          child: Text(lang.submit),
         ),
       ],
     );
@@ -82,32 +82,32 @@ class MyProfilePage extends StatelessWidget {
 
   const MyProfilePage({super.key});
 
-  Future<void> updateDisplayName(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
+  Future<void> updateDisplayName(BuildContext context, WidgetRef ref) async {
+    final lang = L10n.of(context);
     final TextEditingController newName = TextEditingController();
     final avatarInfo = ref.read(accountAvatarInfoProvider);
     newName.text = avatarInfo.displayName ?? '';
 
     final newText = await showDialog<String>(
       context: context,
-      builder: (BuildContext context) =>
-          ChangeDisplayName(currentName: avatarInfo.displayName),
+      builder: (context) {
+        return ChangeDisplayName(currentName: avatarInfo.displayName);
+      },
     );
 
     if (!context.mounted) return;
     if (newText == null) return;
 
-    EasyLoading.show(status: L10n.of(context).updatingDisplayName);
-    await ref.read(accountProvider).setDisplayName(newText);
+    EasyLoading.show(status: lang.updatingDisplayName);
+    final account = ref.read(accountProvider);
+    await account.setDisplayName(newText);
     ref.invalidate(accountProvider);
 
     if (!context.mounted) {
       EasyLoading.dismiss();
       return;
     }
-    EasyLoading.showToast(L10n.of(context).displayNameUpdateSubmitted);
+    EasyLoading.showToast(lang.displayNameUpdateSubmitted);
   }
 
   Future<void> updateAvatar(BuildContext context, WidgetRef ref) async {
@@ -117,7 +117,8 @@ class MyProfilePage extends StatelessWidget {
       EasyLoading.show(status: L10n.of(context).updatingProfileImage);
       final filePath = result.files.first.path;
       if (filePath == null) throw 'avatar path not available';
-      await ref.read(accountProvider).uploadAvatar(filePath);
+      final account = ref.read(accountProvider);
+      await account.uploadAvatar(filePath);
       ref.invalidate(accountProvider);
       // close loading
       EasyLoading.dismiss();
@@ -149,6 +150,7 @@ class MyProfilePage extends StatelessWidget {
   Widget _buildBody(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
+        final lang = L10n.of(context);
         final accountInfo = ref.watch(accountAvatarInfoProvider);
 
         final userId = accountInfo.uniqueId;
@@ -156,7 +158,7 @@ class MyProfilePage extends StatelessWidget {
 
         return SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -166,7 +168,7 @@ class MyProfilePage extends StatelessWidget {
                 _profileItem(
                   key: MyProfilePage.displayNameKey,
                   context: context,
-                  title: L10n.of(context).displayName,
+                  title: lang.displayName,
                   subTitle: displayName,
                   trailingIcon: Atlas.pencil_edit,
                   onPressed: () => updateDisplayName(context, ref),
@@ -174,7 +176,7 @@ class MyProfilePage extends StatelessWidget {
                 const SizedBox(height: 20),
                 _profileItem(
                   context: context,
-                  title: L10n.of(context).username,
+                  title: lang.username,
                   subTitle: userId,
                   trailingIcon: Atlas.pages,
                   onPressed: () => _onCopy(userId, context),
@@ -222,7 +224,10 @@ class MyProfilePage extends StatelessWidget {
                       ),
                       color: Theme.of(context).colorScheme.surface,
                     ),
-                    child: const Icon(Icons.edit, size: 16),
+                    child: const Icon(
+                      Icons.edit,
+                      size: 16,
+                    ),
                   ),
                 ),
               ),
@@ -250,7 +255,10 @@ class MyProfilePage extends StatelessWidget {
           style: Theme.of(context).textTheme.labelMedium,
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 5,
+            vertical: 10,
+          ),
           child: Text(
             subTitle,
             style: Theme.of(context).textTheme.titleSmall,
@@ -264,8 +272,9 @@ class MyProfilePage extends StatelessWidget {
     );
   }
 
-  void _onCopy(String userId, BuildContext context) {
-    Clipboard.setData(ClipboardData(text: userId));
+  Future<void> _onCopy(String userId, BuildContext context) async {
+    await Clipboard.setData(ClipboardData(text: userId));
+    if (!context.mounted) return;
     EasyLoading.showToast(L10n.of(context).usernameCopiedToClipboard);
   }
 }
