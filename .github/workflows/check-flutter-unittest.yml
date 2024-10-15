@@ -33,5 +33,6 @@ jobs:
         with:
           working-directory: app
           directory: coverage
+          flags: unittest
           name: flutter-widget-tests
           token: ${{ secrets.CODECOV_TOKEN }}

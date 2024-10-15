@@ -77,13 +77,14 @@ jobs:
         env:
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
           DEFAULT_HOMESERVER_NAME: "localhost"
-        run: cargo llvm-cov nextest run --config-file .github/nextest-config.toml -p acter-test
+        run: cargo llvm-cov --lcov --output-path lcov.info nextest run --config-file .github/nextest-config.toml -p acter-test
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/codecov-action@v4
         with:
           files: lcov.info
+          flags: integration-test
           name: rust-integration-tests
           token: ${{ secrets.CODECOV_TOKEN }}
 
