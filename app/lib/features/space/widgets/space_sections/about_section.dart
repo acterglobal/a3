@@ -40,6 +40,7 @@ class AboutSection extends ConsumerWidget {
   }
 
   Widget spaceDescription(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final spaceLoader = ref.watch(spaceProvider(spaceId));
     return spaceLoader.when(
       data: (space) {
@@ -57,7 +58,7 @@ class AboutSection extends ConsumerWidget {
               }
             },
             child: Text(
-              topic ?? L10n.of(context).noTopicFound,
+              topic ?? lang.noTopicFound,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
@@ -65,10 +66,10 @@ class AboutSection extends ConsumerWidget {
       },
       error: (e, s) {
         _log.severe('Failed to load space', e, s);
-        return Text(L10n.of(context).failedToLoadSpace(e));
+        return Text(lang.failedToLoadSpace(e));
       },
       loading: () => Skeletonizer(
-        child: Text(L10n.of(context).loading),
+        child: Text(lang.loading),
       ),
     );
   }

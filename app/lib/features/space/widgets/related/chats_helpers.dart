@@ -104,18 +104,19 @@ Widget renderFurther(
   String spaceId,
   int? maxItems,
 ) {
+  final lang = L10n.of(context);
   final relatedChatsLoader = ref.watch(remoteChatRelationsProvider(spaceId));
   return relatedChatsLoader.when(
     data: (chats) => renderRemoteChats(context, ref, spaceId, chats, maxItems),
     error: (e, s) {
       _log.severe('Failed to load the related chats', e, s);
       return Card(
-        child: Text(L10n.of(context).errorLoadingRelatedChats(e)),
+        child: Text(lang.errorLoadingRelatedChats(e)),
       );
     },
     loading: () => Skeletonizer(
       child: Card(
-        child: Text(L10n.of(context).loadingOtherChats),
+        child: Text(lang.loadingOtherChats),
       ),
     ),
   );

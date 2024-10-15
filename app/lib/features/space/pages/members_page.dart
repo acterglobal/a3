@@ -19,6 +19,7 @@ class SpaceMembersPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final membersLoader = ref.watch(membersIdsProvider(spaceIdOrAlias));
     final membership =
         ref.watch(roomMembershipProvider(spaceIdOrAlias)).valueOrNull;
@@ -43,7 +44,7 @@ class SpaceMembersPage extends ConsumerWidget {
                       Routes.spaceInvite.name,
                       pathParameters: {'spaceId': spaceIdOrAlias},
                     ),
-                    child: Text(L10n.of(context).invite),
+                    child: Text(lang.invite),
                   )
                 : const SizedBox.shrink(),
           ],
@@ -56,7 +57,7 @@ class SpaceMembersPage extends ConsumerWidget {
             if (members.isEmpty) {
               return SliverToBoxAdapter(
                 child: Center(
-                  child: Text(L10n.of(context).noMembersFound),
+                  child: Text(lang.noMembersFound),
                 ),
               );
             }
@@ -76,13 +77,13 @@ class SpaceMembersPage extends ConsumerWidget {
             _log.severe('Failed to load space members', e, s);
             return SliverToBoxAdapter(
               child: Center(
-                child: Text(L10n.of(context).loadingFailed(e)),
+                child: Text(lang.loadingFailed(e)),
               ),
             );
           },
           loading: () => SliverToBoxAdapter(
             child: Center(
-              child: Text(L10n.of(context).loading),
+              child: Text(lang.loading),
             ),
           ),
         ),

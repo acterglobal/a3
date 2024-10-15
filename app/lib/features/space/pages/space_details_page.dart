@@ -6,6 +6,7 @@ import 'package:acter/features/space/dialogs/suggested_rooms.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter/features/space/widgets/skeletons/space_details_skeletons.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_sections/about_section.dart';
 import 'package:acter/features/space/widgets/space_sections/chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/events_section.dart';
@@ -15,7 +16,6 @@ import 'package:acter/features/space/widgets/space_sections/pins_section.dart';
 import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
 import 'package:acter/features/space/widgets/space_sections/spaces_section.dart';
 import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
-import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -230,15 +230,16 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   }
 
   String itemLabel(BuildContext context, TabEntry tabItem) {
+    final lang = L10n.of(context);
     return switch (tabItem) {
-      TabEntry.overview => L10n.of(context).overview,
-      TabEntry.pins => L10n.of(context).pins,
-      TabEntry.tasks => L10n.of(context).tasks,
-      TabEntry.events => L10n.of(context).events,
-      TabEntry.news => L10n.of(context).boosts,
-      TabEntry.chats => L10n.of(context).chats,
-      TabEntry.spaces => L10n.of(context).spaces,
-      TabEntry.members => L10n.of(context).members,
+      TabEntry.overview => lang.overview,
+      TabEntry.pins => lang.pins,
+      TabEntry.tasks => lang.tasks,
+      TabEntry.events => lang.events,
+      TabEntry.news => lang.boosts,
+      TabEntry.chats => lang.chats,
+      TabEntry.spaces => lang.spaces,
+      TabEntry.members => lang.members,
       TabEntry.actions => '...',
     };
   }

@@ -25,6 +25,7 @@ class ChatsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final suggestedChats =
         ref.watch(suggestedChatsProvider(spaceId)).valueOrNull;
     if (suggestedChats != null &&
@@ -46,12 +47,12 @@ class ChatsSection extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to load the related spaces', e, s);
         return Center(
-          child: Text(L10n.of(context).loadingSpacesFailed(e)),
+          child: Text(lang.loadingSpacesFailed(e)),
         );
       },
       loading: () => Skeletonizer(
         child: Center(
-          child: Text(L10n.of(context).loading),
+          child: Text(lang.loading),
         ),
       ),
     );

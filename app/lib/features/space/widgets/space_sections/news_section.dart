@@ -26,17 +26,18 @@ class NewsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final newsLoader = ref.watch(newsListProvider(spaceId));
     return newsLoader.when(
       data: (news) => buildNewsSectionUI(context, news),
       error: (e, s) {
         _log.severe('Failed to load boosts in space', e, s);
         return Center(
-          child: Text(L10n.of(context).loadingFailed(e)),
+          child: Text(lang.loadingFailed(e)),
         );
       },
       loading: () => Center(
-        child: Text(L10n.of(context).loading),
+        child: Text(lang.loading),
       ),
     );
   }

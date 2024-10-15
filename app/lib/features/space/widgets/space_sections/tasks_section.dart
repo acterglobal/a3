@@ -22,17 +22,18 @@ class TasksSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final tasksLoader = ref.watch(taskListProvider(spaceId));
     return tasksLoader.when(
       data: (tasks) => buildTasksSectionUI(context, tasks),
       error: (e, s) {
         _log.severe('Failed to load tasks in space', e, s);
         return Center(
-          child: Text(L10n.of(context).loadingTasksFailed(e)),
+          child: Text(lang.loadingTasksFailed(e)),
         );
       },
       loading: () => Center(
-        child: Text(L10n.of(context).loading),
+        child: Text(lang.loading),
       ),
     );
   }

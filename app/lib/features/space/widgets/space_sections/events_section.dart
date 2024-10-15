@@ -23,6 +23,7 @@ class EventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final calEventsLoader = ref.watch(
       eventListSearchFilterProvider((spaceId: spaceId, searchText: '')),
     );
@@ -31,11 +32,11 @@ class EventsSection extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to search cal events in space', e, s);
         return Center(
-          child: Text(L10n.of(context).searchingFailed(e)),
+          child: Text(lang.searchingFailed(e)),
         );
       },
       loading: () => Center(
-        child: Text(L10n.of(context).loading),
+        child: Text(lang.loading),
       ),
     );
   }

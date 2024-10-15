@@ -22,17 +22,18 @@ class MembersSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final membersLoader = ref.watch(membersIdsProvider(spaceId));
     return membersLoader.when(
       data: (members) => buildMembersSectionUI(context, members),
       error: (e, s) {
         _log.severe('Failed to load members in space', e, s);
         return Center(
-          child: Text(L10n.of(context).loadingMembersFailed(e)),
+          child: Text(lang.loadingMembersFailed(e)),
         );
       },
       loading: () => Center(
-        child: Text(L10n.of(context).loading),
+        child: Text(lang.loading),
       ),
     );
   }

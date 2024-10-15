@@ -50,16 +50,17 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return DefaultDialog(
       width: MediaQuery.of(context).size.width * 0.8,
       height: MediaQuery.of(context).size.height * 0.8,
       title: Text(
-        L10n.of(context).suggestedRoomsTitle,
+        lang.suggestedRoomsTitle,
         style: Theme.of(context).textTheme.titleMedium,
       ),
       subtitle: Column(
         children: [
-          Text(L10n.of(context).suggestedRoomsSubtitle),
+          Text(lang.suggestedRoomsSubtitle),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -70,7 +71,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
                       selectedRooms = [];
                     });
                   },
-                  child: Text(L10n.of(context).unselectAll),
+                  child: Text(lang.unselectAll),
                 ),
               if (selectedRooms != null)
                 ActerInlineTextButton(
@@ -79,7 +80,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
                       selectedRooms = null;
                     });
                   },
-                  child: Text(L10n.of(context).selectAll),
+                  child: Text(lang.selectAll),
                 ),
             ],
           ),
@@ -99,12 +100,12 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
             markHasSeenSuggested(ref, widget.spaceId);
             Navigator.pop(context);
           },
-          child: Text(L10n.of(context).skip),
+          child: Text(lang.skip),
         ),
         if (selectedRooms != [])
           ActerPrimaryActionButton(
             onPressed: () => _joinSelected(context),
-            child: Text(L10n.of(context).join),
+            child: Text(lang.join),
           ),
       ],
     );

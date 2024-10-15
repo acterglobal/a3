@@ -23,17 +23,18 @@ class PinsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final pinsLoader = ref.watch(pinListProvider(spaceId));
     return pinsLoader.when(
       data: (pins) => buildPinsSectionUI(context, pins),
       error: (e, s) {
         _log.severe('Failed to load pins in space', e, s);
         return Center(
-          child: Text(L10n.of(context).loadingFailed(e)),
+          child: Text(lang.loadingFailed(e)),
         );
       },
       loading: () => Center(
-        child: Text(L10n.of(context).loading),
+        child: Text(lang.loading),
       ),
     );
   }
