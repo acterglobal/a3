@@ -51,7 +51,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // all was fine
-        verify(mockObserver.didPop(any, any));
+        verify(mockObserver.didPop(any!, any));
       },
       skip: true, // appflowy is currently broken
     );
