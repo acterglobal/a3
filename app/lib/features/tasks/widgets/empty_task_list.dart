@@ -10,6 +10,7 @@ class EmptyTaskList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return SizedBox(
       height: 450,
       child: Center(
@@ -19,7 +20,7 @@ class EmptyTaskList extends StatelessWidget {
             const Icon(Atlas.list, size: 50.0),
             const SizedBox(height: 20),
             Text(
-              L10n.of(context).emptyTaskList,
+              lang.emptyTaskList,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 20),
@@ -28,7 +29,7 @@ class EmptyTaskList extends StatelessWidget {
                 context,
                 initialSelectedSpace: initialSelectedSpace,
               ),
-              child: Text(L10n.of(context).createTaskList),
+              child: Text(lang.createTaskList),
             ),
           ],
         ),

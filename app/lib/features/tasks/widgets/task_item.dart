@@ -36,6 +36,7 @@ class TaskItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final taskLoader =
         ref.watch(taskItemProvider((taskListId: taskListId, taskId: taskId)));
     return taskLoader.when(
@@ -62,11 +63,11 @@ class TaskItem extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to load task', e, s);
         return ListTile(
-          title: Text(L10n.of(context).loadingFailed(e)),
+          title: Text(lang.loadingFailed(e)),
         );
       },
       loading: () => ListTile(
-        title: Text(L10n.of(context).loading),
+        title: Text(lang.loading),
       ),
     );
   }
@@ -106,6 +107,7 @@ class TaskItem extends ConsumerWidget {
   }
 
   Widget takeItemSubTitle(WidgetRef ref, BuildContext context, Task task) {
+    final lang = L10n.of(context);
     final description = task.description();
     final tasklistId = task.taskListIdStr();
     final tasklistLoader = ref.watch(taskListItemProvider(tasklistId));
@@ -132,10 +134,10 @@ class TaskItem extends ConsumerWidget {
               ),
               error: (e, s) {
                 _log.severe('Failed to load task', e, s);
-                return Text(L10n.of(context).loadingFailed(e));
+                return Text(lang.loadingFailed(e));
               },
               loading: () => Skeletonizer(
-                child: Text(L10n.of(context).loading),
+                child: Text(lang.loading),
               ),
             ),
           if (description?.body() != null && !showBreadCrumb)
@@ -152,6 +154,7 @@ class TaskItem extends ConsumerWidget {
   }
 
   Widget dueDateWidget(BuildContext context, Task task) {
+    final lang = L10n.of(context);
     TextStyle? textStyle = Theme.of(context).textTheme.labelMedium;
     DateTime? dueDate =
         task.dueDate() == null ? null : DateTime.parse(task.dueDate()!);
@@ -161,9 +164,9 @@ class TaskItem extends ConsumerWidget {
     String? label;
     Color iconColor = Colors.white54;
     if (dueDate.isToday) {
-      label = L10n.of(context).dueToday;
+      label = lang.dueToday;
     } else if (dueDate.isTomorrow) {
-      label = L10n.of(context).dueTomorrow;
+      label = lang.dueTomorrow;
     } else if (dueDate.isPast) {
       label = dueDate.timeago();
       iconColor = Theme.of(context).colorScheme.onSurface;
@@ -183,7 +186,7 @@ class TaskItem extends ConsumerWidget {
         ),
         const SizedBox(width: 6),
         Text(
-          label ?? L10n.of(context).due(dateText),
+          label ?? lang.due(dateText),
           style: textStyle,
         ),
       ],
