@@ -11,7 +11,11 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class SettingsPage extends ConsumerWidget {
   final bool isFullPage;
-  const SettingsPage({this.isFullPage = false, super.key});
+
+  const SettingsPage({
+    this.isFullPage = false,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -25,7 +25,10 @@ class EmailAddressCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
+      margin: const EdgeInsets.symmetric(
+        vertical: 2,
+        horizontal: 15,
+      ),
       child: ListTile(
         leading: isConfirmed
             ? Icon(
@@ -36,7 +39,7 @@ class EmailAddressCard extends ConsumerWidget {
         title: Text(emailAddress),
         trailing: isConfirmed
             ? PopupMenuButton(
-                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                itemBuilder: (context) => <PopupMenuEntry>[
                   PopupMenuItem(
                     onTap: () => onUnregister(context, ref),
                     child: Row(
@@ -64,16 +67,15 @@ class EmailAddressCard extends ConsumerWidget {
                       icon: const Icon(Atlas.envelope_check_thin),
                     ),
                     PopupMenuButton(
-                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                      itemBuilder: (context) => <PopupMenuEntry>[
                         PopupMenuItem(
                           onTap: () => alreadyConfirmedAddress(context, ref),
                           child: Row(
                             children: [
                               const Icon(Atlas.envelope_check_thin),
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
                                 child: Text(lang.alreadyConfirmed),
                               ),
                             ],
@@ -85,9 +87,8 @@ class EmailAddressCard extends ConsumerWidget {
                             children: [
                               const Icon(Atlas.passcode_thin),
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
                                 child: Text(lang.confirmWithToken),
                               ),
                             ],
@@ -99,9 +100,8 @@ class EmailAddressCard extends ConsumerWidget {
                             children: [
                               const Icon(Atlas.trash_can_thin),
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
                                 child: Text(
                                   lang.remove,
                                   style: Theme.of(context).textTheme.labelSmall,
@@ -232,12 +232,16 @@ class EmailConfirm {
   String token;
   String password;
 
-  EmailConfirm(this.token, this.password);
+  EmailConfirm(
+    this.token,
+    this.password,
+  );
 }
 
 class PasswordConfirm extends StatefulWidget {
   static Key passwordConfirmTxt = const Key('password-confirm-txt');
   static Key passwordConfirmBtn = const Key('password-confirm-btn');
+
   const PasswordConfirm({super.key});
 
   @override
@@ -298,9 +302,7 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
   }
 
   void togglePassword() {
-    setState(() {
-      passwordVisible = !passwordVisible;
-    });
+    setState(() => passwordVisible = !passwordVisible);
   }
 
   void onSubmit(BuildContext context) {
@@ -376,9 +378,7 @@ class _TokenConfirmState extends State<TokenConfirm> {
   }
 
   void togglePassword() {
-    setState(() {
-      passwordVisible = !passwordVisible;
-    });
+    setState(() => passwordVisible = !passwordVisible);
   }
 
   void onSubmit(BuildContext context) {

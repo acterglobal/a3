@@ -50,13 +50,13 @@ class __AddEmailState extends State<_AddEmail> {
         initialSelection: widget.emails.first,
         onSelected: (String? value) {
           // This is called when the user selects an item.
-          setState(() {
-            emailAddr = value!;
-          });
+          setState(() => emailAddr = value!);
         },
-        dropdownMenuEntries:
-            widget.emails.map<DropdownMenuEntry<String>>((String value) {
-          return DropdownMenuEntry<String>(value: value, label: value);
+        dropdownMenuEntries: widget.emails.map((String value) {
+          return DropdownMenuEntry<String>(
+            value: value,
+            label: value,
+          );
         }).toList(),
       ),
       actionsAlignment: MainAxisAlignment.spaceEvenly,
@@ -66,9 +66,7 @@ class __AddEmailState extends State<_AddEmail> {
           child: Text(lang.cancel),
         ),
         ActerPrimaryActionButton(
-          onPressed: () {
-            Navigator.pop(context, emailAddr);
-          },
+          onPressed: () => Navigator.pop(context, emailAddr),
           child: Text(lang.add),
         ),
       ],
@@ -95,9 +93,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
             SettingsSection(
               title: Text(lang.notifications),
               tiles: [
-                LabsNotificationsSettingsTile(
-                  title: lang.pushToThisDevice,
-                ),
+                LabsNotificationsSettingsTile(title: lang.pushToThisDevice),
                 AppsNotificationsSettingsTile(
                   title: lang.boosts,
                   description: lang.notifyAboutSpaceUpdates,
@@ -176,7 +172,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
           isOneToOne,
           newMode,
         ),
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        itemBuilder: (context) => <PopupMenuEntry<String>>[
           PopupMenuItem<String>(
             value: 'all',
             child: Text(lang.allMessages),
@@ -300,9 +296,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
     if (!context.mounted) return;
     if (emailToAdd == null) return;
     EasyLoading.show(status: lang.adding(emailToAdd));
-    final client = ref.read(
-      alwaysClientProvider,
-    ); // is guaranteed because of the ignoredUsersProvider using it
+    final client = ref.read(alwaysClientProvider);
     try {
       await client.addEmailPusher(
         appIdPrefix,

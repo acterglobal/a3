@@ -41,9 +41,7 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
               child: TextFormField(
                 controller: newEmailAddress,
                 // FIXME: should have an email-addres-validator ,
-                decoration: InputDecoration(
-                  hintText: lang.emailAddress,
-                ),
+                decoration: InputDecoration(hintText: lang.emailAddress),
               ),
             ),
           ],

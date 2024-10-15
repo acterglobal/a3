@@ -13,7 +13,7 @@ void showEditSpaceNameBottomSheet({
   required BuildContext context,
   required WidgetRef ref,
   required String spaceId,
-}) async {
+}) {
   final lang = L10n.of(context);
   final spaceAvatarInfo = ref.read(roomAvatarInfoProvider(spaceId));
   if (!context.mounted) return;

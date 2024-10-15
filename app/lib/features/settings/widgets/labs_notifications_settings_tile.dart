@@ -30,9 +30,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
       title: Text(title ?? lang.mobilePushNotifications),
       description: !canPush ? Text(lang.noPushServerConfigured) : null,
       initialValue: canPush &&
-          ref.watch(
-            isActiveProvider(LabsFeature.mobilePushNotifications),
-          ),
+          ref.watch(isActiveProvider(LabsFeature.mobilePushNotifications)),
       enabled: canPush,
       onToggle: (newVal) => onToggle(context, ref, newVal),
     );
@@ -67,9 +65,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(
-        lang.changedPushNotificationSettingsSuccessfully,
-      );
+      EasyLoading.showToast(lang.changedPushNotificationSettingsSuccessfully);
     } catch (e, s) {
       _log.severe('Failed to change settings of push notification', e, s);
       if (!context.mounted) {

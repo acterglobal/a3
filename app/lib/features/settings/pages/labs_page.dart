@@ -37,7 +37,7 @@ class SettingsLabsPage extends ConsumerWidget {
                   description: Text(lang.sharedCalendarAndEvents),
                   initialValue:
                       ref.watch(isActiveProvider(LabsFeature.encryptionBackup)),
-                  onToggle: (newVal) => updateFeatureState(
+                  onToggle: (newVal) async => await updateFeatureState(
                     ref,
                     LabsFeature.encryptionBackup,
                     newVal,
@@ -62,9 +62,7 @@ class SettingsLabsPage extends ConsumerWidget {
               tiles: [
                 SettingsTile.switchTile(
                   title: Text(lang.unreadMarkerFeatureTitle),
-                  description: Text(
-                    lang.unreadMarkerFeatureDescription,
-                  ),
+                  description: Text(lang.unreadMarkerFeatureDescription),
                   initialValue:
                       ref.watch(isActiveProvider(LabsFeature.chatUnread)),
                   onToggle: (newVal) =>
@@ -78,9 +76,7 @@ class SettingsLabsPage extends ConsumerWidget {
                 SettingsTile.switchTile(
                   enabled: isSupportedPlatform,
                   title: Text(lang.calendarSyncFeatureTitle),
-                  description: Text(
-                    lang.calendarSyncFeatureDesc,
-                  ),
+                  description: Text(lang.calendarSyncFeatureDesc),
                   initialValue: isSupportedPlatform &&
                       ref.watch(
                         isActiveProvider(LabsFeature.deviceCalendarSync),
@@ -116,9 +112,8 @@ class SettingsLabsPage extends ConsumerWidget {
                 SettingsTile.switchTile(
                   title: Text(lang.coBudget),
                   description: Text(lang.manageBudgetsCooperatively),
-                  initialValue: ref.watch(
-                    isActiveProvider(LabsFeature.cobudget),
-                  ),
+                  initialValue:
+                      ref.watch(isActiveProvider(LabsFeature.cobudget)),
                   onToggle: (newVal) =>
                       updateFeatureState(ref, LabsFeature.cobudget, newVal),
                   enabled: false,

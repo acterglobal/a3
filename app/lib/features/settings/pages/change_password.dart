@@ -92,9 +92,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                 _oldPasswordVisible ? Icons.visibility : Icons.visibility_off,
               ),
               onPressed: () {
-                setState(() {
-                  _oldPasswordVisible = !_oldPasswordVisible;
-                });
+                setState(() => _oldPasswordVisible = !_oldPasswordVisible);
               },
             ),
           ),
@@ -123,9 +121,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
                 _newPasswordVisible ? Icons.visibility : Icons.visibility_off,
               ),
               onPressed: () {
-                setState(() {
-                  _newPasswordVisible = !_newPasswordVisible;
-                });
+                setState(() => _newPasswordVisible = !_newPasswordVisible);
               },
             ),
           ),

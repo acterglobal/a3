@@ -85,7 +85,7 @@ class BlockedUsersPage extends ConsumerWidget {
               icon: const Icon(Atlas.plus_circle_thin),
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
-              onPressed: () async => await onAdd(context, ref),
+              onPressed: () => onAdd(context, ref),
             ),
           ],
         ),
@@ -110,11 +110,7 @@ class BlockedUsersPage extends ConsumerWidget {
                         ),
                         trailing: OutlinedButton(
                           child: Text(lang.unblock),
-                          onPressed: () async => await onDelete(
-                            context,
-                            ref,
-                            userId,
-                          ),
+                          onPressed: () => onDelete(context, ref, userId),
                         ),
                       ),
                     );
@@ -142,7 +138,7 @@ class BlockedUsersPage extends ConsumerWidget {
     final lang = L10n.of(context);
     final userToAdd = await showDialog<String?>(
       context: context,
-      builder: (BuildContext context) => const AddUserToBlock(),
+      builder: (context) => const AddUserToBlock(),
     );
     if (userToAdd == null) return;
     if (!context.mounted) {

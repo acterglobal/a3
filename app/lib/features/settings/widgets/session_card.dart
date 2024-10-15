@@ -13,30 +13,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SessionCard extends ConsumerWidget {
   final DeviceRecord deviceRecord;
 
-  const SessionCard({super.key, required this.deviceRecord});
+  const SessionCard({
+    super.key,
+    required this.deviceRecord,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     bool isVerified = deviceRecord.isVerified();
-    final fields = [
-      isVerified ? lang.verified : lang.unverified,
-    ];
+    final crumbs = [isVerified ? lang.verified : lang.unverified];
     final lastSeenTs = deviceRecord.lastSeenTs();
     if (lastSeenTs != null) {
       final dateTime = DateTime.fromMillisecondsSinceEpoch(
         lastSeenTs,
         isUtc: true,
       );
-      fields.add(dateTime.toLocal().toString());
+      crumbs.add(dateTime.toLocal().toString());
     }
     final lastSeenIp = deviceRecord.lastSeenIp();
     if (lastSeenIp != null) {
-      fields.add(lastSeenIp);
+      crumbs.add(lastSeenIp);
     }
-    fields.add(deviceRecord.deviceId().toString());
+    crumbs.add(deviceRecord.deviceId().toString());
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
+      margin: const EdgeInsets.symmetric(
+        vertical: 2,
+        horizontal: 15,
+      ),
       child: ListTile(
         leading: isVerified
             ? Icon(
@@ -49,11 +53,13 @@ class SessionCard extends ConsumerWidget {
               ),
         title: Text(deviceRecord.displayName() ?? ''),
         subtitle: Breadcrumbs(
-          crumbs: fields.map((e) => TextSpan(text: e)).toList(),
+          crumbs: [
+            for (final crumb in crumbs) TextSpan(text: crumb),
+          ],
           separator: ' - ',
         ),
         trailing: PopupMenuButton(
-          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+          itemBuilder: (context) => <PopupMenuEntry>[
             PopupMenuItem(
               onTap: () async => await onLogout(context, ref),
               child: Row(
@@ -96,7 +102,7 @@ class SessionCard extends ConsumerWidget {
     TextEditingController passwordController = TextEditingController();
     final result = await showDialog<bool>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         final lang = L10n.of(context);
         return AlertDialog(
           backgroundColor: Theme.of(context).colorScheme.surface,
@@ -107,9 +113,7 @@ class SessionCard extends ConsumerWidget {
               TextField(
                 controller: passwordController,
                 obscureText: true,
-                decoration: InputDecoration(
-                  hintText: lang.password,
-                ),
+                decoration: InputDecoration(hintText: lang.password),
               ),
             ],
           ),
@@ -125,9 +129,7 @@ class SessionCard extends ConsumerWidget {
             ActerPrimaryActionButton(
               child: Text(lang.ok),
               onPressed: () {
-                if (passwordController.text.isEmpty) {
-                  return;
-                }
+                if (passwordController.text.isEmpty) return;
                 if (context.mounted) {
                   Navigator.pop(context, true);
                 }
@@ -137,9 +139,7 @@ class SessionCard extends ConsumerWidget {
         );
       },
     );
-    if (result != true) {
-      return;
-    }
+    if (result != true) return;
     final client = ref.read(alwaysClientProvider);
     final manager = client.sessionManager();
     await manager.deleteDevice(

@@ -87,7 +87,10 @@ class QuickActionsBuilder extends ConsumerWidget {
             OutlinedButton.icon(
               key: QuickJumpKeys.createEventAction,
               onPressed: () => routeTo(context, Routes.createEvent),
-              icon: const Icon(Atlas.plus_circle_thin, size: 18),
+              icon: const Icon(
+                Atlas.plus_circle_thin,
+                size: 18,
+              ),
               label: Text(
                 lang.event,
                 style: Theme.of(context).textTheme.labelMedium,
@@ -97,7 +100,10 @@ class QuickActionsBuilder extends ConsumerWidget {
             OutlinedButton.icon(
               key: QuickJumpKeys.createTaskListAction,
               onPressed: () => showCreateUpdateTaskListBottomSheet(context),
-              icon: const Icon(Atlas.plus_circle_thin, size: 18),
+              icon: const Icon(
+                Atlas.plus_circle_thin,
+                size: 18,
+              ),
               label: Text(
                 lang.taskList,
                 style: Theme.of(context).textTheme.labelMedium,
@@ -108,7 +114,10 @@ class QuickActionsBuilder extends ConsumerWidget {
               onPressed: () {
                 _log.info('poll pressed');
               },
-              icon: const Icon(Atlas.plus_circle_thin, size: 18),
+              icon: const Icon(
+                Atlas.plus_circle_thin,
+                size: 18,
+              ),
               label: Text(
                 lang.poll,
                 style: Theme.of(context).textTheme.labelMedium,
@@ -144,7 +153,10 @@ class QuickActionsBuilder extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.textHighlight,
                 ),
               ),
-              icon: const Icon(Atlas.bug_clipboard_thin, size: 18),
+              icon: const Icon(
+                Atlas.bug_clipboard_thin,
+                size: 18,
+              ),
               label: Text(
                 lang.reportBug,
                 style: Theme.of(context).textTheme.labelMedium,

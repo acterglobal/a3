@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
@@ -9,7 +10,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/setup.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -42,8 +42,10 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
-    final deviceId =
-        ref.watch(alwaysClientProvider.select((a) => a.deviceId().toString()));
+    final appNameDigest = sha1.convert(utf8.encode(Env.rageshakeAppName));
+    final urlDigest = sha1.convert(utf8.encode(Env.rageshakeUrl));
+    final deviceId = ref.watch(deviceIdProvider);
+    final devIdDigest = sha1.convert(utf8.encode(deviceId));
     final allowReportSending =
         ref.watch(allowSentryReportingProvider).valueOrNull ?? isNightly;
     return WithSidebar(
@@ -128,9 +130,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                           lang.rageShakeAppNameDigest,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        value: Text(
-                          '${sha1.convert(utf8.encode(Env.rageshakeAppName))}',
-                        ),
+                        value: Text(appNameDigest.toString()),
                       ),
                 isDevBuild
                     ? SettingsTile(
@@ -145,9 +145,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                           lang.rageShakeTargetUrlDigest,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        value: Text(
-                          '${sha1.convert(utf8.encode(Env.rageshakeUrl))}',
-                        ),
+                        value: Text(urlDigest.toString()),
                       ),
                 isDevBuild
                     ? SettingsTile(
@@ -162,7 +160,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                           lang.deviceIdDigest,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        value: Text('${sha1.convert(utf8.encode(deviceId))}'),
+                        value: Text(devIdDigest.toString()),
                       ),
                 SettingsTile(
                   title: Text(
@@ -195,9 +193,9 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                   title: Text(lang.licenses),
                   value: Text(lang.builtOnShouldersOfGiants),
                   leading: const Icon(Atlas.list_file_thin),
-                  onPressed: (context) => context.pushNamed(
-                    Routes.licenses.name,
-                  ),
+                  onPressed: (context) {
+                    context.pushNamed(Routes.licenses.name);
+                  },
                 ),
               ],
             ),
@@ -258,12 +256,12 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
     String title,
     String fieldName,
   ) async {
-    final lang = L10n.of(context);
     TextEditingController textFieldController =
         TextEditingController(text: currentValue);
     return showDialog(
       context: context,
       builder: (context) {
+        final lang = L10n.of(context);
         return AlertDialog(
           title: Text(title),
           content: Wrap(

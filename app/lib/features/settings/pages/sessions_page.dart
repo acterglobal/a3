@@ -31,7 +31,7 @@ class SessionsPage extends ConsumerWidget {
               icon: const Icon(Atlas.arrows_rotating_right_thin),
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
-              onPressed: () async {
+              onPressed: () {
                 ref.invalidate(allSessionsProvider);
               },
             ),
@@ -73,9 +73,9 @@ class SessionsPage extends ConsumerWidget {
             ),
           ),
           SliverList.builder(
-            itemBuilder: (context, index) => SessionCard(
-              deviceRecord: sessions[index],
-            ),
+            itemBuilder: (context, index) {
+              return SessionCard(deviceRecord: sessions[index]);
+            },
             itemCount: sessions.length,
           ),
         ],
@@ -119,9 +119,9 @@ class SessionsPage extends ConsumerWidget {
         ),
       ),
       SliverList.builder(
-        itemBuilder: (context, index) => SessionCard(
-          deviceRecord: unverifiedSessions[index],
-        ),
+        itemBuilder: (context, index) {
+          return SessionCard(deviceRecord: unverifiedSessions[index]);
+        },
         itemCount: unverifiedSessions.length,
       ),
     ];
@@ -143,9 +143,9 @@ class SessionsPage extends ConsumerWidget {
           ),
         ),
         SliverList.builder(
-          itemBuilder: (context, index) => SessionCard(
-            deviceRecord: verifiedSessions[index],
-          ),
+          itemBuilder: (context, index) {
+            return SessionCard(deviceRecord: verifiedSessions[index]);
+          },
           itemCount: verifiedSessions.length,
         ),
       ]);

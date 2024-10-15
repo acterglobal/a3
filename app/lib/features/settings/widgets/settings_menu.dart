@@ -174,14 +174,12 @@ class SettingsMenu extends ConsumerWidget {
               title: lang.superInvitations,
               subTitle: lang.manageYourInvitationCodes,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingsSuperInvites,
-                ),
+                color: routedColor(context, ref, Routes.settingsSuperInvites),
               ),
-              onTap: () {
-                if (ref.read(hasSuperTokensAccess).valueOrNull != true) return;
+              onTap: () async {
+                final hasAccess = await ref.read(hasSuperTokensAccess.future);
+                if (!hasAccess) return;
+                if (!context.mounted) return;
                 if (!isFullPage && context.isLargeScreen) {
                   context
                       .pushReplacementNamed(Routes.settingsSuperInvites.name);
@@ -203,11 +201,7 @@ class SettingsMenu extends ConsumerWidget {
               title: lang.chat,
               subTitle: lang.chatSettingsExplainer,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingsChat,
-                ),
+                color: routedColor(context, ref, Routes.settingsChat),
               ),
               onTap: () {
                 if (!isFullPage && context.isLargeScreen) {
@@ -223,11 +217,7 @@ class SettingsMenu extends ConsumerWidget {
               title: lang.language,
               subTitle: lang.changeAppLanguage,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingLanguage,
-                ),
+                color: routedColor(context, ref, Routes.settingLanguage),
               ),
               onTap: () {
                 if (!isFullPage && context.isLargeScreen) {
@@ -244,11 +234,7 @@ class SettingsMenu extends ConsumerWidget {
               title: lang.labs,
               subTitle: lang.experimentalActerFeatures,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.settingsLabs,
-                ),
+                color: routedColor(context, ref, Routes.settingsLabs),
               ),
               onTap: () {
                 if (!isFullPage && context.isLargeScreen) {
@@ -263,11 +249,7 @@ class SettingsMenu extends ConsumerWidget {
               iconColor: routedColor(context, ref, Routes.info),
               title: lang.info,
               titleStyles: TextStyle(
-                color: routedColor(
-                  context,
-                  ref,
-                  Routes.info,
-                ),
+                color: routedColor(context, ref, Routes.info),
               ),
               onTap: () {
                 if (!isFullPage && context.isLargeScreen) {
@@ -335,7 +317,10 @@ class SettingsMenu extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 15.0, top: 10.0),
+            padding: const EdgeInsets.only(
+              left: 15,
+              top: 10,
+            ),
             child: Text(
               sectionTitle,
               style: Theme.of(context).textTheme.labelLarge!.copyWith(
@@ -345,9 +330,7 @@ class SettingsMenu extends ConsumerWidget {
                   ),
             ),
           ),
-          Column(
-            children: children,
-          ),
+          Column(children: children),
         ],
       ),
     );
