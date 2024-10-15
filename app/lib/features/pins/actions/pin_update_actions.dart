@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -8,17 +9,17 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:acter/common/providers/sdk_provider.dart';
 
 final _log = Logger('a3::pins::utils');
 
 Future<void> updatePinTitle(
-    BuildContext context,
-    ActerPin pin,
-    String newTitle,
-    ) async {
+  BuildContext context,
+  ActerPin pin,
+  String newTitle,
+) async {
+  final lang = L10n.of(context);
   try {
-    EasyLoading.show(status: L10n.of(context).updateName);
+    EasyLoading.show(status: lang.updateName);
     final updateBuilder = pin.updateBuilder();
     updateBuilder.title(newTitle);
     await updateBuilder.send();
@@ -32,19 +33,20 @@ Future<void> updatePinTitle(
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).updateNameFailed(e),
+      lang.updateNameFailed(e),
       duration: const Duration(seconds: 3),
     );
   }
 }
 
 Future<void> updatePinLink(
-    BuildContext context,
-    ActerPin pin,
-    String newLink,
-    ) async {
+  BuildContext context,
+  ActerPin pin,
+  String newLink,
+) async {
+  final lang = L10n.of(context);
   try {
-    EasyLoading.show(status: L10n.of(context).updatingLinking);
+    EasyLoading.show(status: lang.updatingLinking);
     final updateBuilder = pin.updateBuilder();
     updateBuilder.url(newLink);
     await updateBuilder.send();
@@ -57,20 +59,21 @@ Future<void> updatePinLink(
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).updateNameFailed(e),
+      lang.updateNameFailed(e),
       duration: const Duration(seconds: 3),
     );
   }
 }
 
 Future<void> updatePinDescription(
-    BuildContext context,
-    String htmlBodyDescription,
-    String plainDescription,
-    ActerPin pin,
-    ) async {
+  BuildContext context,
+  String htmlBodyDescription,
+  String plainDescription,
+  ActerPin pin,
+) async {
+  final lang = L10n.of(context);
   try {
-    EasyLoading.show(status: L10n.of(context).updatingDescription);
+    EasyLoading.show(status: lang.updatingDescription);
     final updateBuilder = pin.updateBuilder();
     updateBuilder.contentText(plainDescription);
     updateBuilder.contentHtml(plainDescription, htmlBodyDescription);
@@ -85,21 +88,22 @@ Future<void> updatePinDescription(
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).updateDescriptionFailed(e),
+      lang.updateDescriptionFailed(e),
       duration: const Duration(seconds: 3),
     );
   }
 }
 
 Future<void> updatePinIcon(
-    BuildContext context,
-    WidgetRef ref,
-    ActerPin pin,
-    Color color,
-    ActerIcon acterIcon,
-    ) async {
+  BuildContext context,
+  WidgetRef ref,
+  ActerPin pin,
+  Color color,
+  ActerIcon acterIcon,
+) async {
+  final lang = L10n.of(context);
   try {
-    EasyLoading.show(status: L10n.of(context).updatingIcon);
+    EasyLoading.show(status: lang.updatingIcon);
     // Pin IconData
     final sdk = await ref.watch(sdkProvider.future);
     final displayBuilder = sdk.api.newDisplayBuilder();
@@ -120,7 +124,7 @@ Future<void> updatePinIcon(
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).updateNameFailed(e),
+      lang.updateNameFailed(e),
       duration: const Duration(seconds: 3),
     );
   }

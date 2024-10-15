@@ -137,13 +137,14 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   Widget _buildTitleField() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(L10n.of(context).title),
+        Text(lang.title),
         const SizedBox(height: 6),
         InputTextField(
-          hintText: L10n.of(context).pinName,
+          hintText: lang.pinName,
           key: CreatePinPage.titleFieldKey,
           textInputType: TextInputType.text,
           textInputAction: TextInputAction.done,
@@ -152,18 +153,18 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
               .read(createPinStateProvider.notifier)
               .setPinTitleValue(text ?? ''),
           // required field, space not allowed
-          validator: (val) => val == null || val.trim().isEmpty
-              ? L10n.of(context).pleaseEnterATitle
-              : null,
+          validator: (val) =>
+              val == null || val.trim().isEmpty ? lang.pleaseEnterATitle : null,
         ),
       ],
     );
   }
 
   Widget attachmentHeader(CreatePinState pinState) {
+    final lang = L10n.of(context);
     return Row(
       children: [
-        Expanded(child: Text(L10n.of(context).attachments)),
+        Expanded(child: Text(lang.attachments)),
         if (pinState.pinAttachmentList.isNotEmpty)
           ActerInlineTextButton(
             onPressed: () {
@@ -175,7 +176,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                 ),
               );
             },
-            child: Text(L10n.of(context).add),
+            child: Text(lang.add),
           ),
       ],
     );
@@ -310,6 +311,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   Future<void> _createPin() async {
+    final lang = L10n.of(context);
     //Close keyboard
     FocusManager.instance.primaryFocus?.unfocus();
 
@@ -318,7 +320,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
     if (!_formKey.currentState!.validate()) return;
     if (!mounted) return;
 
-    EasyLoading.show(status: L10n.of(context).creatingPin);
+    EasyLoading.show(status: lang.creatingPin);
     try {
       final space = await ref.read(spaceProvider(spaceId!).future);
       final pinDraft = space.pinDraft();
@@ -363,7 +365,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
 
       EasyLoading.dismiss();
       if (!mounted) return;
-      EasyLoading.showToast(L10n.of(context).pinCreatedSuccessfully);
+      EasyLoading.showToast(lang.pinCreatedSuccessfully);
       context.replaceNamed(
         Routes.pin.name,
         pathParameters: {'pinId': pinId.toString()},
@@ -375,7 +377,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).errorCreatingPin(e),
+        lang.errorCreatingPin(e),
         duration: const Duration(seconds: 3),
       );
     }

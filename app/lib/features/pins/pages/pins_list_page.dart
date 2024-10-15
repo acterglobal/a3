@@ -35,7 +35,6 @@ class PinsListPage extends ConsumerStatefulWidget {
 }
 
 class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
-
   String get searchValue => ref.watch(searchValueProvider);
 
   @override
@@ -140,6 +139,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   }
 
   Widget _buildPinsEmptyState() {
+    final lang = L10n.of(context);
     var canAdd = false;
     if (searchValue.isEmpty) {
       final canPostLoader = ref.watch(
@@ -151,9 +151,9 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
       heightFactor: 1,
       child: EmptyState(
         title: searchValue.isNotEmpty
-            ? L10n.of(context).noMatchingPinsFound
-            : L10n.of(context).noPinsAvailableYet,
-        subtitle: L10n.of(context).noPinsAvailableDescription,
+            ? lang.noMatchingPinsFound
+            : lang.noPinsAvailableYet,
+        subtitle: lang.noPinsAvailableDescription,
         image: 'assets/images/empty_pin.svg',
         primaryButton: canAdd
             ? ActerPrimaryActionButton(
@@ -161,7 +161,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
                   Routes.createPin.name,
                   queryParameters: {'spaceId': widget.spaceId},
                 ),
-                child: Text(L10n.of(context).createPin),
+                child: Text(lang.createPin),
               )
             : null,
       ),

@@ -131,17 +131,18 @@ class UploadAvatarPage extends ConsumerWidget {
   }
 
   Future<void> uploadAvatar(BuildContext context, WidgetRef ref) async {
+    final lang = L10n.of(context);
     try {
       final account = ref.watch(accountProvider);
       if (selectedUserAvatar.value == null ||
           selectedUserAvatar.value?.path == null) {
         if (context.mounted) {
-          EasyLoading.showToast(L10n.of(context).avatarEmpty);
+          EasyLoading.showToast(lang.avatarEmpty);
         }
         return;
       }
       if (context.mounted) {
-        EasyLoading.show(status: L10n.of(context).avatarUploading);
+        EasyLoading.show(status: lang.avatarUploading);
       }
       await account.uploadAvatar(selectedUserAvatar.value!.path!);
       ref.invalidate(accountProvider);
@@ -154,7 +155,7 @@ class UploadAvatarPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).avatarUploadFailed(e),
+        lang.avatarUploadFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

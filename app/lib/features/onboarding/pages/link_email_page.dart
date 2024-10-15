@@ -51,11 +51,12 @@ class LinkEmailPage extends ConsumerWidget {
   }
 
   Widget _buildHeadlineText(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          L10n.of(context).protectPrivacyTitle,
+          lang.protectPrivacyTitle,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: Theme.of(context).colorScheme.secondary,
               ),
@@ -63,12 +64,12 @@ class LinkEmailPage extends ConsumerWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          L10n.of(context).protectPrivacyDescription1,
+          lang.protectPrivacyDescription1,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: 10),
         Text(
-          L10n.of(context).protectPrivacyDescription2,
+          lang.protectPrivacyDescription2,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],
@@ -76,18 +77,19 @@ class LinkEmailPage extends ConsumerWidget {
   }
 
   Widget _buildEmailInputField(BuildContext context) {
+    final lang = L10n.of(context);
     return Form(
       key: formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(L10n.of(context).emailOptional),
+          Text(lang.emailOptional),
           const SizedBox(height: 10),
           TextFormField(
             key: LinkEmailPage.emailField,
             controller: emailController,
             decoration: InputDecoration(
-              hintText: L10n.of(context).hintEmail,
+              hintText: lang.hintEmail,
             ),
             style: Theme.of(context).textTheme.labelLarge,
             validator: (val) => validateEmail(context, val),
@@ -99,18 +101,19 @@ class LinkEmailPage extends ConsumerWidget {
 
   Future<void> linkEmail(BuildContext context, WidgetRef ref) async {
     if (!formKey.currentState!.validate()) return;
+    final lang = L10n.of(context);
     final account = ref.read(accountProvider);
-    EasyLoading.show(status: L10n.of(context).linkingEmailAddress);
+    EasyLoading.show(status: lang.linkingEmailAddress);
     try {
       final emailAddr = emailController.text.trim();
       await account.request3pidManagementTokenViaEmail(emailAddr);
       ref.invalidate(emailAddressesProvider);
       if (!context.mounted) return;
-      EasyLoading.showSuccess(L10n.of(context).pleaseCheckYourInbox);
+      EasyLoading.showSuccess(lang.pleaseCheckYourInbox);
       isLinked.value = true;
     } catch (e) {
       EasyLoading.showToast(
-        L10n.of(context).failedToSubmitEmail(e),
+        lang.failedToSubmitEmail(e),
         toastPosition: EasyLoadingToastPosition.bottom,
       );
     } finally {

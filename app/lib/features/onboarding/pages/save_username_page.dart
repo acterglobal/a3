@@ -46,11 +46,12 @@ class SaveUsernamePage extends StatelessWidget {
   }
 
   Widget _buildHeadlineText(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          L10n.of(context).saveUsernameTitle,
+          lang.saveUsernameTitle,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: Theme.of(context).colorScheme.secondary,
               ),
@@ -58,17 +59,17 @@ class SaveUsernamePage extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          L10n.of(context).saveUsernameDescription1,
+          lang.saveUsernameDescription1,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: 10),
         Text(
-          L10n.of(context).saveUsernameDescription2,
+          lang.saveUsernameDescription2,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: 10),
         Text(
-          L10n.of(context).saveUsernameDescription3,
+          lang.saveUsernameDescription3,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],

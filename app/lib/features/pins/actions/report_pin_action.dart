@@ -5,10 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 void showReportDialog(BuildContext context, ActerPin pin) {
+  final lang = L10n.of(context);
   openReportContentDialog(
     context,
-    title: L10n.of(context).reportThisPin,
-    description: L10n.of(context).reportThisContent,
+    title: lang.reportThisPin,
+    description: lang.reportThisContent,
     eventId: pin.eventIdStr(),
     roomId: pin.roomIdStr(),
     senderId: pin.sender().toString(),
