@@ -125,7 +125,10 @@ class TaskItemDetailPage extends ConsumerWidget {
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () => showReportDialog(context: context, task: task),
+                  onTap: () => showReportDialog(
+                    context: context,
+                    task: task,
+                  ),
                   child: Text(
                     lang.report,
                     style: Theme.of(context).textTheme.bodyMedium,
@@ -149,17 +152,15 @@ class TaskItemDetailPage extends ConsumerWidget {
   }
 
   // Redact Task Item Dialog
-  void showRedactDialog({
+  Future<void> showRedactDialog({
     required BuildContext context,
     required WidgetRef ref,
     required Task task,
-  }) {
-    openRedactContentDialog(
+  }) async {
+    await openRedactContentDialog(
       context,
       title: L10n.of(context).deleteTaskItem,
-      onSuccess: () {
-        Navigator.pop(context);
-      },
+      onSuccess: () => Navigator.pop(context),
       eventId: task.eventIdStr(),
       roomId: task.roomIdStr(),
       isSpace: true,
@@ -167,12 +168,12 @@ class TaskItemDetailPage extends ConsumerWidget {
   }
 
   // Report Task Item Dialog
-  void showReportDialog({
+  Future<void> showReportDialog({
     required BuildContext context,
     required Task task,
-  }) {
+  }) async {
     final lang = L10n.of(context);
-    openReportContentDialog(
+    await openReportContentDialog(
       context,
       title: lang.reportTaskItem,
       description: lang.reportThisContent,
@@ -210,7 +211,7 @@ class TaskItemDetailPage extends ConsumerWidget {
   Widget taskData(BuildContext context, Task task, WidgetRef ref) {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             const SizedBox(height: 10),

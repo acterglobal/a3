@@ -24,9 +24,13 @@ class TasksListPage extends ConsumerStatefulWidget {
   static const scrollView = Key('space-task-lists');
   static const createNewTaskListKey = Key('tasks-create-list');
   static const taskListsKey = Key('tasks-task-lists');
+
   final String? spaceId;
 
-  const TasksListPage({super.key, this.spaceId});
+  const TasksListPage({
+    super.key,
+    this.spaceId,
+  });
 
   @override
   ConsumerState<TasksListPage> createState() => _TasksListPageConsumerState();
@@ -53,10 +57,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(lang.tasks),
-          if (widget.spaceId != null)
-            SpaceNameWidget(
-              spaceId: widget.spaceId!,
-            ),
+          if (widget.spaceId != null) SpaceNameWidget(spaceId: widget.spaceId!),
         ],
       ),
       actions: [
@@ -71,9 +72,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
                     : Icons.visibility_outlined,
                 size: 18,
               ),
-              label: Text(
-                value ? lang.hideCompleted : lang.showCompleted,
-              ),
+              label: Text(value ? lang.hideCompleted : lang.showCompleted),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
               ),
@@ -103,9 +102,14 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
-          onChanged: (value) =>
-              ref.read(searchValueProvider.notifier).state = value,
-          onClear: () => ref.read(searchValueProvider.notifier).state = '',
+          onChanged: (value) {
+            final notifier = ref.read(searchValueProvider.notifier);
+            notifier.state = value;
+          },
+          onClear: () {
+            final notifier = ref.read(searchValueProvider.notifier);
+            notifier.state = '';
+          },
         ),
         Expanded(
           child: tasklistsLoader.when(
@@ -116,9 +120,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
                 background: const TasksListSkeleton(),
                 error: error,
                 stack: stack,
-                onRetryTap: () {
-                  ref.invalidate(allTasksListsProvider);
-                },
+                onRetryTap: () => ref.invalidate(allTasksListsProvider),
               );
             },
             loading: () => const TasksListSkeleton(),
@@ -158,9 +160,8 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
     final lang = L10n.of(context);
     var canAdd = false;
     if (searchValue.isEmpty) {
-      final canPostLoader = ref.watch(
-        hasSpaceWithPermissionProvider('CanPostTaskList'),
-      );
+      final canPostLoader =
+          ref.watch(hasSpaceWithPermissionProvider('CanPostTaskList'));
       if (canPostLoader.valueOrNull == true) canAdd = true;
     }
     return Center(

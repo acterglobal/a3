@@ -26,6 +26,7 @@ final _log = Logger('a3::tasks::tasklist_details');
 class TaskListDetailPage extends ConsumerStatefulWidget {
   static const pageKey = Key('task-list-details-page');
   static const taskListTitleKey = Key('task-list-title');
+
   final String taskListId;
 
   const TaskListDetailPage({
@@ -145,8 +146,8 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   // Redact Task List Dialog
-  void showRedactDialog({required TaskList taskList}) {
-    openRedactContentDialog(
+  Future<void> showRedactDialog({required TaskList taskList}) async {
+    await openRedactContentDialog(
       context,
       title: L10n.of(context).deleteTaskList,
       onSuccess: () => Navigator.pop(context),
@@ -157,9 +158,9 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   // Report Task List Dialog
-  void showReportDialog(TaskList taskList) {
+  Future<void> showReportDialog(TaskList taskList) async {
     final lang = L10n.of(context);
-    openReportContentDialog(
+    await openReportContentDialog(
       context,
       title: lang.reportTaskList,
       description: lang.reportThisContent,
@@ -230,7 +231,10 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           ),
         ),
         const SizedBox(height: 10),
-        const Divider(indent: 10, endIndent: 18),
+        const Divider(
+          indent: 10,
+          endIndent: 18,
+        ),
         const SizedBox(height: 10),
       ],
     );
@@ -279,12 +283,10 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         _widgetTasksListHeader(),
         ValueListenableBuilder(
           valueListenable: showCompletedTask,
-          builder: (context, value, child) {
-            return TaskItemsListWidget(
-              taskList: taskListData,
-              showCompletedTask: value,
-            );
-          },
+          builder: (context, value, child) => TaskItemsListWidget(
+            taskList: taskListData,
+            showCompletedTask: value,
+          ),
         ),
         const SizedBox(height: 20),
         AttachmentSectionWidget(manager: taskListData.attachments()),
@@ -300,9 +302,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          lang.tasks,
-        ),
+        Text(lang.tasks),
         ValueListenableBuilder(
           valueListenable: showCompletedTask,
           builder: (context, value, child) {
@@ -314,9 +314,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
                     : Icons.visibility_outlined,
                 size: 18,
               ),
-              label: Text(
-                value ? lang.hideCompleted : lang.showCompleted,
-              ),
+              label: Text(value ? lang.hideCompleted : lang.showCompleted),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
               ),

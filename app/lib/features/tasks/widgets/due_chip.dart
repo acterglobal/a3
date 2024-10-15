@@ -74,9 +74,7 @@ class _DueChipState extends State<DueChip> {
       label = lang.dueTomorrow;
     } else if (dueDate!.isPast) {
       label = dueDate!.timeago();
-      dueTheme = textStyle.copyWith(
-        color: Theme.of(context).colorScheme.error,
-      );
+      dueTheme = textStyle.copyWith(color: Theme.of(context).colorScheme.error);
     }
     final dateText =
         DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!);

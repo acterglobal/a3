@@ -11,26 +11,24 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::tasks::create_update_task_item');
 
-void showCreateUpdateTaskItemBottomSheet(
+Future<void> showCreateUpdateTaskItemBottomSheet(
   BuildContext context, {
   required TaskList taskList,
   required String taskName,
   Task? task,
   Function()? cancel,
-}) {
-  showModalBottomSheet(
+}) async {
+  await showModalBottomSheet(
     context: context,
     showDragHandle: false,
     useSafeArea: true,
     isScrollControlled: true,
-    builder: (context) {
-      return CreateUpdateTaskItemList(
-        taskList: taskList,
-        taskName: taskName,
-        task: task,
-        cancel: cancel,
-      );
-    },
+    builder: (context) => CreateUpdateTaskItemList(
+      taskList: taskList,
+      taskName: taskName,
+      task: task,
+      cancel: cancel,
+    ),
   );
 }
 
@@ -91,7 +89,7 @@ class _CreateUpdateItemListConsumerState
   Widget _buildBody(BuildContext context) {
     final lang = L10n.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -139,9 +137,7 @@ class _CreateUpdateItemListConsumerState
         const SizedBox(height: 5),
         TextFormField(
           autofocus: true,
-          decoration: InputDecoration(
-            hintText: lang.name,
-          ),
+          decoration: InputDecoration(hintText: lang.name),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _taskNameController,
           // required field, space not allowed
@@ -163,9 +159,7 @@ class _CreateUpdateItemListConsumerState
         ),
         const SizedBox(height: 5),
         TextFormField(
-          decoration: InputDecoration(
-            hintText: lang.description,
-          ),
+          decoration: InputDecoration(hintText: lang.description),
           minLines: 4,
           maxLines: 4,
           controller: _taskDescriptionController,
@@ -236,9 +230,7 @@ class _CreateUpdateItemListConsumerState
     final lang = L10n.of(context);
     return ElevatedButton(
       onPressed: widget.task == null ? addTask : updateTask,
-      child: Text(
-        widget.task == null ? lang.addTask : lang.updateTask,
-      ),
+      child: Text(widget.task == null ? lang.addTask : lang.updateTask),
     );
   }
 

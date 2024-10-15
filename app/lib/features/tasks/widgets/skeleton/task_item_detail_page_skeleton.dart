@@ -13,7 +13,10 @@ class TaskItemDetailPageSkeleton extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 5,
+            ),
             child: Text(lang.thisIsAMultilineDescription),
           ),
           ListTile(

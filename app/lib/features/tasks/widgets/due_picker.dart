@@ -8,7 +8,10 @@ class PickedDue {
   final DateTime due;
   final bool includeTime;
 
-  const PickedDue(this.due, this.includeTime);
+  const PickedDue(
+    this.due,
+    this.includeTime,
+  );
 }
 
 const quickSelectToday = Key('due-action-today');

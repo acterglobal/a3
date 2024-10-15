@@ -15,19 +15,17 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::tasks::create_update_tasklist');
 
-void showCreateUpdateTaskListBottomSheet(
+Future<void> showCreateUpdateTaskListBottomSheet(
   BuildContext context, {
   String? initialSelectedSpace,
-}) {
-  showModalBottomSheet(
+}) async {
+  await showModalBottomSheet(
     context: context,
     showDragHandle: false,
     useSafeArea: true,
     isScrollControlled: true,
     builder: (context) {
-      return CreateUpdateTaskList(
-        initialSelectedSpace: initialSelectedSpace,
-      );
+      return CreateUpdateTaskList(initialSelectedSpace: initialSelectedSpace);
     },
   );
 }
@@ -76,7 +74,7 @@ class _CreateUpdateTaskListConsumerState
 
   Widget _buildBody(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -133,9 +131,7 @@ class _CreateUpdateTaskListConsumerState
         TextFormField(
           autofocus: true,
           key: CreateUpdateTaskList.titleKey,
-          decoration: InputDecoration(
-            hintText: lang.name,
-          ),
+          decoration: InputDecoration(hintText: lang.name),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _titleController,
           // required field, space not allowed
@@ -163,7 +159,7 @@ class _CreateUpdateTaskListConsumerState
               height: 200,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.white70),
-                borderRadius: BorderRadius.circular(10.0),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: HtmlEditor(
                 editorState: textEditorState,
@@ -221,7 +217,7 @@ class _CreateUpdateTaskListConsumerState
       // TaskList IconData
 
       if (taskListIconColor != null || taskListIcon != null) {
-        final sdk = await ref.watch(sdkProvider.future);
+        final sdk = await ref.read(sdkProvider.future);
         final displayBuilder = sdk.api.newDisplayBuilder();
         if (taskListIconColor != null) {
           displayBuilder.color(taskListIconColor!.value);
