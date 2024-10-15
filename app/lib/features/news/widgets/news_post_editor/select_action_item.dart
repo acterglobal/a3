@@ -15,14 +15,14 @@ class SelectActionItem extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(height: 20.0),
+        const SizedBox(height: 20),
         actionItemUI(
           context: context,
           actionIcon: Atlas.calendar_dots,
           actionName: L10n.of(context).eventShare,
           onTap: () => onShareEventSelected(),
         ),
-        const SizedBox(height: 20.0),
+        const SizedBox(height: 20),
       ],
     );
   }

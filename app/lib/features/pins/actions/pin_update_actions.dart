@@ -51,7 +51,6 @@ Future<void> updatePinLink(
     updateBuilder.url(newLink);
     await updateBuilder.send();
     EasyLoading.dismiss();
-    if (!context.mounted) return;
   } catch (e, s) {
     _log.severe('Failed to change url of pin', e, s);
     if (!context.mounted) {
@@ -116,7 +115,6 @@ Future<void> updatePinIcon(
     await updateBuilder.send();
     EasyLoading.dismiss();
     ref.invalidate(pinProvider);
-    if (!context.mounted) return;
   } catch (e, s) {
     _log.severe('Failed to change icon of pin', e, s);
     if (!context.mounted) {

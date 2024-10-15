@@ -63,7 +63,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
           spaceId: widget.spaceId,
           onPressed: () => context.pushNamed(
             Routes.createPin.name,
-            queryParameters: {'spaceId': widget.spaceId},
+            queryParameters: {'spaceId': spaceId},
           ),
         ),
       ],
@@ -83,9 +83,14 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
-          onChanged: (value) =>
-              ref.read(searchValueProvider.notifier).state = value,
-          onClear: () => ref.read(searchValueProvider.notifier).state = '',
+          onChanged: (value) {
+            final notifier = ref.read(searchValueProvider.notifier);
+            notifier.state = value;
+          },
+          onClear: () {
+            final notifier = ref.read(searchValueProvider.notifier);
+            notifier.state = '';
+          },
         ),
         Expanded(
           child: pinsLoader.when(
@@ -142,9 +147,8 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
     final lang = L10n.of(context);
     var canAdd = false;
     if (searchValue.isEmpty) {
-      final canPostLoader = ref.watch(
-        hasSpaceWithPermissionProvider('CanPostPin'),
-      );
+      final canPostLoader =
+          ref.watch(hasSpaceWithPermissionProvider('CanPostPin'));
       if (canPostLoader.valueOrNull == true) canAdd = true;
     }
     return Center(

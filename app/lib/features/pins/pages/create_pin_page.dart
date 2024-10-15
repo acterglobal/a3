@@ -85,7 +85,11 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
+        padding: const EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: 24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -149,9 +153,10 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
           textInputType: TextInputType.text,
           textInputAction: TextInputAction.done,
           controller: _titleController,
-          onInputChanged: (text) => ref
-              .read(createPinStateProvider.notifier)
-              .setPinTitleValue(text ?? ''),
+          onInputChanged: (text) {
+            final notifier = ref.read(createPinStateProvider.notifier);
+            notifier.setPinTitleValue(text ?? '');
+          },
           // required field, space not allowed
           validator: (val) =>
               val == null || val.trim().isEmpty ? lang.pleaseEnterATitle : null,
@@ -229,8 +234,10 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                 ],
               ),
         trailing: IconButton(
-          onPressed: () =>
-              ref.read(createPinStateProvider.notifier).removeAttachment(index),
+          onPressed: () {
+            final notifier = ref.read(createPinStateProvider.notifier);
+            notifier.removeAttachment(index);
+          },
           icon: const Icon(
             Atlas.xmark_circle,
             color: Colors.red,
@@ -255,9 +262,8 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
         onSave: (newTitle) {
           Navigator.pop(context);
           final pinAttachment = attachmentData.copyWith(title: newTitle);
-          ref
-              .read(createPinStateProvider.notifier)
-              .changeAttachmentTitle(pinAttachment, index);
+          final notifier = ref.read(createPinStateProvider.notifier);
+          notifier.changeAttachmentTitle(pinAttachment, index);
         },
       );
     }

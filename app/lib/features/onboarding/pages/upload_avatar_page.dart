@@ -119,7 +119,10 @@ class UploadAvatarPage extends ConsumerWidget {
                       ),
                       color: Theme.of(context).colorScheme.surface,
                     ),
-                    child: const Icon(Icons.add, size: 16),
+                    child: const Icon(
+                      Icons.add,
+                      size: 16,
+                    ),
                   ),
                 ),
               ),
@@ -136,14 +139,10 @@ class UploadAvatarPage extends ConsumerWidget {
       final account = ref.watch(accountProvider);
       if (selectedUserAvatar.value == null ||
           selectedUserAvatar.value?.path == null) {
-        if (context.mounted) {
-          EasyLoading.showToast(lang.avatarEmpty);
-        }
+        if (context.mounted) EasyLoading.showToast(lang.avatarEmpty);
         return;
       }
-      if (context.mounted) {
-        EasyLoading.show(status: lang.avatarUploading);
-      }
+      if (context.mounted) EasyLoading.show(status: lang.avatarUploading);
       await account.uploadAvatar(selectedUserAvatar.value!.path!);
       ref.invalidate(accountProvider);
       EasyLoading.dismiss(); // close loading

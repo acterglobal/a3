@@ -119,7 +119,9 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         children: [
           Row(
             children: [
-              const Skeletonizer(child: Bone.circle(size: 100)),
+              const Skeletonizer(
+                child: Bone.circle(size: 100),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -270,17 +272,18 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   Widget pinTitleUI(ActerPin pin) {
     return SelectionArea(
       child: GestureDetector(
-        onTap: () {
+        onTap: () async {
           final membership =
-              ref.read(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+              await ref.read(roomMembershipProvider(pin.roomIdStr()).future);
           if (membership?.canString('CanPostPin') == true) {
+            if (!mounted) return;
             showEditTitleBottomSheet(
               context: context,
               bottomSheetTitle: L10n.of(context).editName,
               titleValue: pin.title(),
               onSave: (newTitle) async {
-                final pinEditNotifier = ref.read(pinEditProvider(pin).notifier);
-                pinEditNotifier.setTitle(newTitle);
+                final notifier = ref.read(pinEditProvider(pin).notifier);
+                notifier.setTitle(newTitle);
                 updatePinTitle(context, pin, newTitle);
               },
             );
@@ -323,7 +326,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
                 descriptionHtmlValue: description.formattedBody(),
                 descriptionMarkdownValue: plainBody,
                 onSave: (htmlBodyDescription, plainDescription) async {
-                  updatePinDescription(
+                  await updatePinDescription(
                     context,
                     htmlBodyDescription,
                     plainDescription,

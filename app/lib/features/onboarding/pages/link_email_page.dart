@@ -13,11 +13,11 @@ class LinkEmailPage extends ConsumerWidget {
   static const emailField = Key('reg-email-txt');
   static const linkEmailBtn = Key('reg-link-email-btn');
 
-  LinkEmailPage({super.key});
-
   final formKey = GlobalKey<FormState>(debugLabel: 'link email page form');
   final ValueNotifier<bool> isLinked = ValueNotifier(false);
   final TextEditingController emailController = TextEditingController();
+
+  LinkEmailPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -88,9 +88,7 @@ class LinkEmailPage extends ConsumerWidget {
           TextFormField(
             key: LinkEmailPage.emailField,
             controller: emailController,
-            decoration: InputDecoration(
-              hintText: lang.hintEmail,
-            ),
+            decoration: InputDecoration(hintText: lang.hintEmail),
             style: Theme.of(context).textTheme.labelLarge,
             validator: (val) => validateEmail(context, val),
           ),
@@ -152,8 +150,11 @@ class LinkEmailPage extends ConsumerWidget {
                 builder: (context, isLinkedValue, child) {
                   if (!isLinkedValue) return const SizedBox.shrink();
                   return const Padding(
-                    padding: EdgeInsets.only(left: 10.0),
-                    child: Icon(Atlas.check_circle, size: 18),
+                    padding: EdgeInsets.only(left: 10),
+                    child: Icon(
+                      Atlas.check_circle,
+                      size: 18,
+                    ),
                   );
                 },
               ),
