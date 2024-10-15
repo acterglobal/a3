@@ -867,6 +867,8 @@
   "@pleaseEnterEventName": {},
   "pleaseFirstSelectASpace": "Please first select a space",
   "@pleaseFirstSelectASpace": {},
+  "errorProcessingSlide": "We couldn't process slide {slideIdx}: {error}",
+  "@errorProcessingSlide": {},
   "pleaseProvideEmailAddressToAdd": "Please provide the email address you’d like to add",
   "@pleaseProvideEmailAddressToAdd": {},
   "pleaseProvideYourUserPassword": "Please provide your user password to confirm you want to end that session.",

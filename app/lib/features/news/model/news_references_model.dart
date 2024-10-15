@@ -10,8 +10,10 @@ enum NewsReferencesType {
 String _toCamelCase(String s) {
   final words = s
       .split('-')
-      .map((w) =>
-          '${w.substring(0, 1).toUpperCase()}${w.substring(1).toLowerCase()}',)
+      .map(
+        (w) =>
+            '${w.substring(0, 1).toUpperCase()}${w.substring(1).toLowerCase()}',
+      )
       .toList();
   words[0] = words[0].toLowerCase();
   return words.join();
@@ -27,4 +29,15 @@ class NewsReferencesModel {
     this.title,
     this.id,
   });
+}
+
+extension Expect on String? {
+  /// Add `.expect(String)` on nullable String to throw on null or return the value
+  String expect([Object error = 'Expect missed value']) {
+    String? value = this;
+    if (value == null) {
+      throw error;
+    }
+    return value;
+  }
 }
