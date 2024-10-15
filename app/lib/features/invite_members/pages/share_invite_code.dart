@@ -73,11 +73,13 @@ class ShareInviteCode extends ConsumerWidget {
     String displayName,
     String roomName,
   ) {
+    final lang = L10n.of(context);
+    final content = lang.shareInviteContent(inviteCode, roomName, displayName);
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(L10n.of(context).message),
+          Text(lang.message),
           const SizedBox(height: 10),
           Expanded(
             child: Container(
@@ -90,10 +92,7 @@ class ShareInviteCode extends ConsumerWidget {
               ),
               padding: const EdgeInsets.all(10),
               child: SingleChildScrollView(
-                child: Text(
-                  L10n.of(context)
-                      .shareInviteContent(inviteCode, roomName, displayName),
-                ),
+                child: Text(content),
               ),
             ),
           ),
@@ -107,6 +106,8 @@ class ShareInviteCode extends ConsumerWidget {
     String displayName,
     String roomName,
   ) {
+    final lang = L10n.of(context);
+    final content = lang.shareInviteContent(inviteCode, roomName, displayName);
     return Wrap(
       direction: Axis.horizontal,
       alignment: WrapAlignment.center,
@@ -115,54 +116,34 @@ class ShareInviteCode extends ConsumerWidget {
         _shareIntentsItem(
           context: context,
           iconData: Atlas.envelope,
-          onTap: () => mailTo(
+          onTap: () async => await mailTo(
             toAddress: '',
-            subject: 'body=${L10n.of(context).shareInviteContent(
-              inviteCode,
-              roomName,
-              displayName,
-            )}',
+            subject: 'body=$content',
           ),
         ),
         _shareIntentsItem(
           context: context,
           iconData: Atlas.whatsapp,
-          onTap: () => shareTextToWhatsApp(
+          onTap: () async => await shareTextToWhatsApp(
             context,
-            text: L10n.of(context).shareInviteContent(
-              inviteCode,
-              roomName,
-              displayName,
-            ),
+            text: content,
           ),
         ),
         _shareIntentsItem(
           context: context,
           iconData: Icons.ios_share_sharp,
-          onTap: () {
-            Share.share(
-              L10n.of(context).shareInviteContent(
-                inviteCode,
-                roomName,
-                displayName,
-              ),
-            );
+          onTap: () async {
+            await Share.share(content);
           },
         ),
         _shareIntentsItem(
           context: context,
           iconData: Atlas.clipboard,
-          onTap: () {
-            Clipboard.setData(
-              ClipboardData(
-                text: L10n.of(context).shareInviteContent(
-                  inviteCode,
-                  roomName,
-                  displayName,
-                ),
-              ),
+          onTap: () async {
+            await Clipboard.setData(
+              ClipboardData(text: content),
             );
-            EasyLoading.showToast(L10n.of(context).messageCopiedToClipboard);
+            EasyLoading.showToast(lang.messageCopiedToClipboard);
           },
         ),
       ],
@@ -191,7 +172,10 @@ class ShareInviteCode extends ConsumerWidget {
 
   Widget _buildDoneButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 10,
+      ),
       child: ActerPrimaryActionButton(
         onPressed: () => Navigator.pop(context),
         child: Text(L10n.of(context).done),

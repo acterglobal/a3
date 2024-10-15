@@ -105,6 +105,7 @@ class EventItem extends StatelessWidget {
   }
 
   Widget _buildRsvpStatus(BuildContext context) {
+    final lang = L10n.of(context);
     return Consumer(
       builder: (context, ref, child) {
         final eventId = event.eventId().toString();
@@ -118,13 +119,13 @@ class EventItem extends StatelessWidget {
             _log.severe('Failed to load RSVP status', e, s);
             return Chip(
               label: Text(
-                L10n.of(context).errorLoadingRsvpStatus(e),
+                lang.errorLoadingRsvpStatus(e),
                 softWrap: true,
               ),
             );
           },
           loading: () => Chip(
-            label: Text(L10n.of(context).loadingRsvpStatus),
+            label: Text(lang.loadingRsvpStatus),
           ),
         );
       },
@@ -148,7 +149,10 @@ class EventItem extends StatelessWidget {
 
   Widget _buildHappeningIndication(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 2,
+      ),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondary,
         borderRadius: const BorderRadius.all(Radius.circular(100)),

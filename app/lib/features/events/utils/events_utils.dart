@@ -11,8 +11,9 @@ Future<void> saveEventTitle({
   required CalendarEvent calendarEvent,
   required String newName,
 }) async {
+  final lang = L10n.of(context);
   try {
-    EasyLoading.show(status: L10n.of(context).updateName);
+    EasyLoading.show(status: lang.updateName);
     final updateBuilder = calendarEvent.updateBuilder();
     updateBuilder.title(newName);
     final eventId = await updateBuilder.send();
@@ -27,7 +28,7 @@ Future<void> saveEventTitle({
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).updateNameFailed(e),
+      lang.updateNameFailed(e),
       duration: const Duration(seconds: 3),
     );
   }
@@ -39,7 +40,8 @@ Future<void> saveEventDescription({
   required String htmlBodyDescription,
   required String plainDescription,
 }) async {
-  EasyLoading.show(status: L10n.of(context).updatingDescription);
+  final lang = L10n.of(context);
+  EasyLoading.show(status: lang.updatingDescription);
   try {
     final updateBuilder = calendarEvent.updateBuilder();
     updateBuilder.descriptionHtml(plainDescription, htmlBodyDescription);
@@ -53,7 +55,7 @@ Future<void> saveEventDescription({
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).errorUpdatingDescription(e),
+      lang.errorUpdatingDescription(e),
       duration: const Duration(seconds: 3),
     );
   }
@@ -61,5 +63,8 @@ Future<void> saveEventDescription({
 
 DateTime calculateDateTimeWithHours(DateTime date, TimeOfDay time) {
   // Replacing hours and minutes from DateTime
-  return date.copyWith(hour: time.hour, minute: time.minute);
+  return date.copyWith(
+    hour: time.hour,
+    minute: time.minute,
+  );
 }

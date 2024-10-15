@@ -37,26 +37,25 @@ class IntroPage extends StatelessWidget {
   }
 
   Widget _buildTitle(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       children: [
         RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-            text: L10n.of(context).welcomeTo,
+            text: lang.welcomeTo,
             style: Theme.of(context).textTheme.displayMedium!.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.textHighlight,
                 ),
             children: <TextSpan>[
-              TextSpan(
-                text: L10n.of(context).acter,
-              ),
+              TextSpan(text: lang.acter),
             ],
           ),
         ),
         const SizedBox(height: 10),
         Text(
-          L10n.of(context).yourSafeAndSecureSpace,
+          lang.yourSafeAndSecureSpace,
           style: Theme.of(context).textTheme.titleSmall,
           textAlign: TextAlign.center,
         ),
@@ -75,6 +74,7 @@ class IntroPage extends StatelessWidget {
   }
 
   Widget _buildDescription(BuildContext context) {
+    final lang = L10n.of(context);
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
@@ -83,24 +83,24 @@ class IntroPage extends StatelessWidget {
           children: [
             RichText(
               text: TextSpan(
-                text: L10n.of(context).introPageDescriptionPre,
+                text: lang.introPageDescriptionPre,
                 style: Theme.of(context).textTheme.bodyMedium,
                 children: <TextSpan>[
                   TextSpan(
-                    text: L10n.of(context).introPageDescriptionHl,
+                    text: lang.introPageDescriptionHl,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           color: Theme.of(context).colorScheme.textHighlight,
                         ),
                   ),
                   TextSpan(
-                    text: L10n.of(context).introPageDescriptionPost,
+                    text: lang.introPageDescriptionPost,
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              L10n.of(context).introPageDescription2ndLine,
+              lang.introPageDescription2ndLine,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],

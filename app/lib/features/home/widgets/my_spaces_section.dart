@@ -26,6 +26,7 @@ class MySpacesSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bookmarkedSpaces = ref.watch(bookmarkedSpacesProvider);
     final spaces = ref.watch(spacesProvider);
+    final lang = L10n.of(context);
     if (bookmarkedSpaces.isNotEmpty) {
       return _RenderSpacesSection(
         spaces: bookmarkedSpaces,
@@ -33,7 +34,7 @@ class MySpacesSection extends ConsumerWidget {
         showAll: true,
         showAllCounter: spaces.length,
         title: Text(
-          L10n.of(context).bookmarkedSpaces,
+          lang.bookmarkedSpaces,
           style: Theme.of(context).textTheme.titleSmall,
         ),
       );
@@ -55,7 +56,7 @@ class MySpacesSection extends ConsumerWidget {
         key: DashboardKeys.widgetMySpacesHeader,
         onTap: () => context.pushNamed(Routes.spaces.name),
         child: Text(
-          L10n.of(context).mySpaces,
+          lang.mySpaces,
           style: Theme.of(context).textTheme.titleSmall,
         ),
       ),
@@ -82,6 +83,7 @@ class _RenderSpacesSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -92,7 +94,7 @@ class _RenderSpacesSection extends ConsumerWidget {
             if (showAll)
               ActerInlineTextButton(
                 onPressed: () => context.pushNamed(Routes.spaces.name),
-                child: Text(L10n.of(context).seeAll),
+                child: Text(lang.seeAll),
               ),
           ],
         ),
@@ -101,12 +103,10 @@ class _RenderSpacesSection extends ConsumerWidget {
           shrinkWrap: true,
           itemCount: limit,
           physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            return RoomCard(
-              roomId: spaces[index].getRoomIdStr(),
-              margin: const EdgeInsets.only(bottom: 14),
-            );
-          },
+          itemBuilder: (context, index) => RoomCard(
+            roomId: spaces[index].getRoomIdStr(),
+            margin: const EdgeInsets.only(bottom: 14),
+          ),
         ),
         if (showActions)
           Padding(
@@ -119,14 +119,14 @@ class _RenderSpacesSection extends ConsumerWidget {
               children: [
                 OutlinedButton(
                   onPressed: () => context.pushNamed(Routes.createSpace.name),
-                  child: Text(L10n.of(context).createSpace),
+                  child: Text(lang.createSpace),
                 ),
                 const SizedBox(height: 10),
                 ActerPrimaryActionButton(
-                  onPressed: () => context.pushNamed(
-                    Routes.searchPublicDirectory.name,
-                  ),
-                  child: Text(L10n.of(context).joinSpace),
+                  onPressed: () {
+                    context.pushNamed(Routes.searchPublicDirectory.name);
+                  },
+                  child: Text(lang.joinSpace),
                 ),
               ],
             ),
@@ -152,11 +152,12 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       children: <Widget>[
         const SizedBox(height: 15),
         Text(
-          L10n.of(context).youAreCurrentlyNotConnectedToAnySpaces,
+          lang.youAreCurrentlyNotConnectedToAnySpaces,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: 30),
@@ -164,15 +165,15 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
           text: TextSpan(
             children: <TextSpan>[
               TextSpan(
-                text: L10n.of(context).create,
+                text: lang.create,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              TextSpan(text: L10n.of(context).or),
+              TextSpan(text: lang.or),
               TextSpan(
-                text: L10n.of(context).join,
+                text: lang.join,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.bold,
@@ -183,7 +184,7 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               TextSpan(
-                text: L10n.of(context).spaceShortDescription,
+                text: lang.spaceShortDescription,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
@@ -196,7 +197,7 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
             key: createNewSpaceKey,
             icon: const Icon(Icons.chevron_right_outlined),
             onPressed: () => context.pushNamed(Routes.createSpace.name),
-            label: Text(L10n.of(context).createNewSpace),
+            label: Text(lang.createNewSpace),
           ),
         ),
         const SizedBox(height: 36),
@@ -206,7 +207,7 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
             onPressed: () {
               context.pushNamed(Routes.searchPublicDirectory.name);
             },
-            child: Text(L10n.of(context).joinExistingSpace),
+            child: Text(lang.joinExistingSpace),
           ),
         ),
       ],
