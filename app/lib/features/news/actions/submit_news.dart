@@ -27,12 +27,12 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
   final lang = L10n.of(context);
 
   if (spaceId == null) {
-    EasyLoading.showToast(L10n.of(context).pleaseFirstSelectASpace);
+    EasyLoading.showToast(lang.pleaseFirstSelectASpace);
     return;
   }
 
   // Show loading message
-  EasyLoading.show(status: L10n.of(context).slidePosting);
+  EasyLoading.show(status: lang.slidePosting);
   try {
     final space = await ref.read(spaceProvider(spaceId).future);
     NewsEntryDraft draft = space.newsDraft();
@@ -46,7 +46,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
             return;
           }
           EasyLoading.showError(
-            L10n.of(context).yourTextSlidesMustContainsSomeText,
+            lang.yourTextSlidesMustContainsSomeText,
             duration: const Duration(seconds: 3),
           );
           return;
@@ -79,7 +79,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
             return;
           }
           EasyLoading.showError(
-            L10n.of(context).postingOfTypeNotYetSupported(mimeType),
+            lang.postingOfTypeNotYetSupported(mimeType),
             duration: const Duration(seconds: 3),
           );
           return;
@@ -114,7 +114,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
             return;
           }
           EasyLoading.showError(
-            L10n.of(context).postingOfTypeNotYetSupported(mimeType),
+            lang.postingOfTypeNotYetSupported(mimeType),
             duration: const Duration(seconds: 3),
           );
           return;
@@ -153,7 +153,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).creatingNewsFailed(e),
+      lang.creatingNewsFailed(e),
       duration: const Duration(seconds: 3),
     );
   }

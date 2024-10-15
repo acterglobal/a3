@@ -21,6 +21,7 @@ class UserSearchResults extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final suggestedUsers =
         ref.watch(filteredSuggestedUsersProvider(roomId)).valueOrNull ?? [];
 
@@ -30,8 +31,8 @@ class UserSearchResults extends ConsumerWidget {
       // nothing found
       return Center(
         child: EmptyState(
-          title: L10n.of(context).noUserFoundTitle,
-          subtitle: L10n.of(context).noUserFoundSubtitle,
+          title: lang.noUserFoundTitle,
+          subtitle: lang.noUserFoundSubtitle,
           image: 'assets/images/empty_activity.svg',
         ),
       );
@@ -58,7 +59,7 @@ class UserSearchResults extends ConsumerWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
                 child: Text(
-                  L10n.of(context).suggestedUsers,
+                  lang.suggestedUsers,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
@@ -74,7 +75,7 @@ class UserSearchResults extends ConsumerWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
                 child: Text(
-                  L10n.of(context).usersfoundDirectory,
+                  lang.usersfoundDirectory,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),

@@ -135,11 +135,12 @@ class ActionBox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final senderId = news.sender().toString();
     final canRedact = ref.watch(canRedactProvider(news));
     final isAuthor = senderId == userId;
     List<Widget> actions = [
-      Text(L10n.of(context).actions),
+      Text(lang.actions),
       const Divider(),
     ];
 
@@ -149,7 +150,7 @@ class ActionBox extends ConsumerWidget {
           key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
           onPressed: () => openRedactContentDialog(
             context,
-            title: L10n.of(context).removeThisPost,
+            title: lang.removeThisPost,
             eventId: news.eventId().toString(),
             onSuccess: () async {
               if (!await Navigator.maybePop(context)) {
@@ -164,7 +165,7 @@ class ActionBox extends ConsumerWidget {
             removeBtnKey: NewsUpdateKeys.removeButton,
           ),
           icon: const Icon(Atlas.trash_thin),
-          label: Text(L10n.of(context).remove),
+          label: Text(lang.remove),
         ),
       );
     } else if (!isAuthor) {
@@ -173,15 +174,15 @@ class ActionBox extends ConsumerWidget {
           key: NewsUpdateKeys.newsSidebarActionReportBtn,
           onPressed: () => openReportContentDialog(
             context,
-            title: L10n.of(context).reportThisPost,
+            title: lang.reportThisPost,
             eventId: news.eventId().toString(),
-            description: L10n.of(context).reportPostContent,
+            description: lang.reportPostContent,
             senderId: senderId,
             roomId: roomId,
             isSpace: true,
           ),
           icon: const Icon(Atlas.exclamation_chat_thin),
-          label: Text(L10n.of(context).reportThis),
+          label: Text(lang.reportThis),
         ),
       );
     }

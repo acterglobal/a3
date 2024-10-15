@@ -7,8 +7,8 @@ import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::news::news_action_item');
@@ -39,6 +39,7 @@ class NewsSlideActions extends ConsumerWidget {
     WidgetRef ref,
     String eventId,
   ) {
+    final lang = L10n.of(context);
     final calEventLoader = ref.watch(calendarEventProvider(eventId));
     return calEventLoader.when(
       data: (calEvent) => EventItem(event: calEvent),
@@ -48,9 +49,9 @@ class NewsSlideActions extends ConsumerWidget {
         return Card(
           child: ListTile(
             leading: const Icon(Icons.calendar_month),
-            title: Text(L10n.of(context).eventNoLongerAvailable),
+            title: Text(lang.eventNoLongerAvailable),
             subtitle: Text(
-              L10n.of(context).eventDeletedOrFailedToLoad,
+              lang.eventDeletedOrFailedToLoad,
               style: Theme.of(context).textTheme.labelLarge,
             ),
             onTap: () async {

@@ -156,13 +156,14 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     showAdaptiveDialog(
       context: context,
       builder: (context) {
+        final lang = L10n.of(context);
         return AlertDialog.adaptive(
-          title: Text(L10n.of(context).addActionWidget),
+          title: Text(lang.addActionWidget),
           content: SelectActionItem(
             onShareEventSelected: () async {
               Navigator.pop(context);
               if (ref.read(newsStateProvider).newsPostSpaceId == null) {
-                EasyLoading.showToast(L10n.of(context).pleaseFirstSelectASpace);
+                EasyLoading.showToast(lang.pleaseFirstSelectASpace);
                 return;
               }
               final notifier = ref.read(newsStateProvider.notifier);
@@ -252,6 +253,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   }
 
   Widget emptySlidePostUI(BuildContext context) {
+    final lang = L10n.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -260,13 +262,13 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         children: [
           SvgPicture.asset(
             'assets/images/empty_updates.svg',
-            semanticsLabel: L10n.of(context).state,
+            semanticsLabel: lang.state,
             height: 150,
             width: 150,
           ),
           const SizedBox(height: 20),
           Text(
-            L10n.of(context).createPostsAndEngageWithinSpace,
+            lang.createPostsAndEngageWithinSpace,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
@@ -274,19 +276,19 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           OutlinedButton(
             key: NewsUpdateKeys.addTextSlide,
             onPressed: () => NewsUtils.addTextSlide(ref),
-            child: Text(L10n.of(context).addTextSlide),
+            child: Text(lang.addTextSlide),
           ),
           const SizedBox(height: 20),
           OutlinedButton(
             key: NewsUpdateKeys.addImageSlide,
             onPressed: () async => await NewsUtils.addImageSlide(ref),
-            child: Text(L10n.of(context).addImageSlide),
+            child: Text(lang.addImageSlide),
           ),
           const SizedBox(height: 20),
           OutlinedButton(
             key: NewsUpdateKeys.addVideoSlide,
             onPressed: () async => await NewsUtils.addVideoSlide(ref),
-            child: Text(L10n.of(context).addVideoSlide),
+            child: Text(lang.addVideoSlide),
           ),
         ],
       ),
