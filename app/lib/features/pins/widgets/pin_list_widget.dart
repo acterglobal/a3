@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
 import 'package:acter/features/pins/widgets/pin_list_skeleton.dart';
@@ -35,14 +36,36 @@ class PinListWidget extends ConsumerWidget {
     final pinsLoader = ref.watch(
       pinListSearchProvider((spaceId: spaceId, searchText: searchValue ?? '')),
     );
-
     return pinsLoader.when(
       data: (pinList) => buildPinSectionUI(context, pinList),
-      error: (e, s) {
-        _log.severe('Failed to load pins', e, s);
-        return Center(child: Text(L10n.of(context).loadingFailed(e)));
-      },
+      error: (error, stack) => pinListErrorWidget(context, ref, error, stack),
       loading: () => const PinListSkeleton(),
+    );
+  }
+
+  Widget pinListErrorWidget(
+    BuildContext context,
+    WidgetRef ref,
+    Object error,
+    StackTrace stack,
+  ) {
+    _log.severe('Failed to load pins', error, stack);
+    return ErrorPage(
+      background: const PinListSkeleton(),
+      error: error,
+      stack: stack,
+      textBuilder: L10n.of(context).loadingFailed,
+      onRetryTap: () {
+        if (searchValue?.isNotEmpty == true) {
+          ref.invalidate(
+            pinListSearchProvider(
+              (spaceId: spaceId, searchText: searchValue ?? ''),
+            ),
+          );
+        } else {
+          ref.invalidate(pinListProvider(spaceId));
+        }
+      },
     );
   }
 
