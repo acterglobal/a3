@@ -35,7 +35,6 @@ class PinsListPage extends ConsumerStatefulWidget {
 }
 
 class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
-
   String get searchValue => ref.watch(searchValueProvider);
 
   @override
@@ -64,7 +63,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
           spaceId: widget.spaceId,
           onPressed: () => context.pushNamed(
             Routes.createPin.name,
-            queryParameters: {'spaceId': widget.spaceId},
+            queryParameters: {'spaceId': spaceId},
           ),
         ),
       ],
@@ -84,9 +83,14 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
-          onChanged: (value) =>
-              ref.read(searchValueProvider.notifier).state = value,
-          onClear: () => ref.read(searchValueProvider.notifier).state = '',
+          onChanged: (value) {
+            final notifier = ref.read(searchValueProvider.notifier);
+            notifier.state = value;
+          },
+          onClear: () {
+            final notifier = ref.read(searchValueProvider.notifier);
+            notifier.state = '';
+          },
         ),
         Expanded(
           child: pinsLoader.when(
@@ -140,20 +144,20 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   }
 
   Widget _buildPinsEmptyState() {
+    final lang = L10n.of(context);
     var canAdd = false;
     if (searchValue.isEmpty) {
-      final canPostLoader = ref.watch(
-        hasSpaceWithPermissionProvider('CanPostPin'),
-      );
+      final canPostLoader =
+          ref.watch(hasSpaceWithPermissionProvider('CanPostPin'));
       if (canPostLoader.valueOrNull == true) canAdd = true;
     }
     return Center(
       heightFactor: 1,
       child: EmptyState(
         title: searchValue.isNotEmpty
-            ? L10n.of(context).noMatchingPinsFound
-            : L10n.of(context).noPinsAvailableYet,
-        subtitle: L10n.of(context).noPinsAvailableDescription,
+            ? lang.noMatchingPinsFound
+            : lang.noPinsAvailableYet,
+        subtitle: lang.noPinsAvailableDescription,
         image: 'assets/images/empty_pin.svg',
         primaryButton: canAdd
             ? ActerPrimaryActionButton(
@@ -161,7 +165,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
                   Routes.createPin.name,
                   queryParameters: {'spaceId': widget.spaceId},
                 ),
-                child: Text(L10n.of(context).createPin),
+                child: Text(lang.createPin),
               )
             : null,
       ),
