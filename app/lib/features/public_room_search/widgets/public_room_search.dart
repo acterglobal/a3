@@ -8,10 +8,10 @@ import 'package:acter/features/public_room_search/widgets/maybe_direct_room_acti
 import 'package:acter/features/public_room_search/widgets/public_room_item.dart';
 import 'package:acter/features/public_room_search/widgets/server_selection_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -218,10 +218,11 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
   }
 
   String buildSearchTitle(BuildContext context) {
+    final lang = L10n.of(context);
     return switch (ref.watch(searchFilterProvider).filterBy) {
-      FilterBy.spaces => L10n.of(context).searchSpaces,
-      FilterBy.chats => L10n.of(context).searchChats,
-      FilterBy.both => L10n.of(context).searchPublicDirectory,
+      FilterBy.spaces => lang.searchSpaces,
+      FilterBy.chats => lang.searchChats,
+      FilterBy.both => lang.searchPublicDirectory,
     };
   }
 

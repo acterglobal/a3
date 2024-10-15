@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/features/public_room_search/widgets/public_room_search.dart';
+import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -33,6 +33,7 @@ class SearchPublicDirectory extends ConsumerWidget {
     PublicSearchResultItem spaceSearchResult,
     String? searchServer,
   ) async {
+    final lang = L10n.of(context);
     final roomId = spaceSearchResult.roomIdStr();
     if ((await ref.read(roomMembershipProvider(roomId).future)) != null) {
       // we know the space, user just wants to enter it
@@ -56,7 +57,7 @@ class SearchPublicDirectory extends ConsumerWidget {
     final joinRule = spaceSearchResult.joinRuleStr();
     if (joinRule != 'Public') {
       // ignore: use_build_context_synchronously
-      EasyLoading.showToast(L10n.of(context).joinRuleNotSupportedYet(joinRule));
+      EasyLoading.showToast(lang.joinRuleNotSupportedYet(joinRule));
       return;
     }
     await joinRoom(
@@ -64,7 +65,7 @@ class SearchPublicDirectory extends ConsumerWidget {
       context,
       ref,
       // ignore: use_build_context_synchronously
-      L10n.of(context).tryingToJoin(spaceSearchResult.name().toString()),
+      lang.tryingToJoin(spaceSearchResult.name().toString()),
       roomId,
       searchServer,
       (roomId) => context.pushNamed(

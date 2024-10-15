@@ -1,7 +1,7 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class ServerSelectionField extends StatefulWidget {
   final List<ServerEntry> options;
@@ -32,6 +32,7 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     if (!editMode) {
       return TextFormField(
         initialValue: widget.currentSelection,
@@ -43,7 +44,7 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
         },
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
-          labelText: L10n.of(context).server,
+          labelText: lang.server,
           suffix: Icon(Icons.edit, color: Theme.of(context).hintColor),
         ),
       );
@@ -69,7 +70,7 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
           autofocus: widget.autofocus,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
-            labelText: L10n.of(context).server,
+            labelText: lang.server,
             suffix: InkWell(
               onTap: () {
                 onSubmit(controller.text);

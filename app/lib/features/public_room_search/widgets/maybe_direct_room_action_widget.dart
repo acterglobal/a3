@@ -29,6 +29,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String alias,
     String server,
   ) {
+    final lang = L10n.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 20,
@@ -38,12 +39,12 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
         child: ListTile(
           onTap: () => onSelectedMatch(context, ref, [server], alias: alias),
           title: Text(alias),
-          subtitle: Text('${L10n.of(context).on} $server'),
+          subtitle: Text('${lang.on} $server'),
           trailing: OutlinedButton.icon(
             onPressed: () =>
                 onSelectedMatch(context, ref, [server], alias: alias),
             icon: const Icon(Atlas.entrance_thin),
-            label: Text(L10n.of(context).tryToJoin),
+            label: Text(lang.tryToJoin),
           ),
         ),
       ),
@@ -56,6 +57,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String roomId,
     List<String> servers,
   ) {
+    final lang = L10n.of(context);
     final roomWatch = ref.watch(maybeRoomProvider(roomId));
     if (roomWatch.valueOrNull == null) {
       return Card(
@@ -68,7 +70,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
           ),
           title: Text(roomId),
           subtitle: servers.isNotEmpty
-              ? Text('${L10n.of(context).via} ${servers.join(', ')}')
+              ? Text('${lang.via} ${servers.join(', ')}')
               : null,
           trailing: OutlinedButton.icon(
             onPressed: () => onSelectedMatch(
@@ -78,7 +80,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
               roomId: roomId,
             ),
             icon: const Icon(Atlas.entrance_thin),
-            label: Text(L10n.of(context).tryToJoin),
+            label: Text(lang.tryToJoin),
           ),
         ),
       );
@@ -122,6 +124,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String roomId,
     List<String> servers,
   ) {
+    final lang = L10n.of(context);
     if (room.joinRuleStr() == 'Public') {
       return OutlinedButton(
         onPressed: () => onSelectedMatch(
@@ -130,7 +133,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
           servers,
           roomId: roomId,
         ),
-        child: Text(L10n.of(context).join),
+        child: Text(lang.join),
       );
     } else {
       return OutlinedButton(
@@ -140,7 +143,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
           servers,
           roomId: roomId,
         ),
-        child: Text(L10n.of(context).requestToJoin),
+        child: Text(lang.requestToJoin),
       );
     }
   }
