@@ -10,8 +10,7 @@ import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -123,7 +122,7 @@ class _SideBarItem extends StatelessWidget {
 
 class ActionBox extends ConsumerWidget {
   final String userId;
-  final ffi.NewsEntry news;
+  final NewsEntry news;
   final String roomId;
 
   const ActionBox({
@@ -137,6 +136,7 @@ class ActionBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final senderId = news.sender().toString();
+    final eventId = news.eventId().toString();
     final canRedact = ref.watch(canRedactProvider(news));
     final isAuthor = senderId == userId;
     List<Widget> actions = [
@@ -151,7 +151,7 @@ class ActionBox extends ConsumerWidget {
           onPressed: () => openRedactContentDialog(
             context,
             title: lang.removeThisPost,
-            eventId: news.eventId().toString(),
+            eventId: eventId,
             onSuccess: () async {
               if (!await Navigator.maybePop(context)) {
                 if (context.mounted) {
@@ -175,7 +175,7 @@ class ActionBox extends ConsumerWidget {
           onPressed: () => openReportContentDialog(
             context,
             title: lang.reportThisPost,
-            eventId: news.eventId().toString(),
+            eventId: eventId,
             description: lang.reportPostContent,
             senderId: senderId,
             roomId: roomId,

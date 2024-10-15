@@ -24,7 +24,6 @@ class UserSearchResults extends ConsumerWidget {
     final lang = L10n.of(context);
     final suggestedUsers =
         ref.watch(filteredSuggestedUsersProvider(roomId)).valueOrNull ?? [];
-
     final foundUsers = ref.watch(searchResultProvider).valueOrNull ?? [];
 
     if (suggestedUsers.isEmpty && foundUsers.isEmpty) {
@@ -49,15 +48,19 @@ class UserSearchResults extends ConsumerWidget {
           showRooms = true;
         }
 
-        final userWidget =
-            userItemBuilder(isSuggestion: showRooms, profile: user);
+        final userWidget = userItemBuilder(
+          isSuggestion: showRooms,
+          profile: user,
+        );
         if (position == 0 && suggestedUsers.isNotEmpty) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 child: Text(
                   lang.suggestedUsers,
                   style: Theme.of(context).textTheme.titleSmall,
@@ -72,8 +75,10 @@ class UserSearchResults extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 child: Text(
                   lang.usersfoundDirectory,
                   style: Theme.of(context).textTheme.titleSmall,

@@ -43,6 +43,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideListUI(BuildContext context) {
+    final currentSlide = ref.watch(newsStateProvider).currentNewsSlide;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -64,23 +65,19 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                     InkWell(
                       key: Key('slide-${slidePost.type.name}-$index'),
                       onTap: () {
-                        ref
-                            .read(newsStateProvider.notifier)
-                            .changeSelectedSlide(slidePost);
+                        final notifier = ref.read(newsStateProvider.notifier);
+                        notifier.changeSelectedSlide(slidePost);
                       },
                       child: Container(
                         width: 60,
                         margin: const EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal: 5.0,
+                          vertical: 10,
+                          horizontal: 5,
                         ),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(5),
-                          border: ref
-                                      .watch(newsStateProvider)
-                                      .currentNewsSlide ==
-                                  slidePost
+                          border: currentSlide == slidePost
                               ? Border.all(
                                   color:
                                       Theme.of(context).colorScheme.textColor,
@@ -99,9 +96,8 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                       child: InkWell(
                         key: Key('remove-slide-${slidePost.type.name}-$index'),
                         onTap: () {
-                          ref
-                              .read(newsStateProvider.notifier)
-                              .deleteSlide(index);
+                          final notifier = ref.read(newsStateProvider.notifier);
+                          notifier.deleteSlide(index);
                         },
                         child: Icon(
                           Icons.remove_circle_outlined,
@@ -132,9 +128,8 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           ? InkWell(
               key: NewsUpdateKeys.selectSpace,
               onTap: () async {
-                await ref
-                    .read(newsStateProvider.notifier)
-                    .changeNewsPostSpaceId(context);
+                final notifier = ref.read(newsStateProvider.notifier);
+                await notifier.changeNewsPostSpaceId(context);
               },
               child: Stack(
                 clipBehavior: Clip.none,
@@ -165,9 +160,8 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           : OutlinedButton(
               key: NewsUpdateKeys.selectSpace,
               onPressed: () async {
-                await ref
-                    .read(newsStateProvider.notifier)
-                    .changeNewsPostSpaceId(context);
+                final notifier = ref.read(newsStateProvider.notifier);
+                await notifier.changeNewsPostSpaceId(context);
               },
               child: Text(L10n.of(context).selectSpace),
             ),
@@ -178,7 +172,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     return Container(
       height: 50,
       width: 2,
-      margin: const EdgeInsets.symmetric(horizontal: 10.0),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
       color: Theme.of(context).colorScheme.onPrimary,
     );
   }
@@ -204,7 +198,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     return switch (slidePostType) {
       NewsSlideType.text => const Icon(Atlas.size_text),
       NewsSlideType.image => ClipRRect(
-          borderRadius: BorderRadius.circular(5.0),
+          borderRadius: BorderRadius.circular(5),
           child: Image(
             image: XFileImage(mediaFile!),
             fit: BoxFit.cover,
@@ -218,7 +212,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
                   return ClipRRect(
-                    borderRadius: BorderRadius.circular(5.0),
+                    borderRadius: BorderRadius.circular(5),
                     child: Image.file(
                       snapshot.data!,
                       fit: BoxFit.cover,
@@ -230,7 +224,10 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
             ),
             Container(
               color: Colors.black38,
-              child: const Icon(Icons.play_arrow_outlined, size: 32),
+              child: const Icon(
+                Icons.play_arrow_outlined,
+                size: 32,
+              ),
             ),
           ],
         ),

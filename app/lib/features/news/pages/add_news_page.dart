@@ -30,7 +30,11 @@ const addNewsKey = Key('add-news');
 
 class AddNewsPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
-  const AddNewsPage({super.key = addNewsKey, this.initialSelectedSpace});
+
+  const AddNewsPage({
+    super.key = addNewsKey,
+    this.initialSelectedSpace,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => AddNewsState();
@@ -126,9 +130,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               IconButton(
                 key: NewsUpdateKeys.slideBackgroundColor,
                 onPressed: () {
-                  ref
-                      .read(newsStateProvider.notifier)
-                      .changeTextSlideBackgroundColor();
+                  final notifier = ref.read(newsStateProvider.notifier);
+                  notifier.changeTextSlideBackgroundColor();
                 },
                 icon: const Icon(Atlas.color),
               ),
@@ -229,9 +232,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                         event: calendarEvent,
                         isShowRsvp: false,
                         onTapEventItem: (event) async {
-                          await ref
-                              .read(newsStateProvider.notifier)
-                              .selectEventToShare(context);
+                          final notifier = ref.read(newsStateProvider.notifier);
+                          await notifier.selectEventToShare(context);
                         },
                       ),
                     );
@@ -312,9 +314,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               // we manage the auto focus manually
               shrinkWrap: true,
               onChanged: (body, html) {
-                ref
-                    .read(newsStateProvider.notifier)
-                    .changeTextSlideValue(body, html);
+                final notifier = ref.read(newsStateProvider.notifier);
+                notifier.changeTextSlideValue(body, html);
               },
             ),
           ),

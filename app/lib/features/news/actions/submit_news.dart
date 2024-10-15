@@ -36,8 +36,8 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
   try {
     final space = await ref.read(spaceProvider(spaceId).future);
     NewsEntryDraft draft = space.newsDraft();
+    final sdk = await ref.read(sdkProvider.future);
     for (final slidePost in newsSlideList) {
-      final sdk = await ref.read(sdkProvider.future);
       // If slide type is text
       if (slidePost.type == NewsSlideType.text) {
         if (slidePost.text == null || slidePost.text!.trim().isEmpty) {
@@ -143,9 +143,8 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
     ref.invalidate(newsStateProvider);
     // Navigate back to update screen.
     Navigator.pop(context);
-    context.pushReplacementNamed(
-      Routes.main.name,
-    ); // go to the home / main updates
+    context
+        .pushReplacementNamed(Routes.main.name); // go to the home/main updates
   } catch (e, s) {
     _log.severe('Failed to send news', e, s);
     if (!context.mounted) {

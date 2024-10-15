@@ -16,7 +16,10 @@ final _log = Logger('a3::news::news_action_item');
 class NewsSlideActions extends ConsumerWidget {
   final NewsSlide newsSlide;
 
-  const NewsSlideActions({super.key, required this.newsSlide});
+  const NewsSlideActions({
+    super.key,
+    required this.newsSlide,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

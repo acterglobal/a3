@@ -56,7 +56,10 @@ class PostAttachmentOptions extends StatelessWidget {
           key: NewsUpdateKeys.cancelButton,
           onTap: () => Navigator.pop(context),
           contentPadding: const EdgeInsets.all(0),
-          title: Text(lang.cancel, textAlign: TextAlign.center),
+          title: Text(
+            lang.cancel,
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );
