@@ -1,7 +1,7 @@
 import 'package:acter/common/widgets/acter_search_widget.dart';
-import 'package:acter/features/member/widgets/user_builder.dart';
-import 'package:acter/features/member/providers/invite_providers.dart';
 import 'package:acter/features/invite_members/widgets/direct_invite.dart';
+import 'package:acter/features/member/providers/invite_providers.dart';
+import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:acter/features/member/widgets/user_search_results.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +29,7 @@ class InviteIndividualUsers extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
@@ -37,13 +38,13 @@ class InviteIndividualUsers extends ConsumerWidget {
           children: [
             const SizedBox(height: 10),
             Text(
-              L10n.of(context).inviteIndividualUsersDescription,
+              lang.inviteIndividualUsersDescription,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
             ActerSearchWidget(
               initialText: ref.read(userSearchValueProvider),
-              hintText: L10n.of(context).searchUsernameToStartDM,
+              hintText: lang.searchUsernameToStartDM,
               onChanged: (value) {
                 ref
                     .read(userSearchValueProvider.notifier)

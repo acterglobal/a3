@@ -21,6 +21,7 @@ class MyTasksSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final tasksLoader = ref.watch(myOpenTasksProvider);
     return tasksLoader.when(
       data: (tasks) {
@@ -43,7 +44,7 @@ class MyTasksSection extends ConsumerWidget {
                   taskId: tasks[index].eventIdStr(),
                   showBreadCrumb: true,
                   onDone: () => EasyLoading.showToast(
-                    L10n.of(context).markedAsDone,
+                    lang.markedAsDone,
                   ),
                 );
               },
@@ -53,23 +54,24 @@ class MyTasksSection extends ConsumerWidget {
       },
       error: (e, s) {
         _log.severe('Failed to load open tasks', e, s);
-        return Text(L10n.of(context).loadingTasksFailed(e));
+        return Text(lang.loadingTasksFailed(e));
       },
-      loading: () => Text(L10n.of(context).loading),
+      loading: () => Text(lang.loading),
     );
   }
 
   Widget myTaskHeader(BuildContext context) {
+    final lang = L10n.of(context);
     return Row(
       children: [
         Text(
-          L10n.of(context).myTasks,
+          lang.myTasks,
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const Spacer(),
         ActerInlineTextButton(
           onPressed: () => context.pushNamed(Routes.tasks.name),
-          child: Text(L10n.of(context).seeAll),
+          child: Text(lang.seeAll),
         ),
       ],
     );

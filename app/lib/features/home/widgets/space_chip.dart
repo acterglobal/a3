@@ -43,12 +43,13 @@ class SpaceChip extends ConsumerWidget {
   }
 
   Widget renderCompactView(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final displayName =
         ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull ?? spaceId;
     return Row(
       children: [
-        Text(L10n.of(context).inSpaceLabelInline),
-        Text(L10n.of(context).colonCharacter),
+        Text(lang.inSpaceLabelInline),
+        Text(lang.colonCharacter),
         InkWell(
           onTap: () {
             if (!onTapOpenSpaceDetail) {

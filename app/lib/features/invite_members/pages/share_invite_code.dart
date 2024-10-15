@@ -73,11 +73,12 @@ class ShareInviteCode extends ConsumerWidget {
     String displayName,
     String roomName,
   ) {
+    final lang = L10n.of(context);
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(L10n.of(context).message),
+          Text(lang.message),
           const SizedBox(height: 10),
           Expanded(
             child: Container(
@@ -91,8 +92,7 @@ class ShareInviteCode extends ConsumerWidget {
               padding: const EdgeInsets.all(10),
               child: SingleChildScrollView(
                 child: Text(
-                  L10n.of(context)
-                      .shareInviteContent(inviteCode, roomName, displayName),
+                  lang.shareInviteContent(inviteCode, roomName, displayName),
                 ),
               ),
             ),
@@ -107,6 +107,7 @@ class ShareInviteCode extends ConsumerWidget {
     String displayName,
     String roomName,
   ) {
+    final lang = L10n.of(context);
     return Wrap(
       direction: Axis.horizontal,
       alignment: WrapAlignment.center,
@@ -117,7 +118,7 @@ class ShareInviteCode extends ConsumerWidget {
           iconData: Atlas.envelope,
           onTap: () => mailTo(
             toAddress: '',
-            subject: 'body=${L10n.of(context).shareInviteContent(
+            subject: 'body=${lang.shareInviteContent(
               inviteCode,
               roomName,
               displayName,
@@ -129,7 +130,7 @@ class ShareInviteCode extends ConsumerWidget {
           iconData: Atlas.whatsapp,
           onTap: () => shareTextToWhatsApp(
             context,
-            text: L10n.of(context).shareInviteContent(
+            text: lang.shareInviteContent(
               inviteCode,
               roomName,
               displayName,
@@ -141,7 +142,7 @@ class ShareInviteCode extends ConsumerWidget {
           iconData: Icons.ios_share_sharp,
           onTap: () {
             Share.share(
-              L10n.of(context).shareInviteContent(
+              lang.shareInviteContent(
                 inviteCode,
                 roomName,
                 displayName,
@@ -155,14 +156,14 @@ class ShareInviteCode extends ConsumerWidget {
           onTap: () {
             Clipboard.setData(
               ClipboardData(
-                text: L10n.of(context).shareInviteContent(
+                text: lang.shareInviteContent(
                   inviteCode,
                   roomName,
                   displayName,
                 ),
               ),
             );
-            EasyLoading.showToast(L10n.of(context).messageCopiedToClipboard);
+            EasyLoading.showToast(lang.messageCopiedToClipboard);
           },
         ),
       ],
