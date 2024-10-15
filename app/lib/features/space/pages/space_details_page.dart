@@ -1,7 +1,9 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
+import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:acter/features/space/dialogs/suggested_rooms.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
@@ -12,7 +14,6 @@ import 'package:acter/features/space/widgets/space_sections/chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/events_section.dart';
 import 'package:acter/features/space/widgets/space_sections/members_section.dart';
 import 'package:acter/features/space/widgets/space_sections/news_section.dart';
-import 'package:acter/features/space/widgets/space_sections/pins_section.dart';
 import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
 import 'package:acter/features/space/widgets/space_sections/spaces_section.dart';
 import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
@@ -20,6 +21,7 @@ import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -259,7 +261,15 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     return switch (tabItem) {
       TabEntry.overview => AboutSection(spaceId: widget.spaceId),
       TabEntry.news => NewsSection(spaceId: widget.spaceId),
-      TabEntry.pins => PinsSection(spaceId: widget.spaceId),
+      TabEntry.pins => PinListWidget(
+          spaceId: widget.spaceId,
+          showSectionHeader: true,
+          limit: 3,
+          onClickSectionHeader: () => context.pushNamed(
+            Routes.spacePins.name,
+            pathParameters: {'spaceId': widget.spaceId},
+          ),
+        ),
       TabEntry.tasks => TasksSection(spaceId: widget.spaceId),
       TabEntry.events => EventsSection(spaceId: widget.spaceId),
       TabEntry.chats => ChatsSection(spaceId: widget.spaceId),

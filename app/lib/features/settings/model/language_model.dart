@@ -16,6 +16,7 @@ class LanguageModel {
       'pl' => const LanguageModel.polish(),
       'fr' => const LanguageModel.french(),
       'sw' => const LanguageModel.swahili(),
+      'ur' => const LanguageModel.urdu(),
       _ => const LanguageModel.english(), // english is fallback
     };
   }
@@ -49,6 +50,10 @@ class LanguageModel {
       : languageName = 'Swahili',
         languageCode = 'sw';
 
+  const LanguageModel.urdu()
+      : languageName = 'اردو ویکیپیڈیا',
+        languageCode = 'ur';
+
   static const allLanguagesList = [
     // we show them in ehm... alphabetical order of the name in their own language
     LanguageModel.german(),
@@ -58,5 +63,6 @@ class LanguageModel {
     LanguageModel.polish(),
     LanguageModel.arabic(),
     LanguageModel.swahili(),
+    LanguageModel.urdu(),
   ];
 }

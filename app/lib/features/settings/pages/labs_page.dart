@@ -68,6 +68,17 @@ class SettingsLabsPage extends ConsumerWidget {
                   onToggle: (newVal) =>
                       updateFeatureState(ref, LabsFeature.chatUnread, newVal),
                 ),
+                SettingsTile.switchTile(
+                  title: Text(L10n.of(context).chatNG),
+                  description: Text(L10n.of(context).chatNGExplainer),
+                  initialValue: ref.watch(isActiveProvider(LabsFeature.chatNG)),
+                  onToggle: (newVal) {
+                    updateFeatureState(ref, LabsFeature.chatNG, newVal);
+                    EasyLoading.showToast(
+                      'Changes will affect after app restart',
+                    );
+                  },
+                ),
               ],
             ),
             SettingsSection(
