@@ -68,6 +68,38 @@ void main() {
       expect(wasCalled, false);
       expect(targetValue, 'ok');
     });
+
+    testWidgets('orElse on null', (tester) async {
+      bool wasCalled = false;
+      String? target;
+
+      String? targetValue = target.map(
+        (a) {
+          wasCalled = true;
+          return 'inner';
+        },
+        orElse: () => 'ok',
+      );
+
+      expect(wasCalled, false);
+      expect(targetValue, 'ok');
+    });
+
+    testWidgets('default on null for async', (tester) async {
+      bool wasCalled = false;
+      String? target;
+
+      String? targetValue = await target.mapAsync(
+        (a) {
+          wasCalled = true;
+          return 'inner';
+        },
+        orElse: () => 'ok',
+      );
+
+      expect(wasCalled, false);
+      expect(targetValue, 'ok');
+    });
   });
 
   group('Option Expect', () {
