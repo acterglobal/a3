@@ -14,6 +14,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 final bucketGlobal = PageStorageBucket();
+typedef RoomSelectAction = Function(String);
 
 class RoomsListWidget extends ConsumerStatefulWidget {
   static const roomListMenuKey = Key('chat-room-list');
@@ -22,7 +23,7 @@ class RoomsListWidget extends ConsumerStatefulWidget {
   static const closeSearchActionButtonKey =
       Key('chat-rooms-list-close-search-action-btn');
 
-  final Function(String) onSelected;
+  final RoomSelectAction onSelected;
 
   const RoomsListWidget({
     required this.onSelected,
@@ -30,11 +31,10 @@ class RoomsListWidget extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _RoomsListWidgetState();
+  ConsumerState<ConsumerStatefulWidget> createState() => RoomsListWidgetState();
 }
 
-class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
+class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   final ScrollController controller = ScrollController();
   final FocusNode searchFocus = FocusNode();
 

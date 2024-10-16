@@ -445,7 +445,6 @@ enum LabsFeature {
         LabsFeature.encryptionBackup,
         LabsFeature.deviceCalendarSync,
         LabsFeature.mobilePushNotifications,
-        LabsFeature.chatNG,
       ];
 }
 
