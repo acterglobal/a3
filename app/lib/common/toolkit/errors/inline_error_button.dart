@@ -34,7 +34,7 @@ class ActerInlineErrorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return icon.let((icn) => _buildWithIcon(context, icn)) ??
+    return icon.map((icn) => _buildWithIcon(context, icn)) ??
         TextButton(
           onPressed: () => ActerErrorDialog.show(
             context: context,
@@ -43,7 +43,7 @@ class ActerInlineErrorButton extends StatelessWidget {
             title: dialogTitle,
             text: text,
             textBuilder: textBuilder,
-            onRetryTap: onRetryTap.let(
+            onRetryTap: onRetryTap.map(
               (cb) => () {
                 cb();
                 Navigator.pop(context);
@@ -77,7 +77,7 @@ class ActerInlineErrorButton extends StatelessWidget {
         title: dialogTitle,
         text: text,
         textBuilder: textBuilder,
-        onRetryTap: onRetryTap.let(
+        onRetryTap: onRetryTap.map(
           (cb) => () {
             cb();
             Navigator.pop(context);

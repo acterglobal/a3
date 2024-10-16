@@ -47,7 +47,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
   }
 
   void _checkInitialQuery() {
-    widget.initialQuery.let((p0) {
+    widget.initialQuery.map((p0) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         ref.read(searchFilterProvider.notifier).updateSearchTerm(p0);
       });

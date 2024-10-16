@@ -137,7 +137,7 @@ final parentIdsProvider =
     if (relations == null) return [];
     // Collect all parents: mainParent and otherParents
     List<String> allParents =
-        relations.mainParent().let((p) => [p.roomId().toString()]) ?? [];
+        relations.mainParent().map((p) => [p.roomId().toString()]) ?? [];
     final others = relations.otherParents().map((p) => p.roomId().toString());
     allParents.addAll(others);
     return allParents;

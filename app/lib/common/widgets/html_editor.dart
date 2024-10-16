@@ -165,7 +165,7 @@ class HtmlEditorState extends State<HtmlEditor> {
       );
 
       _changeListener?.cancel();
-      widget.onChanged.let((cb) {
+      widget.onChanged.map((cb) {
         _changeListener = editorState.transactionStream.listen(
           (data) => _triggerExport(cb),
           onError: (e, s) {
@@ -225,7 +225,7 @@ class HtmlEditorState extends State<HtmlEditor> {
         width: 10,
       ),
     );
-    widget.onSave.let((cb) {
+    widget.onSave.map((cb) {
       children.add(
         ActerPrimaryActionButton(
           key: HtmlEditor.saveEditKey,

@@ -47,7 +47,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   @override
   void initState() {
     super.initState();
-    widget.initialSelectedSpace.let((p0) {
+    widget.initialSelectedSpace.map((p0) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         ref.read(newsStateProvider.notifier).setSpaceId(p0);
       });

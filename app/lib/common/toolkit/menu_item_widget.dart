@@ -36,7 +36,7 @@ class MenuItemWidget extends StatelessWidget {
         key: innerKey,
         onTap: onTap,
         visualDensity: visualDensity,
-        leading: iconData.let(
+        leading: iconData.map(
           (data) => Icon(
             data,
             color: enabled ? iconColor : Theme.of(context).disabledColor,
@@ -48,7 +48,7 @@ class MenuItemWidget extends StatelessWidget {
             color: enabled ? null : Theme.of(context).disabledColor,
           ),
         ),
-        subtitle: subTitle.let(
+        subtitle: subTitle.map(
           (t) => Text(
             t,
             style: titleStyles?.copyWith(

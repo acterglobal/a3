@@ -48,8 +48,8 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
   final ValueNotifier<ActerIcon> selectedIcon = ValueNotifier(ActerIcon.list);
 
   void _setWidgetValues() {
-    widget.selectedColor.let((color) => selectedColor.value = color);
-    widget.selectedIcon.let((icon) => selectedIcon.value = icon);
+    widget.selectedColor.map((color) => selectedColor.value = color);
+    widget.selectedIcon.map((icon) => selectedIcon.value = icon);
   }
 
   @override
@@ -81,7 +81,7 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
           Expanded(child: _buildIconSelector()),
           ActerPrimaryActionButton(
             onPressed: () {
-              widget.onIconSelection.let((cb) {
+              widget.onIconSelection.map((cb) {
                 cb(selectedColor.value, selectedIcon.value);
               });
               Navigator.pop(context);

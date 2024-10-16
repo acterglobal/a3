@@ -156,7 +156,7 @@ class _ChatBubble extends ConsumerWidget {
   }
 
   Bubble renderBubble(BuildContext context, bool isAuthor) {
-    Widget bubbleChild = message.repliedMessage.let(
+    Widget bubbleChild = message.repliedMessage.map(
           (replied) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

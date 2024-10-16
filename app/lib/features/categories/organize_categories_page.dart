@@ -205,7 +205,7 @@ class _DraggableCategoriesListState
 
   //DRAG AND DROP LIST VIEW
   Widget _buildSubSpacesUIWithDrag() {
-    return dragAndDropList.let(
+    return dragAndDropList.map(
           (list) => DragAndDropLists(
             children: list,
             onListReorder: _onListReorder,
@@ -219,7 +219,7 @@ class _DraggableCategoriesListState
 
   //ON HEADER ITEM REORDER
   Future<void> _onListReorder(int oldListIndex, int newListIndex) async {
-    dragAndDropList.let((list) {
+    dragAndDropList.map((list) {
       final movedList = list.removeAt(oldListIndex);
       list.insert(newListIndex, movedList);
 
@@ -237,7 +237,7 @@ class _DraggableCategoriesListState
     int newItemIndex,
     int newListIndex,
   ) async {
-    dragAndDropList.let((list) {
+    dragAndDropList.map((list) {
       final movedItem = list[oldListIndex].children.removeAt(oldItemIndex);
       list[newListIndex].children.insert(newItemIndex, movedItem);
 

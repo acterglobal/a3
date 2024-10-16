@@ -38,7 +38,7 @@ class FullScreenAvatarPage extends ConsumerWidget {
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
     final profileData = ref.watch(roomAvatarInfoProvider(roomId));
-    return profileData.avatar.let(
+    return profileData.avatar.map(
           (data) => Center(
             child: PinchZoomReleaseUnzoomWidget(
               child: Container(

@@ -26,8 +26,8 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
   final ValueNotifier<ActerIcon> icon = ValueNotifier(ActerIcon.list);
 
   void _setWidgetValues() {
-    widget.color.let((clr) => color.value = clr);
-    widget.icon.let((icn) => icon.value = icn);
+    widget.color.map((clr) => color.value = clr);
+    widget.icon.map((icn) => icon.value = icn);
   }
 
   @override
@@ -46,7 +46,7 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(100),
-      onTap: widget.onIconSelection.let(
+      onTap: widget.onIconSelection.map(
         (cb) => () {
           showActerIconPicker(
             context: context,

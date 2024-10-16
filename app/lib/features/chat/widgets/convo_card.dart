@@ -47,7 +47,7 @@ class ConvoCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final inner = buildInner(context, ref);
-    return animation.let(
+    return animation.map(
           (val) => SizeTransition(
             sizeFactor: val,
             child: inner,

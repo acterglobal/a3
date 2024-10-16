@@ -76,7 +76,7 @@ class CategoryHeaderView extends StatelessWidget {
       iconSize: 28,
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
         PopupMenuItem(
-          onTap: onClickEditCategory.let((cb) => () => cb()),
+          onTap: onClickEditCategory.map((cb) => () => cb()),
           child: Row(
             children: <Widget>[
               Icon(PhosphorIcons.pencil()),
@@ -86,7 +86,7 @@ class CategoryHeaderView extends StatelessWidget {
           ),
         ),
         PopupMenuItem(
-          onTap: onClickDeleteCategory.let((cb) => () => cb()),
+          onTap: onClickDeleteCategory.map((cb) => () => cb()),
           child: Row(
             children: <Widget>[
               Icon(PhosphorIcons.trash()),
