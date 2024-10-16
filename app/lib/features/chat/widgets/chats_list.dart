@@ -185,8 +185,9 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
   void _insert(int pos, String data) {
     _log.fine('insert $pos: $data');
     _currentList.insert(pos, data);
-    if (_listKey.currentState != null) {
-      _listKey.currentState!.insertItem(pos);
+    final curState = _listKey.currentState;
+    if (curState != null) {
+      curState.insertItem(pos);
     } else {
       _log.fine('we are not');
     }
@@ -194,8 +195,9 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
 
   void _remove(int pos, String data) {
     _currentList.removeAt(pos);
-    if (_listKey.currentState != null) {
-      _listKey.currentState!.removeItem(
+    final curState = _listKey.currentState;
+    if (curState != null) {
+      curState.removeItem(
         pos,
         (context, animation) => _removedItemBuilder(data, context, animation),
       );
