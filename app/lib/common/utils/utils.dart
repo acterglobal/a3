@@ -5,9 +5,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger('a3::common::util');
 
 final aliasedHttpRegexp =
     RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)');
