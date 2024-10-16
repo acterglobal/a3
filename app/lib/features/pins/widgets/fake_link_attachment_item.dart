@@ -1,6 +1,6 @@
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
