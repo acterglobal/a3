@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/common/models/types.dart';

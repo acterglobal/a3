@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';

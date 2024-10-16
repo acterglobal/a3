@@ -1,10 +1,11 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/common/widgets/visibility/room_visibilty_type.dart';
+import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';

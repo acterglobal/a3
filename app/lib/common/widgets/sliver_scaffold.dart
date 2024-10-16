@@ -1,5 +1,5 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:flutter/material.dart';
 
 class SliverScaffold extends StatelessWidget {

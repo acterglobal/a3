@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 

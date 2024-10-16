@@ -1,5 +1,5 @@
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/visibility/room_visibility_item.dart';
+import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';

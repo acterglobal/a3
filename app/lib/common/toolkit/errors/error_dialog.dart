@@ -1,5 +1,5 @@
 import 'package:acter/common/toolkit/errors/util.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:flutter/material.dart';
