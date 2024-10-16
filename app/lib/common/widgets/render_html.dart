@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class RenderHtml extends ConsumerWidget {
   final String text;
   final TextStyle? defaultTextStyle;
+
   const RenderHtml({
     super.key,
     required this.text,

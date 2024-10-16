@@ -69,7 +69,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
         ),
       ],
     ).animate(
-      CurvedAnimation(parent: controller, curve: const Interval(0, 1)),
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0, 1),
+      ),
     );
 
     smallHeartOpacity = TweenSequence(
@@ -88,7 +91,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
         ),
       ],
     ).animate(
-      CurvedAnimation(parent: controller, curve: const Interval(0, 0.7)),
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0, 0.7),
+      ),
     );
 
     sizedBoxsize = TweenSequence(
@@ -107,7 +113,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
         ),
       ],
     ).animate(
-      CurvedAnimation(parent: controller, curve: const Interval(0, 0.7)),
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0, 0.7),
+      ),
     );
   }
 
@@ -148,9 +157,7 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                               fill: 1.0,
                               color: Theme.of(context).colorScheme.error,
                             )
-                          : const Icon(
-                              Atlas.heart,
-                            ),
+                          : const Icon(Atlas.heart),
                       color: widget.isLiked
                           ? Theme.of(context).colorScheme.tertiary
                           : widget.color,
@@ -182,7 +189,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
             );
           },
         ),
-        Text(widget.likeCount.toString(), style: widget.style),
+        Text(
+          widget.likeCount.toString(),
+          style: widget.style,
+        ),
       ],
     );
   }

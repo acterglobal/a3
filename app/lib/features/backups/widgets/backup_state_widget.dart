@@ -140,7 +140,9 @@ class BackupStateWidget extends ConsumerWidget {
       child: Column(
         children: [
           const LinearProgressIndicator(semanticsLabel: 'in progress'),
-          ListTile(title: Text(currentState.toString())),
+          ListTile(
+            title: Text(currentState.toString()),
+          ),
         ],
       ),
     );

@@ -118,8 +118,7 @@ class _DraggableCategoriesListState
       categoryList[categoryIndex].entries.length,
       (entryItemIndex) => DragAndDropItem(
         child: RoomCard(
-          roomId:
-              categoryList[categoryIndex].entries[entryItemIndex].toString(),
+          roomId: categoryList[categoryIndex].entries[entryItemIndex],
           margin: const EdgeInsets.symmetric(vertical: 6),
           leading: Icon(PhosphorIcons.dotsSixVertical()),
         ),

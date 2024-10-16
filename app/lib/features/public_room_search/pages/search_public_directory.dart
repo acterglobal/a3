@@ -66,7 +66,7 @@ class SearchPublicDirectory extends ConsumerWidget {
     await joinRoom(
       context,
       ref,
-      lang.tryingToJoin(spaceSearchResult.name().toString()),
+      lang.tryingToJoin(spaceSearchResult.name() ?? ''),
       roomId,
       searchServer,
       (roomId) => context.pushNamed(

@@ -65,7 +65,7 @@ class SuperInvitesPage extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final token = tokens[index];
                     final acceptedCount = lang.usedTimes(token.acceptedCount());
-                    final tokenStr = token.token().toString();
+                    final tokenStr = token.token();
                     final firstRoom =
                         asDartStringList(token.rooms()).firstOrNull;
                     return Card(
