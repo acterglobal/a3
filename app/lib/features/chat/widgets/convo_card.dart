@@ -84,7 +84,9 @@ class ConvoCard extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                 subtitle: buildSubtitle(context, constraints),
-                trailing: constraints.maxWidth < 300 ? null : trailing,
+                trailing: constraints.maxWidth < 300
+                    ? null
+                    : trailing ?? _TrailingWidget(roomId: roomId),
               ),
             ),
           ],
