@@ -560,10 +560,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               .width(image.width)
               .height(image.height);
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            final selected = inputState.selectedMessage;
-            if (selected == null) throw 'selected msg not available';
-            final remoteId = selected.remoteId;
-            if (remoteId == null) throw 'remote id of msg not available';
+            final remoteId = inputState.selectedMessage?.remoteId;
+            if (remoteId == null) throw 'remote id of sel msg not available';
             await stream.replyMessage(remoteId, imageDraft);
           } else {
             await stream.sendMessage(imageDraft);
@@ -573,10 +571,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           final audioDraft =
               client.audioDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            final selected = inputState.selectedMessage;
-            if (selected == null) throw 'selected msg not available';
-            final remoteId = selected.remoteId;
-            if (remoteId == null) throw 'remote id of msg not available';
+            final remoteId = inputState.selectedMessage?.remoteId;
+            if (remoteId == null) throw 'remote id of sel msg not available';
             await stream.replyMessage(remoteId, audioDraft);
           } else {
             await stream.sendMessage(audioDraft);
@@ -586,10 +582,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           final videoDraft =
               client.videoDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            final selected = inputState.selectedMessage;
-            if (selected == null) throw 'selected msg not available';
-            final remoteId = selected.remoteId;
-            if (remoteId == null) throw 'remote id of msg not available';
+            final remoteId = inputState.selectedMessage?.remoteId;
+            if (remoteId == null) throw 'remote id of sel msg not available';
             await stream.replyMessage(remoteId, videoDraft);
           } else {
             await stream.sendMessage(videoDraft);
@@ -598,10 +592,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           final fileDraft =
               client.fileDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            final selected = inputState.selectedMessage;
-            if (selected == null) throw 'selected msg not available';
-            final remoteId = selected.remoteId;
-            if (remoteId == null) throw 'remote id of msg not available';
+            final remoteId = inputState.selectedMessage?.remoteId;
+            if (remoteId == null) throw 'remote id of sel msg not available';
             await stream.replyMessage(remoteId, fileDraft);
           } else {
             await stream.sendMessage(fileDraft);
@@ -724,16 +716,12 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           await ref.read(timelineStreamProvider(widget.roomId).future);
 
       if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-        final selected = inputState.selectedMessage;
-        if (selected == null) throw 'selected msg not available';
-        final remoteId = selected.remoteId;
-        if (remoteId == null) throw 'remote id of msg not available';
+        final remoteId = inputState.selectedMessage?.remoteId;
+        if (remoteId == null) throw 'remote id of sel msg not available';
         await stream.replyMessage(remoteId, draft);
       } else if (inputState.selectedMessageState == SelectedMessageState.edit) {
-        final selected = inputState.selectedMessage;
-        if (selected == null) throw 'selected msg not available';
-        final remoteId = selected.remoteId;
-        if (remoteId == null) throw 'remote id of msg not available';
+        final remoteId = inputState.selectedMessage?.remoteId;
+        if (remoteId == null) throw 'remote id of sel msg not available';
         await stream.editMessage(remoteId, draft);
       } else {
         await stream.sendMessage(draft);
