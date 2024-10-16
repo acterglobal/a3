@@ -16,7 +16,9 @@ final useLocal = Platform.isAndroid ||
 final usePush = Platform.isAndroid || Platform.isIOS;
 
 Future<int> notificationsCount() async {
-  return (await flutterLocalNotificationsPlugin.getActiveNotifications()).length;
+  if (Platform.isLinux) return 0; // not supported
+  return (await flutterLocalNotificationsPlugin.getActiveNotifications())
+      .length;
 }
 
 Future<void> removeNotificationsForRoom(String roomId) async {
