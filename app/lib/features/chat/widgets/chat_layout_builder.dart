@@ -5,13 +5,17 @@ import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+typedef RoomListWidgetBuilder = Widget Function(RoomSelectAction);
+
 class ChatLayoutBuilder extends StatelessWidget {
   final Widget? centerChild;
   final Widget? expandedChild;
+  final RoomListWidgetBuilder? roomListWidgetBuilder;
 
-  const ChatLayoutBuilder({
+  ChatLayoutBuilder({
     this.centerChild,
     this.expandedChild,
+    this.roomListWidgetBuilder,
     super.key,
   });
 
@@ -19,13 +23,15 @@ class ChatLayoutBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     final expanded = expandedChild;
     final center = centerChild;
+    final rlwBuilder =
+        roomListWidgetBuilder ?? (s) => RoomsListWidget(onSelected: s);
     if (!context.isLargeScreen) {
       // we only have space to show the deepest child:
       if (expanded != null) return expanded;
       if (center != null) return center;
       // no children, show the room list
-      return RoomsListWidget(
-        onSelected: (String roomId) => context.pushNamed(
+      return rlwBuilder(
+        (String roomId) => context.pushNamed(
           Routes.chatroom.name,
           pathParameters: {'roomId': roomId},
         ),
@@ -38,8 +44,8 @@ class ChatLayoutBuilder extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Flexible(
-          child: RoomsListWidget(
-            onSelected: (String roomId) => pushReplacementRouting
+          child: rlwBuilder(
+            (String roomId) => pushReplacementRouting
                 ? context.pushReplacementNamed(
                     // we switch without "push"
                     Routes.chatroom.name,
