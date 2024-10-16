@@ -12,7 +12,7 @@ class ChatLayoutBuilder extends StatelessWidget {
   final Widget? expandedChild;
   final RoomListWidgetBuilder? roomListWidgetBuilder;
 
-  ChatLayoutBuilder({
+  const ChatLayoutBuilder({
     this.centerChild,
     this.expandedChild,
     this.roomListWidgetBuilder,

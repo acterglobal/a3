@@ -16,6 +16,7 @@ class RoomsListNGWidget extends RoomsListWidget {
 }
 
 class _RoomsListNGWidgetState extends RoomsListWidgetState {
+  @override
   Widget roomListTitle(BuildContext context) {
     final lang = L10n.of(context);
     String? title;
