@@ -243,9 +243,9 @@ class SidebarWidget extends ConsumerWidget {
           style: Theme.of(context).textTheme.labelSmall,
           softWrap: false,
         ),
-        onTap: () => context.pushNamed(Routes.quickJump.name),
+        onTap: () => goToBranch(ShellBranch.quickSearchShell),
         tutorialGlobalKey: jumpToKey,
-        indicator: const _SidebarItemIndicator(routes: [Routes.quickJump]),
+        indicator: const _SidebarItemIndicator(routes: [Routes.quickSearch]),
       ),
       _SidebarItem(
         icon: const Icon(
@@ -263,7 +263,7 @@ class SidebarWidget extends ConsumerWidget {
         indicator: const _SidebarItemIndicator(
           reversed: true,
           routes: [
-            Routes.quickJump,
+            Routes.quickSearch,
             Routes.chat,
             Routes.activities,
           ],
