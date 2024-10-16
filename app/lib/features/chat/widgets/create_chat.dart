@@ -600,9 +600,12 @@ class _CreateRoomFormWidgetConsumerState
   Future<void> _handleAvatarUpload() async {
     FilePickerResult? result = await pickAvatar(context: context);
     if (result != null) {
-      result.files.single.path.let((path) {
-        ref.read(_avatarProvider.notifier).update((state) => path);
-      });
+      final filePath = result.files.single.path;
+      if (filePath == null) {
+        _log.severe('FilePickerResult had an empty path', result);
+        return;
+      }
+      ref.read(_avatarProvider.notifier).update((state) => filePath);
     } else {
       // user cancelled the picker
     }

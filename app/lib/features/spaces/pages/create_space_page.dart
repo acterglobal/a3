@@ -17,6 +17,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::spaces::create_space');
 
 // user selected visibility provider
 final _selectedVisibilityProvider =
@@ -148,12 +151,15 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
   }
 
-  void _handleAvatarUpload() async {
+  Future<void> _handleAvatarUpload() async {
     FilePickerResult? result = await pickAvatar(context: context);
     if (result != null) {
-      setState(() {
-        spaceAvatar = File(result.files.single.path!);
-      });
+      final filePath = result.files.single.path;
+      if (filePath == null) {
+        _log.severe('FilePickerResult had an empty path', result);
+        return;
+      }
+      setState(() => spaceAvatar = File(filePath));
     } else {
       // user cancelled the picker
     }
