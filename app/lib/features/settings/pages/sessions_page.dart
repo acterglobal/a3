@@ -17,20 +17,21 @@ class SessionsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final sessionsLoader = ref.watch(unknownSessionsProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: !context.isLargeScreen,
-          title: Text(L10n.of(context).sessions),
+          title: Text(lang.sessions),
           centerTitle: true,
           actions: [
             IconButton(
               icon: const Icon(Atlas.arrows_rotating_right_thin),
               iconSize: 28,
               color: Theme.of(context).colorScheme.surface,
-              onPressed: () async {
+              onPressed: () {
                 ref.invalidate(allSessionsProvider);
               },
             ),
@@ -41,7 +42,7 @@ class SessionsPage extends ConsumerWidget {
           error: (e, s) {
             _log.severe('Failed to load unknown sessions', e, s);
             return Center(
-              child: Text(L10n.of(context).couldNotLoadAllSessions),
+              child: Text(lang.couldNotLoadAllSessions),
             );
           },
           loading: () => const Center(
@@ -53,6 +54,7 @@ class SessionsPage extends ConsumerWidget {
   }
 
   Widget buildSessions(BuildContext context, List<DeviceRecord> sessions) {
+    final lang = L10n.of(context);
     final unverifiedSessions = sessions.where((s) => !s.isVerified()).toList();
 
     if (unverifiedSessions.isEmpty) {
@@ -65,15 +67,15 @@ class SessionsPage extends ConsumerWidget {
                 vertical: 15,
               ),
               child: Text(
-                L10n.of(context).verifiedSessionsDescription,
+                lang.verifiedSessionsDescription,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
           ),
           SliverList.builder(
-            itemBuilder: (context, index) => SessionCard(
-              deviceRecord: sessions[index],
-            ),
+            itemBuilder: (context, index) {
+              return SessionCard(deviceRecord: sessions[index]);
+            },
             itemCount: sessions.length,
           ),
         ],
@@ -97,7 +99,7 @@ class SessionsPage extends ConsumerWidget {
                 ),
               ),
               Text(
-                L10n.of(context).unverifiedSessions,
+                lang.unverifiedSessions,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
             ],
@@ -111,15 +113,15 @@ class SessionsPage extends ConsumerWidget {
             vertical: 15,
           ),
           child: Text(
-            L10n.of(context).unverifiedSessionsDescription,
+            lang.unverifiedSessionsDescription,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
       ),
       SliverList.builder(
-        itemBuilder: (context, index) => SessionCard(
-          deviceRecord: unverifiedSessions[index],
-        ),
+        itemBuilder: (context, index) {
+          return SessionCard(deviceRecord: unverifiedSessions[index]);
+        },
         itemCount: unverifiedSessions.length,
       ),
     ];
@@ -135,15 +137,15 @@ class SessionsPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              '${L10n.of(context).verified} ${L10n.of(context).sessions}',
+              '${lang.verified} ${lang.sessions}',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
         ),
         SliverList.builder(
-          itemBuilder: (context, index) => SessionCard(
-            deviceRecord: verifiedSessions[index],
-          ),
+          itemBuilder: (context, index) {
+            return SessionCard(deviceRecord: verifiedSessions[index]);
+          },
           itemCount: verifiedSessions.length,
         ),
       ]);

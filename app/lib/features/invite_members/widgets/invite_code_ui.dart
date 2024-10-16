@@ -19,7 +19,11 @@ final _log = Logger('a3::invite::invite_code');
 
 class InviteCodeUI extends ConsumerStatefulWidget {
   final String roomId;
-  const InviteCodeUI({super.key, required this.roomId});
+
+  const InviteCodeUI({
+    super.key,
+    required this.roomId,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _InviteCodeUIState();
@@ -66,11 +70,12 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     final inviteCode = selectedToken?.token();
     if (inviteCode == null) {
       return ActerPrimaryActionButton(
         onPressed: () => generateNewInviteCode(context, ref),
-        child: Text(L10n.of(context).generateInviteCode),
+        child: Text(lang.generateInviteCode),
       );
     }
 
@@ -91,7 +96,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
                     ),
                     if (otherRoomsCount > 0)
                       Text(
-                        L10n.of(context).moreRooms(otherRoomsCount),
+                        lang.moreRooms(otherRoomsCount),
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
@@ -99,13 +104,11 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
                 ),
               ),
               IconButton(
-                onPressed: () {
-                  Clipboard.setData(
+                onPressed: () async {
+                  await Clipboard.setData(
                     ClipboardData(text: inviteCode),
                   );
-                  EasyLoading.showToast(
-                    L10n.of(context).inviteCopiedToClipboard,
-                  );
+                  EasyLoading.showToast(lang.inviteCopiedToClipboard);
                 },
                 icon: const Icon(Icons.copy),
               ),
@@ -130,9 +133,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
                 extra: token,
               );
             },
-            child: Text(
-              L10n.of(context).manage,
-            ),
+            child: Text(lang.manage),
           ),
         ),
         const SizedBox(height: 10),
@@ -144,7 +145,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
               'roomId': widget.roomId,
             },
           ),
-          child: Text(L10n.of(context).share),
+          child: Text(lang.share),
         ),
       ],
     );
@@ -161,6 +162,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
       isDismissible: true,
       builder: (context) => Consumer(
         builder: (context, ref, child) {
+          final lang = L10n.of(context);
           final inviteCodes =
               ref.watch(superInvitesForRoom(widget.roomId)).valueOrNull ?? [];
           return Column(
@@ -173,14 +175,14 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(L10n.of(context).select),
+                      child: Text(lang.select),
                     ),
                     OutlinedButton.icon(
                       icon: const Icon(Icons.close),
                       onPressed: () {
                         Navigator.pop(context, null);
                       },
-                      label: Text(L10n.of(context).close),
+                      label: Text(lang.close),
                     ),
                   ],
                 ),
@@ -195,12 +197,9 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
                         (selectedToken?.rooms().length ?? 1) - 1;
                     return ListTile(
                       title: Text(invite.token()),
-                      subtitle:
-                          Text(L10n.of(context).moreRooms(otherRoomsCount)),
+                      subtitle: Text(lang.moreRooms(otherRoomsCount)),
                       onTap: () {
-                        setState(() {
-                          selectedToken = invite;
-                        });
+                        setState(() => selectedToken = invite);
                         Navigator.pop(context, null);
                       },
                     );
@@ -218,8 +217,9 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
     BuildContext context,
     WidgetRef ref,
   ) async {
+    final lang = L10n.of(context);
     try {
-      EasyLoading.show(status: L10n.of(context).generateInviteCode);
+      EasyLoading.show(status: lang.generateInviteCode);
       final displayName =
           await ref.read(roomDisplayNameProvider(widget.roomId).future);
       String prefix =
@@ -257,7 +257,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).activateInviteCodeFailed(e),
+        lang.activateInviteCodeFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

@@ -39,11 +39,12 @@ class SelectSpaceFormField extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentSpaceId = ref.watch(selectedSpaceIdProvider);
+    final lang = L10n.of(context);
 
     final emptyButton = OutlinedButton(
       key: openKey,
       onPressed: () => selectSpace(context, ref),
-      child: Text(emptyText ?? L10n.of(context).pleaseSelectSpace),
+      child: Text(emptyText ?? lang.pleaseSelectSpace),
     );
 
     return FormField(
@@ -56,7 +57,7 @@ class SelectSpaceFormField extends ConsumerWidget {
                 children: [
                   if (!useCompatView)
                     Text(
-                      title ?? L10n.of(context).space,
+                      title ?? lang.space,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   Consumer(
@@ -89,7 +90,7 @@ class SelectSpaceFormField extends ConsumerWidget {
       validator: (val) =>
           !mandatory || ref.read(selectedSpaceIdProvider) != null
               ? null
-              : L10n.of(context).youMustSelectSpace,
+              : lang.youMustSelectSpace,
     );
   }
 

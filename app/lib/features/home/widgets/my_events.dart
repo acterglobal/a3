@@ -26,14 +26,15 @@ class MyEventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     //Get my events data
     final calEventsLoader = switch (eventFilters) {
       EventFilters.ongoing => ref.watch(myOngoingEventListProvider(null)),
       _ => ref.watch(myUpcomingEventListProvider(null)),
     };
     final sectionTitle = switch (eventFilters) {
-      EventFilters.ongoing => L10n.of(context).happeningNow,
-      _ => L10n.of(context).myUpcomingEvents,
+      EventFilters.ongoing => lang.happeningNow,
+      _ => lang.myUpcomingEvents,
     };
 
     return calEventsLoader.when(
@@ -49,7 +50,7 @@ class MyEventsSection extends ConsumerWidget {
       },
       error: (e, s) {
         _log.severe('Failed to load cal events', e, s);
-        return Text(L10n.of(context).loadingEventsFailed(e));
+        return Text(lang.loadingEventsFailed(e));
       },
       loading: () => const EventListSkeleton(),
     );

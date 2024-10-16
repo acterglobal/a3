@@ -58,6 +58,7 @@ class _ReportContentWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final TextEditingController textController = TextEditingController();
+    final lang = L10n.of(context);
     return DefaultDialog(
       title: Align(
         alignment: Alignment.topLeft,
@@ -83,7 +84,7 @@ class _ReportContentWidget extends ConsumerWidget {
             padding: const EdgeInsets.all(8.0),
             child: InputTextField(
               controller: textController,
-              hintText: L10n.of(context).reason,
+              hintText: lang.reason,
               textInputType: TextInputType.multiline,
               maxLines: 5,
             ),
@@ -93,11 +94,11 @@ class _ReportContentWidget extends ConsumerWidget {
               return CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
                 title: Text(
-                  L10n.of(context).blockUserOptional,
+                  lang.blockUserOptional,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 subtitle: Text(
-                  L10n.of(context).markToHideAllCurrentAndFutureContent,
+                  lang.markToHideAllCurrentAndFutureContent,
                   style: Theme.of(context).textTheme.labelMedium,
                 ),
                 value: ref.watch(_ignoreUserProvider),
@@ -116,11 +117,11 @@ class _ReportContentWidget extends ConsumerWidget {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(L10n.of(context).close),
+          child: Text(lang.close),
         ),
         ActerPrimaryActionButton(
           onPressed: () => reportContent(context, ref, textController.text),
-          child: Text(L10n.of(context).report),
+          child: Text(lang.report),
         ),
       ],
     );
@@ -129,7 +130,8 @@ class _ReportContentWidget extends ConsumerWidget {
   void reportContent(BuildContext context, WidgetRef ref, String reason) async {
     bool res = false;
     final ignoreFlag = ref.read(_ignoreUserProvider);
-    EasyLoading.show(status: L10n.of(context).sendingReport);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.sendingReport);
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
@@ -148,7 +150,7 @@ class _ReportContentWidget extends ConsumerWidget {
         res = await room.reportContent(eventId, null, reason);
         _log.info('Content from user:{$senderId flagged $res reason:$reason}');
         if (ignoreFlag) {
-          var member = await room.getMember(senderId);
+          final member = await room.getMember(senderId);
           bool ignore = await member.ignore();
           _log.info('User added to ignore list:$senderId:$ignore');
         }
@@ -159,12 +161,12 @@ class _ReportContentWidget extends ConsumerWidget {
         return;
       }
       if (res) {
-        EasyLoading.showToast(L10n.of(context).reportSent);
+        EasyLoading.showToast(lang.reportSent);
         Navigator.pop(context);
       } else {
         _log.severe('Failed to report content');
         EasyLoading.showError(
-          L10n.of(context).reportSendingFailed,
+          lang.reportSendingFailed,
           duration: const Duration(seconds: 3),
         );
       }
@@ -175,7 +177,7 @@ class _ReportContentWidget extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).reportSendingFailedDueTo(e),
+        lang.reportSendingFailedDueTo(e),
         duration: const Duration(seconds: 3),
       );
     }

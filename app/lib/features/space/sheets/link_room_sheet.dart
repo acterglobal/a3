@@ -30,12 +30,12 @@ enum ChildRoomType {
 }
 
 class LinkRoomPage extends ConsumerStatefulWidget {
+  static const confirmJoinRuleUpdateKey = Key('link-room-confirm-join-rule');
+  static const denyJoinRuleUpdateKey = Key('link-room-deny-join-rule');
+
   final String parentSpaceId;
   final String pageTitle;
   final ChildRoomType childRoomType;
-
-  static const confirmJoinRuleUpdateKey = Key('link-room-confirm-join-rule');
-  static const denyJoinRuleUpdateKey = Key('link-room-deny-join-rule');
 
   const LinkRoomPage({
     super.key,
@@ -112,7 +112,8 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   Widget searchUI() {
     return Search(
       onChanged: (value) {
-        ref.read(roomSearchValueProvider.notifier).update((state) => value);
+        final notifier = ref.read(roomSearchValueProvider.notifier);
+        notifier.update((state) => value);
       },
       searchController: searchTextEditingController,
     );
@@ -169,14 +170,15 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //Show chat list based on the search term
   Widget searchedChatsList() {
+    final lang = L10n.of(context);
     final searchedList = ref.watch(roomSearchedChatsProvider);
     return searchedList.when(
       data: (chats) => chats.isEmpty
-          ? Text(L10n.of(context).noChatsFoundMatchingYourSearchTerm)
+          ? Text(lang.noChatsFoundMatchingYourSearchTerm)
           : chatListUI(chats),
       error: (e, s) {
         _log.severe('Failed to search chats', e, s);
-        return errorUI(L10n.of(context).searchingFailed(e));
+        return errorUI(lang.searchingFailed(e));
       },
       loading: () => loadingUI(),
     );
@@ -213,20 +215,20 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       return searchedSpaceList();
     }
 
-    final spaces =
-        ref.watch(spacesProvider).map((space) => space.getRoomIdStr()).toList();
-    return spaceListUI(spaces);
+    final spaces = ref.watch(spacesProvider);
+    return spaceListUI(spaces.map((space) => space.getRoomIdStr()).toList());
   }
 
 //Show space list based on the search term
   Widget searchedSpaceList() {
+    final lang = L10n.of(context);
     final searchedSpaces = ref.watch(searchedSpacesProvider);
     return searchedSpaces.when(
       data: (spaces) {
         if (spaces.isEmpty) {
           return Center(
             heightFactor: 10,
-            child: Text(L10n.of(context).noChatsFoundMatchingYourSearchTerm),
+            child: Text(lang.noChatsFoundMatchingYourSearchTerm),
           );
         }
         return spaceListUI(spaces);
@@ -234,7 +236,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       loading: () => loadingUI(),
       error: (e, s) {
         _log.severe('Failed to search spaces', e, s);
-        return errorUI(L10n.of(context).searchingFailed(e));
+        return errorUI(lang.searchingFailed(e));
       },
     );
   }
@@ -246,6 +248,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       padding: const EdgeInsets.all(8),
       itemCount: spacesList.length,
       itemBuilder: (context, index) {
+        final lang = L10n.of(context);
         final roomId = spacesList[index];
         final isSubspace = childRoomsIds.contains(roomId);
         final isLinked = widget.childRoomType == ChildRoomType.space
@@ -253,9 +256,9 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
             : recommendedChildSpaceIds.contains(roomId);
 
         final subtitle = isSubspace
-            ? Text(L10n.of(context).subspace)
+            ? Text(lang.subspace)
             : recommendedChildSpaceIds.contains(roomId)
-                ? Text(L10n.of(context).recommendedSpace)
+                ? Text(lang.recommendedSpace)
                 : null;
 
         return BriefRoomEntry(
@@ -292,13 +295,14 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   }
 
   Widget roomTrailing(String roomId, bool isLinked, bool canLink) {
+    final lang = L10n.of(context);
     return SizedBox(
       width: 100,
       child: isLinked
           ? OutlinedButton(
               onPressed: () => onTapUnlinkChildRoom(roomId),
               key: Key('room-list-unlink-$roomId'),
-              child: Text(L10n.of(context).unlink),
+              child: Text(lang.unlink),
             )
           : canLink
               ? OutlinedButton(
@@ -309,7 +313,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
                       color: Theme.of(context).colorScheme.success,
                     ),
                   ),
-                  child: Text(L10n.of(context).link),
+                  child: Text(lang.link),
                 )
               : null,
     );
@@ -320,37 +324,33 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     Room room,
     String parentSpaceId,
   ) async {
+    final lang = L10n.of(context);
     final joinRule = room.joinRuleStr();
     List<String> currentRooms = [];
     bool parentCanSee = joinRule == 'public';
     String newRule = 'restricted';
     if (joinRule == 'restricted' || joinRule == 'knock_restricted') {
-      currentRooms =
-          room.restrictedRoomIdsStr().map((t) => t.toString()).toList();
+      currentRooms = asDartStringList(room.restrictedRoomIdsStr());
       parentCanSee = currentRooms.contains(parentSpaceId);
       newRule = joinRule;
     }
 
     if (!parentCanSee) {
       final spaceAvatarInfo = ref.read(roomAvatarInfoProvider(parentSpaceId));
-      if (!mounted) return;
       final parentSpaceName =
-          // ignore: use_build_context_synchronously
-          spaceAvatarInfo.displayName ?? L10n.of(context).theParentSpace;
+          spaceAvatarInfo.displayName ?? lang.theParentSpace;
       final roomName =
           // ignore: use_build_context_synchronously
-          spaceAvatarInfo.displayName ?? L10n.of(context).theSelectedRooms;
+          spaceAvatarInfo.displayName ?? lang.theSelectedRooms;
       bool shouldChange = await showDialog(
-        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text(L10n.of(context).notVisible),
+            title: Text(lang.notVisible),
             content: Wrap(
               children: [
                 Text(
-                  L10n.of(context)
-                      .theCurrentJoinRulesOfSpace(roomName, parentSpaceName),
+                  lang.theCurrentJoinRulesOfSpace(roomName, parentSpaceName),
                 ),
               ],
             ),
@@ -358,14 +358,14 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
             actions: <Widget>[
               OutlinedButton(
                 key: LinkRoomPage.denyJoinRuleUpdateKey,
-                child: Text(L10n.of(context).noThanks),
+                child: Text(lang.noThanks),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
               ),
               ActerPrimaryActionButton(
                 key: LinkRoomPage.confirmJoinRuleUpdateKey,
-                child: Text(L10n.of(context).yesPleaseUpdate),
+                child: Text(lang.yesPleaseUpdate),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
@@ -396,16 +396,16 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
     //Fetch selected parent space data and add given roomId as child
     final space = await ref.read(spaceProvider(spaceId).future);
-    space.addChildRoom(roomId, false);
+    await space.addChildRoom(roomId, false);
 
     //Make subspace
     if (widget.childRoomType == ChildRoomType.space) {
       //Fetch selected room data and add given parentSpaceId as parent
       final room = await ref.read(maybeRoomProvider(roomId).future);
       if (room != null) {
-        room.addParentRoom(spaceId, true);
-        // ignore: use_build_context_synchronously
-        checkJoinRule(context, room, spaceId);
+        await room.addParentRoom(spaceId, true);
+        if (!context.mounted) return;
+        await checkJoinRule(context, room, spaceId);
       }
     }
 

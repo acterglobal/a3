@@ -1,7 +1,7 @@
 import 'package:acter/features/search/widgets/quick_jump.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const Map<String, String> empty = {};
 
@@ -13,7 +13,9 @@ class QuickjumpDialog extends ConsumerWidget {
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 400),
       child: Scaffold(
-        appBar: AppBar(title: Text(L10n.of(context).jumpTo)),
+        appBar: AppBar(
+          title: Text(L10n.of(context).jumpTo),
+        ),
         body: const QuickJump(
           expand: false,
           popBeforeRoute: true,

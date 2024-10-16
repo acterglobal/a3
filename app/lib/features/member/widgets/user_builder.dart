@@ -52,6 +52,7 @@ bool isJoined(String userId, List<String> joined) {
 
 class _RoomName extends ConsumerWidget {
   final String roomId;
+
   const _RoomName({required this.roomId});
 
   @override
@@ -61,9 +62,7 @@ class _RoomName extends ConsumerWidget {
     if (isDirectChat) {
       return Text(
         L10n.of(context).dmChat,
-        style: const TextStyle(
-          fontStyle: FontStyle.italic,
-        ),
+        style: const TextStyle(fontStyle: FontStyle.italic),
       );
     }
     return Text(
@@ -138,27 +137,28 @@ class UserBuilder extends ConsumerWidget {
         userProfile.let((p0) => asDartStringList(p0.sharedRooms())) ?? [];
     if (sharedRooms.isEmpty) return tile;
 
+    final lang = L10n.of(context);
     const style = TextStyle(fontStyle: FontStyle.italic);
 
     Widget sharedRoomsRow = switch (sharedRooms.length) {
       1 => Wrap(
           children: [
             Text(
-              L10n.of(context).youAreBothIn,
+              lang.youAreBothIn,
               style: style,
-            ), //L10n.of(context).youAreBothIn),
+            ), //lang.youAreBothIn),
             _RoomName(roomId: sharedRooms[0]),
           ],
         ),
       2 => Wrap(
           children: [
             Text(
-              L10n.of(context).youAreBothIn,
+              lang.youAreBothIn,
               style: style,
-            ), //L10n.of(context).youAreBothIn),
+            ), //lang.youAreBothIn),
             _RoomName(roomId: sharedRooms[0]),
             Text(
-              L10n.of(context).andSeparator,
+              lang.andSeparator,
               style: style,
             ),
             _RoomName(roomId: sharedRooms[1]),
@@ -167,9 +167,9 @@ class UserBuilder extends ConsumerWidget {
       3 => Wrap(
           children: [
             Text(
-              L10n.of(context).youAreBothIn,
+              lang.youAreBothIn,
               style: style,
-            ), //L10n.of(context).youAreBothIn),
+            ), //lang.youAreBothIn),
             _RoomName(roomId: sharedRooms[0]),
             const Text(
               ', ',
@@ -177,7 +177,7 @@ class UserBuilder extends ConsumerWidget {
             ),
             _RoomName(roomId: sharedRooms[1]),
             Text(
-              L10n.of(context).andSeparator,
+              lang.andSeparator,
               style: style,
             ),
             _RoomName(roomId: sharedRooms[2]),
@@ -186,9 +186,9 @@ class UserBuilder extends ConsumerWidget {
       _ => Wrap(
           children: [
             Text(
-              L10n.of(context).youAreBothIn,
+              lang.youAreBothIn,
               style: style,
-            ), //L10n.of(context).youAreBothIn),
+            ), //lang.youAreBothIn),
             _RoomName(roomId: sharedRooms[0]),
             const Text(
               ', ',
@@ -196,7 +196,7 @@ class UserBuilder extends ConsumerWidget {
             ),
             _RoomName(roomId: sharedRooms[1]),
             Text(
-              L10n.of(context).andNMore(sharedRooms.length - 2),
+              lang.andNMore(sharedRooms.length - 2),
               style: style,
             ),
           ],
@@ -208,7 +208,10 @@ class UserBuilder extends ConsumerWidget {
       children: [
         tile,
         Padding(
-          padding: const EdgeInsets.only(left: 25, bottom: 10),
+          padding: const EdgeInsets.only(
+            left: 25,
+            bottom: 10,
+          ),
           child: sharedRoomsRow,
         ),
       ],
@@ -244,9 +247,10 @@ class UserStateButton extends ConsumerWidget {
     required this.userId,
   });
 
-  void _handleInvite(BuildContext context) async {
+  Future<void> _handleInvite(BuildContext context) async {
+    final lang = L10n.of(context);
     EasyLoading.show(
-      status: L10n.of(context).invitingLoading(userId),
+      status: lang.invitingLoading(userId),
       dismissOnTap: false,
     );
     try {
@@ -254,13 +258,14 @@ class UserStateButton extends ConsumerWidget {
       EasyLoading.dismiss();
     } catch (e) {
       // ignore: use_build_context_synchronously
-      EasyLoading.showToast(L10n.of(context).invitingError(e, userId));
+      EasyLoading.showToast(lang.invitingError(e, userId));
     }
   }
 
-  void _cancelInvite(BuildContext context, WidgetRef ref) async {
+  Future<void> _cancelInvite(BuildContext context, WidgetRef ref) async {
+    final lang = L10n.of(context);
     EasyLoading.show(
-      status: L10n.of(context).cancelInviteLoading(userId),
+      status: lang.cancelInviteLoading(userId),
       dismissOnTap: false,
     );
     try {
@@ -273,12 +278,13 @@ class UserStateButton extends ConsumerWidget {
       EasyLoading.dismiss();
     } catch (e) {
       // ignore: use_build_context_synchronously
-      EasyLoading.showToast(L10n.of(context).cancelInviteError(e, userId));
+      EasyLoading.showToast(lang.cancelInviteError(e, userId));
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final roomId = room.roomIdStr();
     final invited =
         ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
@@ -287,14 +293,14 @@ class UserStateButton extends ConsumerWidget {
       return InkWell(
         onTap: () => _cancelInvite(context, ref),
         child: Chip(
-          label: Text(L10n.of(context).revoke),
+          label: Text(lang.revoke),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }
     if (isJoined(userId, joined)) {
       return Chip(
-        label: Text(L10n.of(context).joined),
+        label: Text(lang.joined),
         backgroundColor: Theme.of(context).colorScheme.success,
       );
     }
@@ -302,7 +308,7 @@ class UserStateButton extends ConsumerWidget {
       onTap: () => _handleInvite(context),
       child: Chip(
         avatar: const Icon(Atlas.paper_airplane_thin),
-        label: Text(L10n.of(context).invite),
+        label: Text(lang.invite),
       ),
     );
   }

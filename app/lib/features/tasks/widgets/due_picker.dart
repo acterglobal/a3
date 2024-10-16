@@ -8,7 +8,10 @@ class PickedDue {
   final DateTime due;
   final bool includeTime;
 
-  const PickedDue(this.due, this.includeTime);
+  const PickedDue(
+    this.due,
+    this.includeTime,
+  );
 }
 
 const quickSelectToday = Key('due-action-today');
@@ -24,6 +27,7 @@ class _DueQuickPickerDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
@@ -34,7 +38,7 @@ class _DueQuickPickerDrawer extends StatelessWidget {
           title(context),
           MenuItemWidget(
             key: quickSelectToday,
-            title: L10n.of(context).today,
+            title: lang.today,
             visualDensity: VisualDensity.compact,
             iconData: Icons.today,
             withMenu: false,
@@ -42,7 +46,7 @@ class _DueQuickPickerDrawer extends StatelessWidget {
           ),
           MenuItemWidget(
             key: quickSelectTomorrow,
-            title: L10n.of(context).tomorrow,
+            title: lang.tomorrow,
             visualDensity: VisualDensity.compact,
             iconData: Icons.calendar_today,
             withMenu: false,
@@ -51,7 +55,7 @@ class _DueQuickPickerDrawer extends StatelessWidget {
           ...renderPostponing(context),
           const SizedBox(height: 10),
           MenuItemWidget(
-            title: L10n.of(context).selectCustomDate,
+            title: lang.selectCustomDate,
             iconData: Icons.calendar_month_outlined,
             withMenu: false,
             onTap: () async {
@@ -76,18 +80,19 @@ class _DueQuickPickerDrawer extends StatelessWidget {
     if (currentDue == null) {
       return [];
     }
+    final lang = L10n.of(context);
     return [
       const SizedBox(height: 10),
       MenuItemWidget(
         visualDensity: VisualDensity.compact,
-        title: L10n.of(context).postpone,
+        title: lang.postpone,
         iconData: Icons.plus_one_rounded,
         withMenu: false,
         onTap: () => _submit(context, currentDue! + const Duration(days: 1)),
       ),
       MenuItemWidget(
         visualDensity: VisualDensity.compact,
-        title: L10n.of(context).postponeN(2),
+        title: lang.postponeN(2),
         iconData: Atlas.plus_thin,
         withMenu: false,
         onTap: () => _submit(context, currentDue! + const Duration(days: 2)),

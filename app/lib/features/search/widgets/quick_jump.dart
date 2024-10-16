@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/icons/tasks_icon.dart';
 import 'package:acter/features/public_room_search/widgets/maybe_direct_room_action_widget.dart';
 import 'package:acter/features/search/model/keys.dart';
@@ -27,8 +28,6 @@ class QuickJump extends ConsumerStatefulWidget {
 }
 
 class _QuickJumpState extends ConsumerState<QuickJump> {
-  final searchTextController = TextEditingController();
-
   List<Widget> primaryButtons(BuildContext context, WidgetRef ref) {
     return [
       Wrap(
@@ -194,34 +193,15 @@ class _QuickJumpState extends ConsumerState<QuickJump> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 15,
-                  ),
-                  child: SearchBar(
-                    controller: searchTextController,
-                    leading: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(Atlas.magnifying_glass),
-                    ),
-                    hintText: L10n.of(context).jumpTo,
-                    trailing: hasSearchTerm
-                        ? [
-                            InkWell(
-                              onTap: () {
-                                searchTextController.clear();
-                                ref.read(searchValueProvider.notifier).state =
-                                    '';
-                              },
-                              child: const Icon(Icons.clear),
-                            ),
-                          ]
-                        : null,
-                    onChanged: (value) {
-                      ref.read(searchValueProvider.notifier).state = value;
-                    },
-                  ),
+                ActerSearchWidget(
+                  initialText: searchValue,
+                  hintText: L10n.of(context).jumpTo,
+                  onChanged: (String value) {
+                    ref.read(searchValueProvider.notifier).state = value;
+                  },
+                  onClear: () {
+                    ref.read(searchValueProvider.notifier).state = '';
+                  },
                 ),
                 ...body,
               ],

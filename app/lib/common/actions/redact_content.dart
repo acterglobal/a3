@@ -69,13 +69,14 @@ class _RedactContentWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return DefaultDialog(
       title: Align(
         alignment: Alignment.topLeft,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            title ?? L10n.of(context).remove,
+            title ?? lang.remove,
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
@@ -83,7 +84,7 @@ class _RedactContentWidget extends ConsumerWidget {
       subtitle: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(
-          description ?? L10n.of(context).removeThisContent,
+          description ?? lang.removeThisContent,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ),
@@ -91,7 +92,7 @@ class _RedactContentWidget extends ConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: InputTextField(
           controller: reasonController,
-          hintText: L10n.of(context).reason,
+          hintText: lang.reason,
           textInputType: TextInputType.multiline,
           maxLines: 5,
         ),
@@ -100,20 +101,21 @@ class _RedactContentWidget extends ConsumerWidget {
         OutlinedButton(
           key: cancelBtnKey,
           onPressed: () => Navigator.pop(context, false),
-          child: Text(L10n.of(context).close),
+          child: Text(lang.close),
         ),
         ActerPrimaryActionButton(
           key: removeBtnKey,
           onPressed: onRemove ??
               () => redactContent(context, ref, reasonController.text),
-          child: Text(L10n.of(context).remove),
+          child: Text(lang.remove),
         ),
       ],
     );
   }
 
   void redactContent(BuildContext context, WidgetRef ref, String reason) async {
-    EasyLoading.show(status: L10n.of(context).removingContent);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.removingContent);
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
@@ -132,7 +134,7 @@ class _RedactContentWidget extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).contentSuccessfullyRemoved);
+      EasyLoading.showToast(lang.contentSuccessfullyRemoved);
       Navigator.pop(context, true);
       onSuccess.let((cb) => cb());
     } catch (e, s) {
@@ -142,7 +144,7 @@ class _RedactContentWidget extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).redactionFailed(e),
+        lang.redactionFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

@@ -184,19 +184,20 @@ class ConvoCard extends ConsumerWidget {
   }
 
   Future<void> onUnmute(BuildContext context, WidgetRef ref) async {
+    final lang = L10n.of(context);
     final room = await ref.read(maybeRoomProvider(roomId).future);
     if (room == null) {
       _log.severe('Room not found: $roomId');
       if (!context.mounted) return;
       EasyLoading.showError(
-        L10n.of(context).roomNotFound,
+        lang.roomNotFound,
         duration: const Duration(seconds: 3),
       );
       return;
     }
     await room.unmute();
     if (!context.mounted) return;
-    EasyLoading.showToast(L10n.of(context).notificationsUnmuted);
+    EasyLoading.showToast(lang.notificationsUnmuted);
     await Future.delayed(const Duration(seconds: 1), () {
       // FIXME: we want to refresh the view but don’t know
       //        when the event was confirmed form sync :(
@@ -227,6 +228,7 @@ class _SubtitleWidget extends ConsumerWidget {
 
     String sender = eventItem.sender();
     String eventType = eventItem.eventType();
+    final lang = L10n.of(context);
     // message event
     switch (eventType) {
       case 'm.call.answer':
@@ -375,7 +377,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                L10n.of(context).thisMessageHasBeenDeleted,
+                lang.thisMessageHasBeenDeleted,
                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.w700,
@@ -401,7 +403,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Expanded(
               child: Text(
-                L10n.of(context).failedToDecryptMessage,
+                lang.failedToDecryptMessage,
                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       fontStyle: FontStyle.italic,
                     ),
@@ -478,25 +480,29 @@ class _SubtitleWidget extends ConsumerWidget {
     List<User> users,
     WidgetRef ref,
   ) {
+    final lang = L10n.of(context);
     final textStyle = Theme.of(context).textTheme.bodySmall!;
     if (users.length == 1) {
-      final userId = users[0].id.toString();
+      final userId = users[0].id;
       final userName = simplifyUserId(userId) ?? userId;
-      return Text(L10n.of(context).typingUser1(userName), style: textStyle);
+      return Text(
+        lang.typingUser1(userName),
+        style: textStyle,
+      );
     } else if (users.length == 2) {
-      final userId1 = users[0].id.toString();
+      final userId1 = users[0].id;
       final userName1 = simplifyUserId(userId1) ?? userId1;
-      final userId2 = users[1].id.toString();
+      final userId2 = users[1].id;
       final userName2 = simplifyUserId(userId2) ?? userId2;
       return Text(
-        L10n.of(context).typingUser2(userName1, userName2),
+        lang.typingUser2(userName1, userName2),
         style: textStyle,
       );
     } else {
-      final userId = users[0].id.toString();
+      final userId = users[0].id;
       final userName = simplifyUserId(userId) ?? userId;
       return Text(
-        L10n.of(context).typingUser3(userName, {users.length - 1}),
+        lang.typingUserN(userName, {users.length - 1}),
         style: textStyle,
       );
     }

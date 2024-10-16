@@ -27,6 +27,7 @@ class QuickActionsBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final features = ref.watch(featuresProvider);
     bool isActive(f) => features.isActive(f);
 
@@ -65,7 +66,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                 size: 18,
               ),
               label: Text(
-                L10n.of(context).boost,
+                lang.boost,
                 style: Theme.of(context).textTheme.labelMedium,
               ),
             ),
@@ -78,7 +79,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                 size: 18,
               ),
               label: Text(
-                L10n.of(context).pin,
+                lang.pin,
                 style: Theme.of(context).textTheme.labelMedium,
               ),
             ),
@@ -86,9 +87,12 @@ class QuickActionsBuilder extends ConsumerWidget {
             OutlinedButton.icon(
               key: QuickJumpKeys.createEventAction,
               onPressed: () => routeTo(context, Routes.createEvent),
-              icon: const Icon(Atlas.plus_circle_thin, size: 18),
+              icon: const Icon(
+                Atlas.plus_circle_thin,
+                size: 18,
+              ),
               label: Text(
-                L10n.of(context).event,
+                lang.event,
                 style: Theme.of(context).textTheme.labelMedium,
               ),
             ),
@@ -96,9 +100,12 @@ class QuickActionsBuilder extends ConsumerWidget {
             OutlinedButton.icon(
               key: QuickJumpKeys.createTaskListAction,
               onPressed: () => showCreateUpdateTaskListBottomSheet(context),
-              icon: const Icon(Atlas.plus_circle_thin, size: 18),
+              icon: const Icon(
+                Atlas.plus_circle_thin,
+                size: 18,
+              ),
               label: Text(
-                L10n.of(context).taskList,
+                lang.taskList,
                 style: Theme.of(context).textTheme.labelMedium,
               ),
             ),
@@ -107,9 +114,12 @@ class QuickActionsBuilder extends ConsumerWidget {
               onPressed: () {
                 _log.info('poll pressed');
               },
-              icon: const Icon(Atlas.plus_circle_thin, size: 18),
+              icon: const Icon(
+                Atlas.plus_circle_thin,
+                size: 18,
+              ),
               label: Text(
-                L10n.of(context).poll,
+                lang.poll,
                 style: Theme.of(context).textTheme.labelMedium,
               ),
             ),
@@ -123,7 +133,7 @@ class QuickActionsBuilder extends ConsumerWidget {
                 size: 18,
               ),
               label: Text(
-                L10n.of(context).discussion,
+                lang.discussion,
                 style: Theme.of(context).textTheme.labelMedium,
               ),
             ),
@@ -131,7 +141,7 @@ class QuickActionsBuilder extends ConsumerWidget {
             icon: const Icon(Atlas.connection),
             key: SpacesKeys.actionCreate,
             onPressed: () => routeTo(context, Routes.createSpace),
-            label: Text(L10n.of(context).createSpace),
+            label: Text(lang.createSpace),
           ),
           if (isBugReportingEnabled)
             OutlinedButton.icon(
@@ -143,9 +153,12 @@ class QuickActionsBuilder extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.textHighlight,
                 ),
               ),
-              icon: const Icon(Atlas.bug_clipboard_thin, size: 18),
+              icon: const Icon(
+                Atlas.bug_clipboard_thin,
+                size: 18,
+              ),
               label: Text(
-                L10n.of(context).reportBug,
+                lang.reportBug,
                 style: Theme.of(context).textTheme.labelMedium,
               ),
               onPressed: () async {

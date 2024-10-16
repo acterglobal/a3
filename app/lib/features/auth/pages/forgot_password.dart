@@ -106,21 +106,22 @@ class _AskForEmail extends StatelessWidget {
   }
 
   Widget _buildTitleText(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Align(
           alignment: Alignment.center,
           child: Text(
-            L10n.of(context).passwordResetTitle,
+            lang.passwordResetTitle,
             style: Theme.of(context).textTheme.displaySmall!.copyWith(
                   color: Theme.of(context).colorScheme.textHighlight,
                 ),
           ),
         ),
         const SizedBox(height: 20),
-        Text(L10n.of(context).forgotYourPassword),
-        Text(L10n.of(context).noWorriesWeHaveGotYouCovered),
+        Text(lang.forgotYourPassword),
+        Text(lang.noWorriesWeHaveGotYouCovered),
       ],
     );
   }
@@ -140,17 +141,18 @@ class _AskForEmail extends StatelessWidget {
   }
 
   Widget _buildEmailInputField(BuildContext context) {
+    final lang = L10n.of(context);
     return Form(
       key: formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(L10n.of(context).emailAddress),
+          Text(lang.emailAddress),
           const SizedBox(height: 10),
           TextFormField(
             key: ForgotPassword.emailFieldKey,
             controller: emailController,
-            decoration: InputDecoration(hintText: L10n.of(context).hintEmail),
+            decoration: InputDecoration(hintText: lang.hintEmail),
             style: Theme.of(context).textTheme.labelLarge,
             validator: (val) => validateEmail(context, val),
           ),
@@ -266,24 +268,24 @@ class _NewPassword extends StatelessWidget {
   }
 
   Widget _buildPasswordInputField(BuildContext context) {
+    final lang = L10n.of(context);
     return Form(
       key: formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(L10n.of(context).newPassword),
+          Text(lang.newPassword),
           const SizedBox(height: 10),
           TextFormField(
             key: ForgotPassword.passwordKey,
             controller: passwordController,
             decoration: InputDecoration(
-              hintText: L10n.of(context).hintMessagePassword,
+              hintText: lang.hintMessagePassword,
             ),
             style: Theme.of(context).textTheme.labelLarge,
             // required field, space allowed
-            validator: (val) => val == null || val.length < 6
-                ? L10n.of(context).hintMessagePassword
-                : null,
+            validator: (val) =>
+                val == null || val.length < 6 ? lang.hintMessagePassword : null,
           ),
         ],
       ),

@@ -1,25 +1,27 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
+import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:acter/features/space/dialogs/suggested_rooms.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter/features/space/widgets/skeletons/space_details_skeletons.dart';
+import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_sections/about_section.dart';
 import 'package:acter/features/space/widgets/space_sections/chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/events_section.dart';
 import 'package:acter/features/space/widgets/space_sections/members_section.dart';
 import 'package:acter/features/space/widgets/space_sections/news_section.dart';
-import 'package:acter/features/space/widgets/space_sections/pins_section.dart';
 import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
 import 'package:acter/features/space/widgets/space_sections/spaces_section.dart';
 import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
-import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -27,6 +29,7 @@ final _log = Logger('a3::space::space_details');
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
   static const headerKey = Key('space-menus-header');
+
   final String spaceId;
 
   const SpaceDetailsPage({
@@ -176,27 +179,25 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         //Header Content UI
         ValueListenableBuilder(
           valueListenable: showHeader,
-          builder: (context, showHeader, child) {
-            return Stack(
-              children: [
-                AnimatedContainer(
-                  height: showHeader ? null : 0,
-                  curve: Curves.easeIn,
-                  duration: const Duration(seconds: 1),
-                  child: SpaceHeader(spaceIdOrAlias: widget.spaceId),
+          builder: (context, showHeader, child) => Stack(
+            children: [
+              AnimatedContainer(
+                height: showHeader ? null : 0,
+                curve: Curves.easeIn,
+                duration: const Duration(seconds: 1),
+                child: SpaceHeader(spaceIdOrAlias: widget.spaceId),
+              ),
+              AnimatedContainer(
+                height: !showHeader ? null : 0,
+                curve: Curves.easeOut,
+                duration: const Duration(seconds: 1),
+                child: SpaceToolbar(
+                  spaceId: widget.spaceId,
+                  spaceTitle: Text(displayName ?? ''),
                 ),
-                AnimatedContainer(
-                  height: !showHeader ? null : 0,
-                  curve: Curves.easeOut,
-                  duration: const Duration(seconds: 1),
-                  child: SpaceToolbar(
-                    spaceId: widget.spaceId,
-                    spaceTitle: Text(displayName ?? ''),
-                  ),
-                ),
-              ],
-            );
-          },
+              ),
+            ],
+          ),
         ),
         //Append menu bar widget
         menuBarWidget,
@@ -207,7 +208,12 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceAvatar() {
     final avatarData =
         ref.watch(roomAvatarProvider(widget.spaceId)).valueOrNull;
-    if (avatarData == null) return Container(height: 200, color: Colors.red);
+    if (avatarData == null) {
+      return Container(
+        height: 200,
+        color: Colors.red,
+      );
+    }
     return Image.memory(
       avatarData.bytes,
       height: 300,
@@ -219,8 +225,15 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceTabMenuUI(BuildContext context, TabEntry tabItem, bool active) {
     return Container(
       key: Key(tabItem.name),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      margin: const EdgeInsets.only(left: 12, top: 12, bottom: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
+      ),
+      margin: const EdgeInsets.only(
+        left: 12,
+        top: 12,
+        bottom: 12,
+      ),
       decoration: BoxDecoration(
         color: active ? Theme.of(context).colorScheme.primary : null,
         borderRadius: BorderRadius.circular(100),
@@ -230,15 +243,16 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   }
 
   String itemLabel(BuildContext context, TabEntry tabItem) {
+    final lang = L10n.of(context);
     return switch (tabItem) {
-      TabEntry.overview => L10n.of(context).overview,
-      TabEntry.pins => L10n.of(context).pins,
-      TabEntry.tasks => L10n.of(context).tasks,
-      TabEntry.events => L10n.of(context).events,
-      TabEntry.news => L10n.of(context).boosts,
-      TabEntry.chats => L10n.of(context).chats,
-      TabEntry.spaces => L10n.of(context).spaces,
-      TabEntry.members => L10n.of(context).members,
+      TabEntry.overview => lang.overview,
+      TabEntry.pins => lang.pins,
+      TabEntry.tasks => lang.tasks,
+      TabEntry.events => lang.events,
+      TabEntry.news => lang.boosts,
+      TabEntry.chats => lang.chats,
+      TabEntry.spaces => lang.spaces,
+      TabEntry.members => lang.members,
       TabEntry.actions => '...',
     };
   }
@@ -247,7 +261,15 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     return switch (tabItem) {
       TabEntry.overview => AboutSection(spaceId: widget.spaceId),
       TabEntry.news => NewsSection(spaceId: widget.spaceId),
-      TabEntry.pins => PinsSection(spaceId: widget.spaceId),
+      TabEntry.pins => PinListWidget(
+          spaceId: widget.spaceId,
+          showSectionHeader: true,
+          limit: 3,
+          onClickSectionHeader: () => context.pushNamed(
+            Routes.spacePins.name,
+            pathParameters: {'spaceId': widget.spaceId},
+          ),
+        ),
       TabEntry.tasks => TasksSection(spaceId: widget.spaceId),
       TabEntry.events => EventsSection(spaceId: widget.spaceId),
       TabEntry.chats => ChatsSection(spaceId: widget.spaceId),

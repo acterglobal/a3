@@ -43,8 +43,14 @@ enum Routes {
   // show as dialog
   createChat('/chat/create'),
   chatroom('/chat/:roomId([!#][^/]+)'), // !roomId, #roomName
+
   chatProfile('/chat/:roomId([!#][^/]+)/profile'),
+
   chatSettingsVisibility('/chat/:roomId([!#][^/]+)/access'),
+  // chat-ng (room version) directs
+  chatNGRoom('/chat-ng/:roomId([!#][^/]+)'),
+  chatNGProfile('/chat-ng/:roomId([!#][^/]+)/profile'),
+  chatNGSettingsVisibility('/chat-ng/:roomId([!#][^/]+)/access'),
   chatInvite('/:roomId([!#][^/]+)/invite'),
 
   // --- tasks
@@ -68,7 +74,9 @@ enum Routes {
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   subSpaces('/:spaceId([!#][^/]+)/subSpaces'),
   subChats('/:spaceId([!#][^/]+)/subChats'),
-  organizeCategories('/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)'),
+  organizeCategories(
+    '/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)',
+  ),
   spaceMembers('/:spaceId([!#][^/]+)/members'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
   spaceEvents('/:spaceId([!#][^/]+)/events'),

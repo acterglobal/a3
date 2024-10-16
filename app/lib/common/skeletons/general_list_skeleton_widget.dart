@@ -1,7 +1,7 @@
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class GeneralListSkeletonWidget extends StatelessWidget {
   const GeneralListSkeletonWidget({super.key});
@@ -18,6 +18,7 @@ class GeneralListSkeletonWidget extends StatelessWidget {
   }
 
   Widget _buildListItemSkeletonUI(BuildContext context) {
+    final lang = L10n.of(context);
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -32,10 +33,8 @@ class GeneralListSkeletonWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(L10n.of(context).title + L10n.of(context).title),
-                Text(
-                  L10n.of(context).description + L10n.of(context).description,
-                ),
+                Text(lang.title + lang.title),
+                Text(lang.description + lang.description),
               ],
             ),
           ),

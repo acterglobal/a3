@@ -20,13 +20,14 @@ class SuperInvitesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final tokensLoader = ref.watch(superInvitesTokensProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
           elevation: 0.0,
-          title: Text(L10n.of(context).superInvites),
+          title: Text(lang.superInvites),
           centerTitle: true,
           actions: [
             IconButton(
@@ -56,17 +57,15 @@ class SuperInvitesPage extends ConsumerWidget {
                 if (tokens.isEmpty) {
                   return SliverToBoxAdapter(
                     child: Center(
-                      child:
-                          Text(L10n.of(context).youHaveNotCreatedInviteCodes),
+                      child: Text(lang.youHaveNotCreatedInviteCodes),
                     ),
                   );
                 }
                 return SliverList.builder(
                   itemBuilder: (context, index) {
                     final token = tokens[index];
-                    final acceptedCount =
-                        L10n.of(context).usedTimes(token.acceptedCount());
-                    final tokenStr = token.token().toString();
+                    final acceptedCount = lang.usedTimes(token.acceptedCount());
+                    final tokenStr = token.token();
                     final firstRoom =
                         asDartStringList(token.rooms()).firstOrNull;
                     return Card(
@@ -98,7 +97,7 @@ class SuperInvitesPage extends ConsumerWidget {
                                       'roomId': firstRoom,
                                     },
                                   ),
-                                  child: Text(L10n.of(context).share),
+                                  child: Text(lang.share),
                                 )
                               : null,
                         ),
@@ -112,7 +111,7 @@ class SuperInvitesPage extends ConsumerWidget {
                 _log.severe('Failed to load the super invite tokens', e, s);
                 return SliverToBoxAdapter(
                   child: Center(
-                    child: Text(L10n.of(context).failedToLoadInviteCodes(e)),
+                    child: Text(lang.failedToLoadInviteCodes(e)),
                   ),
                 );
               },

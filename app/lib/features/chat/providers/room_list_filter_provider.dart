@@ -7,8 +7,10 @@ final _log = Logger('a3::chat::room_list_filter_provider');
 
 final persistentRoomListFilterSelector = createMapPrefProvider<FilterSelection>(
   prefKey: 'chatRoomFilterSelection',
-  mapFrom: (v) => FilterSelection.values
-      .firstWhere((e) => e.toString() == v, orElse: () => FilterSelection.all),
+  mapFrom: (v) => FilterSelection.values.firstWhere(
+    (e) => e.toString() == v,
+    orElse: () => FilterSelection.all,
+  ),
   mapTo: (v) => v.toString(),
 );
 

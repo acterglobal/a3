@@ -20,8 +20,8 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -119,7 +119,9 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         children: [
           Row(
             children: [
-              const Skeletonizer(child: Bone.circle(size: 100)),
+              const Skeletonizer(
+                child: Bone.circle(size: 100),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -145,6 +147,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
 
   // pin actions menu builder
   Widget _buildActionMenu() {
+    final lang = L10n.of(context);
     final pin = ref.watch(pinProvider(widget.pinId)).valueOrNull;
     if (pin == null) {
       return const SizedBox.shrink();
@@ -164,7 +167,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         PopupMenuItem<String>(
           key: PinDetailsPage.editBtnKey,
           onTap: () => showEditPintTitleDialog(context, ref, pin),
-          child: Text(L10n.of(context).editTitle),
+          child: Text(lang.editTitle),
         ),
       );
 
@@ -173,7 +176,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         PopupMenuItem<String>(
           key: PinDetailsPage.editBtnKey,
           onTap: () => showEditPintDescriptionDialog(context, ref, pin),
-          child: Text(L10n.of(context).editDescription),
+          child: Text(lang.editDescription),
         ),
       );
     }
@@ -189,7 +192,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
               color: Theme.of(context).colorScheme.error,
             ),
             const SizedBox(width: 10),
-            Text(L10n.of(context).reportPin),
+            Text(lang.reportPin),
           ],
         ),
       ),
@@ -205,7 +208,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
             roomId: roomId,
           ),
           child: Text(
-            L10n.of(context).removePin,
+            lang.removePin,
             style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
         ),
@@ -269,17 +272,18 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   Widget pinTitleUI(ActerPin pin) {
     return SelectionArea(
       child: GestureDetector(
-        onTap: () {
+        onTap: () async {
           final membership =
-              ref.read(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+              await ref.read(roomMembershipProvider(pin.roomIdStr()).future);
           if (membership?.canString('CanPostPin') == true) {
+            if (!mounted) return;
             showEditTitleBottomSheet(
               context: context,
               bottomSheetTitle: L10n.of(context).editName,
               titleValue: pin.title(),
               onSave: (newTitle) async {
-                final pinEditNotifier = ref.read(pinEditProvider(pin).notifier);
-                pinEditNotifier.setTitle(newTitle);
+                final notifier = ref.read(pinEditProvider(pin).notifier);
+                notifier.setTitle(newTitle);
                 updatePinTitle(context, pin, newTitle);
               },
             );
@@ -322,7 +326,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
                 descriptionHtmlValue: description.formattedBody(),
                 descriptionMarkdownValue: plainBody,
                 onSave: (htmlBodyDescription, plainDescription) async {
-                  updatePinDescription(
+                  await updatePinDescription(
                     context,
                     htmlBodyDescription,
                     plainDescription,

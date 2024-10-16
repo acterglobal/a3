@@ -30,7 +30,8 @@ Future<String?> createSpace(
   RoomVisibility? roomVisibility,
   bool createDefaultChat = false,
 }) async {
-  EasyLoading.show(status: L10n.of(context).creatingSpace);
+  final lang = L10n.of(context);
+  EasyLoading.show(status: lang.creatingSpace);
   try {
     final sdk = await ref.read(sdkProvider.future);
     final config = sdk.api.newSpaceSettingsBuilder();
@@ -49,7 +50,8 @@ Future<String?> createSpace(
       config.setVisibility(roomVisibility.name);
     }
     final client = ref.read(alwaysClientProvider);
-    final roomId = (await client.createActerSpace(config.build())).toString();
+    final result = await client.createActerSpace(config.build());
+    final roomId = result.toString();
     if (parentRoomId != null) {
       final space = await ref.read(spaceProvider(parentRoomId).future);
       await space.addChildRoom(roomId, false);
@@ -64,7 +66,7 @@ Future<String?> createSpace(
       final chatId = await createChat(
         context,
         ref,
-        name: L10n.of(context).defaultChatName(name),
+        name: lang.defaultChatName(name),
         parentId: roomId,
         suggested: true,
       );
@@ -81,7 +83,7 @@ Future<String?> createSpace(
       return null;
     }
     EasyLoading.showError(
-      L10n.of(context).creatingSpaceFailed(e),
+      lang.creatingSpaceFailed(e),
       duration: const Duration(seconds: 3),
     );
     return null;

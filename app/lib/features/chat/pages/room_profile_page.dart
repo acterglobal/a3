@@ -10,9 +10,9 @@ import 'package:acter/common/widgets/edit_plain_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
+import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
-import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -74,12 +74,13 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     Convo? convo,
     bool isDirectChat,
   ) {
+    final lang = L10n.of(context);
     List<PopupMenuItem> menuListItems = [];
     if (membership?.canString('CanSetName') == true) {
       menuListItems.add(
         PopupMenuItem(
           onTap: () => showEditNameBottomSheet(roomAvatarInfo),
-          child: Text(L10n.of(context).editName),
+          child: Text(lang.editName),
         ),
       );
     }
@@ -91,7 +92,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             convo: convo,
             descriptionValue: convo?.topic() ?? '',
           ),
-          child: Text(L10n.of(context).editDescription),
+          child: Text(lang.editDescription),
         ),
       );
 
@@ -106,7 +107,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               roomId: convo.getRoomIdStr(),
             ),
             child: Text(
-              L10n.of(context).closeChat,
+              lang.closeChat,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.error,
               ),
@@ -157,17 +158,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               isDirectChat,
             ),
             _description(context, membership, convo),
-            _actions(
-              context,
-              convo,
-              isDirectChat,
-            ),
+            _actions(context, convo, isDirectChat),
             const SizedBox(height: 20),
-            _optionsBody(
-              context,
-              convo,
-              isDirectChat,
-            ),
+            _optionsBody(context, convo, isDirectChat),
           ],
         ),
       ),
@@ -224,8 +217,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Future<void> _saveName(String newName) async {
+    final lang = L10n.of(context);
     try {
-      EasyLoading.show(status: L10n.of(context).updateName);
+      EasyLoading.show(status: lang.updateName);
       final convo = await ref.read(chatProvider(widget.roomId).future);
       if (convo == null) {
         throw RoomNotFound();
@@ -241,7 +235,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).updateNameFailed(e),
+        lang.updateNameFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -279,6 +273,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     final membershipLoader = ref.watch(roomMembershipProvider(widget.roomId));
     final isBookmarked =
         ref.watch(isConvoBookmarked(widget.roomId)).valueOrNull ?? false;
+    final lang = L10n.of(context);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -287,10 +282,10 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         _actionItem(
           context: context,
           iconData: isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-          actionName: L10n.of(context).bookmark,
+          actionName: lang.bookmark,
           onTap: () async {
-            (await ref.read(chatProvider(widget.roomId).future))
-                ?.setBookmarked(!isBookmarked);
+            final convo = await ref.read(chatProvider(widget.roomId).future);
+            if (convo != null) convo.setBookmarked(!isBookmarked);
           },
         ),
 
@@ -301,7 +296,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             return _actionItem(
               context: context,
               iconData: Atlas.user_plus_thin,
-              actionName: L10n.of(context).invite,
+              actionName: lang.invite,
               actionItemColor: membership.canString('CanInvite')
                   ? null
                   : Theme.of(context).colorScheme.onSurface,
@@ -310,11 +305,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           },
           error: (e, s) {
             _log.severe('Failed to load room membership', e, s);
-            return Text(L10n.of(context).errorLoadingTileDueTo(e));
+            return Text(lang.errorLoadingTileDueTo(e));
           },
           loading: () => ActionItemSkeleton(
             iconData: Atlas.user_plus_thin,
-            actionName: L10n.of(context).invite,
+            actionName: lang.invite,
           ),
         ),
 
@@ -322,7 +317,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         _actionItem(
           context: context,
           iconData: Icons.ios_share,
-          actionName: L10n.of(context).share,
+          actionName: lang.share,
           onTap: _handleShare,
         ),
 
@@ -330,7 +325,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         _actionItem(
           context: context,
           iconData: Icons.exit_to_app,
-          actionName: L10n.of(context).leave,
+          actionName: lang.leave,
           actionItemColor: Theme.of(context).colorScheme.error,
           onTap: showLeaveRoomDialog,
         ),
@@ -347,7 +342,10 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 5,
+          vertical: 10,
+        ),
         margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
@@ -423,6 +421,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
 
   Widget _convoMembersList() {
     final membersLoader = ref.watch(membersIdsProvider(widget.roomId));
+    final lang = L10n.of(context);
 
     return Container(
       width: double.infinity,
@@ -441,16 +440,16 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                 vertical: 8,
               ),
               child: Text(
-                L10n.of(context).membersCount(members.length),
+                lang.membersCount(members.length),
                 style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
             loading: () => Skeletonizer(
-              child: Text(L10n.of(context).membersCount(0)),
+              child: Text(lang.membersCount(0)),
             ),
             error: (e, s) {
               _log.severe('Failed to load room members', e, s);
-              return Text(L10n.of(context).errorLoadingMembersCount(e));
+              return Text(lang.errorLoadingMembersCount(e));
             },
           ),
           MemberList(roomId: widget.roomId),
@@ -460,26 +459,27 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Future<void> showLeaveRoomDialog() async {
-    showAdaptiveDialog(
+    final lang = L10n.of(context);
+    await showAdaptiveDialog(
       context: context,
       useRootNavigator: false,
       builder: (context) => DefaultDialog(
         title: Text(
-          L10n.of(context).leaveRoom,
+          lang.leaveRoom,
           style: Theme.of(context).textTheme.titleSmall,
         ),
         subtitle: Text(
-          L10n.of(context).areYouSureYouWantToLeaveRoom,
+          lang.areYouSureYouWantToLeaveRoom,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         actions: [
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(L10n.of(context).no),
+            child: Text(lang.no),
           ),
           ActerPrimaryActionButton(
             onPressed: _handleLeaveRoom,
-            child: Text(L10n.of(context).yes),
+            child: Text(lang.yes),
           ),
         ],
       ),
@@ -487,8 +487,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Future<void> _handleLeaveRoom() async {
+    final lang = L10n.of(context);
     Navigator.pop(context);
-    EasyLoading.show(status: L10n.of(context).leavingRoom);
+    EasyLoading.show(status: lang.leavingRoom);
     try {
       final parentIds = await ref.read(parentIdsProvider(widget.roomId).future);
       final convo = await ref.read(chatProvider(widget.roomId).future);
@@ -511,7 +512,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       } else {
         _log.severe('Failed to leave room');
         EasyLoading.showError(
-          L10n.of(context).someErrorOccurredLeavingRoom,
+          lang.someErrorOccurredLeavingRoom,
           duration: const Duration(seconds: 3),
         );
       }
@@ -522,7 +523,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToLeaveRoom(e),
+        lang.failedToLeaveRoom(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -543,7 +544,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }
 
   Future<void> _handleShare() async {
-    EasyLoading.show(status: L10n.of(context).sharingRoom);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.sharingRoom);
     try {
       final convo = await ref.read(chatProvider(widget.roomId).future);
       if (convo == null) {
@@ -556,9 +558,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       }
       Share.share(
         roomLink,
-        subject: L10n.of(context).linkToChat,
+        subject: lang.linkToChat,
       );
-      EasyLoading.showToast(L10n.of(context).sharedSuccessfully);
+      EasyLoading.showToast(lang.sharedSuccessfully);
     } catch (e, s) {
       _log.severe('Couldn’t share this room', e, s);
       if (!mounted) {
@@ -566,7 +568,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToShareRoom(e),
+        lang.failedToShareRoom(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -581,8 +583,9 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       context: context,
       descriptionValue: descriptionValue,
       onSave: (newDescription) async {
+        final lang = L10n.of(context);
         try {
-          EasyLoading.show(status: L10n.of(context).updateDescription);
+          EasyLoading.show(status: lang.updateDescription);
           await convo?.setTopic(newDescription);
           EasyLoading.dismiss();
           if (!context.mounted) return;
@@ -594,7 +597,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             return;
           }
           EasyLoading.showError(
-            L10n.of(context).updateDescriptionFailed(e),
+            lang.updateDescriptionFailed(e),
             duration: const Duration(seconds: 3),
           );
         }

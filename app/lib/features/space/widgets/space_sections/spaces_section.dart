@@ -25,12 +25,17 @@ class SpacesSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final suggestedSpaces =
         ref.watch(suggestedSpacesProvider(spaceId)).valueOrNull;
     if (suggestedSpaces != null &&
         (suggestedSpaces.$1.isNotEmpty || suggestedSpaces.$2.isNotEmpty)) {
       return buildSuggestedSpacesSectionUI(
-          context, ref, suggestedSpaces.$1, suggestedSpaces.$2,);
+        context,
+        ref,
+        suggestedSpaces.$1,
+        suggestedSpaces.$2,
+      );
     }
 
     final overviewLoader = ref.watch(spaceRelationsOverviewProvider(spaceId));
@@ -43,11 +48,11 @@ class SpacesSection extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to load the related spaces', e, s);
         return Center(
-          child: Text(L10n.of(context).loadingSpacesFailed(e)),
+          child: Text(lang.loadingSpacesFailed(e)),
         );
       },
       loading: () => Center(
-        child: Text(L10n.of(context).loading),
+        child: Text(lang.loading),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
@@ -34,8 +35,6 @@ class EventListPage extends ConsumerStatefulWidget {
 }
 
 class _EventListPageState extends ConsumerState<EventListPage> {
-  final TextEditingController searchTextController = TextEditingController();
-
   String get searchValue => ref.watch(searchValueProvider);
 
   EventFilters get eventFilterValue => ref.watch(eventFilterProvider);
@@ -83,7 +82,13 @@ class _EventListPageState extends ConsumerState<EventListPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActerSearchWidget(searchTextController: searchTextController),
+        ActerSearchWidget(
+          onChanged: (value) {
+            final notifier = ref.read(searchValueProvider.notifier);
+            notifier.state = value;
+          },
+          onClear: () => ref.read(searchValueProvider.notifier).state = '',
+        ),
         filterChipsButtons(),
         Expanded(
           child: calEventsLoader.when(
@@ -111,50 +116,59 @@ class _EventListPageState extends ConsumerState<EventListPage> {
   }
 
   Widget filterChipsButtons() {
+    final lang = L10n.of(context);
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 4,
+        ),
         child: Wrap(
           children: [
             FilterChip(
               selected: eventFilterValue == EventFilters.all,
-              label: Text(L10n.of(context).all),
-              onSelected: (value) => ref
-                  .read(eventFilterProvider.notifier)
-                  .state = EventFilters.all,
+              label: Text(lang.all),
+              onSelected: (value) {
+                final notifier = ref.read(eventFilterProvider.notifier);
+                notifier.state = EventFilters.all;
+              },
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: eventFilterValue == EventFilters.bookmarked,
-              label: Text(L10n.of(context).bookmarked),
-              onSelected: (value) => ref
-                  .read(eventFilterProvider.notifier)
-                  .state = EventFilters.bookmarked,
+              label: Text(lang.bookmarked),
+              onSelected: (value) {
+                final notifier = ref.read(eventFilterProvider.notifier);
+                notifier.state = EventFilters.bookmarked;
+              },
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: eventFilterValue == EventFilters.ongoing,
-              label: Text(L10n.of(context).happeningNow),
-              onSelected: (value) => ref
-                  .read(eventFilterProvider.notifier)
-                  .state = EventFilters.ongoing,
+              label: Text(lang.happeningNow),
+              onSelected: (value) {
+                final notifier = ref.read(eventFilterProvider.notifier);
+                notifier.state = EventFilters.ongoing;
+              },
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: eventFilterValue == EventFilters.upcoming,
-              label: Text(L10n.of(context).upcoming),
-              onSelected: (value) => ref
-                  .read(eventFilterProvider.notifier)
-                  .state = EventFilters.upcoming,
+              label: Text(lang.upcoming),
+              onSelected: (value) {
+                final notifier = ref.read(eventFilterProvider.notifier);
+                notifier.state = EventFilters.upcoming;
+              },
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: eventFilterValue == EventFilters.past,
-              label: Text(L10n.of(context).past),
-              onSelected: (value) => ref
-                  .read(eventFilterProvider.notifier)
-                  .state = EventFilters.past,
+              label: Text(lang.past),
+              onSelected: (value) {
+                final notifier = ref.read(eventFilterProvider.notifier);
+                notifier.state = EventFilters.past;
+              },
             ),
           ],
         ),
@@ -186,18 +200,18 @@ class _EventListPageState extends ConsumerState<EventListPage> {
   Widget _buildEventsEmptyState() {
     var canAdd = false;
     if (searchValue.isEmpty) {
-      final canPostLoader = ref.watch(
-        hasSpaceWithPermissionProvider('CanPostEvent'),
-      );
+      final canPostLoader =
+          ref.watch(hasSpaceWithPermissionProvider('CanPostEvent'));
       if (canPostLoader.valueOrNull == true) canAdd = true;
     }
+    final lang = L10n.of(context);
     return Center(
       heightFactor: 1,
       child: EmptyState(
         title: searchValue.isNotEmpty
-            ? L10n.of(context).noMatchingEventsFound
-            : L10n.of(context).noEventsFound,
-        subtitle: L10n.of(context).noEventAvailableDescription,
+            ? lang.noMatchingEventsFound
+            : lang.noEventsFound,
+        subtitle: lang.noEventAvailableDescription,
         image: 'assets/images/empty_event.svg',
         primaryButton: canAdd
             ? ActerPrimaryActionButton(
@@ -205,7 +219,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
                   Routes.createEvent.name,
                   queryParameters: {'spaceId': widget.spaceId},
                 ),
-                child: Text(L10n.of(context).addEvent),
+                child: Text(lang.addEvent),
               )
             : null,
       ),

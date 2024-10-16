@@ -27,17 +27,17 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
   final lang = L10n.of(context);
 
   if (spaceId == null) {
-    EasyLoading.showToast(L10n.of(context).pleaseFirstSelectASpace);
+    EasyLoading.showToast(lang.pleaseFirstSelectASpace);
     return;
   }
 
   // Show loading message
-  EasyLoading.show(status: L10n.of(context).slidePosting);
+  EasyLoading.show(status: lang.slidePosting);
   try {
     final space = await ref.read(spaceProvider(spaceId).future);
     NewsEntryDraft draft = space.newsDraft();
+    final sdk = await ref.read(sdkProvider.future);
     for (final slidePost in newsSlideList) {
-      final sdk = await ref.read(sdkProvider.future);
       // If slide type is text
       if (slidePost.type == NewsSlideType.text) {
         if (slidePost.text == null || slidePost.text!.trim().isEmpty) {
@@ -46,7 +46,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
             return;
           }
           EasyLoading.showError(
-            L10n.of(context).yourTextSlidesMustContainsSomeText,
+            lang.yourTextSlidesMustContainsSomeText,
             duration: const Duration(seconds: 3),
           );
           return;
@@ -79,7 +79,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
             return;
           }
           EasyLoading.showError(
-            L10n.of(context).postingOfTypeNotYetSupported(mimeType),
+            lang.postingOfTypeNotYetSupported(mimeType),
             duration: const Duration(seconds: 3),
           );
           return;
@@ -114,7 +114,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
             return;
           }
           EasyLoading.showError(
-            L10n.of(context).postingOfTypeNotYetSupported(mimeType),
+            lang.postingOfTypeNotYetSupported(mimeType),
             duration: const Duration(seconds: 3),
           );
           return;
@@ -143,9 +143,8 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
     ref.invalidate(newsStateProvider);
     // Navigate back to update screen.
     Navigator.pop(context);
-    context.pushReplacementNamed(
-      Routes.main.name,
-    ); // go to the home / main updates
+    context
+        .pushReplacementNamed(Routes.main.name); // go to the home/main updates
   } catch (e, s) {
     _log.severe('Failed to send news', e, s);
     if (!context.mounted) {
@@ -153,7 +152,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).creatingNewsFailed(e),
+      lang.creatingNewsFailed(e),
       duration: const Duration(seconds: 3),
     );
   }

@@ -11,13 +11,14 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::tasks::update_tasklist_details');
 
 Future<void> updateTaskListIcon(
-    BuildContext context,
-    WidgetRef ref,
-    TaskList taskList,
-    Color color,
-    ActerIcon acterIcon,
+  BuildContext context,
+  WidgetRef ref,
+  TaskList taskList,
+  Color color,
+  ActerIcon acterIcon,
 ) async {
-  EasyLoading.show(status: L10n.of(context).updatingIcon);
+  final lang = L10n.of(context);
+  EasyLoading.show(status: lang.updatingIcon);
 
   // TaskList IconData
   final sdk = await ref.watch(sdkProvider.future);
@@ -40,18 +41,19 @@ Future<void> updateTaskListIcon(
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).updatingTaskFailed(e),
+      lang.updatingTaskFailed(e),
       duration: const Duration(seconds: 3),
     );
   }
 }
 
 Future<void> updateTaskListTitle(
-    BuildContext context,
-    TaskList taskList,
-    String newName,
-    ) async {
-  EasyLoading.show(status: L10n.of(context).updatingTask);
+  BuildContext context,
+  TaskList taskList,
+  String newName,
+) async {
+  final lang = L10n.of(context);
+  EasyLoading.show(status: lang.updatingTask);
   final updater = taskList.updateBuilder();
   updater.name(newName);
   try {
@@ -66,7 +68,7 @@ Future<void> updateTaskListTitle(
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).updatingTaskFailed(e),
+      lang.updatingTaskFailed(e),
       duration: const Duration(seconds: 3),
     );
   }

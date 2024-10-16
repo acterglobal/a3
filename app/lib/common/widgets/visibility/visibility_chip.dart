@@ -54,15 +54,16 @@ class VisibilityChip extends ConsumerWidget {
   }
 
   Widget renderSpaceChip(BuildContext context, RoomVisibility? visibility) {
+    final lang = L10n.of(context);
     IconData icon = switch (visibility) {
       RoomVisibility.Public => Icons.language,
       RoomVisibility.SpaceVisible => Atlas.users,
       _ => Icons.lock,
     };
     String label = switch (visibility) {
-      RoomVisibility.Public => L10n.of(context).public,
-      RoomVisibility.SpaceVisible => L10n.of(context).limited,
-      _ => L10n.of(context).private,
+      RoomVisibility.Public => lang.public,
+      RoomVisibility.SpaceVisible => lang.limited,
+      _ => lang.private,
     };
     return useCompactView
         ? Text(label, style: Theme.of(context).textTheme.labelSmall)

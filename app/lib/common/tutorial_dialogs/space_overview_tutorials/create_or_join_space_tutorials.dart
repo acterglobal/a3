@@ -2,8 +2,8 @@ import 'package:acter/common/tutorial_dialogs/show_tutorials.dart';
 import 'package:acter/common/tutorial_dialogs/target_focus.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 final createNewSpaceKey = GlobalKey(debugLabel: 'create new space');
 final joinExistingSpaceKey = GlobalKey(debugLabel: 'join existing space');
@@ -18,6 +18,7 @@ Future<void> setCreateOrJoinSpaceTutorialAsViewed() async {
 }
 
 Future<void> createOrJoinSpaceTutorials({required BuildContext context}) async {
+  final lang = L10n.of(context);
   final prefs = await sharedPrefs();
   final isShow = prefs.getBool(createOrJoinSpacePrefKey) ?? true;
 
@@ -36,8 +37,8 @@ Future<void> createOrJoinSpaceTutorials({required BuildContext context}) async {
           keyTarget: createNewSpaceKey,
           contentAlign: ContentAlign.top,
           shape: ShapeLightFocus.RRect,
-          contentTitle: L10n.of(context).createSpaceTutorialTitle,
-          contentDescription: L10n.of(context).createSpaceTutorialDescription,
+          contentTitle: lang.createSpaceTutorialTitle,
+          contentDescription: lang.createSpaceTutorialDescription,
           isFirst: true,
         ),
         targetFocus(
@@ -45,8 +46,8 @@ Future<void> createOrJoinSpaceTutorials({required BuildContext context}) async {
           keyTarget: joinExistingSpaceKey,
           contentAlign: ContentAlign.top,
           shape: ShapeLightFocus.RRect,
-          contentTitle: L10n.of(context).joinSpaceTutorialTitle,
-          contentDescription: L10n.of(context).joinSpaceTutorialDescription,
+          contentTitle: lang.joinSpaceTutorialTitle,
+          contentDescription: lang.joinSpaceTutorialDescription,
           isLast: true,
         ),
       ],

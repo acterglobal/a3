@@ -236,7 +236,7 @@ class _VisibilityAccessibilityPageState
 
   Future<void> removeSpace(String spaceId) async {
     final newList =
-        (await ref.read(joinRulesAllowedRoomsProvider(spaceId).future))
+        (await ref.read(joinRulesAllowedRoomsProvider(widget.roomId).future))
             .where((id) => id != spaceId)
             .toList();
     final visibility =
@@ -249,7 +249,7 @@ class _VisibilityAccessibilityPageState
       final spaceId = await selectSpaceDrawer(context: context);
       if (spaceId != null) {
         final spaceList =
-            await ref.read(joinRulesAllowedRoomsProvider(spaceId).future);
+            await ref.read(joinRulesAllowedRoomsProvider(roomId).future);
         final isAlreadyAdded = spaceList.any((roomId) => roomId == spaceId);
         if (!isAlreadyAdded) {
           spaceList.add(spaceId);

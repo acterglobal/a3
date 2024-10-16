@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -47,15 +48,6 @@ class SelectRoomDrawer extends ConsumerStatefulWidget {
 }
 
 class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
-  final TextEditingController searchTextController = TextEditingController();
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // ensure we are synced up
-    searchTextController.text = ref.read(roomSearchValueProvider) ?? '';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -67,7 +59,15 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           title(context),
-          searchBar(context),
+          ActerSearchWidget(
+            padding: EdgeInsets.zero,
+            onChanged: (String value) {
+              ref.read(roomSearchValueProvider.notifier).state = value;
+            },
+            onClear: () {
+              ref.read(roomSearchValueProvider.notifier).state = '';
+            },
+          ),
           Flexible(
             child: roomsList(context),
           ),
@@ -90,38 +90,6 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
           label: Text(L10n.of(context).clear),
         ),
       ],
-    );
-  }
-
-  Widget searchBar(BuildContext context) {
-    if (allRooms().length < 10) {
-      // small list, ignore
-      return const SizedBox.shrink();
-    }
-
-    final hasSearchTerm = (ref.read(roomSearchValueProvider) ?? '').isNotEmpty;
-
-    return SearchBar(
-      controller: searchTextController,
-      leading: const Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Icon(Atlas.magnifying_glass),
-      ),
-      hintText: L10n.of(context).search,
-      trailing: hasSearchTerm
-          ? [
-              InkWell(
-                onTap: () {
-                  searchTextController.clear();
-                  ref.read(roomSearchValueProvider.notifier).state = '';
-                },
-                child: const Icon(Icons.clear),
-              ),
-            ]
-          : null,
-      onChanged: (value) {
-        ref.read(roomSearchValueProvider.notifier).state = value;
-      },
     );
   }
 
@@ -154,12 +122,13 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
       RoomType.space => ref.watch(searchedSpacesProvider),
       RoomType.groupChat => ref.watch(roomSearchedChatsProvider),
     };
+    final lang = L10n.of(context);
     return roomsLoader.when(
       data: (rooms) {
         if (rooms.isEmpty) {
           return Center(
             heightFactor: 10,
-            child: Text(L10n.of(context).noChatsFoundMatchingYourSearchTerm),
+            child: Text(lang.noChatsFoundMatchingYourSearchTerm),
           );
         }
         return roomsListUI(rooms);
@@ -171,7 +140,7 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
       error: (e, s) {
         _log.severe('Failed to search space or convo', e, s);
         return Center(
-          child: Text(L10n.of(context).searchingFailed(e)),
+          child: Text(lang.searchingFailed(e)),
         );
       },
     );

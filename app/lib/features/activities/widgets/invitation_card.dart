@@ -43,8 +43,12 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      margin: const EdgeInsets.symmetric(
+        vertical: 10,
+        horizontal: 16,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -58,13 +62,13 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
                 // Reject Invitation Button
                 OutlinedButton(
                   onPressed: () => _onTapDeclineInvite(context),
-                  child: Text(L10n.of(context).decline),
+                  child: Text(lang.decline),
                 ),
                 const SizedBox(width: 15),
                 // Accept Invitation Button
                 ActerPrimaryActionButton(
                   onPressed: () => _onTapAcceptInvite(context),
-                  child: Text(L10n.of(context).accept),
+                  child: Text(lang.accept),
                 ),
               ],
             ),
@@ -175,11 +179,11 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
 
   // method for post-process invitation accept
   void _onTapAcceptInvite(BuildContext context) async {
-    EasyLoading.show(status: L10n.of(context).joining);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.joining);
     final client = ref.read(alwaysClientProvider);
     final roomId = widget.invitation.roomIdStr();
     final isSpace = widget.invitation.room().isSpace();
-    final lang = L10n.of(context);
     try {
       await widget.invitation.accept();
     } catch (e, s) {
@@ -221,7 +225,8 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
   }
 
   void _onTapDeclineInvite(BuildContext context) async {
-    EasyLoading.show(status: L10n.of(context).rejecting);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.rejecting);
     try {
       bool res = await widget.invitation.reject();
       ref.invalidate(invitationListProvider);
@@ -230,11 +235,11 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
         return;
       }
       if (res) {
-        EasyLoading.showToast(L10n.of(context).rejected);
+        EasyLoading.showToast(lang.rejected);
       } else {
         _log.severe('Failed to reject invitation');
         EasyLoading.showError(
-          L10n.of(context).failedToReject,
+          lang.failedToReject,
           duration: const Duration(seconds: 3),
         );
       }
@@ -245,7 +250,7 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToRejectInvite(e),
+        lang.failedToRejectInvite(e),
         duration: const Duration(seconds: 3),
       );
     }

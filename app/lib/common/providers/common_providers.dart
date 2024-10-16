@@ -135,3 +135,5 @@ final canRedactProvider = FutureProvider.autoDispose.family<bool, dynamic>(
     }
   }),
 );
+
+final searchValueProvider = StateProvider.autoDispose<String>((ref) => '');

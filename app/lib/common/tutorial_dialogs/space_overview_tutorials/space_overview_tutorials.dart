@@ -2,8 +2,8 @@ import 'package:acter/common/tutorial_dialogs/show_tutorials.dart';
 import 'package:acter/common/tutorial_dialogs/target_focus.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 const spaceOverviewPrefKey = 'spaceOverviewPrefKey';
 
@@ -22,6 +22,7 @@ void spaceOverviewTutorials({
   final isShow = prefs.getBool(spaceOverviewPrefKey) ?? true;
 
   if (context.mounted && isShow) {
+    final lang = L10n.of(context);
     showTutorials(
       context: context,
       onFinish: setSpaceOverviewTutorialsAsViewed,
@@ -37,8 +38,8 @@ void spaceOverviewTutorials({
           contentAlign: ContentAlign.bottom,
           shape: ShapeLightFocus.RRect,
           paddingFocus: 10,
-          contentTitle: L10n.of(context).spaceOverviewTutorialTitle,
-          contentDescription: L10n.of(context).spaceOverviewTutorialDescription,
+          contentTitle: lang.spaceOverviewTutorialTitle,
+          contentDescription: lang.spaceOverviewTutorialDescription,
           isFirst: true,
           isLast: true,
         ),

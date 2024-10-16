@@ -26,16 +26,17 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final pinData = ref.watch(pinProvider(pinId));
     return pinData.when(
       data: (pin) => fakeLinkAttachmentItemUI(context, ref, pin),
       loading: () => Skeletonizer(
-        child: Text(L10n.of(context).loadingPin),
+        child: Text(lang.loadingPin),
       ),
       error: (e, s) {
         _log.severe('Error loading pin', e, s);
         return Text(
-          L10n.of(context).errorLoadingPin(e),
+          lang.errorLoadingPin(e),
         );
       },
     );
@@ -78,39 +79,42 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     return PopupMenuButton<String>(
       key: const Key('fake-pink-link-menu-options'),
       icon: const Icon(Icons.more_vert),
-      itemBuilder: (context) => [
-        //Check for can post pin permission
-        PopupMenuItem<String>(
-          key: const Key('fake-pink-link-edit'),
-          onTap: () {
-            showAddEditLinkBottomSheet(
-              context: context,
-              pinLink: link,
-              onSave: (title, newLink) async {
-                if (link == newLink) Navigator.pop(context);
-                await handleLinkBackwardSupportOnEdit(
-                  context,
-                  ref,
-                  pin,
-                  title,
-                  newLink,
-                );
-              },
-            );
-          },
-          child: Text(L10n.of(context).edit),
-        ),
-        PopupMenuItem<String>(
-          key: const Key('fake-pink-link-delete'),
-          onTap: () => updatePinLink(context, pin, ''),
-          child: Text(
-            L10n.of(context).delete,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.error,
+      itemBuilder: (context) {
+        final lang = L10n.of(context);
+        return [
+          //Check for can post pin permission
+          PopupMenuItem<String>(
+            key: const Key('fake-pink-link-edit'),
+            onTap: () {
+              showAddEditLinkBottomSheet(
+                context: context,
+                pinLink: link,
+                onSave: (title, newLink) async {
+                  if (link == newLink) Navigator.pop(context);
+                  await handleLinkBackwardSupportOnEdit(
+                    context,
+                    ref,
+                    pin,
+                    title,
+                    newLink,
+                  );
+                },
+              );
+            },
+            child: Text(lang.edit),
+          ),
+          PopupMenuItem<String>(
+            key: const Key('fake-pink-link-delete'),
+            onTap: () => updatePinLink(context, pin, ''),
+            child: Text(
+              lang.delete,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+              ),
             ),
           ),
-        ),
-      ],
+        ];
+      },
     );
   }
 

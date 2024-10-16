@@ -7,13 +7,16 @@ import 'package:acter/features/pins/actions/set_pin_links.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PinAttachmentOptions extends ConsumerWidget {
   final bool isBottomSheetOpen;
 
-  const PinAttachmentOptions({super.key, this.isBottomSheetOpen = false});
+  const PinAttachmentOptions({
+    super.key,
+    this.isBottomSheetOpen = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,6 +24,7 @@ class PinAttachmentOptions extends ConsumerWidget {
   }
 
   Widget _buildPinAttachmentOptions(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final pinState = ref.watch(createPinStateProvider);
     return Column(
       children: [
@@ -29,7 +33,7 @@ class PinAttachmentOptions extends ConsumerWidget {
           children: [
             _pinAttachmentOptionItem(
               context: context,
-              title: L10n.of(context).text,
+              title: lang.text,
               iconData: Atlas.text,
               onTap: () {
                 showEditPinDescriptionBottomSheet(
@@ -45,7 +49,7 @@ class PinAttachmentOptions extends ConsumerWidget {
             ),
             _pinAttachmentOptionItem(
               context: context,
-              title: L10n.of(context).link,
+              title: lang.link,
               iconData: Atlas.link,
               onTap: () => showAddPinLinkBottomSheet(
                 context: context,
@@ -55,7 +59,7 @@ class PinAttachmentOptions extends ConsumerWidget {
             ),
             _pinAttachmentOptionItem(
               context: context,
-              title: L10n.of(context).file,
+              title: lang.file,
               iconData: Atlas.file,
               onTap: () => selectAttachmentOnTap(
                 ref,
@@ -65,7 +69,7 @@ class PinAttachmentOptions extends ConsumerWidget {
             ),
             _pinAttachmentOptionItem(
               context: context,
-              title: L10n.of(context).image,
+              title: lang.image,
               iconData: Atlas.image_gallery,
               onTap: () => selectAttachmentOnTap(
                 ref,
@@ -75,7 +79,7 @@ class PinAttachmentOptions extends ConsumerWidget {
             ),
             _pinAttachmentOptionItem(
               context: context,
-              title: L10n.of(context).video,
+              title: lang.video,
               iconData: Atlas.video_camera,
               onTap: () => selectAttachmentOnTap(
                 ref,
@@ -85,7 +89,7 @@ class PinAttachmentOptions extends ConsumerWidget {
             ),
             _pinAttachmentOptionItem(
               context: context,
-              title: L10n.of(context).audio,
+              title: lang.audio,
               iconData: Atlas.audio_headphones,
               onTap: () => selectAttachmentOnTap(
                 ref,
@@ -126,11 +130,13 @@ class PinAttachmentOptions extends ConsumerWidget {
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           children: [
-            Expanded(child: Icon(iconData)),
+            Expanded(
+              child: Icon(iconData),
+            ),
             Text(title),
           ],
         ),

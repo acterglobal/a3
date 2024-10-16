@@ -253,13 +253,14 @@ Future<void> uploadAvatar(
   BuildContext context,
   String roomId,
 ) async {
+  final lang = L10n.of(context);
   final room = await ref.read(maybeRoomProvider(roomId).future);
   if (room == null || !context.mounted) return;
   FilePickerResult? result = await pickAvatar(context: context);
   if (result == null || result.files.isEmpty) return;
+  if (!context.mounted) return;
   try {
-    if (!context.mounted) return;
-    EasyLoading.show(status: L10n.of(context).avatarUploading);
+    EasyLoading.show(status: lang.avatarUploading);
     final filePath = result.files.first.path;
     if (filePath == null) throw 'avatar path not available';
     await room.uploadAvatar(filePath);
@@ -272,7 +273,7 @@ Future<void> uploadAvatar(
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).failedToUploadAvatar(e),
+      lang.failedToUploadAvatar(e),
       duration: const Duration(seconds: 3),
     );
   }
@@ -414,6 +415,7 @@ enum LabsFeature {
 
   // specific features
   chatUnread,
+  chatNG,
 
   // system features
   deviceCalendarSync,
@@ -440,6 +442,7 @@ enum LabsFeature {
         LabsFeature.encryptionBackup,
         LabsFeature.deviceCalendarSync,
         LabsFeature.mobilePushNotifications,
+        LabsFeature.chatNG,
       ];
 }
 

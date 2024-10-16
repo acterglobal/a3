@@ -53,13 +53,14 @@ class _EditRoomDescriptionSheetState
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
             const SizedBox(height: 20),
-            Text(L10n.of(context).editDescription),
+            Text(lang.editDescription),
             const SizedBox(height: 20),
             TextFormField(
               keyboardType: TextInputType.multiline,
@@ -67,9 +68,7 @@ class _EditRoomDescriptionSheetState
               controller: _descriptionController,
               minLines: 4,
               maxLines: 4,
-              decoration: InputDecoration(
-                hintText: L10n.of(context).description,
-              ),
+              decoration: InputDecoration(hintText: lang.description),
             ),
             const SizedBox(height: 20),
             Row(
@@ -77,12 +76,12 @@ class _EditRoomDescriptionSheetState
               children: [
                 OutlinedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text(L10n.of(context).cancel),
+                  child: Text(lang.cancel),
                 ),
                 const SizedBox(width: 20),
                 ActerPrimaryActionButton(
                   onPressed: () => _editDescription(context, ref),
-                  child: Text(L10n.of(context).save),
+                  child: Text(lang.save),
                 ),
               ],
             ),
@@ -98,9 +97,10 @@ class _EditRoomDescriptionSheetState
       Navigator.pop(context);
       return; // no changes to submit
     }
+    final lang = L10n.of(context);
 
     try {
-      EasyLoading.show(status: L10n.of(context).updateDescription);
+      EasyLoading.show(status: lang.updateDescription);
       final convo = await ref.read(chatProvider(widget.roomId).future);
       if (convo == null) {
         throw RoomNotFound();
@@ -116,7 +116,7 @@ class _EditRoomDescriptionSheetState
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).updateDescriptionFailed(e),
+        lang.updateDescriptionFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

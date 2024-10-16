@@ -1,5 +1,5 @@
-import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +31,10 @@ class CategoryHeaderView extends StatelessWidget {
 
   Widget _buildCategoryHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 6,
+      ),
       decoration: BoxDecoration(
         color: headerBackgroundColor,
         borderRadius: const BorderRadius.all(Radius.circular(16)),
@@ -67,6 +70,7 @@ class CategoryHeaderView extends StatelessWidget {
   }
 
   Widget _buildMenuOptions(BuildContext context) {
+    final lang = L10n.of(context);
     return PopupMenuButton(
       icon: Icon(PhosphorIcons.dotsThreeVertical()),
       iconSize: 28,
@@ -77,7 +81,7 @@ class CategoryHeaderView extends StatelessWidget {
             children: <Widget>[
               Icon(PhosphorIcons.pencil()),
               const SizedBox(width: 6),
-              Text(L10n.of(context).editCategory),
+              Text(lang.editCategory),
             ],
           ),
         ),
@@ -87,7 +91,7 @@ class CategoryHeaderView extends StatelessWidget {
             children: <Widget>[
               Icon(PhosphorIcons.trash()),
               const SizedBox(width: 6),
-              Text(L10n.of(context).deleteCategory),
+              Text(lang.deleteCategory),
             ],
           ),
         ),

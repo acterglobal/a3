@@ -1,6 +1,6 @@
 import 'package:acter/features/news/news_utils/news_utils.dart';
-import 'package:acter/features/news/widgets/news_item_slide/news_slide_actions.dart';
 import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
+import 'package:acter/features/news/widgets/news_item_slide/news_slide_actions.dart';
 import 'package:acter/features/news/widgets/news_item_slide/text_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -46,7 +46,10 @@ class NewsSlideItem extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: Container(
               height: 190,
-              padding: const EdgeInsets.only(right: 60, bottom: 80),
+              padding: const EdgeInsets.only(
+                right: 60,
+                bottom: 80,
+              ),
               child: NewsSlideActions(newsSlide: slide),
             ),
           ),

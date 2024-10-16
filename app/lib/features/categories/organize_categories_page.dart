@@ -118,8 +118,7 @@ class _DraggableCategoriesListState
       categoryList[categoryIndex].entries.length,
       (entryItemIndex) => DragAndDropItem(
         child: RoomCard(
-          roomId:
-              categoryList[categoryIndex].entries[entryItemIndex].toString(),
+          roomId: categoryList[categoryIndex].entries[entryItemIndex],
           margin: const EdgeInsets.symmetric(vertical: 6),
           leading: Icon(PhosphorIcons.dotsSixVertical()),
         ),
@@ -146,6 +145,7 @@ class _DraggableCategoriesListState
 
   //APPBAR VIEW
   AppBar _buildAppBarUI() {
+    final lang = L10n.of(context);
     final spaceName =
         ref.watch(roomDisplayNameProvider(widget.spaceId)).valueOrNull;
     return AppBar(
@@ -166,7 +166,7 @@ class _DraggableCategoriesListState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            L10n.of(context).organize,
+            lang.organize,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           Text(
@@ -181,7 +181,7 @@ class _DraggableCategoriesListState
           icon: Icon(PhosphorIcons.plus()),
           onPressed: () => showAddEditCategoryBottomSheet(
             context: context,
-            bottomSheetTitle: L10n.of(context).addCategory,
+            bottomSheetTitle: lang.addCategory,
             onSave: (title, color, icon) => callAddCategory(title, color, icon),
           ),
         ),

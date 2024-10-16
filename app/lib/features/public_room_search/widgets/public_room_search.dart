@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/public_room_search/models/public_search_filters.dart';
 import 'package:acter/features/public_room_search/providers/public_search_providers.dart';
 import 'package:acter/features/public_room_search/types.dart';
@@ -7,82 +8,12 @@ import 'package:acter/features/public_room_search/widgets/maybe_direct_room_acti
 import 'package:acter/features/public_room_search/widgets/public_room_item.dart';
 import 'package:acter/features/public_room_search/widgets/server_selection_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:atlas_icons/atlas_icons.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-
-class _SearchField extends ConsumerStatefulWidget {
-  final String? initialQuery;
-  const _SearchField({this.initialQuery});
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() => __SearchFieldState();
-}
-
-class __SearchFieldState extends ConsumerState<_SearchField> {
-  bool hasSearchTerm = false;
-
-  final TextEditingController searchTextController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _checkInitialQuery();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _checkInitialQuery();
-  }
-
-  void _checkInitialQuery() {
-    if (widget.initialQuery != null) {
-      searchTextController.text = widget.initialQuery!;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final hasSearchTerm = ref.watch(searchFilterProvider).searchTerm != null;
-    return SearchBar(
-      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-        const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-          ),
-        ),
-      ),
-      controller: searchTextController,
-      leading: const Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Icon(Atlas.magnifying_glass),
-      ),
-      hintText: L10n.of(context).searchTermFieldHint,
-      trailing: hasSearchTerm
-          ? [
-              InkWell(
-                onTap: () {
-                  searchTextController.clear();
-                  ref
-                      .read(searchFilterProvider.notifier)
-                      .updateSearchTerm(null);
-                },
-                child: const Icon(Icons.clear),
-              ),
-            ]
-          : null,
-      onChanged: (value) {
-        ref.read(searchFilterProvider.notifier).updateSearchTerm(value);
-      },
-    );
-  }
-}
 
 class PublicRoomSearch extends ConsumerStatefulWidget {
   final bool autofocus;
@@ -136,7 +67,19 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _SearchField(initialQuery: widget.initialQuery),
+              ActerSearchWidget(
+                initialText: widget.initialQuery,
+                padding: EdgeInsets.zero,
+                hintText: L10n.of(context).jumpTo,
+                onChanged: (String value) {
+                  final notifier = ref.read(searchFilterProvider.notifier);
+                  notifier.updateSearchTerm(value);
+                },
+                onClear: () {
+                  final notifier = ref.read(searchFilterProvider.notifier);
+                  notifier.updateSearchTerm(null);
+                },
+              ),
               Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
@@ -175,9 +118,8 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
       textStyle: TextStyle(color: Theme.of(context).hintColor),
       menuStyle: const MenuStyle(visualDensity: VisualDensity.compact),
       onSelected: (FilterBy? newFilter) {
-        ref
-            .read(searchFilterProvider.notifier)
-            .updateFilters(newFilter ?? FilterBy.both);
+        final notifier = ref.read(searchFilterProvider.notifier);
+        notifier.updateFilters(newFilter ?? FilterBy.both);
       },
       dropdownMenuEntries: const [
         DropdownMenuEntry<FilterBy>(
@@ -205,8 +147,10 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
           loadingPage(context),
       itemBuilder: (context, item, index) => PublicRoomItem(
         item: item,
-        onSelected: (item) =>
-            widget.onSelected(item, ref.read(searchFilterProvider).server),
+        onSelected: (item) {
+          final serverName = ref.read(searchFilterProvider).server;
+          return widget.onSelected(item, serverName);
+        },
       ),
       noItemsFoundIndicatorBuilder: (context, controller) {
         if (ref.read(publicSearchProvider.notifier).isLoading()) {
@@ -273,15 +217,18 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
   }
 
   String buildSearchTitle(BuildContext context) {
+    final lang = L10n.of(context);
     return switch (ref.watch(searchFilterProvider).filterBy) {
-      FilterBy.spaces => L10n.of(context).searchSpaces,
-      FilterBy.chats => L10n.of(context).searchChats,
-      FilterBy.both => L10n.of(context).searchPublicDirectory,
+      FilterBy.spaces => lang.searchSpaces,
+      FilterBy.chats => lang.searchChats,
+      FilterBy.both => lang.searchPublicDirectory,
     };
   }
 
   @override
   Widget build(BuildContext context) {
+    final searchVal =
+        ref.watch(searchFilterProvider.select((v) => v.searchTerm ?? ''));
     return Scaffold(
       appBar: AppBar(
         title: Text(buildSearchTitle(context)),
@@ -291,9 +238,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
           _searchBar(context),
           SliverToBoxAdapter(
             child: MaybeDirectRoomActionWidget(
-              searchVal: ref.watch(
-                searchFilterProvider.select((v) => v.searchTerm ?? ''),
-              ),
+              searchVal: searchVal,
               canMatchAlias: true,
               canMatchId: true,
             ),
@@ -308,9 +253,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
     String? currentSelection = ref.watch(searchFilterProvider).server;
     if (currentSelection != null) {
       final foundEntry = defaultServers
-          .where(
-            (element) => element.value == currentSelection,
-          )
+          .where((element) => element.value == currentSelection)
           .firstOrNull;
       if (foundEntry != null) {
         currentSelection = foundEntry.name ?? foundEntry.value;
@@ -324,9 +267,10 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
           options: defaultServers,
           autofocus: true,
           currentSelection: currentSelection ?? 'Acter.global',
-          onSelect: (newServer) => ref
-              .read(searchFilterProvider.notifier)
-              .updateSearchServer(newServer),
+          onSelect: (newServer) {
+            final notifier = ref.read(searchFilterProvider.notifier);
+            notifier.updateSearchServer(newServer);
+          },
         ),
       ),
     );

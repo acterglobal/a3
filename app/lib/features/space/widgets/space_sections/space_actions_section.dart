@@ -38,6 +38,7 @@ class SpaceActionsSection extends ConsumerWidget {
   }
 
   Widget actionButtons(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     bool canAddPin = membership?.canString('CanPostPin') == true;
     bool canPostUpdate = membership?.canString('CanPostNews') == true;
@@ -52,7 +53,7 @@ class SpaceActionsSection extends ConsumerWidget {
         simpleActionButton(
           context: context,
           iconData: PhosphorIcons.newspaper(),
-          title: L10n.of(context).addBoost,
+          title: lang.addBoost,
           onPressed: () async {
             if (!canPostUpdate && canChangeSetting) {
               final result = await offerToActivateFeature(
@@ -75,7 +76,7 @@ class SpaceActionsSection extends ConsumerWidget {
         simpleActionButton(
           context: context,
           iconData: Atlas.pin,
-          title: L10n.of(context).addPin,
+          title: lang.addPin,
           onPressed: () async {
             if (!canAddPin && canChangeSetting) {
               final result = await offerToActivateFeature(
@@ -98,7 +99,7 @@ class SpaceActionsSection extends ConsumerWidget {
         simpleActionButton(
           context: context,
           iconData: Atlas.calendar_dots,
-          title: L10n.of(context).addEvent,
+          title: lang.addEvent,
           onPressed: () async {
             if (!canAddEvent && canChangeSetting) {
               final result = await offerToActivateFeature(
@@ -121,7 +122,7 @@ class SpaceActionsSection extends ConsumerWidget {
         simpleActionButton(
           context: context,
           iconData: Atlas.list,
-          title: L10n.of(context).addTask,
+          title: lang.addTask,
           onPressed: () async {
             if (!canAddEvent && canChangeSetting) {
               final result = await offerToActivateFeature(
@@ -148,7 +149,7 @@ class SpaceActionsSection extends ConsumerWidget {
           key: createChatAction,
           context: context,
           iconData: Atlas.chats,
-          title: L10n.of(context).addChat,
+          title: lang.addChat,
           onPressed: () => context.pushNamed(
             Routes.createChat.name,
             queryParameters: {'spaceId': spaceId},
@@ -159,7 +160,7 @@ class SpaceActionsSection extends ConsumerWidget {
           key: createSpaceAction,
           context: context,
           iconData: Icons.people,
-          title: L10n.of(context).addSpace,
+          title: lang.addSpace,
           onPressed: () => context.pushNamed(
             Routes.createSpace.name,
             queryParameters: {'parentSpaceId': spaceId},
@@ -168,7 +169,7 @@ class SpaceActionsSection extends ConsumerWidget {
         simpleActionButton(
           context: context,
           iconData: Icons.link,
-          title: L10n.of(context).linkChat,
+          title: lang.linkChat,
           onPressed: () => context.pushNamed(
             Routes.linkChat.name,
             pathParameters: {'spaceId': spaceId},
@@ -177,7 +178,7 @@ class SpaceActionsSection extends ConsumerWidget {
         simpleActionButton(
           context: context,
           iconData: Icons.link,
-          title: L10n.of(context).linkSpace,
+          title: lang.linkSpace,
           onPressed: () => context.pushNamed(
             Routes.linkSubspace.name,
             pathParameters: {'spaceId': spaceId},
