@@ -34,9 +34,9 @@ final spaceListSearchProvider = FutureProvider.autoDispose
 
   //Return all spaces with search criteria
   return spaceList.where((space) {
-    final spaceId = space.getRoomIdStr();
-    final spaceInfo = ref.watch(roomAvatarInfoProvider(spaceId));
-    final spaceName = spaceInfo.displayName ?? spaceId;
-    return spaceName.toLowerCase().contains(searchText);
+    final roomId = space.getRoomIdStr();
+    final spaceInfo = ref.watch(roomAvatarInfoProvider(roomId));
+    final spaceName = spaceInfo.displayName ?? roomId;
+    return spaceName.toLowerCase().contains(searchText.toLowerCase());
   }).toList();
 });
