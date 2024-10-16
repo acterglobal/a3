@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,41 +74,6 @@ extension ActerContextUtils on BuildContext {
       MediaQuery.of(this).size.width >= largeScreenBreakPoint;
 }
 
-String formatDate(CalendarEvent e) {
-  final start = toDartDatetime(e.utcStart()).toLocal();
-  final end = toDartDatetime(e.utcEnd()).toLocal();
-  final startFmt = DateFormat.yMMMd().format(start);
-  if (start.difference(end).inDays == 0) {
-    return startFmt;
-  } else {
-    final endFmt = DateFormat.yMMMd().format(end);
-    return '$startFmt - $endFmt';
-  }
-}
-
-String formatTime(CalendarEvent e) {
-  final start = toDartDatetime(e.utcStart()).toLocal();
-  final end = toDartDatetime(e.utcEnd()).toLocal();
-  return '${DateFormat.jm().format(start)} - ${DateFormat.jm().format(end)}';
-}
-
-String getMonthFromDate(UtcDateTime utcDateTime) {
-  final localDateTime = toDartDatetime(utcDateTime).toLocal();
-  final month = DateFormat.MMM().format(localDateTime);
-  return month;
-}
-
-String getDayFromDate(UtcDateTime utcDateTime) {
-  final localDateTime = toDartDatetime(utcDateTime).toLocal();
-  final day = DateFormat.d().format(localDateTime);
-  return day;
-}
-
-String getTimeFromDate(BuildContext context, UtcDateTime utcDateTime) {
-  final localDateTime = toDartDatetime(utcDateTime).toLocal();
-  return DateFormat.jm().format(localDateTime);
-}
-
 String jiffyTime(BuildContext context, int timeInterval) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
   final now = Jiffy.now().startOf(Unit.day);
@@ -131,10 +95,6 @@ String jiffyTime(BuildContext context, int timeInterval) {
 extension TimeOfDayExtension on TimeOfDay {
   /// note: 'hour' is in 24-hour format
   double toDouble() => hour + (minute / 60.0);
-}
-
-String eventDateFormat(DateTime dateTime) {
-  return DateFormat('MMM dd, yyyy').format(dateTime);
 }
 
 String taskDueDateFormat(DateTime dateTime) {
