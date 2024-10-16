@@ -46,7 +46,7 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
       );
     }
     return tokenResponse
-            .let((resp) => _NewPassword(tokenResponse: resp, sdk: sdk)) ??
+            .map((resp) => _NewPassword(tokenResponse: resp, sdk: sdk)) ??
         _AskForEmail(
           sdk: sdk,
           onSubmit: (resp) => setState(() => tokenResponse = resp),

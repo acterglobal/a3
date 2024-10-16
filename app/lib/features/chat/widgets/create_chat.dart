@@ -458,7 +458,7 @@ class _CreateRoomFormWidgetConsumerState
   @override
   void initState() {
     super.initState();
-    widget.initialSelectedSpaceId.let((p0) {
+    widget.initialSelectedSpaceId.map((p0) {
       isSpaceRoom = true;
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         final notifier = ref.read(selectedSpaceIdProvider.notifier);
@@ -593,7 +593,7 @@ class _CreateRoomFormWidgetConsumerState
   }
 
   void _handleTitleChange(String? value) {
-    value.let((val) {
+    value.map((val) {
       ref.read(_titleProvider.notifier).update((state) => val);
     });
   }

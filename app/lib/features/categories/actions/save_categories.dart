@@ -45,10 +45,10 @@ Future<void> saveCategories(
       newCategoryItem.title(category.title);
 
       //ADD COLOR AND ICON
-      category.color.let((color) {
+      category.color.map((color) {
         displayBuilder.color(color.value);
       });
-      category.icon.let((icon) {
+      category.icon.map((icon) {
         displayBuilder.icon('acter-icon', icon.name);
       });
       newCategoryItem.display(displayBuilder.build());

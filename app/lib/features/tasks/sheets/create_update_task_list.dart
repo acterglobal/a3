@@ -60,7 +60,7 @@ class _CreateUpdateTaskListConsumerState
   @override
   void initState() {
     super.initState();
-    widget.initialSelectedSpace.let((p0) {
+    widget.initialSelectedSpace.map((p0) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         ref.read(selectedSpaceIdProvider.notifier).state = p0;
       });

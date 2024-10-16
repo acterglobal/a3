@@ -298,7 +298,7 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
               });
               return ScrollsToTop(
                 onScrollsToTop: _onScrollsToTop,
-                child: widget.onRefresh.let(
+                child: widget.onRefresh.map(
                       (cb) => RefreshIndicator(
                         onRefresh: cb,
                         child: buildScrollabelPositionedList(),
@@ -404,17 +404,17 @@ class _DefaultHeaderWidgetState extends State<DefaultHeaderWidget>
   }
 
   void tabChangeListener() {
-    _tabController.let((controller) => widget.onTapTab(controller.index));
+    _tabController.map((controller) => widget.onTapTab(controller.index));
   }
 
   void externalTabChangeListener() {
-    _tabController.let((controller) {
+    _tabController.map((controller) {
       controller.index = widget.selectedTabIndex.value;
     });
   }
 
   void _onTapTab(_) {
-    _tabController.let((controller) {
+    _tabController.map((controller) {
       controller.index = widget.selectedTabIndex.value;
     });
   }

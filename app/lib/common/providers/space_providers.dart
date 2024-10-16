@@ -400,7 +400,7 @@ final remoteSubspaceRelationsProvider =
         await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
     final toIgnore = List.of(relatedSpaces.knownSubspaces);
     toIgnore.addAll(relatedSpaces.parents.map((e) => e.getRoomIdStr()));
-    relatedSpaces.mainParent.let((p) => toIgnore.add(p.getRoomIdStr()));
+    relatedSpaces.mainParent.map((p) => toIgnore.add(p.getRoomIdStr()));
     toIgnore.add(spaceId); // the hierarchy also gives us ourselfes ...
 
     final roomHierarchy =

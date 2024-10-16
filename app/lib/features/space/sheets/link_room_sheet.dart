@@ -125,7 +125,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     final space = ref.watch(selectedSpaceDetailsProvider);
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: space.let(
+      child: space.map(
             (p0) => Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,

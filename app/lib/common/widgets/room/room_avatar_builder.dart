@@ -25,6 +25,6 @@ class RoomAvatarBuilder extends ConsumerWidget {
         size: avatarSize,
       ),
     );
-    return padding.let((p) => Padding(padding: p, child: child)) ?? child;
+    return padding.map((p) => Padding(padding: p, child: child)) ?? child;
   }
 }

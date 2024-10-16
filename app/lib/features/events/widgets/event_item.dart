@@ -37,7 +37,7 @@ class EventItem extends StatelessWidget {
     return InkWell(
       onTap: () {
         final eventId = event.eventId().toString();
-        onTapEventItem.let((cb) => cb(eventId)) ??
+        onTapEventItem.map((cb) => cb(eventId)) ??
             context.pushNamed(
               Routes.calendarEvent.name,
               pathParameters: {'calendarId': eventId},

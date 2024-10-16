@@ -228,7 +228,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
 
   List<Widget> renderForScreenShot() {
     final lang = L10n.of(context);
-    return widget.imagePath.let(
+    return widget.imagePath.map(
           (path) => [
             const SizedBox(height: 10),
             CheckboxListTile(

@@ -94,11 +94,11 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   @override
   void initState() {
     super.initState();
-    widget.templateEvent.let((p0) {
+    widget.templateEvent.map((p0) {
           WidgetsBinding.instance
               .addPostFrameCallback((Duration dur) => _setFromTemplate(p0));
         }) ??
-        widget.initialSelectedSpace.let((p0) {
+        widget.initialSelectedSpace.map((p0) {
           WidgetsBinding.instance
               .addPostFrameCallback((Duration dur) => _setSpaceId(p0));
         });

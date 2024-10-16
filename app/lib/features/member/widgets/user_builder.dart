@@ -135,7 +135,7 @@ class UserBuilder extends ConsumerWidget {
 
   Widget _buildSharedRooms(BuildContext context, Widget tile) {
     final sharedRooms =
-        userProfile.let((p0) => asDartStringList(p0.sharedRooms())) ?? [];
+        userProfile.map((p0) => asDartStringList(p0.sharedRooms())) ?? [];
     if (sharedRooms.isEmpty) return tile;
 
     final lang = L10n.of(context);

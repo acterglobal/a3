@@ -136,7 +136,7 @@ class _RedactContentWidget extends ConsumerWidget {
       }
       EasyLoading.showToast(lang.contentSuccessfullyRemoved);
       Navigator.pop(context, true);
-      onSuccess.let((cb) => cb());
+      onSuccess.map((cb) => cb());
     } catch (e, s) {
       _log.severe('Failed to redact content', e, s);
       if (!context.mounted) {
