@@ -2,12 +2,10 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/pages/chat_select_page.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ChatLayoutBuilder extends ConsumerWidget {
+class ChatLayoutBuilder extends StatelessWidget {
   final Widget? centerChild;
   final Widget? expandedChild;
 
@@ -18,26 +16,19 @@ class ChatLayoutBuilder extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final expanded = expandedChild;
     final center = centerChild;
-    final isChatNG = ref.watch(isActiveProvider(LabsFeature.chatNG));
-    final roomRoute = isChatNG ? Routes.chatNGRoom.name : Routes.chatroom.name;
-
     if (!context.isLargeScreen) {
       // we only have space to show the deepest child:
       if (expanded != null) return expanded;
       if (center != null) return center;
       // no children, show the room list
-      return Consumer(
-        builder: (context, ref, child) {
-          return RoomsListWidget(
-            onSelected: (String roomId) => context.pushNamed(
-              roomRoute,
-              pathParameters: {'roomId': roomId},
-            ),
-          );
-        },
+      return RoomsListWidget(
+        onSelected: (String roomId) => context.pushNamed(
+          Routes.chatroom.name,
+          pathParameters: {'roomId': roomId},
+        ),
       );
     }
 
@@ -51,12 +42,12 @@ class ChatLayoutBuilder extends ConsumerWidget {
             onSelected: (String roomId) => pushReplacementRouting
                 ? context.pushReplacementNamed(
                     // we switch without "push"
-                    roomRoute,
+                    Routes.chatroom.name,
                     pathParameters: {'roomId': roomId},
                   )
                 : context.pushNamed(
                     // we switch without "push"
-                    roomRoute,
+                    Routes.chatroom.name,
                     pathParameters: {'roomId': roomId},
                   ),
           ),
