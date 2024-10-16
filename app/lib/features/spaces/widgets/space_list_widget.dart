@@ -1,6 +1,5 @@
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
-import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter/features/spaces/widgets/space_list_skeleton.dart';
@@ -13,7 +12,6 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::space-list-widget');
 
 class SpaceListWidget extends ConsumerWidget {
-  final String? spaceId;
   final String? searchValue;
   final int? limit;
   final bool showSectionHeader;
@@ -24,7 +22,6 @@ class SpaceListWidget extends ConsumerWidget {
   const SpaceListWidget({
     super.key,
     this.limit,
-    this.spaceId,
     this.searchValue,
     this.showSectionHeader = false,
     this.onClickSectionHeader,
@@ -55,15 +52,7 @@ class SpaceListWidget extends ConsumerWidget {
       stack: stack,
       textBuilder: L10n.of(context).loadingFailed,
       onRetryTap: () {
-        if (searchValue?.isNotEmpty == true) {
-          ref.invalidate(
-            pinListSearchProvider(
-              (spaceId: spaceId, searchText: searchValue ?? ''),
-            ),
-          );
-        } else {
-          ref.invalidate(pinListProvider(spaceId));
-        }
+        ref.invalidate(spaceListSearchProvider(searchValue ?? ''));
       },
     );
   }
