@@ -41,4 +41,6 @@ class NewsUpdateKeys {
   static const removeButton = Key('news-remove-btn');
 
   static const closeEditor = Key('news-editor-close');
+  static const confirmDeleteDraft = Key('news-confirm-delete-draft');
+  static const cancelClose = Key('news-cancel-close');
 }

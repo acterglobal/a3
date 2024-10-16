@@ -106,9 +106,10 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     }
 
     // we first need to confirm with the user that we can clear everything.
-    final bool? confirm = await showAdaptiveDialog(
+    final bool? confirm = await showAdaptiveDialog<bool>(
       context: context,
       useRootNavigator: false,
+      routeSettings: const RouteSettings(name: 'confirmCanClear'),
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(L10n.of(context).deleteNewsDraftTitle),
@@ -118,12 +119,14 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
             OutlinedButton(
+              key: NewsUpdateKeys.cancelClose,
               onPressed: () => Navigator.pop(context, false),
               child: Text(
                 L10n.of(context).no,
               ),
             ),
             ActerDangerActionButton(
+              key: NewsUpdateKeys.confirmDeleteDraft,
               onPressed: () async {
                 Navigator.pop(context, true);
               },
