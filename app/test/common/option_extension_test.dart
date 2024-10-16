@@ -36,37 +36,59 @@ void main() {
 
       expect(wasCalled, false);
     });
+
+    testWidgets('default on null', (tester) async {
+      bool wasCalled = false;
+      String? target;
+
+      String? targetValue = target.map(
+        (a) {
+          wasCalled = true;
+          return 'inner';
+        },
+        defaultValue: 'ok',
+      );
+
+      expect(wasCalled, false);
+      expect(targetValue, 'ok');
+    });
+
+    testWidgets('default on null for async', (tester) async {
+      bool wasCalled = false;
+      String? target;
+
+      String? targetValue = await target.mapAsync(
+        (a) {
+          wasCalled = true;
+          return 'inner';
+        },
+        defaultValue: 'ok',
+      );
+
+      expect(wasCalled, false);
+      expect(targetValue, 'ok');
+    });
   });
 
-  testWidgets('default on null', (tester) async {
-    bool wasCalled = false;
-    String? target;
+  group('Option Expect', () {
+    testWidgets('expect', (tester) async {
+      String? target = 'jo';
 
-    String? targetValue = target.map(
-      (a) {
-        wasCalled = true;
-        return 'inner';
-      },
-      defaultValue: 'ok',
-    );
+      String targetValue = target.expect('error');
 
-    expect(wasCalled, false);
-    expect(targetValue, 'ok');
-  });
+      expect(targetValue, 'jo');
+    });
+    testWidgets('expect throws', (tester) async {
+      String? target;
 
-  testWidgets('default on null for async', (tester) async {
-    bool wasCalled = false;
-    String? target;
-
-    String? targetValue = await target.mapAsync(
-      (a) {
-        wasCalled = true;
-        return 'inner';
-      },
-      defaultValue: 'ok',
-    );
-
-    expect(wasCalled, false);
-    expect(targetValue, 'ok');
+      expect(
+        () => target.expect('my custom error'),
+        throwsA(predicate((e) => e == 'my custom error')),
+      );
+      expect(
+        () => target.expect('totally custom'),
+        throwsA(predicate((e) => e == 'totally custom')),
+      );
+    });
   });
 }

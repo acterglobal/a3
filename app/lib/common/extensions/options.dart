@@ -13,4 +13,13 @@ extension OptionExtension<T> on T? {
     final T? value = this;
     return value == null ? defaultValue : op(value);
   }
+
+  /// Unwrap the value or throw the `error`
+  T expect([Object error = 'Value was null']) {
+    final T? value = this;
+    if (value == null) {
+      throw error;
+    }
+    return value;
+  }
 }
