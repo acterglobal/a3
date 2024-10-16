@@ -330,8 +330,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     bool parentCanSee = joinRule == 'public';
     String newRule = 'restricted';
     if (joinRule == 'restricted' || joinRule == 'knock_restricted') {
-      currentRooms =
-          room.restrictedRoomIdsStr().map((t) => t.toString()).toList();
+      currentRooms = asDartStringList(room.restrictedRoomIdsStr());
       parentCanSee = currentRooms.contains(parentSpaceId);
       newRule = joinRule;
     }

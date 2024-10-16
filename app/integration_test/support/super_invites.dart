@@ -21,7 +21,7 @@ extension SuperInvites on ConvenientTest {
     List<String>? chats,
     StepCallback? onCreateForm,
   }) async {
-    final newToken = 't${const Uuid().v4().toString()}'.substring(0, 8);
+    final newToken = 't${const Uuid().v4()}'.substring(0, 8);
     await find.byKey(Keys.mainNav).should(findsOneWidget);
     await navigateTo([
       MainNavKeys.quickJump,

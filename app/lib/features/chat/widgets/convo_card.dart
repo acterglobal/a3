@@ -482,20 +482,20 @@ class _SubtitleWidget extends ConsumerWidget {
     final lang = L10n.of(context);
     final textStyle = Theme.of(context).textTheme.bodySmall!;
     if (userIds.length == 1) {
-      final userName = simplifyUserId(userIds[0].id.toString());
+      final userName = simplifyUserId(userIds[0].id);
       return Text(
         lang.typingUser1(userName!),
         style: textStyle,
       );
     } else if (userIds.length == 2) {
-      final u1 = simplifyUserId(userIds[0].id.toString());
-      final u2 = simplifyUserId(userIds[1].id.toString());
+      final u1 = simplifyUserId(userIds[0].id);
+      final u2 = simplifyUserId(userIds[1].id);
       return Text(
         lang.typingUser2(u1!, u2!),
         style: textStyle,
       );
     } else {
-      final u1 = simplifyUserId(userIds[0].id.toString());
+      final u1 = simplifyUserId(userIds[0].id);
       return Text(
         lang.typingUserN(u1!, {userIds.length - 1}),
         style: textStyle,

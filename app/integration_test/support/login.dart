@@ -24,7 +24,7 @@ extension ActerLogin on ConvenientTest {
     String? registrationToken,
     String? displayName,
   }) async {
-    final newId = 'it-${const Uuid().v4().toString()}';
+    final newId = 'it-${const Uuid().v4()}';
     startFreshTestApp(newId);
     await register(
       newId,

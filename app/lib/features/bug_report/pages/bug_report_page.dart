@@ -56,10 +56,10 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       final Map<String, String> extraFields = {};
       if (submitErrorAndStackTrace) {
         if (widget.error != null) {
-          extraFields['error'] = widget.error.toString();
+          extraFields['error'] = widget.error!;
         }
         if (widget.stack != null) {
-          extraFields['stack'] = widget.stack.toString();
+          extraFields['stack'] = widget.stack!;
         }
       }
       if (descController.text.isNotEmpty) {
