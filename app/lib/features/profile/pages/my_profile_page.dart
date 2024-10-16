@@ -11,6 +11,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::profile::my_profile');
 
 class ChangeDisplayName extends StatefulWidget {
   final String? currentName;
@@ -112,11 +115,14 @@ class MyProfilePage extends StatelessWidget {
 
   Future<void> updateAvatar(BuildContext context, WidgetRef ref) async {
     FilePickerResult? result = await pickAvatar(context: context);
-    if (!context.mounted) return;
     if (result != null && result.files.isNotEmpty) {
-      EasyLoading.show(status: L10n.of(context).updatingProfileImage);
       final filePath = result.files.first.path;
-      if (filePath == null) throw 'avatar path not available';
+      if (filePath == null) {
+        _log.severe('FilePickerResult had an empty path', result);
+        return;
+      }
+      if (!context.mounted) return;
+      EasyLoading.show(status: L10n.of(context).updatingProfileImage);
       final account = ref.read(accountProvider);
       await account.uploadAvatar(filePath);
       ref.invalidate(accountProvider);

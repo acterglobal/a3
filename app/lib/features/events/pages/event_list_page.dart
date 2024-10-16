@@ -25,7 +25,10 @@ final _log = Logger('a3::cal_event::list');
 class EventListPage extends ConsumerStatefulWidget {
   final String? spaceId;
 
-  const EventListPage({super.key, this.spaceId});
+  const EventListPage({
+    super.key,
+    this.spaceId,
+  });
 
   @override
   ConsumerState<EventListPage> createState() => _EventListPageState();
@@ -45,6 +48,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
   }
 
   AppBar _buildAppBar() {
+    final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
       title: Column(
@@ -52,7 +56,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(L10n.of(context).events),
-          if (widget.spaceId != null) SpaceNameWidget(spaceId: widget.spaceId!),
+          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
         ],
       ),
       actions: [

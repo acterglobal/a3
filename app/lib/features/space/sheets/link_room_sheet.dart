@@ -5,6 +5,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
@@ -330,8 +331,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     bool parentCanSee = joinRule == 'public';
     String newRule = 'restricted';
     if (joinRule == 'restricted' || joinRule == 'knock_restricted') {
-      currentRooms =
-          room.restrictedRoomIdsStr().map((t) => t.toString()).toList();
+      currentRooms = asDartStringList(room.restrictedRoomIdsStr());
       parentCanSee = currentRooms.contains(parentSpaceId);
       newRule = joinRule;
     }

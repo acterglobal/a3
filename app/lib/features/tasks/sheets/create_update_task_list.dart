@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/html_editor.dart';
@@ -15,19 +15,17 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::tasks::create_update_tasklist');
 
-void showCreateUpdateTaskListBottomSheet(
+Future<void> showCreateUpdateTaskListBottomSheet(
   BuildContext context, {
   String? initialSelectedSpace,
-}) {
-  showModalBottomSheet(
+}) async {
+  await showModalBottomSheet(
     context: context,
     showDragHandle: false,
     useSafeArea: true,
     isScrollControlled: true,
     builder: (context) {
-      return CreateUpdateTaskList(
-        initialSelectedSpace: initialSelectedSpace,
-      );
+      return CreateUpdateTaskList(initialSelectedSpace: initialSelectedSpace);
     },
   );
 }
@@ -76,7 +74,7 @@ class _CreateUpdateTaskListConsumerState
 
   Widget _buildBody(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -121,26 +119,24 @@ class _CreateUpdateTaskListConsumerState
   }
 
   Widget _widgetTaskListName() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          L10n.of(context).taskListName,
+          lang.taskListName,
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 5),
         TextFormField(
           autofocus: true,
           key: CreateUpdateTaskList.titleKey,
-          decoration: InputDecoration(
-            hintText: L10n.of(context).name,
-          ),
+          decoration: InputDecoration(hintText: lang.name),
           autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _titleController,
           // required field, space not allowed
-          validator: (val) => val == null || val.trim().isEmpty
-              ? L10n.of(context).pleaseEnterAName
-              : null,
+          validator: (val) =>
+              val == null || val.trim().isEmpty ? lang.pleaseEnterAName : null,
         ),
       ],
     );
@@ -163,7 +159,7 @@ class _CreateUpdateTaskListConsumerState
               height: 200,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.white70),
-                borderRadius: BorderRadius.circular(10.0),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: HtmlEditor(
                 editorState: textEditorState,
@@ -210,8 +206,9 @@ class _CreateUpdateTaskListConsumerState
   }
 
   Future<void> submitForm() async {
+    final lang = L10n.of(context);
     if (!_formKey.currentState!.validate()) return;
-    EasyLoading.show(status: L10n.of(context).postingTaskList);
+    EasyLoading.show(status: lang.postingTaskList);
     try {
       final spaceId = ref.read(selectedSpaceIdProvider);
       final space = await ref.read(spaceProvider(spaceId!).future);
@@ -220,7 +217,7 @@ class _CreateUpdateTaskListConsumerState
       // TaskList IconData
 
       if (taskListIconColor != null || taskListIcon != null) {
-        final sdk = await ref.watch(sdkProvider.future);
+        final sdk = await ref.read(sdkProvider.future);
         final displayBuilder = sdk.api.newDisplayBuilder();
         if (taskListIconColor != null) {
           displayBuilder.color(taskListIconColor!.value);
@@ -248,7 +245,7 @@ class _CreateUpdateTaskListConsumerState
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToCreateTaskList(e),
+        lang.failedToCreateTaskList(e),
         duration: const Duration(seconds: 3),
       );
     }

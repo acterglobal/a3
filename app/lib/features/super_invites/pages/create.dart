@@ -32,7 +32,10 @@ class CreateSuperInviteTokenPage extends ConsumerStatefulWidget {
 
   final SuperInviteToken? token;
 
-  const CreateSuperInviteTokenPage({super.key, this.token});
+  const CreateSuperInviteTokenPage({
+    super.key,
+    this.token,
+  });
 
   @override
   ConsumerState<CreateSuperInviteTokenPage> createState() =>
@@ -71,6 +74,7 @@ class _CreateSuperInviteTokenPageConsumerState
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     final spaces = List<String>.empty(growable: true);
     final chats = List<String>.empty(growable: true);
     for (final roomId in _roomIds) {
@@ -86,7 +90,10 @@ class _CreateSuperInviteTokenPageConsumerState
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 15,
+            vertical: 10,
+          ),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,9 +102,7 @@ class _CreateSuperInviteTokenPageConsumerState
                 isEdit
                     ? ListTile(
                         title: Text(_tokenController.text),
-                        subtitle: Text(
-                          L10n.of(context).claimedTimes(_acceptedCount),
-                        ),
+                        subtitle: Text(lang.claimedTimes(_acceptedCount)),
                         trailing: IconButton(
                           key: CreateSuperInviteTokenPage.deleteBtn,
                           icon: const Icon(Atlas.trash_can_thin),
@@ -105,18 +110,18 @@ class _CreateSuperInviteTokenPageConsumerState
                         ),
                       )
                     : InputTextField(
-                        hintText: L10n.of(context).code,
+                        hintText: lang.code,
                         key: CreateSuperInviteTokenPage.tokenFieldKey,
                         textInputType: TextInputType.text,
                         controller: _tokenController,
                         // required field
                         validator: (val) => val == null || val.length < 6
-                            ? L10n.of(context).codeMustBeAtLeast6CharactersLong
+                            ? lang.codeMustBeAtLeast6CharactersLong
                             : null,
                       ),
                 CheckboxFormField(
                   key: CreateSuperInviteTokenPage.createDmKey,
-                  title: Text(L10n.of(context).createDMWhenRedeeming),
+                  title: Text(lang.createDMWhenRedeeming),
                   onChanged: (newValue) =>
                       setState(() => tokenUpdater.createDm(newValue ?? false)),
                   initialValue: _initialDmCheck,
@@ -124,13 +129,9 @@ class _CreateSuperInviteTokenPageConsumerState
                 const SizedBox(height: 10),
                 ..._spacesSection(context, spaces),
                 ..._chatsSection(context, chats),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 const Divider(),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 _actionBar(context),
               ],
             ),
@@ -141,42 +142,36 @@ class _CreateSuperInviteTokenPageConsumerState
   }
 
   List<Widget> _spacesSection(BuildContext context, List<String> rooms) {
-    return _renderSection(
-        context, L10n.of(context).spaces, L10n.of(context).addSpace, rooms,
-        () async {
+    final lang = L10n.of(context);
+    return _renderSection(context, lang.spaces, lang.addSpace, rooms, () async {
       final newSpace = await selectSpaceDrawer(
         context: context,
         currentSpaceId: null,
         canCheck: 'CanInvite',
-        title: Text(L10n.of(context).addSpace),
+        title: Text(lang.addSpace),
       );
       if (newSpace != null) {
         if (!_roomIds.contains(newSpace)) {
           tokenUpdater.addRoom(newSpace);
-          setState(
-            () => _roomIds = List.from(_roomIds)..add(newSpace),
-          );
+          setState(() => _roomIds = List.from(_roomIds)..add(newSpace));
         }
       }
     });
   }
 
   List<Widget> _chatsSection(BuildContext context, List<String> rooms) {
-    return _renderSection(
-        context, L10n.of(context).chats, L10n.of(context).addChat, rooms,
-        () async {
+    final lang = L10n.of(context);
+    return _renderSection(context, lang.chats, lang.addChat, rooms, () async {
       final newSpace = await selectChatDrawer(
         context: context,
         currentChatId: null,
         canCheck: 'CanInvite',
-        title: Text(L10n.of(context).addChat),
+        title: Text(lang.addChat),
       );
       if (newSpace != null) {
         if (!_roomIds.contains(newSpace)) {
           tokenUpdater.addRoom(newSpace);
-          setState(
-            () => _roomIds = List.from(_roomIds)..add(newSpace),
-          );
+          setState(() => _roomIds = List.from(_roomIds)..add(newSpace));
         }
       }
     });
@@ -204,9 +199,7 @@ class _CreateSuperInviteTokenPageConsumerState
             ),
         ],
       ),
-      const SizedBox(
-        height: 10,
-      ),
+      const SizedBox(height: 10),
       if (rooms.isNotEmpty)
         _roomsList(context, rooms)
       else
@@ -231,9 +224,7 @@ class _CreateSuperInviteTokenPageConsumerState
           trailing: InkWell(
             onTap: () {
               tokenUpdater.removeRoom(roomId);
-              setState(
-                () => _roomIds = List.from(_roomIds)..remove(roomId),
-              );
+              setState(() => _roomIds = List.from(_roomIds)..remove(roomId));
             },
             child: Icon(
               Atlas.trash_can_thin,
@@ -247,6 +238,7 @@ class _CreateSuperInviteTokenPageConsumerState
   }
 
   Widget _actionBar(BuildContext context) {
+    final lang = L10n.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -259,35 +251,28 @@ class _CreateSuperInviteTokenPageConsumerState
               }
             }
           },
-          child: Text(
-            L10n.of(context).cancel,
-          ),
+          child: Text(lang.cancel),
         ),
         const SizedBox(width: 10),
         ActerPrimaryActionButton(
           key: CreateSuperInviteTokenPage.submitBtn,
           onPressed: _submit,
-          child: Text(
-            isEdit ? L10n.of(context).save : L10n.of(context).createCode,
-          ),
+          child: Text(isEdit ? lang.save : lang.createCode),
         ),
       ],
     );
   }
 
   AppBar _buildAppBar(BuildContext context) {
+    final lang = L10n.of(context);
     return AppBar(
-      title: Text(
-        isEdit
-            ? L10n.of(context).editInviteCode
-            : L10n.of(context).createInviteCode,
-      ),
+      title: Text(isEdit ? lang.editInviteCode : lang.createInviteCode),
     );
   }
 
   Future<void> _submit() async {
-    final status =
-        isEdit ? L10n.of(context).savingCode : L10n.of(context).creatingCode;
+    final lang = L10n.of(context);
+    final status = isEdit ? lang.savingCode : lang.creatingCode;
     EasyLoading.show(status: status);
     try {
       final tokenTxt = _tokenController.text;
@@ -295,8 +280,8 @@ class _CreateSuperInviteTokenPageConsumerState
         tokenUpdater.token(tokenTxt);
       }
       // all other changes happen on the object itself;
-      final provider = ref.read(superInvitesProvider);
-      await provider.createOrUpdateToken(tokenUpdater);
+      final superInvites = ref.read(superInvitesProvider);
+      await superInvites.createOrUpdateToken(tokenUpdater);
       ref.invalidate(superInvitesTokensProvider);
       EasyLoading.dismiss();
       if (!mounted) return;
@@ -312,8 +297,8 @@ class _CreateSuperInviteTokenPageConsumerState
         return;
       }
       final status = isEdit
-          ? L10n.of(context).saveInviteCodeFailed(e)
-          : L10n.of(context).createInviteCodeFailed(e);
+          ? lang.saveInviteCodeFailed(e)
+          : lang.createInviteCodeFailed(e);
       EasyLoading.showError(
         status,
         duration: const Duration(seconds: 3),
@@ -322,31 +307,26 @@ class _CreateSuperInviteTokenPageConsumerState
   }
 
   Future<void> _deleteIt(BuildContext context) async {
+    final lang = L10n.of(context);
     final bool? confirm = await showAdaptiveDialog(
       context: context,
       useRootNavigator: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(L10n.of(context).deleteCode),
-          content: Text(
-            L10n.of(context).doYouWantToDeleteInviteCode,
-          ),
+          title: Text(lang.deleteCode),
+          content: Text(lang.doYouWantToDeleteInviteCode),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(
-                L10n.of(context).no,
-              ),
+              child: Text(lang.no),
             ),
             ActerDangerActionButton(
               key: CreateSuperInviteTokenPage.deleteConfirm,
               onPressed: () async {
                 Navigator.pop(context, true);
               },
-              child: Text(
-                L10n.of(context).delete,
-              ),
+              child: Text(lang.delete),
             ),
           ],
         );
@@ -356,7 +336,7 @@ class _CreateSuperInviteTokenPageConsumerState
       return;
     }
 
-    EasyLoading.show(status: L10n.of(context).deletingCode);
+    EasyLoading.show(status: lang.deletingCode);
     try {
       final tokenTxt = _tokenController.text;
       // all other changes happen on the object itself;
@@ -373,7 +353,7 @@ class _CreateSuperInviteTokenPageConsumerState
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).deleteInviteCodeFailed(e),
+        lang.deleteInviteCodeFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

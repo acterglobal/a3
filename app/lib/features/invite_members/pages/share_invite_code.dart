@@ -1,7 +1,8 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/share/actions/mail_to.dart';
+import 'package:acter/features/share/actions/share_to_whatsapp.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -124,7 +125,7 @@ class ShareInviteCode extends ConsumerWidget {
         _shareIntentsItem(
           context: context,
           iconData: Atlas.whatsapp,
-          onTap: () async => await shareTextToWhatsApp(
+          onTap: () async => await shareToWhatsApp(
             context,
             text: content,
           ),

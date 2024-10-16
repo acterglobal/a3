@@ -1,6 +1,6 @@
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/actions/get_event_type.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
@@ -11,10 +11,6 @@ class EventDateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildEventDate(context);
-  }
-
-  Widget _buildEventDate(BuildContext context) {
     final day = getDayFromDate(calendarEvent.utcStart());
     final month = getMonthFromDate(calendarEvent.utcStart());
     final startTime = getTimeFromDate(context, calendarEvent.utcStart());

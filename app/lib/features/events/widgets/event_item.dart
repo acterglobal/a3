@@ -1,9 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/blinking_text.dart';
 import 'package:acter/features/events/actions/get_event_type.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent, RsvpStatusTag;
@@ -35,14 +36,12 @@ class EventItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (onTapEventItem != null) {
-          onTapEventItem!(event.eventId().toString());
-          return;
-        }
-        context.pushNamed(
-          Routes.calendarEvent.name,
-          pathParameters: {'calendarId': event.eventId().toString()},
-        );
+        final eventId = event.eventId().toString();
+        onTapEventItem.let((cb) => cb(eventId)) ??
+            context.pushNamed(
+              Routes.calendarEvent.name,
+              pathParameters: {'calendarId': eventId},
+            );
       },
       child: Stack(
         alignment: Alignment.topLeft,

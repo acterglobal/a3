@@ -31,6 +31,7 @@ class TaskListItemCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final tasklistLoader = ref.watch(taskListItemProvider(taskListId));
     return tasklistLoader.when(
       data: (taskList) => Card(
@@ -63,11 +64,11 @@ class TaskListItemCard extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to load tasklist', e, s);
         return Card(
-          child: Text(L10n.of(context).errorLoadingTasks(e)),
+          child: Text(lang.errorLoadingTasks(e)),
         );
       },
       loading: () => Card(
-        child: Text(L10n.of(context).loading),
+        child: Text(lang.loading),
       ),
     );
   }

@@ -14,6 +14,7 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:acter/common/extensions/options.dart';
 
 final _log = Logger('a3::chat::convo_card');
 
@@ -45,13 +46,14 @@ class ConvoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (animation != null) {
-      return SizeTransition(
-        sizeFactor: animation!,
-        child: buildInner(context, ref),
-      );
-    }
-    return buildInner(context, ref);
+    final inner = buildInner(context, ref);
+    return animation.let(
+          (val) => SizeTransition(
+            sizeFactor: val,
+            child: inner,
+          ),
+        ) ??
+        inner;
   }
 
   Widget buildInner(BuildContext context, WidgetRef ref) {
@@ -83,7 +85,9 @@ class ConvoCard extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                 subtitle: buildSubtitle(context, constraints),
-                trailing: constraints.maxWidth < 300 ? null : trailing,
+                trailing: constraints.maxWidth < 300
+                    ? null
+                    : trailing ?? _TrailingWidget(roomId: roomId),
               ),
             ),
           ],
@@ -213,9 +217,9 @@ class _SubtitleWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userIds = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
-    if (userIds != null && userIds.isNotEmpty) {
-      return renderTypingState(context, userIds, ref);
+    final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
+    if (users != null && users.isNotEmpty) {
+      return renderTypingState(context, users, ref);
     }
 
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
@@ -476,28 +480,32 @@ class _SubtitleWidget extends ConsumerWidget {
 
   Widget renderTypingState(
     BuildContext context,
-    List<User> userIds,
+    List<User> users,
     WidgetRef ref,
   ) {
     final lang = L10n.of(context);
     final textStyle = Theme.of(context).textTheme.bodySmall!;
-    if (userIds.length == 1) {
-      final userName = simplifyUserId(userIds[0].id.toString());
+    if (users.length == 1) {
+      final userId = users[0].id;
+      final userName = simplifyUserId(userId) ?? userId;
       return Text(
-        lang.typingUser1(userName!),
+        lang.typingUser1(userName),
         style: textStyle,
       );
-    } else if (userIds.length == 2) {
-      final u1 = simplifyUserId(userIds[0].id.toString());
-      final u2 = simplifyUserId(userIds[1].id.toString());
+    } else if (users.length == 2) {
+      final userId1 = users[0].id;
+      final userName1 = simplifyUserId(userId1) ?? userId1;
+      final userId2 = users[1].id;
+      final userName2 = simplifyUserId(userId2) ?? userId2;
       return Text(
-        lang.typingUser2(u1!, u2!),
+        lang.typingUser2(userName1, userName2),
         style: textStyle,
       );
     } else {
-      final u1 = simplifyUserId(userIds[0].id.toString());
+      final userId = users[0].id;
+      final userName = simplifyUserId(userId) ?? userId;
       return Text(
-        lang.typingUserN(u1!, {userIds.length - 1}),
+        lang.typingUserN(userName, {users.length - 1}),
         style: textStyle,
       );
     }

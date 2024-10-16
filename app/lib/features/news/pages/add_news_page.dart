@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/events/providers/event_providers.dart';

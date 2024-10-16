@@ -26,6 +26,7 @@ final _log = Logger('a3::tasks::tasklist_details');
 class TaskListDetailPage extends ConsumerStatefulWidget {
   static const pageKey = Key('task-list-details-page');
   static const taskListTitleKey = Key('task-list-title');
+
   final String taskListId;
 
   const TaskListDetailPage({
@@ -49,6 +50,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   AppBar _buildAppbar() {
+    final lang = L10n.of(context);
     final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
     return tasklistLoader.when(
       data: (tasklist) {
@@ -107,21 +109,21 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
                   PopupMenuItem(
                     onTap: () => showEditDescriptionSheet(tasklist),
                     child: Text(
-                      L10n.of(context).editDescription,
+                      lang.editDescription,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                   PopupMenuItem(
                     onTap: () => showRedactDialog(taskList: tasklist),
                     child: Text(
-                      L10n.of(context).delete,
+                      lang.delete,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                   PopupMenuItem(
                     onTap: () => showReportDialog(tasklist),
                     child: Text(
-                      L10n.of(context).report,
+                      lang.report,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
@@ -134,18 +136,18 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       error: (e, s) {
         _log.severe('Failed to load tasklist', e, s);
         return AppBar(
-          title: Text(L10n.of(context).loadingFailed(e)),
+          title: Text(lang.loadingFailed(e)),
         );
       },
       loading: () => AppBar(
-        title: Text(L10n.of(context).loading),
+        title: Text(lang.loading),
       ),
     );
   }
 
   // Redact Task List Dialog
-  void showRedactDialog({required TaskList taskList}) {
-    openRedactContentDialog(
+  Future<void> showRedactDialog({required TaskList taskList}) async {
+    await openRedactContentDialog(
       context,
       title: L10n.of(context).deleteTaskList,
       onSuccess: () => Navigator.pop(context),
@@ -156,11 +158,12 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   // Report Task List Dialog
-  void showReportDialog(TaskList taskList) {
-    openReportContentDialog(
+  Future<void> showReportDialog(TaskList taskList) async {
+    final lang = L10n.of(context);
+    await openReportContentDialog(
       context,
-      title: L10n.of(context).reportTaskList,
-      description: L10n.of(context).reportThisContent,
+      title: lang.reportTaskList,
+      description: lang.reportThisContent,
       eventId: taskList.eventIdStr(),
       senderId: taskList.role() ?? '',
       roomId: taskList.spaceIdStr(),
@@ -169,13 +172,14 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   Widget _buildBody() {
+    final lang = L10n.of(context);
     final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
     return tasklistLoader.when(
       data: (tasklist) => _buildTaskListData(tasklist),
       error: (error, stack) {
         _log.severe('Failed to load tasklist', error, stack);
         return ErrorPage(
-          background: Text(L10n.of(context).loading),
+          background: Text(lang.loading),
           error: error,
           stack: stack,
           onRetryTap: () {
@@ -183,7 +187,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           },
         );
       },
-      loading: () => Text(L10n.of(context).loading),
+      loading: () => Text(lang.loading),
     );
   }
 
@@ -227,7 +231,10 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           ),
         ),
         const SizedBox(height: 10),
-        const Divider(indent: 10, endIndent: 18),
+        const Divider(
+          indent: 10,
+          endIndent: 18,
+        ),
         const SizedBox(height: 10),
       ],
     );
@@ -249,7 +256,8 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     String htmlBodyDescription,
     String plainDescription,
   ) async {
-    EasyLoading.show(status: L10n.of(context).updatingDescription);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.updatingDescription);
     try {
       final updater = taskListData.updateBuilder();
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
@@ -263,7 +271,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).errorUpdatingDescription(e),
+        lang.errorUpdatingDescription(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -275,12 +283,10 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         _widgetTasksListHeader(),
         ValueListenableBuilder(
           valueListenable: showCompletedTask,
-          builder: (context, value, child) {
-            return TaskItemsListWidget(
-              taskList: taskListData,
-              showCompletedTask: value,
-            );
-          },
+          builder: (context, value, child) => TaskItemsListWidget(
+            taskList: taskListData,
+            showCompletedTask: value,
+          ),
         ),
         const SizedBox(height: 20),
         AttachmentSectionWidget(manager: taskListData.attachments()),
@@ -292,12 +298,11 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   Widget _widgetTasksListHeader() {
+    final lang = L10n.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          L10n.of(context).tasks,
-        ),
+        Text(lang.tasks),
         ValueListenableBuilder(
           valueListenable: showCompletedTask,
           builder: (context, value, child) {
@@ -309,11 +314,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
                     : Icons.visibility_outlined,
                 size: 18,
               ),
-              label: Text(
-                value
-                    ? L10n.of(context).hideCompleted
-                    : L10n.of(context).showCompleted,
-              ),
+              label: Text(value ? lang.hideCompleted : lang.showCompleted),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
               ),
