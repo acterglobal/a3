@@ -9,13 +9,16 @@ class EventListNotifier
     extends FamilyAsyncNotifier<List<CalendarEvent>, String?> {
   late Stream<bool> _listener;
 
-  Future<List<CalendarEvent>> _getEventList(Client client) async {
+  Future<List<CalendarEvent>> _getEventList(
+    Client client,
+    String? spaceId,
+  ) async {
     //GET ALL EVENTS
-    if (arg == null) {
+    if (spaceId == null) {
       return (await client.calendarEvents()).toList();
     } else {
       //GET SPACE EVENTS
-      final space = await client.space(arg!);
+      final space = await client.space(spaceId);
       return (await space.calendarEvents()).toList();
     }
   }
@@ -35,9 +38,11 @@ class EventListNotifier
     }
 
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(() async => await _getEventList(client));
+      state = await AsyncValue.guard(
+        () async => await _getEventList(client, spaceId),
+      );
     });
-    return await _getEventList(client);
+    return await _getEventList(client, spaceId);
   }
 }
 

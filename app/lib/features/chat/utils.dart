@@ -301,12 +301,12 @@ Future<void> parseUserMentionText(
       displayName = linkedName;
       isValidMention = roomMentions.any((uId) => uId == userId);
     }
-    if (isValidMention && displayName != null) {
+    if (isValidMention && userId != null && displayName != null) {
       final simpleMention = '@$displayName';
       final startIndex = match.start - offset;
       final endIndex = startIndex + simpleMention.length;
       // restore mention state of input
-      inputNotifier.addMention(displayName, userId!);
+      inputNotifier.addMention(displayName, userId);
       // restore tags
       tags.add(
         TaggedText(

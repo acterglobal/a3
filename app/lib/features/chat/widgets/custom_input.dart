@@ -5,6 +5,7 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
@@ -559,10 +560,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               .width(image.width)
               .height(image.height);
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            await stream.replyMessage(
-              inputState.selectedMessage!.remoteId!,
-              imageDraft,
-            );
+            final remoteId = inputState.selectedMessage?.remoteId;
+            if (remoteId == null) throw 'remote id of sel msg not available';
+            await stream.replyMessage(remoteId, imageDraft);
           } else {
             await stream.sendMessage(imageDraft);
           }
@@ -571,10 +571,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           final audioDraft =
               client.audioDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            await stream.replyMessage(
-              inputState.selectedMessage!.remoteId!,
-              audioDraft,
-            );
+            final remoteId = inputState.selectedMessage?.remoteId;
+            if (remoteId == null) throw 'remote id of sel msg not available';
+            await stream.replyMessage(remoteId, audioDraft);
           } else {
             await stream.sendMessage(audioDraft);
           }
@@ -582,24 +581,20 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             attachmentType == AttachmentType.video) {
           final videoDraft =
               client.videoDraft(file.path, mimeType).size(file.lengthSync());
-
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            await stream.replyMessage(
-              inputState.selectedMessage!.remoteId!,
-              videoDraft,
-            );
+            final remoteId = inputState.selectedMessage?.remoteId;
+            if (remoteId == null) throw 'remote id of sel msg not available';
+            await stream.replyMessage(remoteId, videoDraft);
           } else {
             await stream.sendMessage(videoDraft);
           }
         } else {
           final fileDraft =
               client.fileDraft(file.path, mimeType).size(file.lengthSync());
-
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-            await stream.replyMessage(
-              inputState.selectedMessage!.remoteId!,
-              fileDraft,
-            );
+            final remoteId = inputState.selectedMessage?.remoteId;
+            if (remoteId == null) throw 'remote id of sel msg not available';
+            await stream.replyMessage(remoteId, fileDraft);
           } else {
             await stream.sendMessage(fileDraft);
           }
@@ -692,9 +687,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     ref.read(chatInputProvider.notifier).startSending();
     try {
       // end the typing notification
-      if (widget.onTyping != null) {
-        widget.onTyping!(false);
-      }
+      widget.onTyping.let((cb) => cb(false));
 
       final mentions = ref.read(chatInputProvider).mentions;
       String markdownText = textController.text;
@@ -723,9 +716,13 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           await ref.read(timelineStreamProvider(widget.roomId).future);
 
       if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-        await stream.replyMessage(inputState.selectedMessage!.remoteId!, draft);
+        final remoteId = inputState.selectedMessage?.remoteId;
+        if (remoteId == null) throw 'remote id of sel msg not available';
+        await stream.replyMessage(remoteId, draft);
       } else if (inputState.selectedMessageState == SelectedMessageState.edit) {
-        await stream.editMessage(inputState.selectedMessage!.remoteId!, draft);
+        final remoteId = inputState.selectedMessage?.remoteId;
+        if (remoteId == null) throw 'remote id of sel msg not available';
+        await stream.editMessage(remoteId, draft);
       } else {
         await stream.sendMessage(draft);
       }
@@ -787,10 +784,10 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
               next.selectedMessage != prev?.selectedMessage)) {
         // a new message has been selected to be edited or switched from reply
         // to edit, force refresh the inner text controller to reflect that
-        if (next.selectedMessage != null) {
-          widget.controller.text = parseEditMsg(next.selectedMessage!);
+        next.selectedMessage.let((selected) {
+          widget.controller.text = parseEditMsg(selected);
           // frame delay to keep focus connected with keyboard.
-        }
+        });
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();
         });
@@ -903,9 +900,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         enabled: ref.watch(_allowEdit(widget.roomId)),
         onChanged: (String val) {
           // send typing notice
-          if (widget.onTyping != null) {
-            widget.onTyping!(val.isNotEmpty);
-          }
+          widget.onTyping.let((cb) => cb(val.isNotEmpty));
         },
         onSubmitted: (_) => widget.onSendButtonPressed(),
         style: Theme.of(context).textTheme.bodyMedium,

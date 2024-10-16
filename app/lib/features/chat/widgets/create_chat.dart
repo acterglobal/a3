@@ -592,15 +592,20 @@ class _CreateRoomFormWidgetConsumerState
   }
 
   void _handleTitleChange(String? value) {
-    ref.read(_titleProvider.notifier).update((state) => value!);
+    value.let((val) {
+      ref.read(_titleProvider.notifier).update((state) => val);
+    });
   }
 
-  void _handleAvatarUpload() async {
+  Future<void> _handleAvatarUpload() async {
     FilePickerResult? result = await pickAvatar(context: context);
     if (result != null) {
-      File file = File(result.files.single.path!);
-      String filepath = file.path;
-      ref.read(_avatarProvider.notifier).update((state) => filepath);
+      final filePath = result.files.single.path;
+      if (filePath == null) {
+        _log.severe('FilePickerResult had an empty path', result);
+        return;
+      }
+      ref.read(_avatarProvider.notifier).update((state) => filePath);
     } else {
       // user cancelled the picker
     }

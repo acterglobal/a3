@@ -262,7 +262,10 @@ Future<void> uploadAvatar(
   try {
     EasyLoading.show(status: lang.avatarUploading);
     final filePath = result.files.first.path;
-    if (filePath == null) throw 'avatar path not available';
+    if (filePath == null) {
+      _log.severe('FilePickerResult had an empty path', result);
+      return;
+    }
     await room.uploadAvatar(filePath);
     // close loading
     EasyLoading.dismiss();
