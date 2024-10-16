@@ -559,7 +559,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               .height(image.height);
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             final remoteId = inputState.selectedMessage?.remoteId;
-            if (remoteId == null) throw 'remote id of sel msg not available';
+            if (remoteId == null) {
+              throw 'remote id of selected image message not available';
+            }
             await stream.replyMessage(remoteId, imageDraft);
           } else {
             await stream.sendMessage(imageDraft);
@@ -570,7 +572,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               client.audioDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             final remoteId = inputState.selectedMessage?.remoteId;
-            if (remoteId == null) throw 'remote id of sel msg not available';
+            if (remoteId == null) {
+              throw 'remote id of selected audio message not available';
+            }
             await stream.replyMessage(remoteId, audioDraft);
           } else {
             await stream.sendMessage(audioDraft);
@@ -581,7 +585,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               client.videoDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             final remoteId = inputState.selectedMessage?.remoteId;
-            if (remoteId == null) throw 'remote id of sel msg not available';
+            if (remoteId == null) {
+              throw 'remote id of selected video message not available';
+            }
             await stream.replyMessage(remoteId, videoDraft);
           } else {
             await stream.sendMessage(videoDraft);
@@ -591,7 +597,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               client.fileDraft(file.path, mimeType).size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             final remoteId = inputState.selectedMessage?.remoteId;
-            if (remoteId == null) throw 'remote id of sel msg not available';
+            if (remoteId == null) {
+              throw 'remote id of selected file message not available';
+            }
             await stream.replyMessage(remoteId, fileDraft);
           } else {
             await stream.sendMessage(fileDraft);
@@ -710,11 +718,11 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
       if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
         final remoteId = inputState.selectedMessage?.remoteId;
-        if (remoteId == null) throw 'remote id of sel msg not available';
+        if (remoteId == null) throw 'remote id of reply message not available';
         await stream.replyMessage(remoteId, draft);
       } else if (inputState.selectedMessageState == SelectedMessageState.edit) {
         final remoteId = inputState.selectedMessage?.remoteId;
-        if (remoteId == null) throw 'remote id of sel msg not available';
+        if (remoteId == null) throw 'remote id of msg to edit not available';
         await stream.editMessage(remoteId, draft);
       } else {
         await stream.sendMessage(draft);
