@@ -9,8 +9,9 @@ import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
 import 'package:acter/features/backups/widgets/backup_state_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/settings/providers/session_providers.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/session_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -175,7 +176,7 @@ class ActivitiesPage extends ConsumerWidget {
 
     final syncStateWidget = renderSyncingState(context, ref);
 
-    if (ref.watch(featuresProvider).isActive(LabsFeature.encryptionBackup)) {
+    if (ref.watch(isActiveProvider(LabsFeature.encryptionBackup))) {
       final backups = renderBackupSection(context, ref);
       if (backups != null) {
         children.add(backups);

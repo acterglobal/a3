@@ -1,11 +1,11 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/search/model/keys.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -28,8 +28,7 @@ class QuickActionsBuilder extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final features = ref.watch(featuresProvider);
-    bool isActive(f) => features.isActive(f);
+    bool isActive(f) => ref.watch(isActiveProvider(f));
 
     final canPostNewsLoader = ref.watch(
       hasSpaceWithPermissionProvider('CanPostNews'),
