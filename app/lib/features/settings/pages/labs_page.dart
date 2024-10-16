@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/labs/model/labs_features.dart';

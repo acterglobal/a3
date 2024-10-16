@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/widgets/chat_layout_builder.dart';
@@ -12,6 +11,7 @@ import 'package:acter/features/space/settings/pages/visibility_accessibility_pag
 import 'package:acter/router/router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:acter/common/extensions/acter_build_context.dart';
 
 /// define the chat layout builder depending on whether the user has set
 /// the chat-ng feature.

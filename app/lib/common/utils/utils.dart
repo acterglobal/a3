@@ -35,19 +35,6 @@ bool isValidUrl(String url) {
   return urlPattern.hasMatch(url);
 }
 
-/// Get provider right from the context no matter where we are
-extension ProviderScopeContext on BuildContext {
-  // Custom call a provider for reading method only
-  // It will be helpful for us for calling the read function
-  // without Consumer,ConsumerWidget or ConsumerStatefulWidget
-  // Incase if you face any issue using this then please wrap your widget
-  // with consumer and then call your provider
-
-  T read<T>(ProviderListenable<T> provider) {
-    return ProviderScope.containerOf(this, listen: false).read(provider);
-  }
-}
-
 /// An extension on [Ref] with helpful methods to add a debounce.
 extension RefDebounceExtension on Ref {
   /// Delays an execution by a bit such that if a dependency changes multiple
@@ -65,13 +52,6 @@ extension RefDebounceExtension on Ref {
     });
     return completer.future;
   }
-}
-
-const largeScreenBreakPoint = 770;
-
-extension ActerContextUtils on BuildContext {
-  bool get isLargeScreen =>
-      MediaQuery.of(this).size.width >= largeScreenBreakPoint;
 }
 
 String jiffyTime(BuildContext context, int timeInterval) {

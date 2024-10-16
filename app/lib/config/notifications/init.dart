@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/notifications/firebase_options.dart';
 import 'package:acter/config/notifications/util.dart';
