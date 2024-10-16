@@ -37,4 +37,36 @@ void main() {
       expect(wasCalled, false);
     });
   });
+
+  testWidgets('default on null', (tester) async {
+    bool wasCalled = false;
+    String? target;
+
+    String? targetValue = target.map(
+      (a) {
+        wasCalled = true;
+        return 'inner';
+      },
+      defaultValue: 'ok',
+    );
+
+    expect(wasCalled, false);
+    expect(targetValue, 'ok');
+  });
+
+  testWidgets('default on null for async', (tester) async {
+    bool wasCalled = false;
+    String? target;
+
+    String? targetValue = await target.mapAsync(
+      (a) {
+        wasCalled = true;
+        return 'inner';
+      },
+      defaultValue: 'ok',
+    );
+
+    expect(wasCalled, false);
+    expect(targetValue, 'ok');
+  });
 }
