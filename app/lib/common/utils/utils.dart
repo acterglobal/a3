@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
@@ -122,19 +121,4 @@ double? calcGap(BuildContext context) {
   final double scale = MediaQuery.textScalerOf(context).textScaleFactor;
   if (scale <= 1) return 8;
   return lerpDouble(8, 4, min(scale - 1, 1));
-}
-
-// helper fn to mimic Option::map() in rust
-// it is used to remove bang operator about nullable variable
-extension Let<T> on T? {
-  R? let<R>(R? Function(T) op) {
-    final T? value = this;
-    return value == null ? null : op(value);
-  }
-
-  // it supports async callback too unlike `extension_nullable`
-  Future<R?> letAsync<R>(R? Function(T) op) async {
-    final T? value = this;
-    return value == null ? null : op(value);
-  }
 }

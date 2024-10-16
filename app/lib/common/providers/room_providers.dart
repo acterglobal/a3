@@ -11,6 +11,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';

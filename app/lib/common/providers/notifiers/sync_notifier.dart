@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:acter/common/models/sync_state/sync_state.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
 

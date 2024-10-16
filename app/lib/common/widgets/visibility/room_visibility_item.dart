@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:flutter/material.dart';
 
