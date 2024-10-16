@@ -406,46 +406,6 @@ double? calcGap(BuildContext context) {
 // ignore: constant_identifier_names
 enum RoomVisibility { Public, Private, SpaceVisible }
 
-enum LabsFeature {
-  // apps in general
-  notes,
-  cobudget,
-  polls,
-  discussions,
-
-  // specific features
-  chatUnread,
-  chatNG,
-
-  // system features
-  deviceCalendarSync,
-  encryptionBackup,
-
-  // candidates for always on
-  comments,
-  mobilePushNotifications,
-
-  // -- not a lab anymore but needs to stay for backwards compat
-  tasks,
-  events,
-  pins,
-  showNotifications; // old name for desktop notifications
-
-  static List<LabsFeature> get defaults =>
-      isDevBuild || isNightly ? nightlyDefaults : releaseDefaults;
-
-  static List<LabsFeature> get releaseDefaults => [
-        LabsFeature.mobilePushNotifications,
-      ];
-
-  static List<LabsFeature> get nightlyDefaults => [
-        LabsFeature.encryptionBackup,
-        LabsFeature.deviceCalendarSync,
-        LabsFeature.mobilePushNotifications,
-        LabsFeature.chatNG,
-      ];
-}
-
 // typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
 // typedef SpaceWithProfileData = ({Space space, ProfileData profile});
 // typedef MemberInfo = ({String userId, String? roomId});

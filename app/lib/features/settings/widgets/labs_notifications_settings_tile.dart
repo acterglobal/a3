@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';

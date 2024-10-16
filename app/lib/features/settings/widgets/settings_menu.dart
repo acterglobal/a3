@@ -4,6 +4,7 @@ import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/config/env.g.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';

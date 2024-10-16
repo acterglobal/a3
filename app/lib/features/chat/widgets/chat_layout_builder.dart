@@ -2,6 +2,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/pages/chat_select_page.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

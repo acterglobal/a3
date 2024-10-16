@@ -4,7 +4,6 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
@@ -15,6 +14,7 @@ import 'package:acter/features/chat/providers/notifiers/media_chat_notifier.dart
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -253,17 +253,17 @@ final hasUnreadChatsProvider = FutureProvider.autoDispose((ref) async {
 });
 
 final subChatsListProvider =
-FutureProvider.family<List<String>, String>((ref, spaceId) async {
+    FutureProvider.family<List<String>, String>((ref, spaceId) async {
   List<String> subChatsList = [];
 
   //Get known sub-chats
   final spaceRelationsOverview =
-  await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+      await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
   subChatsList.addAll(spaceRelationsOverview.knownChats);
 
   //Get more sub-chats
   final relatedChatsLoader =
-  await ref.watch(remoteChatRelationsProvider(spaceId).future);
+      await ref.watch(remoteChatRelationsProvider(spaceId).future);
   for (var element in relatedChatsLoader) {
     subChatsList.add(element.roomIdStr());
   }

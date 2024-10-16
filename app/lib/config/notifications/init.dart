@@ -6,6 +6,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/notifications/firebase_options.dart';
 import 'package:acter/config/notifications/util.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
