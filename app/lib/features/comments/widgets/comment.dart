@@ -52,9 +52,7 @@ class CommentWidget extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: formatted != null
-                ? RenderHtml(
-                    text: formatted,
-                  )
+                ? RenderHtml(text: formatted)
                 : Text(msgContent.body()),
           ),
           const SizedBox(height: 12),

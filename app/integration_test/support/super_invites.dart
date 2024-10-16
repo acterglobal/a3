@@ -3,15 +3,16 @@ import 'dart:async';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/search/model/keys.dart';
+import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
 import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/super_invites/widgets/redeem_token.dart';
-import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uuid/uuid.dart';
+
 import '../support/spaces.dart';
 import '../support/util.dart';
 
