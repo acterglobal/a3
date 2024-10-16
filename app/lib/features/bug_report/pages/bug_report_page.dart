@@ -55,12 +55,8 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       loadingNotifier.update((state) => true);
       final Map<String, String> extraFields = {};
       if (submitErrorAndStackTrace) {
-        if (widget.error != null) {
-          extraFields['error'] = widget.error!;
-        }
-        if (widget.stack != null) {
-          extraFields['stack'] = widget.stack!;
-        }
+        widget.error.let((error) => extraFields['error'] = error);
+        widget.stack.let((stack) => extraFields['stack'] = stack);
       }
       if (descController.text.isNotEmpty) {
         extraFields['description'] = descController.text;

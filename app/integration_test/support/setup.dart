@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,11 +28,8 @@ void _disableOverflowErrors() {
     if (isOverflowError) {
       debugPrint('$details');
     } else {
-      if (originalOnError != null) {
-        originalOnError!(details);
-      } else {
-        FlutterError.presentError(details);
-      }
+      originalOnError.let((cb) => cb(details)) ??
+          FlutterError.presentError(details);
     }
   };
 }

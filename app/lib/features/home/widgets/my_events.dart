@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
@@ -73,7 +74,7 @@ class MyEventsSection extends ConsumerWidget {
   }
 
   Widget eventListUI(BuildContext context, List<CalendarEvent> events) {
-    final count = limit == null ? events.length : min(events.length, limit!);
+    final count = limit.let((val) => min(val, events.length)) ?? events.length;
     return ListView.builder(
       shrinkWrap: true,
       itemCount: count,
