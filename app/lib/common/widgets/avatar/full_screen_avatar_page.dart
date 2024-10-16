@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/room/actions/avatar_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

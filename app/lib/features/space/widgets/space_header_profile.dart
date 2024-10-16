@@ -1,7 +1,7 @@
 import 'package:acter/common/actions/show_parent_space_list.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/room/actions/avatar_upload.dart';
 import 'package:acter/features/space/widgets/space_info.dart';
 import 'package:acter/features/space/actions/set_space_title.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';

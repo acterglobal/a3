@@ -3,12 +3,8 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -47,7 +43,7 @@ bool isValidUrl(String url) {
 }
 
 /// Get provider right from the context no matter where we are
-extension Context on BuildContext {
+extension ProviderScopeContext on BuildContext {
   // Custom call a provider for reading method only
   // It will be helpful for us for calling the read function
   // without Consumer,ConsumerWidget or ConsumerStatefulWidget
@@ -83,17 +79,6 @@ const largeScreenBreakPoint = 770;
 extension ActerContextUtils on BuildContext {
   bool get isLargeScreen =>
       MediaQuery.of(this).size.width >= largeScreenBreakPoint;
-}
-
-DateTime kFirstDay = DateTime.utc(2010, 10, 16);
-DateTime kLastDay = DateTime.utc(2050, 12, 31);
-
-List<DateTime> daysInRange(DateTime first, DateTime last) {
-  final dayCount = last.difference(first).inDays + 1;
-  return List.generate(
-    dayCount,
-    (index) => DateTime.utc(first.year, first.month, first.day + index),
-  );
 }
 
 String formatDate(CalendarEvent e) {
@@ -224,61 +209,6 @@ String randomString() {
   final random = Random.secure();
   final values = List<int>.generate(16, (i) => random.nextInt(255));
   return base64UrlEncode(values);
-}
-
-Future<void> openAvatar(
-  BuildContext context,
-  WidgetRef ref,
-  String roomId,
-) async {
-  final membership = await ref.read(roomMembershipProvider(roomId).future);
-  final canUpdateAvatar = membership?.canString('CanUpdateAvatar') == true;
-  final avatarInfo = ref.read(roomAvatarInfoProvider(roomId));
-
-  if (avatarInfo.avatar != null && context.mounted) {
-    //Open avatar in full screen if avatar data available
-    context.pushNamed(
-      Routes.fullScreenAvatar.name,
-      queryParameters: {'roomId': roomId},
-    );
-  } else if (avatarInfo.avatar == null && canUpdateAvatar && context.mounted) {
-    //Change avatar if avatar is null and have relevant permission
-    uploadAvatar(ref, context, roomId);
-  }
-}
-
-Future<void> uploadAvatar(
-  WidgetRef ref,
-  BuildContext context,
-  String roomId,
-) async {
-  final lang = L10n.of(context);
-  final room = await ref.read(maybeRoomProvider(roomId).future);
-  if (room == null || !context.mounted) return;
-  FilePickerResult? result = await pickAvatar(context: context);
-  if (result == null || result.files.isEmpty) return;
-  if (!context.mounted) return;
-  try {
-    EasyLoading.show(status: lang.avatarUploading);
-    final filePath = result.files.first.path;
-    if (filePath == null) {
-      _log.severe('FilePickerResult had an empty path', result);
-      return;
-    }
-    await room.uploadAvatar(filePath);
-    // close loading
-    EasyLoading.dismiss();
-  } catch (e, s) {
-    _log.severe('Failed to upload avatar', e, s);
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-    EasyLoading.showError(
-      lang.failedToUploadAvatar(e),
-      duration: const Duration(seconds: 3),
-    );
-  }
 }
 
 T getRandomElement<T>(List<T> list) {

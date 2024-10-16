@@ -10,6 +10,7 @@ import 'package:acter/common/widgets/edit_plain_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
+import 'package:acter/features/room/actions/avatar_upload.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
