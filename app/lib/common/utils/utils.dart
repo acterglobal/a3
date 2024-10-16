@@ -1,14 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -178,88 +174,6 @@ String documentTypeFromFileExtension(String fileExtension) {
   };
 }
 
-Future<void> shareTextToWhatsApp(
-  BuildContext context, {
-  required String text,
-}) async {
-  final url = 'whatsapp://send?text=$text';
-  final encodedUri = Uri.parse(url);
-  if (await canLaunchUrl(encodedUri)) {
-    await launchUrl(encodedUri);
-  } else {
-    _log.warning('WhatsApp not available');
-    if (!context.mounted) return;
-    EasyLoading.showError(
-      L10n.of(context).appUnavailable,
-      duration: const Duration(seconds: 3),
-    );
-  }
-}
-
-Future<void> mailTo({required String toAddress, String? subject}) async {
-  final emailLaunchUri = Uri(
-    scheme: 'mailto',
-    path: toAddress,
-    query: subject,
-  );
-  await launchUrl(emailLaunchUri);
-}
-
-String randomString() {
-  final random = Random.secure();
-  final values = List<int>.generate(16, (i) => random.nextInt(255));
-  return base64UrlEncode(values);
-}
-
-T getRandomElement<T>(List<T> list) {
-  final i = Random().nextInt(list.length);
-  return list[i];
-}
-
-int hexOfRGBA(int r, int g, int b, {double opacity = 1}) {
-  r = (r < 0) ? -r : r;
-  g = (g < 0) ? -g : g;
-  b = (b < 0) ? -b : b;
-  opacity = (opacity < 0) ? -opacity : opacity;
-  opacity = (opacity > 1) ? 255 : opacity * 255;
-  r = (r > 255) ? 255 : r;
-  g = (g > 255) ? 255 : g;
-  b = (b > 255) ? 255 : b;
-  int a = opacity.toInt();
-  return int.parse(
-    '${a.toRadixString(16)}${r.toRadixString(16)}${g.toRadixString(16)}${b.toRadixString(16)}',
-    radix: 16,
-  );
-}
-
-bool isOnlyEmojis(String text) {
-  final emojisRegExp = RegExp(
-    r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])',
-  );
-  // find all emojis
-  final emojis = emojisRegExp.allMatches(text);
-
-  // return if none found
-  if (emojis.isEmpty) return false;
-
-  // remove all emojis from the this
-  for (final emoji in emojis) {
-    text = text.replaceAll(emoji.input.substring(emoji.start, emoji.end), '');
-  }
-
-  // remove all whitespace (optional)
-  text = text.replaceAll('', '');
-
-  // return true if nothing else left
-  return text.isEmpty;
-}
-
-extension DateHelpers on DateTime {
-  String toRfc3339() {
-    return toUtc().toIso8601String();
-  }
-}
-
 String? simplifyUserId(String name) {
   // example - @bitfriend:acter.global
   RegExp re = RegExp(r'^@(.*):\w+([\.-]?\w+)*(\.\w+)+$');
@@ -281,45 +195,15 @@ String? simplifyUserId(String name) {
   return null;
 }
 
-String? simplifyRoomId(String name) {
-  // example - !qporfwt:matrix.org
-  RegExp re = RegExp(r'^!(\w+([\.-]?\w+)*):\w+([\.-]?\w+)*(\.\w+)+$');
-  RegExpMatch? match = re.firstMatch(name);
-  if (match != null) {
-    return match.group(1);
-  }
-  return name;
+T getRandomElement<T>(List<T> list) {
+  final i = Random().nextInt(list.length);
+  return list[i];
 }
 
 String simplifyBody(String formattedBody) {
   // strip out parent msg from reply msg
   RegExp re = RegExp(r'^<mx-reply>[\s\S]+</mx-reply>');
   return formattedBody.replaceAll(re, '');
-}
-
-Color getUserAvatarNameColor(types.User user, List<Color> colors) {
-  return colors[user.id.hashCode % colors.length];
-}
-
-String getUserInitials(types.User user) {
-  final initials = [];
-  user.firstName.let((firstName) {
-    if (firstName.isNotEmpty) initials.add(firstName[0].toUpperCase());
-  });
-  user.lastName.let((lastName) {
-    if (lastName.isNotEmpty) initials.add(lastName[0].toLowerCase());
-  });
-  return initials.join().trim();
-}
-
-String? getIssueId(String url) {
-  // example - https://github.com/bitfriend/acter-bugs/issues/9
-  RegExp re = RegExp(r'^https:\/\/github.com\/(.*)\/(.*)\/issues\/(\d*)$');
-  RegExpMatch? match = re.firstMatch(url);
-  if (match != null) {
-    return match.group(3);
-  }
-  return null;
 }
 
 ///helper function to convert list ffiString object to DartString.
