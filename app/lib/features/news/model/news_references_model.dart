@@ -30,14 +30,3 @@ class NewsReferencesModel {
     this.id,
   });
 }
-
-extension Expect on String? {
-  /// Add `.expect(String)` on nullable String to throw on null or return the value
-  String expect([Object error = 'Expect missed value']) {
-    String? value = this;
-    if (value == null) {
-      throw error;
-    }
-    return value;
-  }
-}

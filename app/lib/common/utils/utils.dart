@@ -466,3 +466,16 @@ extension Let<T> on T? {
     return value == null ? null : op(value);
   }
 }
+
+/// Helper to allow you to replace `!` with a neat and simple
+/// `.expect('Error Messages')` that will throw with that specific
+/// error message.
+extension Expect<T> on T? {
+  T expect([Object error = 'Expect missed value']) {
+    T? value = this;
+    if (value == null) {
+      throw error;
+    }
+    return value;
+  }
+}
