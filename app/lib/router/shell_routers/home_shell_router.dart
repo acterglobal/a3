@@ -31,6 +31,7 @@ import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/space/pages/space_details_page.dart';
 import 'package:acter/features/space/settings/pages/visibility_accessibility_page.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
+import 'package:acter/features/spaces/pages/space_list_page.dart';
 import 'package:acter/features/spaces/pages/sub_spaces_page.dart';
 import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/space/pages/members_page.dart';
@@ -39,7 +40,6 @@ import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/space/settings/pages/notification_configuration_page.dart';
 import 'package:acter/features/public_room_search/pages/search_public_directory.dart';
 import 'package:acter/features/spaces/pages/create_space_page.dart';
-import 'package:acter/features/spaces/pages/spaces_page.dart';
 import 'package:acter/features/tasks/pages/task_item_detail_page.dart';
 import 'package:acter/features/tasks/pages/task_list_details_page.dart';
 import 'package:acter/features/tasks/pages/tasks_list_page.dart';
@@ -354,7 +354,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       return NoTransitionPage(
         key: state.pageKey,
-        child: const SpacesPage(),
+        child: const SpaceListPage(),
       );
     },
   ),
