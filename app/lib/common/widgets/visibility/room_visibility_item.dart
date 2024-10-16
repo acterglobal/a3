@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:flutter/material.dart';
 
 class RoomVisibilityItem extends StatelessWidget {

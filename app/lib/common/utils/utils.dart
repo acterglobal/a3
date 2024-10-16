@@ -335,15 +335,6 @@ double? calcGap(BuildContext context) {
   return lerpDouble(8, 4, min(scale - 1, 1));
 }
 
-// ignore: constant_identifier_names
-enum RoomVisibility { Public, Private, SpaceVisible }
-
-// typedef ChatWithProfileData = ({Convo chat, ProfileData profile});
-// typedef SpaceWithProfileData = ({Space space, ProfileData profile});
-// typedef MemberInfo = ({String userId, String? roomId});
-// typedef ChatMessageInfo = ({String messageId, String roomId});
-// typedef AttachmentInfo = ({AttachmentType type, File file});
-
 // helper fn to mimic Option::map() in rust
 // it is used to remove bang operator about nullable variable
 extension Let<T> on T? {
