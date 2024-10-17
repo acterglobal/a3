@@ -1,6 +1,6 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/features/room/actions/join_room.dart';

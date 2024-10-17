@@ -1,6 +1,6 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/blinking_text.dart';
 import 'package:acter/features/events/actions/get_event_type.dart';
 import 'package:acter/features/events/providers/event_providers.dart';

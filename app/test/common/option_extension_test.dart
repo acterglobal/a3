@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Option Map Tests', () {

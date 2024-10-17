@@ -1,5 +1,5 @@
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';

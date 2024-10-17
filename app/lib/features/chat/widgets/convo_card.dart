@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
@@ -14,7 +15,6 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:acter/common/extensions/options.dart';
 
 final _log = Logger('a3::chat::convo_card');
 

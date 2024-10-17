@@ -1,5 +1,5 @@
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:flutter/material.dart';
