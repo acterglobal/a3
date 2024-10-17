@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -19,7 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::cal_event::createOrEdit');
+final _log = Logger('a3::cal_event::create');
 
 const createEditEventKey = Key('create-edit-event');
 
@@ -93,14 +94,18 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   @override
   void initState() {
     super.initState();
-    widget.templateEvent.let((p0) {
-          WidgetsBinding.instance
-              .addPostFrameCallback((Duration dur) => _setFromTemplate(p0));
-        }) ??
-        widget.initialSelectedSpace.let((p0) {
-          WidgetsBinding.instance
-              .addPostFrameCallback((Duration dur) => _setSpaceId(p0));
+    widget.templateEvent.map(
+      (p0) => WidgetsBinding.instance.addPostFrameCallback((Duration dur) {
+        _setFromTemplate(p0);
+      }),
+      orElse: () {
+        widget.initialSelectedSpace.map((p0) {
+          WidgetsBinding.instance.addPostFrameCallback((Duration dur) {
+            _setSpaceId(p0);
+          });
         });
+      },
+    );
   }
 
   @override

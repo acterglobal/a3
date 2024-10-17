@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::feature_flag');
+final _log = Logger('a3::labs::feature_flag');
 
 extension on Enum {
   String keyName() => name;

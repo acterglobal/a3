@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
@@ -46,7 +47,7 @@ class ConvoCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final inner = buildInner(context, ref);
-    return animation.let(
+    return animation.map(
           (val) => SizeTransition(
             sizeFactor: val,
             child: inner,
@@ -84,7 +85,9 @@ class ConvoCard extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                 subtitle: buildSubtitle(context, constraints),
-                trailing: constraints.maxWidth < 300 ? null : trailing,
+                trailing: constraints.maxWidth < 300
+                    ? null
+                    : trailing ?? _TrailingWidget(roomId: roomId),
               ),
             ),
           ],

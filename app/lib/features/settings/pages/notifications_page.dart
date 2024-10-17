@@ -1,7 +1,7 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
@@ -21,7 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
 
-final _log = Logger('a3::settings::notifications_page');
+final _log = Logger('a3::settings::notifications');
 
 class _AddEmail extends StatefulWidget {
   final List<String> emails;

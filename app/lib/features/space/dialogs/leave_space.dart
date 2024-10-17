@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::spaces::leave_space');
+final _log = Logger('a3::space::leave_space');
 
 const leaveSpaceYesBtn = Key('leave-space-yes-btn');
 

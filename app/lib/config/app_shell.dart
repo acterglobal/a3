@@ -4,7 +4,6 @@ import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/auth/pages/logged_out_screen.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
@@ -14,7 +13,8 @@ import 'package:acter/features/cross_signing/widgets/cross_signing.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,7 +27,7 @@ import 'package:logging/logging.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake_detector/shake_detector.dart';
 
-final _log = Logger('a3::home::home_shell');
+final _log = Logger('a3::config::home_shell');
 
 final ScreenshotController screenshotController = ScreenshotController();
 

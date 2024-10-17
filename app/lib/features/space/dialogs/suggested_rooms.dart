@@ -1,6 +1,6 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/features/room/actions/join_room.dart';
@@ -12,7 +12,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::spaces::suggested_rooms');
+final _log = Logger('a3::space::suggested_rooms');
 
 class _SuggestedRooms extends ConsumerStatefulWidget {
   final String spaceId;
@@ -120,7 +120,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
 
   Future<void> _joinSelected(BuildContext context) async {
     final allRooms = chatsFound.followedBy(spacesFound).toList();
-    List<SpaceHierarchyRoomInfo> roomsToJoin = selectedRooms.let(
+    List<SpaceHierarchyRoomInfo> roomsToJoin = selectedRooms.map(
           (p0) => p0
               .where((rId) {
                 final found = allRooms.any((r) => r.roomIdStr() == rId);

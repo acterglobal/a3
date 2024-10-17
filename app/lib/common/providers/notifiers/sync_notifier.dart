@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/sync_state/sync_state.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
 
@@ -66,7 +66,7 @@ class SyncNotifier extends StateNotifier<SyncState> {
           state = SyncState(initialSync: false, errorMsg: msg);
         } else {
           final retry = min(
-            state.nextRetry.let((nextRetry) => nextRetry * 2) ?? 5,
+            state.nextRetry.map((nextRetry) => nextRetry * 2) ?? 5,
             300,
           ); // we double this to a max of 5min.
           state = state.copyWith(

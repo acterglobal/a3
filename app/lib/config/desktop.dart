@@ -9,7 +9,7 @@ import 'package:logging/logging.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
-final _log = Logger('a3::desktop');
+final _log = Logger('a3::config::desktop');
 
 class DesktopSupport extends StatefulWidget {
   final Widget child;

@@ -26,17 +26,17 @@ final spaceListSearchProvider = FutureProvider.autoDispose
     .family<List<Space>, String>((ref, searchText) async {
   final bookmarkedSpaceList = ref.watch(bookmarkedSpacesProvider);
   final othersSpaceList = ref.watch(unbookmarkedSpacesProvider);
-  final spaceList = bookmarkedSpaceList.followedBy(othersSpaceList).toList();
+  final spaceList = bookmarkedSpaceList.followedBy(othersSpaceList);
 
   //Return all spaces if search is empty
-  final search = searchText.toLowerCase();
-  if (search.isEmpty) return spaceList;
+  final searchValue = searchText.trim().toLowerCase();
+  if (searchValue.isEmpty) return spaceList.toList();
 
   //Return all spaces with search criteria
   return spaceList.where((space) {
     final roomId = space.getRoomIdStr();
     final spaceInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final spaceName = spaceInfo.displayName ?? roomId;
-    return spaceName.toLowerCase().contains(searchText.toLowerCase());
+    return spaceName.toLowerCase().contains(searchValue);
   }).toList();
 });

@@ -1,7 +1,7 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/notifiers/relations_notifier.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -172,23 +172,17 @@ final searchedSpacesProvider =
   final allSpaces = await ref.watch(_spaceIdAndNames.future);
 
   if (searchValue == null || searchValue.isEmpty) {
-    return allSpaces
-        .map(
-          (e) => e.$1,
-        )
-        .toList();
+    return allSpaces.map((e) => e.$1).toList();
   }
 
   final searchTerm = searchValue.toLowerCase();
 
   final foundSpaces = List<String>.empty(growable: true);
 
-  for (final item in allSpaces) {
-    if (item.$1.contains(searchTerm) ||
-        (item.$2 != null
-            ? item.$2!.toLowerCase().contains(searchTerm)
-            : false)) {
-      foundSpaces.add(item.$1);
+  for (final (roomId, dispName) in allSpaces) {
+    if (roomId.contains(searchTerm) ||
+        dispName?.toLowerCase().contains(searchTerm) == true) {
+      foundSpaces.add(roomId);
     }
   }
 
@@ -400,7 +394,7 @@ final remoteSubspaceRelationsProvider =
         await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
     final toIgnore = List.of(relatedSpaces.knownSubspaces);
     toIgnore.addAll(relatedSpaces.parents.map((e) => e.getRoomIdStr()));
-    relatedSpaces.mainParent.let((p) => toIgnore.add(p.getRoomIdStr()));
+    relatedSpaces.mainParent.map((p) => toIgnore.add(p.getRoomIdStr()));
     toIgnore.add(spaceId); // the hierarchy also gives us ourselfes ...
 
     final roomHierarchy =

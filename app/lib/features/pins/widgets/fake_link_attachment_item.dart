@@ -1,6 +1,6 @@
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
@@ -14,7 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::pin::fake-pin-link-attachment-item');
+final _log = Logger('a3::pins::fake_link_attachment_item');
 
 class FakeLinkAttachmentItem extends ConsumerWidget {
   final String pinId;

@@ -1,10 +1,12 @@
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::event::utils');
+final _log = Logger('a3::cal_event::utils');
 
 Future<void> saveEventTitle({
   required BuildContext context,
@@ -67,4 +69,43 @@ DateTime calculateDateTimeWithHours(DateTime date, TimeOfDay time) {
     hour: time.hour,
     minute: time.minute,
   );
+}
+
+String formatDate(CalendarEvent e) {
+  final start = toDartDatetime(e.utcStart()).toLocal();
+  final end = toDartDatetime(e.utcEnd()).toLocal();
+  final startFmt = DateFormat.yMMMd().format(start);
+  if (start.difference(end).inDays == 0) {
+    return startFmt;
+  } else {
+    final endFmt = DateFormat.yMMMd().format(end);
+    return '$startFmt - $endFmt';
+  }
+}
+
+String formatTime(CalendarEvent e) {
+  final start = toDartDatetime(e.utcStart()).toLocal();
+  final end = toDartDatetime(e.utcEnd()).toLocal();
+  return '${DateFormat.jm().format(start)} - ${DateFormat.jm().format(end)}';
+}
+
+String getMonthFromDate(UtcDateTime utcDateTime) {
+  final localDateTime = toDartDatetime(utcDateTime).toLocal();
+  final month = DateFormat.MMM().format(localDateTime);
+  return month;
+}
+
+String getDayFromDate(UtcDateTime utcDateTime) {
+  final localDateTime = toDartDatetime(utcDateTime).toLocal();
+  final day = DateFormat.d().format(localDateTime);
+  return day;
+}
+
+String getTimeFromDate(BuildContext context, UtcDateTime utcDateTime) {
+  final localDateTime = toDartDatetime(utcDateTime).toLocal();
+  return DateFormat.jm().format(localDateTime);
+}
+
+String eventDateFormat(DateTime dateTime) {
+  return DateFormat('MMM dd, yyyy').format(dateTime);
 }

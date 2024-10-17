@@ -16,7 +16,7 @@ import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::tasks::widget::task_item');
+final _log = Logger('a3::tasks::widgets::task_item');
 
 class TaskItem extends ConsumerWidget {
   final String taskListId;

@@ -10,7 +10,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::report_content');
+final _log = Logger('a3::common::actions::report_content');
 
 final _ignoreUserProvider = StateProvider.autoDispose<bool>((ref) => false);
 

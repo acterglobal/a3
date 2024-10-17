@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::close_room');
+final _log = Logger('a3::common::actions::close_room');
 
 Future<bool> openCloseRoomDialog({
   required BuildContext context,

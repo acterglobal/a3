@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::tasks::widget::task_list_item');
+final _log = Logger('a3::tasks::widgets::task_list_item_card');
 
 class TaskListItemCard extends ConsumerWidget {
   final String taskListId;

@@ -1,7 +1,7 @@
 import 'dart:math';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -26,9 +26,9 @@ class EmojiPickerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height =
-        size.let((val) => val.height) ?? MediaQuery.of(context).size.height / 3;
+        size.map((val) => val.height) ?? MediaQuery.of(context).size.height / 3;
     final width =
-        size.let((val) => val.width) ?? MediaQuery.of(context).size.width;
+        size.map((val) => val.width) ?? MediaQuery.of(context).size.width;
     final cols = min(width / (EmojiConfig.emojiSizeMax * 2), 12).floor();
 
     final emojiConfig = EmojiViewConfig(

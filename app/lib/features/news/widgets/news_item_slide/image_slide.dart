@@ -7,7 +7,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-final _log = Logger('a3::news::widget::image_slide');
+final _log = Logger('a3::news::image_slide');
 
 class ImageSlide extends StatelessWidget {
   final NewsSlide slide;
