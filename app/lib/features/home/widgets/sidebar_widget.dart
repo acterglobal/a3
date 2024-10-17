@@ -243,9 +243,9 @@ class SidebarWidget extends ConsumerWidget {
           style: Theme.of(context).textTheme.labelSmall,
           softWrap: false,
         ),
-        onTap: () => goToBranch(ShellBranch.quickSearchShell),
+        onTap: () => goToBranch(ShellBranch.searchShell),
         tutorialGlobalKey: jumpToKey,
-        indicator: const _SidebarItemIndicator(routes: [Routes.quickSearch]),
+        indicator: const _SidebarItemIndicator(routes: [Routes.search]),
       ),
       _SidebarItem(
         icon: const Icon(
@@ -263,7 +263,7 @@ class SidebarWidget extends ConsumerWidget {
         indicator: const _SidebarItemIndicator(
           reversed: true,
           routes: [
-            Routes.quickSearch,
+            Routes.search,
             Routes.chat,
             Routes.activities,
           ],

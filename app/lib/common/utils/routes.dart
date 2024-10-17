@@ -108,7 +108,6 @@ enum Routes {
   settingsSuperInvites('/settings/super_invites'),
   // -- utils
   bugReport('/bug-report'),
-  quickSearch('/quick-search'),
   // -- coming in from a push notification
   forward('/forward'),
   // -- fatal failure
