@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
@@ -18,7 +19,6 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -47,9 +47,9 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   @override
   void initState() {
     super.initState();
-    widget.initialSelectedSpace.map((p0) {
+    widget.initialSelectedSpace.map((initialSpaceId) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        ref.read(newsStateProvider.notifier).setSpaceId(p0);
+        ref.read(newsStateProvider.notifier).setSpaceId(initialSpaceId);
       });
     });
     ref.listenManual(newsStateProvider, fireImmediately: true,
@@ -95,18 +95,67 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     return Scaffold(
       appBar: appBarUI(context),
       body: bodyUI(context),
-      floatingActionButton: actionButtonUI(context),
+      floatingActionButton:
+          selectedNewsPost != null ? actionButtonUI(context) : null,
     );
+  }
+
+  Future<bool> canClear() async {
+    if (ref.read(newsStateProvider.notifier).isEmpty()) {
+      return true;
+    }
+
+    // we first need to confirm with the user that we can clear everything.
+    final bool? confirm = await showAdaptiveDialog<bool>(
+      context: context,
+      useRootNavigator: false,
+      routeSettings: const RouteSettings(name: 'confirmCanClear'),
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(L10n.of(context).deleteNewsDraftTitle),
+          content: Text(
+            L10n.of(context).deleteNewsDraftText,
+          ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
+          actions: <Widget>[
+            OutlinedButton(
+              key: NewsUpdateKeys.cancelClose,
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(
+                L10n.of(context).no,
+              ),
+            ),
+            ActerDangerActionButton(
+              key: NewsUpdateKeys.confirmDeleteDraft,
+              onPressed: () async {
+                Navigator.pop(context, true);
+              },
+              child: Text(
+                L10n.of(context).deleteDraftBtn,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirm == true) {
+      ref.read(newsStateProvider.notifier).clear();
+    }
+    return confirm == true;
   }
 
   //App Bar
   AppBar appBarUI(BuildContext context) {
     return AppBar(
       leading: IconButton(
-        onPressed: () {
+        key: NewsUpdateKeys.closeEditor,
+        onPressed: () async {
           // Hide Keyboard
           SystemChannels.textInput.invokeMethod('TextInput.hide');
-          Navigator.pop(context);
+          if (await canClear()) {
+            // ignore: use_build_context_synchronously
+            Navigator.pop(context);
+          }
         },
         icon: const Icon(Atlas.xmark_circle),
       ),
@@ -141,15 +190,12 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
 
   //Action Button
   Widget actionButtonUI(BuildContext context) {
-    return Visibility(
-      visible: selectedNewsPost != null,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 90),
-        child: FloatingActionButton(
-          key: NewsUpdateKeys.newsSubmitBtn,
-          onPressed: () => sendNews(context, ref),
-          child: const Icon(Icons.send),
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 90),
+      child: FloatingActionButton(
+        key: NewsUpdateKeys.newsSubmitBtn,
+        onPressed: () => sendNews(context, ref),
+        child: const Icon(Icons.send),
       ),
     );
   }
@@ -165,10 +211,6 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           content: SelectActionItem(
             onShareEventSelected: () async {
               Navigator.pop(context);
-              if (ref.read(newsStateProvider).newsPostSpaceId == null) {
-                EasyLoading.showToast(lang.pleaseFirstSelectASpace);
-                return;
-              }
               final notifier = ref.read(newsStateProvider.notifier);
               await notifier.selectEventToShare(context);
             },

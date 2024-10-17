@@ -5,6 +5,8 @@ import 'package:acter/features/news/model/news_post_state.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:riverpod/riverpod.dart';
 
 final newsStateProvider =
@@ -34,6 +36,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     );
     //Clear object reference if news post id gets changes
     state.currentNewsSlide?.newsReferencesModel = null;
+    for (final slide in state.newsSlideList) {
+      slide.newsReferencesModel = null;
+    }
 
     state = state.copyWith(
       newsPostSpaceId: spaceId,
@@ -44,10 +49,32 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     state = state.copyWith(newsPostSpaceId: spaceId);
   }
 
+  void clear() {
+    state = const NewsPostState();
+  }
+
+  bool isEmpty() {
+    return state == const NewsPostState();
+  }
+
   Future<void> selectEventToShare(BuildContext context) async {
+    final lang = L10n.of(context);
+    final newsPostSpaceId = state.newsPostSpaceId ??
+        await selectSpaceDrawer(
+          context: context,
+          canCheck: 'CanPostNews',
+        );
+
+    if (newsPostSpaceId == null) {
+      EasyLoading.showToast(lang.pleaseFirstSelectASpace);
+      return;
+    }
+    if (!context.mounted) {
+      return;
+    }
     final eventId = await selectEventDrawer(
       context: context,
-      spaceId: state.newsPostSpaceId!,
+      spaceId: newsPostSpaceId,
     );
     final newsSpaceReference = NewsReferencesModel(
       type: NewsReferencesType.calendarEvent,
