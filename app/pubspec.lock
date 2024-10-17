@@ -76,14 +76,21 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.1"
+  appflowy_acter_plugins:
+    dependency: "direct main"
+    description:
+      path: "../packages/appflowy_acter_plugins"
+      relative: true
+    source: path
+    version: "0.0.6+1"
   appflowy_editor:
     dependency: "direct main"
     description:
       name: appflowy_editor
-      sha256: f8df03fa8020feceae0cf2bd60384187b32b71e9e95b99f7e0a4dcdd44a171cf
+      sha256: "568a9e73315442157fdd0ff892aa5abed418bec0c1bf8885bb352c26d078a57f"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.0"
+    version: "4.0.0"
   archive:
     dependency: transitive
     description:
@@ -1449,6 +1456,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.4"
+  media_kit_libs_video:
+    dependency: transitive
+    description:
+      name: media_kit_libs_video
+      sha256: "20bb4aefa8fece282b59580e1cd8528117297083a6640c98c2e98cfc96b93288"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.5"
   media_kit_libs_windows_video:
     dependency: "direct main"
     description:

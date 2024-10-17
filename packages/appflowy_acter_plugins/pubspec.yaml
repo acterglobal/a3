@@ -1,0 +1,47 @@
+name: appflowy_acter_plugins
+description: "A collection of plugins and Acter block components for the AppFlowy Editor."
+version: 0.0.6+1
+homepage: 'https://doc.acter.global/'
+
+topics:
+  - editor
+  - appflowy
+  - plugins
+  - widgets
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+  web:
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  appflowy_editor: ^4.0.0
+  flutter:
+    sdk: flutter
+  flutter_chat_types: ^3.6.2
+  flutter_link_previewer: ^3.2.2
+
+  # Code Block Plugin
+  highlight: ^0.7.0
+
+  # Video Plugin
+  media_kit: ^1.1.10+1
+  media_kit_libs_video: ^1.0.4
+  media_kit_video: ^1.2.4
+  provider: ^6.1.2
+  string_validator: ^1.0.2
+
+  universal_platform: ^1.1.0
+
+  # Link Preview Plugin
+  url_launcher: ^6.2.6
+
+dev_dependencies:
+  flutter_lints: ^3.0.2

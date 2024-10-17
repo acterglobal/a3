@@ -1,0 +1,36 @@
+name: example
+description: "Example application for AppFlowy Acter Editor Plugins."
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.3 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  appflowy_editor: 
+
+  appflowy_acter_plugins:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.2
+
+dependency_overrides:
+  appflowy_editor:
+    git:
+      url: https://github.com/AppFlowy-IO/appflowy-editor.git
+      ref: "b5da6e4"
+
+flutter:
+  uses-material-design: true
+
+  fonts:
+    - family: RobotoMono
+      fonts:
+        - asset: assets/RobotoMono-Regular.ttf
