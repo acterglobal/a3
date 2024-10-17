@@ -55,12 +55,12 @@ class _DesktopSupportState extends State<DesktopSupport>
     Menu menu = Menu(
       items: [
         MenuItem(
-          key: 'home',
-          label: 'Home',
-        ),
-        MenuItem(
           key: 'search',
           label: 'Search',
+        ),
+        MenuItem(
+          key: 'home',
+          label: 'Home',
         ),
         MenuItem(
           key: 'chat',
