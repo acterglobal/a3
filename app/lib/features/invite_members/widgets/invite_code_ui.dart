@@ -106,9 +106,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
               ),
               IconButton(
                 onPressed: () async {
-                  await Clipboard.setData(
-                    ClipboardData(text: inviteCode),
-                  );
+                  await Clipboard.setData(ClipboardData(text: inviteCode));
                   EasyLoading.showToast(lang.inviteCopiedToClipboard);
                 },
                 icon: const Icon(Icons.copy),
@@ -172,7 +170,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
                     Expanded(
@@ -180,9 +178,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
                     ),
                     OutlinedButton.icon(
                       icon: const Icon(Icons.close),
-                      onPressed: () {
-                        Navigator.pop(context, null);
-                      },
+                      onPressed: () => Navigator.pop(context, null),
                       label: Text(lang.close),
                     ),
                   ],
@@ -221,11 +217,10 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
     final lang = L10n.of(context);
     try {
       EasyLoading.show(status: lang.generateInviteCode);
-      final displayName =
+      final dispName =
           await ref.read(roomDisplayNameProvider(widget.roomId).future);
       String prefix =
-          (displayName?.replaceAll(RegExp(r'[^A-Za-z]'), '').toLowerCase() ??
-              '');
+          dispName?.replaceAll(RegExp(r'[^A-Za-z]'), '').toLowerCase() ?? '';
 
       final rng = Random();
 

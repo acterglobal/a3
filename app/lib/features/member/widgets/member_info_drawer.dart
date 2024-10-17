@@ -250,7 +250,10 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
     return ListTile(
-      leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
+      leading: RoomAvatarBuilder(
+        roomId: roomId,
+        avatarSize: 24,
+      ),
       title: Text(roomName),
     );
   }
@@ -313,9 +316,8 @@ class MemberInfoDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberLoader = ref.watch(
-      memberProvider((roomId: roomId, userId: memberId)),
-    );
+    final memberLoader =
+        ref.watch(memberProvider((roomId: roomId, userId: memberId)));
     return memberLoader.when(
       data: (member) => _MemberInfoDrawerInner(
         member: member,

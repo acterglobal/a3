@@ -12,7 +12,10 @@ final _log = Logger('a3::news::image_slide');
 class ImageSlide extends StatelessWidget {
   final NewsSlide slide;
 
-  const ImageSlide({super.key, required this.slide});
+  const ImageSlide({
+    super.key,
+    required this.slide,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +53,12 @@ class ImageSlide extends StatelessWidget {
   }
 
   Widget buildImageLoadingUI() {
-    return Center(child: Icon(PhosphorIcons.image(), size: 100));
+    return Center(
+      child: Icon(
+        PhosphorIcons.image(),
+        size: 100,
+      ),
+    );
   }
 
   Widget buildImageLoadingErrorUI(

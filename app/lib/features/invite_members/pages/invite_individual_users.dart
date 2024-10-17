@@ -90,9 +90,15 @@ class InviteIndividualUsers extends ConsumerWidget {
         child: Column(
           children: [
             if (userNameRegExp.hasMatch(cleaned))
-              DirectInvite(roomId: roomId, userId: cleaned),
+              DirectInvite(
+                roomId: roomId,
+                userId: cleaned,
+              ),
             if (noAtUserNameRegExp.hasMatch(cleaned))
-              DirectInvite(roomId: roomId, userId: '@$cleaned'),
+              DirectInvite(
+                roomId: roomId,
+                userId: '@$cleaned',
+              ),
           ],
         ),
       );
