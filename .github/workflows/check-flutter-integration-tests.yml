@@ -318,7 +318,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
@@ -380,7 +380,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Install cargo-make
         if: steps.cache-cargo.outputs.cache-hit != 'true'
@@ -531,7 +531,7 @@ jobs:
   #     - uses: actions/setup-java@v4
   #       with:
   #         distribution: 'temurin'
-  #         java-version: '17'
+  #         java-version: '21'
 
   #     - name: Install cargo-make
   #       if: steps.cache-cargo.outputs.cache-hit != 'true'

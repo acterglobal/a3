@@ -54,7 +54,7 @@ jobs:
             cargo_make_setup: setup-android
             cargo_make_args: android-arm
             with_ndk_version: r25
-            java_version: "17"
+            java_version: "21"
             flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
             artifact_prefix: acter-${{inputs.artifacts_prefix}}android
             artifact_path:  app/build/app/outputs/bundle/release/
@@ -66,7 +66,7 @@ jobs:
             cargo_make_setup: setup-android
             cargo_make_args: android-arm
             with_ndk_version: r25
-            java_version: "17"
+            java_version: "21"
             flutter_build_args: "build apk --split-per-abi --split-debug-info=debug_symbols"
             artifact_prefix: acter-${{inputs.artifacts_prefix}}android
             artifact_path:  app/build/app/outputs/apk/release/
