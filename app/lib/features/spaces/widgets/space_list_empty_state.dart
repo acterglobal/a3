@@ -6,11 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceListEmptyState extends ConsumerWidget {
-  final String? searchValue;
+  final String searchValue;
 
   const SpaceListEmptyState({
     super.key,
-    this.searchValue,
+    required this.searchValue,
   });
 
   @override

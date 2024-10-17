@@ -36,6 +36,7 @@ class SpaceListWidget extends ConsumerWidget {
       data: (spaceList) => buildSpaceSectionUI(context, spaceList),
       error: (error, stack) => spaceListErrorWidget(context, ref, error, stack),
       loading: () => const SpaceListSkeleton(),
+      skipLoadingOnReload: true,
     );
   }
 
