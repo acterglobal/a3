@@ -1,10 +1,11 @@
 import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/config/env.g.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -46,7 +47,7 @@ class SettingsMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final isBackupEnabled =
-        ref.watch(featuresProvider).isActive(LabsFeature.encryptionBackup);
+        ref.watch(isActiveProvider(LabsFeature.encryptionBackup));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

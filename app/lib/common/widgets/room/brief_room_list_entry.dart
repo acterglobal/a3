@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +36,7 @@ class BriefRoomEntry extends ConsumerWidget {
     );
     final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
-    Widget? trailing = trailingBuilder.let((cb) => cb(canLink));
+    Widget? trailing = trailingBuilder.map((cb) => cb(canLink));
     if (trailing == null && selectedValue == roomId) {
       trailing = const Icon(Icons.check_circle_outline);
     }
@@ -50,7 +50,7 @@ class BriefRoomEntry extends ConsumerWidget {
       title: Text(roomName),
       subtitle: subtitle,
       trailing: trailing,
-      onTap: canLink ? onSelect.let((cb) => () => cb(roomId)) : null,
+      onTap: canLink ? onSelect.map((cb) => () => cb(roomId)) : null,
     );
   }
 }

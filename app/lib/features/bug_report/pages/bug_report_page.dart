@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/bug_report/actions/submit_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +12,16 @@ import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::bug_report');
+
+String? _getIssueId(String url) {
+  // example - https://github.com/bitfriend/acter-bugs/issues/9
+  RegExp re = RegExp(r'^https:\/\/github.com\/(.*)\/(.*)\/issues\/(\d*)$');
+  RegExpMatch? match = re.firstMatch(url);
+  if (match != null) {
+    return match.group(3);
+  }
+  return null;
+}
 
 class BugReportPage extends ConsumerStatefulWidget {
   static const titleField = Key('bug-report-title');
@@ -69,7 +79,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
         screenshotPath: withScreenshot ? widget.imagePath : null,
         extraFields: extraFields,
       );
-      String? issueId = getIssueId(reportUrl);
+      String? issueId = _getIssueId(reportUrl);
       loadingNotifier.update((state) => false);
       if (context.mounted) {
         final status = issueId != null
@@ -214,7 +224,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
 
   List<Widget> renderForScreenShot() {
     final lang = L10n.of(context);
-    return widget.imagePath.let(
+    return widget.imagePath.map(
           (path) => [
             const SizedBox(height: 10),
             CheckboxListTile(

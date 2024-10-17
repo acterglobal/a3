@@ -5,6 +5,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
@@ -124,7 +125,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     final space = ref.watch(selectedSpaceDetailsProvider);
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: space.let(
+      child: space.map(
             (p0) => Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,

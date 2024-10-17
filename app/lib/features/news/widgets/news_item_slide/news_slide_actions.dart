@@ -1,5 +1,5 @@
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/toolkit/errors/error_dialog.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';

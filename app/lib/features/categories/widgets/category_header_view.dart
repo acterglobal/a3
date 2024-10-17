@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
@@ -76,7 +76,7 @@ class CategoryHeaderView extends StatelessWidget {
       iconSize: 28,
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
         PopupMenuItem(
-          onTap: onClickEditCategory.let((cb) => () => cb()),
+          onTap: onClickEditCategory.map((cb) => () => cb()),
           child: Row(
             children: <Widget>[
               Icon(PhosphorIcons.pencil()),
@@ -86,7 +86,7 @@ class CategoryHeaderView extends StatelessWidget {
           ),
         ),
         PopupMenuItem(
-          onTap: onClickDeleteCategory.let((cb) => () => cb()),
+          onTap: onClickDeleteCategory.map((cb) => () => cb()),
           child: Row(
             children: <Widget>[
               Icon(PhosphorIcons.trash()),

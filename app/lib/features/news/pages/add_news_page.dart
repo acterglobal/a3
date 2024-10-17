@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -47,7 +47,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   @override
   void initState() {
     super.initState();
-    widget.initialSelectedSpace.let((p0) {
+    widget.initialSelectedSpace.map((p0) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         ref.read(newsStateProvider.notifier).setSpaceId(p0);
       });

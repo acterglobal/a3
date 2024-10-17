@@ -14,6 +14,7 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:acter/common/extensions/options.dart';
 
 final _log = Logger('a3::chat::convo_card');
 
@@ -46,7 +47,7 @@ class ConvoCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final inner = buildInner(context, ref);
-    return animation.let(
+    return animation.map(
           (val) => SizeTransition(
             sizeFactor: val,
             child: inner,
@@ -84,7 +85,9 @@ class ConvoCard extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                 subtitle: buildSubtitle(context, constraints),
-                trailing: constraints.maxWidth < 300 ? null : trailing,
+                trailing: constraints.maxWidth < 300
+                    ? null
+                    : trailing ?? _TrailingWidget(roomId: roomId),
               ),
             ),
           ],

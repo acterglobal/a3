@@ -2,6 +2,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
@@ -93,11 +94,11 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   @override
   void initState() {
     super.initState();
-    widget.templateEvent.let((p0) {
+    widget.templateEvent.map((p0) {
           WidgetsBinding.instance
               .addPostFrameCallback((Duration dur) => _setFromTemplate(p0));
         }) ??
-        widget.initialSelectedSpace.let((p0) {
+        widget.initialSelectedSpace.map((p0) {
           WidgetsBinding.instance
               .addPostFrameCallback((Duration dur) => _setSpaceId(p0));
         });

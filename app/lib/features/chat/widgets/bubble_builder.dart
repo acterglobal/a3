@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/custom_message_builder.dart';
@@ -156,7 +156,7 @@ class _ChatBubble extends ConsumerWidget {
   }
 
   Bubble renderBubble(BuildContext context, bool isAuthor) {
-    Widget bubbleChild = message.repliedMessage.let(
+    Widget bubbleChild = message.repliedMessage.map(
           (replied) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

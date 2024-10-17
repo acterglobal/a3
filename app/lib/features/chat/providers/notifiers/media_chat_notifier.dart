@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -79,7 +79,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
   }
 
   Future<void> downloadMedia() async {
-    await _convo.letAsync((convo) async {
+    await _convo.mapAsync((convo) async {
       state = state.copyWith(isDownloading: true);
       try {
         //Download media if media path is not available
@@ -89,7 +89,7 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
           null,
           tempDir.path,
         );
-        await result.text().letAsync((path) async {
+        await result.text().mapAsync((path) async {
           state = state.copyWith(
             mediaFile: File(path),
             videoThumbnailFile: null,

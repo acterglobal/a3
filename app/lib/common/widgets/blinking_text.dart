@@ -19,7 +19,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:flutter/material.dart';
 
 class BlinkText extends StatefulWidget {
@@ -143,7 +143,7 @@ class BlinkTextState extends State<BlinkText>
   void initState() {
     super.initState();
     //default duration
-    widget.duration.let((val) => duration = val);
+    widget.duration.map((val) => duration = val);
 
     //default beginColor
     if (widget.beginColor != null) {
@@ -206,7 +206,7 @@ class BlinkTextState extends State<BlinkText>
   Widget build(BuildContext context) {
     final defaultStyle = DefaultTextStyle.of(context);
     var style = defaultStyle.style;
-    widget.style.let((val) => style = defaultStyle.style.merge(val));
+    widget.style.map((val) => style = defaultStyle.style.merge(val));
     if (MediaQuery.boldTextOf(context)) {
       style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
     }

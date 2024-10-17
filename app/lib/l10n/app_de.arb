@@ -2178,7 +2178,7 @@
   "@powerLevelAdmin": {},
   "powerLevelModerator": "Moderator",
   "@powerLevelModerator": {},
-  "powerLevelRegular": "Regulär",
+  "powerLevelRegular": "Jede:r",
   "@powerLevelRegular": {},
   "powerLevelNone": "keines",
   "@powerLevelNone": {},
@@ -2249,5 +2249,9 @@
   "calenderWithEvents": "Kalender mit Events",
   "@calenderWithEvents": {},
   "addBoost": "Boost hinzufügen",
-  "@addBoost": {}
+  "@addBoost": {},
+  "chatNG": "Next-Generation Chat",
+  "@chatNG": {},
+  "chatNGExplainer": "Wechsle zum Chat der nächsten Generation. Features sind evtl. noch nicht stabil",
+  "@chatNGExplainer": {}
 }

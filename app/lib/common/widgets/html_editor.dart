@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
@@ -165,7 +165,7 @@ class HtmlEditorState extends State<HtmlEditor> {
       );
 
       _changeListener?.cancel();
-      widget.onChanged.let((cb) {
+      widget.onChanged.map((cb) {
         _changeListener = editorState.transactionStream.listen(
           (data) => _triggerExport(cb),
           onError: (e, s) {
@@ -225,7 +225,7 @@ class HtmlEditorState extends State<HtmlEditor> {
         width: 10,
       ),
     );
-    widget.onSave.let((cb) {
+    widget.onSave.map((cb) {
       children.add(
         ActerPrimaryActionButton(
           key: HtmlEditor.saveEditKey,

@@ -1,5 +1,5 @@
 import 'package:acter/common/toolkit/errors/util.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:flutter/material.dart';
@@ -90,7 +90,7 @@ class ActerErrorDialog extends StatelessWidget {
             ErrorCode.notFound => lang.notFound,
             _ => lang.fatalError,
           },
-      text: text ?? textBuilder.let((cb) => cb(error)),
+      text: text ?? textBuilder.map((cb) => cb(error)),
       type: switch (err) {
         ErrorCode.notFound => QuickAlertType.warning,
         _ => QuickAlertType.error,
@@ -100,7 +100,7 @@ class ActerErrorDialog extends StatelessWidget {
       cancelBtnText: lang.back,
       borderRadius: borderRadius,
     );
-    onRetryTap.let((cb) {
+    onRetryTap.map((cb) {
       options.showConfirmBtn = true;
       options.confirmBtnColor = theme.primaryColor;
       options.confirmBtnText = lang.retry;
@@ -197,7 +197,7 @@ class _ActerErrorActionButtons extends QuickAlertButtons {
         borderRadius: BorderRadius.circular(15.0),
       ),
       color: options.confirmBtnColor ??
-          context.let((ctx) => Theme.of(ctx).primaryColor),
+          context.map((ctx) => Theme.of(ctx).primaryColor),
       onPressed: onTap,
       child: Center(
         child: Padding(

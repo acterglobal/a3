@@ -1,8 +1,7 @@
 import 'dart:async';
-
-import 'package:acter/common/utils/feature_flagger.dart';
-import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/features/labs/feature_flagger.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
