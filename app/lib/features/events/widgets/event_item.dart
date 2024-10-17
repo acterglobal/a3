@@ -37,11 +37,13 @@ class EventItem extends StatelessWidget {
     return InkWell(
       onTap: () {
         final eventId = event.eventId().toString();
-        onTapEventItem.map((cb) => cb(eventId)) ??
-            context.pushNamed(
-              Routes.calendarEvent.name,
-              pathParameters: {'calendarId': eventId},
-            );
+        onTapEventItem.map(
+          (cb) => cb(eventId),
+          orElse: () => context.pushNamed(
+            Routes.calendarEvent.name,
+            pathParameters: {'calendarId': eventId},
+          ),
+        );
       },
       child: Stack(
         alignment: Alignment.topLeft,
