@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -185,25 +186,21 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
   void _insert(int pos, String data) {
     _log.fine('insert $pos: $data');
     _currentList.insert(pos, data);
-    final curState = _listKey.currentState;
-    if (curState != null) {
-      curState.insertItem(pos);
-    } else {
-      _log.fine('we are not');
-    }
+    _listKey.currentState.map(
+      (curState) => curState.insertItem(pos),
+      orElse: () => _log.fine('we are not'),
+    );
   }
 
   void _remove(int pos, String data) {
     _currentList.removeAt(pos);
-    final curState = _listKey.currentState;
-    if (curState != null) {
-      curState.removeItem(
+    _listKey.currentState.map(
+      (curState) => curState.removeItem(
         pos,
         (context, animation) => _removedItemBuilder(data, context, animation),
-      );
-    } else {
-      _log.fine('we are not');
-    }
+      ),
+      orElse: () => _log.fine('we are not'),
+    );
   }
 
   Widget _removedItemBuilder(
