@@ -16,6 +16,8 @@ import 'package:path_provider/path_provider.dart';
 final _log = Logger('a3::news::utils');
 
 class NewsUtils {
+  static ImagePicker imagePicker = ImagePicker();
+
   static Future<File?> getThumbnailData(XFile videoFile) async {
     try {
       final tempDir = await getTemporaryDirectory();
@@ -61,7 +63,7 @@ class NewsUtils {
   //Add image slide
   static Future<void> addImageSlide(WidgetRef ref) async {
     final clr = getRandomElement(Colors.primaries);
-    XFile? imageFile = await ImagePicker().pickImage(
+    XFile? imageFile = await imagePicker.pickImage(
       source: ImageSource.gallery,
     );
     if (imageFile != null) {
@@ -77,7 +79,7 @@ class NewsUtils {
   //Add video slide
   static Future<void> addVideoSlide(WidgetRef ref) async {
     final clr = getRandomElement(Colors.primaries);
-    XFile? videoFile = await ImagePicker().pickVideo(
+    XFile? videoFile = await imagePicker.pickVideo(
       source: ImageSource.gallery,
     );
     if (videoFile != null) {

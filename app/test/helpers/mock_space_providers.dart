@@ -3,7 +3,7 @@ import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockRoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String>
     with Mock

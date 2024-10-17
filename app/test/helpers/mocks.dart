@@ -5,7 +5,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 /// Mocked version of ActerSdk
 class MockActerSdk extends Mock implements ActerSdk {}
