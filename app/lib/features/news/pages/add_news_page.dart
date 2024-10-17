@@ -24,7 +24,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::news::add_page');
+final _log = Logger('a3::news::add');
 
 const addNewsKey = Key('add-news');
 

@@ -12,7 +12,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::tasks::widgets::list');
+final _log = Logger('a3::tasks::widgets::task_items_list');
 
 class TaskItemsListWidget extends ConsumerStatefulWidget {
   final TaskList taskList;

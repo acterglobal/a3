@@ -12,7 +12,7 @@ import 'package:acter_notifify/platform/windows.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::notifify');
+final _log = Logger('a3::notifify::acter');
 
 /// Function to call when a notification has been tapped by the user
 typedef HandleMessageTap = FutureOr<bool> Function(Map<String?, Object?> data);

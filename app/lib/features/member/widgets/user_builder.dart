@@ -14,7 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::common::user');
+final _log = Logger('a3::member::user');
 
 final userAvatarProvider =
     FutureProvider.family<MemoryImage?, UserProfile>((ref, user) async {

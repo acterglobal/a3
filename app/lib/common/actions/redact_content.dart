@@ -11,7 +11,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::redact_content');
+final _log = Logger('a3::common::actions::redact_content');
 
 Future<bool> openRedactContentDialog(
   BuildContext context, {

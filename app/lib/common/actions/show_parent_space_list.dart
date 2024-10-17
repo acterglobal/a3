@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::space::parent-space-list');
+final _log = Logger('a3::common::actions::parent-space-list');
 
 Future<void> showParentSpaceList(
   BuildContext context,

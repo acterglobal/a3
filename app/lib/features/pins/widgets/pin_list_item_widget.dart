@@ -7,13 +7,13 @@ import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::pins::pin_item');
+final _log = Logger('a3::pins::list_item');
 
 class PinListItemWidget extends ConsumerWidget {
   final String pinId;

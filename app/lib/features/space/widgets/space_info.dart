@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::common::spaces::info');
+final _log = Logger('a3::space::space_info');
 
 final isActerSpaceForSpace =
     FutureProvider.autoDispose.family<bool, Space>((ref, space) async {

@@ -21,7 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
 
-final _log = Logger('a3::settings::notifications_page');
+final _log = Logger('a3::settings::notifications');
 
 class _AddEmail extends StatefulWidget {
   final List<String> emails;

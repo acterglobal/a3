@@ -32,7 +32,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::pins::create_pin');
+final _log = Logger('a3::pins::create_page');
 
 class CreatePinPage extends ConsumerStatefulWidget {
   static const createPinPageKey = Key('create-pin-page');

@@ -7,7 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::space::settings::update_feature_level');
+final _log = Logger('a3::space::actions::update_feature_level');
 
 Future<bool> updateFeatureLevelChangeDialog(
   BuildContext context,

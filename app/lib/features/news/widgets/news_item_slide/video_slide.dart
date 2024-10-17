@@ -10,7 +10,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-final _log = Logger('a3::news::widget::video_slide');
+final _log = Logger('a3::news::video_slide');
 
 class VideoSlide extends StatelessWidget {
   final NewsSlide slide;
