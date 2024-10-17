@@ -12,10 +12,12 @@ import 'package:logging/logging.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:path/path.dart' as p;
 
-final _log = Logger('a3::pins::select::attachment');
+final _log = Logger('a3::pins::select_attachments');
 
 Future<FilePickerResult?> pick(
-    L10n lang, AttachmentType pinAttachmentType,) async {
+  L10n lang,
+  AttachmentType pinAttachmentType,
+) async {
   if (pinAttachmentType == AttachmentType.image) {
     return await pickImage(lang: lang);
   }

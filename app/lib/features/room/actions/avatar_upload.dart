@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::profile::avatar_upload');
+final _log = Logger('a3::room::avatar_upload');
 
 Future<void> openAvatar(
   BuildContext context,

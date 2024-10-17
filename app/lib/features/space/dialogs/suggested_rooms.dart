@@ -12,7 +12,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::spaces::suggested_rooms');
+final _log = Logger('a3::space::suggested_rooms');
 
 class _SuggestedRooms extends ConsumerStatefulWidget {
   final String spaceId;

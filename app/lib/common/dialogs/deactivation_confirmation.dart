@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::deactivate');
+final _log = Logger('a3::common::dialogs::deactivate');
 
 const deactivateConfirmBtn = Key('deactivate-account-confirm');
 const deactivateCancelBtn = Key('deactivate-account-cancel');

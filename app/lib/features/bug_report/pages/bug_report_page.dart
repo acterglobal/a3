@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::bug_report');
+final _log = Logger('a3::bug_report::bug_report_page');
 
 String? _getIssueId(String url) {
   // example - https://github.com/bitfriend/acter-bugs/issues/9

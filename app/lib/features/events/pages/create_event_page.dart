@@ -20,7 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::cal_event::createOrEdit');
+final _log = Logger('a3::cal_event::create');
 
 const createEditEventKey = Key('create-edit-event');
 

@@ -4,7 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::space::topic');
+final _log = Logger('a3::space::actions::set_acter');
 
 enum SpaceFeature {
   boosts,

@@ -6,7 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::settings::devices');
+final _log = Logger('a3::settings::devices_notifier');
 
 class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
   Stream<DeviceEvent>? _listener;

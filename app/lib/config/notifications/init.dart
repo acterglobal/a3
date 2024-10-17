@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::notifications');
+final _log = Logger('a3::config::notifications');
 
 const appIdPrefix = Env.pushAppPrefix;
 const appName = Env.pushAppName;
