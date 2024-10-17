@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
@@ -116,16 +117,14 @@ class _SidebarItem extends StatelessWidget {
       onTap: onTap,
       child: icon,
     );
-
-    if (indicator != null) {
+    indicator.map((ind) {
       inner = Stack(
         children: [
-          Center(child: indicator!),
+          Center(child: ind),
           Center(child: inner),
         ],
       );
-    }
-
+    });
     return Container(
       height: 40,
       width: 40,

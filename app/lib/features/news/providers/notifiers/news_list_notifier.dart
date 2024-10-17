@@ -15,19 +15,20 @@ class AsyncNewsListNotifier
 
   @override
   Future<List<NewsEntry>> build(String? arg) async {
+    final spaceId = arg;
     final client = ref.watch(alwaysClientProvider);
 
     //GET ALL NEWS
-    if (arg == null) {
+    if (spaceId == null) {
       _listener = client.subscribeStream('news');
     } else {
       //GET SPACE NEWS
-      _listener = client.subscribeStream('$arg::news');
+      _listener = client.subscribeStream('$spaceId::news');
     }
     _poller = _listener.listen(
       (data) async {
         _log.info('news subscribe received');
-        state = await AsyncValue.guard(() => _fetchNews(client));
+        state = await AsyncValue.guard(() => _fetchNews(client, spaceId));
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);
@@ -37,30 +38,26 @@ class AsyncNewsListNotifier
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await _fetchNews(client);
+    return await _fetchNews(client, spaceId);
   }
 
-  Future<List<NewsEntry>> _fetchNews(Client client) async {
+  Future<List<NewsEntry>> _fetchNews(Client client, String? spaceId) async {
     //GET ALL NEWS
-    if (arg == null) {
-      return sortNewsListDscTime(
-        (await client.latestNewsEntries(25)).toList(),
-      ); // this might throw internally
+    if (spaceId == null) {
+      final newsEntries =
+          await client.latestNewsEntries(25); // this might throw internally
+      return sortNewsListDscTime(newsEntries.toList());
     } else {
       //GET SPACE NEWS
-      final space = await client.space(arg!);
-      return sortNewsListDscTime(
-        (await space.latestNewsEntries(100)).toList(),
-      ); // this might throw internally
+      final space = await client.space(spaceId);
+      final newsEntries =
+          await space.latestNewsEntries(100); // this might throw internally
+      return sortNewsListDscTime(newsEntries.toList());
     }
   }
 }
 
-Future<List<NewsEntry>> sortNewsListDscTime(
-  List<NewsEntry> newsList,
-) async {
-  newsList.sort(
-    (a, b) => b.originServerTs().compareTo(a.originServerTs()),
-  );
+Future<List<NewsEntry>> sortNewsListDscTime(List<NewsEntry> newsList) async {
+  newsList.sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
   return newsList;
 }

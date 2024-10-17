@@ -119,18 +119,19 @@ class UserBuilder extends ConsumerWidget {
   }
 
   Widget? _renderTrailing(BuildContext context, WidgetRef ref) {
-    if (!includeUserJoinState || roomId == null) {
-      return null;
-    }
-    final room = ref.watch(maybeRoomProvider(roomId!)).valueOrNull;
-    return room != null
-        ? UserStateButton(
-            userId: userId,
-            room: room,
-          )
-        : const Skeletonizer(
+    if (!includeUserJoinState) return null;
+    return roomId.map((rId) {
+      final room = ref.watch(maybeRoomProvider(rId)).valueOrNull;
+      return room.map(
+            (r) => UserStateButton(
+              userId: userId,
+              room: r,
+            ),
+          ) ??
+          const Skeletonizer(
             child: Text('user'),
           );
+    });
   }
 
   Widget _buildSharedRooms(BuildContext context, Widget tile) {
@@ -219,23 +220,26 @@ class UserBuilder extends ConsumerWidget {
     );
   }
 
-  AvatarInfo _avatarInfo(WidgetRef ref) => (userProfile != null)
-      ? ref.watch(userAvatarInfoProvider(userProfile!))
-      : roomId != null
-          ? ref.watch(
-              memberAvatarInfoProvider((roomId: roomId!, userId: userId)),
-            )
-          : AvatarInfo(uniqueId: userId);
+  AvatarInfo _avatarInfo(WidgetRef ref) {
+    return userProfile.map((profile) {
+          return ref.watch(userAvatarInfoProvider(profile));
+        }) ??
+        roomId.map((rId) {
+          return ref.watch(
+            memberAvatarInfoProvider((roomId: rId, userId: userId)),
+          );
+        }) ??
+        AvatarInfo(uniqueId: userId);
+  }
 
-  String? _displayName(WidgetRef ref) =>
-      userProfile?.displayName() ??
-      (roomId != null
-          ? ref
-              .watch(
-                memberDisplayNameProvider((roomId: roomId!, userId: userId)),
-              )
-              .valueOrNull
-          : null);
+  String? _displayName(WidgetRef ref) {
+    return userProfile?.displayName() ??
+        roomId.map((rId) {
+          return ref
+              .watch(memberDisplayNameProvider((roomId: rId, userId: userId)))
+              .valueOrNull;
+        });
+  }
 }
 
 class UserStateButton extends ConsumerWidget {
