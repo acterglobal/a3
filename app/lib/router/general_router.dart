@@ -18,7 +18,6 @@ import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
-import 'package:acter/features/search/pages/quick_jump.dart';
 import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
 import 'package:acter/router/router.dart';
@@ -108,14 +107,6 @@ final generalRoutes = [
     builder: (context, state) => FatalFailPage(
       error: state.uri.queryParameters['error']!,
       trace: state.uri.queryParameters['trace']!,
-    ),
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
-    name: Routes.quickJump.name,
-    path: Routes.quickJump.route,
-    pageBuilder: (context, state) => DialogPage(
-      builder: (BuildContext context) => const QuickjumpDialog(),
     ),
   ),
   GoRoute(

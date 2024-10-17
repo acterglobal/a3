@@ -12,14 +12,14 @@ enum ShellBranch {
   updatesShell,
   chatsShell,
   activitiesShell,
-  quickJumpShell;
+  searchShell;
 
   GlobalKey<NavigatorState> get key => switch (this) {
         ShellBranch.homeShell => homeTabNavKey,
         ShellBranch.updatesShell => updateTabNavKey,
         ShellBranch.chatsShell => chatTabNavKey,
         ShellBranch.activitiesShell => activitiesTabNavKey,
-        ShellBranch.quickJumpShell => searchTabNavKey,
+        ShellBranch.searchShell => searchTabNavKey,
       };
 }
 
