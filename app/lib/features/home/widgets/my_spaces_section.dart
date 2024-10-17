@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
@@ -45,7 +46,7 @@ class MySpacesSection extends ConsumerWidget {
       return const _NoSpacesWidget();
     }
 
-    final count = limit == null ? spaces.length : min(spaces.length, limit!);
+    final count = limit.map((val) => min(val, spaces.length)) ?? spaces.length;
     return _RenderSpacesSection(
       spaces: spaces,
       limit: count,

@@ -172,23 +172,17 @@ final searchedSpacesProvider =
   final allSpaces = await ref.watch(_spaceIdAndNames.future);
 
   if (searchValue == null || searchValue.isEmpty) {
-    return allSpaces
-        .map(
-          (e) => e.$1,
-        )
-        .toList();
+    return allSpaces.map((e) => e.$1).toList();
   }
 
   final searchTerm = searchValue.toLowerCase();
 
   final foundSpaces = List<String>.empty(growable: true);
 
-  for (final item in allSpaces) {
-    if (item.$1.contains(searchTerm) ||
-        (item.$2 != null
-            ? item.$2!.toLowerCase().contains(searchTerm)
-            : false)) {
-      foundSpaces.add(item.$1);
+  for (final (roomId, dispName) in allSpaces) {
+    if (roomId.contains(searchTerm) ||
+        dispName?.toLowerCase().contains(searchTerm) == true) {
+      foundSpaces.add(roomId);
     }
   }
 
