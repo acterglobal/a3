@@ -1,2 +1,1 @@
-rootProject.name = 'acter_flutter_sdk'
-org.gradle.jvmargs=-Xmx4608m
+rootProject.name = 'a3sdk'

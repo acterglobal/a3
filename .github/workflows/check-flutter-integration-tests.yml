@@ -318,7 +318,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
@@ -329,7 +329,7 @@ jobs:
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r25
+          ndk-version: r27
 
       - name: Build Native
         run: cargo make android-dev
@@ -380,7 +380,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Install cargo-make
         if: steps.cache-cargo.outputs.cache-hit != 'true'
@@ -392,7 +392,7 @@ jobs:
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          ndk-version: r25
+          ndk-version: r27
 
       - uses: subosito/flutter-action@v2
         name: Set up flutter
@@ -531,7 +531,7 @@ jobs:
   #     - uses: actions/setup-java@v4
   #       with:
   #         distribution: 'temurin'
-  #         java-version: '17'
+  #         java-version: '21'
 
   #     - name: Install cargo-make
   #       if: steps.cache-cargo.outputs.cache-hit != 'true'
@@ -543,7 +543,7 @@ jobs:
   #     - uses: nttld/setup-ndk@v1
   #       id: setup-ndk
   #       with:
-  #         ndk-version: r25
+  #         ndk-version: r27
 
   #     - uses: subosito/flutter-action@v2
   #       name: Set up flutter

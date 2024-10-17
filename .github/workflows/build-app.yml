@@ -53,8 +53,8 @@ jobs:
             exclude_from_release: true
             cargo_make_setup: setup-android
             cargo_make_args: android-arm
-            with_ndk_version: r25
-            java_version: "17"
+            with_ndk_version: r27
+            java_version: "21"
             flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
             artifact_prefix: acter-${{inputs.artifacts_prefix}}android
             artifact_path:  app/build/app/outputs/bundle/release/
@@ -65,8 +65,8 @@ jobs:
             os: ubuntu-latest
             cargo_make_setup: setup-android
             cargo_make_args: android-arm
-            with_ndk_version: r25
-            java_version: "17"
+            with_ndk_version: r27
+            java_version: "21"
             flutter_build_args: "build apk --split-per-abi --split-debug-info=debug_symbols"
             artifact_prefix: acter-${{inputs.artifacts_prefix}}android
             artifact_path:  app/build/app/outputs/apk/release/
@@ -95,7 +95,7 @@ jobs:
             rename_suffix: "ipa"
             with_debug_symbols: true
           - name: MacOS
-            os: macos-12
+            os: macos-13
             target: macos
             with_apple_cert: true
             cargo_make_args: desktop
