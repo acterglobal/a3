@@ -218,6 +218,9 @@ class _SliverFooter extends StatelessWidget {
   }
 
   void onCancel(BuildContext context) {
-    cancelActionOnPressed.map((cb) => cb()) ?? Navigator.pop(context);
+    cancelActionOnPressed.map(
+      (cb) => cb(),
+      orElse: () => Navigator.pop(context),
+    );
   }
 }
