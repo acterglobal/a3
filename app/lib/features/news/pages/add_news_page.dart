@@ -54,18 +54,19 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     });
     ref.listenManual(newsStateProvider, fireImmediately: true,
         (prevState, nextState) async {
-      final isText = nextState.currentNewsSlide?.type == NewsSlideType.text;
-      final changed = prevState?.currentNewsSlide != nextState.currentNewsSlide;
+      final nextSlide = nextState.currentNewsSlide;
+      final isText = nextSlide != null && nextSlide.type == NewsSlideType.text;
+      final changed = prevState?.currentNewsSlide != nextSlide;
       if (isText && changed) {
-        final next = nextState.currentNewsSlide!;
+        final text = nextSlide.text;
+        final html = nextSlide.html;
         final document =
-            ActerDocumentHelpers.parse(next.text ?? '', htmlContent: next.html);
+            ActerDocumentHelpers.parse(text ?? '', htmlContent: html);
 
-        final autoFocus =
-            (next.html?.isEmpty ?? true) && (next.text?.isEmpty ?? true);
+        final autoFocus = html?.isEmpty != false && text?.isEmpty != false;
 
         setState(() {
-          selectedNewsPost = next;
+          selectedNewsPost = nextSlide;
           if (!document.isEmpty) {
             textEditorState = EditorState(document: document);
           }
@@ -165,12 +166,13 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           content: SelectActionItem(
             onShareEventSelected: () async {
               Navigator.pop(context);
-              if (ref.read(newsStateProvider).newsPostSpaceId == null) {
+              final spaceId = ref.read(newsStateProvider).newsPostSpaceId;
+              if (spaceId == null) {
                 EasyLoading.showToast(lang.pleaseFirstSelectASpace);
                 return;
               }
               final notifier = ref.read(newsStateProvider.notifier);
-              await notifier.selectEventToShare(context);
+              await notifier.selectEventToShare(context, spaceId);
             },
           ),
         );
@@ -207,8 +209,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     return selectedNewsPost.map(
           (slide) => switch (slide.type) {
             NewsSlideType.text => slideTextPostUI(context),
-            NewsSlideType.image => slideImagePostUI(context),
-            NewsSlideType.video => slideVideoPostUI(context),
+            NewsSlideType.image => slideImagePostUI(context, slide),
+            NewsSlideType.video => slideVideoPostUI(context, slide),
           },
         ) ??
         emptySlidePostUI(context);
@@ -218,6 +220,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   Widget selectedActionButtonsUI() {
     final newsReferences = selectedNewsPost?.newsReferencesModel;
     if (newsReferences == null) return const SizedBox();
+    final lang = L10n.of(context);
     final calEventId = newsReferences.id;
     return Positioned(
       bottom: 10,
@@ -234,8 +237,14 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                         event: calendarEvent,
                         isShowRsvp: false,
                         onTapEventItem: (event) async {
+                          final spaceId =
+                              ref.read(newsStateProvider).newsPostSpaceId;
+                          if (spaceId == null) {
+                            EasyLoading.showToast(lang.pleaseFirstSelectASpace);
+                            return;
+                          }
                           final notifier = ref.read(newsStateProvider.notifier);
-                          await notifier.selectEventToShare(context);
+                          await notifier.selectEventToShare(context, spaceId);
                         },
                       ),
                     );
@@ -247,7 +256,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                   error: (e, s) {
                     _log.severe('Failed to load cal event', e, s);
                     return Center(
-                      child: Text(L10n.of(context).failedToLoadEvent(e)),
+                      child: Text(lang.failedToLoadEvent(e)),
                     );
                   },
                 ),
@@ -326,23 +335,25 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     );
   }
 
-  Widget slideImagePostUI(BuildContext context) {
-    final imageFile = selectedNewsPost!.mediaFile;
+  Widget slideImagePostUI(BuildContext context, NewsSlideItem slide) {
+    final imageFile = slide.mediaFile;
+    if (imageFile == null) throw 'media file of image slide not available';
     return Container(
       alignment: Alignment.center,
-      color: selectedNewsPost!.backgroundColor,
+      color: slide.backgroundColor,
       child: Image.file(
-        File(imageFile!.path),
+        File(imageFile.path),
         fit: BoxFit.contain,
       ),
     );
   }
 
-  Widget slideVideoPostUI(BuildContext context) {
-    final videoFile = selectedNewsPost!.mediaFile!;
+  Widget slideVideoPostUI(BuildContext context, NewsSlideItem slide) {
+    final videoFile = slide.mediaFile;
+    if (videoFile == null) throw 'media file of video slide not available';
     return Container(
       alignment: Alignment.center,
-      color: selectedNewsPost!.backgroundColor,
+      color: slide.backgroundColor,
       child: ActerVideoPlayer(
         key: Key('add-news-slide-video-${videoFile.name}'),
         videoFile: File(videoFile.path),

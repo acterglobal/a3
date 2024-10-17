@@ -26,11 +26,12 @@ class ImageSlide extends StatelessWidget {
     return FutureBuilder<FfiBufferUint8>(
       future: slide.sourceBinary(null),
       builder: (BuildContext context, AsyncSnapshot<FfiBufferUint8> snapshot) {
-        if (snapshot.hasData &&
-            snapshot.connectionState == ConnectionState.done) {
-          return buildImageUI(snapshot.data!.asTypedList());
-        } else if (snapshot.hasError) {
-          return buildImageLoadingErrorUI(context, snapshot);
+        final data = snapshot.data;
+        final error = snapshot.error;
+        if (data != null && snapshot.connectionState == ConnectionState.done) {
+          return buildImageUI(data.asTypedList());
+        } else if (error != null) {
+          return buildImageLoadingErrorUI(context, error, snapshot.stackTrace);
         }
         return buildImageLoadingUI();
       },
@@ -54,15 +55,12 @@ class ImageSlide extends StatelessWidget {
 
   Widget buildImageLoadingErrorUI(
     BuildContext context,
-    AsyncSnapshot<FfiBufferUint8> snapshot,
+    Object error,
+    StackTrace? stackTrace,
   ) {
-    _log.severe(
-      'Failed to load image of slide',
-      snapshot.error,
-      snapshot.stackTrace,
-    );
+    _log.severe('Failed to load image of slide', error, stackTrace);
     return Center(
-      child: Text(L10n.of(context).errorLoadingImage(snapshot.error!)),
+      child: Text(L10n.of(context).errorLoadingImage(error)),
     );
   }
 }

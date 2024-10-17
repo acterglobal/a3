@@ -44,10 +44,10 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     state = state.copyWith(newsPostSpaceId: spaceId);
   }
 
-  Future<void> selectEventToShare(BuildContext context) async {
+  Future<void> selectEventToShare(BuildContext context, String spaceId) async {
     final eventId = await selectEventDrawer(
       context: context,
-      spaceId: state.newsPostSpaceId!,
+      spaceId: spaceId,
     );
     final newsSpaceReference = NewsReferencesModel(
       type: NewsReferencesType.calendarEvent,

@@ -41,7 +41,8 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
     for (final slidePost in newsSlideList) {
       // If slide type is text
       if (slidePost.type == NewsSlideType.text) {
-        if (slidePost.text == null || slidePost.text!.trim().isEmpty) {
+        final text = slidePost.text;
+        if (text == null || text.trim().isEmpty) {
           if (!context.mounted) {
             EasyLoading.dismiss();
             return;
@@ -52,9 +53,9 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
           );
           return;
         }
-        final textDraft = slidePost.html
-                .map((html) => client.textHtmlDraft(html, slidePost.text!)) ??
-            client.textMarkdownDraft(slidePost.text!);
+        final textDraft =
+            slidePost.html.map((html) => client.textHtmlDraft(html, text)) ??
+                client.textMarkdownDraft(text);
         final textSlideDraft = textDraft.intoNewsSlideDraft();
 
         textSlideDraft.color(
@@ -69,67 +70,69 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
       }
 
       // If slide type is image
-      else if (slidePost.type == NewsSlideType.image &&
-          slidePost.mediaFile != null) {
-        final file = slidePost.mediaFile!;
-        String? mimeType = file.mimeType ?? lookupMimeType(file.path);
-        if (mimeType == null) throw lang.failedToDetectMimeType;
-        if (!mimeType.startsWith('image/')) {
-          if (!context.mounted) {
-            EasyLoading.dismiss();
+      else if (slidePost.type == NewsSlideType.image) {
+        final file = slidePost.mediaFile;
+        if (file != null) {
+          String? mimeType = file.mimeType ?? lookupMimeType(file.path);
+          if (mimeType == null) throw lang.failedToDetectMimeType;
+          if (!mimeType.startsWith('image/')) {
+            if (!context.mounted) {
+              EasyLoading.dismiss();
+              return;
+            }
+            EasyLoading.showError(
+              lang.postingOfTypeNotYetSupported(mimeType),
+              duration: const Duration(seconds: 3),
+            );
             return;
           }
-          EasyLoading.showError(
-            lang.postingOfTypeNotYetSupported(mimeType),
-            duration: const Duration(seconds: 3),
+          Uint8List bytes = await file.readAsBytes();
+          final decodedImage = await decodeImageFromList(bytes);
+          final imageDraft = client
+              .imageDraft(file.path, mimeType)
+              .size(bytes.length)
+              .width(decodedImage.width)
+              .height(decodedImage.height);
+          final imageSlideDraft = imageDraft.intoNewsSlideDraft();
+          imageSlideDraft.color(
+            sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
           );
-          return;
+          slidePost.newsReferencesModel.map((model) {
+            final objRef = getSlideReference(sdk, model);
+            imageSlideDraft.addReference(objRef);
+          });
         }
-        Uint8List bytes = await file.readAsBytes();
-        final decodedImage = await decodeImageFromList(bytes);
-        final imageDraft = client
-            .imageDraft(file.path, mimeType)
-            .size(bytes.length)
-            .width(decodedImage.width)
-            .height(decodedImage.height);
-        final imageSlideDraft = imageDraft.intoNewsSlideDraft();
-        imageSlideDraft.color(
-          sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
-        );
-        slidePost.newsReferencesModel.map((model) {
-          final objRef = getSlideReference(sdk, model);
-          imageSlideDraft.addReference(objRef);
-        });
       }
 
       // If slide type is video
-      else if (slidePost.type == NewsSlideType.video &&
-          slidePost.mediaFile != null) {
-        final file = slidePost.mediaFile!;
-        String? mimeType = file.mimeType ?? lookupMimeType(file.path);
-        if (mimeType == null) throw lang.failedToDetectMimeType;
-        if (!mimeType.startsWith('video/')) {
-          if (!context.mounted) {
-            EasyLoading.dismiss();
+      else if (slidePost.type == NewsSlideType.video) {
+        final file = slidePost.mediaFile;
+        if (file != null) {
+          String? mimeType = file.mimeType ?? lookupMimeType(file.path);
+          if (mimeType == null) throw lang.failedToDetectMimeType;
+          if (!mimeType.startsWith('video/')) {
+            if (!context.mounted) {
+              EasyLoading.dismiss();
+              return;
+            }
+            EasyLoading.showError(
+              lang.postingOfTypeNotYetSupported(mimeType),
+              duration: const Duration(seconds: 3),
+            );
             return;
           }
-          EasyLoading.showError(
-            lang.postingOfTypeNotYetSupported(mimeType),
-            duration: const Duration(seconds: 3),
+          Uint8List bytes = await file.readAsBytes();
+          final videoDraft =
+              client.videoDraft(file.path, mimeType).size(bytes.length);
+          final videoSlideDraft = videoDraft.intoNewsSlideDraft();
+          videoSlideDraft.color(
+            sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
           );
-          return;
+          slidePost.newsReferencesModel.map((model) {
+            final objRef = getSlideReference(sdk, model);
+            videoSlideDraft.addReference(objRef);
+          });
         }
-        Uint8List bytes = await file.readAsBytes();
-        final videoDraft =
-            client.videoDraft(file.path, mimeType).size(bytes.length);
-        final videoSlideDraft = videoDraft.intoNewsSlideDraft();
-        videoSlideDraft.color(
-          sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
-        );
-        slidePost.newsReferencesModel.map((model) {
-          final objRef = getSlideReference(sdk, model);
-          videoSlideDraft.addReference(objRef);
-        });
       }
     }
     await draft.send();
@@ -157,17 +160,12 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
   }
 }
 
-ObjRef getSlideReference(
-  ActerSdk sdk,
-  NewsReferencesModel newsReferencesModel,
-) {
-  final refDetails = switch (newsReferencesModel.type) {
-    NewsReferencesType.calendarEvent => sdk.api
-        .newCalendarEventRefBuilder(newsReferencesModel.id!, null, null)
-        .build(),
-    NewsReferencesType.link => sdk.api
-        .newLinkRefBuilder(newsReferencesModel.title!, newsReferencesModel.id!)
-        .build(),
+ObjRef getSlideReference(ActerSdk sdk, NewsReferencesModel model) {
+  final refDetails = switch (model.type) {
+    NewsReferencesType.calendarEvent =>
+      sdk.api.newCalendarEventRefBuilder(model.id!, null, null).build(),
+    NewsReferencesType.link =>
+      sdk.api.newLinkRefBuilder(model.title!, model.id!).build(),
   };
   return sdk.api.newObjRefBuilder(null, refDetails).build();
 }
