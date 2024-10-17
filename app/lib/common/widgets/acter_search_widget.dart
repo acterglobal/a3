@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -40,7 +40,7 @@ class _ActerSearchWidgetState extends State<ActerSearchWidget> {
   @override
   void initState() {
     super.initState();
-    widget.initialText.let((text) => searchTextController.text = text);
+    widget.initialText.map((text) => searchTextController.text = text);
   }
 
   @override
