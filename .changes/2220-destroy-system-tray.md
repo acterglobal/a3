@@ -1,1 +1,0 @@
-- [smallfix] Destroy system tray when app exits
