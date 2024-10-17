@@ -1,13 +1,13 @@
-import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:quickalert/widgets/quickalert_buttons.dart';
-import 'package:quickalert/widgets/quickalert_container.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:quickalert/models/quickalert_options.dart';
 import 'package:quickalert/quickalert.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:quickalert/widgets/quickalert_buttons.dart';
+import 'package:quickalert/widgets/quickalert_container.dart';
 
 class ActerErrorDialog extends StatelessWidget {
   static const retryBtn = Key('error-dialog-retry-btn');
