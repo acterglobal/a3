@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -52,14 +53,14 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
         orElse: () => tokens.first, // or otherwise pick the first available
       );
 
-      if (selectedToken != null) {
+      selectedToken.map((selected) {
         // we had a token selected, let’s try to find it again
-        final tokenCode = selectedToken!.token();
+        final tokenCode = selected.token();
         newToken = tokens.firstWhere(
           (t) => t.token() == tokenCode, // replace with teh updated one
           orElse: () => newToken,
         );
-      }
+      });
       // auto select a token
       setState(() {
         selectedToken = newToken;

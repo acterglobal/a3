@@ -204,12 +204,14 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
 
   //Show slide data view based on the current slide selection
   Widget slidePostUI(BuildContext context) {
-    return switch (selectedNewsPost?.type) {
-      NewsSlideType.text => slideTextPostUI(context),
-      NewsSlideType.image => slideImagePostUI(context),
-      NewsSlideType.video => slideVideoPostUI(context),
-      _ => emptySlidePostUI(context),
-    };
+    return selectedNewsPost.map(
+          (slide) => switch (slide.type) {
+            NewsSlideType.text => slideTextPostUI(context),
+            NewsSlideType.image => slideImagePostUI(context),
+            NewsSlideType.video => slideVideoPostUI(context),
+          },
+        ) ??
+        emptySlidePostUI(context);
   }
 
   //Show selected Action Buttons

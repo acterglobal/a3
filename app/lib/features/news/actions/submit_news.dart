@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -51,19 +52,19 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
           );
           return;
         }
-        final textDraft = slidePost.html != null
-            ? client.textHtmlDraft(slidePost.html!, slidePost.text!)
-            : client.textMarkdownDraft(slidePost.text!);
+        final textDraft = slidePost.html
+                .map((html) => client.textHtmlDraft(html, slidePost.text!)) ??
+            client.textMarkdownDraft(slidePost.text!);
         final textSlideDraft = textDraft.intoNewsSlideDraft();
 
         textSlideDraft.color(
           sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
         );
 
-        if (slidePost.newsReferencesModel != null) {
-          final objRef = getSlideReference(sdk, slidePost.newsReferencesModel!);
+        slidePost.newsReferencesModel.map((model) {
+          final objRef = getSlideReference(sdk, model);
           textSlideDraft.addReference(objRef);
-        }
+        });
         await draft.addSlide(textSlideDraft);
       }
 
@@ -95,11 +96,10 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
         imageSlideDraft.color(
           sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
         );
-        if (slidePost.newsReferencesModel != null) {
-          final objRef = getSlideReference(sdk, slidePost.newsReferencesModel!);
+        slidePost.newsReferencesModel.map((model) {
+          final objRef = getSlideReference(sdk, model);
           imageSlideDraft.addReference(objRef);
-        }
-        await draft.addSlide(imageSlideDraft);
+        });
       }
 
       // If slide type is video
@@ -126,11 +126,10 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
         videoSlideDraft.color(
           sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
         );
-        if (slidePost.newsReferencesModel != null) {
-          final objRef = getSlideReference(sdk, slidePost.newsReferencesModel!);
+        slidePost.newsReferencesModel.map((model) {
+          final objRef = getSlideReference(sdk, model);
           videoSlideDraft.addReference(objRef);
-        }
-        await draft.addSlide(videoSlideDraft);
+        });
       }
     }
     await draft.send();
