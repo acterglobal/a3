@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/bug_report/actions/submit_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::bug_report');
+final _log = Logger('a3::bug_report::bug_report_page');
 
 String? _getIssueId(String url) {
   // example - https://github.com/bitfriend/acter-bugs/issues/9
@@ -65,12 +65,8 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       loadingNotifier.update((state) => true);
       final Map<String, String> extraFields = {};
       if (submitErrorAndStackTrace) {
-        if (widget.error != null) {
-          extraFields['error'] = widget.error!;
-        }
-        if (widget.stack != null) {
-          extraFields['stack'] = widget.stack!;
-        }
+        widget.error.map((error) => extraFields['error'] = error);
+        widget.stack.map((stack) => extraFields['stack'] = stack);
       }
       if (descController.text.isNotEmpty) {
         extraFields['description'] = descController.text;
@@ -228,7 +224,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
 
   List<Widget> renderForScreenShot() {
     final lang = L10n.of(context);
-    return widget.imagePath.let(
+    return widget.imagePath.map(
           (path) => [
             const SizedBox(height: 10),
             CheckboxListTile(

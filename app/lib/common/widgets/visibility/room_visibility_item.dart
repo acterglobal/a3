@@ -37,7 +37,7 @@ class RoomVisibilityItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
-        key: spaceVisibilityValue.let((val) => generateKey(val)),
+        key: spaceVisibilityValue.map((val) => generateKey(val)),
         leading: Icon(iconData),
         title: Text(
           title,
@@ -48,17 +48,17 @@ class RoomVisibilityItem extends StatelessWidget {
           style: Theme.of(context).textTheme.labelMedium,
         ),
         onTap: isShowRadio && onChanged != null
-            ? spaceVisibilityValue.let(
-                (val) => onChanged.let((cb) => () => cb(val)),
+            ? spaceVisibilityValue.map(
+                (val) => onChanged.map((cb) => () => cb(val)),
               )
             : null,
         trailing: !isShowRadio
             ? const Icon(Icons.keyboard_arrow_down_sharp)
-            : spaceVisibilityValue.let(
+            : spaceVisibilityValue.map(
                   (val) => Radio<RoomVisibility>(
                     value: val,
                     groupValue: selectedVisibilityValue,
-                    onChanged: onChanged.let((cb) => (value) => cb(value)),
+                    onChanged: onChanged.map((cb) => (value) => cb(value)),
                   ),
                 ) ??
                 const Icon(Icons.keyboard_arrow_down_sharp),

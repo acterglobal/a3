@@ -1,5 +1,5 @@
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +70,7 @@ class SelectSpaceFormField extends ConsumerWidget {
             )
           : Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: state.errorText.let(
+              child: state.errorText.map(
                     (err) => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -101,7 +101,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     String currentSpaceId,
   ) {
     final space = ref.watch(selectedSpaceDetailsProvider);
-    return space.let(
+    return space.map(
           (p0) => SpaceChip(
             spaceId: p0.roomId,
             onTapOpenSpaceDetail: false,

@@ -1,5 +1,5 @@
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter/material.dart';
 
 class SliverScaffold extends StatelessWidget {
@@ -218,6 +218,9 @@ class _SliverFooter extends StatelessWidget {
   }
 
   void onCancel(BuildContext context) {
-    cancelActionOnPressed.let((cb) => cb()) ?? Navigator.pop(context);
+    cancelActionOnPressed.map(
+      (cb) => cb(),
+      orElse: () => Navigator.pop(context),
+    );
   }
 }

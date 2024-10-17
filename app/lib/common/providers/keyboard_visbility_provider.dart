@@ -2,7 +2,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::common::keyboard');
+final _log = Logger('a3::common::keyboard_visibility_provider');
 
 final keyboardVisibleProvider = StreamProvider<bool>((ref) async* {
   final keyboardVisibilityController = KeyboardVisibilityController();

@@ -1,7 +1,7 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
@@ -33,7 +33,7 @@ class ActivitiesPage extends ConsumerWidget {
     final syncState = ref.watch(syncStateProvider);
     final errorMsg = syncState.errorMsg;
     final retryDuration =
-        syncState.countDown.let((countDown) => Duration(seconds: countDown));
+        syncState.countDown.map((countDown) => Duration(seconds: countDown));
     if (!ref.watch(hasFirstSyncedProvider)) {
       return SliverToBoxAdapter(
         child: Card(
@@ -111,7 +111,7 @@ class ActivitiesPage extends ConsumerWidget {
         child: Text(lang.errorUnverifiedSessions(err.toString())),
       );
     }
-    return allSessions.value.let((val) {
+    return allSessions.value.map((val) {
       final sessions = val.where((session) => !session.isVerified()).toList();
       if (sessions.isEmpty) {
         return null;

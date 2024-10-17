@@ -1,8 +1,8 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::redact_content');
+final _log = Logger('a3::common::actions::redact_content');
 
 Future<bool> openRedactContentDialog(
   BuildContext context, {
@@ -136,7 +136,7 @@ class _RedactContentWidget extends ConsumerWidget {
       }
       EasyLoading.showToast(lang.contentSuccessfullyRemoved);
       Navigator.pop(context, true);
-      onSuccess.let((cb) => cb());
+      onSuccess.map((cb) => cb());
     } catch (e, s) {
       _log.severe('Failed to redact content', e, s);
       if (!context.mounted) {

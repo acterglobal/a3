@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -21,7 +22,10 @@ class ActerSearchWidget extends StatefulWidget {
     this.initialText,
     this.leading,
     this.trailing,
-    this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+    this.padding = const EdgeInsets.symmetric(
+      horizontal: 10,
+      vertical: 15,
+    ),
     required this.onChanged,
     required this.onClear,
   });
@@ -36,9 +40,7 @@ class _ActerSearchWidgetState extends State<ActerSearchWidget> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialText != null) {
-      searchTextController.text = widget.initialText!;
-    }
+    widget.initialText.map((text) => searchTextController.text = text);
   }
 
   @override
@@ -46,7 +48,6 @@ class _ActerSearchWidgetState extends State<ActerSearchWidget> {
     searchTextController.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {

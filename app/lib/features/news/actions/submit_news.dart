@@ -18,7 +18,7 @@ import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
 
-final _log = Logger('a3::news::send_news');
+final _log = Logger('a3::news::submit_news');
 
 Future<NewsSlideDraft> _makeTextSlide(
   WidgetRef ref,

@@ -6,7 +6,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::pins::edit_state');
+final _log = Logger('a3::pins::edit_state_notifier');
 
 class PinEditNotifier extends StateNotifier<PinEditState> {
   final ActerPin pin;

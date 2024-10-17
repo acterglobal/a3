@@ -1,6 +1,6 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/extensions/options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -18,13 +18,13 @@ class AddButtonWithCanPermission extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return canString.let((key) {
+    return canString.map((key) {
           //Show add button if there is at lease one space where user can post
           final canDoLoader = ref.watch(hasSpaceWithPermissionProvider(key));
           var canAdd = canDoLoader.valueOrNull ?? false;
 
           //If space id is given then check with specific space permission
-          spaceId.let((val) {
+          spaceId.map((val) {
             final membership =
                 ref.watch(roomMembershipProvider(val)).valueOrNull;
             canAdd = membership?.canString(key) == true;

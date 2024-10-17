@@ -14,7 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::pin::fake-pin-link-attachment-item');
+final _log = Logger('a3::pins::fake_link_attachment_item');
 
 class FakeLinkAttachmentItem extends ConsumerWidget {
   final String pinId;

@@ -10,7 +10,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 
-final _log = Logger('a3::bug_report');
+final _log = Logger('a3::bug_report::submit_bug_report');
 
 Future<String> submitBugReport({
   bool withLog = false,

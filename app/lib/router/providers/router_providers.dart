@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 // ignore: implementation_imports
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::router::location_state');
+final _log = Logger('a3::router::router_providers');
 
 class LocationStateNotifier extends StateNotifier<String> {
   LocationStateNotifier() : super('/') {

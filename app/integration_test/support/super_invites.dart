@@ -44,8 +44,8 @@ extension SuperInvites on ConvenientTest {
       ]);
     }
 
-    if (chats?.isNotEmpty == true) {
-      for (final chatId in chats!) {
+    if (chats != null && chats.isNotEmpty == true) {
+      for (final chatId in chats) {
         await navigateTo([
           CreateSuperInviteTokenPage.addSubmenu,
           CreateSuperInviteTokenPage.addChatKey,

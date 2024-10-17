@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::space::limited-space-list');
+final _log = Logger('a3::common::actions::limited-space-list');
 
 Future<void> showLimitedSpaceList(
   BuildContext context,

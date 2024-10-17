@@ -1,1 +1,0 @@
-- Minor fix blocking notifications when badge counting isn't supported

@@ -3,6 +3,7 @@ library;
 
 import 'dart:typed_data';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
@@ -11,7 +12,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/common/extensions/options.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
@@ -137,7 +137,7 @@ final parentIdsProvider =
     if (relations == null) return [];
     // Collect all parents: mainParent and otherParents
     List<String> allParents =
-        relations.mainParent().let((p) => [p.roomId().toString()]) ?? [];
+        relations.mainParent().map((p) => [p.roomId().toString()]) ?? [];
     final others = relations.otherParents().map((p) => p.roomId().toString());
     allParents.addAll(others);
     return allParents;

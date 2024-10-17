@@ -6,7 +6,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::event::utils');
+final _log = Logger('a3::cal_event::utils');
 
 Future<void> saveEventTitle({
   required BuildContext context,

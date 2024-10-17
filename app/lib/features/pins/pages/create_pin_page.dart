@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -7,7 +8,6 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
@@ -32,7 +32,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::pins::create_pin');
+final _log = Logger('a3::pins::create_page');
 
 class CreatePinPage extends ConsumerStatefulWidget {
   static const createPinPageKey = Key('create-pin-page');
@@ -60,7 +60,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   @override
   void initState() {
     super.initState();
-    widget.initialSelectedSpace.let((p0) {
+    widget.initialSelectedSpace.map((p0) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
         ref.read(selectedSpaceIdProvider.notifier).state = p0;
       });

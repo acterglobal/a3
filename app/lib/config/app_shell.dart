@@ -27,7 +27,7 @@ import 'package:logging/logging.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake_detector/shake_detector.dart';
 
-final _log = Logger('a3::home::home_shell');
+final _log = Logger('a3::config::home_shell');
 
 final ScreenshotController screenshotController = ScreenshotController();
 

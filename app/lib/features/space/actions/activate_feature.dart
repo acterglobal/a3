@@ -10,7 +10,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::space::topic');
+final _log = Logger('a3::space::actions::activate');
 
 Future<bool> offerToActivateFeature({
   required BuildContext context,
