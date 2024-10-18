@@ -55,6 +55,10 @@ class _DesktopSupportState extends State<DesktopSupport>
     Menu menu = Menu(
       items: [
         MenuItem(
+          key: 'search',
+          label: 'Search',
+        ),
+        MenuItem(
           key: 'home',
           label: 'Home',
         ),
@@ -132,7 +136,10 @@ class _DesktopSupportState extends State<DesktopSupport>
 
     await windowManager.show();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) async {
-      if (menuItem.key == 'home') {
+      if (menuItem.key == 'search') {
+        _log.info('route search');
+        rootNavKey.currentContext!.pushNamed(Routes.search.name);
+      } else if (menuItem.key == 'home') {
         _log.info('route home');
         rootNavKey.currentContext!.pushNamed(Routes.main.name);
       } else if (menuItem.key == 'chat') {

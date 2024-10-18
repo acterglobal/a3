@@ -352,9 +352,10 @@ final homeShellRoutes = [
     path: Routes.spaces.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final searchQuery = state.uri.queryParameters['searchQuery'];
       return NoTransitionPage(
         key: state.pageKey,
-        child: const SpaceListPage(),
+        child: SpaceListPage(searchQuery: searchQuery),
       );
     },
   ),
@@ -460,9 +461,10 @@ final homeShellRoutes = [
     path: Routes.pins.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final searchQuery = state.uri.queryParameters['searchQuery'];
       return NoTransitionPage(
         key: state.pageKey,
-        child: const PinsListPage(),
+        child: PinsListPage(searchQuery: searchQuery),
       );
     },
   ),

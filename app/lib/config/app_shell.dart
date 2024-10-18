@@ -134,10 +134,10 @@ class AppShellState extends ConsumerState<AppShell> {
     return CallbackShortcuts(
       bindings: <LogicalKeySet, VoidCallback>{
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): () {
-          context.pushNamed(Routes.quickJump.name);
+          context.goNamed(Routes.search.name);
         },
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyK): () {
-          context.pushNamed(Routes.quickJump.name);
+          context.goNamed(Routes.search.name);
         },
       },
       child: KeyboardDismissOnTap(
