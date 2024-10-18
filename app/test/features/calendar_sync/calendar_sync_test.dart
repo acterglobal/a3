@@ -73,4 +73,46 @@ void main() {
       );
     });
   });
+  group('Calendar Event Updater tests', () {
+    testWidgets('basics update fine', (tester) async {
+      final events = generateMockCalendarEvents(10);
+
+      final event = Event('1');
+      for (final mock in events) {
+        await updateEventDetails(mock, null, event);
+        // ensuring the general stuff worked
+        expect(event.title, mock.title());
+        expect(event.description, mock.description()?.body());
+        // todo: check the start and end time ...?!?
+      }
+    });
+    testWidgets('status and reminders are set correctly', (tester) async {
+      final mockEvent = generateMockCalendarEvents(1).first;
+      final targetEvent = Event('1');
+
+      // yes add reminder
+      await updateEventDetails(mockEvent, RsvpStatusTag.Yes, targetEvent);
+      expect(targetEvent.status, EventStatus.Confirmed);
+      expect(targetEvent.reminders?.length, 1);
+      expect(targetEvent.reminders?.first.minutes, 10);
+
+      // maybe remove timer
+      await updateEventDetails(mockEvent, RsvpStatusTag.No, targetEvent);
+      expect(targetEvent.status, EventStatus.Canceled);
+      expect(targetEvent.reminders, null);
+
+      targetEvent.reminders = [Reminder(minutes: 30)];
+      // not responded removes timer
+      await updateEventDetails(mockEvent, null, targetEvent);
+      expect(targetEvent.status, EventStatus.None);
+      expect(targetEvent.reminders, null);
+
+      targetEvent.reminders = [Reminder(minutes: 30)];
+      // maybe adds timer
+      await updateEventDetails(mockEvent, RsvpStatusTag.Maybe, targetEvent);
+      expect(targetEvent.status, EventStatus.Tentative);
+      expect(targetEvent.reminders?.length, 1);
+      expect(targetEvent.reminders?.first.minutes, 10);
+    });
+  });
 }

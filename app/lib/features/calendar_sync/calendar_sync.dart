@@ -198,7 +198,7 @@ Future<void> _refreshCalendar(
       foundEventIds.add(localEvent.eventId);
     }
 
-    localEvent = await _updateEventDetails(calEvent, rsvp, localEvent);
+    localEvent = await updateEventDetails(calEvent, rsvp, localEvent);
     final localRequest = await deviceCalendar.createOrUpdateEvent(localEvent);
     if (localRequest == null) {
       _log.severe('Updating $calEventId failed. No response. skipping');
@@ -236,14 +236,14 @@ Future<void> _refreshCalendar(
   }
 }
 
-Future<Event> _updateEventDetails(
+@visibleForTesting
+Future<Event> updateEventDetails(
   CalendarEvent acterEvent,
   RsvpStatusTag? rsvp,
   Event localEvent,
 ) async {
   localEvent.title = acterEvent.title();
   localEvent.description = acterEvent.description()?.body();
-  localEvent.reminders = [Reminder(minutes: 10)];
   localEvent.start = TZDateTime.from(
     toDartDatetime(acterEvent.utcStart()),
     UTC,
@@ -252,11 +252,15 @@ Future<Event> _updateEventDetails(
     toDartDatetime(acterEvent.utcEnd()),
     UTC,
   );
-  localEvent.status = switch (rsvp) {
-    RsvpStatusTag.Yes => EventStatus.Confirmed,
-    RsvpStatusTag.Maybe => EventStatus.Tentative,
-    _ => EventStatus.None
+  final (status, reminders) = switch (rsvp) {
+    RsvpStatusTag.Yes => (EventStatus.Confirmed, [Reminder(minutes: 10)]),
+    RsvpStatusTag.Maybe => (EventStatus.Tentative, [Reminder(minutes: 10)]),
+    RsvpStatusTag.No => (EventStatus.Canceled, null),
+    null => (EventStatus.None, null),
   };
+
+  localEvent.status = status;
+  localEvent.reminders = reminders;
   return localEvent;
 }
 
@@ -269,21 +273,10 @@ Future<List<String>> _findActerCalendars() async {
   if (calendars == null) {
     return [];
   }
-  if (Platform.isAndroid) {
-    return calendars
-        .where(
-      (c) =>
-          c.accountType == 'LOCAL' &&
-          c.accountName == 'Acter' &&
-          c.name == 'Acter',
-    )
-        .map((c) {
-      _log.info('Found ${c.id} (${c.accountType})');
-      return c.id!;
-    }).toList();
-  }
   return calendars
-      .where((c) => c.accountType == 'Local' && c.name == 'Acter')
+      .where(
+    (c) => c.accountType?.toLowerCase() == 'local' && c.name == 'Acter',
+  )
       .map((c) {
     _log.info('Found ${c.id} (${c.accountType})');
     return c.id!;
