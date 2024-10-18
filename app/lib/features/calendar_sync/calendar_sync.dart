@@ -9,6 +9,7 @@ import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:device_calendar/device_calendar.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,9 +26,7 @@ const calendarSyncKey = 'calendar_sync_id';
 const calendarSyncIdsKey = 'calendar_sync_ids';
 
 // internal state
-
-// ignore: unnecessary_late
-late DeviceCalendarPlugin deviceCalendar = DeviceCalendarPlugin();
+DeviceCalendarPlugin deviceCalendar = DeviceCalendarPlugin();
 ProviderSubscription<AsyncValue<List<EventAndRsvp>>>? _subscription;
 
 Future<bool> _isEnabled() async {
@@ -97,28 +96,37 @@ Future<void> initCalendarSync({bool ignoreRejection = false}) async {
         _log.info('ignoring state change without value');
         return;
       }
-      _scheduleRefresh(calendarId, events);
+      scheduleRefresh(calendarId, events);
     },
     fireImmediately: true,
   );
 }
 
+Completer<void>? _completer;
 Timer? _debounce;
 (String, List<EventAndRsvp>)? _next;
 bool _running = false;
 
 // schedules an update of the calender
 // makes sure there is only one running at a time
-void _scheduleRefresh(
+@visibleForTesting
+Future<void> scheduleRefresh(
   String calendarId,
   List<EventAndRsvp> events,
 ) {
   _debounce?.cancel(); // cancel the current debounce;
-  _debounce = Timer(const Duration(seconds: 3), () {
+  _completer ??= Completer<void>();
+  _debounce = Timer(const Duration(seconds: 3), () async {
     _debounce = null;
-    _refreshLoop();
+    try {
+      await _refreshLoop();
+    } finally {
+      _completer?.complete();
+      _completer = null;
+    }
   });
   _next = (calendarId, events);
+  return _completer!.future;
 }
 
 Future<void> _refreshLoop() async {
