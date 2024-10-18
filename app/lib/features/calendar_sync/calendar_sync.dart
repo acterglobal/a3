@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
@@ -8,6 +9,7 @@ import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:device_calendar/device_calendar.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,9 +26,7 @@ const calendarSyncKey = 'calendar_sync_id';
 const calendarSyncIdsKey = 'calendar_sync_ids';
 
 // internal state
-
-// ignore: unnecessary_late
-late DeviceCalendarPlugin deviceCalendar = DeviceCalendarPlugin();
+DeviceCalendarPlugin deviceCalendar = DeviceCalendarPlugin();
 ProviderSubscription<AsyncValue<List<EventAndRsvp>>>? _subscription;
 
 Future<bool> _isEnabled() async {
@@ -91,15 +91,61 @@ Future<void> initCalendarSync({bool ignoreRejection = false}) async {
           .listen(
     eventsToSyncProvider,
     (prev, next) async {
-      if (!next.hasValue) {
+      final events = next.valueOrNull;
+      if (events == null) {
         _log.info('ignoring state change without value');
         return;
       }
-      // FIXME: we probably want to debounce this ...
-      await _refreshCalendar(calendarId, next.valueOrNull ?? []);
+      scheduleRefresh(calendarId, events);
     },
     fireImmediately: true,
   );
+}
+
+Completer<void>? _completer;
+Timer? _debounce;
+(String, List<EventAndRsvp>)? _next;
+bool _running = false;
+
+// schedules an update of the calender
+// makes sure there is only one running at a time
+@visibleForTesting
+Future<void> scheduleRefresh(
+  String calendarId,
+  List<EventAndRsvp> events,
+) {
+  _debounce?.cancel(); // cancel the current debounce;
+  _completer ??= Completer<void>();
+  _debounce = Timer(const Duration(seconds: 3), () async {
+    _debounce = null;
+    try {
+      await _refreshLoop();
+    } finally {
+      _completer?.complete();
+      _completer = null;
+    }
+  });
+  _next = (calendarId, events);
+  return _completer!.future;
+}
+
+Future<void> _refreshLoop() async {
+  if (_running) return;
+  _running = true;
+  try {
+    while (true) {
+      final next = _next;
+      _next = null; // clear it
+      if (next == null) {
+        break;
+      }
+
+      final (calendarId, events) = next;
+      await _refreshCalendar(calendarId, events);
+    }
+  } finally {
+    _running = false;
+  }
 }
 
 Future<void> _refreshCalendar(
@@ -232,14 +278,14 @@ Future<List<String>> _findActerCalendars() async {
           c.name == 'Acter',
     )
         .map((c) {
-      _log.info('Scheduling to delete ${c.id} (${c.accountType})');
+      _log.info('Found ${c.id} (${c.accountType})');
       return c.id!;
     }).toList();
   }
   return calendars
       .where((c) => c.accountType == 'Local' && c.name == 'Acter')
       .map((c) {
-    _log.info('Scheduling to delete ${c.id} (${c.accountType})');
+    _log.info('Found ${c.id} (${c.accountType})');
     return c.id!;
   }).toList();
 }

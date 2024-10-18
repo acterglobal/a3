@@ -14,3 +14,4 @@ native/acter/bindings.dart
 .github/assets/git-crypt-key
 app/lib/config/env.g.dart
 app/.env.*
+app/coverage
