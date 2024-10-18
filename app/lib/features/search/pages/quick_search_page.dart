@@ -67,7 +67,10 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
             limit: 3,
             searchValue: searchValue,
             showSectionHeader: true,
-            onClickSectionHeader: () => context.pushNamed(Routes.pins.name),
+            onClickSectionHeader: () => context.pushNamed(
+              Routes.pins.name,
+              queryParameters: {'searchQuery': searchValue},
+            ),
           ),
         ],
       ),
