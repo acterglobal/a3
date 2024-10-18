@@ -11,7 +11,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceListPage extends ConsumerStatefulWidget {
-  const SpaceListPage({super.key});
+  final String? searchQuery;
+
+  const SpaceListPage({super.key, this.searchQuery});
 
   @override
   ConsumerState<SpaceListPage> createState() => _AllPinsPageConsumerState();
@@ -19,6 +21,16 @@ class SpaceListPage extends ConsumerStatefulWidget {
 
 class _AllPinsPageConsumerState extends ConsumerState<SpaceListPage> {
   String get searchValue => ref.watch(searchValueProvider);
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.searchQuery != null) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        ref.read(searchValueProvider.notifier).state = widget.searchQuery!;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +86,7 @@ class _AllPinsPageConsumerState extends ConsumerState<SpaceListPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
+          initialText: widget.searchQuery,
           onChanged: (value) {
             final notifier = ref.read(searchValueProvider.notifier);
             notifier.state = value;
