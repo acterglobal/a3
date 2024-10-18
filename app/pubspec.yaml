@@ -76,7 +76,6 @@ dependencies:
   freezed: ^2.5.7
   acter_flutter_sdk:
     path: ../packages/rust_sdk
-  mockito: ^5.4.4
 
   # State Management
   flutter_riverpod: ^2.5.1
@@ -168,12 +167,13 @@ dev_dependencies:
       ref: ben-cli-limit-tests
       path: packages/convenient_test_manager_dart
   msix: ^3.7.0
-  # mockito: ^5.4.2
   uuid: ^4.0.0
   enough_mail: ^2.1.6
   sentry_dart_plugin: ^2.0.0
   translations_cleaner: ^0.0.5
   enven: ^1.0.1
+  mockingjay: ^0.6.0
+  mocktail: ^1.0.4
 
 dependency_overrides:
 

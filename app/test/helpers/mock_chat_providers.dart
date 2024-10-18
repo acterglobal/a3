@@ -16,7 +16,7 @@ import 'package:flutter_chat_types/src/message.dart';
 import 'package:flutter_chat_types/src/messages/text_message.dart';
 import 'package:flutter_chat_types/src/preview_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 
 typedef MockedRoomData = Map<String, AvatarInfo>;
