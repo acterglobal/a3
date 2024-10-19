@@ -28,8 +28,17 @@ class Dashboard extends ConsumerWidget {
     final hasSpaces = ref.watch(hasSpacesProvider);
     return InDashboard(
       child: SafeArea(
+        bottom: false,
         child: Scaffold(
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.miniEndDocked,
+          floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
           appBar: _buildDashboardAppBar(context, client),
+          floatingActionButton: FloatingActionButton.small(
+            onPressed: () {},
+            backgroundColor: Theme.of(context).primaryColor,
+            child: const Icon(Icons.add),
+          ),
           body: Padding(
             padding: const EdgeInsets.only(
               top: 20,
