@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -32,8 +33,9 @@ class Dashboard extends ConsumerWidget {
       child: SafeArea(
         bottom: false,
         child: Scaffold(
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.miniEndFloat,
+          floatingActionButtonLocation: Platform.isIOS
+              ? FloatingActionButtonLocation.miniEndDocked
+              : FloatingActionButtonLocation.miniEndFloat,
           floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
           appBar: _buildDashboardAppBar(context, client),
           floatingActionButton: FloatingActionButton.small(

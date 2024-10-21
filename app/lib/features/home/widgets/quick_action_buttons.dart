@@ -1,20 +1,23 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class QuickActionButtons extends StatelessWidget {
+class QuickActionButtons extends ConsumerWidget {
   const QuickActionButtons({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Wrap(
             children: [
@@ -23,28 +26,44 @@ class QuickActionButtons extends StatelessWidget {
                 iconData: Atlas.pin,
                 color: const Color(0xff7c4a4a),
                 title: lang.addPin,
-                onPressed: () => context.pushNamed(Routes.createPin.name),
+                onPressed: () {
+                  ref.watch(quickActionVisibilityProvider.notifier).state =
+                      false;
+                  context.pushNamed(Routes.createPin.name);
+                },
               ),
               actionButton(
                 context: context,
                 iconData: Atlas.list,
                 title: lang.addTask,
                 color: const Color(0xff406c6e),
-                onPressed: () => showCreateUpdateTaskListBottomSheet(context),
+                onPressed: () {
+                  ref.watch(quickActionVisibilityProvider.notifier).state =
+                      false;
+                  showCreateUpdateTaskListBottomSheet(context);
+                },
               ),
               actionButton(
                 context: context,
                 iconData: Atlas.calendar_dots,
                 title: lang.addEvent,
                 color: const Color(0xff206a9a),
-                onPressed: () => context.pushNamed(Routes.createEvent.name),
+                onPressed: () {
+                  ref.watch(quickActionVisibilityProvider.notifier).state =
+                      false;
+                  context.pushNamed(Routes.createEvent.name);
+                },
               ),
               actionButton(
                 context: context,
                 iconData: Atlas.megaphone_thin,
                 title: lang.addBoost,
                 color: Colors.blueGrey,
-                onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
+                onPressed: () {
+                  ref.watch(quickActionVisibilityProvider.notifier).state =
+                      false;
+                  context.pushNamed(Routes.actionAddUpdate.name);
+                },
               ),
             ],
           ),
@@ -74,15 +93,9 @@ class QuickActionButtons extends StatelessWidget {
           color: color ?? Theme.of(context).unselectedWidgetColor,
           borderRadius: const BorderRadius.all(Radius.circular(100)),
         ),
-        child: Icon(
-          iconData,
-          size: 16,
-        ),
+        child: Icon(iconData, size: 14),
       ),
-      label: Text(
-        title,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
+      label: Text(title),
     );
   }
 }
