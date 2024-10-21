@@ -16,6 +16,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,7 +29,6 @@ class Dashboard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(alwaysClientProvider);
     final hasSpaces = ref.watch(hasSpacesProvider);
-    final showQuickActions = ref.watch(quickActionVisibilityProvider);
     return InDashboard(
       child: SafeArea(
         bottom: false,
@@ -38,17 +38,7 @@ class Dashboard extends ConsumerWidget {
               : FloatingActionButtonLocation.miniEndFloat,
           floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
           appBar: _buildDashboardAppBar(context, client),
-          floatingActionButton: FloatingActionButton.small(
-            onPressed: () {
-              if (showQuickActions) {
-                ref.read(quickActionVisibilityProvider.notifier).state = false;
-              } else {
-                ref.read(quickActionVisibilityProvider.notifier).state = true;
-              }
-            },
-            backgroundColor: Theme.of(context).primaryColor,
-            child: Icon(showQuickActions ? Icons.close : Icons.add),
-          ),
+          floatingActionButton: manageQuickAddButton(context, ref),
           body: Padding(
             padding: const EdgeInsets.only(
               top: 20,
@@ -197,6 +187,40 @@ class Dashboard extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  SlotLayout manageQuickAddButton(BuildContext context, WidgetRef ref) {
+    return SlotLayout(
+      config: <Breakpoint, SlotLayoutConfig>{
+        Breakpoints.small: SlotLayout.from(
+          key: const Key('quick-add'),
+          inAnimation: AdaptiveScaffold.bottomToTop,
+          outAnimation: AdaptiveScaffold.topToBottom,
+          builder: (context) => quickAddActionUI(context, ref),
+        ),
+        Breakpoints.medium: SlotLayout.from(
+          key: const Key('quick-add'),
+          inAnimation: AdaptiveScaffold.bottomToTop,
+          outAnimation: AdaptiveScaffold.topToBottom,
+          builder: (context) => quickAddActionUI(context, ref),
+        ),
+      },
+    );
+  }
+
+  FloatingActionButton quickAddActionUI(BuildContext context, WidgetRef ref) {
+    final showQuickActions = ref.watch(quickActionVisibilityProvider);
+    return FloatingActionButton.small(
+      onPressed: () {
+        if (showQuickActions) {
+          ref.read(quickActionVisibilityProvider.notifier).state = false;
+        } else {
+          ref.read(quickActionVisibilityProvider.notifier).state = true;
+        }
+      },
+      backgroundColor: Theme.of(context).primaryColor,
+      child: Icon(showQuickActions ? Icons.close : Icons.add),
     );
   }
 
