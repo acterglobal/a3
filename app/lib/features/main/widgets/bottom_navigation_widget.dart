@@ -48,7 +48,11 @@ class BottomNavigationWidget extends ConsumerWidget {
                 divider(context),
                 const SizedBox(height: 6),
                 bottomNavNar(ref),
-                if (showQuickActions) const QuickActionButtons(),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  height: showQuickActions ? 170 : 0,
+                  child: const QuickActionButtons(),
+                ),
               ],
             ),
           ),
@@ -56,7 +60,6 @@ class BottomNavigationWidget extends ConsumerWidget {
       ],
     );
   }
-
 
   Widget tutorialScreenUI() {
     return SizedBox(

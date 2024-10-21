@@ -11,44 +11,46 @@ class QuickActionButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Wrap(
-          children: [
-            actionButton(
-              context: context,
-              iconData: Atlas.pin,
-              color: const Color(0xff7c4a4a),
-              title: lang.addPin,
-              onPressed: () => context.pushNamed(Routes.createPin.name),
-            ),
-            actionButton(
-              context: context,
-              iconData: Atlas.list,
-              title: lang.addTask,
-              color: const Color(0xff406c6e),
-              onPressed: () => showCreateUpdateTaskListBottomSheet(context),
-            ),
-            actionButton(
-              context: context,
-              iconData: Atlas.calendar_dots,
-              title: lang.addEvent,
-              color: const Color(0xff206a9a),
-              onPressed: () => context.pushNamed(Routes.createEvent.name),
-            ),
-            actionButton(
-              context: context,
-              iconData: Atlas.megaphone_thin,
-              title: lang.addBoost,
-              color: Colors.blueGrey,
-              onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20 ),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            children: [
+              actionButton(
+                context: context,
+                iconData: Atlas.pin,
+                color: const Color(0xff7c4a4a),
+                title: lang.addPin,
+                onPressed: () => context.pushNamed(Routes.createPin.name),
+              ),
+              actionButton(
+                context: context,
+                iconData: Atlas.list,
+                title: lang.addTask,
+                color: const Color(0xff406c6e),
+                onPressed: () => showCreateUpdateTaskListBottomSheet(context),
+              ),
+              actionButton(
+                context: context,
+                iconData: Atlas.calendar_dots,
+                title: lang.addEvent,
+                color: const Color(0xff206a9a),
+                onPressed: () => context.pushNamed(Routes.createEvent.name),
+              ),
+              actionButton(
+                context: context,
+                iconData: Atlas.megaphone_thin,
+                title: lang.addBoost,
+                color: Colors.blueGrey,
+                onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
     );
   }
 
