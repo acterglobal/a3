@@ -5,59 +5,97 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:go_router/go_router.dart';
 
-Widget bottomNavigationWidget(
-  BuildContext context,
-  WidgetRef ref,
-  StatefulNavigationShell navigationShell,
-) {
-  final keyboardVisibility = ref.watch(keyboardVisibleProvider);
-  if (keyboardVisibility.valueOrNull != false) {
-    return const SizedBox.shrink();
+class BottomNavigationWidget extends ConsumerStatefulWidget {
+  final StatefulNavigationShell navigationShell;
+
+  const BottomNavigationWidget({
+    super.key,
+    required this.navigationShell,
+  });
+
+  @override
+  ConsumerState<BottomNavigationWidget> createState() =>
+      _BottomNavigationWidgetState();
+}
+
+class _BottomNavigationWidgetState
+    extends ConsumerState<BottomNavigationWidget> {
+  bool isShow = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return bottomNavigationWidget();
   }
-  return Stack(
-    children: [
-      SizedBox(
-        height: 50,
-        child: Row(
-          children: bottomBarItems
-              .map(
-                (bottomBarNav) => Expanded(
-                  child: Center(
-                    child: SizedBox(
-                      key: bottomBarNav.tutorialGlobalKey,
-                      height: 40,
-                      width: 40,
+
+  Widget bottomNavigationWidget() {
+    final keyboardVisibility = ref.watch(keyboardVisibleProvider);
+    if (keyboardVisibility.valueOrNull != false) {
+      return const SizedBox.shrink();
+    }
+
+    return Stack(
+      children: [
+        SizedBox(
+          height: 50,
+          child: Row(
+            children: bottomBarItems
+                .map(
+                  (bottomBarNav) => Expanded(
+                    child: Center(
+                      child: SizedBox(
+                        key: bottomBarNav.tutorialGlobalKey,
+                        height: 40,
+                        width: 40,
+                      ),
                     ),
                   ),
+                )
+                .toList(),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(30.0),
+              topLeft: Radius.circular(30.0),
+            ),
+          ),
+          child: GestureDetector(
+            onPanUpdate: (details) {
+              if (details.delta.dy < 0) {
+                isShow = !isShow;
+              }
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                const Divider(
+                  indent: 180,
+                  endIndent: 180,
+                  thickness: 2,
                 ),
-              )
-              .toList(),
+                BottomNavigationBar(
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
+                  currentIndex: widget.navigationShell.currentIndex,
+                  onTap: (index) {
+                    widget.navigationShell.goBranch(
+                      index,
+                      initialLocation:
+                          index == widget.navigationShell.currentIndex,
+                    );
+                  },
+                  items: bottomBarItems,
+                  type: BottomNavigationBarType.fixed,
+                ),
+                if (isShow) const QuickActionButtons(),
+              ],
+            ),
+          ),
         ),
-      ),
-      GestureDetector(
-        onPanUpdate: (details) {
-          if (details.delta.dy < 0) {
-            showModalBottomSheet<void>(
-              context: context,
-              showDragHandle: true,
-              builder: (context) => const QuickActionButtons(),
-            );
-          }
-        },
-        child: BottomNavigationBar(
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          currentIndex: navigationShell.currentIndex,
-          onTap: (index) {
-            navigationShell.goBranch(
-              index,
-              initialLocation: index == navigationShell.currentIndex,
-            );
-          },
-          items: bottomBarItems,
-          type: BottomNavigationBarType.fixed,
-        ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }

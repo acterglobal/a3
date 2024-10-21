@@ -210,14 +210,14 @@ class AppShellState extends ConsumerState<AppShell> {
           inAnimation: AdaptiveScaffold.bottomToTop,
           outAnimation: AdaptiveScaffold.topToBottom,
           builder: (context) =>
-              bottomNavigationWidget(context, ref, widget.navigationShell),
+              BottomNavigationWidget(navigationShell: widget.navigationShell),
         ),
         Breakpoints.medium: SlotLayout.from(
           key: Keys.mainNav,
           inAnimation: AdaptiveScaffold.bottomToTop,
           outAnimation: AdaptiveScaffold.topToBottom,
           builder: (context) =>
-              bottomNavigationWidget(context, ref, widget.navigationShell),
+              BottomNavigationWidget(navigationShell: widget.navigationShell),
         ),
       },
     );
