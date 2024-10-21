@@ -408,7 +408,6 @@ impl Client {
 
         self.invitation_controller.add_event_handler();
         self.typing_controller.add_event_handler(&client);
-        self.receipt_controller.add_event_handler(&client);
 
         self.verification_controller
             .add_to_device_event_handler(&client);

@@ -36,7 +36,7 @@ use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-    receipt::ReceiptController, typing::TypingController, verification::VerificationController,
+    typing::TypingController, verification::VerificationController,
 };
 
 mod sync;
@@ -69,7 +69,6 @@ pub struct Client {
     pub(crate) verification_controller: VerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
-    pub(crate) receipt_controller: ReceiptController,
     pub spaces: Arc<RwLock<ObservableVector<Space>>>,
     pub convos: Arc<RwLock<ObservableVector<Convo>>>,
 }
@@ -187,7 +186,6 @@ impl Client {
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
-            receipt_controller: ReceiptController::new(),
         };
         cl.load_from_cache().await;
         Ok(cl)
@@ -454,7 +452,6 @@ impl Client {
         self.verification_controller
             .remove_sync_event_handler(&client);
         self.typing_controller.remove_event_handler(&client);
-        self.receipt_controller.remove_event_handler(&client);
 
         RUNTIME
             .spawn(async move {

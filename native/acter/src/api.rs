@@ -37,7 +37,6 @@ mod pins;
 mod profile;
 mod push;
 mod reactions;
-mod receipt;
 mod room;
 mod rsvp;
 mod search;
@@ -105,7 +104,6 @@ pub use push::{
 };
 pub use reactions::{Reaction, ReactionManager};
 pub use read_receipts::ReadReceiptsManager;
-pub use receipt::{ReceiptEvent, ReceiptRecord, ReceiptThread};
 pub use room::{
     new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
     SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
