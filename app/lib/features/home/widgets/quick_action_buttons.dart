@@ -27,7 +27,7 @@ class QuickActionButtons extends ConsumerWidget {
                 color: const Color(0xff7c4a4a),
                 title: lang.addPin,
                 onPressed: () {
-                  ref.watch(quickActionVisibilityProvider.notifier).state =
+                  ref.read(quickActionVisibilityProvider.notifier).state =
                       false;
                   context.pushNamed(Routes.createPin.name);
                 },
@@ -38,7 +38,7 @@ class QuickActionButtons extends ConsumerWidget {
                 title: lang.addTask,
                 color: const Color(0xff406c6e),
                 onPressed: () {
-                  ref.watch(quickActionVisibilityProvider.notifier).state =
+                  ref.read(quickActionVisibilityProvider.notifier).state =
                       false;
                   showCreateUpdateTaskListBottomSheet(context);
                 },
@@ -49,7 +49,7 @@ class QuickActionButtons extends ConsumerWidget {
                 title: lang.addEvent,
                 color: const Color(0xff206a9a),
                 onPressed: () {
-                  ref.watch(quickActionVisibilityProvider.notifier).state =
+                  ref.read(quickActionVisibilityProvider.notifier).state =
                       false;
                   context.pushNamed(Routes.createEvent.name);
                 },
@@ -60,7 +60,7 @@ class QuickActionButtons extends ConsumerWidget {
                 title: lang.addBoost,
                 color: Colors.blueGrey,
                 onPressed: () {
-                  ref.watch(quickActionVisibilityProvider.notifier).state =
+                  ref.read(quickActionVisibilityProvider.notifier).state =
                       false;
                   context.pushNamed(Routes.actionAddUpdate.name);
                 },
