@@ -54,7 +54,6 @@ class Dashboard extends ConsumerWidget {
               child: hasSpaces
                   ? Column(
                       children: [
-                        searchWidget(context),
                         featuresNav(context),
                         const SizedBox(height: 20),
                         const MyEventsSection(
@@ -107,26 +106,6 @@ class Dashboard extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget searchWidget(BuildContext context) {
-    return InkWell(
-      onTap: () => context.goNamed(Routes.search.name),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.search),
-            const SizedBox(width: 8),
-            Text(L10n.of(context).search),
-          ],
-        ),
-      ),
     );
   }
 
