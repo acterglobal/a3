@@ -51,6 +51,18 @@ impl TestModelBuilder {
     }
 }
 
+impl TestModel {
+    pub fn event_meta(&self) -> EventMeta {
+        EventMeta {
+            event_id: self.event_id.clone(),
+            sender: user_id!("@test:example.org").to_owned(),
+            origin_server_ts: MilliSecondsSinceUnixEpoch(123567890u32.into()),
+            room_id: self.room_id.clone(),
+            redacted: None,
+        }
+    }
+}
+
 impl ActerModel for TestModel {
     fn event_id(&self) -> &EventId {
         &self.event_id

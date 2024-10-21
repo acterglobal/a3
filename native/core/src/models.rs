@@ -218,6 +218,12 @@ pub struct RedactedActerModel {
 }
 
 impl RedactedActerModel {
+    pub fn origin_type(&self) -> &str {
+        &self.orig_type
+    }
+}
+
+impl RedactedActerModel {
     pub fn new(
         orig_type: String,
         orig_indizes: Vec<String>,
