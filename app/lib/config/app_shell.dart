@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
@@ -11,10 +10,10 @@ import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/cross_signing/widgets/cross_signing.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
+import 'package:acter/features/main/widgets/bottom_navigation_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -203,48 +202,6 @@ class AppShellState extends ConsumerState<AppShell> {
     );
   }
 
-  Widget bottomNavigationWidget(BuildContext context) {
-    final keyboardVisibility = ref.watch(keyboardVisibleProvider);
-    if (keyboardVisibility.valueOrNull != false) {
-      return const SizedBox.shrink();
-    }
-    return Stack(
-      children: [
-        SizedBox(
-          height: 50,
-          child: Row(
-            children: bottomBarItems
-                .map(
-                  (bottomBarNav) => Expanded(
-                    child: Center(
-                      child: SizedBox(
-                        key: bottomBarNav.tutorialGlobalKey,
-                        height: 40,
-                        width: 40,
-                      ),
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-        BottomNavigationBar(
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          currentIndex: widget.navigationShell.currentIndex,
-          onTap: (index) {
-            widget.navigationShell.goBranch(
-              index,
-              initialLocation: index == widget.navigationShell.currentIndex,
-            );
-          },
-          items: bottomBarItems,
-          type: BottomNavigationBarType.fixed,
-        ),
-      ],
-    );
-  }
-
   SlotLayout bottomNavigationLayout() {
     return SlotLayout(
       config: <Breakpoint, SlotLayoutConfig>{
@@ -252,13 +209,15 @@ class AppShellState extends ConsumerState<AppShell> {
           key: Keys.mainNav,
           inAnimation: AdaptiveScaffold.bottomToTop,
           outAnimation: AdaptiveScaffold.topToBottom,
-          builder: bottomNavigationWidget,
+          builder: (context) =>
+              bottomNavigationWidget(context, ref, widget.navigationShell),
         ),
         Breakpoints.medium: SlotLayout.from(
           key: Keys.mainNav,
           inAnimation: AdaptiveScaffold.bottomToTop,
           outAnimation: AdaptiveScaffold.topToBottom,
-          builder: bottomNavigationWidget,
+          builder: (context) =>
+              bottomNavigationWidget(context, ref, widget.navigationShell),
         ),
       },
     );
