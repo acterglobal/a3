@@ -25,4 +25,14 @@ jobs:
         run: dart run enven
       - name: Run flutter unit tests
         working-directory: app
-        run: flutter test
+        run: flutter test --coverage
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@v4
+        with:
+          working-directory: app
+          directory: coverage
+          flags: unittest
+          name: flutter-widget-tests
+          token: ${{ secrets.CODECOV_TOKEN }}

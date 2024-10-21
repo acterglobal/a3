@@ -12,10 +12,12 @@ import 'package:go_router/go_router.dart';
 
 class PinsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
+  final String? searchQuery;
 
   const PinsListPage({
     super.key,
     this.spaceId,
+    this.searchQuery,
   });
 
   @override
@@ -24,6 +26,16 @@ class PinsListPage extends ConsumerStatefulWidget {
 
 class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   String get searchValue => ref.watch(searchValueProvider);
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.searchQuery != null) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        ref.read(searchValueProvider.notifier).state = widget.searchQuery!;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +75,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
+          initialText: widget.searchQuery,
           onChanged: (value) {
             final notifier = ref.read(searchValueProvider.notifier);
             notifier.state = value;

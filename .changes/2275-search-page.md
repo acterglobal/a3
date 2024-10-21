@@ -1,0 +1,1 @@
+- [New] : UI-UX improvement in search page to make it more consistent and align with uniform design standards.

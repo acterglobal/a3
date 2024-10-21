@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/room_test_wrapper.dart';
 import '../../helpers/utils.dart';
-import '../../helpers/mocks.dart';
+import '../../helpers/mock_a3sdk.dart';
 import '../../helpers/test_wrapper_widget.dart';
 
 void main() {

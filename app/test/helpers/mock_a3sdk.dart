@@ -5,7 +5,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 /// Mocked version of ActerSdk
 class MockActerSdk extends Mock implements ActerSdk {}
@@ -103,3 +103,57 @@ class MockAsyncConvoNotifier extends AsyncConvoNotifier {
     return await client.convoWithRetry(roomId, 0);
   }
 }
+
+//
+//  --- Calendar --
+//
+class MockCalendarEvent extends Mock implements CalendarEvent {}
+
+class MockEventId extends Mock implements EventId {
+  final String id;
+
+  MockEventId({required this.id});
+
+  @override
+  String toString() => id;
+}
+
+class MockTextMessageContent extends Mock implements TextMessageContent {
+  final String textBody;
+  final String? htmlBody;
+
+  MockTextMessageContent({required this.textBody, this.htmlBody});
+
+  @override
+  String body() => textBody;
+}
+
+class MockUtcDateTime extends Mock implements UtcDateTime {
+  final int millis;
+
+  MockUtcDateTime({required this.millis});
+
+  @override
+  int timestampMillis() => millis;
+}
+
+const hourInMilliSeconds = 3600000;
+
+List<MockCalendarEvent> generateMockCalendarEvents([int count = 1]) =>
+    List.generate(count, (idx) {
+      final eventA = MockCalendarEvent();
+      when(eventA.title).thenReturn('Event $idx');
+      when(eventA.eventId).thenReturn(MockEventId(id: 'event-$idx-id'));
+      when(eventA.description)
+          .thenReturn(MockTextMessageContent(textBody: 'event $idx body'));
+      final millisecondsBase = DateTime.now().millisecondsSinceEpoch +
+          (idx * 2 * hourInMilliSeconds); // put it 2 * idx hours from now
+
+      when(eventA.utcStart)
+          .thenReturn(MockUtcDateTime(millis: millisecondsBase));
+      when(eventA.utcEnd).thenReturn(
+        MockUtcDateTime(millis: millisecondsBase + hourInMilliSeconds),
+        // event takes one hour
+      );
+      return eventA;
+    });
