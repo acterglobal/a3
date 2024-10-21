@@ -2,10 +2,15 @@ use acter_core::models::{self, ActerModel, AnyActerModel};
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;
+use matrix_sdk::ruma::api::client::receipt::create_receipt::v3::ReceiptType;
 use matrix_sdk_base::ruma::{
-    events::MessageLikeEventType, OwnedEventId, OwnedTransactionId, OwnedUserId, UserId,
+    events::{
+        receipt::{Receipt, ReceiptThread, SyncReceiptEvent},
+        MessageLikeEventType,
+    },
+    OwnedEventId, OwnedTransactionId, OwnedUserId, UserId,
 };
-use std::ops::Deref;
+use std::{collections::BTreeMap, ops::Deref};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 
@@ -45,7 +50,7 @@ pub struct ReadReceiptsManager {
     client: Client,
     room: Room,
     event_id: OwnedEventId,
-    // inner: models::ReadReceiptsManager,
+    events: BTreeMap<OwnedUserId, Receipt>, // inner: models::ReadReceiptsManager,
 }
 
 // impl Deref for ReadReceiptsManager {
@@ -61,10 +66,22 @@ impl ReadReceiptsManager {
         room: Room,
         event_id: OwnedEventId,
     ) -> Result<ReadReceiptsManager> {
+        let events = client
+            .core
+            .client()
+            .store()
+            .get_event_room_receipt_events(
+                room.room_id(),
+                matrix_sdk::ruma::events::receipt::ReceiptType::Read,
+                ReceiptThread::Unthreaded,
+                &event_id,
+            )
+            .await?;
         Ok(ReadReceiptsManager {
             client,
             room,
             event_id,
+            events: events.into_iter().collect(),
         })
     }
 
@@ -77,37 +94,28 @@ impl ReadReceiptsManager {
         .await
     }
 
-    pub async fn mark_read(&self) -> Result<OwnedEventId> {
-        unimplemented!();
-        // let room = self.room.clone();
-        // let my_id = self.client.user_id()?;
-        // let event = self.inner.construct_like_event();
+    pub async fn mark_read(&self) -> Result<()> {
+        let room = self.room.clone();
+        let event_id = self.event_id.clone();
 
-        // RUNTIME
-        //     .spawn(async move {
-        //         let permitted = room
-        //             .can_user_send_message(&my_id, MessageLikeEventType::ReadReceipts)
-        //             .await?;
-        //         if !permitted {
-        //             bail!("No permission to send reaction in this room");
-        //         }
-        //         let response = room.send(event).await?;
-        //         Ok(response.event_id)
-        //     })
-        //     .await?
+        RUNTIME
+            .spawn(async move {
+                room.send_single_receipt(ReceiptType::Read, ReceiptThread::Unthreaded, event_id)
+                    .await?;
+                Ok(())
+            })
+            .await?
     }
 
-    // pub fn stats(&self) -> models::ReadReceiptsStats {
-    //     self.inner.stats().clone()
-    // }
-
     pub fn seen_count(&self) -> u32 {
-        0
-        // self.inner.stats().total_like_reactions
+        self.events.len() as u32
     }
 
     pub fn seen_by_me(&self) -> bool {
-        false
+        let Ok(user_id) = self.client.user_id() else {
+            return false;
+        };
+        self.events.contains_key(&user_id)
     }
 
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
