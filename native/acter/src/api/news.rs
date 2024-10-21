@@ -423,6 +423,15 @@ impl NewsEntry {
         .await
     }
 
+    pub async fn read_receipts(&self) -> Result<crate::ReadReceiptsManager> {
+        crate::ReadReceiptsManager::new(
+            self.client.clone(),
+            self.room.clone(),
+            self.content.event_id().to_owned(),
+        )
+        .await
+    }
+
     fn is_joined(&self) -> bool {
         matches!(self.room.state(), RoomState::Joined)
     }

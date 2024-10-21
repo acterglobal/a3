@@ -10,7 +10,9 @@ use tokio_retry::{
 };
 use tracing::info;
 
-use crate::utils::{random_user_with_random_space, random_user_with_template};
+use crate::utils::{
+    random_user_with_random_space, random_user_with_template, random_users_with_random_space,
+};
 
 const TMPL: &str = r#"
 version = "0.1"
@@ -594,6 +596,101 @@ async fn news_like_reaction_test() -> Result<()> {
     assert!(!reaction_manager.reacted_by_me());
     assert!(!reaction_manager.liked_by_me());
     assert_eq!(reaction_manager.likes_count(), 0);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn news_read_receipt_test() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (mut users, room_id) = random_users_with_random_space("news_views", 4).await?;
+    let mut user = users.remove(0);
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
+    })
+    .await?;
+
+    let space = user.space(room_id.to_string()).await?;
+    let mut draft = space.news_draft()?;
+    let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
+    draft.add_slide(Box::new(text_draft.into())).await?;
+    draft.send().await?;
+
+    let space_cl = space.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let inner_space = space_cl.clone();
+        async move {
+            if inner_space.latest_news_entries(1).await?.len() != 1 {
+                bail!("news not found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let slides = space.latest_news_entries(1).await?;
+    let final_entry = slides.first().unwrap();
+    let main_receipts_manager = final_entry.read_receipts().await?;
+    assert_eq!(main_receipts_manager.seen_count(), 0);
+
+    for (idx, mut user) in users.into_iter().enumerate() {
+        let state_sync = user.start_sync();
+        state_sync.await_has_synced_history().await?;
+        let uidx = idx as u32;
+
+        let fetcher_client = user.clone();
+        let target_id = room_id.clone();
+        Retry::spawn(retry_strategy.clone(), move || {
+            let client = fetcher_client.clone();
+            let room_id = target_id.clone();
+            async move { client.space(room_id.to_string()).await }
+        })
+        .await?;
+
+        let space = user.space(room_id.to_string()).await?;
+
+        let space_cl = space.clone();
+        Retry::spawn(retry_strategy.clone(), move || {
+            let inner_space = space_cl.clone();
+            async move {
+                if inner_space.latest_news_entries(1).await?.len() != 1 {
+                    bail!("news not found");
+                }
+                Ok(())
+            }
+        })
+        .await?;
+
+        let slides = space.latest_news_entries(1).await?;
+        let news_entry = slides.first().unwrap();
+
+        let local_receipts_manager = news_entry.read_receipts().await?;
+        assert_eq!(local_receipts_manager.seen_count(), uidx);
+        local_receipts_manager.mark_read().await?;
+
+        let receipts_manager = main_receipts_manager.clone();
+        Retry::spawn(retry_strategy.clone(), move || {
+            let receipts_manager = receipts_manager.clone();
+
+            async move {
+                let new_receipts_manager = receipts_manager.reload().await?;
+                if new_receipts_manager.seen_count() != uidx + 1 {
+                    bail!("news read receipt after {uidx} not found");
+                }
+                Ok(())
+            }
+        })
+        .await?;
+    }
 
     Ok(())
 }
