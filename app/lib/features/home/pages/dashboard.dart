@@ -10,6 +10,7 @@ import 'package:acter/features/home/widgets/in_dashboard.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_tasks.dart';
+import 'package:acter/features/home/widgets/quick_action_buttons.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -31,11 +32,15 @@ class Dashboard extends ConsumerWidget {
         bottom: false,
         child: Scaffold(
           floatingActionButtonLocation:
-              FloatingActionButtonLocation.miniEndDocked,
+              FloatingActionButtonLocation.miniEndFloat,
           floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
           appBar: _buildDashboardAppBar(context, client),
           floatingActionButton: FloatingActionButton.small(
-            onPressed: () {},
+            onPressed: () => showModalBottomSheet<void>(
+              context: context,
+              showDragHandle: true,
+              builder: (context) => const QuickActionButtons(),
+            ),
             backgroundColor: Theme.of(context).primaryColor,
             child: const Icon(Icons.add),
           ),
