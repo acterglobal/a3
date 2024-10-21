@@ -1,11 +1,12 @@
 import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/quick_action_buttons.dart';
+import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:go_router/go_router.dart';
 
-class BottomNavigationWidget extends ConsumerStatefulWidget {
+class BottomNavigationWidget extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
   const BottomNavigationWidget({
@@ -14,45 +15,16 @@ class BottomNavigationWidget extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<BottomNavigationWidget> createState() =>
-      _BottomNavigationWidgetState();
-}
-
-class _BottomNavigationWidgetState
-    extends ConsumerState<BottomNavigationWidget> {
-  bool isShow = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return bottomNavigationWidget();
-  }
-
-  Widget bottomNavigationWidget() {
+  Widget build(BuildContext context, WidgetRef ref) {
     final keyboardVisibility = ref.watch(keyboardVisibleProvider);
+    final showQuickActions = ref.watch(quickActionVisibilityProvider);
     if (keyboardVisibility.valueOrNull != false) {
       return const SizedBox.shrink();
     }
 
     return Stack(
       children: [
-        SizedBox(
-          height: 50,
-          child: Row(
-            children: bottomBarItems
-                .map(
-                  (bottomBarNav) => Expanded(
-                    child: Center(
-                      child: SizedBox(
-                        key: bottomBarNav.tutorialGlobalKey,
-                        height: 40,
-                        width: 40,
-                      ),
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-        ),
+        tutorialScreenUI(),
         Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
@@ -64,38 +36,72 @@ class _BottomNavigationWidgetState
           child: GestureDetector(
             onPanUpdate: (details) {
               if (details.delta.dy < 0) {
-                isShow = !isShow;
+                ref.watch(quickActionVisibilityProvider.notifier).state = true;
+              } else {
+                ref.watch(quickActionVisibilityProvider.notifier).state = false;
               }
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 12),
-                const Divider(
-                  indent: 180,
-                  endIndent: 180,
-                  thickness: 2,
-                ),
-                BottomNavigationBar(
-                  showSelectedLabels: false,
-                  showUnselectedLabels: false,
-                  currentIndex: widget.navigationShell.currentIndex,
-                  onTap: (index) {
-                    widget.navigationShell.goBranch(
-                      index,
-                      initialLocation:
-                          index == widget.navigationShell.currentIndex,
-                    );
-                  },
-                  items: bottomBarItems,
-                  type: BottomNavigationBarType.fixed,
-                ),
-                if (isShow) const QuickActionButtons(),
+                divider(context),
+                bottomNavNar(),
+                if (showQuickActions) const QuickActionButtons(),
               ],
             ),
           ),
         ),
       ],
+    );
+  }
+
+
+  Widget tutorialScreenUI() {
+    return SizedBox(
+      height: 50,
+      child: Row(
+        children: bottomBarItems
+            .map(
+              (bottomBarNav) => Expanded(
+                child: Center(
+                  child: SizedBox(
+                    key: bottomBarNav.tutorialGlobalKey,
+                    height: 40,
+                    width: 40,
+                  ),
+                ),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  Widget divider(BuildContext context) {
+    return Container(
+      height: 2,
+      width: 40,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onSurface,
+        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+      ),
+    );
+  }
+
+  Widget bottomNavNar() {
+    return BottomNavigationBar(
+      showSelectedLabels: false,
+      showUnselectedLabels: false,
+      currentIndex: navigationShell.currentIndex,
+      onTap: (index) {
+        navigationShell.goBranch(
+          index,
+          initialLocation: index == navigationShell.currentIndex,
+        );
+      },
+      items: bottomBarItems,
+      type: BottomNavigationBarType.fixed,
     );
   }
 }
