@@ -83,16 +83,22 @@ class InviteIndividualUsers extends ConsumerWidget {
 
   Widget _buildUserDirectInvite(WidgetRef ref) {
     final searchValue = ref.watch(userSearchValueProvider);
-    if (searchValue?.isNotEmpty == true) {
-      final cleaned = searchValue!.trim();
+    if (searchValue != null && searchValue.isNotEmpty == true) {
+      final cleaned = searchValue.trim();
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           children: [
             if (userNameRegExp.hasMatch(cleaned))
-              DirectInvite(roomId: roomId, userId: cleaned),
+              DirectInvite(
+                roomId: roomId,
+                userId: cleaned,
+              ),
             if (noAtUserNameRegExp.hasMatch(cleaned))
-              DirectInvite(roomId: roomId, userId: '@$cleaned'),
+              DirectInvite(
+                roomId: roomId,
+                userId: '@$cleaned',
+              ),
           ],
         ),
       );

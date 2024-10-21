@@ -17,16 +17,12 @@ final newsStateProvider =
 class NewsStateNotifier extends StateNotifier<NewsPostState> {
   final Ref ref;
 
-  NewsStateNotifier({
-    required this.ref,
-  }) : super(const NewsPostState());
+  NewsStateNotifier({required this.ref}) : super(const NewsPostState());
 
   void changeTextSlideBackgroundColor() {
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
     selectedNewsSlide?.backgroundColor = getRandomElement(Colors.primaries);
-    state = state.copyWith(
-      currentNewsSlide: selectedNewsSlide,
-    );
+    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
 
   Future<void> changeNewsPostSpaceId(BuildContext context) async {
@@ -40,9 +36,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
       slide.newsReferencesModel = null;
     }
 
-    state = state.copyWith(
-      newsPostSpaceId: spaceId,
-    );
+    state = state.copyWith(newsPostSpaceId: spaceId);
   }
 
   void setSpaceId(String spaceId) {
@@ -82,9 +76,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     );
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
     selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
-    state = state.copyWith(
-      currentNewsSlide: selectedNewsSlide,
-    );
+    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
 
   void changeTextSlideValue(String body, String? html) {
@@ -93,9 +85,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   }
 
   void changeSelectedSlide(NewsSlideItem newsSlideModel) {
-    state = state.copyWith(
-      currentNewsSlide: newsSlideModel,
-    );
+    state = state.copyWith(currentNewsSlide: newsSlideModel);
   }
 
   void addSlide(NewsSlideItem newsSlideModel) {
@@ -113,8 +103,10 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     List<NewsSlideItem> newsSlideList = [...state.newsSlideList];
     newsSlideList.removeAt(index);
     if (newsSlideList.isEmpty) {
-      state =
-          state.copyWith(newsSlideList: newsSlideList, currentNewsSlide: null);
+      state = state.copyWith(
+        newsSlideList: newsSlideList,
+        currentNewsSlide: null,
+      );
     } else if (index == newsSlideList.length) {
       state = state.copyWith(
         newsSlideList: newsSlideList,

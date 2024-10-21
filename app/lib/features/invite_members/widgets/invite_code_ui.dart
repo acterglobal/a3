@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -52,14 +53,14 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
         orElse: () => tokens.first, // or otherwise pick the first available
       );
 
-      if (selectedToken != null) {
+      selectedToken.map((selected) {
         // we had a token selected, let’s try to find it again
-        final tokenCode = selectedToken!.token();
+        final tokenCode = selected.token();
         newToken = tokens.firstWhere(
           (t) => t.token() == tokenCode, // replace with teh updated one
           orElse: () => newToken,
         );
-      }
+      });
       // auto select a token
       setState(() {
         selectedToken = newToken;
@@ -105,9 +106,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
               ),
               IconButton(
                 onPressed: () async {
-                  await Clipboard.setData(
-                    ClipboardData(text: inviteCode),
-                  );
+                  await Clipboard.setData(ClipboardData(text: inviteCode));
                   EasyLoading.showToast(lang.inviteCopiedToClipboard);
                 },
                 icon: const Icon(Icons.copy),
@@ -171,7 +170,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
                     Expanded(
@@ -179,9 +178,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
                     ),
                     OutlinedButton.icon(
                       icon: const Icon(Icons.close),
-                      onPressed: () {
-                        Navigator.pop(context, null);
-                      },
+                      onPressed: () => Navigator.pop(context, null),
                       label: Text(lang.close),
                     ),
                   ],
@@ -220,11 +217,10 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
     final lang = L10n.of(context);
     try {
       EasyLoading.show(status: lang.generateInviteCode);
-      final displayName =
+      final dispName =
           await ref.read(roomDisplayNameProvider(widget.roomId).future);
       String prefix =
-          (displayName?.replaceAll(RegExp(r'[^A-Za-z]'), '').toLowerCase() ??
-              '');
+          dispName?.replaceAll(RegExp(r'[^A-Za-z]'), '').toLowerCase() ?? '';
 
       final rng = Random();
 

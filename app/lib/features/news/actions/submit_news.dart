@@ -187,22 +187,19 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
   context.pushReplacementNamed(Routes.main.name); // go to the home/main updates
 }
 
-ObjRef getSlideReference(
-  ActerSdk sdk,
-  NewsReferencesModel newsReferencesModel,
-) {
-  final refDetails = switch (newsReferencesModel.type) {
+ObjRef getSlideReference(ActerSdk sdk, NewsReferencesModel refModel) {
+  final refDetails = switch (refModel.type) {
     NewsReferencesType.calendarEvent => sdk.api
         .newCalendarEventRefBuilder(
-          newsReferencesModel.id.expect('Referenced Calendar misses id'),
+          refModel.id.expect('Referenced Calendar misses id'),
           null,
           null,
         )
         .build(),
     NewsReferencesType.link => sdk.api
         .newLinkRefBuilder(
-          newsReferencesModel.title.expect('Referenced link misses title'),
-          newsReferencesModel.id.expect('Referenced link misses id'),
+          refModel.title.expect('Referenced link misses title'),
+          refModel.id.expect('Referenced link misses id'),
         )
         .build(),
   };
