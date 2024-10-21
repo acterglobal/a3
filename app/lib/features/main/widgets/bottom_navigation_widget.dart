@@ -29,8 +29,8 @@ class BottomNavigationWidget extends ConsumerWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(30.0),
-              topLeft: Radius.circular(30.0),
+              topRight: Radius.circular(20.0),
+              topLeft: Radius.circular(20.0),
             ),
           ),
           child: GestureDetector(
@@ -46,7 +46,8 @@ class BottomNavigationWidget extends ConsumerWidget {
               children: [
                 const SizedBox(height: 12),
                 divider(context),
-                bottomNavNar(),
+                const SizedBox(height: 6),
+                bottomNavNar(ref),
                 if (showQuickActions) const QuickActionButtons(),
               ],
             ),
@@ -89,12 +90,13 @@ class BottomNavigationWidget extends ConsumerWidget {
     );
   }
 
-  Widget bottomNavNar() {
+  Widget bottomNavNar(WidgetRef ref) {
     return BottomNavigationBar(
       showSelectedLabels: false,
       showUnselectedLabels: false,
       currentIndex: navigationShell.currentIndex,
       onTap: (index) {
+        ref.read(quickActionVisibilityProvider.notifier).state = false;
         navigationShell.goBranch(
           index,
           initialLocation: index == navigationShell.currentIndex,

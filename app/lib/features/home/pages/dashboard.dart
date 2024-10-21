@@ -10,7 +10,7 @@ import 'package:acter/features/home/widgets/in_dashboard.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_tasks.dart';
-import 'package:acter/features/home/widgets/quick_action_buttons.dart';
+import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -27,6 +27,7 @@ class Dashboard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(alwaysClientProvider);
     final hasSpaces = ref.watch(hasSpacesProvider);
+    final showQuickActions = ref.watch(quickActionVisibilityProvider);
     return InDashboard(
       child: SafeArea(
         bottom: false,
@@ -36,13 +37,15 @@ class Dashboard extends ConsumerWidget {
           floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
           appBar: _buildDashboardAppBar(context, client),
           floatingActionButton: FloatingActionButton.small(
-            onPressed: () => showModalBottomSheet<void>(
-              context: context,
-              showDragHandle: true,
-              builder: (context) => const QuickActionButtons(),
-            ),
+            onPressed: () {
+              if (showQuickActions) {
+                ref.read(quickActionVisibilityProvider.notifier).state = false;
+              } else {
+                ref.read(quickActionVisibilityProvider.notifier).state = true;
+              }
+            },
             backgroundColor: Theme.of(context).primaryColor,
-            child: const Icon(Icons.add),
+            child: Icon(showQuickActions ? Icons.close : Icons.add),
           ),
           body: Padding(
             padding: const EdgeInsets.only(
