@@ -215,7 +215,7 @@ class SubChatsPage extends ConsumerWidget {
           final roomInfo = roomEntry.$1;
           final roomId = roomEntry.$2;
           if (roomInfo != null) {
-            // we don't have this room yet, need to show via room hierarchy
+            // we don’t have this room yet, need to show via room hierarchy
             final parentId = spaceId;
             return RoomHierarchyCard(
               key: Key('subchat-list-item-$roomId'),
