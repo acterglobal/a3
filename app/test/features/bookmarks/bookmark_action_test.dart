@@ -32,5 +32,29 @@ void main() {
       await tester.pump();
       verify(() => mockManager.add(any(), any())).called(1);
     });
+    testWidgets('unset bookmark', (tester) async {
+      final mockManager = MockedBookmarksManager();
+      when(() => mockManager.remove(any(), any()))
+          .thenAnswer((a) async => true);
+      await tester.pumpProviderWidget(
+        overrides: [
+          isBookmarkedProvider.overrideWith((ref, b) => true),
+          bookmarksManagerProvider.overrideWith(
+            () => MockBookmarksManagerNotifier(manager: mockManager),
+          ),
+        ],
+        child: const BookmarkAction(
+          bookmarker: (id: 'a', type: BookmarkType.news),
+        ),
+      );
+      final unbookmarkKey = const ValueKey('a-unbookmark');
+
+      verifyNever(() => mockManager.add(any(), any()));
+
+      expect(find.byKey(unbookmarkKey), findsOneWidget);
+      await tester.tap(find.byKey(unbookmarkKey));
+      await tester.pump();
+      verify(() => mockManager.remove(any(), any())).called(1);
+    });
   });
 }
