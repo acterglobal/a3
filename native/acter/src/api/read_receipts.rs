@@ -30,23 +30,27 @@ impl ReadReceiptsManager {
         room: Room,
         event_id: OwnedEventId,
     ) -> Result<ReadReceiptsManager> {
-        let events = client
-            .core
-            .client()
-            .store()
-            .get_event_room_receipt_events(
-                room.room_id(),
-                matrix_sdk::ruma::events::receipt::ReceiptType::Read,
-                ReceiptThread::Unthreaded,
-                &event_id,
-            )
-            .await?;
-        Ok(ReadReceiptsManager {
-            client,
-            room,
-            event_id,
-            events: events.into_iter().collect(),
-        })
+        RUNTIME
+            .spawn(async move {
+                let events = client
+                    .core
+                    .client()
+                    .store()
+                    .get_event_room_receipt_events(
+                        room.room_id(),
+                        matrix_sdk::ruma::events::receipt::ReceiptType::Read,
+                        ReceiptThread::Unthreaded,
+                        &event_id,
+                    )
+                    .await?;
+                Ok(ReadReceiptsManager {
+                    client,
+                    room,
+                    event_id,
+                    events: events.into_iter().collect(),
+                })
+            })
+            .await?
     }
 
     pub async fn reload(&self) -> Result<ReadReceiptsManager> {

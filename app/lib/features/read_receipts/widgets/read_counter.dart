@@ -1,13 +1,21 @@
+import 'dart:async';
+
 import 'package:acter/common/toolkit/errors/inline_error_button.dart';
 import 'package:acter/features/read_receipts/providers/read_receipts.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class ReadCounterWidget extends StatefulHookConsumerWidget {
+class ReadCounterWidget extends ConsumerStatefulWidget {
   final Future<ReadReceiptsManager> manager;
-  const ReadCounterWidget({super.key, required this.manager});
+  final int? triggerAfterSecs;
+  const ReadCounterWidget({
+    super.key,
+    required this.manager,
+    this.triggerAfterSecs,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -15,6 +23,42 @@ class ReadCounterWidget extends StatefulHookConsumerWidget {
 }
 
 class _ReadCounterWidgetState extends ConsumerState<ReadCounterWidget> {
+  Timer? _timer;
+  @override
+  void initState() {
+    super.initState();
+    _updateTrigger();
+  }
+
+  @override
+  void didUpdateWidget(covariant ReadCounterWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _updateTrigger();
+  }
+
+  void _updateTrigger() {
+    _timer?.cancel(); // cancel any pending timers
+    final seconds = widget.triggerAfterSecs;
+    if (seconds != null && seconds != 0) {
+      _timer = Timer(Duration(seconds: seconds), () async {
+        final manager =
+            await ref.read(readReceiptsManagerProvider(widget.manager).future);
+        if (!manager.readByMe()) {
+          await manager.announceRead();
+        }
+        _timer = null; // reset the timer
+      });
+    } else {
+      _timer = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _timer?.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     final manager = ref.watch(readReceiptsManagerProvider(widget.manager));
@@ -36,17 +80,22 @@ class _ReadCounterWidgetState extends ConsumerState<ReadCounterWidget> {
           const Text('error'),
         ],
       ),
+      skipLoadingOnReload: true,
+      skipLoadingOnRefresh: true,
     );
   }
 }
 
 class _ReadCounterWidgetLoading extends StatelessWidget {
-  const _ReadCounterWidgetLoading({Key? super.key});
+  const _ReadCounterWidgetLoading();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: null,
+    return Column(
+      children: [
+        Icon(PhosphorIcons.eye()),
+        const Skeletonizer(child: Text('count')),
+      ],
     );
   }
 }
