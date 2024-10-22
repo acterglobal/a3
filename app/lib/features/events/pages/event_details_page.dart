@@ -14,7 +14,7 @@ import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
-import 'package:acter/features/events/actions/get_event_type.dart';
+import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
@@ -127,7 +127,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     final canRedact = ref.watch(canRedactProvider(event));
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final canPostEvent = membership?.canString('CanPostEvent') == true;
-    final canChangeDate = getEventType(event) == EventFilters.upcoming;
+    final canChangeDate =
+        ref.watch(eventTypeProvider(event)) == EventFilters.upcoming;
 
     //Create event actions
     List<PopupMenuEntry> actions = [];
@@ -292,12 +293,13 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     final spaceId = calendarEvent.roomIdStr();
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final canPostEvent = membership?.canString('CanPostEvent') == true;
+    final eventType = ref.watch(eventTypeProvider(calendarEvent));
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Date and Month
-        EventDateWidget(calendarEvent: calendarEvent),
+        EventDateWidget(calendarEvent: calendarEvent, eventType: eventType),
         // Title, Space, User counts, comments counts and like counts
         Expanded(
           child: Column(
@@ -476,7 +478,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     required Color rsvpStatusColor,
     bool isSelected = false,
   }) {
-    final canRSVPUpdate = getEventType(calendarEvent) != EventFilters.past;
+    final canRSVPUpdate =
+        ref.watch(eventTypeProvider(calendarEvent)) != EventFilters.past;
     return Expanded(
       child: InkWell(
         key: key,
@@ -518,14 +521,15 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             .fromNow();
 
     String eventDateTime = '${formatDate(ev)} (${formatTime(ev)})';
+    final eventType = ref.watch(eventTypeProvider(ev));
 
-    String eventTimingTitle = switch (getEventType(ev)) {
+    String eventTimingTitle = switch (eventType) {
       EventFilters.ongoing => '${lang.eventStarted} $agoTime',
       EventFilters.upcoming => '${lang.eventStarts} $agoTime',
       EventFilters.past => '${lang.eventEnded} $agoTime',
       _ => '',
     };
-    final canChangeDate = getEventType(ev) == EventFilters.upcoming;
+    final canChangeDate = eventType == EventFilters.upcoming;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),

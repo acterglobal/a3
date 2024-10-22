@@ -1,4 +1,3 @@
-import 'package:acter/features/events/actions/get_event_type.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -6,8 +5,10 @@ import 'package:flutter/material.dart';
 
 class EventDateWidget extends StatelessWidget {
   final CalendarEvent calendarEvent;
+  final EventFilters eventType;
 
-  const EventDateWidget({super.key, required this.calendarEvent});
+  const EventDateWidget(
+      {super.key, required this.calendarEvent, required this.eventType,});
 
   @override
   Widget build(BuildContext context) {
@@ -40,11 +41,8 @@ class EventDateWidget extends StatelessWidget {
     );
   }
 
-  Color getColorBasedOnEventType(BuildContext context) {
-    if (getEventType(calendarEvent) == EventFilters.past) {
-      return Colors.grey.shade800;
-    } else {
-      return Theme.of(context).primaryColor;
-    }
-  }
+  Color getColorBasedOnEventType(BuildContext context) => switch (eventType) {
+        EventFilters.past => Colors.grey.shade800,
+        _ => Theme.of(context).primaryColor
+      };
 }
