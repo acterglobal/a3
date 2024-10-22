@@ -379,7 +379,7 @@ mod tests {
 
         assert_eq!(inner_model, model);
 
-        // now let's redact this model;
+        // now let’s redact this model;
 
         let redaction: UnsignedRoomRedactionEvent = from_value(json!({
             "event_id" : format!("{model_id}:redacted"),

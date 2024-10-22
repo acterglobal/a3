@@ -86,7 +86,7 @@ Future<String?> forwardRedirect(
 
     final room = await client.room(roomId);
     if (!room.isJoined()) {
-      // we haven't joined yet or have been kicked
+      // we haven’t joined yet or have been kicked
       // either way, we are to be shown the thing on the activities page
       return state.namedLocation(
         Routes.activities.name,
