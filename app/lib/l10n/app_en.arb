@@ -2263,5 +2263,6 @@
   "calenderWithEvents": "Calender with Events",
   "@calenderWithEvents": {},
   "addBoost": "Add Boost",
+  "addTaskList": "Add TaskList",
   "@addBoost": {}
 }

@@ -75,43 +75,46 @@ class _CreateUpdateTaskListConsumerState
   Widget _buildBody(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 20),
-              const Divider(
-                indent: 150,
-                endIndent: 150,
-                thickness: 2,
-              ),
-              Text(
-                L10n.of(context).createNewTaskList,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 40),
-              Center(
-                child: ActerIconWidget(
-                  onIconSelection: (taskListIconColor, taskListIcon) {
-                    this.taskListIconColor = taskListIconColor;
-                    this.taskListIcon = taskListIcon;
-                  },
+      child: Container(
+        padding: MediaQuery.of(context).viewInsets,
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 20),
+                const Divider(
+                  indent: 150,
+                  endIndent: 150,
+                  thickness: 2,
                 ),
-              ),
-              const SizedBox(height: 20),
-              _widgetTaskListName(),
-              _widgetDescription(),
-              const SizedBox(height: 20),
-              const SelectSpaceFormField(canCheck: 'CanPostTaskList'),
-              _widgetMoreDetails(),
-              const SizedBox(height: 20),
-              _widgetCreateButton(),
-              const SizedBox(height: 20),
-            ],
+                Text(
+                  L10n.of(context).createNewTaskList,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 40),
+                Center(
+                  child: ActerIconWidget(
+                    onIconSelection: (taskListIconColor, taskListIcon) {
+                      this.taskListIconColor = taskListIconColor;
+                      this.taskListIcon = taskListIcon;
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _widgetTaskListName(),
+                _widgetDescription(),
+                const SizedBox(height: 20),
+                const SelectSpaceFormField(canCheck: 'CanPostTaskList'),
+                _widgetMoreDetails(),
+                const SizedBox(height: 20),
+                _widgetCreateButton(),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),

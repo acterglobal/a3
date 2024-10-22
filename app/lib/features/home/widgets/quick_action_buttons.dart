@@ -35,7 +35,7 @@ class QuickActionButtons extends ConsumerWidget {
               actionButton(
                 context: context,
                 iconData: Atlas.list,
-                title: lang.addTask,
+                title: lang.addTaskList,
                 color: const Color(0xff406c6e),
                 onPressed: () {
                   ref.read(quickActionVisibilityProvider.notifier).state =
