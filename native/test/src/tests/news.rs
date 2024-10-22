@@ -646,6 +646,7 @@ async fn news_read_receipt_test() -> Result<()> {
         let state_sync = user.start_sync();
         state_sync.await_has_synced_history().await?;
         let uidx = idx as u32;
+        let subscriber = main_receipts_manager.subscribe();
 
         let fetcher_client = user.clone();
         let target_id = room_id.clone();
@@ -677,10 +678,17 @@ async fn news_read_receipt_test() -> Result<()> {
         assert_eq!(local_receipts_manager.seen_count(), uidx);
         local_receipts_manager.mark_read().await?;
 
+        Retry::spawn(retry_strategy.clone(), || async {
+            if subscriber.is_empty() {
+                bail!("not been alerted to reload");
+            }
+            Ok(())
+        })
+        .await?;
+
         let receipts_manager = main_receipts_manager.clone();
         Retry::spawn(retry_strategy.clone(), move || {
             let receipts_manager = receipts_manager.clone();
-
             async move {
                 let new_receipts_manager = receipts_manager.reload().await?;
                 if new_receipts_manager.seen_count() != uidx + 1 {

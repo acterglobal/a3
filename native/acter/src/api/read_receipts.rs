@@ -16,35 +16,6 @@ use tokio_stream::{wrappers::BroadcastStream, Stream};
 
 use super::{client::Client, RUNTIME};
 
-// #[derive(Clone, Debug)]
-// pub struct ReadReceipts {
-// }
-
-// impl Deref for ReadReceipts {
-//     type Target = models::ReadReceipts;
-//     fn deref(&self) -> &Self::Target {
-//         &self.inner
-//     }
-// }
-
-// impl ReadReceipts {
-//     pub fn event_id_str(&self) -> String {
-//         self.inner.event_id().to_string()
-//     }
-
-//     pub fn sender(&self) -> OwnedUserId {
-//         self.inner.meta.sender.clone()
-//     }
-
-//     pub fn origin_server_ts(&self) -> u64 {
-//         self.inner.meta.origin_server_ts.get().into()
-//     }
-
-//     pub fn relates_to(&self) -> String {
-//         self.inner.relates_to.event_id.to_string()
-//     }
-// }
-
 #[derive(Clone, Debug)]
 pub struct ReadReceiptsManager {
     client: Client,
@@ -52,13 +23,6 @@ pub struct ReadReceiptsManager {
     event_id: OwnedEventId,
     events: BTreeMap<OwnedUserId, Receipt>, // inner: models::ReadReceiptsManager,
 }
-
-// impl Deref for ReadReceiptsManager {
-//     type Target = models::ReadReceiptsManager;
-//     fn deref(&self) -> &Self::Target {
-//         &self.inner
-//     }
-// }
 
 impl ReadReceiptsManager {
     pub(crate) async fn new(
@@ -94,6 +58,10 @@ impl ReadReceiptsManager {
         .await
     }
 
+    pub fn update_key(&self) -> String {
+        format!("{:}:{:}:rr", self.room.room_id(), self.event_id)
+    }
+
     pub async fn mark_read(&self) -> Result<()> {
         let room = self.room.clone();
         let event_id = self.event_id.clone();
@@ -123,7 +91,6 @@ impl ReadReceiptsManager {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        unimplemented!();
-        // self.client.subscribe(self.inner.update_key())
+        self.client.subscribe(self.update_key())
     }
 }
