@@ -1,3 +1,4 @@
+import 'package:acter/common/drag_handle_widget.dart';
 import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/quick_action_buttons.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
@@ -45,7 +46,7 @@ class BottomNavigationWidget extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 12),
-                dragHandle(context),
+                const DragHandleWidget(),
                 const SizedBox(height: 6),
                 bottomNavNar(ref),
                 AnimatedContainer(
@@ -78,17 +79,6 @@ class BottomNavigationWidget extends ConsumerWidget {
               ),
             )
             .toList(),
-      ),
-    );
-  }
-
-  Widget dragHandle(BuildContext context) {
-    return Container(
-      height: 3,
-      width: 40,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onSurface,
-        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
       ),
     );
   }

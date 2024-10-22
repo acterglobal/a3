@@ -21,7 +21,7 @@ Future<void> showCreateUpdateTaskListBottomSheet(
 }) async {
   await showModalBottomSheet(
     context: context,
-    showDragHandle: false,
+    showDragHandle: true,
     useSafeArea: true,
     isScrollControlled: true,
     builder: (context) {
@@ -84,12 +84,6 @@ class _CreateUpdateTaskListConsumerState
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 20),
-                const Divider(
-                  indent: 150,
-                  endIndent: 150,
-                  thickness: 2,
-                ),
                 Text(
                   L10n.of(context).createNewTaskList,
                   textAlign: TextAlign.center,
