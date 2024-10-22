@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -214,7 +215,7 @@ class SidebarWidget extends ConsumerWidget {
           onTap: () => context.pushNamed(Routes.createSpace.name),
           child: ActionButtonWidget(
             iconData: Atlas.pin,
-            color: const Color(0xff7c4a4a),
+            color: pinFeatureColor,
             title: lang.addPin,
             onPressed: () {
               context.pushNamed(Routes.createPin.name);
@@ -228,7 +229,7 @@ class SidebarWidget extends ConsumerWidget {
           child: ActionButtonWidget(
             iconData: Atlas.list,
             title: lang.addTaskList,
-            color: const Color(0xff406c6e),
+            color: taskFeatureColor,
             onPressed: () {
               showCreateUpdateTaskListBottomSheet(context);
             },
@@ -241,7 +242,7 @@ class SidebarWidget extends ConsumerWidget {
           child: ActionButtonWidget(
             iconData: Atlas.calendar_dots,
             title: lang.addEvent,
-            color: const Color(0xff206a9a),
+            color: eventFeatureColor,
             onPressed: () {
               context.pushNamed(Routes.createEvent.name);
             },
@@ -254,7 +255,7 @@ class SidebarWidget extends ConsumerWidget {
           child: ActionButtonWidget(
             iconData: Atlas.megaphone_thin,
             title: lang.addBoost,
-            color: Colors.blueGrey,
+            color: boastFeatureColor,
             onPressed: () {
               context.pushNamed(Routes.actionAddUpdate.name);
             },

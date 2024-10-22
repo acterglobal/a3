@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
@@ -115,7 +116,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: lang.pins,
               iconData: Atlas.pin,
-              color: const Color(0xff7c4a4a),
+              color: pinFeatureColor,
               onTap: () => context.pushNamed(Routes.pins.name),
             ),
             const SizedBox(width: 20),
@@ -123,7 +124,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: lang.events,
               iconData: Atlas.calendar_dots,
-              color: const Color(0xff206a9a),
+              color: eventFeatureColor,
               onTap: () => context.pushNamed(Routes.calendarEvents.name),
             ),
           ],
@@ -135,7 +136,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: lang.tasks,
               iconData: Atlas.list,
-              color: const Color(0xff406c6e),
+              color: taskFeatureColor,
               onTap: () => context.pushNamed(Routes.tasks.name),
             ),
             const SizedBox(width: 20),
@@ -143,7 +144,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: lang.boosts,
               iconData: Atlas.megaphone_thin,
-              color: Colors.blueGrey,
+              color:boastFeatureColor,
               onTap: () => context.pushNamed(Routes.updateList.name),
             ),
           ],

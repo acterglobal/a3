@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/action_button_widget.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
@@ -24,7 +25,7 @@ class QuickActionButtons extends ConsumerWidget {
             children: [
               ActionButtonWidget(
                 iconData: Atlas.pin,
-                color: const Color(0xff7c4a4a),
+                color: pinFeatureColor,
                 title: lang.addPin,
                 onPressed: () {
                   ref.read(quickActionVisibilityProvider.notifier).state =
@@ -35,7 +36,7 @@ class QuickActionButtons extends ConsumerWidget {
               ActionButtonWidget(
                 iconData: Atlas.list,
                 title: lang.addTaskList,
-                color: const Color(0xff406c6e),
+                color: taskFeatureColor,
                 onPressed: () {
                   ref.read(quickActionVisibilityProvider.notifier).state =
                       false;
@@ -45,7 +46,7 @@ class QuickActionButtons extends ConsumerWidget {
               ActionButtonWidget(
                 iconData: Atlas.calendar_dots,
                 title: lang.addEvent,
-                color: const Color(0xff206a9a),
+                color: eventFeatureColor,
                 onPressed: () {
                   ref.read(quickActionVisibilityProvider.notifier).state =
                       false;
@@ -55,7 +56,7 @@ class QuickActionButtons extends ConsumerWidget {
               ActionButtonWidget(
                 iconData: Atlas.megaphone_thin,
                 title: lang.addBoost,
-                color: Colors.blueGrey,
+                color: boastFeatureColor,
                 onPressed: () {
                   ref.read(quickActionVisibilityProvider.notifier).state =
                       false;
