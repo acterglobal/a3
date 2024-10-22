@@ -21,9 +21,17 @@ class MockAsyncReadReceiptsManagerNotifier
         Future<ReadReceiptsManager>>
     with Mock
     implements AsyncReadReceiptsManagerNotifier {
+  bool shouldFail;
+
+  MockAsyncReadReceiptsManagerNotifier({this.shouldFail = false});
+
   @override
   Future<ReadReceiptsManager> build(Future<ReadReceiptsManager> arg) async {
-    print("new arg");
+    if (shouldFail) {
+      // toggle failure so the retry works
+      shouldFail = !shouldFail;
+      throw 'Expected fail';
+    }
     return await arg;
   }
 }

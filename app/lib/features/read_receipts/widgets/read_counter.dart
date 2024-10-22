@@ -3,6 +3,7 @@ import 'package:acter/features/read_receipts/providers/read_receipts.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ReadCounterWidget extends StatefulHookConsumerWidget {
   final Future<ReadReceiptsManager> manager;
@@ -20,12 +21,20 @@ class _ReadCounterWidgetState extends ConsumerState<ReadCounterWidget> {
     return manager.when(
       data: (manager) {
         final count = manager.readCount();
-        return Text('$count');
+        return Column(children: [Icon(PhosphorIcons.eye()), Text('$count')]);
       },
       loading: () => const _ReadCounterWidgetLoading(),
-      error: (error, stackTrace) => ActerInlineErrorButton.icon(
-        error: error,
-        icon: const Icon(Icons.abc),
+      error: (error, stackTrace) => Column(
+        children: [
+          ActerInlineErrorButton.icon(
+            error: error,
+            stack: stackTrace,
+            icon: Icon(PhosphorIcons.eye()),
+            onRetryTap: () =>
+                ref.invalidate(readReceiptsManagerProvider(widget.manager)),
+          ),
+          const Text('error'),
+        ],
       ),
     );
   }
