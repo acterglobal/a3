@@ -218,12 +218,14 @@ class SidebarWidget extends ConsumerWidget {
             color: pinFeatureColor,
             title: lang.addPin,
             onPressed: () {
+              Navigator.pop(context);
               context.pushNamed(Routes.createPin.name);
             },
           ),
         ),
         PopupMenuItem(
           onTap: () {
+            Navigator.pop(context);
             context.pushNamed(Routes.searchPublicDirectory.name);
           },
           child: ActionButtonWidget(
@@ -231,12 +233,14 @@ class SidebarWidget extends ConsumerWidget {
             title: lang.addTaskList,
             color: taskFeatureColor,
             onPressed: () {
+              Navigator.pop(context);
               showCreateUpdateTaskListBottomSheet(context);
             },
           ),
         ),
         PopupMenuItem(
           onTap: () {
+            Navigator.pop(context);
             context.pushNamed(Routes.searchPublicDirectory.name);
           },
           child: ActionButtonWidget(
