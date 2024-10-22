@@ -9,6 +9,7 @@ import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
 import 'package:acter/features/home/widgets/chats_icon.dart';
+import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -192,9 +193,100 @@ class SidebarWidget extends ConsumerWidget {
               ),
             ),
           ),
+          const Divider(indent: 18, endIndent: 18),
+          _quickActionButton(context),
           if (isBugReportingEnabled) ..._bugReporter(context),
+          const SizedBox(height: 12)
         ],
       ),
+    );
+  }
+
+  Widget _quickActionButton(BuildContext context) {
+    final lang = L10n.of(context);
+    return PopupMenuButton(
+      icon: const Icon(Atlas.plus_circle),
+      iconSize: 28,
+      color: Theme.of(context).colorScheme.surface,
+      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+        PopupMenuItem(
+          onTap: () => context.pushNamed(Routes.createSpace.name),
+          child: actionButton(
+            context: context,
+            iconData: Atlas.pin,
+            color: const Color(0xff7c4a4a),
+            title: lang.addPin,
+            onPressed: () {
+              context.pushNamed(Routes.createPin.name);
+            },
+          ),
+        ),
+        PopupMenuItem(
+          onTap: () {
+            context.pushNamed(Routes.searchPublicDirectory.name);
+          },
+          child: actionButton(
+            context: context,
+            iconData: Atlas.list,
+            title: lang.addTaskList,
+            color: const Color(0xff406c6e),
+            onPressed: () {
+              showCreateUpdateTaskListBottomSheet(context);
+            },
+          ),
+        ),
+        PopupMenuItem(
+          onTap: () {
+            context.pushNamed(Routes.searchPublicDirectory.name);
+          },
+          child: actionButton(
+            context: context,
+            iconData: Atlas.calendar_dots,
+            title: lang.addEvent,
+            color: const Color(0xff206a9a),
+            onPressed: () {
+              context.pushNamed(Routes.createEvent.name);
+            },
+          ),
+        ),
+        PopupMenuItem(
+          onTap: () {
+            context.pushNamed(Routes.searchPublicDirectory.name);
+          },
+          child: actionButton(
+            context: context,
+            iconData: Atlas.megaphone_thin,
+            title: lang.addBoost,
+            color: Colors.blueGrey,
+            onPressed: () {
+              context.pushNamed(Routes.actionAddUpdate.name);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget actionButton({
+    required BuildContext context,
+    required IconData iconData,
+    required String title,
+    required VoidCallback onPressed,
+    Color? color,
+    Key? key,
+  }) {
+    return TextButton.icon(
+      key: key,
+      onPressed: onPressed,
+      icon: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: color ?? Theme.of(context).unselectedWidgetColor,
+          borderRadius: const BorderRadius.all(Radius.circular(100)),
+        ),
+        child: Icon(iconData, size: 14),
+      ),
+      label: Text(title),
     );
   }
 
