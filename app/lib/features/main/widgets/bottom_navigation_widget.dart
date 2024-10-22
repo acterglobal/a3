@@ -45,7 +45,7 @@ class BottomNavigationWidget extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 12),
-                divider(context),
+                dragHandle(context),
                 const SizedBox(height: 6),
                 bottomNavNar(ref),
                 AnimatedContainer(
@@ -82,9 +82,9 @@ class BottomNavigationWidget extends ConsumerWidget {
     );
   }
 
-  Widget divider(BuildContext context) {
+  Widget dragHandle(BuildContext context) {
     return Container(
-      height: 2,
+      height: 3,
       width: 40,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onSurface,
