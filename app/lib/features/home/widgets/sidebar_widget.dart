@@ -198,7 +198,7 @@ class SidebarWidget extends ConsumerWidget {
           const Divider(indent: 18, endIndent: 18),
           _quickActionButton(context),
           if (isBugReportingEnabled) ..._bugReporter(context),
-          const SizedBox(height: 12)
+          const SizedBox(height: 12),
         ],
       ),
     );
@@ -217,7 +217,7 @@ class SidebarWidget extends ConsumerWidget {
             color: pinFeatureColor,
             title: lang.addPin,
             onPressed: () {
-              if(context.canPop()) Navigator.pop(context);
+              if (context.canPop()) Navigator.pop(context);
               context.pushNamed(Routes.createPin.name);
             },
           ),
@@ -228,7 +228,7 @@ class SidebarWidget extends ConsumerWidget {
             title: lang.addTaskList,
             color: taskFeatureColor,
             onPressed: () {
-              if(context.canPop()) Navigator.pop(context);
+              if (context.canPop()) Navigator.pop(context);
               showCreateUpdateTaskListBottomSheet(context);
             },
           ),
@@ -239,7 +239,7 @@ class SidebarWidget extends ConsumerWidget {
             title: lang.addEvent,
             color: eventFeatureColor,
             onPressed: () {
-              if(context.canPop()) Navigator.pop(context);
+              if (context.canPop()) Navigator.pop(context);
               context.pushNamed(Routes.createEvent.name);
             },
           ),
@@ -250,7 +250,7 @@ class SidebarWidget extends ConsumerWidget {
             title: lang.addBoost,
             color: boastFeatureColor,
             onPressed: () {
-              if(context.canPop()) Navigator.pop(context);
+              if (context.canPop()) Navigator.pop(context);
               context.pushNamed(Routes.actionAddUpdate.name);
             },
           ),
