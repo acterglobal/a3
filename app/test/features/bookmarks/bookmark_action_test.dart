@@ -3,16 +3,21 @@ import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../../helpers/error_helpers.dart';
+import 'package:mocktail/mocktail.dart';
+import '../../helpers/mock_bookmarks.dart';
 import '../../helpers/test_util.dart';
 
 void main() {
   group('BookmarkAction', () {
     testWidgets('set bookmark', (tester) async {
+      final mockManager = MockedBookmarksManager();
+      when(() => mockManager.add(any(), any())).thenAnswer((a) async => true);
       await tester.pumpProviderWidget(
         overrides: [
-          isBookmarkedProvider.overrideWith((a, b) => false),
+          isBookmarkedProvider.overrideWith((ref, b) => false),
+          bookmarksManagerProvider.overrideWith(
+            () => MockBookmarksManagerNotifier(manager: mockManager),
+          ),
         ],
         child: const BookmarkAction(
           bookmarker: (id: 'a', type: BookmarkType.news),
@@ -20,8 +25,12 @@ void main() {
       );
       final bookmarkKey = const ValueKey('a-bookmark');
 
+      verifyNever(() => mockManager.add(any(), any()));
+
       expect(find.byKey(bookmarkKey), findsOneWidget);
-      // tester.tap(find.byKey(bookmarkKey));
+      await tester.tap(find.byKey(bookmarkKey));
+      await tester.pump();
+      verify(() => mockManager.add(any(), any())).called(1);
     });
   });
 }
