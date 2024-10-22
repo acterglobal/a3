@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/action_button_widget.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -21,8 +22,7 @@ class QuickActionButtons extends ConsumerWidget {
         children: [
           Wrap(
             children: [
-              actionButton(
-                context: context,
+              ActionButtonWidget(
                 iconData: Atlas.pin,
                 color: const Color(0xff7c4a4a),
                 title: lang.addPin,
@@ -32,8 +32,7 @@ class QuickActionButtons extends ConsumerWidget {
                   context.pushNamed(Routes.createPin.name);
                 },
               ),
-              actionButton(
-                context: context,
+              ActionButtonWidget(
                 iconData: Atlas.list,
                 title: lang.addTaskList,
                 color: const Color(0xff406c6e),
@@ -43,8 +42,7 @@ class QuickActionButtons extends ConsumerWidget {
                   showCreateUpdateTaskListBottomSheet(context);
                 },
               ),
-              actionButton(
-                context: context,
+              ActionButtonWidget(
                 iconData: Atlas.calendar_dots,
                 title: lang.addEvent,
                 color: const Color(0xff206a9a),
@@ -54,8 +52,7 @@ class QuickActionButtons extends ConsumerWidget {
                   context.pushNamed(Routes.createEvent.name);
                 },
               ),
-              actionButton(
-                context: context,
+              ActionButtonWidget(
                 iconData: Atlas.megaphone_thin,
                 title: lang.addBoost,
                 color: Colors.blueGrey,
@@ -70,29 +67,6 @@ class QuickActionButtons extends ConsumerWidget {
           const SizedBox(height: 20),
         ],
       ),
-    );
-  }
-
-  Widget actionButton({
-    required BuildContext context,
-    required IconData iconData,
-    required String title,
-    required VoidCallback onPressed,
-    Color? color,
-    Key? key,
-  }) {
-    return TextButton.icon(
-      key: key,
-      onPressed: onPressed,
-      icon: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: color ?? Theme.of(context).unselectedWidgetColor,
-          borderRadius: const BorderRadius.all(Radius.circular(100)),
-        ),
-        child: Icon(iconData, size: 14),
-      ),
-      label: Text(title),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/action_button_widget.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
@@ -211,8 +212,7 @@ class SidebarWidget extends ConsumerWidget {
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
         PopupMenuItem(
           onTap: () => context.pushNamed(Routes.createSpace.name),
-          child: actionButton(
-            context: context,
+          child: ActionButtonWidget(
             iconData: Atlas.pin,
             color: const Color(0xff7c4a4a),
             title: lang.addPin,
@@ -225,8 +225,7 @@ class SidebarWidget extends ConsumerWidget {
           onTap: () {
             context.pushNamed(Routes.searchPublicDirectory.name);
           },
-          child: actionButton(
-            context: context,
+          child: ActionButtonWidget(
             iconData: Atlas.list,
             title: lang.addTaskList,
             color: const Color(0xff406c6e),
@@ -239,8 +238,7 @@ class SidebarWidget extends ConsumerWidget {
           onTap: () {
             context.pushNamed(Routes.searchPublicDirectory.name);
           },
-          child: actionButton(
-            context: context,
+          child: ActionButtonWidget(
             iconData: Atlas.calendar_dots,
             title: lang.addEvent,
             color: const Color(0xff206a9a),
@@ -253,8 +251,7 @@ class SidebarWidget extends ConsumerWidget {
           onTap: () {
             context.pushNamed(Routes.searchPublicDirectory.name);
           },
-          child: actionButton(
-            context: context,
+          child: ActionButtonWidget(
             iconData: Atlas.megaphone_thin,
             title: lang.addBoost,
             color: Colors.blueGrey,
@@ -264,29 +261,6 @@ class SidebarWidget extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget actionButton({
-    required BuildContext context,
-    required IconData iconData,
-    required String title,
-    required VoidCallback onPressed,
-    Color? color,
-    Key? key,
-  }) {
-    return TextButton.icon(
-      key: key,
-      onPressed: onPressed,
-      icon: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: color ?? Theme.of(context).unselectedWidgetColor,
-          borderRadius: const BorderRadius.all(Radius.circular(100)),
-        ),
-        child: Icon(iconData, size: 14),
-      ),
-      label: Text(title),
     );
   }
 
