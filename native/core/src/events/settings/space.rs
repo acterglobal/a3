@@ -55,8 +55,8 @@ pub type EventsSettings = SimpleSettingWithTurnOff;
 
 /// Backwards compatibility note:
 ///
-/// In an earlier version, we agreed that if pins, news and events hadn't changed,
-/// we'd assume they are activated. Even switching the default today means, we'd
+/// In an earlier version, we agreed that if pins, news and events hadn’t changed,
+/// we’d assume they are activated. Even switching the default today means, we’d
 /// change that behavior for all where at least _some_ had been changed. Thus, we
 /// are keeping that behavior but _recommend_ using `off` to explicitly set
 /// the right behavior up for all future cases.

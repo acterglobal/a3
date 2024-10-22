@@ -100,7 +100,7 @@ fn setup_x86_64_android_workaround() {
         );
         let full_path = format!("{android_ndk_home}/{linux_x86_64_lib_dir}");
         if !std::fs::exists(&full_path).unwrap() {
-            panic!("`clang_rt.builtins-x86_64-android` includes not found. `{full_path}` doesn't exist. Please adjust `$ANDROID_NDK_HOME` and/or `$NDK_CLANG_VERSION` to fix.")
+            panic!("`clang_rt.builtins-x86_64-android` includes not found. `{full_path}` doesn’t exist. Please adjust `$ANDROID_NDK_HOME` and/or `$NDK_CLANG_VERSION` to fix.")
         }
         println!("cargo:rustc-link-search={full_path}");
         println!("cargo:rustc-link-lib=static=clang_rt.builtins-x86_64-android");
