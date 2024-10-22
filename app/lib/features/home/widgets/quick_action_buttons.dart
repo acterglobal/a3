@@ -27,6 +27,7 @@ class QuickActionButtons extends ConsumerWidget {
                 iconData: Atlas.pin,
                 color: pinFeatureColor,
                 title: lang.addPin,
+                padding: const EdgeInsets.symmetric(vertical: 6),
                 onPressed: () {
                   ref.read(quickActionVisibilityProvider.notifier).state =
                       false;
@@ -37,6 +38,7 @@ class QuickActionButtons extends ConsumerWidget {
                 iconData: Atlas.list,
                 title: lang.addTaskList,
                 color: taskFeatureColor,
+                padding: const EdgeInsets.symmetric(vertical: 6),
                 onPressed: () {
                   ref.read(quickActionVisibilityProvider.notifier).state =
                       false;
@@ -47,6 +49,7 @@ class QuickActionButtons extends ConsumerWidget {
                 iconData: Atlas.calendar_dots,
                 title: lang.addEvent,
                 color: eventFeatureColor,
+                padding: const EdgeInsets.symmetric(vertical: 6),
                 onPressed: () {
                   ref.read(quickActionVisibilityProvider.notifier).state =
                       false;
@@ -57,6 +60,7 @@ class QuickActionButtons extends ConsumerWidget {
                 iconData: Atlas.megaphone_thin,
                 title: lang.addBoost,
                 color: boastFeatureColor,
+                padding: const EdgeInsets.symmetric(vertical: 6),
                 onPressed: () {
                   ref.read(quickActionVisibilityProvider.notifier).state =
                       false;

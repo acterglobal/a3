@@ -212,55 +212,45 @@ class SidebarWidget extends ConsumerWidget {
       color: Theme.of(context).colorScheme.surface,
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
         PopupMenuItem(
-          onTap: () => context.pushNamed(Routes.createSpace.name),
           child: ActionButtonWidget(
             iconData: Atlas.pin,
             color: pinFeatureColor,
             title: lang.addPin,
             onPressed: () {
-              Navigator.pop(context);
+              if(context.canPop()) Navigator.pop(context);
               context.pushNamed(Routes.createPin.name);
             },
           ),
         ),
         PopupMenuItem(
-          onTap: () {
-            Navigator.pop(context);
-            context.pushNamed(Routes.searchPublicDirectory.name);
-          },
           child: ActionButtonWidget(
             iconData: Atlas.list,
             title: lang.addTaskList,
             color: taskFeatureColor,
             onPressed: () {
-              Navigator.pop(context);
+              if(context.canPop()) Navigator.pop(context);
               showCreateUpdateTaskListBottomSheet(context);
             },
           ),
         ),
         PopupMenuItem(
-          onTap: () {
-            Navigator.pop(context);
-            context.pushNamed(Routes.searchPublicDirectory.name);
-          },
           child: ActionButtonWidget(
             iconData: Atlas.calendar_dots,
             title: lang.addEvent,
             color: eventFeatureColor,
             onPressed: () {
+              if(context.canPop()) Navigator.pop(context);
               context.pushNamed(Routes.createEvent.name);
             },
           ),
         ),
         PopupMenuItem(
-          onTap: () {
-            context.pushNamed(Routes.searchPublicDirectory.name);
-          },
           child: ActionButtonWidget(
             iconData: Atlas.megaphone_thin,
             title: lang.addBoost,
             color: boastFeatureColor,
             onPressed: () {
+              if(context.canPop()) Navigator.pop(context);
               context.pushNamed(Routes.actionAddUpdate.name);
             },
           ),
