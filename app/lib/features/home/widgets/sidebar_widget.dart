@@ -1,15 +1,18 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/action_button_widget.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
 import 'package:acter/features/home/widgets/chats_icon.dart';
+import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -191,9 +194,143 @@ class SidebarWidget extends ConsumerWidget {
               ),
             ),
           ),
+          const Divider(indent: 18, endIndent: 18),
+          _quickActionButton(context, ref),
           if (isBugReportingEnabled) ..._bugReporter(context),
+          const SizedBox(height: 12),
         ],
       ),
+    );
+  }
+
+  Widget _quickActionButton(BuildContext context, WidgetRef ref) {
+    final hasSpaces = ref.watch(hasSpacesProvider);
+    return hasSpaces
+        ? quickActionWhenHasSpaces(context, ref)
+        : quickActionWhenNoSpaces(context, ref);
+  }
+
+  PopupMenuButton quickActionWhenHasSpaces(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    final lang = L10n.of(context);
+    List<PopupMenuEntry> actions = [];
+    final canAddPin =
+        ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
+            false;
+    final canAddEvent =
+        ref.watch(hasSpaceWithPermissionProvider('CanPostEvent')).valueOrNull ??
+            false;
+    final canAddTask = ref
+            .watch(hasSpaceWithPermissionProvider('CanPostTaskList'))
+            .valueOrNull ??
+        false;
+    final canAddBoost =
+        ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
+            false;
+    if (canAddPin) {
+      actions.add(
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.pin,
+            color: pinFeatureColor,
+            title: lang.addPin,
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.createPin.name);
+            },
+          ),
+        ),
+      );
+    }
+    if (canAddTask) {
+      actions.add(
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.list,
+            title: lang.addTaskList,
+            color: taskFeatureColor,
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              showCreateUpdateTaskListBottomSheet(context);
+            },
+          ),
+        ),
+      );
+    }
+    if (canAddEvent) {
+      actions.add(
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.calendar_dots,
+            title: lang.addEvent,
+            color: eventFeatureColor,
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.createEvent.name);
+            },
+          ),
+        ),
+      );
+    }
+    if (canAddBoost) {
+      actions.add(
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.megaphone_thin,
+            title: lang.addBoost,
+            color: boastFeatureColor,
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.actionAddUpdate.name);
+            },
+          ),
+        ),
+      );
+    }
+
+    return PopupMenuButton(
+      icon: const Icon(Atlas.plus_circle),
+      iconSize: 28,
+      color: Theme.of(context).colorScheme.surface,
+      itemBuilder: (BuildContext context) => actions,
+    );
+  }
+
+  PopupMenuButton quickActionWhenNoSpaces(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    final lang = L10n.of(context);
+    return PopupMenuButton(
+      icon: const Icon(Atlas.plus_circle),
+      iconSize: 28,
+      color: Theme.of(context).colorScheme.surface,
+      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.users,
+            color: Colors.purpleAccent.withAlpha(70),
+            title: lang.createSpace,
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.createSpace.name);
+            },
+          ),
+        ),
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.chats,
+            title: lang.createChat,
+            color: Colors.green.withAlpha(70),
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.createChat.name);
+            },
+          ),
+        ),
+      ],
     );
   }
 

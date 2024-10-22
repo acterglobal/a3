@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
@@ -10,10 +12,12 @@ import 'package:acter/features/home/widgets/in_dashboard.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_tasks.dart';
+import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,8 +32,14 @@ class Dashboard extends ConsumerWidget {
     final hasSpaces = ref.watch(hasSpacesProvider);
     return InDashboard(
       child: SafeArea(
+        bottom: false,
         child: Scaffold(
+          floatingActionButtonLocation: Platform.isIOS
+              ? FloatingActionButtonLocation.miniEndDocked
+              : FloatingActionButtonLocation.miniEndFloat,
+          floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
           appBar: _buildDashboardAppBar(context, client),
+          floatingActionButton: manageQuickAddButton(context, ref),
           body: Padding(
             padding: const EdgeInsets.only(
               top: 20,
@@ -40,7 +50,6 @@ class Dashboard extends ConsumerWidget {
               child: hasSpaces
                   ? Column(
                       children: [
-                        searchWidget(context),
                         featuresNav(context),
                         const SizedBox(height: 20),
                         const MyEventsSection(
@@ -96,26 +105,6 @@ class Dashboard extends ConsumerWidget {
     );
   }
 
-  Widget searchWidget(BuildContext context) {
-    return InkWell(
-      onTap: () => context.goNamed(Routes.search.name),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: const BorderRadius.all(Radius.circular(16)),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.search),
-            const SizedBox(width: 8),
-            Text(L10n.of(context).search),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget featuresNav(BuildContext context) {
     final lang = L10n.of(context);
     return Column(
@@ -127,7 +116,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: lang.pins,
               iconData: Atlas.pin,
-              color: const Color(0xff7c4a4a),
+              color: pinFeatureColor,
               onTap: () => context.pushNamed(Routes.pins.name),
             ),
             const SizedBox(width: 20),
@@ -135,7 +124,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: lang.events,
               iconData: Atlas.calendar_dots,
-              color: const Color(0xff206a9a),
+              color: eventFeatureColor,
               onTap: () => context.pushNamed(Routes.calendarEvents.name),
             ),
           ],
@@ -147,7 +136,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: lang.tasks,
               iconData: Atlas.list,
-              color: const Color(0xff406c6e),
+              color: taskFeatureColor,
               onTap: () => context.pushNamed(Routes.tasks.name),
             ),
             const SizedBox(width: 20),
@@ -155,7 +144,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: lang.boosts,
               iconData: Atlas.megaphone_thin,
-              color: Colors.blueGrey,
+              color:boastFeatureColor,
               onTap: () => context.pushNamed(Routes.updateList.name),
             ),
           ],
@@ -199,6 +188,40 @@ class Dashboard extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  SlotLayout manageQuickAddButton(BuildContext context, WidgetRef ref) {
+    return SlotLayout(
+      config: <Breakpoint, SlotLayoutConfig>{
+        Breakpoints.small: SlotLayout.from(
+          key: const Key('quick-add'),
+          inAnimation: AdaptiveScaffold.bottomToTop,
+          outAnimation: AdaptiveScaffold.topToBottom,
+          builder: (context) => quickAddActionUI(context, ref),
+        ),
+        Breakpoints.medium: SlotLayout.from(
+          key: const Key('quick-add'),
+          inAnimation: AdaptiveScaffold.bottomToTop,
+          outAnimation: AdaptiveScaffold.topToBottom,
+          builder: (context) => quickAddActionUI(context, ref),
+        ),
+      },
+    );
+  }
+
+  FloatingActionButton quickAddActionUI(BuildContext context, WidgetRef ref) {
+    final showQuickActions = ref.watch(quickActionVisibilityProvider);
+    return FloatingActionButton.small(
+      onPressed: () {
+        if (showQuickActions) {
+          ref.read(quickActionVisibilityProvider.notifier).state = false;
+        } else {
+          ref.read(quickActionVisibilityProvider.notifier).state = true;
+        }
+      },
+      backgroundColor: Theme.of(context).primaryColor,
+      child: Icon(showQuickActions ? Icons.close : Icons.add),
     );
   }
 
