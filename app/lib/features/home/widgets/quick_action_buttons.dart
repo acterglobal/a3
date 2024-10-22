@@ -83,10 +83,7 @@ class QuickActionButtons extends ConsumerWidget {
   }) {
     return TextButton.icon(
       key: key,
-      onPressed: () {
-        Navigator.pop(context);
-        onPressed();
-      },
+      onPressed: onPressed,
       icon: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
