@@ -92,7 +92,7 @@ fn setup_x86_64_android_workaround() {
                 "Unsupported OS. You must use either Linux, MacOS or Windows to build the crate."
             ),
         };
-        const DEFAULT_CLANG_VERSION: &str = "18";
+        const DEFAULT_CLANG_VERSION: &str = "18"; // ndk v27.2.12479018 uses clang v18
         let clang_version =
             std::env::var("NDK_CLANG_VERSION").unwrap_or_else(|_| DEFAULT_CLANG_VERSION.to_owned());
         let linux_x86_64_lib_dir = format!(
