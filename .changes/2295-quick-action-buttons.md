@@ -1,2 +1,1 @@
-- [New-Mobile] : Quick action buttons now accessible by swipe-up on bottom navigation bar
-- [New-Desktop] : Quick action buttons now accessible from side bar navigation panel
+- New Quick action buttons now accessible by swipe-up on bottom navigation bar and from side bar navigation panel
