@@ -206,21 +206,17 @@ class SidebarWidget extends ConsumerWidget {
 
   Widget _quickActionButton(BuildContext context, WidgetRef ref) {
     final hasSpaces = ref.watch(hasSpacesProvider);
-    return PopupMenuButton(
-      icon: const Icon(Atlas.plus_circle),
-      iconSize: 28,
-      color: Theme.of(context).colorScheme.surface,
-      itemBuilder: (BuildContext context) => hasSpaces
-          ? quickActionWhenHasSpaces(context, ref)
-          : quickActionWhenNoSpaces(context, ref),
-    );
+    return hasSpaces
+        ? quickActionWhenHasSpaces(context, ref)
+        : quickActionWhenNoSpaces(context, ref);
   }
 
-  List<PopupMenuEntry> quickActionWhenHasSpaces(
+  PopupMenuButton quickActionWhenHasSpaces(
     BuildContext context,
     WidgetRef ref,
   ) {
     final lang = L10n.of(context);
+    List<PopupMenuEntry> actions = [];
     final canAddPin =
         ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
             false;
@@ -234,8 +230,8 @@ class SidebarWidget extends ConsumerWidget {
     final canAddBoost =
         ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
             false;
-    return <PopupMenuEntry>[
-      if (canAddPin)
+    if (canAddPin) {
+      actions.add(
         PopupMenuItem(
           child: ActionButtonWidget(
             iconData: Atlas.pin,
@@ -247,7 +243,10 @@ class SidebarWidget extends ConsumerWidget {
             },
           ),
         ),
-      if (canAddTask)
+      );
+    }
+    if (canAddTask) {
+      actions.add(
         PopupMenuItem(
           child: ActionButtonWidget(
             iconData: Atlas.list,
@@ -259,7 +258,10 @@ class SidebarWidget extends ConsumerWidget {
             },
           ),
         ),
-      if (canAddEvent)
+      );
+    }
+    if (canAddEvent) {
+      actions.add(
         PopupMenuItem(
           child: ActionButtonWidget(
             iconData: Atlas.calendar_dots,
@@ -271,7 +273,10 @@ class SidebarWidget extends ConsumerWidget {
             },
           ),
         ),
-      if (canAddBoost)
+      );
+    }
+    if (canAddBoost) {
+      actions.add(
         PopupMenuItem(
           child: ActionButtonWidget(
             iconData: Atlas.megaphone_thin,
@@ -283,38 +288,51 @@ class SidebarWidget extends ConsumerWidget {
             },
           ),
         ),
-    ];
+      );
+    }
+
+    return PopupMenuButton(
+      icon: const Icon(Atlas.plus_circle),
+      iconSize: 28,
+      color: Theme.of(context).colorScheme.surface,
+      itemBuilder: (BuildContext context) => actions,
+    );
   }
 
-  List<PopupMenuEntry> quickActionWhenNoSpaces(
+  PopupMenuButton quickActionWhenNoSpaces(
     BuildContext context,
     WidgetRef ref,
   ) {
     final lang = L10n.of(context);
-    return <PopupMenuEntry>[
-      PopupMenuItem(
-        child: ActionButtonWidget(
-          iconData: Atlas.users,
-          color: Colors.purpleAccent.withAlpha(70),
-          title: lang.createSpace,
-          onPressed: () {
-            if (context.canPop()) Navigator.pop(context);
-            context.pushNamed(Routes.createSpace.name);
-          },
+    return PopupMenuButton(
+      icon: const Icon(Atlas.plus_circle),
+      iconSize: 28,
+      color: Theme.of(context).colorScheme.surface,
+      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.users,
+            color: Colors.purpleAccent.withAlpha(70),
+            title: lang.createSpace,
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.createSpace.name);
+            },
+          ),
         ),
-      ),
-      PopupMenuItem(
-        child: ActionButtonWidget(
-          iconData: Atlas.chats,
-          title: lang.createChat,
-          color: Colors.green.withAlpha(70),
-          onPressed: () {
-            if (context.canPop()) Navigator.pop(context);
-            context.pushNamed(Routes.createChat.name);
-          },
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.chats,
+            title: lang.createChat,
+            color: Colors.green.withAlpha(70),
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.createChat.name);
+            },
+          ),
         ),
-      ),
-    ];
+      ],
+    );
   }
 
   List<Widget> _bugReporter(BuildContext context) {
