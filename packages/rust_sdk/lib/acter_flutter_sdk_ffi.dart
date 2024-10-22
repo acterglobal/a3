@@ -2799,6 +2799,53 @@ class Api {
     return tmp7;
   }
 
+  ReadReceiptsManager? __newsEntryReadReceiptsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryReadReceiptsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ReadReceiptsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ReadReceiptsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
   CommentsManager? __newsEntryCommentsFuturePoll(
     int boxed,
     int postCobject,
@@ -4242,6 +4289,97 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_ReactionManager");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = ReactionManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __readReceiptsManagerAnnounceReadFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _readReceiptsManagerAnnounceReadFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  ReadReceiptsManager? __readReceiptsManagerReloadFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _readReceiptsManagerReloadFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ReadReceiptsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ReadReceiptsManager._(this, tmp13_1);
     return tmp7;
   }
 
@@ -15217,6 +15355,39 @@ class Api {
     return tmp9;
   }
 
+  bool? __readReceiptsManagerSubscribeStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _readReceiptsManagerSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
   bool? __roomSubscribeToUpdatesStreamPoll(
     int boxed,
     int postCobject,
@@ -17428,6 +17599,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _newsEntryReadReceiptsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__NewsEntry_read_receipts");
+
+  late final _newsEntryReadReceipts = _newsEntryReadReceiptsPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _newsEntryCommentsPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -19163,6 +19344,61 @@ class Api {
       _ReactionRelatesToReturn Function(
         int,
       )>();
+  late final _readReceiptsManagerAnnounceReadPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__ReadReceiptsManager_announce_read");
+
+  late final _readReceiptsManagerAnnounceRead =
+      _readReceiptsManagerAnnounceReadPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _readReceiptsManagerReadCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+            ffi.IntPtr,
+          )>>("__ReadReceiptsManager_read_count");
+
+  late final _readReceiptsManagerReadCount =
+      _readReceiptsManagerReadCountPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _readReceiptsManagerReadByMePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__ReadReceiptsManager_read_by_me");
+
+  late final _readReceiptsManagerReadByMe =
+      _readReceiptsManagerReadByMePtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _readReceiptsManagerSubscribeStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__ReadReceiptsManager_subscribe_stream");
+
+  late final _readReceiptsManagerSubscribeStream =
+      _readReceiptsManagerSubscribeStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _readReceiptsManagerReloadPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__ReadReceiptsManager_reload");
+
+  late final _readReceiptsManagerReload =
+      _readReceiptsManagerReloadPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _eventSendStateStatePtr = _lookup<
       ffi.NativeFunction<
           _EventSendStateStateReturn Function(
@@ -28266,6 +28502,21 @@ class Api {
             int,
             int,
           )>();
+  late final _newsEntryReadReceiptsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryReadReceiptsFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__NewsEntry_read_receipts_future_poll");
+
+  late final _newsEntryReadReceiptsFuturePoll =
+      _newsEntryReadReceiptsFuturePollPtr.asFunction<
+          _NewsEntryReadReceiptsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _newsEntryCommentsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _NewsEntryCommentsFuturePollReturn Function(
@@ -28725,6 +28976,36 @@ class Api {
   late final _reactionManagerReloadFuturePoll =
       _reactionManagerReloadFuturePollPtr.asFunction<
           _ReactionManagerReloadFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _readReceiptsManagerAnnounceReadFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ReadReceiptsManagerAnnounceReadFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__ReadReceiptsManager_announce_read_future_poll");
+
+  late final _readReceiptsManagerAnnounceReadFuturePoll =
+      _readReceiptsManagerAnnounceReadFuturePollPtr.asFunction<
+          _ReadReceiptsManagerAnnounceReadFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _readReceiptsManagerReloadFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ReadReceiptsManagerReloadFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__ReadReceiptsManager_reload_future_poll");
+
+  late final _readReceiptsManagerReloadFuturePoll =
+      _readReceiptsManagerReloadFuturePollPtr.asFunction<
+          _ReadReceiptsManagerReloadFuturePollReturn Function(
             int,
             int,
             int,
@@ -32246,6 +32527,23 @@ class Api {
   late final _reactionManagerSubscribeStreamStreamPoll =
       _reactionManagerSubscribeStreamStreamPollPtr.asFunction<
           _ReactionManagerSubscribeStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _readReceiptsManagerSubscribeStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ReadReceiptsManagerSubscribeStreamStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__ReadReceiptsManager_subscribe_stream_stream_poll");
+
+  late final _readReceiptsManagerSubscribeStreamStreamPoll =
+      _readReceiptsManagerSubscribeStreamStreamPollPtr.asFunction<
+          _ReadReceiptsManagerSubscribeStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -36365,6 +36663,21 @@ class NewsEntry {
     return tmp2;
   }
 
+  /// get the read receipt manager
+  Future<ReadReceiptsManager> readReceipts() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryReadReceipts(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_read_receipts_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryReadReceiptsFuturePoll);
+    return tmp2;
+  }
+
   /// get the comment manager
   Future<CommentsManager> comments() {
     var tmp0 = 0;
@@ -39811,6 +40124,93 @@ class Reaction {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ReadReceiptsManager {
+  final Api _api;
+  final _Box _box;
+
+  ReadReceiptsManager._(this._api, this._box);
+
+  /// mark this as read for the others in the room to know
+  Future<bool> announceRead() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._readReceiptsManagerAnnounceRead(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__ReadReceiptsManager_announce_read_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__readReceiptsManagerAnnounceReadFuturePoll);
+    return tmp2;
+  }
+
+  /// total of users that announced they had seen this
+  int readCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._readReceiptsManagerReadCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// whether I have already marked this as read, publicly or privately
+  bool readByMe() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._readReceiptsManagerReadByMe(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// get informed about changes to this manager
+  Stream<bool> subscribeStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._readReceiptsManagerSubscribeStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(
+        _api, tmp3_0, "__ReadReceiptsManager_subscribe_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(
+        tmp3_1, _api.__readReceiptsManagerSubscribeStreamStreamPoll);
+    return tmp2;
+  }
+
+  /// reload this manager
+  Future<ReadReceiptsManager> reload() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._readReceiptsManagerReload(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__ReadReceiptsManager_reload_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__readReceiptsManagerReloadFuturePoll);
     return tmp2;
   }
 
@@ -60852,6 +61252,21 @@ class _NewsEntryReactionsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _NewsEntryReadReceiptsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
 class _NewsEntryCommentsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -61303,6 +61718,36 @@ class _ReactionManagerRedactReactionFuturePollReturn extends ffi.Struct {
 }
 
 class _ReactionManagerReloadFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ReadReceiptsManagerAnnounceReadFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ReadReceiptsManagerReloadFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -64864,6 +65309,13 @@ class _RsvpManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
 }
 
 class _ReactionManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _ReadReceiptsManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

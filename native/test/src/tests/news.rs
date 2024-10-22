@@ -640,7 +640,7 @@ async fn news_read_receipt_test() -> Result<()> {
     let slides = space.latest_news_entries(1).await?;
     let final_entry = slides.first().unwrap();
     let main_receipts_manager = final_entry.read_receipts().await?;
-    assert_eq!(main_receipts_manager.seen_count(), 0);
+    assert_eq!(main_receipts_manager.read_count(), 0);
 
     for (idx, mut user) in users.into_iter().enumerate() {
         let state_sync = user.start_sync();
@@ -675,8 +675,8 @@ async fn news_read_receipt_test() -> Result<()> {
         let news_entry = slides.first().unwrap();
 
         let local_receipts_manager = news_entry.read_receipts().await?;
-        assert_eq!(local_receipts_manager.seen_count(), uidx);
-        local_receipts_manager.mark_read().await?;
+        assert_eq!(local_receipts_manager.read_count(), uidx);
+        local_receipts_manager.announce_read().await?;
 
         Retry::spawn(retry_strategy.clone(), || async {
             if subscriber.is_empty() {
@@ -691,7 +691,7 @@ async fn news_read_receipt_test() -> Result<()> {
             let receipts_manager = receipts_manager.clone();
             async move {
                 let new_receipts_manager = receipts_manager.reload().await?;
-                if new_receipts_manager.seen_count() != uidx + 1 {
+                if new_receipts_manager.read_count() != uidx + 1 {
                     bail!("news read receipt after {uidx} not found");
                 }
                 Ok(())

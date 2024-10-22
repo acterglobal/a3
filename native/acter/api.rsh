@@ -408,6 +408,9 @@ object NewsEntry {
     /// get the reaction manager
     fn reactions() -> Future<Result<ReactionManager>>;
 
+    /// get the read receipt manager
+    fn read_receipts() -> Future<Result<ReadReceiptsManager>>;
+
     /// get the comment manager
     fn comments() -> Future<Result<CommentsManager>>;
 }
@@ -754,13 +757,14 @@ object Rsvp {
     fn status() -> string;
 }
 
-//  ### ##   ### ###    ##      ## ##   #### ##    ####    ## ##   ###  ##   ## ##   
-//  ##  ##   ##  ##     ##    ##   ##  # ## ##     ##    ##   ##    ## ##  ##   ##  
-//  ##  ##   ##       ## ##   ##         ##        ##    ##   ##   # ## #  ####     
-//  ## ##    ## ##    ##  ##  ##         ##        ##    ##   ##   ## ##    #####   
-//  ## ##    ##       ## ###  ##         ##        ##    ##   ##   ##  ##      ###  
-//  ##  ##   ##  ##   ##  ##  ##   ##    ##        ##    ##   ##   ##  ##  ##   ##  
-// #### ##  ### ###  ###  ##   ## ##    ####      ####    ## ##   ###  ##   ## ## 
+
+//  ########  ########    ###     ######  ######## ####  #######  ##    ## 
+//  ##     ## ##         ## ##   ##    ##    ##     ##  ##     ## ###   ## 
+//  ##     ## ##        ##   ##  ##          ##     ##  ##     ## ####  ## 
+//  ########  ######   ##     ## ##          ##     ##  ##     ## ## ## ## 
+//  ##   ##   ##       ######### ##          ##     ##  ##     ## ##  #### 
+//  ##    ##  ##       ##     ## ##    ##    ##     ##  ##     ## ##   ### 
+//  ##     ## ######## ##     ##  ######     ##    ####  #######  ##    ## 
 
 
 object ReactionManager {
@@ -815,6 +819,35 @@ object Reaction {
 
     /// the event id to which it is reacted
     fn relates_to() -> string;
+}
+
+
+//  ########  ########    ###    ########     ########  ########  ######  ######## #### ########  ########  ######  
+//  ##     ## ##         ## ##   ##     ##    ##     ## ##       ##    ## ##        ##  ##     ##    ##    ##    ## 
+//  ##     ## ##        ##   ##  ##     ##    ##     ## ##       ##       ##        ##  ##     ##    ##    ##       
+//  ########  ######   ##     ## ##     ##    ########  ######   ##       ######    ##  ########     ##     ######  
+//  ##   ##   ##       ######### ##     ##    ##   ##   ##       ##       ##        ##  ##           ##          ## 
+//  ##    ##  ##       ##     ## ##     ##    ##    ##  ##       ##    ## ##        ##  ##           ##    ##    ## 
+//  ##     ## ######## ##     ## ########     ##     ## ########  ######  ######## #### ##           ##     ######  
+
+
+
+object ReadReceiptsManager {
+    /// mark this as read for the others in the room to know
+    fn announce_read() -> Future<Result<bool>>;
+
+    /// total of users that announced they had seen this
+    fn read_count() -> u32;
+
+    /// whether I have already marked this as read, publicly or privately
+    fn read_by_me() -> bool;
+
+    /// get informed about changes to this manager
+    fn subscribe_stream() -> Stream<bool>;
+
+    /// reload this manager
+    fn reload() -> Future<Result<ReadReceiptsManager>>;
+
 }
 
 

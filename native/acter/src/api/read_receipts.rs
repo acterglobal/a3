@@ -62,7 +62,7 @@ impl ReadReceiptsManager {
         format!("{:}:{:}:rr", self.room.room_id(), self.event_id)
     }
 
-    pub async fn mark_read(&self) -> Result<()> {
+    pub async fn announce_read(&self) -> Result<bool> {
         let room = self.room.clone();
         let event_id = self.event_id.clone();
 
@@ -70,16 +70,16 @@ impl ReadReceiptsManager {
             .spawn(async move {
                 room.send_single_receipt(ReceiptType::Read, ReceiptThread::Unthreaded, event_id)
                     .await?;
-                Ok(())
+                Ok(true)
             })
             .await?
     }
 
-    pub fn seen_count(&self) -> u32 {
+    pub fn read_count(&self) -> u32 {
         self.events.len() as u32
     }
 
-    pub fn seen_by_me(&self) -> bool {
+    pub fn read_by_me(&self) -> bool {
         let Ok(user_id) = self.client.user_id() else {
             return false;
         };
