@@ -121,8 +121,9 @@ class _CreateSuperInviteTokenPageConsumerState
                 CheckboxFormField(
                   key: CreateSuperInviteTokenPage.createDmKey,
                   title: Text(lang.createDMWhenRedeeming),
-                  onChanged: (newValue) =>
-                      setState(() => tokenUpdater.createDm(newValue ?? false)),
+                  onChanged: (newValue) {
+                    setState(() => tokenUpdater.createDm(newValue ?? false));
+                  },
                   initialValue: _initialDmCheck,
                 ),
                 const SizedBox(height: 10),
@@ -322,7 +323,7 @@ class _CreateSuperInviteTokenPageConsumerState
             ),
             ActerDangerActionButton(
               key: CreateSuperInviteTokenPage.deleteConfirm,
-              onPressed: () async {
+              onPressed: () {
                 Navigator.pop(context, true);
               },
               child: Text(lang.delete),
