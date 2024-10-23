@@ -29,7 +29,6 @@ class SpaceActionsSection extends ConsumerWidget {
         SectionHeader(
           title: L10n.of(context).actions,
           isShowSeeAllButton: false,
-          onTapSeeAll: () {},
         ),
         actionButtons(context, ref),
         const SizedBox(height: 300),
