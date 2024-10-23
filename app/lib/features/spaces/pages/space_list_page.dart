@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
@@ -13,7 +14,10 @@ import 'package:go_router/go_router.dart';
 class SpaceListPage extends ConsumerStatefulWidget {
   final String? searchQuery;
 
-  const SpaceListPage({super.key, this.searchQuery});
+  const SpaceListPage({
+    super.key,
+    this.searchQuery,
+  });
 
   @override
   ConsumerState<SpaceListPage> createState() => _AllPinsPageConsumerState();
@@ -25,11 +29,11 @@ class _AllPinsPageConsumerState extends ConsumerState<SpaceListPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.searchQuery != null) {
+    widget.searchQuery.map((query) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        ref.read(searchValueProvider.notifier).state = widget.searchQuery!;
+        ref.read(searchValueProvider.notifier).state = query;
       });
-    }
+    });
   }
 
   @override
@@ -88,12 +92,10 @@ class _AllPinsPageConsumerState extends ConsumerState<SpaceListPage> {
         ActerSearchWidget(
           initialText: widget.searchQuery,
           onChanged: (value) {
-            final notifier = ref.read(searchValueProvider.notifier);
-            notifier.state = value;
+            ref.read(searchValueProvider.notifier).state = value;
           },
           onClear: () {
-            final notifier = ref.read(searchValueProvider.notifier);
-            notifier.state = '';
+            ref.read(searchValueProvider.notifier).state = '';
           },
         ),
         Expanded(

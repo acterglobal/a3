@@ -50,6 +50,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
 
   AppBar _buildAppBar() {
     final lang = L10n.of(context);
+    final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
       title: Column(
@@ -57,7 +58,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(lang.tasks),
-          if (widget.spaceId != null) SpaceNameWidget(spaceId: widget.spaceId!),
+          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
         ],
       ),
       actions: [
@@ -81,11 +82,11 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         ),
         AddButtonWithCanPermission(
           key: TasksListPage.createNewTaskListKey,
-          spaceId: widget.spaceId,
+          spaceId: spaceId,
           canString: 'CanPostTaskList',
           onPressed: () => showCreateUpdateTaskListBottomSheet(
             context,
-            initialSelectedSpace: widget.spaceId,
+            initialSelectedSpace: spaceId,
           ),
         ),
       ],

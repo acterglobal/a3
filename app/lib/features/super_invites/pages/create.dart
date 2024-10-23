@@ -57,11 +57,10 @@ class _CreateSuperInviteTokenPageConsumerState
   void initState() {
     super.initState();
     final provider = ref.read(superInvitesProvider);
-    if (widget.token != null) {
+    final token = widget.token;
+    if (token != null) {
       // given an update builder we are in an edit mode
-
       isEdit = true;
-      final token = widget.token!;
       _tokenController.text = token.token();
       _roomIds = asDartStringList(token.rooms());
       _acceptedCount = token.acceptedCount();
@@ -122,8 +121,9 @@ class _CreateSuperInviteTokenPageConsumerState
                 CheckboxFormField(
                   key: CreateSuperInviteTokenPage.createDmKey,
                   title: Text(lang.createDMWhenRedeeming),
-                  onChanged: (newValue) =>
-                      setState(() => tokenUpdater.createDm(newValue ?? false)),
+                  onChanged: (newValue) {
+                    setState(() => tokenUpdater.createDm(newValue ?? false));
+                  },
                   initialValue: _initialDmCheck,
                 ),
                 const SizedBox(height: 10),
@@ -323,7 +323,7 @@ class _CreateSuperInviteTokenPageConsumerState
             ),
             ActerDangerActionButton(
               key: CreateSuperInviteTokenPage.deleteConfirm,
-              onPressed: () async {
+              onPressed: () {
                 Navigator.pop(context, true);
               },
               child: Text(lang.delete),

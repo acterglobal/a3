@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
@@ -69,16 +70,17 @@ class _CreateUpdateItemListConsumerState
   }
 
   void setUpdateData() {
-    if (widget.task == null) return;
-    if (widget.task!.description() != null) {
-      _taskDescriptionController.text = widget.task!.description()!.body();
-    }
-    if (widget.task!.dueDate() != null) {
-      selectedDate = DateTime.parse(widget.task!.dueDate()!);
-      if (selectedDate != null) {
-        _taskDueDateController.text = taskDueDateFormat(selectedDate!);
-      }
-    }
+    widget.task.map((task) {
+      task.description().map((description) {
+        _taskDescriptionController.text = description.body();
+      });
+      task.dueDate().map((dueDate) {
+        DateTime.parse(dueDate).map((date) {
+          selectedDate = date;
+          _taskDueDateController.text = taskDueDateFormat(date);
+        });
+      });
+    });
   }
 
   @override
@@ -195,15 +197,17 @@ class _CreateUpdateItemListConsumerState
           children: [
             ActerInlineTextButton(
               onPressed: () => setState(() {
-                selectedDate = DateTime.now();
-                _taskDueDateController.text = taskDueDateFormat(selectedDate!);
+                final date = DateTime.now();
+                selectedDate = date;
+                _taskDueDateController.text = taskDueDateFormat(date);
               }),
               child: Text(lang.today),
             ),
             ActerInlineTextButton(
               onPressed: () => setState(() {
-                selectedDate = DateTime.now().addDays(1);
-                _taskDueDateController.text = taskDueDateFormat(selectedDate!);
+                final date = DateTime.now().addDays(1);
+                selectedDate = date;
+                _taskDueDateController.text = taskDueDateFormat(date);
               }),
               child: Text(lang.tomorrow),
             ),
@@ -243,18 +247,15 @@ class _CreateUpdateItemListConsumerState
     if (_taskDescriptionController.text.isNotEmpty) {
       taskDraft.descriptionText(_taskDescriptionController.text);
     }
-    if (selectedDate != null) {
-      taskDraft.dueDate(
-        selectedDate!.year,
-        selectedDate!.month,
-        selectedDate!.day,
-      );
+    final date = selectedDate;
+    if (date != null) {
+      taskDraft.dueDate(date.year, date.month, date.day);
     }
     try {
       await taskDraft.send();
       EasyLoading.dismiss();
       if (!mounted) return;
-      if (widget.cancel != null) widget.cancel!();
+      widget.cancel.map((cb) => cb());
       Navigator.pop(context);
     } catch (e, s) {
       _log.severe('Failed to create task', e, s);
@@ -271,19 +272,18 @@ class _CreateUpdateItemListConsumerState
 
   Future<void> updateTask() async {
     final lang = L10n.of(context);
-    if (!_formKey.currentState!.validate() || widget.task == null) return;
+    if (!_formKey.currentState!.validate()) return;
+    final task = widget.task;
+    if (task == null) return;
     EasyLoading.show(status: lang.updatingTask);
-    final updater = widget.task!.updateBuilder();
+    final updater = task.updateBuilder();
     updater.title(_taskNameController.text);
     if (_taskDescriptionController.text.isNotEmpty) {
       updater.descriptionText(_taskDescriptionController.text);
     }
-    if (selectedDate != null) {
-      updater.dueDate(
-        selectedDate!.year,
-        selectedDate!.month,
-        selectedDate!.day,
-      );
+    final date = selectedDate;
+    if (date != null) {
+      updater.dueDate(date.year, date.month, date.day);
     }
     try {
       await updater.send();

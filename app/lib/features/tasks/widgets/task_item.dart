@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -102,16 +103,14 @@ class TaskItem extends ConsumerWidget {
           updater.markUndone();
         }
         await updater.send();
-        if (onDone != null) {
-          onDone!();
-        }
+        onDone.map((cb) => cb());
       },
     );
   }
 
   Widget takeItemSubTitle(WidgetRef ref, BuildContext context, Task task) {
     final lang = L10n.of(context);
-    final description = task.description();
+    final description = task.description()?.body();
     final tasklistId = task.taskListIdStr();
     final tasklistLoader = ref.watch(taskListItemProvider(tasklistId));
     return Padding(
@@ -143,9 +142,9 @@ class TaskItem extends ConsumerWidget {
                 child: Text(lang.loading),
               ),
             ),
-          if (description?.body() != null && !showBreadCrumb)
+          if (description != null && !showBreadCrumb)
             Text(
-              description!.body(),
+              description,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelMedium,
@@ -158,42 +157,41 @@ class TaskItem extends ConsumerWidget {
 
   Widget dueDateWidget(BuildContext context, Task task) {
     final lang = L10n.of(context);
-    TextStyle? textStyle = Theme.of(context).textTheme.labelMedium;
-    DateTime? dueDate =
-        task.dueDate() == null ? null : DateTime.parse(task.dueDate()!);
-
-    if (dueDate == null) return const SizedBox.shrink();
-
-    String? label;
-    Color iconColor = Colors.white54;
-    if (dueDate.isToday) {
-      label = lang.dueToday;
-    } else if (dueDate.isTomorrow) {
-      label = lang.dueTomorrow;
-    } else if (dueDate.isPast) {
-      label = dueDate.timeago();
-      iconColor = Theme.of(context).colorScheme.onSurface;
-      textStyle = textStyle?.copyWith(
-        color: Theme.of(context).colorScheme.error,
-      );
-    }
-    final dateText =
-        DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate);
-
-    return Row(
-      children: [
-        Icon(
-          Icons.access_time,
-          color: iconColor,
-          size: 18,
-        ),
-        const SizedBox(width: 6),
-        Text(
-          label ?? lang.due(dateText),
-          style: textStyle,
-        ),
-      ],
-    );
+    return task.dueDate().map((dueDate) {
+          final date = DateTime.parse(dueDate);
+          final dateText =
+              DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(date);
+          final label = date.isToday
+              ? lang.dueToday
+              : date.isTomorrow
+                  ? lang.dueTomorrow
+                  : date.isPast
+                      ? date.timeago()
+                      : lang.due(dateText);
+          final iconColor = date.isPast
+              ? Theme.of(context).colorScheme.onSurface
+              : Colors.white54;
+          var textStyle = Theme.of(context).textTheme.labelMedium;
+          if (date.isPast) {
+            textStyle =
+                textStyle?.copyWith(color: Theme.of(context).colorScheme.error);
+          }
+          return Row(
+            children: [
+              Icon(
+                Icons.access_time,
+                color: iconColor,
+                size: 18,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: textStyle,
+              ),
+            ],
+          );
+        }) ??
+        const SizedBox.shrink();
   }
 
   Widget? trailing(WidgetRef ref, Task task) {

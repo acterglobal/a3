@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
@@ -61,32 +62,30 @@ class _DueChipState extends State<DueChip> {
     final lang = L10n.of(context);
     final textStyle =
         widget.baseTextStyle ?? Theme.of(context).textTheme.bodySmall!;
-    if (dueDate == null) {
-      return widget.noneChild ?? const SizedBox.shrink();
-    }
-
-    String? label;
-    TextStyle? dueTheme;
-
-    if (dueDate!.isToday) {
-      label = lang.dueToday;
-    } else if (dueDate!.isTomorrow) {
-      label = lang.dueTomorrow;
-    } else if (dueDate!.isPast) {
-      label = dueDate!.timeago();
-      dueTheme = textStyle.copyWith(color: Theme.of(context).colorScheme.error);
-    }
-    final dateText =
-        DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!);
-
-    return Chip(
-      visualDensity: widget.visualDensity,
-      label: Text(
-        // FIXME: tooltip to show the full date?
-        label ?? lang.due(dateText),
-        style: widget.task.isDone() ? null : dueTheme,
-      ),
-    );
+    return dueDate.map((date) {
+          final dateText =
+              DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(date);
+          final label = date.isToday
+              ? lang.dueToday
+              : date.isTomorrow
+                  ? lang.dueTomorrow
+                  : date.isPast
+                      ? date.timeago()
+                      : lang.due(dateText);
+          final dueTheme = date.isPast
+              ? textStyle.copyWith(color: Theme.of(context).colorScheme.error)
+              : null;
+          return Chip(
+            visualDensity: widget.visualDensity,
+            label: Text(
+              // FIXME: tooltip to show the full date?
+              label,
+              style: widget.task.isDone() ? null : dueTheme,
+            ),
+          );
+        }) ??
+        widget.noneChild ??
+        const SizedBox.shrink();
   }
 
   Future<void> duePickerAction(BuildContext context) async {
