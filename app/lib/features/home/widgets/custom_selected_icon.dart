@@ -13,7 +13,7 @@ class CustomSelectedIcon extends ConsumerWidget {
     return InkWell(
       onDoubleTap: () {
         if (key == MainNavKeys.updates) {
-          ref.read(boostGoToPageProvider.notifier).goToPage(0);
+          ref.read(boostGoToPageProvider.notifier).state = 0;
         }
       },
       child: Container(

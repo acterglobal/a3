@@ -27,12 +27,4 @@ final totalLikesForNewsProvider =
   return reactionsManager.likesCount();
 });
 
-class BoostGoToPageNotifier extends StateNotifier<int> {
-  BoostGoToPageNotifier() : super(0);
-
-  void goToPage(int pageIndex) => state = pageIndex;
-}
-
-final boostGoToPageProvider = StateNotifierProvider<BoostGoToPageNotifier, int>(
-  (ref) => BoostGoToPageNotifier(),
-);
+final boostGoToPageProvider = StateProvider.autoDispose<int>((ref) => 0);
