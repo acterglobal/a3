@@ -75,7 +75,10 @@ class MyEventsSection extends ConsumerWidget {
   }
 
   Widget eventListUI(
-      BuildContext context, WidgetRef ref, List<CalendarEvent> events) {
+    BuildContext context,
+    WidgetRef ref,
+    List<CalendarEvent> events,
+  ) {
     final count = limit.map((val) => min(val, events.length)) ?? events.length;
     return ListView.builder(
       shrinkWrap: true,
