@@ -45,11 +45,12 @@ class VideoSlide extends StatelessWidget {
     return FutureBuilder<File>(
       future: getNewsVideoFile(),
       builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-        if (snapshot.hasData &&
-            snapshot.connectionState == ConnectionState.done) {
-          return buildVideoUI(snapshot.data!);
-        } else if (snapshot.hasError) {
-          return buildVideoLoadingErrorUI(context, snapshot);
+        final data = snapshot.data;
+        final error = snapshot.error;
+        if (data != null && snapshot.connectionState == ConnectionState.done) {
+          return buildVideoUI(data);
+        } else if (error != null) {
+          return buildVideoLoadingErrorUI(context, error, snapshot.stackTrace);
         }
         return buildVideoLoadingUI();
       },
@@ -74,15 +75,12 @@ class VideoSlide extends StatelessWidget {
 
   Widget buildVideoLoadingErrorUI(
     BuildContext context,
-    AsyncSnapshot<File> snapshot,
+    Object error,
+    StackTrace? stackTrace,
   ) {
-    _log.severe(
-      'Failed to load video of slide',
-      snapshot.error,
-      snapshot.stackTrace,
-    );
+    _log.severe('Failed to load video of slide', error, stackTrace);
     return Center(
-      child: Text(L10n.of(context).loadingFailed(snapshot.error!)),
+      child: Text(L10n.of(context).loadingFailed(error)),
     );
   }
 }

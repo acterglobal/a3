@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -52,13 +53,14 @@ class SpaceChip extends ConsumerWidget {
         Text(lang.colonCharacter),
         InkWell(
           onTap: () {
-            if (!onTapOpenSpaceDetail) {
-              if (onTapSelectSpace != null) {
-                onTapSelectSpace!();
-                return;
-              }
+            if (onTapOpenSpaceDetail) {
+              goToSpace(context, spaceId);
+              return;
             }
-            goToSpace(context, spaceId);
+            onTapSelectSpace.map(
+              (cb) => cb(),
+              orElse: () => goToSpace(context, spaceId),
+            );
           },
           child: Text(
             displayName,

@@ -1,7 +1,7 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/model/news_references_model.dart';

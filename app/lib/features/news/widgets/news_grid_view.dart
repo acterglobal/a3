@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/news/widgets/news_item/news_post_time_widget.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -35,7 +36,7 @@ class NewsGridView extends StatelessWidget {
         children: List.generate(
           newsList.length,
           (index) => InkWell(
-            onTap: () => onTapNewItem != null ? onTapNewItem!(index) : null,
+            onTap: onTapNewItem.map((cb) => () => cb(index)),
             child: newsItemUI(newsList[index]),
           ),
         ),

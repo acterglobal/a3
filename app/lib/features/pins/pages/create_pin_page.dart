@@ -271,9 +271,10 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   Widget _pinDescription(CreatePinState pinState) {
-    if (pinState.pinDescriptionParams == null ||
-        pinState.pinDescriptionParams!.htmlBodyDescription.trim().isEmpty ||
-        pinState.pinDescriptionParams!.plainDescription.trim().isEmpty) {
+    final params = pinState.pinDescriptionParams;
+    if (params == null ||
+        params.htmlBodyDescription.trim().isEmpty ||
+        params.plainDescription.trim().isEmpty) {
       return const SizedBox.shrink();
     }
     return Column(
@@ -287,19 +288,17 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
               showEditPinDescriptionBottomSheet(
                 context: context,
                 ref: ref,
-                htmlBodyDescription:
-                    pinState.pinDescriptionParams?.htmlBodyDescription,
-                plainDescription:
-                    pinState.pinDescriptionParams?.plainDescription,
+                htmlBodyDescription: params.htmlBodyDescription,
+                plainDescription: params.plainDescription,
               );
             },
-            child: pinState.pinDescriptionParams!.htmlBodyDescription.isNotEmpty
+            child: params.htmlBodyDescription.isNotEmpty
                 ? RenderHtml(
-                    text: pinState.pinDescriptionParams!.htmlBodyDescription,
+                    text: params.htmlBodyDescription,
                     defaultTextStyle: Theme.of(context).textTheme.labelLarge,
                   )
                 : Text(
-                    pinState.pinDescriptionParams!.plainDescription,
+                    params.plainDescription,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
           ),
@@ -329,7 +328,8 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
 
     EasyLoading.show(status: lang.creatingPin);
     try {
-      final space = await ref.read(spaceProvider(spaceId!).future);
+      final space = await ref
+          .read(spaceProvider(spaceId.expect('space not selected')).future);
       final pinDraft = space.pinDraft();
       final pinState = ref.read(createPinStateProvider);
 
@@ -337,31 +337,25 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       if (pinIconColor != null || pinIcon != null) {
         final sdk = await ref.watch(sdkProvider.future);
         final displayBuilder = sdk.api.newDisplayBuilder();
-        if (pinIconColor != null) {
-          displayBuilder.color(pinIconColor!.value);
-        }
-        if (pinIcon != null) {
-          displayBuilder.icon('acter-icon', pinIcon!.name);
-        }
+        pinIconColor.map((color) => displayBuilder.color(color.value));
+        pinIcon.map((icon) => displayBuilder.icon('acter-icon', icon.name));
         pinDraft.display(displayBuilder.build());
       }
 
       // Pin Title
-      if (pinState.pinTitle != null && pinState.pinTitle!.isNotEmpty) {
-        pinDraft.title(pinState.pinTitle!);
-      }
+      pinState.pinTitle.map((title) {
+        if (title.isNotEmpty) pinDraft.title(title);
+      });
 
       // Pin Description
-      if (pinState.pinDescriptionParams != null) {
-        if (pinState.pinDescriptionParams!.htmlBodyDescription.isNotEmpty) {
-          pinDraft.contentHtml(
-            pinState.pinDescriptionParams!.plainDescription,
-            pinState.pinDescriptionParams!.htmlBodyDescription,
-          );
+      final params = pinState.pinDescriptionParams;
+      if (params != null) {
+        final plain = params.plainDescription;
+        final html = params.htmlBodyDescription;
+        if (html.isNotEmpty) {
+          pinDraft.contentHtml(plain, html);
         } else {
-          pinDraft.contentMarkdown(
-            pinState.pinDescriptionParams!.plainDescription,
-          );
+          pinDraft.contentMarkdown(plain);
         }
       }
 
@@ -410,7 +404,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
         context: context,
         ref: ref,
         manager: manager,
-        attachments: attachment.path != null ? [File(attachment.path!)] : [],
+        attachments: attachment.path.map((path) => [File(path)]) ?? [],
         title: attachment.title,
         link: attachment.link,
         attachmentType: attachment.attachmentType,

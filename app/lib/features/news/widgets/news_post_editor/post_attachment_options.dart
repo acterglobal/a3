@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class PostAttachmentOptions extends StatelessWidget {
           key: NewsUpdateKeys.addTextSlide,
           onTap: () {
             Navigator.pop(context);
-            if (onTapAddText != null) onTapAddText!();
+            onTapAddText.map((cb) => cb());
           },
           leading: const Icon(Atlas.size_text),
           title: Text(lang.addTextSlide),
@@ -38,7 +39,7 @@ class PostAttachmentOptions extends StatelessWidget {
           key: NewsUpdateKeys.addImageSlide,
           onTap: () {
             Navigator.pop(context);
-            if (onTapImage != null) onTapImage!();
+            onTapImage.map((cb) => cb());
           },
           leading: const Icon(Atlas.file_image),
           title: Text(lang.selectPicture),
@@ -47,7 +48,7 @@ class PostAttachmentOptions extends StatelessWidget {
           key: NewsUpdateKeys.addVideoSlide,
           onTap: () {
             Navigator.pop(context);
-            if (onTapVideo != null) onTapVideo!();
+            onTapVideo.map((cb) => cb());
           },
           leading: const Icon(Atlas.file_video),
           title: Text(lang.selectVideo),

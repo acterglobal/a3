@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
@@ -200,7 +201,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
       NewsSlideType.image => ClipRRect(
           borderRadius: BorderRadius.circular(5),
           child: Image(
-            image: XFileImage(mediaFile!),
+            image: XFileImage(mediaFile.expect('image slide needs media file')),
             fit: BoxFit.cover,
           ),
         ),
@@ -208,13 +209,16 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           fit: StackFit.expand,
           children: [
             FutureBuilder(
-              future: NewsUtils.getThumbnailData(mediaFile!),
+              future: NewsUtils.getThumbnailData(
+                mediaFile.expect('video slide needs media file'),
+              ),
               builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
+                final data = snapshot.data;
+                if (data != null) {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(5),
                     child: Image.file(
-                      snapshot.data!,
+                      data,
                       fit: BoxFit.cover,
                     ),
                   );
