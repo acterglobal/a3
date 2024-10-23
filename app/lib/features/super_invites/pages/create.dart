@@ -57,11 +57,10 @@ class _CreateSuperInviteTokenPageConsumerState
   void initState() {
     super.initState();
     final provider = ref.read(superInvitesProvider);
-    if (widget.token != null) {
+    final token = widget.token;
+    if (token != null) {
       // given an update builder we are in an edit mode
-
       isEdit = true;
-      final token = widget.token!;
       _tokenController.text = token.token();
       _roomIds = asDartStringList(token.rooms());
       _acceptedCount = token.acceptedCount();

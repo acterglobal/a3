@@ -110,7 +110,7 @@ class TaskItem extends ConsumerWidget {
 
   Widget takeItemSubTitle(WidgetRef ref, BuildContext context, Task task) {
     final lang = L10n.of(context);
-    final description = task.description();
+    final description = task.description()?.body();
     final tasklistId = task.taskListIdStr();
     final tasklistLoader = ref.watch(taskListItemProvider(tasklistId));
     return Padding(
@@ -142,9 +142,9 @@ class TaskItem extends ConsumerWidget {
                 child: Text(lang.loading),
               ),
             ),
-          if (description?.body() != null && !showBreadCrumb)
+          if (description != null && !showBreadCrumb)
             Text(
-              description!.body(),
+              description,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelMedium,
