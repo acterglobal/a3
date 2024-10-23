@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
@@ -95,13 +96,16 @@ class UploadAvatarPage extends ConsumerWidget {
               ValueListenableBuilder(
                 valueListenable: selectedUserAvatar,
                 builder: (context, userAvatar, child) {
-                  if (userAvatar == null && userAvatar?.path == null) {
-                    return const Icon(Atlas.account, size: 50);
-                  }
-                  return CircleAvatar(
-                    radius: 100,
-                    backgroundImage: FileImage(File(userAvatar!.path!)),
-                  );
+                  return userAvatar?.path.map(
+                        (filePath) => CircleAvatar(
+                          radius: 100,
+                          backgroundImage: FileImage(File(filePath)),
+                        ),
+                      ) ??
+                      const Icon(
+                        Atlas.account,
+                        size: 50,
+                      );
                 },
               ),
               Positioned.fill(

@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:flutter/material.dart';
@@ -70,12 +71,12 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
           hasChanges = true;
         }
 
-        if (state.html != null) {
-          if (content.formattedBody() != state.html) {
-            updateBuilder.contentHtml(state.markdown, state.html!);
+        state.html.map((html) {
+          if (content.formattedBody() != html) {
+            updateBuilder.contentHtml(state.markdown, html);
             hasChanges = true;
           }
-        }
+        });
       }
 
       if (hasChanges) {
