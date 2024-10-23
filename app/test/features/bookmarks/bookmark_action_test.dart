@@ -23,7 +23,7 @@ void main() {
           bookmarker: (id: 'a', type: BookmarkType.news),
         ),
       );
-      final bookmarkKey = const ValueKey('a-bookmark');
+      const bookmarkKey = ValueKey('a-bookmark');
 
       verifyNever(() => mockManager.add(any(), any()));
 
@@ -47,7 +47,7 @@ void main() {
           bookmarker: (id: 'a', type: BookmarkType.news),
         ),
       );
-      final unbookmarkKey = const ValueKey('a-unbookmark');
+      const unbookmarkKey = ValueKey('a-unbookmark');
 
       verifyNever(() => mockManager.add(any(), any()));
 
