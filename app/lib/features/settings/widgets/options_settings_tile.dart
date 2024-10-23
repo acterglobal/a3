@@ -1,7 +1,8 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:settings_ui/settings_ui.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:settings_ui/settings_ui.dart';
 
 typedef OnOptionSelect<T> = void Function(T value);
 
@@ -46,7 +47,7 @@ class __OptionsSettingsTileState<T> extends State<_OptionsSettingsTile<T>> {
         widget.title,
         style: tileTextTheme,
       ),
-      description: widget.explainer != null ? Text(widget.explainer!) : null,
+      description: widget.explainer.map((explainer) => Text(explainer)),
       leading: widget.icon,
       trailing: MenuAnchor(
         controller: menuController,

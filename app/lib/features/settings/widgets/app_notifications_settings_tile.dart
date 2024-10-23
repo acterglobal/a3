@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -49,7 +50,7 @@ class _AppNotificationSettingsTile extends ConsumerWidget {
   Widget innerBuild(BuildContext context, WidgetRef ref, bool currentValue) {
     return SettingsTile.switchTile(
       title: Text(title),
-      description: description != null ? Text(description!) : null,
+      description: description.map((desc) => Text(desc)),
       initialValue: currentValue,
       enabled: enabled ?? true,
       onToggle: (newVal) async {

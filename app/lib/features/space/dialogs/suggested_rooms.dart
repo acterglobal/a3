@@ -107,10 +107,10 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
   }
 
   void _toggle(String roomId) {
-    List<String> newSelectedRooms = selectedRooms != null
-        ? List.from(selectedRooms!)
+    List<String> newSelectedRooms = selectedRooms
+            .map((rooms) => List.from(rooms)) ??
         // we had been an _all_ selection, but now we need to take one out.
-        : chatsFound.followedBy(spacesFound).map((e) => e.roomIdStr()).toList();
+        chatsFound.followedBy(spacesFound).map((e) => e.roomIdStr()).toList();
     if (!newSelectedRooms.remove(roomId)) {
       // was not in, add it new
       newSelectedRooms.add(roomId);
@@ -181,9 +181,8 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
             contentPadding: EdgeInsets.zero,
             trailing: Switch(
               onChanged: (value) => _toggle(roomId),
-              value: selectedRooms == null
-                  ? true
-                  : selectedRooms!.contains(roomId),
+              value:
+                  selectedRooms.map((rooms) => rooms.contains(roomId)) ?? true,
             ),
           );
         },
@@ -210,9 +209,8 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
             contentPadding: EdgeInsets.zero,
             trailing: Switch(
               onChanged: (value) => _toggle(roomId),
-              value: selectedRooms == null
-                  ? true
-                  : selectedRooms!.contains(roomId),
+              value:
+                  selectedRooms.map((rooms) => rooms.contains(roomId)) ?? true,
             ),
           );
         },
