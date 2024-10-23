@@ -27,10 +27,9 @@ class _NewsVerticalViewState extends ConsumerState<NewsFullView> {
     super.initState();
     _pageController = PageController(initialPage: widget.initialPageIndex);
     //LISTEN for boost index
-    ref.listenManual(boostToToPageProvider, fireImmediately: true,
+    ref.listenManual(boostGoToPageProvider, fireImmediately: true,
         (previous, next) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        print('listenManual : boost index $previous $next');
         _pageController.animateToPage(
           next,
           curve: Curves.easeIn,

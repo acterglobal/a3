@@ -4,8 +4,8 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show NewsEntry, ReactionManager;
 import 'package:riverpod/riverpod.dart';
 
-final newsListProvider =
-    AsyncNotifierProvider.family<AsyncNewsListNotifier, List<NewsEntry>,String?>(
+final newsListProvider = AsyncNotifierProvider.family<AsyncNewsListNotifier,
+    List<NewsEntry>, String?>(
   () => AsyncNewsListNotifier(),
 );
 
@@ -27,4 +27,12 @@ final totalLikesForNewsProvider =
   return reactionsManager.likesCount();
 });
 
-final boostToToPageProvider = StateProvider.autoDispose<int>((ref) => 0);
+class BoostGoToPageNotifier extends StateNotifier<int> {
+  BoostGoToPageNotifier() : super(0);
+
+  void goToPage(int pageIndex) => state = pageIndex;
+}
+
+final boostGoToPageProvider = StateNotifierProvider<BoostGoToPageNotifier, int>(
+  (ref) => BoostGoToPageNotifier(),
+);
