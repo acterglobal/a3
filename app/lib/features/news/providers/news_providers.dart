@@ -26,3 +26,5 @@ final totalLikesForNewsProvider =
   final reactionsManager = await ref.watch(newsReactionsProvider(news).future);
   return reactionsManager.likesCount();
 });
+
+final boostToToPageProvider = StateProvider.autoDispose<int>((ref) => 0);
