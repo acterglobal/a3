@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -140,12 +141,13 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
             color: Theme.of(context).colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(5),
           ),
-          child: spaceAvatar != null
-              ? Image.file(
-                  File(spaceAvatar!.path),
+          child: spaceAvatar.map(
+                (file) => Image.file(
+                  File(file.path),
                   fit: BoxFit.cover,
-                )
-              : const Icon(Atlas.up_arrow_from_bracket_thin),
+                ),
+              ) ??
+              const Icon(Atlas.up_arrow_from_bracket_thin),
         ),
       ),
     );

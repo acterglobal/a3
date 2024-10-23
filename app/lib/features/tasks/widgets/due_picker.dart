@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:dart_date/dart_date.dart';
@@ -77,27 +78,27 @@ class _DueQuickPickerDrawer extends StatelessWidget {
   }
 
   List<Widget> renderPostponing(BuildContext context) {
-    if (currentDue == null) {
-      return [];
-    }
     final lang = L10n.of(context);
-    return [
-      const SizedBox(height: 10),
-      MenuItemWidget(
-        visualDensity: VisualDensity.compact,
-        title: lang.postpone,
-        iconData: Icons.plus_one_rounded,
-        withMenu: false,
-        onTap: () => _submit(context, currentDue! + const Duration(days: 1)),
-      ),
-      MenuItemWidget(
-        visualDensity: VisualDensity.compact,
-        title: lang.postponeN(2),
-        iconData: Atlas.plus_thin,
-        withMenu: false,
-        onTap: () => _submit(context, currentDue! + const Duration(days: 2)),
-      ),
-    ];
+    return currentDue.map(
+          (date) => [
+            const SizedBox(height: 10),
+            MenuItemWidget(
+              visualDensity: VisualDensity.compact,
+              title: lang.postpone,
+              iconData: Icons.plus_one_rounded,
+              withMenu: false,
+              onTap: () => _submit(context, date + const Duration(days: 1)),
+            ),
+            MenuItemWidget(
+              visualDensity: VisualDensity.compact,
+              title: lang.postponeN(2),
+              iconData: Atlas.plus_thin,
+              withMenu: false,
+              onTap: () => _submit(context, date + const Duration(days: 2)),
+            ),
+          ],
+        ) ??
+        [];
   }
 
   void _submit(

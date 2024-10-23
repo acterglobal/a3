@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
@@ -69,16 +70,17 @@ class _CreateUpdateItemListConsumerState
   }
 
   void setUpdateData() {
-    if (widget.task == null) return;
-    if (widget.task!.description() != null) {
-      _taskDescriptionController.text = widget.task!.description()!.body();
-    }
-    if (widget.task!.dueDate() != null) {
-      selectedDate = DateTime.parse(widget.task!.dueDate()!);
-      if (selectedDate != null) {
-        _taskDueDateController.text = taskDueDateFormat(selectedDate!);
-      }
-    }
+    widget.task.map((task) {
+      task.description().map((description) {
+        _taskDescriptionController.text = description.body();
+      });
+      task.dueDate().map((dueDate) {
+        DateTime.parse(dueDate).map((date) {
+          selectedDate = date;
+          _taskDueDateController.text = taskDueDateFormat(date);
+        });
+      });
+    });
   }
 
   @override
@@ -254,7 +256,7 @@ class _CreateUpdateItemListConsumerState
       await taskDraft.send();
       EasyLoading.dismiss();
       if (!mounted) return;
-      if (widget.cancel != null) widget.cancel!();
+      widget.cancel.map((cb) => cb());
       Navigator.pop(context);
     } catch (e, s) {
       _log.severe('Failed to create task', e, s);
