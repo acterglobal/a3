@@ -119,15 +119,3 @@ double? calcGap(BuildContext context) {
   if (scale <= 1) return 8;
   return lerpDouble(8, 4, min(scale - 1, 1));
 }
-/// Helper to allow you to replace `!` with a neat and simple
-/// `.expect('Error Messages')` that will throw with that specific
-/// error message.
-extension Expect<T> on T? {
-  T expect([Object error = 'Expect missed value']) {
-    T? value = this;
-    if (value == null) {
-      throw error;
-    }
-    return value;
-  }
-}
