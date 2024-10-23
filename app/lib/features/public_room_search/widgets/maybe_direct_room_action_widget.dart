@@ -116,16 +116,10 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
             );
     }
 
-    final trailing = noMemberButton(context, ref, room, roomId, servers);
-    return room.isSpace()
-        ? renderRoomCard(
-            roomId,
-            trailing: trailing,
-          )
-        : renderRoomCard(
-            roomId,
-            trailing: trailing,
-          );
+    return renderRoomCard(
+      roomId,
+      trailing: noMemberButton(context, ref, room, roomId, servers),
+    );
   }
 
   Widget noMemberButton(

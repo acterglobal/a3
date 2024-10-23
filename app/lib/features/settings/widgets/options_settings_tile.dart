@@ -61,11 +61,7 @@ class __OptionsSettingsTileState<T> extends State<_OptionsSettingsTile<T>> {
     return widget.options.map((r) => menuItem(context, r.$1, r.$2)).toList();
   }
 
-  ListTile menuItem(
-    BuildContext context,
-    T key,
-    String title,
-  ) {
+  ListTile menuItem(BuildContext context, T key, String title) {
     return ListTile(
       selected: widget.selected == key,
       onTap: () {
