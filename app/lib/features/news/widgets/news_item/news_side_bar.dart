@@ -6,6 +6,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
+import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/router/utils.dart';
@@ -58,6 +59,19 @@ class NewsSideBar extends ConsumerWidget {
                 await manager.redactLike(null, null);
               }
             },
+          ),
+          const SizedBox(height: 10),
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                showDragHandle: true,
+                builder: (context) => CommentsSection(
+                  manager: news.comments(),
+                ),
+              );
+            },
+            icon: const Icon(Atlas.comment_blank),
           ),
           const SizedBox(height: 10),
           InkWell(
