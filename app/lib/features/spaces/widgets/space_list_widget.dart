@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
@@ -69,9 +70,7 @@ class SpaceListWidget extends ConsumerWidget {
               SectionHeader(
                 title: L10n.of(context).spaces,
                 isShowSeeAllButton: count < spaceList.length,
-                onTapSeeAll: () => onClickSectionHeader == null
-                    ? null
-                    : onClickSectionHeader!(),
+                onTapSeeAll: onClickSectionHeader.map((cb) => () => cb()),
               ),
               spaceListUI(spaceList, count),
             ],

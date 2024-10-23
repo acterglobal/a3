@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
@@ -80,9 +81,7 @@ class PinListWidget extends ConsumerWidget {
               SectionHeader(
                 title: L10n.of(context).pins,
                 isShowSeeAllButton: count < pinList.length,
-                onTapSeeAll: () => onClickSectionHeader == null
-                    ? null
-                    : onClickSectionHeader!(),
+                onTapSeeAll: onClickSectionHeader.map((cb) => () => cb()),
               ),
               pinListUI(pinList, count),
             ],

@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -94,7 +95,8 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
         ),
       );
     }
-    final room = roomWatch.value!;
+    final room =
+        roomWatch.value.expect('could not get room from id without domain');
 
     if (room.isJoined()) {
       return room.isSpace()
@@ -114,16 +116,10 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
             );
     }
 
-    final trailing = noMemberButton(context, ref, room, roomId, servers);
-    return room.isSpace()
-        ? renderRoomCard(
-            roomId,
-            trailing: trailing,
-          )
-        : renderRoomCard(
-            roomId,
-            trailing: trailing,
-          );
+    return renderRoomCard(
+      roomId,
+      trailing: noMemberButton(context, ref, room, roomId, servers),
+    );
   }
 
   Widget noMemberButton(

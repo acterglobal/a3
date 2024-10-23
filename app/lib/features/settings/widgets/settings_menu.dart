@@ -48,6 +48,7 @@ class SettingsMenu extends ConsumerWidget {
     final lang = L10n.of(context);
     final isBackupEnabled =
         ref.watch(isActiveProvider(LabsFeature.encryptionBackup));
+    final helpCenterUrl = helpUrl;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -260,13 +261,13 @@ class SettingsMenu extends ConsumerWidget {
                 }
               },
             ),
-            if (helpUrl != null)
+            if (helpCenterUrl != null)
               MenuItemWidget(
                 iconData: PhosphorIcons.question(),
                 title: lang.helpCenterTitle,
                 subTitle: lang.helpCenterDesc,
                 trailing: Icon(PhosphorIcons.arrowSquareOut()),
-                onTap: () => launchUrl(helpUrl!),
+                onTap: () => launchUrl(helpCenterUrl),
               ),
           ],
         ),
