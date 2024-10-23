@@ -213,11 +213,12 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                 mediaFile.expect('video slide needs media file'),
               ),
               builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
+                final data = snapshot.data;
+                if (data != null) {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(5),
                     child: Image.file(
-                      snapshot.data!,
+                      data,
                       fit: BoxFit.cover,
                     ),
                   );

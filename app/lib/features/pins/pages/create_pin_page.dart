@@ -271,9 +271,10 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   Widget _pinDescription(CreatePinState pinState) {
-    if (pinState.pinDescriptionParams == null ||
-        pinState.pinDescriptionParams!.htmlBodyDescription.trim().isEmpty ||
-        pinState.pinDescriptionParams!.plainDescription.trim().isEmpty) {
+    final params = pinState.pinDescriptionParams;
+    if (params == null ||
+        params.htmlBodyDescription.trim().isEmpty ||
+        params.plainDescription.trim().isEmpty) {
       return const SizedBox.shrink();
     }
     return Column(
@@ -287,19 +288,17 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
               showEditPinDescriptionBottomSheet(
                 context: context,
                 ref: ref,
-                htmlBodyDescription:
-                    pinState.pinDescriptionParams?.htmlBodyDescription,
-                plainDescription:
-                    pinState.pinDescriptionParams?.plainDescription,
+                htmlBodyDescription: params.htmlBodyDescription,
+                plainDescription: params.plainDescription,
               );
             },
-            child: pinState.pinDescriptionParams!.htmlBodyDescription.isNotEmpty
+            child: params.htmlBodyDescription.isNotEmpty
                 ? RenderHtml(
-                    text: pinState.pinDescriptionParams!.htmlBodyDescription,
+                    text: params.htmlBodyDescription,
                     defaultTextStyle: Theme.of(context).textTheme.labelLarge,
                   )
                 : Text(
-                    pinState.pinDescriptionParams!.plainDescription,
+                    params.plainDescription,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
           ),
@@ -349,16 +348,14 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       });
 
       // Pin Description
-      if (pinState.pinDescriptionParams != null) {
-        if (pinState.pinDescriptionParams!.htmlBodyDescription.isNotEmpty) {
-          pinDraft.contentHtml(
-            pinState.pinDescriptionParams!.plainDescription,
-            pinState.pinDescriptionParams!.htmlBodyDescription,
-          );
+      final params = pinState.pinDescriptionParams;
+      if (params != null) {
+        final plain = params.plainDescription;
+        final html = params.htmlBodyDescription;
+        if (html.isNotEmpty) {
+          pinDraft.contentHtml(plain, html);
         } else {
-          pinDraft.contentMarkdown(
-            pinState.pinDescriptionParams!.plainDescription,
-          );
+          pinDraft.contentMarkdown(plain);
         }
       }
 

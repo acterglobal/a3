@@ -141,13 +141,13 @@ class UploadAvatarPage extends ConsumerWidget {
     final lang = L10n.of(context);
     try {
       final account = ref.watch(accountProvider);
-      if (selectedUserAvatar.value == null ||
-          selectedUserAvatar.value?.path == null) {
+      final filePath = selectedUserAvatar.value?.path;
+      if (filePath == null) {
         if (context.mounted) EasyLoading.showToast(lang.avatarEmpty);
         return;
       }
       if (context.mounted) EasyLoading.show(status: lang.avatarUploading);
-      await account.uploadAvatar(selectedUserAvatar.value!.path!);
+      await account.uploadAvatar(filePath);
       ref.invalidate(accountProvider);
       EasyLoading.dismiss(); // close loading
       if (context.mounted) context.goNamed(Routes.main.name);
