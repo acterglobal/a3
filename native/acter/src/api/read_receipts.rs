@@ -21,7 +21,7 @@ pub struct ReadReceiptsManager {
     client: Client,
     room: Room,
     event_id: OwnedEventId,
-    events: BTreeMap<OwnedUserId, Receipt>, // inner: models::ReadReceiptsManager,
+    inner: models::ReadReceiptsManager,
 }
 
 impl ReadReceiptsManager {
@@ -32,22 +32,14 @@ impl ReadReceiptsManager {
     ) -> Result<ReadReceiptsManager> {
         RUNTIME
             .spawn(async move {
-                let events = client
-                    .core
-                    .client()
-                    .store()
-                    .get_event_room_receipt_events(
-                        room.room_id(),
-                        matrix_sdk::ruma::events::receipt::ReceiptType::Read,
-                        ReceiptThread::Unthreaded,
-                        &event_id,
-                    )
-                    .await?;
+                let inner =
+                    models::ReadReceiptsManager::from_store_and_event_id(client.store(), &event_id)
+                        .await;
                 Ok(ReadReceiptsManager {
                     client,
                     room,
                     event_id,
-                    events: events.into_iter().collect(),
+                    inner,
                 })
             })
             .await?
@@ -63,31 +55,27 @@ impl ReadReceiptsManager {
     }
 
     pub fn update_key(&self) -> String {
-        format!("{:}:{:}:rr", self.room.room_id(), self.event_id)
+        self.inner.update_key()
     }
 
     pub async fn announce_read(&self) -> Result<bool> {
         let room = self.room.clone();
-        let event_id = self.event_id.clone();
+        let event = self.inner.construct_read_event();
 
         RUNTIME
             .spawn(async move {
-                room.send_single_receipt(ReceiptType::Read, ReceiptThread::Unthreaded, event_id)
-                    .await?;
+                room.send(event).await?;
                 Ok(true)
             })
             .await?
     }
 
     pub fn read_count(&self) -> u32 {
-        self.events.len() as u32
+        self.inner.stats.total_views
     }
 
     pub fn read_by_me(&self) -> bool {
-        let Ok(user_id) = self.client.user_id() else {
-            return false;
-        };
-        self.events.contains_key(&user_id)
+        self.inner.stats.user_has_read
     }
 
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
