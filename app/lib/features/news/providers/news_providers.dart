@@ -27,4 +27,4 @@ final totalLikesForNewsProvider =
   return reactionsManager.likesCount();
 });
 
-final boostGoToPageProvider = StateProvider.autoDispose<int>((ref) => 0);
+final boostGoToPageProvider = StateProvider.autoDispose<int?>((ref) => 0);

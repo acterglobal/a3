@@ -29,13 +29,16 @@ class _NewsVerticalViewState extends ConsumerState<NewsFullView> {
     //LISTEN for boost index
     ref.listenManual(boostGoToPageProvider, fireImmediately: true,
         (previous, next) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _pageController.animateToPage(
-          next,
-          curve: Curves.easeIn,
-          duration: const Duration(milliseconds: 500),
-        );
-      });
+      if (next != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _pageController.animateToPage(
+            next,
+            curve: Curves.easeIn,
+            duration: const Duration(milliseconds: 500),
+          );
+          ref.read(boostGoToPageProvider.notifier).state = null;
+        });
+      }
     });
   }
 
