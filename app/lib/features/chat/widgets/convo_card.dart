@@ -342,6 +342,10 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.sticker':
+        final body = eventItem
+            .msgContent()
+            .expect('m.sticker should have msg content')
+            .body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -357,7 +361,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                eventItem.msgContent()!.body(),
+                body,
                 style: Theme.of(context).textTheme.labelMedium,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -452,6 +456,10 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.poll.start':
+        final body = eventItem
+            .msgContent()
+            .expect('m.poll.start should have msg content')
+            .body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -467,7 +475,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                eventItem.msgContent()!.body(),
+                body,
                 style: Theme.of(context).textTheme.labelMedium,
                 overflow: TextOverflow.ellipsis,
               ),

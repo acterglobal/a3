@@ -28,7 +28,7 @@ List<FeatureFlag<T>> featureFlagsFromJson<T extends Enum>(
     json.map((json) {
       final key = json['key']!;
       try {
-        final feature = fromString(key)!;
+        final feature = fromString(key).expect('enum parsing from key failed');
         final active = json['active'];
         return FeatureFlag<T>(feature: feature, active: active);
       } catch (e) {
@@ -42,7 +42,11 @@ List<FeatureFlag<T>> featureFlagsFromJson<T extends Enum>(
 class FeatureFlag<T extends Enum> {
   late T feature;
   late bool active;
-  FeatureFlag({required this.feature, required this.active});
+
+  FeatureFlag({
+    required this.feature,
+    required this.active,
+  });
 
   Map toJson() {
     Map fromObject = {
@@ -57,7 +61,11 @@ class FeatureFlag<T extends Enum> {
 class Features<T extends Enum> {
   final List<FeatureFlag<T>> flags;
   final List<T> defaultOn;
-  const Features({required this.flags, required this.defaultOn});
+
+  const Features({
+    required this.flags,
+    required this.defaultOn,
+  });
 
   String toJson() => json.encode(flags);
 
