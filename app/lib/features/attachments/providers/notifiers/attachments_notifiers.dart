@@ -75,7 +75,7 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
     } catch (e) {
       state = state.copyWith(
         mediaLoadingState: AttachmentMediaLoadingState.error(
-          'Some error occurred ${e.toString()}',
+          'Some error occurred: ${e.toString()}',
         ),
       );
     }
