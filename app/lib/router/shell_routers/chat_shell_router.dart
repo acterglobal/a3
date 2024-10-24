@@ -1,3 +1,5 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
@@ -11,7 +13,6 @@ import 'package:acter/features/space/settings/pages/visibility_accessibility_pag
 import 'package:acter/router/router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:acter/common/extensions/acter_build_context.dart';
 
 /// define the chat layout builder depending on whether the user has set
 /// the chat-ng feature.
@@ -51,8 +52,8 @@ final chatShellRoutes = [
     path: Routes.chatroom.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['roomId']!;
-
+      final roomId = state.pathParameters['roomId']
+          .expect('chatroom route needs roomId as path param');
       rootNavKey.currentContext
           ?.read(selectedChatIdProvider.notifier)
           .select(roomId);
@@ -71,8 +72,8 @@ final chatShellRoutes = [
     path: Routes.chatProfile.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['roomId']!;
-
+      final roomId = state.pathParameters['roomId']
+          .expect('chatProfile route needs roomId as path param');
       rootNavKey.currentContext
           ?.read(selectedChatIdProvider.notifier)
           .select(roomId);
@@ -94,8 +95,8 @@ final chatShellRoutes = [
     path: Routes.chatSettingsVisibility.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['roomId']!;
-
+      final roomId = state.pathParameters['roomId']
+          .expect('chatSettingsVisibility route needs roomId as path param');
       rootNavKey.currentContext
           ?.read(selectedChatIdProvider.notifier)
           .select(roomId);
@@ -118,7 +119,8 @@ final chatShellRoutes = [
     path: Routes.chatInvite.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['roomId']!;
+      final roomId = state.pathParameters['roomId']
+          .expect('chatInvite route needs roomId as path param');
       return NoTransitionPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(

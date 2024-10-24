@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
@@ -26,9 +27,9 @@ List<FeatureFlag<T>> featureFlagsFromJson<T extends Enum>(
 ) {
   List<FeatureFlag<T>> flags = List.from(
     json.map((json) {
-      final key = json['key']!;
+      final key = json['key'].expect('json should contain key');
       try {
-        final feature = fromString(key).expect('enum parsing from key failed');
+        final feature = fromString(key).expect('enum parsing from $key failed');
         final active = json['active'];
         return FeatureFlag<T>(feature: feature, active: active);
       } catch (e) {

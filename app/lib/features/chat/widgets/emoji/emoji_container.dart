@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/widgets/emoji/emoji_reaction_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -52,7 +53,9 @@ class _EmojiContainerState extends State<EmojiContainer>
         runSpacing: 3,
         children: List.generate(keys.length, (int index) {
           String key = keys[index];
-          final records = reactions[key]! as List<ReactionRecord>;
+          final records =
+              reactions[key].expect('reactions of $key not available')
+                  as List<ReactionRecord>;
           final sentByMe = records.any((x) => x.sentByMe());
           final emoji = Text(key, style: EmojiConfig.emojiTextStyle);
           final moreThanOne = records.length > 1;
@@ -107,24 +110,32 @@ class _EmojiContainerState extends State<EmojiContainer>
           userId,
           () => List<String>.empty(growable: true),
         );
-        usersByReaction[key]!.add(userId);
-        reactionsByUsers[userId]!.add(key);
+        usersByReaction[key]
+            .expect('reactors of $key not available')
+            .add(userId);
+        reactionsByUsers[userId]
+            .expect('reactions from $userId not available')
+            .add(key);
       }
     });
     // sort the users per item on the number of emojis sent - highest first
     usersByReaction.forEach((key, users) {
-      users.sort(
-        (userIdA, userIdB) => reactionsByUsers[userIdB]!
-            .length
-            .compareTo(reactionsByUsers[userIdA]!.length),
-      );
+      users.sort((userIdA, userIdB) {
+        final reactionsA = reactionsByUsers[userIdA]
+            .expect('reactions from $userIdA not available');
+        final reactionsB = reactionsByUsers[userIdB]
+            .expect('reactions from $userIdB not available');
+        return reactionsB.length.compareTo(reactionsA.length);
+      });
     });
     final allUsers = reactionsByUsers.keys.toList();
-    allUsers.sort(
-      (userIdA, userIdB) => reactionsByUsers[userIdB]!
-          .length
-          .compareTo(reactionsByUsers[userIdA]!.length),
-    );
+    allUsers.sort((userIdA, userIdB) {
+      final reactionsA = reactionsByUsers[userIdA]
+          .expect('reactions from $userIdA not available');
+      final reactionsB = reactionsByUsers[userIdB]
+          .expect('reactions from $userIdB not available');
+      return reactionsB.length.compareTo(reactionsA.length);
+    });
 
     num total = 0;
     if (mounted) {
@@ -199,7 +210,8 @@ class _EmojiContainerState extends State<EmojiContainer>
                     for (final key in keys)
                       _ReactionListing(
                         roomId: roomId,
-                        users: usersByReaction[key]!,
+                        users: usersByReaction[key]
+                            .expect('reactors of $key not available'),
                         usersMap: reactionsByUsers,
                       ),
                   ],
@@ -235,10 +247,11 @@ class _ReactionListing extends StatelessWidget {
       shrinkWrap: true,
       itemCount: users.length,
       itemBuilder: (BuildContext context, int index) {
+        final userId = users[index];
         return EmojiReactionItem(
           roomId: roomId,
-          userId: users[index],
-          emojis: usersMap[users[index]]!,
+          userId: userId,
+          emojis: usersMap[userId].expect('emojis from $userId not available'),
         );
       },
       separatorBuilder: (BuildContext context, int index) {

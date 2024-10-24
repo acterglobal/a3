@@ -1,25 +1,26 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/pages/fatal_fail.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/avatar/full_screen_avatar_page.dart';
 import 'package:acter/common/widgets/dialog_page.dart';
 import 'package:acter/common/widgets/side_sheet_page.dart';
+import 'package:acter/features/auth/pages/forgot_password.dart';
+import 'package:acter/features/auth/pages/login_page.dart';
+import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
-import 'package:acter/features/news/pages/add_news_page.dart';
-import 'package:acter/features/auth/pages/forgot_password.dart';
 import 'package:acter/features/intro/pages/intro_page.dart';
 import 'package:acter/features/intro/pages/intro_profile.dart';
-import 'package:acter/features/auth/pages/login_page.dart';
+import 'package:acter/features/news/pages/add_news_page.dart';
 import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
-import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
-import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/features/space/sheets/link_room_sheet.dart';
+import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
@@ -67,8 +68,11 @@ final generalRoutes = [
     parentNavigatorKey: rootNavKey,
     name: Routes.saveUsername.name,
     path: Routes.saveUsername.route,
-    builder: (context, state) =>
-        SaveUsernamePage(username: state.uri.queryParameters['username']!),
+    builder: (context, state) {
+      final username = state.uri.queryParameters['username']
+          .expect('saveUsername route needs username as query param');
+      return SaveUsernamePage(username: username);
+    },
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
@@ -104,10 +108,16 @@ final generalRoutes = [
     parentNavigatorKey: rootNavKey,
     name: Routes.fatalFail.name,
     path: Routes.fatalFail.route,
-    builder: (context, state) => FatalFailPage(
-      error: state.uri.queryParameters['error']!,
-      trace: state.uri.queryParameters['trace']!,
-    ),
+    builder: (context, state) {
+      final error = state.uri.queryParameters['error']
+          .expect('fatalFail route needs error query param');
+      final trace = state.uri.queryParameters['trace']
+          .expect('fatalFail route needs trace query param');
+      return FatalFailPage(
+        error: error,
+        trace: trace,
+      );
+    },
   ),
   GoRoute(
     name: Routes.createPin.name,
@@ -151,6 +161,8 @@ final generalRoutes = [
     name: Routes.linkChat.name,
     path: Routes.linkChat.route,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('linkChat route needs spaceId as path param');
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -165,7 +177,7 @@ final generalRoutes = [
           );
         },
         child: LinkRoomPage(
-          parentSpaceId: state.pathParameters['spaceId']!,
+          parentSpaceId: spaceId,
           pageTitle: 'Link as Space-chat',
           childRoomType: ChildRoomType.chat,
         ),
@@ -177,6 +189,8 @@ final generalRoutes = [
     name: Routes.linkSubspace.name,
     path: Routes.linkSubspace.route,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('linkSubspace route needs spaceId as path param');
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -191,7 +205,7 @@ final generalRoutes = [
           );
         },
         child: LinkRoomPage(
-          parentSpaceId: state.pathParameters['spaceId']!,
+          parentSpaceId: spaceId,
           pageTitle: 'Link Sub-Space',
           childRoomType: ChildRoomType.space,
         ),
@@ -203,6 +217,8 @@ final generalRoutes = [
     name: Routes.linkRecommended.name,
     path: Routes.linkRecommended.route,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('linkRecommended route needs spaceId as path param');
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -217,7 +233,7 @@ final generalRoutes = [
           );
         },
         child: LinkRoomPage(
-          parentSpaceId: state.pathParameters['spaceId']!,
+          parentSpaceId: spaceId,
           pageTitle: 'Link Recommended-Space',
           childRoomType: ChildRoomType.recommendedSpace,
         ),
@@ -279,10 +295,12 @@ final generalRoutes = [
     name: Routes.fullScreenAvatar.name,
     path: Routes.fullScreenAvatar.route,
     pageBuilder: (context, state) {
+      final roomId = state.uri.queryParameters['roomId']
+          .expect('fullScreenAvatar route needs roomId as query param');
       return NoTransitionPage(
         key: state.pageKey,
         child: FullScreenAvatarPage(
-          roomId: state.uri.queryParameters['roomId']!,
+          roomId: roomId,
         ),
       );
     },
