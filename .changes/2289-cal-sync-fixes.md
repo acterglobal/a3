@@ -1,1 +1,0 @@
-- [labs] [Fix] synchronize calendar sync to avoid double events and duplicate calendars

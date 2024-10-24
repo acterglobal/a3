@@ -1,1 +1,0 @@
-- New Quick action buttons now accessible by swipe-up on bottom navigation bar and from side bar navigation panel
