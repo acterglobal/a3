@@ -141,9 +141,9 @@ async fn news_plain_text_test() -> Result<()> {
     .await?;
 
     let slides = space.latest_news_entries(1).await?;
-    let final_entry = slides.first().expect("Item is there");
-    let _event_id = final_entry.event_id();
-    let text_slide = final_entry.get_slide(0).expect("we have a slide");
+    let second_news = slides.first().expect("Item is there");
+    let _event_id = second_news.event_id();
+    let text_slide = second_news.get_slide(0).expect("we have a slide");
     assert_eq!(text_slide.type_str(), "text");
     let msg_content = text_slide.msg_content();
     assert!(msg_content.formatted_body().is_none());
@@ -693,6 +693,164 @@ async fn news_read_receipt_test() -> Result<()> {
                 let new_receipts_manager = receipts_manager.reload().await?;
                 if new_receipts_manager.read_count() != uidx + 1 {
                     bail!("news read receipt after {uidx} not found");
+                }
+                Ok(())
+            }
+        })
+        .await?;
+    }
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn multi_news_read_receipt_test() -> Result<()> {
+    // In this test we create two news entries, an older and a newer one
+    // then sync up the several users and have them check off the newer
+    // and then the older one as read by them and expect the view count
+    // to increase as such
+    // Note: this is incompatible with the way that matrix thinks about
+    //       read receipts - latest marked means all before are marked -
+    //       and ensures that our implementation properly does though.
+    let _ = env_logger::try_init();
+    let (mut users, room_id) = random_users_with_random_space("news_views", 4).await?;
+    let mut user = users.remove(0);
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
+    })
+    .await?;
+
+    let space = user.space(room_id.to_string()).await?;
+    let mut draft = space.news_draft()?;
+    let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
+    draft.add_slide(Box::new(text_draft.into())).await?;
+    let first_news_id = draft.send().await?;
+
+    let mut draft = space.news_draft()?;
+    let text_draft = user.text_markdown_draft("## This is a second news".to_owned());
+    draft.add_slide(Box::new(text_draft.into())).await?;
+    let second_news_id = draft.send().await?;
+
+    let space_cl = space.clone();
+    let slides = Retry::spawn(retry_strategy.clone(), move || {
+        let inner_space = space_cl.clone();
+        async move {
+            let news_entries = inner_space.latest_news_entries(2).await?;
+            if news_entries.len() != 2 {
+                bail!("news not found");
+            }
+            Ok(news_entries)
+        }
+    })
+    .await?;
+    let mut slides_iter = slides.into_iter();
+    let newest_slide = slides_iter.next().unwrap();
+    assert_eq!(newest_slide.event_id(), second_news_id);
+    let older_slide = slides_iter.next().unwrap();
+    assert_eq!(older_slide.event_id(), first_news_id);
+
+    let newest_slide_rr_manager = newest_slide.read_receipts().await?;
+    assert_eq!(newest_slide_rr_manager.read_count(), 0);
+    let older_slide_rr_manager = older_slide.read_receipts().await?;
+    assert_eq!(older_slide_rr_manager.read_count(), 0);
+
+    for (idx, mut user) in users.into_iter().enumerate() {
+        let state_sync = user.start_sync();
+        state_sync.await_has_synced_history().await?;
+        let uidx = idx as u32;
+        let newest_subscriber = newest_slide_rr_manager.subscribe();
+        let older_subscriber = older_slide_rr_manager.subscribe();
+
+        let fetcher_client = user.clone();
+        let target_id = room_id.clone();
+        Retry::spawn(retry_strategy.clone(), move || {
+            let client = fetcher_client.clone();
+            let room_id = target_id.clone();
+            async move { client.space(room_id.to_string()).await }
+        })
+        .await?;
+
+        let space = user.space(room_id.to_string()).await?;
+
+        let space_cl = space.clone();
+        let mut slides = Retry::spawn(retry_strategy.clone(), move || {
+            let inner_space = space_cl.clone();
+            async move {
+                let news_entries = inner_space.latest_news_entries(2).await?;
+                if news_entries.len() != 2 {
+                    bail!("news not found");
+                }
+                Ok(news_entries)
+            }
+        })
+        .await?
+        .into_iter();
+
+        let newest_entry = slides.next().unwrap();
+        assert_eq!(newest_entry.event_id(), second_news_id);
+
+        let local_receipts_manager = newest_entry.read_receipts().await?;
+        assert_eq!(local_receipts_manager.read_count(), uidx);
+        local_receipts_manager.announce_read().await?;
+
+        Retry::spawn(retry_strategy.clone(), || async {
+            if newest_subscriber.is_empty() {
+                bail!("newer: not been alerted to reload");
+            }
+            Ok(())
+        })
+        .await?;
+
+        assert!(older_subscriber.is_empty());
+
+        let receipts_manager = newest_slide_rr_manager.clone();
+        Retry::spawn(retry_strategy.clone(), move || {
+            let receipts_manager = receipts_manager.clone();
+            async move {
+                let new_receipts_manager = receipts_manager.reload().await?;
+                let read_count = new_receipts_manager.read_count();
+                if read_count != uidx + 1 {
+                    bail!("newer: news read receipt {read_count} wrong at {uidx} ");
+                }
+                Ok(())
+            }
+        })
+        .await?;
+
+        // now the user is looking at the older slide
+
+        let older_entry = slides.next().unwrap();
+        assert_eq!(older_entry.event_id(), first_news_id);
+
+        let local_receipts_manager = older_entry.read_receipts().await?;
+        assert_eq!(local_receipts_manager.read_count(), uidx);
+        local_receipts_manager.announce_read().await?;
+
+        Retry::spawn(retry_strategy.clone(), || async {
+            if older_subscriber.is_empty() {
+                bail!("older: not been alerted to reload");
+            }
+            Ok(())
+        })
+        .await?;
+
+        let receipts_manager = older_slide_rr_manager.clone();
+        Retry::spawn(retry_strategy.clone(), move || {
+            let receipts_manager = receipts_manager.clone();
+            async move {
+                let new_receipts_manager = receipts_manager.reload().await?;
+                let read_count = new_receipts_manager.read_count();
+                if read_count != uidx + 1 {
+                    bail!("older: news read receipt {read_count} wrong at {uidx} ");
                 }
                 Ok(())
             }
