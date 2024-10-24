@@ -1,1 +1,0 @@
-- [Labs] [Fix] Only add reminders on the device calendar for events that the user RSVP'ed maybe or yes, too. Keep the others quiet. 

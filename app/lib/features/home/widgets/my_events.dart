@@ -4,6 +4,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -45,7 +46,7 @@ class MyEventsSection extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             sectionHeader(context, sectionTitle),
-            eventListUI(context, calEvents),
+            eventListUI(context, ref, calEvents),
           ],
         );
       },
@@ -73,7 +74,11 @@ class MyEventsSection extends ConsumerWidget {
     );
   }
 
-  Widget eventListUI(BuildContext context, List<CalendarEvent> events) {
+  Widget eventListUI(
+    BuildContext context,
+    WidgetRef ref,
+    List<CalendarEvent> events,
+  ) {
     final count = limit.map((val) => min(val, events.length)) ?? events.length;
     return ListView.builder(
       shrinkWrap: true,
@@ -83,6 +88,7 @@ class MyEventsSection extends ConsumerWidget {
         isShowSpaceName: true,
         margin: const EdgeInsets.only(bottom: 14),
         event: events[index],
+        eventType: ref.watch(eventTypeProvider(events[index])),
       ),
     );
   }

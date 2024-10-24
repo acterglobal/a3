@@ -2,7 +2,6 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/blinking_text.dart';
-import 'package:acter/features/events/actions/get_event_type.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
@@ -22,6 +21,7 @@ class EventItem extends StatelessWidget {
   final Function(String)? onTapEventItem;
   final bool isShowRsvp;
   final bool isShowSpaceName;
+  final EventFilters eventType;
 
   const EventItem({
     super.key,
@@ -30,6 +30,7 @@ class EventItem extends StatelessWidget {
     this.onTapEventItem,
     this.isShowRsvp = true,
     this.isShowSpaceName = false,
+    required this.eventType,
   });
 
   @override
@@ -53,7 +54,10 @@ class EventItem extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                EventDateWidget(calendarEvent: event),
+                EventDateWidget(
+                  calendarEvent: event,
+                  eventType: eventType,
+                ),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -66,7 +70,7 @@ class EventItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                if (getEventType(event) == EventFilters.ongoing)
+                if (eventType == EventFilters.ongoing)
                   _buildHappeningIndication(context),
                 const SizedBox(width: 10),
                 if (isShowRsvp) _buildRsvpStatus(context),
