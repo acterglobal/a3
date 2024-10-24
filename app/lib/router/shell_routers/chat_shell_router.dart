@@ -60,9 +60,7 @@ final chatShellRoutes = [
       return NoTransitionPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(
-          centerChild: RoomPage(
-            roomId: roomId,
-          ),
+          centerChild: RoomPage(roomId: roomId),
         ),
       );
     },
@@ -80,12 +78,8 @@ final chatShellRoutes = [
       return NoTransitionPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(
-          centerChild: RoomPage(
-            roomId: roomId,
-          ),
-          expandedChild: RoomProfilePage(
-            roomId: roomId,
-          ),
+          centerChild: RoomPage(roomId: roomId),
+          expandedChild: RoomProfilePage(roomId: roomId),
         ),
       );
     },
@@ -103,9 +97,7 @@ final chatShellRoutes = [
       return NoTransitionPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(
-          centerChild: RoomPage(
-            roomId: roomId,
-          ),
+          centerChild: RoomPage(roomId: roomId),
           expandedChild: VisibilityAccessibilityPage(
             roomId: roomId,
             impliedClose: true,
@@ -124,12 +116,8 @@ final chatShellRoutes = [
       return NoTransitionPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(
-          centerChild: RoomPage(
-            roomId: roomId,
-          ),
-          expandedChild: InvitePage(
-            roomId: roomId,
-          ),
+          centerChild: RoomPage(roomId: roomId),
+          expandedChild: InvitePage(roomId: roomId),
         ),
       );
     },

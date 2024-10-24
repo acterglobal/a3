@@ -97,11 +97,16 @@ final generalRoutes = [
     name: Routes.bugReport.name,
     path: Routes.bugReport.route,
     pageBuilder: (context, state) => DialogPage(
-      builder: (BuildContext context) => BugReportPage(
-        imagePath: state.uri.queryParameters['screenshot'],
-        error: state.uri.queryParameters['error'],
-        stack: state.uri.queryParameters['stack'],
-      ),
+      builder: (BuildContext context) {
+        final screenshot = state.uri.queryParameters['screenshot'];
+        final error = state.uri.queryParameters['error'];
+        final stack = state.uri.queryParameters['stack'];
+        return BugReportPage(
+          imagePath: screenshot,
+          error: error,
+          stack: stack,
+        );
+      },
     ),
   ),
   GoRoute(
@@ -123,11 +128,11 @@ final generalRoutes = [
     name: Routes.createPin.name,
     path: Routes.createPin.route,
     pageBuilder: (context, state) {
-      final String? spaceId = state.uri.queryParameters['spaceId'];
+      final spaceId = state.uri.queryParameters['spaceId'];
       return NoTransitionPage(
         key: state.pageKey,
         child: CreatePinPage(
-          initialSelectedSpace: (spaceId?.isNotEmpty == true) ? spaceId : null,
+          initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
         ),
       );
     },
@@ -137,6 +142,7 @@ final generalRoutes = [
     name: Routes.actionCreateSuperInvite.name,
     path: Routes.actionCreateSuperInvite.route,
     pageBuilder: (context, state) {
+      final token = state.extra as SuperInviteToken?;
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -144,15 +150,11 @@ final generalRoutes = [
             position: Tween(
               begin: const Offset(1, 0),
               end: const Offset(0, 0),
-            ).animate(
-              animation,
-            ),
+            ).animate(animation),
             child: child,
           );
         },
-        child: CreateSuperInviteTokenPage(
-          token: state.extra != null ? state.extra as SuperInviteToken : null,
-        ),
+        child: CreateSuperInviteTokenPage(token: token),
       );
     },
   ),
@@ -170,9 +172,7 @@ final generalRoutes = [
             position: Tween(
               begin: const Offset(1, 0),
               end: const Offset(0, 0),
-            ).animate(
-              animation,
-            ),
+            ).animate(animation),
             child: child,
           );
         },
@@ -198,9 +198,7 @@ final generalRoutes = [
             position: Tween(
               begin: const Offset(1, 0),
               end: const Offset(0, 0),
-            ).animate(
-              animation,
-            ),
+            ).animate(animation),
             child: child,
           );
         },
@@ -226,9 +224,7 @@ final generalRoutes = [
             position: Tween(
               begin: const Offset(1, 0),
               end: const Offset(0, 0),
-            ).animate(
-              animation,
-            ),
+            ).animate(animation),
             child: child,
           );
         },
@@ -246,12 +242,11 @@ final generalRoutes = [
     path: Routes.actionAddUpdate.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final String? spaceId = state.uri.queryParameters['spaceId'];
+      final spaceId = state.uri.queryParameters['spaceId'];
       return NoTransitionPage(
         key: state.pageKey,
         child: AddNewsPage(
-          initialSelectedSpace:
-              (spaceId != null && spaceId.isNotEmpty) ? spaceId : null,
+          initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
         ),
       );
     },
@@ -261,31 +256,32 @@ final generalRoutes = [
     name: Routes.createChat.name,
     path: Routes.createChat.route,
     pageBuilder: (context, state) {
+      final spaceId = state.uri.queryParameters['spaceId'];
+      final page = state.extra as int?;
       return context.isLargeScreen
           ? DialogPage(
               barrierDismissible: false,
               builder: (context) => CreateChatPage(
-                initialSelectedSpaceId: state.uri.queryParameters['spaceId'],
-                initialPage: state.extra as int?,
+                initialSelectedSpaceId: spaceId,
+                initialPage: page,
               ),
             )
           : CustomTransitionPage(
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
-                var begin = const Offset(0.0, 1.0);
-                var end = Offset.zero;
-                var curve = Curves.easeInOut;
-                var tween = Tween(begin: begin, end: end)
-                    .chain(CurveTween(curve: curve));
-                var offsetAnimation = animation.drive(tween);
+                final tween = Tween(
+                  begin: const Offset(0, 1),
+                  end: Offset.zero,
+                ).chain(CurveTween(curve: Curves.easeInOut));
+                final offsetAnimation = animation.drive(tween);
                 return SlideTransition(
                   position: offsetAnimation,
                   child: child,
                 );
               },
               child: CreateChatPage(
-                initialSelectedSpaceId: state.uri.queryParameters['spaceId'],
-                initialPage: state.extra as int?,
+                initialSelectedSpaceId: spaceId,
+                initialPage: page,
               ),
             );
     },
@@ -299,9 +295,7 @@ final generalRoutes = [
           .expect('fullScreenAvatar route needs roomId as query param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: FullScreenAvatarPage(
-          roomId: roomId,
-        ),
+        child: FullScreenAvatarPage(roomId: roomId),
       );
     },
   ),

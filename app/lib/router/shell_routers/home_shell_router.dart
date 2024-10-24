@@ -225,9 +225,7 @@ final homeShellRoutes = [
           .expect('subSpaces route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: SubSpacesPage(
-          spaceId: spaceId,
-        ),
+        child: SubSpacesPage(spaceId: spaceId),
       );
     },
   ),
@@ -240,9 +238,7 @@ final homeShellRoutes = [
           .expect('subChats route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: SubChatsPage(
-          spaceId: spaceId,
-        ),
+        child: SubChatsPage(spaceId: spaceId),
       );
     },
   ),
@@ -273,9 +269,7 @@ final homeShellRoutes = [
           .expect('spaceMembers route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: SpaceMembersPage(
-          spaceIdOrAlias: spaceId,
-        ),
+        child: SpaceMembersPage(spaceIdOrAlias: spaceId),
       );
     },
   ),
@@ -288,9 +282,7 @@ final homeShellRoutes = [
           .expect('spacePins route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: PinsListPage(
-          spaceId: spaceId,
-        ),
+        child: PinsListPage(spaceId: spaceId),
       );
     },
   ),
@@ -303,9 +295,7 @@ final homeShellRoutes = [
           .expect('spaceEvents route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: EventListPage(
-          spaceId: spaceId,
-        ),
+        child: EventListPage(spaceId: spaceId),
       );
     },
   ),
@@ -318,9 +308,7 @@ final homeShellRoutes = [
           .expect('spaceTasks route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: TasksListPage(
-          spaceId: spaceId,
-        ),
+        child: TasksListPage(spaceId: spaceId),
       );
     },
   ),
@@ -333,9 +321,7 @@ final homeShellRoutes = [
           .expect('spaceUpdates route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: NewsListPage(
-          spaceId: spaceId,
-        ),
+        child: NewsListPage(spaceId: spaceId),
       );
     },
   ),
@@ -344,11 +330,10 @@ final homeShellRoutes = [
     path: Routes.searchPublicDirectory.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final query = state.uri.queryParameters['query'];
       return NoTransitionPage(
         key: state.pageKey,
-        child: SearchPublicDirectory(
-          query: state.uri.queryParameters['query'],
-        ),
+        child: SearchPublicDirectory(query: query),
       );
     },
   ),
@@ -361,9 +346,7 @@ final homeShellRoutes = [
           .expect('space route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: SpaceDetailsPage(
-          spaceId: spaceId,
-        ),
+        child: SpaceDetailsPage(spaceId: spaceId),
       );
     },
   ),
@@ -389,9 +372,7 @@ final homeShellRoutes = [
           .expect('spaceSettings route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: SpaceSettingsMenuIndexPage(
-          spaceId: spaceId,
-        ),
+        child: SpaceSettingsMenuIndexPage(spaceId: spaceId),
       );
     },
   ),
@@ -404,9 +385,7 @@ final homeShellRoutes = [
           .expect('spaceSettingsApps route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: SpaceAppsSettingsPage(
-          spaceId: spaceId,
-        ),
+        child: SpaceAppsSettingsPage(spaceId: spaceId),
       );
     },
   ),
@@ -420,12 +399,8 @@ final homeShellRoutes = [
       return NoTransitionPage(
         key: state.pageKey,
         child: WithSidebar(
-          sidebar: SpaceSettingsMenu(
-            spaceId: spaceId,
-          ),
-          child: VisibilityAccessibilityPage(
-            roomId: spaceId,
-          ),
+          sidebar: SpaceSettingsMenu(spaceId: spaceId),
+          child: VisibilityAccessibilityPage(roomId: spaceId),
         ),
       );
     },
@@ -440,9 +415,7 @@ final homeShellRoutes = [
       );
       return NoTransitionPage(
         key: state.pageKey,
-        child: SpaceNotificationConfigurationPage(
-          spaceId: spaceId,
-        ),
+        child: SpaceNotificationConfigurationPage(spaceId: spaceId),
       );
     },
   ),
@@ -484,9 +457,7 @@ final homeShellRoutes = [
           .expect('taskListDetails route needs taskListId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: TaskListDetailPage(
-          taskListId: taskListId,
-        ),
+        child: TaskListDetailPage(taskListId: taskListId),
       );
     },
   ),
@@ -511,9 +482,7 @@ final homeShellRoutes = [
           .expect('pin route needs pinId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: PinDetailsPage(
-          pinId: pinId,
-        ),
+        child: PinDetailsPage(pinId: pinId),
       );
     },
   ),
@@ -541,7 +510,7 @@ final homeShellRoutes = [
       return NoTransitionPage(
         key: state.pageKey,
         child: CreateEventPage(
-          initialSelectedSpace: (spaceId?.isNotEmpty == true) ? spaceId : null,
+          initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
           templateEvent: templateEvent,
         ),
       );
@@ -556,9 +525,7 @@ final homeShellRoutes = [
           .expect('calendarEvent route needs calendarId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: EventDetailPage(
-          calendarId: calendarId,
-        ),
+        child: EventDetailPage(calendarId: calendarId),
       );
     },
   ),
@@ -579,11 +546,10 @@ final homeShellRoutes = [
     path: Routes.createSpace.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final parentSpaceId = state.uri.queryParameters['parentSpaceId'];
       return NoTransitionPage(
         key: state.pageKey,
-        child: CreateSpacePage(
-          initialParentsSpaceId: state.uri.queryParameters['parentSpaceId'],
-        ),
+        child: CreateSpacePage(initialParentsSpaceId: parentSpaceId),
       );
     },
   ),
@@ -596,9 +562,7 @@ final homeShellRoutes = [
           .expect('spaceInvite route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: InvitePage(
-          roomId: spaceId,
-        ),
+        child: InvitePage(roomId: spaceId),
       );
     },
   ),
@@ -611,9 +575,7 @@ final homeShellRoutes = [
           .expect('inviteIndividual route needs roomId as query param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: InviteIndividualUsers(
-          roomId: roomId,
-        ),
+        child: InviteIndividualUsers(roomId: roomId),
       );
     },
   ),
@@ -626,9 +588,7 @@ final homeShellRoutes = [
           .expect('inviteSpaceMembers route needs roomId as query param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: InviteSpaceMembers(
-          roomId: roomId,
-        ),
+        child: InviteSpaceMembers(roomId: roomId),
       );
     },
   ),
@@ -659,9 +619,7 @@ final homeShellRoutes = [
           .expect('invitePending route needs roomId as query param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: InvitePending(
-          roomId: roomId,
-        ),
+        child: InvitePending(roomId: roomId),
       );
     },
   ),
