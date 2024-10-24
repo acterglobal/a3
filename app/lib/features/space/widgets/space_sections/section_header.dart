@@ -5,12 +5,12 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class SectionHeader extends StatelessWidget {
   final String title;
   final bool isShowSeeAllButton;
-  final VoidCallback onTapSeeAll;
+  final VoidCallback? onTapSeeAll;
 
   const SectionHeader({
     super.key,
     required this.title,
-    required this.onTapSeeAll,
+    this.onTapSeeAll,
     this.isShowSeeAllButton = false,
   });
 
@@ -21,7 +21,7 @@ class SectionHeader extends StatelessWidget {
 
   Widget sectionHeaderUI(BuildContext context) {
     return GestureDetector(
-      onTap: () => onTapSeeAll(),
+      onTap: onTapSeeAll,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14),
         margin: const EdgeInsets.symmetric(vertical: 12),
@@ -50,7 +50,7 @@ class SectionHeader extends StatelessWidget {
             const Spacer(),
             isShowSeeAllButton
                 ? ActerInlineTextButton(
-                    onPressed: () => onTapSeeAll(),
+                    onPressed: onTapSeeAll,
                     child: Text(L10n.of(context).seeAll),
                   )
                 : const SizedBox(height: 50),

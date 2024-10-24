@@ -207,8 +207,9 @@ class _CreateUpdateTaskListConsumerState
     if (!_formKey.currentState!.validate()) return;
     EasyLoading.show(status: lang.postingTaskList);
     try {
-      final spaceId = ref.read(selectedSpaceIdProvider);
-      final space = await ref.read(spaceProvider(spaceId!).future);
+      final spaceId =
+          ref.read(selectedSpaceIdProvider).expect('space not selected');
+      final space = await ref.read(spaceProvider(spaceId).future);
       final taskListDraft = space.taskListDraft();
 
       // TaskList IconData
@@ -216,12 +217,9 @@ class _CreateUpdateTaskListConsumerState
       if (taskListIconColor != null || taskListIcon != null) {
         final sdk = await ref.read(sdkProvider.future);
         final displayBuilder = sdk.api.newDisplayBuilder();
-        if (taskListIconColor != null) {
-          displayBuilder.color(taskListIconColor!.value);
-        }
-        if (taskListIcon != null) {
-          displayBuilder.icon('acter-icon', taskListIcon!.name);
-        }
+        taskListIconColor.map((color) => displayBuilder.color(color.value));
+        taskListIcon
+            .map((icon) => displayBuilder.icon('acter-icon', icon.name));
         taskListDraft.display(displayBuilder.build());
       }
 

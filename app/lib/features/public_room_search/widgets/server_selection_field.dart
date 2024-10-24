@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -73,15 +74,15 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
         );
       },
       itemBuilder: (context, entry) {
-        if (entry.name != null) {
-          return ListTile(
-            title: Text(entry.name!),
-            subtitle: Text(entry.value),
-          );
-        }
-        return ListTile(
-          title: Text(entry.value),
-        );
+        return entry.name.map(
+              (name) => ListTile(
+                title: Text(name),
+                subtitle: Text(entry.value),
+              ),
+            ) ??
+            ListTile(
+              title: Text(entry.value),
+            );
       },
       onSelected: (entry) => onSubmit(entry.value),
     );

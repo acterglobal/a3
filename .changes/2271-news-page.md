@@ -1,1 +1,0 @@
-- Refactor of NewsEditor gives clearer Error messages and allows to clear drafts when leaving

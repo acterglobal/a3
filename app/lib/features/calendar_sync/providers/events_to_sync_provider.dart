@@ -1,5 +1,5 @@
 //ALL UPCOMING EVENTS
-import 'package:acter/features/events/actions/get_event_type.dart';
+import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +10,7 @@ final eventsToSyncProvider = FutureProvider.autoDispose((ref) async {
   // fetch all from all spaces
   final allEventList = await ref.watch(allEventListProvider(null).future);
   final upcomingAndOngoing = allEventList.where((event) {
-    final eventType = getEventType(event);
+    final eventType = ref.watch(eventTypeProvider(event));
     return eventType == EventFilters.upcoming ||
         eventType == EventFilters.ongoing;
   });

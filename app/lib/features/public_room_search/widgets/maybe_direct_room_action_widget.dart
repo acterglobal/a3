@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -94,7 +95,8 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
         ),
       );
     }
-    final room = roomWatch.value!;
+    final room =
+        roomWatch.value.expect('could not get room from id without domain');
 
     if (room.isJoined()) {
       return room.isSpace()
@@ -114,16 +116,10 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
             );
     }
 
-    final trailing = noMemberButton(context, ref, room, roomId, servers);
-    return room.isSpace()
-        ? renderRoomCard(
-            roomId,
-            trailing: trailing,
-          )
-        : renderRoomCard(
-            roomId,
-            trailing: trailing,
-          );
+    return renderRoomCard(
+      roomId,
+      trailing: noMemberButton(context, ref, room, roomId, servers),
+    );
   }
 
   Widget noMemberButton(
@@ -184,8 +180,12 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     final aliased = aliasedHttpRegexp.firstMatch(searchVal) ??
         idAliasRegexp.firstMatch(searchVal);
     if (canMatchAlias && aliased != null) {
-      final alias = aliased.namedGroup('alias')!;
-      final server = aliased.namedGroup('server')!;
+      final alias = aliased
+          .namedGroup('alias')
+          .expect('could not extract alias from search value');
+      final server = aliased
+          .namedGroup('server')
+          .expect('could not extract server from search value');
       return renderAliased(context, ref, alias, server);
     }
 
@@ -193,7 +193,8 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
         idMatrixRegexp.firstMatch(searchVal);
 
     if (canMatchId && id != null) {
-      final roomId = id.namedGroup('id')!;
+      final roomId =
+          id.namedGroup('id').expect('could not extract id from search value');
       final List<String> servers = [
         id.namedGroup('server_name') ?? '',
         id.namedGroup('server_name2') ?? '',

@@ -1,13 +1,14 @@
+import 'package:acter/features/datetime/providers/utc_now_provider.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
-import 'package:dart_date/dart_date.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
-EventFilters getEventType(ffi.CalendarEvent event) {
+final eventTypeProvider =
+    Provider.autoDispose.family<EventFilters, ffi.CalendarEvent>((ref, event) {
   DateTime eventStartDateTime = toDartDatetime(event.utcStart());
   DateTime eventEndDateTime = toDartDatetime(event.utcEnd());
-  DateTime currentDateTime = DateTime.now().toUTC;
+  DateTime currentDateTime = ref.read(utcNowProvider);
 
   //Check for event type
   if (eventStartDateTime.isBefore(currentDateTime) &&
@@ -19,4 +20,4 @@ EventFilters getEventType(ffi.CalendarEvent event) {
     return EventFilters.past;
   }
   return EventFilters.all;
-}
+});

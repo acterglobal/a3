@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/member/widgets/member_list_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -12,7 +14,7 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::space::members_page');
 
-class SpaceMembersPage extends ConsumerWidget {
+class SpaceMembersPage extends ConsumerStatefulWidget {
   final String spaceIdOrAlias;
 
   const SpaceMembersPage({
@@ -21,14 +23,26 @@ class SpaceMembersPage extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SpaceMembersPage> createState() => _SpaceMembersPageState();
+}
+
+class _SpaceMembersPageState extends ConsumerState<SpaceMembersPage> {
+  String get searchValue => ref.watch(searchValueProvider);
+
+  @override
+  Widget build(BuildContext context) {
     final lang = L10n.of(context);
-    final membersLoader = ref.watch(membersIdsProvider(spaceIdOrAlias));
+    final membersLoader = ref.watch(
+      membersIdWithSearchProvider(
+        (roomId: widget.spaceIdOrAlias, searchValue: searchValue),
+      ),
+    );
     final membership =
-        ref.watch(roomMembershipProvider(spaceIdOrAlias)).valueOrNull;
-    final invited =
-        ref.watch(spaceInvitedMembersProvider(spaceIdOrAlias)).valueOrNull ??
-            [];
+        ref.watch(roomMembershipProvider(widget.spaceIdOrAlias)).valueOrNull;
+    final invited = ref
+            .watch(spaceInvitedMembersProvider(widget.spaceIdOrAlias))
+            .valueOrNull ??
+        [];
     final showInviteBtn = membership?.canString('CanInvite') == true;
 
     return CustomScrollView(
@@ -45,12 +59,24 @@ class SpaceMembersPage extends ConsumerWidget {
                     ),
                     onPressed: () => context.pushNamed(
                       Routes.spaceInvite.name,
-                      pathParameters: {'spaceId': spaceIdOrAlias},
+                      pathParameters: {'spaceId': widget.spaceIdOrAlias},
                     ),
                     child: Text(lang.invite),
                   )
                 : const SizedBox.shrink(),
           ],
+        ),
+        SliverToBoxAdapter(
+          child: ActerSearchWidget(
+            onChanged: (value) {
+              final notifier = ref.read(searchValueProvider.notifier);
+              notifier.state = value;
+            },
+            onClear: () {
+              final notifier = ref.read(searchValueProvider.notifier);
+              notifier.state = '';
+            },
+          ),
         ),
         membersLoader.when(
           data: (members) {
@@ -72,10 +98,11 @@ class SpaceMembersPage extends ConsumerWidget {
               ),
               itemBuilder: (context, index) => MemberListEntry(
                 memberId: members[index],
-                roomId: spaceIdOrAlias,
+                roomId: widget.spaceIdOrAlias,
               ),
             );
           },
+          skipLoadingOnReload: false,
           error: (e, s) {
             _log.severe('Failed to load space members', e, s);
             return SliverToBoxAdapter(

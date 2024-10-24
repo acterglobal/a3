@@ -1,8 +1,9 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/extensions/acter_build_context.dart';
-import 'package:acter/config/notifications/init.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -50,7 +51,9 @@ class __AddEmailState extends State<_AddEmail> {
         initialSelection: widget.emails.first,
         onSelected: (String? value) {
           // This is called when the user selects an item.
-          setState(() => emailAddr = value!);
+          setState(() {
+            emailAddr = value.expect('email selection is invalid');
+          });
         },
         dropdownMenuEntries: widget.emails.map((String value) {
           return DropdownMenuEntry<String>(

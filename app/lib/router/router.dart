@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/pages/not_found.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -66,8 +67,9 @@ Future<String?> forwardRedirect(
     }
     Client client;
     try {
-      final deviceId = state.uri.queryParameters['deviceId'];
-      client = await acterSdk.getClientWithDeviceId(deviceId!, true);
+      final deviceId = state.uri.queryParameters['deviceId']
+          .expect('query params should contain device id');
+      client = await acterSdk.getClientWithDeviceId(deviceId, true);
       // ignore: use_build_context_synchronously
       final ref = ProviderScope.containerOf(context);
       // ensure we have selected the right client

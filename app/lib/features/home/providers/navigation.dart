@@ -5,6 +5,7 @@ import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
 import 'package:acter/features/home/widgets/chats_icon.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
+import 'package:acter/features/news/widgets/news_full_view.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -29,9 +30,12 @@ final bottomBarItems = [
       key: MainNavKeys.updates,
       Atlas.megaphone_thin,
     ),
-    activeIcon: const CustomSelectedIcon(
-      icon: Icon(Atlas.megaphone_thin),
+    activeIcon: CustomSelectedIcon(
+      icon: const Icon(Atlas.megaphone_thin),
       key: MainNavKeys.updates,
+      onTap: () {
+        NewsVerticalViewState.goToPage(0);
+      },
     ),
     label: 'Updates',
     initialLocation: Routes.updates.route,
