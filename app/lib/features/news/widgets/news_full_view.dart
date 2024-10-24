@@ -16,24 +16,31 @@ class NewsFullView extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<NewsFullView> createState() => _NewsVerticalViewState();
+  ConsumerState<NewsFullView> createState() => NewsVerticalViewState();
 }
 
-class _NewsVerticalViewState extends ConsumerState<NewsFullView> {
-  late PageController _pageController;
+class NewsVerticalViewState extends ConsumerState<NewsFullView> {
+  static PageController? _pageController;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(
-      initialPage: widget.initialPageIndex,
-    );
+    _pageController = PageController(initialPage: widget.initialPageIndex);
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
+    _pageController?.dispose();
+    _pageController = null;
     super.dispose();
+  }
+
+  static void goToPage(int index) {
+    _pageController?.animateToPage(
+      index,
+      curve: Curves.easeIn,
+      duration: const Duration(milliseconds: 500),
+    );
   }
 
   @override
