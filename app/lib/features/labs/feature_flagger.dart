@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:acter/common/extensions/options.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
