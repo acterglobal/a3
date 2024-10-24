@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/calendar_sync/providers/events_to_sync_provider.dart';
