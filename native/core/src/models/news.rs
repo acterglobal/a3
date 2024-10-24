@@ -57,7 +57,11 @@ impl ActerModel for NewsEntry {
     }
 
     fn capabilities(&self) -> &[Capability] {
-        &[Capability::Commentable, Capability::Reactable]
+        &[
+            Capability::Commentable,
+            Capability::Reactable,
+            Capability::ReadTracking,
+        ]
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

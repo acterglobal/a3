@@ -5,6 +5,7 @@ pub mod comments;
 mod common;
 pub mod news;
 pub mod pins;
+pub mod read_receipt;
 pub mod room;
 pub mod rsvp;
 pub mod settings;
@@ -19,6 +20,7 @@ use matrix_sdk_base::ruma::{
     },
     exports::{serde::de::Error as SerdeDeError, serde_json as smart_serde_json},
 };
+use read_receipt::{ReadReceiptEvent, ReadReceiptEventContent};
 
 #[derive(Clone, Debug)]
 pub enum AnyActerEvent {
@@ -47,6 +49,7 @@ pub enum AnyActerEvent {
     AttachmentUpdate(attachments::AttachmentUpdateEvent),
 
     Reaction(ReactionEvent),
+    ReadReceipt(ReadReceiptEvent),
     Rsvp(rsvp::RsvpEvent),
 }
 
@@ -154,6 +157,14 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                 let event = smart_serde_json::from_str::<rsvp::RsvpEvent>(json.get())
                     .map_err(D::Error::custom)?;
                 Ok(Self::Rsvp(event))
+            }
+
+            ReadReceiptEventContent::TYPE => {
+                let event = ::matrix_sdk_base::ruma::exports::serde_json::from_str::<
+                    ReadReceiptEvent,
+                >(json.get())
+                .map_err(D::Error::custom)?;
+                Ok(Self::ReadReceipt(event))
             }
 
             ReactionEventContent::TYPE => {
