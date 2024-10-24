@@ -59,10 +59,10 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
 
     try {
       //Get media path if already downloaded
-      final mediaPath = await attachment.mediaPath(false);
-      if (mediaPath.text() != null) {
+      final mediaPath = (await attachment.mediaPath(false)).text();
+      if (mediaPath != null) {
         state = state.copyWith(
-          mediaFile: File(mediaPath.text()!),
+          mediaFile: File(mediaPath),
           mediaLoadingState: const AttachmentMediaLoadingState.loaded(),
         );
       } else {
@@ -85,8 +85,8 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
     state = state.copyWith(isDownloading: true);
     //Download media if media path is not available
     final tempDir = await getTemporaryDirectory();
-    final result = await attachment.downloadMedia(null, tempDir.path);
-    String? mediaPath = result.text();
+    final mediaPath =
+        (await attachment.downloadMedia(null, tempDir.path)).text();
     if (mediaPath != null) {
       state = state.copyWith(
         mediaFile: File(mediaPath),
