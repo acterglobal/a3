@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/room_providers.dart';
@@ -310,6 +311,9 @@ class TaskItemDetailPage extends ConsumerWidget {
 
   Widget _widgetTaskDate(BuildContext context, Task task) {
     final lang = L10n.of(context);
+    final dateText =
+        task.dueDate().map((date) => taskDueDateFormat(DateTime.parse(date))) ??
+            lang.noDueDate;
     return ListTile(
       dense: true,
       leading: const Icon(Atlas.calendar_date_thin),
@@ -320,9 +324,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       trailing: Padding(
         padding: const EdgeInsets.only(right: 12),
         child: Text(
-          task.dueDate() != null
-              ? taskDueDateFormat(DateTime.parse(task.dueDate()!))
-              : lang.noDueDate,
+          dateText,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
@@ -334,9 +336,8 @@ class TaskItemDetailPage extends ConsumerWidget {
     final lang = L10n.of(context);
     final newDue = await showDuePicker(
       context: context,
-      initialDate: task.dueDate() != null
-          ? DateTime.parse(task.dueDate()!)
-          : DateTime.now(),
+      initialDate:
+          task.dueDate().map((date) => DateTime.parse(date)) ?? DateTime.now(),
     );
     if (!context.mounted) return;
     if (newDue == null) return;

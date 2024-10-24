@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/features/files/actions/file_share.dart';
@@ -48,6 +49,8 @@ class FileView extends ConsumerWidget {
     WidgetRef ref,
   ) {
     final msgContent = attachment.msgContent();
+    final size =
+        msgContent.size().expect('size of file attachment not available');
     return InkWell(
       onTap: () async {
         final notifier =
@@ -77,7 +80,7 @@ class FileView extends ConsumerWidget {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  formatBytes(msgContent.size()!.truncate()),
+                  formatBytes(size.truncate()),
                   style: Theme.of(context).textTheme.labelSmall!,
                   textScaler: const TextScaler.linear(0.7),
                 ),

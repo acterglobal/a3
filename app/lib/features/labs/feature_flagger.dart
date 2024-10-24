@@ -28,7 +28,7 @@ List<FeatureFlag<T>> featureFlagsFromJson<T extends Enum>(
     json.map((json) {
       final key = json['key']!;
       try {
-        final feature = fromString(key)!;
+        final feature = fromString(key).expect('enum parsing from key failed');
         final active = json['active'];
         return FeatureFlag<T>(feature: feature, active: active);
       } catch (e) {
