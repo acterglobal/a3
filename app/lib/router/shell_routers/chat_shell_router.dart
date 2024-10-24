@@ -3,6 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/widgets/chat_layout_builder.dart';
+import 'package:acter/features/chat_ng/pages/chat_room.dart';
 import 'package:acter/features/chat_ng/widgets/rooms_list.dart';
 import 'package:acter/features/invite_members/pages/invite_page.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
@@ -51,6 +52,9 @@ final chatShellRoutes = [
     path: Routes.chatroom.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final isChatNg = rootNavKey.currentContext
+              ?.read(isActiveProvider(LabsFeature.chatNG)) ==
+          true;
       final roomId = state.pathParameters['roomId']!;
 
       rootNavKey.currentContext
@@ -59,9 +63,13 @@ final chatShellRoutes = [
       return NoTransitionPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(
-          centerChild: RoomPage(
-            roomId: roomId,
-          ),
+          centerChild: isChatNg
+              ? ChatRoomNgPage(
+                  roomId: roomId,
+                )
+              : RoomPage(
+                  roomId: roomId,
+                ),
         ),
       );
     },

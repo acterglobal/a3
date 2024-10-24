@@ -35,6 +35,8 @@ class ChatRoomState with _$ChatRoomState {
     @Default(true) bool hasMore,
   }) = _ChatRoomState;
 
+  RoomMessage? message(String uniqueId) => messages[uniqueId];
+
   ChatRoomState copyWithRemovedMessageAt(int idx) {
     if (this.messageList.isEmpty) {
       return this;

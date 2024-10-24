@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
@@ -31,7 +30,9 @@ class ChatRoomMessagesNotifier extends StateNotifier<ChatRoomState> {
       timeline = await ref.read(timelineStreamProvider(roomId).future);
       _listener = timeline.messagesStream(); // keep it resident in memory
       _poller = _listener.listen(
-        _executeDiff,
+        (diff) {
+          state = handleDiff(state, diff);
+        },
         onError: (e, s) {
           _log.severe('msg stream errored', e, s);
         },
@@ -51,8 +52,6 @@ class ChatRoomMessagesNotifier extends StateNotifier<ChatRoomState> {
       );
     }
   }
-
-  void _executeDiff(RoomMessageDiff diff) {}
 
   Future<void> loadMore({bool failOnError = false}) async {
     if (state.hasMore && !state.loading.isLoading) {
@@ -79,42 +78,10 @@ class ChatRoomMessagesNotifier extends StateNotifier<ChatRoomState> {
   }
 }
 
-// List<RoomMessage> messagesCopy() => List.from(state.messages, growable: true);
-
-// // Messages CRUD
-// void setMessages(List<RoomMessage> messages) =>
-//     state = state.copyWith(messages: messages);
-
-// void insertMessage(int to, RoomMessage m) {
-//   final newState = messagesCopy();
-//   if (to < newState.length) {
-//     newState.insert(to, m);
-//   } else {
-//     newState.add(m);
-//   }
-//   state = state.copyWith(messages: newState);
-// }
-
-// void replaceMessageAt(int index, RoomMessage m) {
-//   WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-//     final newState = messagesCopy();
-//     newState[index] = m;
-//     state = state.copyWith(messages: newState);
-//   });
-// }
-
-// void removeMessage(int idx) {
-//   final newState = messagesCopy();
-//   newState.removeAt(idx);
-//   state = state.copyWith(messages: newState);
-// }
-
-// void resetMessages() => state = state.copyWith(messages: []);
-
-// parses `RoomMessage` event to `RoomMessage` and updates messages list
 @visibleForTesting
 ChatRoomState handleDiff(ChatRoomState state, RoomMessageDiff diff) {
-  switch (diff.action()) {
+  final action = diff.action();
+  switch (action) {
     case 'Append':
       List<RoomMessage> incoming =
           diff.values().expect('append diff must contain values').toList();
@@ -228,6 +195,7 @@ ChatRoomState handleDiff(ChatRoomState state, RoomMessageDiff diff) {
         return state.copyWith(messageList: before, messages: messages);
       }
     default:
+      _log.severe('Unsupported action $action when diffing room messages');
       break;
   }
   return state;
