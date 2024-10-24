@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
@@ -50,6 +51,8 @@ class VideoView extends ConsumerWidget {
     WidgetRef ref,
   ) {
     final msgContent = attachment.msgContent();
+    final size =
+        msgContent.size().expect('size of video attachment not available');
     return InkWell(
       onTap: () async {
         final notifier =
@@ -79,7 +82,7 @@ class VideoView extends ConsumerWidget {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  formatBytes(msgContent.size()!.truncate()),
+                  formatBytes(size.truncate()),
                   style: Theme.of(context).textTheme.labelSmall,
                   textScaler: const TextScaler.linear(0.7),
                 ),

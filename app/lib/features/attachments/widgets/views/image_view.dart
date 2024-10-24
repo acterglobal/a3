@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
@@ -49,6 +50,8 @@ class ImageView extends ConsumerWidget {
     WidgetRef ref,
   ) {
     final msgContent = attachment.msgContent();
+    final size =
+        msgContent.size().expect('size of image attchment not available');
     return InkWell(
       onTap: () async {
         final notifier =
@@ -78,7 +81,7 @@ class ImageView extends ConsumerWidget {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  formatBytes(msgContent.size()!.truncate()),
+                  formatBytes(size.truncate()),
                   style: Theme.of(context).textTheme.labelSmall,
                   textScaler: const TextScaler.linear(0.7),
                 ),

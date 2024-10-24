@@ -259,10 +259,8 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     if (draft != null) {
       final inputNotifier = ref.read(chatInputProvider.notifier);
       inputNotifier.unsetSelectedMessage();
-      if (draft.eventId() != null) {
-        final eventId = draft.eventId()!;
+      draft.eventId().map((eventId) {
         final draftType = draft.draftType();
-
         final m = ref
             .read(chatMessagesProvider(widget.roomId))
             .firstWhere((x) => x.id == eventId);
@@ -271,17 +269,15 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         } else if (draftType == 'reply') {
           inputNotifier.setReplyToMessage(m);
         }
-      }
-      if (draft.htmlText() != null) {
-        await parseUserMentionText(
-          draft.htmlText()!,
-          widget.roomId,
-          textController,
-          ref,
-        );
-      } else {
-        textController.text = draft.plainText();
-      }
+      });
+      await draft.htmlText().mapAsync(
+        (html) async {
+          await parseUserMentionText(html, widget.roomId, textController, ref);
+        },
+        orElse: () {
+          textController.text = draft.plainText();
+        },
+      );
 
       _log.info('compose draft loaded for room: ${widget.roomId}');
     }
