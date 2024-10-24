@@ -1,21 +1,19 @@
-import 'package:acter/features/home/data/keys.dart';
-import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CustomSelectedIcon extends ConsumerWidget {
+class CustomSelectedIcon extends StatelessWidget {
   final Widget icon;
+  final VoidCallback? onTap;
 
-  const CustomSelectedIcon({super.key, required this.icon});
+  const CustomSelectedIcon({
+    super.key,
+    required this.icon,
+    this.onTap,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return InkWell(
-      onDoubleTap: () {
-        if (key == MainNavKeys.updates) {
-          ref.read(boostGoToPageProvider.notifier).state = 0;
-        }
-      },
+      onTap: onTap,
       child: Container(
         height: 30,
         width: 54,
