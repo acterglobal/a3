@@ -102,6 +102,7 @@ class _SpaceMembersPageState extends ConsumerState<SpaceMembersPage> {
               ),
             );
           },
+          skipLoadingOnReload: false,
           error: (e, s) {
             _log.severe('Failed to load space members', e, s);
             return SliverToBoxAdapter(

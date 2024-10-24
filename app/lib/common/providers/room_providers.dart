@@ -311,9 +311,10 @@ final membersIdWithSearchProvider = FutureProvider.family
   final List<String> foundedMembersId = [];
   for (final memberId in membersIdList) {
     final memberInfo = ref.watch(
-        memberAvatarInfoProvider((userId: memberId, roomId: param.roomId)));
-    final displayName = memberInfo.displayName ?? '';
-    if (displayName.toLowerCase().contains(searchTerm)) {
+      memberAvatarInfoProvider((userId: memberId, roomId: param.roomId)),
+    );
+    if (memberInfo.displayName?.toLowerCase().contains(searchTerm) == true ||
+        memberId.toLowerCase().contains(searchTerm)) {
       foundedMembersId.add(memberId);
     }
   }
