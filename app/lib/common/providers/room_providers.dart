@@ -295,6 +295,31 @@ final membersIdsProvider =
   return asDartStringList(members);
 });
 
+typedef RoomMembersSearchParam = ({String roomId, String searchValue});
+
+/// Ids of the members of the Room with search value.
+/// Returns empty list if the room isn’t found
+final membersIdWithSearchProvider = FutureProvider.family
+    .autoDispose<List<String>, RoomMembersSearchParam>((ref, param) async {
+  final room = await ref.watch(maybeRoomProvider(param.roomId).future);
+  if (room == null) return [];
+  final members = await room.activeMembersIds();
+  final List<String> membersIdList = asDartStringList(members);
+  final searchTerm = param.searchValue.toLowerCase();
+  if (searchTerm.isEmpty) return membersIdList;
+
+  final List<String> foundedMembersId = [];
+  for (final memberId in membersIdList) {
+    final memberInfo = ref.watch(
+        memberAvatarInfoProvider((userId: memberId, roomId: param.roomId)));
+    final displayName = memberInfo.displayName ?? '';
+    if (displayName.toLowerCase().contains(searchTerm)) {
+      foundedMembersId.add(memberId);
+    }
+  }
+  return foundedMembersId;
+});
+
 //FIXME : This need to be handle from rust side
 final isDirectChatProvider =
     FutureProvider.family<bool, String>((ref, roomIdOrAlias) async {
