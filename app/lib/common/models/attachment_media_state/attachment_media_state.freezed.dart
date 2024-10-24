@@ -82,6 +82,9 @@ class _$AttachmentMediaLoadingStateCopyWithImpl<$Res,
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of AttachmentMediaLoadingState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -101,6 +104,9 @@ class __$$AttachmentMediaLoadingStateLoadingImplCopyWithImpl<$Res>
       _$AttachmentMediaLoadingStateLoadingImpl _value,
       $Res Function(_$AttachmentMediaLoadingStateLoadingImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of AttachmentMediaLoadingState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -217,6 +223,9 @@ class __$$AttachmentMediaLoadingStateLoadedImplCopyWithImpl<$Res>
       _$AttachmentMediaLoadingStateLoadedImpl _value,
       $Res Function(_$AttachmentMediaLoadingStateLoadedImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of AttachmentMediaLoadingState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -336,6 +345,8 @@ class __$$AttachmentMediaLoadingStateErrorImplCopyWithImpl<$Res>
       $Res Function(_$AttachmentMediaLoadingStateErrorImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of AttachmentMediaLoadingState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -375,7 +386,9 @@ class _$AttachmentMediaLoadingStateErrorImpl
   @override
   int get hashCode => Object.hash(runtimeType, error);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of AttachmentMediaLoadingState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$AttachmentMediaLoadingStateErrorImplCopyWith<
@@ -459,7 +472,10 @@ abstract class _AttachmentMediaLoadingStateError
       _$AttachmentMediaLoadingStateErrorImpl;
 
   String? get error;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of AttachmentMediaLoadingState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$AttachmentMediaLoadingStateErrorImplCopyWith<
           _$AttachmentMediaLoadingStateErrorImpl>
       get copyWith => throw _privateConstructorUsedError;
@@ -472,7 +488,9 @@ mixin _$AttachmentMediaState {
   File? get mediaFile => throw _privateConstructorUsedError;
   bool get isDownloading => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of AttachmentMediaState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $AttachmentMediaStateCopyWith<AttachmentMediaState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -502,6 +520,8 @@ class _$AttachmentMediaStateCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of AttachmentMediaState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -525,6 +545,8 @@ class _$AttachmentMediaStateCopyWithImpl<$Res,
     ) as $Val);
   }
 
+  /// Create a copy of AttachmentMediaState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $AttachmentMediaLoadingStateCopyWith<$Res> get mediaLoadingState {
@@ -560,6 +582,8 @@ class __$$AttachmentMediaStateImplCopyWithImpl<$Res>
       $Res Function(_$AttachmentMediaStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of AttachmentMediaState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -623,7 +647,9 @@ class _$AttachmentMediaStateImpl implements _AttachmentMediaState {
   int get hashCode =>
       Object.hash(runtimeType, mediaLoadingState, mediaFile, isDownloading);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of AttachmentMediaState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$AttachmentMediaStateImplCopyWith<_$AttachmentMediaStateImpl>
@@ -644,8 +670,11 @@ abstract class _AttachmentMediaState implements AttachmentMediaState {
   File? get mediaFile;
   @override
   bool get isDownloading;
+
+  /// Create a copy of AttachmentMediaState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$AttachmentMediaStateImplCopyWith<_$AttachmentMediaStateImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
