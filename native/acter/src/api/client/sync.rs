@@ -510,32 +510,6 @@ impl Client {
                     }
                 }
 
-                let room_read_receipts = response
-                    .rooms
-                    .join
-                    .iter()
-                    .flat_map(|(room_id, value)| {
-                        value.ephemeral.iter().filter_map(|r| {
-                            let room_id = room_id.clone();
-                            let Ok(AnySyncEphemeralRoomEvent::Receipt(r)) = r.deserialize() else {
-                                return None;
-                            };
-                            Some(
-                                r.content
-                                    .keys()
-                                    .map(|k| format!("{room_id}:{k}:rr"))
-                                    .collect::<Vec<String>>(),
-                            )
-                        })
-                    })
-                    .flatten()
-                    .collect::<Vec<String>>();
-
-                if !room_read_receipts.is_empty() {
-                    trace!(?room_read_receipts, "read_receipts");
-                    me.executor().notify(room_read_receipts);
-                }
-
                 let changed_rooms = response
                     .rooms
                     .join
