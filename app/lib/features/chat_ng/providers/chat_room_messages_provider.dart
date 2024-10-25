@@ -41,8 +41,6 @@ final renderableChatMessagesProvider =
       _log.severe('Room Msg $roomId $id not found');
       return false;
     }
-    final type = msg.eventItem()?.eventType();
-    print(type);
-    return _supportedTypes.contains(type);
+    return _supportedTypes.contains(msg.eventItem()?.eventType());
   }).toList();
 });

@@ -19,7 +19,7 @@ class _ChatMessageList extends ConsumerStatefulWidget {
   final List<String> messages;
   final String roomId;
   const _ChatMessageList(
-      {super.key, required this.messages, required this.roomId});
+      {required this.messages, required this.roomId,});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

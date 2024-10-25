@@ -1,7 +1,7 @@
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_room_messages_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockedRoomMessageDiff extends Mock implements RoomMessageDiff {
@@ -10,8 +10,12 @@ class MockedRoomMessageDiff extends Mock implements RoomMessageDiff {
   final List<MockRoomMessage>? messages;
   final MockRoomMessage? message;
 
-  MockedRoomMessageDiff(
-      {required this.act, this.idx, this.messages, this.message});
+  MockedRoomMessageDiff({
+    required this.act,
+    this.idx,
+    this.messages,
+    this.message,
+  });
 
   @override
   int? index() => idx;
@@ -223,10 +227,13 @@ void main() {
         );
         final newState = handleDiff(
           startingState,
-          MockedRoomMessageDiff(act: 'Append', messages: [
-            MockRoomMessage(id: 'g'),
-            MockRoomMessage(id: 'h'),
-          ]),
+          MockedRoomMessageDiff(
+            act: 'Append',
+            messages: [
+              MockRoomMessage(id: 'g'),
+              MockRoomMessage(id: 'h'),
+            ],
+          ),
         );
         expect(newState.messageList, ['b', 'd', 'e', 'f', 'g', 'h']);
         expect(newState.messages.length, 6);
