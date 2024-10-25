@@ -65,7 +65,7 @@ class CommentItemWidget extends ConsumerWidget {
       children: [
         Text(displayName ?? userId, style: displayNameTextStyle),
         const SizedBox(width: 8),
-        if (displayName != null) Text(userId, style: usrNameTextStyle)
+        if (displayName != null) Text(userId, style: usrNameTextStyle),
       ],
     );
   }

@@ -59,7 +59,7 @@ class CommentListEmptyStateWidget extends StatelessWidget {
                     ?.copyWith(color: color),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
