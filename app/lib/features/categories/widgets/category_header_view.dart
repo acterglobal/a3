@@ -63,8 +63,8 @@ class CategoryHeaderView extends StatelessWidget {
         categoryModelLocal.title,
         style: Theme.of(context)
             .textTheme
-            .titleSmall!
-            .copyWith(color: Theme.of(context).disabledColor),
+            .titleSmall
+            ?.copyWith(color: Theme.of(context).disabledColor),
       ),
     );
   }

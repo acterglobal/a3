@@ -78,7 +78,7 @@ class SelectSpaceFormField extends ConsumerWidget {
                         Text(
                           err,
                           style:
-                              Theme.of(context).textTheme.bodySmall!.copyWith(
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: Theme.of(context).colorScheme.error,
                                   ),
                         ),

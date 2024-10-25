@@ -151,18 +151,19 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   Widget _buildHeadlineText(BuildContext context) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: [
         Text(
           lang.createProfile,
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: Theme.of(context).colorScheme.textHighlight,
-              ),
+          style: textTheme.headlineMedium?.copyWith(
+            color: Theme.of(context).colorScheme.textHighlight,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
           lang.onboardText,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: textTheme.bodyMedium,
         ),
       ],
     );

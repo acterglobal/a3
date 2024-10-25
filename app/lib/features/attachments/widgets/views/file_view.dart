@@ -81,7 +81,7 @@ class FileView extends ConsumerWidget {
                 const SizedBox(width: 5),
                 Text(
                   formatBytes(size.truncate()),
-                  style: Theme.of(context).textTheme.labelSmall!,
+                  style: Theme.of(context).textTheme.labelSmall,
                   textScaler: const TextScaler.linear(0.7),
                 ),
               ],
