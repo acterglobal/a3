@@ -6,11 +6,11 @@ import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CommentWidget extends ConsumerWidget {
+class CommentItemWidget extends ConsumerWidget {
   final Comment comment;
   final CommentsManager manager;
 
-  const CommentWidget({
+  const CommentItemWidget({
     super.key,
     required this.comment,
     required this.manager,

@@ -1,7 +1,9 @@
+import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/features/comments/providers/comments.dart';
-import 'package:acter/features/comments/widgets/comments_list.dart';
+import 'package:acter/features/comments/widgets/add_comment_widget.dart';
+import 'package:acter/features/comments/widgets/comment_list_skeleton_widget.dart';
+import 'package:acter/features/comments/widgets/comment_list_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,51 +23,43 @@ class CommentsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final managerLoader = ref.watch(commentsManagerProvider(manager));
     return managerLoader.when(
-      data: (manager) => found(context, manager),
-      error: (e, s) {
-        _log.severe('Failed to load comment manager', e, s);
-        return onError(context, e);
-      },
-      loading: () => loading(context),
+      data: (commentManager) => buildCommentSectionUI(context, commentManager),
+      error: (error, stack) =>
+          commentManagerErrorWidget(context, ref, error, stack),
+      loading: () => const CommentListSkeletonWidget(),
     );
   }
 
-  static Widget _inBox(BuildContext context, Widget child) {
+  Widget buildCommentSectionUI(
+    BuildContext context,
+    CommentsManager commentManager,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Row(
-            children: [
-              const Icon(
-                Atlas.comment_blank_thin,
-                size: 14,
-              ),
-              const SizedBox(width: 5),
-              Text(
-                L10n.of(context).comments,
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-              const SizedBox(width: 5),
-            ],
-          ),
-          const SizedBox(height: 10),
-          child,
+          Text(L10n.of(context).comments),
+          CommentListWidget(manager: commentManager),
+          AddCommentWidget(manager: commentManager),
         ],
       ),
     );
   }
 
-  Widget found(BuildContext context, CommentsManager manager) {
-    return _inBox(context, CommentsList(manager: manager));
-  }
-
-  Widget onError(BuildContext context, Object error) {
-    return _inBox(context, Text(L10n.of(context).loadingFailed(error)));
-  }
-
-  static Widget loading(BuildContext context) {
-    return _inBox(context, Text(L10n.of(context).loading));
+  Widget commentManagerErrorWidget(
+    BuildContext context,
+    WidgetRef ref,
+    Object error,
+    StackTrace stack,
+  ) {
+    _log.severe('Failed to load comment manager', error, stack);
+    return ErrorPage(
+      background: const CommentListSkeletonWidget(),
+      error: error,
+      stack: stack,
+      textBuilder: L10n.of(context).loadingFailed,
+      onRetryTap: () => ref.invalidate(commentsManagerProvider(manager)),
+    );
   }
 }
