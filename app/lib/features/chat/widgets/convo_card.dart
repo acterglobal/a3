@@ -80,8 +80,8 @@ class ConvoCard extends ConsumerWidget {
                         displayName,
                         style: Theme.of(context)
                             .textTheme
-                            .bodyMedium!
-                            .copyWith(fontWeight: FontWeight.w700),
+                            .bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
                         overflow: TextOverflow.ellipsis,
                       ),
                 subtitle: buildSubtitle(context, constraints),
@@ -284,8 +284,8 @@ class _SubtitleWidget extends ConsumerWidget {
                     '${simplifyUserId(sender)}: ',
                     style: Theme.of(context)
                         .textTheme
-                        .labelMedium!
-                        .copyWith(fontWeight: FontWeight.w700),
+                        .labelMedium
+                        ?.copyWith(fontWeight: FontWeight.w700),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -294,10 +294,10 @@ class _SubtitleWidget extends ConsumerWidget {
                     // ignore: unnecessary_string_interpolations
                     data: '''$body''',
                     maxLines: 1,
-                    defaultTextStyle:
-                        Theme.of(context).textTheme.labelMedium!.copyWith(
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                    defaultTextStyle: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(overflow: TextOverflow.ellipsis),
                     onLinkTap: (url) => {},
                   ),
                 ),
@@ -322,8 +322,8 @@ class _SubtitleWidget extends ConsumerWidget {
                 '${simplifyUserId(sender)}: ',
                 style: Theme.of(context)
                     .textTheme
-                    .labelMedium!
-                    .copyWith(fontWeight: FontWeight.w700),
+                    .labelMedium
+                    ?.copyWith(fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -332,10 +332,10 @@ class _SubtitleWidget extends ConsumerWidget {
                 // ignore: unnecessary_string_interpolations
                 data: '''$body''',
                 maxLines: 1,
-                defaultTextStyle:
-                    Theme.of(context).textTheme.labelMedium!.copyWith(
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                defaultTextStyle: Theme.of(context)
+                    .textTheme
+                    .labelMedium
+                    ?.copyWith(overflow: TextOverflow.ellipsis),
                 onLinkTap: (url) => {},
               ),
             ),
@@ -354,8 +354,8 @@ class _SubtitleWidget extends ConsumerWidget {
                 '${simplifyUserId(sender)}: ',
                 style: Theme.of(context)
                     .textTheme
-                    .labelMedium!
-                    .copyWith(fontWeight: FontWeight.w700),
+                    .labelMedium
+                    ?.copyWith(fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -377,15 +377,15 @@ class _SubtitleWidget extends ConsumerWidget {
                 '${simplifyUserId(sender)}: ',
                 style: Theme.of(context)
                     .textTheme
-                    .labelMedium!
-                    .copyWith(fontWeight: FontWeight.w700),
+                    .labelMedium
+                    ?.copyWith(fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             Flexible(
               child: Text(
                 lang.thisMessageHasBeenDeleted,
-                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.w700,
                     ),
@@ -403,17 +403,18 @@ class _SubtitleWidget extends ConsumerWidget {
                 '${simplifyUserId(sender)}: ',
                 style: Theme.of(context)
                     .textTheme
-                    .labelMedium!
-                    .copyWith(fontWeight: FontWeight.w700),
+                    .labelMedium
+                    ?.copyWith(fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             Expanded(
               child: Text(
                 lang.failedToDecryptMessage,
-                style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      fontStyle: FontStyle.italic,
-                    ),
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium
+                    ?.copyWith(fontStyle: FontStyle.italic),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -435,9 +436,10 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)} ',
-                style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      fontStyle: FontStyle.italic,
-                    ),
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium
+                    ?.copyWith(fontStyle: FontStyle.italic),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -446,10 +448,10 @@ class _SubtitleWidget extends ConsumerWidget {
                 // ignore: unnecessary_string_interpolations
                 data: '''$body''',
                 maxLines: 1,
-                defaultTextStyle:
-                    Theme.of(context).textTheme.labelMedium!.copyWith(
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                defaultTextStyle: Theme.of(context)
+                    .textTheme
+                    .labelMedium
+                    ?.copyWith(overflow: TextOverflow.ellipsis),
                 onLinkTap: (url) => {},
               ),
             ),
@@ -468,8 +470,8 @@ class _SubtitleWidget extends ConsumerWidget {
                 '${simplifyUserId(sender)}: ',
                 style: Theme.of(context)
                     .textTheme
-                    .labelMedium!
-                    .copyWith(fontWeight: FontWeight.w700),
+                    .labelMedium
+                    ?.copyWith(fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -492,13 +494,13 @@ class _SubtitleWidget extends ConsumerWidget {
     WidgetRef ref,
   ) {
     final lang = L10n.of(context);
-    final textStyle = Theme.of(context).textTheme.bodySmall!;
+    final textTheme = Theme.of(context).textTheme;
     if (users.length == 1) {
       final userId = users[0].id;
       final userName = simplifyUserId(userId) ?? userId;
       return Text(
         lang.typingUser1(userName),
-        style: textStyle,
+        style: textTheme.bodySmall,
       );
     } else if (users.length == 2) {
       final userId1 = users[0].id;
@@ -507,14 +509,14 @@ class _SubtitleWidget extends ConsumerWidget {
       final userName2 = simplifyUserId(userId2) ?? userId2;
       return Text(
         lang.typingUser2(userName1, userName2),
-        style: textStyle,
+        style: textTheme.bodySmall,
       );
     } else {
       final userId = users[0].id;
       final userName = simplifyUserId(userId) ?? userId;
       return Text(
         lang.typingUserN(userName, {users.length - 1}),
-        style: textStyle,
+        style: textTheme.bodySmall,
       );
     }
   }

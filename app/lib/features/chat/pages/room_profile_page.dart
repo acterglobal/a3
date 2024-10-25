@@ -365,8 +365,8 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                 actionName,
                 style: Theme.of(context)
                     .textTheme
-                    .labelLarge!
-                    .copyWith(color: actionItemColor),
+                    .labelLarge
+                    ?.copyWith(color: actionItemColor),
               ),
             ],
           ),

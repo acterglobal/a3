@@ -246,9 +246,10 @@ class _ChatBubble extends ConsumerWidget {
         const SizedBox(width: 5),
         Text(
           replyProfile.displayName ?? '',
-          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                color: Theme.of(context).colorScheme.tertiary,
-              ),
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(color: Theme.of(context).colorScheme.tertiary),
         ),
       ],
     );
