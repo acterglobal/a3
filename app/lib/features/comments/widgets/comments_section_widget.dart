@@ -11,10 +11,10 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::comments::section');
 
-class CommentsSection extends ConsumerWidget {
+class CommentsSectionWidget extends ConsumerWidget {
   final Future<CommentsManager> manager;
 
-  const CommentsSection({
+  const CommentsSectionWidget({
     super.key,
     required this.manager,
   });

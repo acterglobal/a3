@@ -11,7 +11,7 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
-import 'package:acter/features/comments/widgets/comments_section.dart';
+import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter/features/tasks/widgets/skeleton/task_item_detail_page_skeleton.dart';
@@ -223,7 +223,7 @@ class TaskItemDetailPage extends ConsumerWidget {
             const SizedBox(height: 20),
             AttachmentSectionWidget(manager: task.attachments()),
             const SizedBox(height: 20),
-            CommentsSection(manager: task.comments()),
+            CommentsSectionWidget(manager: task.comments()),
             const SizedBox(height: 20),
           ],
         ),

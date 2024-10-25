@@ -13,7 +13,7 @@ import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
-import 'package:acter/features/comments/widgets/comments_section.dart';
+import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -282,7 +282,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           const SizedBox(height: 40),
           AttachmentSectionWidget(manager: calendarEvent.attachments()),
           const SizedBox(height: 40),
-          CommentsSection(manager: calendarEvent.comments()),
+          CommentsSectionWidget(manager: calendarEvent.comments()),
           const SizedBox(height: 40),
         ],
       ),
