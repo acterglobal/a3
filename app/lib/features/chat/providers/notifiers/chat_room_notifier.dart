@@ -130,8 +130,12 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     List<PostProcessItem> postProcessing = [];
     switch (diff.action()) {
       case 'Append':
-        List<RoomMessage> messages =
-            diff.values().expect('append diff should contain values').toList();
+        final values = diff.values();
+        if (values == null) {
+          _log.severe('On append action, values should be available');
+          return;
+        }
+        List<RoomMessage> messages = values.toList();
         List<types.Message> messagesToAdd = [];
         for (final m in messages) {
           final message = parseMessage(m);
@@ -145,38 +149,64 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'Set': // used to update UnableToDecrypt message
-        RoomMessage m = diff.value().expect('set diff should contain value');
-        final index = diff.index().expect('set diff should contain index');
-        final message = parseMessage(m);
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On set action, value should be available');
+          return;
+        }
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On set action, index should be available');
+          return;
+        }
+        final message = parseMessage(value);
         replaceMessageAt(index, message);
-        postProcessing.add(PostProcessItem(m, message));
+        postProcessing.add(PostProcessItem(value, message));
         break;
       case 'Insert':
-        RoomMessage m = diff.value().expect('insert diff should contain value');
-        final index = diff.index().expect('insert diff should contain index');
-        final message = parseMessage(m);
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On insert action, value should be available');
+          return;
+        }
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On insert action, index should be available');
+          return;
+        }
+        final message = parseMessage(value);
         insertMessage(index, message);
-        postProcessing.add(PostProcessItem(m, message));
+        postProcessing.add(PostProcessItem(value, message));
         break;
       case 'Remove':
-        int index = diff.index().expect('remove diff should contain index');
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On remove action, index should be available');
+          return;
+        }
         removeMessage(index);
         break;
       case 'PushBack':
-        RoomMessage m =
-            diff.value().expect('push back diff should contain value');
-        final message = parseMessage(m);
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On push back action, value should be available');
+          return;
+        }
+        final message = parseMessage(value);
         final newList = messagesCopy();
         newList.add(message);
         setMessages(newList);
-        postProcessing.add(PostProcessItem(m, message));
+        postProcessing.add(PostProcessItem(value, message));
         break;
       case 'PushFront':
-        RoomMessage m =
-            diff.value().expect('push front diff should contain value');
-        final message = parseMessage(m);
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On push front action, value should be available');
+          return;
+        }
+        final message = parseMessage(value);
         insertMessage(0, message);
-        postProcessing.add(PostProcessItem(m, message));
+        postProcessing.add(PostProcessItem(value, message));
         break;
       case 'PopBack':
         final newList = messagesCopy();
@@ -192,10 +222,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         setMessages([]);
         break;
       case 'Reset':
-        List<RoomMessage> messages =
-            diff.values().expect('reset diff should contain values').toList();
+        final values = diff.values();
+        if (values == null) {
+          _log.severe('On reset action, values should be available');
+          return;
+        }
         List<types.Message> newList = [];
-        for (final m in messages) {
+        for (final m in values.toList()) {
           final message = parseMessage(m);
           newList.add(message);
           postProcessing.add(PostProcessItem(m, message));
@@ -205,10 +238,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'Truncate':
-        final length =
-            diff.index().expect('truncate diff should contain index');
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On truncate action, index should be available');
+          return;
+        }
         final newList = messagesCopy();
-        setMessages(newList.take(length).toList());
+        setMessages(newList.take(index).toList());
         break;
       default:
         break;
