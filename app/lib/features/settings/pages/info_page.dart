@@ -65,8 +65,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 lang.appDefaults,
                 style: Theme.of(context)
                     .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.primary),
+                    .bodyLarge
+                    ?.copyWith(color: Theme.of(context).colorScheme.primary),
               ),
               tiles: <SettingsTile>[
                 SettingsTile(
@@ -97,8 +97,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 lang.debugInfo,
                 style: Theme.of(context)
                     .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.primary),
+                    .bodyLarge
+                    ?.copyWith(color: Theme.of(context).colorScheme.primary),
               ),
               tiles: <SettingsTile>[
                 SettingsTile.switchTile(
@@ -185,8 +185,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 lang.thirdParty,
                 style: Theme.of(context)
                     .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.primary),
+                    .bodyLarge
+                    ?.copyWith(color: Theme.of(context).colorScheme.primary),
               ),
               tiles: [
                 SettingsTile.navigation(
