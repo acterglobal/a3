@@ -70,6 +70,7 @@ class NewsSideBar extends ConsumerWidget {
                   manager: news.comments(),
                   shrinkWrap: false,
                   centerTitle: true,
+                  useCompactEmptyState: false,
                 ),
               );
             },

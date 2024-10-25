@@ -15,11 +15,13 @@ class CommentsSectionWidget extends ConsumerWidget {
   final Future<CommentsManager> manager;
   final bool shrinkWrap;
   final bool centerTitle;
+  final bool useCompactEmptyState;
 
   const CommentsSectionWidget({
     super.key,
     this.shrinkWrap = true,
     this.centerTitle = false,
+    this.useCompactEmptyState = true,
     required this.manager,
   });
 
@@ -61,9 +63,18 @@ class CommentsSectionWidget extends ConsumerWidget {
   }
 
   Widget commentListUI(CommentsManager commentManager) {
-    if (shrinkWrap) return CommentListWidget(manager: commentManager);
+    if (shrinkWrap) {
+      return CommentListWidget(
+        manager: commentManager,
+        useCompactEmptyState: useCompactEmptyState,
+      );
+    }
     return Expanded(
-      child: CommentListWidget(manager: commentManager, shrinkWrap: shrinkWrap),
+      child: CommentListWidget(
+        manager: commentManager,
+        shrinkWrap: shrinkWrap,
+        useCompactEmptyState: useCompactEmptyState,
+      ),
     );
   }
 

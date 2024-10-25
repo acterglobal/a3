@@ -1,6 +1,7 @@
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/features/comments/providers/comments.dart';
 import 'package:acter/features/comments/widgets/comment_item_widget.dart';
+import 'package:acter/features/comments/widgets/comment_list_empty_state_widget.dart';
 import 'package:acter/features/comments/widgets/comment_list_skeleton_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -13,13 +14,13 @@ final _log = Logger('a3::comments::list::widget');
 class CommentListWidget extends ConsumerWidget {
   final CommentsManager manager;
   final bool shrinkWrap;
-  final Widget emptyState;
+  final bool useCompactEmptyState;
 
   const CommentListWidget({
     super.key,
     required this.manager,
     this.shrinkWrap = true,
-    this.emptyState = const SizedBox.shrink(),
+    this.useCompactEmptyState = true,
   });
 
   @override
@@ -34,7 +35,9 @@ class CommentListWidget extends ConsumerWidget {
   }
 
   Widget buildCommentListUI(BuildContext context, List<Comment> commentList) {
-    if (commentList.isEmpty) return emptyState;
+    if (commentList.isEmpty) {
+      return CommentListEmptyStateWidget(useCompactView: useCompactEmptyState);
+    }
     return ListView.builder(
       shrinkWrap: shrinkWrap,
       itemCount: commentList.length,
