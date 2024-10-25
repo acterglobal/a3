@@ -80,11 +80,11 @@ class TaskItem extends ConsumerWidget {
     return Text(
       task.title(),
       style: task.isDone()
-          ? Theme.of(context).textTheme.bodyMedium!.copyWith(
+          ? Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w100,
                 decoration: TextDecoration.lineThrough,
               )
-          : Theme.of(context).textTheme.bodyMedium!,
+          : Theme.of(context).textTheme.bodyMedium,
     );
   }
 

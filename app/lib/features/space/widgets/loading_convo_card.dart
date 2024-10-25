@@ -78,8 +78,8 @@ class LoadingConvoCard extends ConsumerWidget {
                     roomId,
                     style: Theme.of(context)
                         .textTheme
-                        .bodyMedium!
-                        .copyWith(fontWeight: FontWeight.w700),
+                        .bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.w700),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),

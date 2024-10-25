@@ -183,7 +183,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         const SizedBox(height: 3),
         Text(
           lang.egGlobalMovement,
-          style: Theme.of(context).textTheme.labelSmall!,
+          style: Theme.of(context).textTheme.labelSmall,
         ),
       ],
     );
@@ -247,7 +247,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         ),
         Text(
           lang.visibilitySubtitle,
-          style: Theme.of(context).textTheme.bodySmall!,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 10),
         InkWell(
