@@ -179,11 +179,12 @@ class _VisibilityAccessibilityPageState
     Widget? subtitle,
     void Function()? removeAction,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 5),
       shape: RoundedRectangleBorder(
         side: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
+          color: colorScheme.primary,
           width: 1.5,
         ),
         borderRadius: BorderRadius.circular(6),
@@ -203,7 +204,7 @@ class _VisibilityAccessibilityPageState
           onPressed: removeAction,
           icon: Icon(
             Atlas.trash,
-            color: Theme.of(context).colorScheme.error,
+            color: colorScheme.error,
           ),
         ),
       ),
@@ -236,10 +237,9 @@ class _VisibilityAccessibilityPageState
   }
 
   Future<void> removeSpace(String spaceId) async {
-    final newList =
-        (await ref.read(joinRulesAllowedRoomsProvider(widget.roomId).future))
-            .where((id) => id != spaceId)
-            .toList();
+    final allowedRooms =
+        await ref.read(joinRulesAllowedRoomsProvider(widget.roomId).future);
+    final newList = allowedRooms.where((id) => id != spaceId).toList();
     final visibility =
         newList.isEmpty ? RoomVisibility.Private : RoomVisibility.SpaceVisible;
     await updateSpaceVisibility(visibility, spaceIds: newList);

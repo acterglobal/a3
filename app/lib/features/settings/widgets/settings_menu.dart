@@ -46,6 +46,7 @@ class SettingsMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final isBackupEnabled =
         ref.watch(isActiveProvider(LabsFeature.encryptionBackup));
     final helpCenterUrl = helpUrl;
@@ -279,23 +280,19 @@ class SettingsMenu extends ConsumerWidget {
             MenuItemWidget(
               key: SettingsMenu.logoutAccount,
               iconData: Atlas.exit_thin,
-              iconColor: Theme.of(context).colorScheme.error,
+              iconColor: colorScheme.error,
               title: lang.logOut,
               subTitle: lang.closeSessionAndDeleteData,
-              titleStyles: TextStyle(
-                color: Theme.of(context).colorScheme.error,
-              ),
+              titleStyles: TextStyle(color: colorScheme.error),
               onTap: () => logoutConfirmationDialog(context, ref),
             ),
             MenuItemWidget(
               key: SettingsMenu.deactivateAccount,
               iconData: Atlas.trash_can_thin,
-              iconColor: Theme.of(context).colorScheme.error,
+              iconColor: colorScheme.error,
               title: lang.deactivateAccount,
               subTitle: lang.irreversiblyDeactivateAccount,
-              titleStyles: TextStyle(
-                color: Theme.of(context).colorScheme.error,
-              ),
+              titleStyles: TextStyle(color: colorScheme.error),
               onTap: () => deactivationConfirmationDialog(context, ref),
             ),
           ],
@@ -311,6 +308,8 @@ class SettingsMenu extends ConsumerWidget {
     bool isDanderZone = false,
     required List<Widget> children,
   }) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -325,11 +324,9 @@ class SettingsMenu extends ConsumerWidget {
             ),
             child: Text(
               sectionTitle,
-              style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    color: isDanderZone
-                        ? Theme.of(context).colorScheme.error
-                        : null,
-                  ),
+              style: textTheme.labelLarge?.copyWith(
+                color: isDanderZone ? colorScheme.error : null,
+              ),
             ),
           ),
           Column(children: children),

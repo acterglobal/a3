@@ -101,15 +101,16 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Theme.of(context).colorScheme.primary.withOpacity(0.7),
-              Theme.of(context).colorScheme.surface.withOpacity(0.5),
-              Theme.of(context).colorScheme.surface.withOpacity(0.1),
-              Theme.of(context).colorScheme.secondaryContainer,
+              colorScheme.primary.withOpacity(0.7),
+              colorScheme.surface.withOpacity(0.5),
+              colorScheme.surface.withOpacity(0.1),
+              colorScheme.secondaryContainer,
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
