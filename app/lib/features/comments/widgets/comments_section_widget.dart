@@ -14,10 +14,12 @@ final _log = Logger('a3::comments::section');
 class CommentsSectionWidget extends ConsumerWidget {
   final Future<CommentsManager> manager;
   final bool shrinkWrap;
+  final bool centerTitle;
 
   const CommentsSectionWidget({
     super.key,
     this.shrinkWrap = true,
+    this.centerTitle = false,
     required this.manager,
   });
 
@@ -36,15 +38,24 @@ class CommentsSectionWidget extends ConsumerWidget {
     BuildContext context,
     CommentsManager commentManager,
   ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        const SizedBox(height: 12),
+        commentTitleUI(context),
+        commentListUI(commentManager),
+        AddCommentWidget(manager: commentManager),
+      ],
+    );
+  }
+
+  Widget commentTitleUI(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(L10n.of(context).comments),
-          commentListUI(commentManager),
-          AddCommentWidget(manager: commentManager),
-        ],
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Text(
+        L10n.of(context).comments,
+        style: Theme.of(context).textTheme.titleMedium,
+        textAlign: centerTitle ? TextAlign.center : TextAlign.start,
       ),
     );
   }

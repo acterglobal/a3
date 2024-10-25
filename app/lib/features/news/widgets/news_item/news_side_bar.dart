@@ -69,6 +69,7 @@ class NewsSideBar extends ConsumerWidget {
                 builder: (context) => CommentsSectionWidget(
                   manager: news.comments(),
                   shrinkWrap: false,
+                  centerTitle: true,
                 ),
               );
             },
