@@ -43,9 +43,7 @@ class SliverScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
+    final colorScheme = Theme.of(context).colorScheme;
     return Material(
       elevation: 1,
       surfaceTintColor: colorScheme.surfaceTint,
@@ -113,8 +111,7 @@ class _SliverHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: EdgeInsets.fromLTRB(addBackIconButton ? 16 : 24, 16, 16, 16),
       child: Row(

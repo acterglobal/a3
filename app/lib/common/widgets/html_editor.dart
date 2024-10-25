@@ -37,15 +37,11 @@ AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
 );
 
 extension ActerEditorStateHelpers on EditorState {
-  String intoHtml({
-    AppFlowyEditorHTMLCodec? codec,
-  }) {
+  String intoHtml({AppFlowyEditorHTMLCodec? codec}) {
     return (codec ?? defaultHtmlCodec).encode(document);
   }
 
-  String intoMarkdown({
-    AppFlowyEditorMarkdownCodec? codec,
-  }) {
+  String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {
     return (codec ?? defaultMarkdownCodec).encode(document);
   }
 }
@@ -113,6 +109,7 @@ class HtmlEditor extends StatefulWidget {
   final ExportCallback? onSave;
   final ExportCallback? onChanged;
   final Function()? onCancel;
+
   const HtmlEditor({
     super.key,
     this.editorState,
@@ -314,9 +311,7 @@ class HtmlEditorState extends State<HtmlEditor> {
             onLookUp: null,
             onSearchWeb: null,
             onShare: null,
-            anchors: TextSelectionToolbarAnchors(
-              primaryAnchor: anchor,
-            ),
+            anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
           );
         },
         child: AppFlowyEditor(
