@@ -30,8 +30,9 @@ class CommentWidget extends ConsumerWidget {
     final avatarInfo = ref.watch(
       memberAvatarInfoProvider((roomId: roomID, userId: userId)),
     );
-
     final displayName = avatarInfo.displayName;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -45,7 +46,7 @@ class CommentWidget extends ConsumerWidget {
             ),
             title: Text(
               displayName ?? userId,
-              style: Theme.of(context).textTheme.titleSmall,
+              style: textTheme.titleSmall,
             ),
             subtitle: displayName == null ? null : Text(userId),
           ),
@@ -60,7 +61,7 @@ class CommentWidget extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               time,
-              style: Theme.of(context).textTheme.labelMedium,
+              style: textTheme.labelMedium,
             ),
           ),
           const SizedBox(height: 16),
