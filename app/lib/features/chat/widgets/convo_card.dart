@@ -111,9 +111,7 @@ class ConvoCard extends ConsumerWidget {
         ),
         const SizedBox(width: 2),
         Expanded(
-          child: _SubtitleWidget(
-            roomId: roomId,
-          ),
+          child: _SubtitleWidget(roomId: roomId),
         ),
       ],
     );
@@ -124,23 +122,23 @@ class ConvoCard extends ConsumerWidget {
         ref.watch(unreadCountersProvider(roomId)).valueOrNull;
 
     final child = RoomAvatar(roomId: roomId, showParents: showParents);
-    if (unreadCounters == null) {
-      return child;
-    }
+    if (unreadCounters == null) return child;
 
-    if (unreadCounters.$1 > 0) {
+    final (notifications, mentions, messages) = unreadCounters;
+    final colorScheme = Theme.of(context).colorScheme;
+    if (notifications > 0) {
       return Badge(
-        backgroundColor: Theme.of(context).colorScheme.badgeImportant,
+        backgroundColor: colorScheme.badgeImportant,
         child: child,
       );
-    } else if (unreadCounters.$2 > 0) {
+    } else if (mentions > 0) {
       return Badge(
-        backgroundColor: Theme.of(context).colorScheme.badgeUrgent,
+        backgroundColor: colorScheme.badgeUrgent,
         child: child,
       );
-    } else if (unreadCounters.$3 > 0) {
+    } else if (messages > 0) {
       return Badge(
-        backgroundColor: Theme.of(context).colorScheme.badgeUnread,
+        backgroundColor: colorScheme.badgeUnread,
         child: child,
       );
     }
@@ -171,7 +169,10 @@ class ConvoCard extends ConsumerWidget {
                       controller.open();
                     }
                   },
-                  icon: const Icon(Atlas.bell_dash_bold, size: 14),
+                  icon: const Icon(
+                    Atlas.bell_dash_bold,
+                    size: 14,
+                  ),
                 );
               },
               menuChildren: [
@@ -232,6 +233,7 @@ class _SubtitleWidget extends ConsumerWidget {
     String sender = eventItem.sender();
     String eventType = eventItem.eventType();
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     // message event
     switch (eventType) {
       case 'm.call.answer':
@@ -282,9 +284,7 @@ class _SubtitleWidget extends ConsumerWidget {
                 Flexible(
                   child: Text(
                     '${simplifyUserId(sender)}: ',
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelMedium
+                    style: textTheme.labelMedium
                         ?.copyWith(fontWeight: FontWeight.w700),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -294,9 +294,7 @@ class _SubtitleWidget extends ConsumerWidget {
                     // ignore: unnecessary_string_interpolations
                     data: '''$body''',
                     maxLines: 1,
-                    defaultTextStyle: Theme.of(context)
-                        .textTheme
-                        .labelMedium
+                    defaultTextStyle: textTheme.labelMedium
                         ?.copyWith(overflow: TextOverflow.ellipsis),
                     onLinkTap: (url) => {},
                   ),
@@ -320,9 +318,7 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: Theme.of(context)
-                    .textTheme
-                    .labelMedium
+                style: textTheme.labelMedium
                     ?.copyWith(fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -332,9 +328,7 @@ class _SubtitleWidget extends ConsumerWidget {
                 // ignore: unnecessary_string_interpolations
                 data: '''$body''',
                 maxLines: 1,
-                defaultTextStyle: Theme.of(context)
-                    .textTheme
-                    .labelMedium
+                defaultTextStyle: textTheme.labelMedium
                     ?.copyWith(overflow: TextOverflow.ellipsis),
                 onLinkTap: (url) => {},
               ),
@@ -352,9 +346,7 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: Theme.of(context)
-                    .textTheme
-                    .labelMedium
+                style: textTheme.labelMedium
                     ?.copyWith(fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -362,7 +354,7 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 body,
-                style: Theme.of(context).textTheme.labelMedium,
+                style: textTheme.labelMedium,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -375,9 +367,7 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: Theme.of(context)
-                    .textTheme
-                    .labelMedium
+                style: textTheme.labelMedium
                     ?.copyWith(fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -385,10 +375,10 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 lang.thisMessageHasBeenDeleted,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontStyle: FontStyle.italic,
-                      fontWeight: FontWeight.w700,
-                    ),
+                style: textTheme.labelMedium?.copyWith(
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w700,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -401,9 +391,7 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: Theme.of(context)
-                    .textTheme
-                    .labelMedium
+                style: textTheme.labelMedium
                     ?.copyWith(fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -411,9 +399,7 @@ class _SubtitleWidget extends ConsumerWidget {
             Expanded(
               child: Text(
                 lang.failedToDecryptMessage,
-                style: Theme.of(context)
-                    .textTheme
-                    .labelMedium
+                style: textTheme.labelMedium
                     ?.copyWith(fontStyle: FontStyle.italic),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -436,9 +422,7 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)} ',
-                style: Theme.of(context)
-                    .textTheme
-                    .labelMedium
+                style: textTheme.labelMedium
                     ?.copyWith(fontStyle: FontStyle.italic),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -448,9 +432,7 @@ class _SubtitleWidget extends ConsumerWidget {
                 // ignore: unnecessary_string_interpolations
                 data: '''$body''',
                 maxLines: 1,
-                defaultTextStyle: Theme.of(context)
-                    .textTheme
-                    .labelMedium
+                defaultTextStyle: textTheme.labelMedium
                     ?.copyWith(overflow: TextOverflow.ellipsis),
                 onLinkTap: (url) => {},
               ),
@@ -468,9 +450,7 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: Theme.of(context)
-                    .textTheme
-                    .labelMedium
+                style: textTheme.labelMedium
                     ?.copyWith(fontWeight: FontWeight.w700),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -478,7 +458,7 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 body,
-                style: Theme.of(context).textTheme.labelMedium,
+                style: textTheme.labelMedium,
                 overflow: TextOverflow.ellipsis,
               ),
             ),

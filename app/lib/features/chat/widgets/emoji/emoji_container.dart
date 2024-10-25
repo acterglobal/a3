@@ -42,6 +42,7 @@ class _EmojiContainerState extends State<EmojiContainer>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     Map<String, dynamic>? reactions = widget.message.metadata?['reactions'];
     if (reactions == null) return const SizedBox();
     final children = reactions.keys.map((key) {
@@ -61,9 +62,8 @@ class _EmojiContainerState extends State<EmojiContainer>
           padding: moreThanOne
               ? const EdgeInsets.only(right: 4)
               : const EdgeInsets.symmetric(horizontal: 2),
-          backgroundColor: sentByMe
-              ? Theme.of(context).colorScheme.secondaryContainer
-              : Theme.of(context).colorScheme.surface,
+          backgroundColor:
+              sentByMe ? colorScheme.secondaryContainer : colorScheme.surface,
           visualDensity: VisualDensity.compact,
           labelPadding: const EdgeInsets.all(0),
           shape: const StadiumBorder(
@@ -84,7 +84,7 @@ class _EmojiContainerState extends State<EmojiContainer>
         horizontal: 5,
         vertical: 2,
       ),
-      color: Theme.of(context).colorScheme.surface,
+      color: colorScheme.surface,
       child: Wrap(
         direction: Axis.horizontal,
         runSpacing: 3,
@@ -144,7 +144,10 @@ class _EmojiContainerState extends State<EmojiContainer>
           reactionTabs.add(
             Tab(
               child: Chip(
-                avatar: Text(key, style: EmojiConfig.emojiTextStyle),
+                avatar: Text(
+                  key,
+                  style: EmojiConfig.emojiTextStyle,
+                ),
                 label: Text('${value.length}'),
               ),
             ),

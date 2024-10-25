@@ -10,10 +10,10 @@ import 'package:acter/common/widgets/edit_plain_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
-import 'package:acter/features/room/actions/avatar_upload.dart';
-import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
+import 'package:acter/features/room/actions/avatar_upload.dart';
+import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -109,9 +109,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             ),
             child: Text(
               lang.closeChat,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.error,
-              ),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
         );
@@ -275,6 +273,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     final isBookmarked =
         ref.watch(isConvoBookmarked(widget.roomId)).valueOrNull ?? false;
     final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -286,7 +285,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           actionName: lang.bookmark,
           onTap: () async {
             final convo = await ref.read(chatProvider(widget.roomId).future);
-            if (convo != null) convo.setBookmarked(!isBookmarked);
+            await convo?.setBookmarked(!isBookmarked);
           },
         ),
 
@@ -300,7 +299,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               actionName: lang.invite,
               actionItemColor: membership.canString('CanInvite')
                   ? null
-                  : Theme.of(context).colorScheme.onSurface,
+                  : colorScheme.onSurface,
               onTap: () => _handleInvite(membership),
             );
           },
@@ -327,7 +326,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           context: context,
           iconData: Icons.exit_to_app,
           actionName: lang.leave,
-          actionItemColor: Theme.of(context).colorScheme.error,
+          actionItemColor: colorScheme.error,
           onTap: showLeaveRoomDialog,
         ),
       ],
@@ -461,17 +460,18 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
 
   Future<void> showLeaveRoomDialog() async {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     await showAdaptiveDialog(
       context: context,
       useRootNavigator: false,
       builder: (context) => DefaultDialog(
         title: Text(
           lang.leaveRoom,
-          style: Theme.of(context).textTheme.titleSmall,
+          style: textTheme.titleSmall,
         ),
         subtitle: Text(
           lang.areYouSureYouWantToLeaveRoom,
-          style: Theme.of(context).textTheme.bodySmall,
+          style: textTheme.bodySmall,
         ),
         actions: [
           OutlinedButton(

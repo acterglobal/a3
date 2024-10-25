@@ -121,9 +121,7 @@ class _ChatBubble extends ConsumerWidget {
           message: message,
         ),
         enlargeEmoji ? child : renderBubble(context, isAuthor),
-        MessageActions(
-          roomId: roomId,
-        ),
+        MessageActions(roomId: roomId),
       ];
     } else {
       children = [
@@ -156,6 +154,7 @@ class _ChatBubble extends ConsumerWidget {
   }
 
   Bubble renderBubble(BuildContext context, bool isAuthor) {
+    final colorScheme = Theme.of(context).colorScheme;
     Widget bubbleChild = message.repliedMessage.map(
           (replied) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,11 +162,8 @@ class _ChatBubble extends ConsumerWidget {
               Container(
                 decoration: BoxDecoration(
                   color: isAuthor
-                      ? Theme.of(context).colorScheme.surface.withOpacity(0.3)
-                      : Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.2),
+                      ? colorScheme.surface.withOpacity(0.3)
+                      : colorScheme.onSurface.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: Column(
@@ -201,9 +197,7 @@ class _ChatBubble extends ConsumerWidget {
         child;
 
     return Bubble(
-      color: isAuthor
-          ? Theme.of(context).colorScheme.primary
-          : Theme.of(context).colorScheme.surface,
+      color: isAuthor ? colorScheme.primary : colorScheme.surface,
       borderColor: Colors.transparent,
       style: BubbleStyle(
         margin: nextMessageInGroup
@@ -232,9 +226,9 @@ class _ChatBubble extends ConsumerWidget {
     WidgetRef ref,
     types.Message replied,
   ) {
-    final authorId = replied.author.id;
-    final replyProfile =
-        ref.watch(memberAvatarInfoProvider((userId: authorId, roomId: roomId)));
+    final replyProfile = ref.watch(
+      memberAvatarInfoProvider((userId: replied.author.id, roomId: roomId)),
+    );
     return Row(
       children: [
         ActerAvatar(
@@ -281,6 +275,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final textTheme = Theme.of(context).textTheme;
     final repliedMessage = message.repliedMessage;
     if (repliedMessage == null) return const SizedBox();
     if (repliedMessage is types.TextMessage) {
@@ -308,7 +303,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
           ),
           Text(
             L10n.of(context).sentAnImage,
-            style: Theme.of(context).textTheme.labelLarge,
+            style: textTheme.labelLarge,
           ),
         ],
       );
@@ -318,7 +313,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
         padding: const EdgeInsets.all(12),
         child: Text(
           repliedMessage.metadata!['content'],
-          style: Theme.of(context).textTheme.bodySmall,
+          style: textTheme.bodySmall,
         ),
       );
     }
