@@ -50,9 +50,10 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
+    final screenSize = MediaQuery.of(context).size;
     return DefaultDialog(
-      width: MediaQuery.of(context).size.width * 0.8,
-      height: MediaQuery.of(context).size.height * 0.8,
+      width: screenSize.width * 0.8,
+      height: screenSize.height * 0.8,
       title: Text(
         lang.suggestedRoomsTitle,
         style: Theme.of(context).textTheme.titleMedium,

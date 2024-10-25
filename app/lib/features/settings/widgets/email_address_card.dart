@@ -24,6 +24,7 @@ class EmailAddressCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Card(
       margin: const EdgeInsets.symmetric(
         vertical: 2,
@@ -49,7 +50,7 @@ class EmailAddressCard extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Text(
                             lang.remove,
-                            style: Theme.of(context).textTheme.labelSmall,
+                            style: textTheme.labelSmall,
                             softWrap: false,
                           ),
                         ),
@@ -104,7 +105,7 @@ class EmailAddressCard extends ConsumerWidget {
                                     const EdgeInsets.symmetric(horizontal: 10),
                                 child: Text(
                                   lang.remove,
-                                  style: Theme.of(context).textTheme.labelSmall,
+                                  style: textTheme.labelSmall,
                                   softWrap: false,
                                 ),
                               ),

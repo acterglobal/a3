@@ -21,6 +21,8 @@ class SessionCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     bool isVerified = deviceRecord.isVerified();
     final crumbs = [isVerified ? lang.verified : lang.unverified];
     final lastSeenTs = deviceRecord.lastSeenTs();
@@ -45,11 +47,11 @@ class SessionCard extends ConsumerWidget {
         leading: isVerified
             ? Icon(
                 Atlas.check_shield_thin,
-                color: Theme.of(context).colorScheme.success,
+                color: colorScheme.success,
               )
             : Icon(
                 Atlas.xmark_shield_thin,
-                color: Theme.of(context).colorScheme.error,
+                color: colorScheme.error,
               ),
         title: Text(deviceRecord.displayName() ?? ''),
         subtitle: Breadcrumbs(
@@ -69,7 +71,7 @@ class SessionCard extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
                       lang.logOut,
-                      style: Theme.of(context).textTheme.labelSmall,
+                      style: textTheme.labelSmall,
                       softWrap: false,
                     ),
                   ),
@@ -85,7 +87,7 @@ class SessionCard extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Text(
                       lang.verifySession,
-                      style: Theme.of(context).textTheme.labelSmall,
+                      style: textTheme.labelSmall,
                       softWrap: false,
                     ),
                   ),
