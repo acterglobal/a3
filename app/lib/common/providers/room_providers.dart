@@ -68,9 +68,7 @@ final roomVisibilityProvider = FutureProvider.family
 final roomInvitedMembersProvider = FutureProvider.autoDispose
     .family<List<Member>, String>((ref, roomIdOrAlias) async {
   final room = await ref.watch(maybeRoomProvider(roomIdOrAlias).future);
-  if (room == null || !room.isJoined()) {
-    return [];
-  }
+  if (room == null || !room.isJoined()) return [];
   final members = await room.invitedMembers();
   return members.toList();
 });
@@ -101,17 +99,18 @@ final roomSearchedChatsProvider =
   final searchValue = ref.watch(roomSearchValueProvider);
 
   if (searchValue == null || searchValue.isEmpty) {
-    return allRoomList.map((i) {
-      return i.$1;
+    return allRoomList.map((item) {
+      final (roomId, dispName) = item;
+      return roomId;
     }).toList();
   }
 
   final loweredSearchValue = searchValue.toLowerCase();
 
-  for (final item in allRoomList) {
-    if (item.$1.toLowerCase().contains(loweredSearchValue) ||
-        (item.$2 ?? '').toLowerCase().contains(loweredSearchValue)) {
-      foundRooms.add(item.$1);
+  for (final (roomId, dispName) in allRoomList) {
+    if (roomId.toLowerCase().contains(loweredSearchValue) ||
+        (dispName ?? '').toLowerCase().contains(loweredSearchValue)) {
+      foundRooms.add(roomId);
     }
   }
 
@@ -123,9 +122,7 @@ final roomSearchedChatsProvider =
 final spaceRelationsProvider =
     FutureProvider.family<SpaceRelations?, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return null;
-  }
+  if (room == null) return null;
   return await room.spaceRelations();
 });
 
@@ -225,9 +222,7 @@ final roomIsMutedProvider =
 final memberProvider =
     FutureProvider.autoDispose.family<Member, MemberInfo>((ref, query) async {
   final room = await ref.watch(maybeRoomProvider(query.roomId).future);
-  if (room == null) {
-    throw RoomNotFound;
-  }
+  if (room == null) throw RoomNotFound;
   return await room.getMember(query.userId);
 });
 

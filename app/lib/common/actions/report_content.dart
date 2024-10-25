@@ -144,9 +144,7 @@ class _ReportContentWidget extends ConsumerWidget {
         _log.info('Content from user:{$senderId flagged $res reason:$reason}');
       } else {
         final room = await ref.read(chatProvider(roomId).future);
-        if (room == null) {
-          throw RoomNotFound();
-        }
+        if (room == null) throw RoomNotFound();
         res = await room.reportContent(eventId, null, reason);
         _log.info('Content from user:{$senderId flagged $res reason:$reason}');
         if (ignoreFlag) {
