@@ -176,8 +176,8 @@ class CustomChatInput extends ConsumerWidget {
                         hintText: L10n.of(context).newMessage,
                         hintStyle: Theme.of(context)
                             .textTheme
-                            .labelLarge!
-                            .copyWith(
+                            .labelLarge
+                            ?.copyWith(
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
                         contentPadding: const EdgeInsets.all(15),
@@ -976,8 +976,8 @@ class _ReplyContentWidget extends StatelessWidget {
           },
           defaultTextStyle: Theme.of(context)
               .textTheme
-              .bodySmall!
-              .copyWith(overflow: TextOverflow.ellipsis),
+              .bodySmall
+              ?.copyWith(overflow: TextOverflow.ellipsis),
           maxLines: 3,
         ),
       );
@@ -1001,8 +1001,8 @@ class _ReplyContentWidget extends StatelessWidget {
           L10n.of(context).replyPreviewUnavailable,
           style: Theme.of(context)
               .textTheme
-              .bodySmall!
-              .copyWith(fontStyle: FontStyle.italic),
+              .bodySmall
+              ?.copyWith(fontStyle: FontStyle.italic),
         ),
       );
     }

@@ -265,7 +265,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                     const SizedBox(width: 5),
                     Text(
                       displayName ?? userId,
-                      style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
                     ),

@@ -150,7 +150,7 @@ class _TextWidget extends ConsumerWidget {
                   ),
                   shrinkToFit: true,
                   defaultTextStyle:
-                      Theme.of(context).textTheme.bodySmall!.copyWith(
+                      Theme.of(context).textTheme.bodySmall?.copyWith(
                             overflow: isReply ? TextOverflow.ellipsis : null,
                             color: isNotice
                                 ? Theme.of(context)

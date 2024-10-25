@@ -90,7 +90,7 @@ class FileMessageBuilder extends ConsumerWidget {
           const SizedBox(height: 5),
           Text(
             formatBytes(message.size.truncate()),
-            style: Theme.of(context).textTheme.labelMedium!.copyWith(
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: Theme.of(context).colorScheme.primary,
                 ),
           ),

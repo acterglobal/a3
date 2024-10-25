@@ -176,8 +176,8 @@ class _UserReceiptsWidget extends ConsumerWidget {
                           userId,
                           style: Theme.of(context)
                               .textTheme
-                              .labelSmall!
-                              .copyWith(
+                              .labelSmall
+                              ?.copyWith(
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
                         ),
