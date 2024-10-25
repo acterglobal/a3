@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
@@ -51,6 +51,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     AsyncValue<Task> taskLoader,
   ) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return taskLoader.when(
       data: (task) => AppBar(
         title: SelectionArea(
@@ -67,7 +68,7 @@ class TaskItemDetailPage extends ConsumerWidget {
               children: [
                 Text(
                   task.title(),
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: textTheme.titleMedium,
                 ),
                 Row(
                   children: [
@@ -79,7 +80,7 @@ class TaskItemDetailPage extends ConsumerWidget {
                     const SizedBox(width: 6),
                     Text(
                       lang.taskList,
-                      style: Theme.of(context).textTheme.labelMedium,
+                      style: textTheme.labelMedium,
                     ),
                   ],
                 ),
@@ -104,14 +105,14 @@ class TaskItemDetailPage extends ConsumerWidget {
                   },
                   child: Text(
                     lang.editTitle,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
                   onTap: () => showEditDescriptionSheet(context, ref, task),
                   child: Text(
                     lang.editDescription,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
@@ -122,7 +123,7 @@ class TaskItemDetailPage extends ConsumerWidget {
                   ),
                   child: Text(
                     lang.delete,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
@@ -132,7 +133,7 @@ class TaskItemDetailPage extends ConsumerWidget {
                   ),
                   child: Text(
                     lang.report,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: textTheme.bodyMedium,
                   ),
                 ),
               ];
@@ -235,6 +236,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     final description = task.description();
     if (description == null) return const SizedBox.shrink();
     final formattedBody = description.formattedBody();
+    final textTheme = Theme.of(context).textTheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,11 +249,11 @@ class TaskItemDetailPage extends ConsumerWidget {
             child: formattedBody != null
                 ? RenderHtml(
                     text: formattedBody,
-                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                    defaultTextStyle: textTheme.labelLarge,
                   )
                 : Text(
                     description.body(),
-                    style: Theme.of(context).textTheme.labelLarge,
+                    style: textTheme.labelLarge,
                   ),
           ),
         ),
@@ -311,6 +313,7 @@ class TaskItemDetailPage extends ConsumerWidget {
 
   Widget _widgetTaskDate(BuildContext context, Task task) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final dateText =
         task.dueDate().map((date) => taskDueDateFormat(DateTime.parse(date))) ??
             lang.noDueDate;
@@ -319,13 +322,13 @@ class TaskItemDetailPage extends ConsumerWidget {
       leading: const Icon(Atlas.calendar_date_thin),
       title: Text(
         lang.dueDate,
-        style: Theme.of(context).textTheme.bodyMedium,
+        style: textTheme.bodyMedium,
       ),
       trailing: Padding(
         padding: const EdgeInsets.only(right: 12),
         child: Text(
           dateText,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: textTheme.bodyMedium,
         ),
       ),
       onTap: () => duePickerAction(context, task),
@@ -376,6 +379,7 @@ class TaskItemDetailPage extends ConsumerWidget {
 
   Widget _widgetTaskAssignment(BuildContext context, Task task, WidgetRef ref) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return ListTile(
       dense: true,
       leading: const Icon(Atlas.business_man_thin),
@@ -383,7 +387,7 @@ class TaskItemDetailPage extends ConsumerWidget {
         children: [
           Text(
             lang.assignment,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: textTheme.bodyMedium,
           ),
           const Spacer(),
           ActerInlineTextButton(
@@ -400,7 +404,7 @@ class TaskItemDetailPage extends ConsumerWidget {
           ? assigneeName(context, task, ref)
           : Text(
               lang.noAssignment,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: textTheme.bodyMedium,
             ),
     );
   }

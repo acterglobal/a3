@@ -42,6 +42,7 @@ class LoadingConvoCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     final avatar = ActerAvatar(
       options: AvatarOptions(
         AvatarInfo(uniqueId: roomId),
@@ -69,7 +70,7 @@ class LoadingConvoCard extends ConsumerWidget {
               child: ListTile(
                 onTap: onTap,
                 selected: roomId == ref.watch(selectedChatIdProvider),
-                selectedTileColor: Theme.of(context).colorScheme.onPrimary,
+                selectedTileColor: colorScheme.onPrimary,
                 onFocusChange: onFocusChange,
                 onLongPress: onLongPress,
                 leading: avatar,
@@ -85,7 +86,7 @@ class LoadingConvoCard extends ConsumerWidget {
                 ),
                 subtitle: constraints.maxWidth < 300
                     ? null
-                    : subtitle.map((text) => Skeletonizer(child: text)),
+                    : subtitle.map((widget) => Skeletonizer(child: widget)),
                 trailing: constraints.maxWidth < 300 ? null : trailing,
               ),
             ),
@@ -94,7 +95,7 @@ class LoadingConvoCard extends ConsumerWidget {
                 : Divider(
                     indent: 75,
                     endIndent: 10,
-                    color: Theme.of(context).colorScheme.tertiary,
+                    color: colorScheme.tertiary,
                   ),
           ],
         );

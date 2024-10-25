@@ -21,6 +21,8 @@ class SuperInvitesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final tokensLoader = ref.watch(superInvitesTokensProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
@@ -33,7 +35,7 @@ class SuperInvitesPage extends ConsumerWidget {
             IconButton(
               icon: const Icon(Atlas.arrows_rotating_right_thin),
               iconSize: 28,
-              color: Theme.of(context).colorScheme.surface,
+              color: colorScheme.surface,
               onPressed: () {
                 ref.invalidate(superInvitesTokensProvider);
               },
@@ -42,7 +44,7 @@ class SuperInvitesPage extends ConsumerWidget {
               key: createNewToken,
               icon: const Icon(Atlas.plus_circle_thin),
               iconSize: 28,
-              color: Theme.of(context).colorScheme.surface,
+              color: colorScheme.surface,
               onPressed: () {
                 context.pushNamed(Routes.actionCreateSuperInvite.name);
               },
@@ -76,11 +78,11 @@ class SuperInvitesPage extends ConsumerWidget {
                         child: ListTile(
                           title: Text(
                             tokenStr,
-                            style: Theme.of(context).textTheme.headlineSmall,
+                            style: textTheme.headlineSmall,
                           ),
                           subtitle: Text(
                             acceptedCount,
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: textTheme.bodySmall,
                           ),
                           onTap: () {
                             context.pushNamed(

@@ -77,14 +77,15 @@ class TaskItem extends ConsumerWidget {
   }
 
   Widget takeItemTitle(BuildContext context, Task task) {
+    final textTheme = Theme.of(context).textTheme;
     return Text(
       task.title(),
       style: task.isDone()
-          ? Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w100,
-                decoration: TextDecoration.lineThrough,
-              )
-          : Theme.of(context).textTheme.bodyMedium,
+          ? textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w100,
+              decoration: TextDecoration.lineThrough,
+            )
+          : textTheme.bodyMedium,
     );
   }
 
@@ -110,6 +111,7 @@ class TaskItem extends ConsumerWidget {
 
   Widget takeItemSubTitle(WidgetRef ref, BuildContext context, Task task) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final description = task.description()?.body();
     final tasklistId = task.taskListIdStr();
     final tasklistLoader = ref.watch(taskListItemProvider(tasklistId));
@@ -130,7 +132,7 @@ class TaskItem extends ConsumerWidget {
                   const SizedBox(width: 6),
                   Text(
                     taskList.name(),
-                    style: Theme.of(context).textTheme.labelMedium,
+                    style: textTheme.labelMedium,
                   ),
                 ],
               ),
@@ -147,7 +149,7 @@ class TaskItem extends ConsumerWidget {
               description,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelMedium,
+              style: textTheme.labelMedium,
             ),
           dueDateWidget(context, task),
         ],
@@ -157,6 +159,8 @@ class TaskItem extends ConsumerWidget {
 
   Widget dueDateWidget(BuildContext context, Task task) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return task.dueDate().map((dueDate) {
           final date = DateTime.parse(dueDate);
           final dateText =
@@ -168,13 +172,11 @@ class TaskItem extends ConsumerWidget {
                   : date.isPast
                       ? date.timeago()
                       : lang.due(dateText);
-          final iconColor = date.isPast
-              ? Theme.of(context).colorScheme.onSurface
-              : Colors.white54;
-          var textStyle = Theme.of(context).textTheme.labelMedium;
+          final iconColor =
+              date.isPast ? colorScheme.onSurface : Colors.white54;
+          var textStyle = textTheme.labelMedium;
           if (date.isPast) {
-            textStyle =
-                textStyle?.copyWith(color: Theme.of(context).colorScheme.error);
+            textStyle = textStyle?.copyWith(color: colorScheme.error);
           }
           return Row(
             children: [
