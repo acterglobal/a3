@@ -111,13 +111,14 @@ class CustomChatInput extends ConsumerWidget {
   }
 
   Widget loadingState(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Skeletonizer(
       child: FrostEffect(
         child: Container(
           key: loadingKey,
           padding: const EdgeInsets.symmetric(vertical: 15),
-          decoration:
-              BoxDecoration(color: Theme.of(context).colorScheme.surface),
+          decoration: BoxDecoration(color: colorScheme.surface),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
@@ -135,8 +136,8 @@ class CustomChatInput extends ConsumerWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: TextField(
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      cursorColor: Theme.of(context).colorScheme.primary,
+                      style: textTheme.bodyMedium,
+                      cursorColor: colorScheme.primary,
                       maxLines: 6,
                       minLines: 1,
                       decoration: InputDecoration(
@@ -144,10 +145,7 @@ class CustomChatInput extends ConsumerWidget {
                         prefixIcon: Icon(
                           Icons.shield,
                           size: 18,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.8),
+                          color: colorScheme.primary.withOpacity(0.8),
                         ),
                         suffixIcon: const Icon(Icons.emoji_emotions),
                         border: OutlineInputBorder(
@@ -155,7 +153,7 @@ class CustomChatInput extends ConsumerWidget {
                           borderSide: BorderSide(
                             width: 0.5,
                             style: BorderStyle.solid,
-                            color: Theme.of(context).colorScheme.surface,
+                            color: colorScheme.surface,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
@@ -170,16 +168,13 @@ class CustomChatInput extends ConsumerWidget {
                           borderSide: BorderSide(
                             width: 0.5,
                             style: BorderStyle.solid,
-                            color: Theme.of(context).colorScheme.onSurface,
+                            color: colorScheme.onSurface,
                           ),
                         ),
                         hintText: L10n.of(context).newMessage,
-                        hintStyle: Theme.of(context)
-                            .textTheme
-                            .labelLarge
-                            ?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
+                        hintStyle: textTheme.labelLarge?.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
                         contentPadding: const EdgeInsets.all(15),
                         hintMaxLines: 1,
                       ),
@@ -373,15 +368,15 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     final isEncrypted = ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull;
     final emojiPickerVisible = ref
         .watch(chatInputProvider.select((value) => value.emojiPickerVisible));
+    final screenSize = MediaQuery.of(context).size;
     return Column(
       children: [
         if (child != null) child,
         FrostEffect(
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 15),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-            ),
+            decoration:
+                BoxDecoration(color: Theme.of(context).colorScheme.surface),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
@@ -413,10 +408,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         ),
         if (emojiPickerVisible)
           EmojiPickerWidget(
-            size: Size(
-              MediaQuery.of(context).size.width,
-              MediaQuery.of(context).size.height / 3,
-            ),
+            size: Size(screenSize.width, screenSize.height / 3),
             onEmojiSelected: handleEmojiSelected,
             onBackspacePressed: handleBackspacePressed,
             onClosePicker: () =>
@@ -465,13 +457,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   }
 
   Widget renderReplyView(BuildContext context, Message repliedToMessage) {
-    final size = MediaQuery.of(context).size;
-    final roomId = widget.roomId;
-
     return renderChatInputArea(
       context,
       FrostEffect(
-        widgetWidth: size.width,
+        widgetWidth: MediaQuery.of(context).size.width,
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primaryContainer,
@@ -492,7 +481,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
               children: [
                 Consumer(
                   builder: (context, ref, child) =>
-                      replyBuilder(roomId, repliedToMessage),
+                      replyBuilder(widget.roomId, repliedToMessage),
                 ),
                 _ReplyContentWidget(
                   roomId: widget.roomId,
@@ -507,11 +496,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   }
 
   Widget renderEditView(BuildContext context, Message editMessage) {
-    final size = MediaQuery.of(context).size;
     return renderChatInputArea(
       context,
       FrostEffect(
-        widgetWidth: size.width,
+        widgetWidth: MediaQuery.of(context).size.width,
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primaryContainer,
@@ -878,11 +866,10 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
     FocusNode chatFocus,
   ) {
     final lang = L10n.of(context);
+    final screenSize = MediaQuery.of(context).size;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.2,
-      ),
+      constraints: BoxConstraints(maxHeight: screenSize.height * 0.2),
       child: TextField(
         maxLines: 5,
         minLines: 1,
@@ -944,6 +931,8 @@ class _ReplyContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final screenSize = MediaQuery.of(context).size;
     if (msg is ImageMessage) {
       final imageMsg = msg as ImageMessage;
       return Padding(
@@ -958,8 +947,7 @@ class _ReplyContentWidget extends StatelessWidget {
     } else if (msg is TextMessage) {
       final textMsg = msg as TextMessage;
       return Container(
-        constraints:
-            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.2),
+        constraints: BoxConstraints(maxHeight: screenSize.height * 0.2),
         padding: const EdgeInsets.all(12),
         child: Html(
           data: textMsg.text,
@@ -974,10 +962,8 @@ class _ReplyContentWidget extends StatelessWidget {
               roomId: roomId,
             );
           },
-          defaultTextStyle: Theme.of(context)
-              .textTheme
-              .bodySmall
-              ?.copyWith(overflow: TextOverflow.ellipsis),
+          defaultTextStyle:
+              textTheme.bodySmall?.copyWith(overflow: TextOverflow.ellipsis),
           maxLines: 3,
         ),
       );
@@ -986,7 +972,7 @@ class _ReplyContentWidget extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Text(
           msg.metadata?['content'],
-          style: Theme.of(context).textTheme.bodySmall,
+          style: textTheme.bodySmall,
         ),
       );
     } else if (msg is CustomMessage) {
@@ -999,10 +985,7 @@ class _ReplyContentWidget extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Text(
           L10n.of(context).replyPreviewUnavailable,
-          style: Theme.of(context)
-              .textTheme
-              .bodySmall
-              ?.copyWith(fontStyle: FontStyle.italic),
+          style: textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
         ),
       );
     }

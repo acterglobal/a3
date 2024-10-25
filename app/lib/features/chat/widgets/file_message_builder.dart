@@ -78,21 +78,21 @@ class FileMessageBuilder extends ConsumerWidget {
   }
 
   Widget fileInfoUI(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             message.name,
-            style: Theme.of(context).textTheme.labelLarge,
+            style: textTheme.labelLarge,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 5),
           Text(
             formatBytes(message.size.truncate()),
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+            style: textTheme.labelMedium?.copyWith(color: colorScheme.primary),
           ),
         ],
       ),

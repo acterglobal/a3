@@ -5,7 +5,6 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -50,15 +49,16 @@ class _TextMessageBuilderConsumerState
     bool enlargeEmoji = widget.message.metadata?['enlargeEmoji'] == true;
     bool wasEdited = widget.message.metadata?['was_edited'] == true;
     final isAuthor = widget.message.author.id == ref.watch(myUserIdStrProvider);
+    final chatTheme = Theme.of(context).chatTheme;
 
     //will return empty if link is other than mention
     return LinkPreview(
       metadataTitleStyle: isAuthor
-          ? Theme.of(context).chatTheme.sentMessageLinkTitleTextStyle
-          : Theme.of(context).chatTheme.receivedMessageLinkTitleTextStyle,
+          ? chatTheme.sentMessageLinkTitleTextStyle
+          : chatTheme.receivedMessageLinkTitleTextStyle,
       metadataTextStyle: isAuthor
-          ? Theme.of(context).chatTheme.sentMessageLinkDescriptionTextStyle
-          : Theme.of(context).chatTheme.receivedMessageLinkDescriptionTextStyle,
+          ? chatTheme.sentMessageLinkDescriptionTextStyle
+          : chatTheme.receivedMessageLinkDescriptionTextStyle,
       enableAnimation: true,
       imageBuilder: (image) {
         return Padding(
@@ -85,7 +85,10 @@ class _TextMessageBuilderConsumerState
         roomId: widget.roomId,
       ),
       width: widget.messageWidth.toDouble(),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 16,
+      ),
     );
   }
 
@@ -116,10 +119,13 @@ class _TextWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(alwaysClientProvider);
-    final emojiTextStyle = client.userId().toString() == message.author.id
-        ? Theme.of(context).chatTheme.sentEmojiMessageTextStyle
-        : Theme.of(context).chatTheme.receivedEmojiMessageTextStyle;
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final chatTheme = Theme.of(context).chatTheme;
+    final myId = ref.watch(myUserIdStrProvider);
+    final emojiTextStyle = myId == message.author.id
+        ? chatTheme.sentEmojiMessageTextStyle
+        : chatTheme.receivedEmojiMessageTextStyle;
     return Column(
       children: [
         ConstrainedBox(
@@ -149,16 +155,12 @@ class _TextWidget extends ConsumerWidget {
                     roomId: roomId,
                   ),
                   shrinkToFit: true,
-                  defaultTextStyle:
-                      Theme.of(context).textTheme.bodySmall?.copyWith(
-                            overflow: isReply ? TextOverflow.ellipsis : null,
-                            color: isNotice
-                                ? Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withOpacity(0.5)
-                                : null,
-                          ),
+                  defaultTextStyle: textTheme.bodySmall?.copyWith(
+                    overflow: isReply ? TextOverflow.ellipsis : null,
+                    color: isNotice
+                        ? colorScheme.onSurface.withOpacity(0.5)
+                        : null,
+                  ),
                   maxLines: isReply ? 3 : null,
                 ),
         ),
@@ -166,10 +168,8 @@ class _TextWidget extends ConsumerWidget {
           visible: wasEdited,
           child: Text(
             L10n.of(context).edited,
-            style: Theme.of(context)
-                .chatTheme
-                .emptyChatPlaceholderTextStyle
-                .copyWith(fontSize: 12),
+            style:
+                chatTheme.emptyChatPlaceholderTextStyle.copyWith(fontSize: 12),
           ),
         ),
       ],
