@@ -20,9 +20,15 @@ class NewsPostTimeWidget extends StatelessWidget {
     ).fromNow();
     return Row(
       children: [
-        Icon(PhosphorIcons.timer(), size: 20),
+        Icon(
+          PhosphorIcons.timer(),
+          size: 20,
+        ),
         const SizedBox(width: 4),
-        Text(agoTime, style: Theme.of(context).textTheme.labelLarge),
+        Text(
+          agoTime,
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
       ],
     );
   }

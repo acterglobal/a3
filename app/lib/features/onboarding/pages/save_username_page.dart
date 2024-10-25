@@ -50,36 +50,38 @@ class SaveUsernamePage extends StatelessWidget {
 
   Widget _buildHeadlineText(BuildContext context) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           lang.saveUsernameTitle,
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: Theme.of(context).colorScheme.secondary,
-              ),
+          style:
+              textTheme.headlineMedium?.copyWith(color: colorScheme.secondary),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 10),
         Text(
           lang.saveUsernameDescription1,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: textTheme.bodyMedium,
         ),
         const SizedBox(height: 10),
         Text(
           lang.saveUsernameDescription2,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: textTheme.bodyMedium,
         ),
         const SizedBox(height: 10),
         Text(
           lang.saveUsernameDescription3,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: textTheme.bodyMedium,
         ),
       ],
     );
   }
 
   Widget _buildDisplayUsername(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -94,12 +96,12 @@ class SaveUsernamePage extends StatelessWidget {
           children: [
             Text(
               L10n.of(context).acterUsername,
-              style: Theme.of(context).textTheme.bodySmall,
+              style: textTheme.bodySmall,
             ),
             const SizedBox(height: 15),
             Text(
               username,
-              style: Theme.of(context).textTheme.headlineMedium,
+              style: textTheme.headlineMedium,
             ),
           ],
         ),
@@ -140,6 +142,8 @@ class SaveUsernamePage extends StatelessWidget {
   }
 
   Widget _buildContinueActionButton(BuildContext context) {
+    final disabledColor = Theme.of(context).disabledColor;
+    final textTheme = Theme.of(context).textTheme;
     return ValueListenableBuilder(
       valueListenable: isCopied,
       builder: (context, isCopiedValue, child) {
@@ -149,15 +153,13 @@ class SaveUsernamePage extends StatelessWidget {
               ? () => context.goNamed(Routes.linkEmail.name)
               : null,
           style: OutlinedButton.styleFrom(
-            side: isCopiedValue
-                ? null
-                : BorderSide(color: Theme.of(context).disabledColor),
+            side: isCopiedValue ? null : BorderSide(color: disabledColor),
           ),
           child: Text(
             L10n.of(context).wizzardContinue,
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: isCopiedValue ? null : Theme.of(context).disabledColor,
-                ),
+            style: textTheme.bodyMedium?.copyWith(
+              color: isCopiedValue ? null : disabledColor,
+            ),
           ),
         );
       },
