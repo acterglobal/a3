@@ -65,10 +65,10 @@ class NewsSideBar extends ConsumerWidget {
             onPressed: () {
               showModalBottomSheet(
                 context: context,
+                isScrollControlled: true,
                 showDragHandle: true,
-                builder: (context) => CommentsSectionWidget(
-                  manager: news.comments(),
-                ),
+                builder: (context) =>
+                    CommentsSectionWidget(manager: news.comments()),
               );
             },
             icon: const Icon(Atlas.comment_blank),
