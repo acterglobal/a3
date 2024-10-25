@@ -29,10 +29,11 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
+    final hintColor = Theme.of(context).hintColor;
     if (!editMode) {
       return TextFormField(
         initialValue: widget.currentSelection,
-        style: TextStyle(color: Theme.of(context).hintColor),
+        style: TextStyle(color: hintColor),
         onTap: () {
           setState(() => editMode = true);
         },
@@ -41,7 +42,7 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
           labelText: lang.server,
           suffix: Icon(
             Icons.edit,
-            color: Theme.of(context).hintColor,
+            color: hintColor,
           ),
         ),
       );

@@ -108,9 +108,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
             onTap: () => updatePinLink(context, pin, ''),
             child: Text(
               lang.delete,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.error,
-              ),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
         ];

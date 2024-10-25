@@ -172,6 +172,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
   }
 
   Widget loadingPage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: List.generate(
         5,
@@ -189,14 +190,14 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
                     title: Skeletonizer(
                       child: Text(
                         'nothing',
-                        style: Theme.of(context).textTheme.labelLarge,
+                        style: textTheme.labelLarge,
                         softWrap: false,
                       ),
                     ),
                     subtitle: Skeletonizer(
                       child: Text(
                         'some larger subtitle',
-                        style: Theme.of(context).textTheme.labelSmall,
+                        style: textTheme.labelSmall,
                         softWrap: false,
                       ),
                     ),

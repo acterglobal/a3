@@ -148,6 +148,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   // pin actions menu builder
   Widget _buildActionMenu() {
     final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final pin = ref.watch(pinProvider(widget.pinId)).valueOrNull;
     if (pin == null) {
       return const SizedBox.shrink();
@@ -189,7 +190,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           children: <Widget>[
             Icon(
               Atlas.warning_thin,
-              color: Theme.of(context).colorScheme.error,
+              color: colorScheme.error,
             ),
             const SizedBox(width: 10),
             Text(lang.reportPin),
@@ -209,7 +210,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           ),
           child: Text(
             lang.removePin,
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
+            style: TextStyle(color: colorScheme.error),
           ),
         ),
       );
@@ -312,6 +313,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     if (htmlBody == null && plainBody.trim().isEmpty) {
       return const SizedBox.shrink();
     }
+    final textTheme = Theme.of(context).textTheme;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -320,29 +322,27 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         const SizedBox(height: 18),
         SelectionArea(
           child: GestureDetector(
-            onTap: () {
-              showEditHtmlDescriptionBottomSheet(
-                context: context,
-                descriptionHtmlValue: description.formattedBody(),
-                descriptionMarkdownValue: plainBody,
-                onSave: (htmlBodyDescription, plainDescription) async {
-                  await updatePinDescription(
-                    context,
-                    htmlBodyDescription,
-                    plainDescription,
-                    pin,
-                  );
-                },
-              );
-            },
+            onTap: () => showEditHtmlDescriptionBottomSheet(
+              context: context,
+              descriptionHtmlValue: description.formattedBody(),
+              descriptionMarkdownValue: plainBody,
+              onSave: (htmlBodyDescription, plainDescription) async {
+                await updatePinDescription(
+                  context,
+                  htmlBodyDescription,
+                  plainDescription,
+                  pin,
+                );
+              },
+            ),
             child: htmlBody != null
                 ? RenderHtml(
                     text: htmlBody,
-                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                    defaultTextStyle: textTheme.labelLarge,
                   )
                 : Text(
                     plainBody,
-                    style: Theme.of(context).textTheme.labelLarge,
+                    style: textTheme.labelLarge,
                   ),
           ),
         ),

@@ -118,6 +118,7 @@ class EmailAddressesPage extends ConsumerWidget {
 
   Widget buildAddresses(BuildContext context, EmailAddresses addresses) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     if (addresses.unconfirmed.isNotEmpty) {
       final slivers = [
         SliverToBoxAdapter(
@@ -134,7 +135,7 @@ class EmailAddressesPage extends ConsumerWidget {
                 ),
                 Text(
                   lang.awaitingConfirmation,
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  style: textTheme.headlineSmall,
                 ),
               ],
             ),
@@ -148,7 +149,7 @@ class EmailAddressesPage extends ConsumerWidget {
             ),
             child: Text(
               lang.awaitingConfirmationDescription,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: textTheme.bodyMedium,
             ),
           ),
         ),
@@ -170,7 +171,7 @@ class EmailAddressesPage extends ConsumerWidget {
               ),
               child: Text(
                 lang.confirmedEmailAddresses,
-                style: Theme.of(context).textTheme.headlineSmall,
+                style: textTheme.headlineSmall,
               ),
             ),
           ),

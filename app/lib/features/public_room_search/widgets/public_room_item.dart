@@ -77,6 +77,7 @@ class PublicRoomItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final avatarLoader = ref.watch(searchItemProfileData(item));
     final topic = item.topic();
 
@@ -103,12 +104,12 @@ class PublicRoomItem extends ConsumerWidget {
                 ),
                 title: Text(
                   item.name() ?? lang.noDisplayName,
-                  style: Theme.of(context).textTheme.labelLarge,
+                  style: textTheme.labelLarge,
                   softWrap: false,
                 ),
                 subtitle: Text(
                   lang.countsMembers(item.numJoinedMembers()),
-                  style: Theme.of(context).textTheme.labelSmall,
+                  style: textTheme.labelSmall,
                   softWrap: false,
                 ),
                 trailing: _JoinBtn(
@@ -127,7 +128,7 @@ class PublicRoomItem extends ConsumerWidget {
                 ),
                 child: Text(
                   topic,
-                  style: Theme.of(context).textTheme.labelMedium,
+                  style: textTheme.labelMedium,
                   maxLines: 5,
                   overflow: TextOverflow.ellipsis,
                 ),

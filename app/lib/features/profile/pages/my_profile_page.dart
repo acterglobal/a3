@@ -197,6 +197,7 @@ class MyProfilePage extends StatelessWidget {
   }
 
   Widget _buildAvatarUI(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     final avatarInfo = ref.watch(accountAvatarInfoProvider);
     return GestureDetector(
       onTap: () => updateAvatar(context, ref),
@@ -206,7 +207,7 @@ class MyProfilePage extends StatelessWidget {
             borderRadius: BorderRadius.circular(100),
             border: Border.all(
               width: 2,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: colorScheme.onSurface,
             ),
           ),
           child: Stack(
@@ -226,9 +227,9 @@ class MyProfilePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(100),
                       border: Border.all(
                         width: 1,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: colorScheme.onSurface,
                       ),
-                      color: Theme.of(context).colorScheme.surface,
+                      color: colorScheme.surface,
                     ),
                     child: const Icon(
                       Icons.edit,
@@ -252,13 +253,14 @@ class MyProfilePage extends StatelessWidget {
     required IconData trailingIcon,
     required VoidCallback onPressed,
   }) {
+    final textTheme = Theme.of(context).textTheme;
     return Card(
       margin: EdgeInsets.zero,
       child: ListTile(
         title: Text(
           title,
           key: key,
-          style: Theme.of(context).textTheme.labelMedium,
+          style: textTheme.labelMedium,
         ),
         subtitle: Padding(
           padding: const EdgeInsets.symmetric(
@@ -267,7 +269,7 @@ class MyProfilePage extends StatelessWidget {
           ),
           child: Text(
             subTitle,
-            style: Theme.of(context).textTheme.titleSmall,
+            style: textTheme.titleSmall,
           ),
         ),
         trailing: IconButton(

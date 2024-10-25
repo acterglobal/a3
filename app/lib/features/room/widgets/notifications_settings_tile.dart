@@ -45,11 +45,10 @@ class _NotificationSettingsTile extends ConsumerWidget {
     final defStatusText = notifToText(context, defNotifStatus ?? '');
     final defNotifText = defaultTitle ??
         lang.defaultNotification('(${defStatusText ?? lang.undefined})');
-    final tileTextTheme = Theme.of(context).textTheme.bodySmall;
     return SettingsTile(
       title: Text(
         title ?? lang.notifications,
-        style: tileTextTheme,
+        style: Theme.of(context).textTheme.bodySmall,
       ),
       description:
           Text(notifToText(context, curNotifStatus ?? '') ?? defNotifText),
