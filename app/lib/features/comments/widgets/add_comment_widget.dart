@@ -50,7 +50,7 @@ class AddCommentWidget extends ConsumerWidget {
 
   Widget addCommentBoxUI(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Theme.of(context).unselectedWidgetColor.withAlpha(30),
         border: Border.all(color: Theme.of(context).unselectedWidgetColor),
