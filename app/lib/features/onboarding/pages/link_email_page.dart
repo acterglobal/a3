@@ -139,7 +139,7 @@ class LinkEmailPage extends ConsumerWidget {
             children: [
               Text(
                 L10n.of(context).linkEmailToProfile,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: isValidEmail
                           ? whiteColor
                           : Theme.of(context).disabledColor,

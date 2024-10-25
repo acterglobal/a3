@@ -155,7 +155,7 @@ class SaveUsernamePage extends StatelessWidget {
           ),
           child: Text(
             L10n.of(context).wizzardContinue,
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: isCopiedValue ? null : Theme.of(context).disabledColor,
                 ),
           ),

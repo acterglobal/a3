@@ -28,14 +28,14 @@ class TextSlide extends StatelessWidget {
     final bodyText = slideContent.body();
     final fgColor = NewsUtils.getForegroundColor(context, slide);
     final defaultTextStyle =
-        Theme.of(context).textTheme.bodyLarge!.copyWith(color: fgColor);
+        Theme.of(context).textTheme.bodyLarge?.copyWith(color: fgColor);
 
     return formattedText != null
         ? renderHtmlText(formattedText, defaultTextStyle)
         : renderNormalText(bodyText, defaultTextStyle);
   }
 
-  Widget renderHtmlText(String formattedText, TextStyle defaultTextStyle) {
+  Widget renderHtmlText(String formattedText, TextStyle? defaultTextStyle) {
     return SelectionArea(
       child: RenderHtml(
         key: NewsUpdateKeys.textUpdateContent,
@@ -45,7 +45,7 @@ class TextSlide extends StatelessWidget {
     );
   }
 
-  Widget renderNormalText(String bodyText, TextStyle defaultTextStyle) {
+  Widget renderNormalText(String bodyText, TextStyle? defaultTextStyle) {
     return SelectableText(
       key: NewsUpdateKeys.textUpdateContent,
       bodyText,
