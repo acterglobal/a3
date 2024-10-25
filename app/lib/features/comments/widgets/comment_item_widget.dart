@@ -20,52 +20,75 @@ class CommentItemWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomID = manager.roomIdStr();
     final userId = comment.sender().toString();
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider((roomId: roomID, userId: userId)),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          userAvatarUI(context, avatarInfo),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  userNameUI(context, avatarInfo),
+                  messageContentUI(context),
+                  const SizedBox(height: 4),
+                  messageTimeUI(context),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget userAvatarUI(BuildContext context, AvatarInfo avatarInfo) {
+    return ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 18));
+  }
+
+  Widget userNameUI(BuildContext context, AvatarInfo avatarInfo) {
+    final userId = comment.sender().toString();
+    final displayName = avatarInfo.displayName;
+    final displayNameTextStyle = Theme.of(context)
+        .textTheme
+        .bodyMedium
+        ?.copyWith(fontWeight: FontWeight.bold);
+    final usrNameTextStyle = Theme.of(context).textTheme.labelMedium;
+
+    return Row(
+      children: [
+        Text(displayName ?? userId, style: displayNameTextStyle),
+        const SizedBox(width: 8),
+        if (displayName != null) Text(userId, style: usrNameTextStyle)
+      ],
+    );
+  }
+
+  Widget messageContentUI(BuildContext context) {
     final msgContent = comment.msgContent();
     final formatted = msgContent.formattedBody();
+    final messageTextStyle = Theme.of(context).textTheme.bodyMedium;
+
+    return formatted != null
+        ? RenderHtml(text: formatted, defaultTextStyle: messageTextStyle)
+        : Text(msgContent.body(), style: messageTextStyle);
+  }
+
+  Widget messageTimeUI(BuildContext context) {
     final commentTime = DateTime.fromMillisecondsSinceEpoch(
       comment.originServerTs(),
       isUtc: true,
     );
     final time = commentTime.toLocal().timeago();
-    final avatarInfo = ref.watch(
-      memberAvatarInfoProvider((roomId: roomID, userId: userId)),
-    );
-
-    final displayName = avatarInfo.displayName;
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ListTile(
-            leading: ActerAvatar(
-              options: AvatarOptions.DM(
-                avatarInfo,
-                size: 18,
-              ),
-            ),
-            title: Text(
-              displayName ?? userId,
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            subtitle: displayName == null ? null : Text(userId),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: formatted != null
-                ? RenderHtml(text: formatted)
-                : Text(msgContent.body()),
-          ),
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              time,
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
+    return Text(
+      time,
+      style: Theme.of(context).textTheme.labelMedium,
     );
   }
 }

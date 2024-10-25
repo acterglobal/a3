@@ -39,7 +39,7 @@ class AddCommentWidget extends ConsumerWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 22)),
+            ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 18)),
             const SizedBox(width: 12),
             Expanded(child: addCommentBoxUI(context)),
           ],
