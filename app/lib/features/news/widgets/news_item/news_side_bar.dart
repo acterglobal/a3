@@ -34,7 +34,7 @@ class NewsSideBar extends ConsumerWidget {
     final isLikedByMe = ref.watch(likedByMeProvider(news));
     final likesCount = ref.watch(totalLikesForNewsProvider(news));
     final space = ref.watch(briefSpaceItemProvider(roomId));
-    final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
+    final bodyLarge = Theme.of(context).textTheme.bodyLarge;
 
     return Align(
       alignment: Alignment.bottomRight,
@@ -45,7 +45,7 @@ class NewsSideBar extends ConsumerWidget {
           LikeButton(
             isLiked: isLikedByMe.valueOrNull ?? false,
             likeCount: likesCount.valueOrNull ?? 0,
-            style: style,
+            style: bodyLarge?.copyWith(fontSize: 13),
             color: Theme.of(context).colorScheme.textColor,
             onTap: () async {
               final manager =
@@ -75,7 +75,7 @@ class NewsSideBar extends ConsumerWidget {
             child: _SideBarItem(
               icon: const Icon(Atlas.dots_horizontal_thin),
               label: '',
-              style: style,
+              style: bodyLarge?.copyWith(fontSize: 13),
             ),
           ),
           const SizedBox(height: 10),
@@ -100,7 +100,7 @@ class NewsSideBar extends ConsumerWidget {
 class _SideBarItem extends StatelessWidget {
   final Widget icon;
   final String label;
-  final TextStyle style;
+  final TextStyle? style;
 
   const _SideBarItem({
     required this.icon,
@@ -114,7 +114,10 @@ class _SideBarItem extends StatelessWidget {
       children: [
         icon,
         const SizedBox(height: 5),
-        Text(label, style: style),
+        Text(
+          label,
+          style: style,
+        ),
       ],
     );
   }

@@ -8,14 +8,14 @@ final _log = Logger('a3::common::like_button');
 class LikeButton extends StatefulWidget {
   final bool isLiked;
   final int likeCount;
-  final TextStyle style;
+  final TextStyle? style;
   final Color color;
   final Future<void> Function() onTap;
 
   const LikeButton({
     super.key,
     required this.likeCount,
-    required this.style,
+    this.style,
     required this.color,
     this.isLiked = false,
     required this.onTap,
