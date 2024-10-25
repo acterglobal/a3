@@ -114,9 +114,9 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget filterChipsButtons() {
+    final lang = L10n.of(context);
     final selected =
         ref.watch(roomListFilterProvider.select((value) => value.selection));
-    final lang = L10n.of(context);
     return Container(
       padding: const EdgeInsets.all(10),
       child: Wrap(
@@ -238,9 +238,7 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         IconButton(
           key: RoomsListWidget.openSearchActionButtonKey,
           onPressed: () {
-            setState(() {
-              _isSearchVisible = true;
-            });
+            setState(() => _isSearchVisible = true);
           },
           padding: const EdgeInsets.only(
             right: 10,

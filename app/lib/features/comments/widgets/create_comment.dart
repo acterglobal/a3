@@ -11,9 +11,10 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::comments::create_comment');
 
 class CreateCommentWidget extends ConsumerStatefulWidget {
+  static const commentField = Key('create-comment-input-field');
+
   final CommentsManager manager;
   final void Function() onClose;
-  static const commentField = Key('create-comment-input-field');
 
   const CreateCommentWidget({
     super.key,

@@ -82,6 +82,7 @@ class InvitePage extends ConsumerWidget {
 
   Widget _buildInviteHeader(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -89,12 +90,12 @@ class InvitePage extends ConsumerWidget {
         const SizedBox(height: 10),
         Text(
           lang.invite,
-          style: Theme.of(context).textTheme.titleLarge,
+          style: textTheme.titleLarge,
         ),
         const SizedBox(height: 5),
         Text(
           lang.spaceInviteDescription,
-          style: Theme.of(context).textTheme.bodySmall,
+          style: textTheme.bodySmall,
         ),
       ],
     );
@@ -134,6 +135,7 @@ class InvitePage extends ConsumerWidget {
 
   Widget _buildInviteFromCode(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -152,13 +154,13 @@ class InvitePage extends ConsumerWidget {
             Text(
               lang.inviteJoinActer,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: textTheme.titleLarge,
             ),
             const SizedBox(height: 20),
             Text(
               lang.inviteJoinActerDescription,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
+              style: textTheme.bodySmall,
             ),
             const SizedBox(height: 20),
             InviteCodeUI(roomId: roomId),

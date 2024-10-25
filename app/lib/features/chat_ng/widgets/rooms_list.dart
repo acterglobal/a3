@@ -10,6 +10,7 @@ class RoomsListNGWidget extends RoomsListWidget {
     required super.onSelected,
     super.key = RoomsListWidget.roomListMenuKey,
   });
+
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
       _RoomsListNGWidgetState();

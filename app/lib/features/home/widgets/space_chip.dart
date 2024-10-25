@@ -64,9 +64,10 @@ class SpaceChip extends ConsumerWidget {
           },
           child: Text(
             displayName,
-            style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  decoration: TextDecoration.underline,
-                ),
+            style: Theme.of(context)
+                .textTheme
+                .labelLarge
+                ?.copyWith(decoration: TextDecoration.underline),
           ),
         ),
       ],

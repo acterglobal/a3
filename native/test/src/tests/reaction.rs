@@ -86,7 +86,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
 
     let kyra_sync = kyra.start_sync();
     kyra_sync.await_has_synced_history().await?;
-    accept_all_invites(kyra.clone()).await?;
+    accept_all_invites(&kyra).await?;
 
     let kyra_convo = wait_for_convo_joined(kyra.clone(), room_id.clone()).await?;
     let kyra_timeline = kyra_convo.timeline_stream();
@@ -94,7 +94,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
 
     let worf_sync = worf.start_sync();
     worf_sync.await_has_synced_history().await?;
-    accept_all_invites(worf.clone()).await?;
+    accept_all_invites(&worf).await?;
     // wait for sync to catch up
     let worf_convo = wait_for_convo_joined(worf.clone(), room_id.clone()).await?;
     let worf_timeline = worf_convo.timeline_stream();

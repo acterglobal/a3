@@ -19,6 +19,7 @@ use matrix_sdk_base::ruma::{
     },
     OwnedRoomId,
 };
+use ruma::events::AnySyncEphemeralRoomEvent;
 use std::{
     collections::{BTreeMap, HashMap},
     io::Write,
@@ -408,7 +409,6 @@ impl Client {
 
         self.invitation_controller.add_event_handler();
         self.typing_controller.add_event_handler(&client);
-        self.receipt_controller.add_event_handler(&client);
 
         self.verification_controller
             .add_to_device_event_handler(&client);
@@ -508,6 +508,32 @@ impl Client {
                         )
                         .await;
                     }
+                }
+
+                let room_read_receipts = response
+                    .rooms
+                    .join
+                    .iter()
+                    .flat_map(|(room_id, value)| {
+                        value.ephemeral.iter().filter_map(|r| {
+                            let room_id = room_id.clone();
+                            let Ok(AnySyncEphemeralRoomEvent::Receipt(r)) = r.deserialize() else {
+                                return None;
+                            };
+                            Some(
+                                r.content
+                                    .keys()
+                                    .map(|k| format!("{room_id}:{k}:rr"))
+                                    .collect::<Vec<String>>(),
+                            )
+                        })
+                    })
+                    .flatten()
+                    .collect::<Vec<String>>();
+
+                if !room_read_receipts.is_empty() {
+                    trace!(?room_read_receipts, "read_receipts");
+                    me.executor().notify(room_read_receipts);
                 }
 
                 let changed_rooms = response

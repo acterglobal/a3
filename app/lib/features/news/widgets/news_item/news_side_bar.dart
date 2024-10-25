@@ -8,6 +8,7 @@ import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:acter/features/read_receipts/widgets/read_counter.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
@@ -42,6 +43,11 @@ class NewsSideBar extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           const Spacer(),
+          ReadCounterWidget(
+            manager: news.readReceipts(),
+            triggerAfterSecs: 3,
+          ),
+          const SizedBox(height: 5),
           LikeButton(
             isLiked: isLikedByMe.valueOrNull ?? false,
             likeCount: likesCount.valueOrNull ?? 0,

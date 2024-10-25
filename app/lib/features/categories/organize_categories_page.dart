@@ -1,6 +1,7 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/categories/actions/save_categories.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
@@ -146,6 +147,7 @@ class _DraggableCategoriesListState
   //APPBAR VIEW
   AppBar _buildAppBarUI() {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final spaceName =
         ref.watch(roomDisplayNameProvider(widget.spaceId)).valueOrNull;
     return AppBar(
@@ -167,12 +169,12 @@ class _DraggableCategoriesListState
         children: [
           Text(
             lang.organize,
-            style: Theme.of(context).textTheme.titleLarge,
+            style: textTheme.titleLarge,
           ),
           Text(
             '(${widget.categoriesFor.name} in $spaceName)',
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelLarge,
+            style: textTheme.labelLarge,
           ),
         ],
       ),
@@ -182,7 +184,7 @@ class _DraggableCategoriesListState
           onPressed: () => showAddEditCategoryBottomSheet(
             context: context,
             bottomSheetTitle: lang.addCategory,
-            onSave: (title, color, icon) => callAddCategory(title, color, icon),
+            onSave: callAddCategory,
           ),
         ),
       ],
@@ -190,7 +192,7 @@ class _DraggableCategoriesListState
   }
 
   //ADD CATEGORY (LOCALLY)
-  void callAddCategory(title, color, icon) {
+  void callAddCategory(String title, Color color, ActerIcon icon) {
     categoryList.insert(
       0,
       CategoryModelLocal(

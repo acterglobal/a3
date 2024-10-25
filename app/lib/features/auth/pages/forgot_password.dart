@@ -114,9 +114,10 @@ class _AskForEmail extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             lang.passwordResetTitle,
-            style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                  color: Theme.of(context).colorScheme.textHighlight,
-                ),
+            style: Theme.of(context)
+                .textTheme
+                .displaySmall
+                ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
           ),
         ),
         const SizedBox(height: 20),
@@ -254,9 +255,10 @@ class _NewPassword extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             L10n.of(context).passwordResetTitle,
-            style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                  color: Theme.of(context).colorScheme.textHighlight,
-                ),
+            style: Theme.of(context)
+                .textTheme
+                .displaySmall
+                ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
           ),
         ),
       ],
