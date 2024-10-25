@@ -12,6 +12,7 @@ use acter_core::{
         comments::{SyncCommentEvent, SyncCommentUpdateEvent},
         news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
         pins::{SyncPinEvent, SyncPinUpdateEvent},
+        read_receipt::SyncReadReceiptEvent,
         rsvp::SyncRsvpEvent,
         tasks::{
             SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskSelfAssignEvent,
@@ -355,6 +356,24 @@ impl Space {
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
                         if let Err(error) = executor
                             .handle(AnyActerModel::NewsEntryUpdate(t.into()))
+                            .await
+                        {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
+
+            // Read Tracking
+            self.room.add_event_handler(
+                |ev: SyncReadReceiptEvent,
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // read receipts don't support redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor
+                            .handle(AnyActerModel::ReadReceipt(t.into()))
                             .await
                         {
                             error!(?error, "execution failed");

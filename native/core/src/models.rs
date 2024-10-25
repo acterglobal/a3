@@ -5,6 +5,7 @@ mod common;
 mod news;
 mod pins;
 mod reactions;
+mod read_receipts;
 mod rsvp;
 mod tag;
 mod tasks;
@@ -32,6 +33,7 @@ use matrix_sdk_base::ruma::{
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 pub use reactions::{Reaction, ReactionManager, ReactionStats};
+pub use read_receipts::{ReadReceipt, ReadReceiptStats, ReadReceiptsManager};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
@@ -52,6 +54,7 @@ use crate::{
         comments::{CommentEventContent, CommentUpdateEventContent},
         news::{NewsEntryEventContent, NewsEntryUpdateEventContent},
         pins::{PinEventContent, PinUpdateEventContent},
+        read_receipt::ReadReceiptEventContent,
         rsvp::RsvpEventContent,
         tasks::{
             TaskEventContent, TaskListEventContent, TaskListUpdateEventContent,
@@ -69,6 +72,8 @@ pub enum Capability {
     Commentable,
     // someone can add attachment on this
     Attachmentable,
+    // users reads/views are being tracked
+    ReadTracking,
     // another custom capability
     Custom(&'static str),
 }
@@ -346,6 +351,7 @@ pub enum AnyActerModel {
 
     Rsvp(Rsvp),
     Reaction(Reaction),
+    ReadReceipt(ReadReceipt),
 
     #[cfg(test)]
     TestModel(TestModel),
@@ -372,6 +378,7 @@ impl AnyActerModel {
             AnyActerModel::AttachmentUpdate(_) => AttachmentUpdateEventContent::TYPE,
             AnyActerModel::Rsvp(_) => RsvpEventContent::TYPE,
             AnyActerModel::Reaction(_) => ReactionEventContent::TYPE,
+            AnyActerModel::ReadReceipt(_) => ReadReceiptEventContent::TYPE,
             AnyActerModel::RedactedActerModel(..) => "unknown_redacted_model",
             #[cfg(test)]
             AnyActerModel::TestModel(_) => "test_model",
@@ -627,6 +634,21 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Reaction(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
                     model_type: ReactionEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                        redacted: None,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+
+            AnyActerEvent::ReadReceipt(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::ReadReceipt(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: ReadReceiptEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
                         event_id: r.event_id,

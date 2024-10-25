@@ -11,7 +11,6 @@ mod onboarding;
 mod pins;
 mod push;
 mod reaction;
-mod receipt;
 mod redact;
 mod reply;
 mod rsvp;

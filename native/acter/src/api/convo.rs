@@ -33,7 +33,6 @@ use crate::TimelineStream;
 use super::{
     client::Client,
     message::RoomMessage,
-    receipt::ReceiptRecord,
     room::Room,
     utils::{remap_for_diff, ApiVectorDiff},
     ComposeDraft, OptionComposeDraft, RUNTIME,
@@ -274,45 +273,6 @@ impl Convo {
             .iter()
             .map(|f| f.to_string())
             .collect()
-    }
-
-    pub async fn user_receipts(&self) -> Result<Vec<ReceiptRecord>> {
-        let room = self.room.clone();
-        RUNTIME
-            .spawn(async move {
-                let mut records = vec![];
-                for member in room.members(RoomMemberships::ACTIVE).await? {
-                    let user_id = member.user_id();
-                    if let Some((event_id, receipt)) = room
-                        .load_user_receipt(ReceiptType::Read, ReceiptThread::Main, user_id)
-                        .await?
-                    {
-                        let record = ReceiptRecord::new(
-                            event_id,
-                            user_id.to_owned(),
-                            receipt.ts,
-                            receipt.thread,
-                            ReceiptType::Read,
-                        );
-                        records.push(record);
-                    }
-                    if let Some((event_id, receipt)) = room
-                        .load_user_receipt(ReceiptType::ReadPrivate, ReceiptThread::Main, user_id)
-                        .await?
-                    {
-                        let record = ReceiptRecord::new(
-                            event_id,
-                            user_id.to_owned(),
-                            receipt.ts,
-                            receipt.thread,
-                            ReceiptType::ReadPrivate,
-                        );
-                        records.push(record);
-                    }
-                }
-                Ok(records)
-            })
-            .await?
     }
 
     pub async fn msg_draft(&self) -> Result<OptionComposeDraft> {
