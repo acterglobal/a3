@@ -290,6 +290,7 @@ class UserStateButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final roomId = room.roomIdStr();
     final invited =
         ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
@@ -299,14 +300,14 @@ class UserStateButton extends ConsumerWidget {
         onTap: () => _cancelInvite(context, ref),
         child: Chip(
           label: Text(lang.revoke),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: colorScheme.error,
         ),
       );
     }
     if (isJoined(userId, joined)) {
       return Chip(
         label: Text(lang.joined),
-        backgroundColor: Theme.of(context).colorScheme.success,
+        backgroundColor: colorScheme.success,
       );
     }
     return InkWell(
