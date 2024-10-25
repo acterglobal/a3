@@ -44,8 +44,8 @@ class SectionHeader extends StatelessWidget {
               title,
               style: Theme.of(context)
                   .textTheme
-                  .titleMedium!
-                  .copyWith(color: Theme.of(context).primaryColor),
+                  .titleMedium
+                  ?.copyWith(color: Theme.of(context).primaryColor),
             ),
             const Spacer(),
             isShowSeeAllButton

@@ -325,7 +325,7 @@ class SettingsMenu extends ConsumerWidget {
             ),
             child: Text(
               sectionTitle,
-              style: Theme.of(context).textTheme.labelLarge!.copyWith(
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: isDanderZone
                         ? Theme.of(context).colorScheme.error
                         : null,
