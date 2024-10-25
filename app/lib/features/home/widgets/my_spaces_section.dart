@@ -167,7 +167,7 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
             children: <TextSpan>[
               TextSpan(
                 text: lang.create,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.bold,
                     ),
@@ -175,7 +175,7 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
               TextSpan(text: lang.or),
               TextSpan(
                 text: lang.join,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.bold,
                     ),

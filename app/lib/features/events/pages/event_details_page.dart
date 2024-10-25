@@ -494,7 +494,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             const SizedBox(height: 4),
             Text(
               actionName,
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     color: isSelected ? rsvpStatusColor : Colors.white38,
                   ),
             ),
