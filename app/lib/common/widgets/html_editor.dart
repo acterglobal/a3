@@ -342,7 +342,10 @@ class HtmlEditorState extends State<HtmlEditor> {
       selectionColor: Theme.of(context).colorScheme.secondaryContainer,
       textStyleConfiguration: widget.textStyleConfiguration ??
           TextStyleConfiguration(
-            text: Theme.of(context).textTheme.bodySmall!,
+            text: Theme.of(context)
+                .textTheme
+                .bodySmall
+                .expect('bodySmall style not available'),
           ),
     );
   }
@@ -354,7 +357,10 @@ class HtmlEditorState extends State<HtmlEditor> {
       selectionColor: Theme.of(context).colorScheme.secondaryContainer,
       textStyleConfiguration: widget.textStyleConfiguration ??
           TextStyleConfiguration(
-            text: Theme.of(context).textTheme.bodySmall!,
+            text: Theme.of(context)
+                .textTheme
+                .bodySmall
+                .expect('bodySmall style not available'),
           ),
     );
   }
