@@ -30,7 +30,7 @@ final emojiFallbackFonts = emojiFont.map((font) => [font]);
 
 class EmojiConfig {
   static TextStyle? emojiTextStyle =
-      emojiFont != null ? TextStyle(fontFamily: emojiFont) : null;
+      emojiFont.map((font) => TextStyle(fontFamily: font));
   static final checkPlatformCompatibility = emojiFont != defaultEmojiFont;
   static final emojiSizeMax = 32 * ((!kIsWeb && Platform.isIOS) ? 1.30 : 1.0);
 }

@@ -131,9 +131,7 @@ class _CloseRoomConfirmationState
       final room = await ref.read(maybeRoomProvider(widget.roomId).future);
       final myMembership =
           await ref.read(roomMembershipProvider(widget.roomId).future);
-      if (room == null || myMembership == null) {
-        throw RoomNotFound();
-      }
+      if (room == null || myMembership == null) throw RoomNotFound();
 
       final myPowerLevel = myMembership.powerLevel();
       final memberIds =
