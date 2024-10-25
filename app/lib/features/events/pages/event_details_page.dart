@@ -122,6 +122,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
   Widget _buildActionMenu(CalendarEvent event) {
     final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     //Get membership details
     final spaceId = event.roomIdStr();
     final canRedact = ref.watch(canRedactProvider(event));
@@ -224,7 +225,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             children: <Widget>[
               Icon(
                 Atlas.trash_can_thin,
-                color: Theme.of(context).colorScheme.error,
+                color: colorScheme.error,
               ),
               const SizedBox(width: 10),
               Text(lang.eventRemove),
@@ -250,7 +251,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           children: <Widget>[
             Icon(
               Atlas.warning_thin,
-              color: Theme.of(context).colorScheme.error,
+              color: colorScheme.error,
             ),
             const SizedBox(width: 10),
             Text(lang.eventReport),
@@ -393,10 +394,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
 
   Widget _buildEventRsvpActions(CalendarEvent calendarEvent) {
     final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final rsvp = ref.watch(myRsvpStatusProvider(widget.calendarId)).valueOrNull;
 
     return Container(
-      color: Theme.of(context).colorScheme.surface,
+      color: colorScheme.surface,
       padding: const EdgeInsets.symmetric(vertical: 15.0),
       child: Row(
         children: [
@@ -406,7 +408,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             onTap: () => onRsvp(RsvpStatusTag.Yes, ref),
             iconData: Icons.check,
             actionName: lang.going,
-            rsvpStatusColor: Theme.of(context).colorScheme.secondary,
+            rsvpStatusColor: colorScheme.secondary,
             isSelected: rsvp == RsvpStatusTag.Yes,
           ),
           _buildVerticalDivider(),
@@ -416,7 +418,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             onTap: () => onRsvp(RsvpStatusTag.No, ref),
             iconData: Icons.close,
             actionName: lang.notGoing,
-            rsvpStatusColor: Theme.of(context).colorScheme.error,
+            rsvpStatusColor: colorScheme.error,
             isSelected: rsvp == RsvpStatusTag.No,
           ),
           _buildVerticalDivider(),
@@ -633,6 +635,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventDescription(CalendarEvent ev) {
+    final textTheme = Theme.of(context).textTheme;
     TextMessageContent? content = ev.description();
     final formattedText = content?.formatted();
     final bodyText = content?.body() ?? '';
@@ -645,7 +648,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         children: [
           Text(
             L10n.of(context).about,
-            style: Theme.of(context).textTheme.titleSmall,
+            style: textTheme.titleSmall,
           ),
           const SizedBox(height: 10),
           SelectionArea(
@@ -654,11 +657,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               child: formattedText != null
                   ? RenderHtml(
                       text: formattedText,
-                      defaultTextStyle: Theme.of(context).textTheme.labelMedium,
+                      defaultTextStyle: textTheme.labelMedium,
                     )
                   : Text(
                       bodyText,
-                      style: Theme.of(context).textTheme.labelMedium,
+                      style: textTheme.labelMedium,
                     ),
             ),
           ),

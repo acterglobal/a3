@@ -138,14 +138,15 @@ class EventItem extends StatelessWidget {
   }
 
   Widget? _getRsvpStatus(BuildContext context, RsvpStatusTag? status) {
+    final colorScheme = Theme.of(context).colorScheme;
     return switch (status) {
       RsvpStatusTag.Yes => Icon(
           Icons.check_circle,
-          color: Theme.of(context).colorScheme.secondary,
+          color: colorScheme.secondary,
         ),
       RsvpStatusTag.No => Icon(
           Icons.cancel,
-          color: Theme.of(context).colorScheme.error,
+          color: colorScheme.error,
         ),
       RsvpStatusTag.Maybe => const Icon(Icons.question_mark_rounded),
       _ => null,
@@ -153,20 +154,21 @@ class EventItem extends StatelessWidget {
   }
 
   Widget _buildHappeningIndication(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 8,
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
+        color: colorScheme.secondary,
         borderRadius: const BorderRadius.all(Radius.circular(100)),
       ),
       child: BlinkText(
         L10n.of(context).live,
         style: Theme.of(context).textTheme.labelLarge,
         beginColor: Colors.white,
-        endColor: Theme.of(context).colorScheme.secondary,
+        endColor: colorScheme.secondary,
       ),
     );
   }

@@ -28,6 +28,7 @@ class MySpacesSection extends ConsumerWidget {
     final bookmarkedSpaces = ref.watch(bookmarkedSpacesProvider);
     final spaces = ref.watch(spacesProvider);
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     if (bookmarkedSpaces.isNotEmpty) {
       return _RenderSpacesSection(
         spaces: bookmarkedSpaces,
@@ -36,7 +37,7 @@ class MySpacesSection extends ConsumerWidget {
         showAllCounter: spaces.length,
         title: Text(
           lang.bookmarkedSpaces,
-          style: Theme.of(context).textTheme.titleSmall,
+          style: textTheme.titleSmall,
         ),
       );
     }
@@ -58,7 +59,7 @@ class MySpacesSection extends ConsumerWidget {
         onTap: () => context.pushNamed(Routes.spaces.name),
         child: Text(
           lang.mySpaces,
-          style: Theme.of(context).textTheme.titleSmall,
+          style: textTheme.titleSmall,
         ),
       ),
     );
@@ -154,12 +155,13 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: <Widget>[
         const SizedBox(height: 15),
         Text(
           lang.youAreCurrentlyNotConnectedToAnySpaces,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: textTheme.bodyMedium,
         ),
         const SizedBox(height: 30),
         RichText(
@@ -167,26 +169,26 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
             children: <TextSpan>[
               TextSpan(
                 text: lang.create,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: textTheme.bodyMedium?.copyWith(
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               TextSpan(text: lang.or),
               TextSpan(
                 text: lang.join,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: textTheme.bodyMedium?.copyWith(
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               TextSpan(
                 text: ' ',
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: textTheme.bodyMedium,
               ),
               TextSpan(
                 text: lang.spaceShortDescription,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: textTheme.bodyMedium,
               ),
             ],
           ),
