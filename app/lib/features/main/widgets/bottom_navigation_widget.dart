@@ -27,13 +27,7 @@ class BottomNavigationWidget extends ConsumerWidget {
       children: [
         tutorialScreenUI(),
         Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(20.0),
-              topLeft: Radius.circular(20.0),
-            ),
-          ),
+          color: Theme.of(context).colorScheme.surface,
           child: GestureDetector(
             onPanUpdate: (details) {
               if (details.delta.dy < 0) {
@@ -45,9 +39,8 @@ class BottomNavigationWidget extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 12),
+                const SizedBox(height: 2),
                 const DragHandleWidget(),
-                const SizedBox(height: 6),
                 bottomNavNar(ref),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
