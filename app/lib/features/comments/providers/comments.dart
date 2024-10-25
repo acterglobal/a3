@@ -42,3 +42,12 @@ final commentsListProvider = FutureProvider.family
     .autoDispose<List<Comment>, CommentsManager>((ref, manager) async {
   return (await manager.comments()).toList();
 });
+
+final commentsCountProvider = FutureProvider.family
+    .autoDispose<int, Future<CommentsManager>>((ref, manager) async {
+  final commentManager =
+      await ref.watch(commentsManagerProvider(manager).future);
+  final commentList =
+      await ref.watch(commentsListProvider(commentManager).future);
+  return commentList.length;
+});

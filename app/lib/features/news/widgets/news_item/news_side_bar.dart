@@ -6,6 +6,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
+import 'package:acter/features/comments/providers/comments.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
@@ -36,7 +37,8 @@ class NewsSideBar extends ConsumerWidget {
     final likesCount = ref.watch(totalLikesForNewsProvider(news));
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
-
+    final commentCount =
+        ref.watch(commentsCountProvider(news.comments())).valueOrNull ?? 0;
     return Align(
       alignment: Alignment.bottomRight,
       child: Column(
@@ -74,7 +76,13 @@ class NewsSideBar extends ConsumerWidget {
                 ),
               );
             },
-            icon: const Icon(Atlas.comment_blank),
+            icon: Column(
+              children: [
+                const Icon(Atlas.comment_blank),
+                const SizedBox(height: 4),
+                Text(commentCount.toString(), style: style),
+              ],
+            ),
           ),
           const SizedBox(height: 10),
           InkWell(
