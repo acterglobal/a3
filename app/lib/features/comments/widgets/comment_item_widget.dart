@@ -57,11 +57,11 @@ class CommentItemWidget extends ConsumerWidget {
     final displayName = avatarInfo.displayName;
     final displayNameTextStyle = Theme.of(context)
         .textTheme
-        .bodyMedium
+        .bodySmall
         ?.copyWith(fontWeight: FontWeight.bold);
     final usrNameTextStyle = Theme.of(context).textTheme.labelMedium;
 
-    return Row(
+    return Wrap(
       children: [
         Text(displayName ?? userId, style: displayNameTextStyle),
         const SizedBox(width: 8),
