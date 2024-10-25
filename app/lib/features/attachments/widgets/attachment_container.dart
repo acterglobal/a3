@@ -37,7 +37,7 @@ class AttachmentContainer extends ConsumerWidget {
             ),
             child: Text(
               name,
-              style: containerStyle!.copyWith(overflow: TextOverflow.ellipsis),
+              style: containerStyle?.copyWith(overflow: TextOverflow.ellipsis),
             ),
           ),
         ],

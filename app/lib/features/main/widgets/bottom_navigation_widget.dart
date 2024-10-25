@@ -1,10 +1,10 @@
 import 'package:acter/common/drag_handle_widget.dart';
+import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/quick_action_buttons.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:go_router/go_router.dart';
 
 class BottomNavigationWidget extends ConsumerWidget {
@@ -36,11 +36,8 @@ class BottomNavigationWidget extends ConsumerWidget {
           ),
           child: GestureDetector(
             onPanUpdate: (details) {
-              if (details.delta.dy < 0) {
-                ref.watch(quickActionVisibilityProvider.notifier).state = true;
-              } else {
-                ref.watch(quickActionVisibilityProvider.notifier).state = false;
-              }
+              ref.watch(quickActionVisibilityProvider.notifier).state =
+                  details.delta.dy < 0;
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,

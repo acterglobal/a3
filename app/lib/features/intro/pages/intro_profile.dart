@@ -58,20 +58,20 @@ class IntroProfile extends StatelessWidget {
 
   Widget _buildHeadlineText(BuildContext context) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: [
         Text(
           lang.makeADifference,
-          style: Theme.of(context).textTheme.headlineMedium,
+          style: textTheme.headlineMedium,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 10),
         Text(
           lang.joinActer,
-          style: Theme.of(context)
-              .textTheme
-              .headlineMedium
-              ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
+          style: textTheme.headlineMedium?.copyWith(
+            color: Theme.of(context).colorScheme.textHighlight,
+          ),
         ),
       ],
     );
@@ -106,6 +106,7 @@ class IntroProfile extends StatelessWidget {
 
   Widget _buildActionButtons(BuildContext context) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
@@ -117,13 +118,13 @@ class IntroProfile extends StatelessWidget {
               onPressed: () => context.pushNamed(Routes.authRegister.name),
               child: Text(
                 lang.signUp,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: textTheme.bodyMedium,
               ),
             ),
             const SizedBox(height: 16),
             Text(
               lang.or,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -132,7 +133,7 @@ class IntroProfile extends StatelessWidget {
               onPressed: () => context.pushNamed(Routes.authLogin.name),
               child: Text(
                 lang.logIn,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: textTheme.bodyMedium,
               ),
             ),
           ],

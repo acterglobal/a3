@@ -20,6 +20,7 @@ class EncryptionInfoSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -30,7 +31,7 @@ class EncryptionInfoSheet extends StatelessWidget {
             children: [
               Text(
                 lang.encryptedChatMessageInfoTitle,
-                style: Theme.of(context).textTheme.headlineSmall,
+                style: textTheme.headlineSmall,
               ),
               if (context.canPop())
                 TextButton(
@@ -42,7 +43,7 @@ class EncryptionInfoSheet extends StatelessWidget {
           const SizedBox(height: 20),
           Text(
             lang.encryptedChatMessageInfo,
-            style: Theme.of(context).textTheme.bodySmall,
+            style: textTheme.bodySmall,
           ),
           const SizedBox(height: 20),
           OutlinedButton(

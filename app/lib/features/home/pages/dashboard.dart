@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
@@ -144,7 +145,7 @@ class Dashboard extends ConsumerWidget {
               context: context,
               title: lang.boosts,
               iconData: Atlas.megaphone_thin,
-              color:boastFeatureColor,
+              color: boastFeatureColor,
               onTap: () => context.pushNamed(Routes.updateList.name),
             ),
           ],
@@ -214,11 +215,8 @@ class Dashboard extends ConsumerWidget {
     final showQuickActions = ref.watch(quickActionVisibilityProvider);
     return FloatingActionButton.small(
       onPressed: () {
-        if (showQuickActions) {
-          ref.read(quickActionVisibilityProvider.notifier).state = false;
-        } else {
-          ref.read(quickActionVisibilityProvider.notifier).state = true;
-        }
+        ref.read(quickActionVisibilityProvider.notifier).state =
+            !showQuickActions;
       },
       backgroundColor: Theme.of(context).primaryColor,
       child: Icon(showQuickActions ? Icons.close : Icons.add),

@@ -262,45 +262,6 @@ object UserProfile {
 }
 
 
-/// Deliver receipt event from rust to flutter
-object ReceiptEvent {
-    /// Get transaction id or flow id
-    fn room_id() -> RoomId;
-
-    /// Get records
-    fn receipt_records() -> Vec<ReceiptRecord>;
-}
-
-/// ReceiptThread wrapper
-object ReceiptThread {
-    /// whether receipt thread is Main
-    fn is_main() -> bool;
-
-    /// whether receipt thread is Unthreaded
-    fn is_unthreaded() -> bool;
-
-    /// Get event id for receipt thread that is neither Main nor Unthreaded
-    fn thread_id() -> Option<EventId>;
-}
-
-/// Deliver receipt record from rust to flutter
-object ReceiptRecord {
-    /// Get id of event that this user read message from peer
-    fn event_id() -> string;
-
-    /// Get id of user that read this message
-    fn seen_by() -> string;
-
-    /// Get time that this user read message from peer in milliseconds
-    fn timestamp() -> Option<u64>;
-
-    /// Get the receipt type, one of m.read or m.read.private
-    fn receipt_type() -> string;
-
-    /// Get the receipt thread wrapper
-    fn receipt_thread() -> ReceiptThread;
-}
-
 /// Deliver typing event from rust
 object TypingEvent {
     /// Get list of user id
@@ -446,6 +407,9 @@ object NewsEntry {
 
     /// get the reaction manager
     fn reactions() -> Future<Result<ReactionManager>>;
+
+    /// get the read receipt manager
+    fn read_receipts() -> Future<Result<ReadReceiptsManager>>;
 
     /// get the comment manager
     fn comments() -> Future<Result<CommentsManager>>;
@@ -793,13 +757,14 @@ object Rsvp {
     fn status() -> string;
 }
 
-//  ### ##   ### ###    ##      ## ##   #### ##    ####    ## ##   ###  ##   ## ##   
-//  ##  ##   ##  ##     ##    ##   ##  # ## ##     ##    ##   ##    ## ##  ##   ##  
-//  ##  ##   ##       ## ##   ##         ##        ##    ##   ##   # ## #  ####     
-//  ## ##    ## ##    ##  ##  ##         ##        ##    ##   ##   ## ##    #####   
-//  ## ##    ##       ## ###  ##         ##        ##    ##   ##   ##  ##      ###  
-//  ##  ##   ##  ##   ##  ##  ##   ##    ##        ##    ##   ##   ##  ##  ##   ##  
-// #### ##  ### ###  ###  ##   ## ##    ####      ####    ## ##   ###  ##   ## ## 
+
+//  ########  ########    ###     ######  ######## ####  #######  ##    ## 
+//  ##     ## ##         ## ##   ##    ##    ##     ##  ##     ## ###   ## 
+//  ##     ## ##        ##   ##  ##          ##     ##  ##     ## ####  ## 
+//  ########  ######   ##     ## ##          ##     ##  ##     ## ## ## ## 
+//  ##   ##   ##       ######### ##          ##     ##  ##     ## ##  #### 
+//  ##    ##  ##       ##     ## ##    ##    ##     ##  ##     ## ##   ### 
+//  ##     ## ######## ##     ##  ######     ##    ####  #######  ##    ## 
 
 
 object ReactionManager {
@@ -854,6 +819,35 @@ object Reaction {
 
     /// the event id to which it is reacted
     fn relates_to() -> string;
+}
+
+
+//  ########  ########    ###    ########     ########  ########  ######  ######## #### ########  ########  ######  
+//  ##     ## ##         ## ##   ##     ##    ##     ## ##       ##    ## ##        ##  ##     ##    ##    ##    ## 
+//  ##     ## ##        ##   ##  ##     ##    ##     ## ##       ##       ##        ##  ##     ##    ##    ##       
+//  ########  ######   ##     ## ##     ##    ########  ######   ##       ######    ##  ########     ##     ######  
+//  ##   ##   ##       ######### ##     ##    ##   ##   ##       ##       ##        ##  ##           ##          ## 
+//  ##    ##  ##       ##     ## ##     ##    ##    ##  ##       ##    ## ##        ##  ##           ##    ##    ## 
+//  ##     ## ######## ##     ## ########     ##     ## ########  ######  ######## #### ##           ##     ######  
+
+
+
+object ReadReceiptsManager {
+    /// mark this as read for the others in the room to know
+    fn announce_read() -> Future<Result<bool>>;
+
+    /// total of users that announced they had seen this
+    fn read_count() -> u32;
+
+    /// whether I have already marked this as read, publicly or privately
+    fn read_by_me() -> bool;
+
+    /// get informed about changes to this manager
+    fn subscribe_stream() -> Stream<bool>;
+
+    /// reload this manager
+    fn reload() -> Future<Result<ReadReceiptsManager>>;
+
 }
 
 
@@ -1381,9 +1375,6 @@ object Convo {
     /// get the path that media (image/audio/video/file) was saved
     /// return None when never downloaded
     fn media_path(event_id: string, is_thumb: bool) -> Future<Result<OptionString>>;
-
-    /// initially called to get receipt status of room members
-    fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
 
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
@@ -2807,9 +2798,6 @@ object Client {
 
     /// Return the typing event receiver
     fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;
-
-    /// Return the receipt event receiver
-    fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 
     /// create convo
     fn create_convo(settings: CreateConvoSettings) -> Future<Result<RoomId>>;

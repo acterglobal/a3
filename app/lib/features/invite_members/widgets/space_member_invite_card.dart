@@ -18,6 +18,7 @@ class SpaceMemberInviteCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final textTheme = Theme.of(context).textTheme;
     final title =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
     final roomAvatar = ref.watch(roomAvatarInfoProvider(roomId));
@@ -41,7 +42,7 @@ class SpaceMemberInviteCard extends ConsumerWidget {
       child: ListTile(
         title: Text(
           title,
-          style: Theme.of(context).textTheme.titleSmall,
+          style: textTheme.titleSmall,
         ),
         subtitle: FutureBuilder(
           future: ref.watch(membersIdsProvider(roomId).future),
@@ -49,7 +50,7 @@ class SpaceMemberInviteCard extends ConsumerWidget {
             final memberCount = snapshot.data?.length ?? 0;
             return Text(
               L10n.of(context).countsMembers(memberCount),
-              style: Theme.of(context).textTheme.bodySmall,
+              style: textTheme.bodySmall,
             );
           },
         ),
