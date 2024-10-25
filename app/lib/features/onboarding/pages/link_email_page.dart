@@ -52,25 +52,26 @@ class LinkEmailPage extends ConsumerWidget {
 
   Widget _buildHeadlineText(BuildContext context) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           lang.protectPrivacyTitle,
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: Theme.of(context).colorScheme.secondary,
-              ),
+          style: textTheme.headlineMedium?.copyWith(
+            color: Theme.of(context).colorScheme.secondary,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 10),
         Text(
           lang.protectPrivacyDescription1,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: textTheme.bodyMedium,
         ),
         const SizedBox(height: 10),
         Text(
           lang.protectPrivacyDescription2,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: textTheme.bodyMedium,
         ),
       ],
     );
@@ -121,6 +122,8 @@ class LinkEmailPage extends ConsumerWidget {
   }
 
   Widget _buildLinkEmailActionButton(BuildContext context, WidgetRef ref) {
+    final disabledColor = Theme.of(context).disabledColor;
+    final textTheme = Theme.of(context).textTheme;
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: emailController,
       builder: (context, emailValue, child) {
@@ -130,8 +133,7 @@ class LinkEmailPage extends ConsumerWidget {
           onPressed: isValidEmail ? () => linkEmail(context, ref) : null,
           style: OutlinedButton.styleFrom(
             side: BorderSide(
-              color:
-                  isValidEmail ? whiteColor : Theme.of(context).disabledColor,
+              color: isValidEmail ? whiteColor : disabledColor,
             ),
           ),
           child: Row(
@@ -139,11 +141,9 @@ class LinkEmailPage extends ConsumerWidget {
             children: [
               Text(
                 L10n.of(context).linkEmailToProfile,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: isValidEmail
-                          ? whiteColor
-                          : Theme.of(context).disabledColor,
-                    ),
+                style: textTheme.bodyMedium?.copyWith(
+                  color: isValidEmail ? whiteColor : disabledColor,
+                ),
               ),
               ValueListenableBuilder(
                 valueListenable: isLinked,

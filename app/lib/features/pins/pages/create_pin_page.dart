@@ -177,9 +177,8 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
               showModalBottomSheet<void>(
                 context: context,
                 showDragHandle: true,
-                builder: (context) => const PinAttachmentOptions(
-                  isBottomSheetOpen: true,
-                ),
+                builder: (context) =>
+                    const PinAttachmentOptions(isBottomSheetOpen: true),
               );
             },
             child: Text(lang.add),
@@ -277,6 +276,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
         params.plainDescription.trim().isEmpty) {
       return const SizedBox.shrink();
     }
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -295,11 +295,11 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
             child: params.htmlBodyDescription.isNotEmpty
                 ? RenderHtml(
                     text: params.htmlBodyDescription,
-                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                    defaultTextStyle: textTheme.labelLarge,
                   )
                 : Text(
                     params.plainDescription,
-                    style: Theme.of(context).textTheme.labelLarge,
+                    style: textTheme.labelLarge,
                   ),
           ),
         ),
