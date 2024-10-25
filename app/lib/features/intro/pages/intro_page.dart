@@ -44,7 +44,7 @@ class IntroPage extends StatelessWidget {
           textAlign: TextAlign.center,
           text: TextSpan(
             text: lang.welcomeTo,
-            style: Theme.of(context).textTheme.displayMedium!.copyWith(
+            style: Theme.of(context).textTheme.displayMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.textHighlight,
                 ),
@@ -88,7 +88,7 @@ class IntroPage extends StatelessWidget {
                 children: <TextSpan>[
                   TextSpan(
                     text: lang.introPageDescriptionHl,
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.textHighlight,
                         ),
                   ),
