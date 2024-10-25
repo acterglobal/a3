@@ -9,6 +9,8 @@ class AllTasksDone extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       height: 450,
       child: Center(
@@ -16,25 +18,25 @@ class AllTasksDone extends StatelessWidget {
           children: [
             Text(
               lang.congrats,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: textTheme.titleMedium,
             ),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Icon(
                 Atlas.check_circle_thin,
                 size: 50.0,
-                color: Theme.of(context).colorScheme.success,
+                color: colorScheme.success,
               ),
             ),
             Text(
               lang.youAreDoneWithAllYourTasks,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: textTheme.bodyMedium,
             ),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Text(
                 lang.seeOpenTasks,
-                style: Theme.of(context).textTheme.bodySmall,
+                style: textTheme.bodySmall,
               ),
             ),
           ],

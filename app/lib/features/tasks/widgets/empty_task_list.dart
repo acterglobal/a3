@@ -6,7 +6,10 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class EmptyTaskList extends StatelessWidget {
   final String? initialSelectedSpace;
 
-  const EmptyTaskList({super.key, this.initialSelectedSpace});
+  const EmptyTaskList({
+    super.key,
+    this.initialSelectedSpace,
+  });
 
   @override
   Widget build(BuildContext context) {
