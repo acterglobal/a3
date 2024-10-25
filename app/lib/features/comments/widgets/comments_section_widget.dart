@@ -13,9 +13,11 @@ final _log = Logger('a3::comments::section');
 
 class CommentsSectionWidget extends ConsumerWidget {
   final Future<CommentsManager> manager;
+  final bool shrinkWrap;
 
   const CommentsSectionWidget({
     super.key,
+    this.shrinkWrap = true,
     required this.manager,
   });
 
@@ -40,10 +42,17 @@ class CommentsSectionWidget extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(L10n.of(context).comments),
-          CommentListWidget(manager: commentManager),
+          commentListUI(commentManager),
           AddCommentWidget(manager: commentManager),
         ],
       ),
+    );
+  }
+
+  Widget commentListUI(CommentsManager commentManager) {
+    if (shrinkWrap) return CommentListWidget(manager: commentManager);
+    return Expanded(
+      child: CommentListWidget(manager: commentManager, shrinkWrap: shrinkWrap),
     );
   }
 
