@@ -20,6 +20,7 @@ use matrix_sdk_base::ruma::{
     RoomOrAliasId, ServerName, UserId,
 };
 use matrix_sdk_ui::{timeline::RoomExt, Timeline};
+use ruma::OwnedTransactionId;
 use std::{
     ops::Deref,
     path::PathBuf,
@@ -163,11 +164,7 @@ impl Convo {
                 };
                 let room_id = latest_msg_room.room_id();
 
-                let full_event = RoomMessage::new_event_item(
-                    user_id.clone(),
-                    &msg,
-                    format!("{room_id}:latest_msg"),
-                );
+                let full_event = RoomMessage::new_event_item(user_id.clone(), &msg);
                 set_latest_msg(&latest_msg_client, room_id, &last_msg_lock_tl, full_event).await;
             }
             warn!(room_id=?latest_msg_room.room_id(), "Timeline stopped")

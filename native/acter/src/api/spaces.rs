@@ -18,6 +18,7 @@ use acter_core::{
             SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskSelfAssignEvent,
             SyncTaskSelfUnassignEvent, SyncTaskUpdateEvent,
         },
+        AnyActerEvent,
     },
     executor::Executor,
     models::{AnyActerModel, EventMeta},
@@ -430,16 +431,24 @@ impl Space {
         }
 
         loop {
-            trace!(name, ?msg_options, "fetching messages");
+            trace!(?room_id, name, ?msg_options, "fetching messages");
             let Messages {
                 end, chunk, state, ..
             } = self.room.messages(msg_options).await?;
-            trace!(name, ?chunk, end, "messages received");
+            trace!(?room_id, name, ?chunk, end, "messages received");
 
             let has_chunks = !chunk.is_empty();
 
             for msg in chunk {
-                match AnyActerModel::try_from(&msg.event) {
+                let event = match msg.kind.raw().deserialize_as::<AnyActerEvent>() {
+                    Ok(e) => e,
+                    Err(error) => {
+                        error!(?error, ?room_id, "Not a proper acter event");
+                        continue;
+                    }
+                };
+
+                match AnyActerModel::try_from(event) {
                     Ok(model) => {
                         trace!(?room_id, user_id=?client.user_id(), ?model, "handling timeline event");
                         if let Err(e) = self.client.executor().handle(model).await {
@@ -465,11 +474,11 @@ impl Space {
                         trace!(?room_id, user_id=?client.user_id(), ?inner, "ignoring event");
                     }
                     Err(m) => {
-                        if let Ok(state_key) = msg.event.get_field::<String>("state_key") {
+                        if let Ok(state_key) = msg.kind.raw().get_field::<String>("state_key") {
                             trace!(state_key=?state_key, "ignoring state event");
                             // ignore state keys
                         } else {
-                            error!(event=?msg.event, "Model didn’t parse {:}", m);
+                            error!(event=?msg, "Model didn’t parse {:}", m);
                         }
                     }
                 };

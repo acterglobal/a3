@@ -44,11 +44,11 @@ default-features = false
 # ATTENTION: _MUST_ stay in sync with the ruma-rev used by matrix-sdk!
 [workspace.dependencies.ruma]
 git = "https://github.com/ruma/ruma"
-rev = "1ae98db9c44f46a590f4c76baf5cef70ebb6970d"
+rev = "26165b23fc2ae9928c5497a21db3d31f4b44cc2a"
 # - see comment above
 [workspace.dependencies.ruma-common]
 git = "https://github.com/ruma/ruma"
-rev = "1ae98db9c44f46a590f4c76baf5cef70ebb6970d"
+rev = "26165b23fc2ae9928c5497a21db3d31f4b44cc2a"
 
 [workspace.dependencies.url]
 version = "2.5.0"

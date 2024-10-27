@@ -7,9 +7,10 @@ use matrix_sdk_base::ruma::{
     OwnedEventId, OwnedTransactionId, OwnedUserId,
 };
 use matrix_sdk_ui::timeline::{
-    EventSendState as SdkEventSendState, EventTimelineItem, MembershipChange, TimelineItem,
-    TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
+    EventSendState as SdkEventSendState, EventTimelineItem, MembershipChange, TimelineEventItemId,
+    TimelineItem, TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
+use ruma::TransactionId;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::info;
@@ -418,15 +419,14 @@ pub struct RoomMessage {
 }
 
 impl RoomMessage {
-    pub(crate) fn new_event_item(
-        my_id: OwnedUserId,
-        event: &EventTimelineItem,
-        unique_id: String,
-    ) -> Self {
+    pub(crate) fn new_event_item(my_id: OwnedUserId, event: &EventTimelineItem) -> Self {
         RoomMessage {
             item_type: "event".to_string(),
             event_item: Some(RoomEventItem::new(event, my_id)),
-            unique_id,
+            unique_id: match event.identifier() {
+                TimelineEventItemId::EventId(e) => e.to_string(),
+                TimelineEventItemId::TransactionId(t) => t.to_string(),
+            },
             virtual_item: None,
         }
     }
@@ -481,13 +481,11 @@ impl RoomMessage {
 impl From<(Arc<TimelineItem>, OwnedUserId)> for RoomMessage {
     fn from(v: (Arc<TimelineItem>, OwnedUserId)) -> RoomMessage {
         let (item, user_id) = v;
-        let unique_id = item.unique_id().to_owned();
+        let unique_id = item.unique_id();
         match item.kind() {
-            TimelineItemKind::Event(event_item) => {
-                RoomMessage::new_event_item(user_id, event_item, unique_id)
-            }
+            TimelineItemKind::Event(event_item) => RoomMessage::new_event_item(user_id, event_item),
             TimelineItemKind::Virtual(virtual_item) => {
-                RoomMessage::new_virtual_item(virtual_item, unique_id)
+                RoomMessage::new_virtual_item(virtual_item, unique_id.0.clone())
             }
         }
     }
