@@ -1,4 +1,5 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/widgets.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'chat_room_state.freezed.dart';
@@ -37,7 +38,10 @@ class ChatRoomState with _$ChatRoomState {
 
   RoomMessage? message(String uniqueId) => messages[uniqueId];
 
-  ChatRoomState copyWithRemovedMessageAt(int idx) {
+  ChatRoomState copyWithRemovedMessageAt(
+    int idx,
+    AnimatedListState? listState,
+  ) {
     if (this.messageList.isEmpty) {
       return this;
     }
@@ -46,15 +50,21 @@ class ChatRoomState with _$ChatRoomState {
     final messages = Map.fromEntries(
       this.messages.entries.where((entry) => entry.key != removedItem),
     );
+    listState?.removeItem(idx, (a, b) => const SizedBox.shrink());
     return copyWith(
       messageList: messageList,
       messages: messages,
     );
   }
 
-  ChatRoomState copyWithNewMessageAt(int idx, RoomMessage m) {
+  ChatRoomState copyWithNewMessageAt(
+    int idx,
+    RoomMessage m,
+    AnimatedListState? listState,
+  ) {
     final uniqueId = m.uniqueId();
     if (this.messageList.isEmpty) {
+      listState?.insertItem(0);
       return copyWith(
         messageList: [uniqueId],
         messages: {uniqueId: m},
@@ -65,6 +75,8 @@ class ChatRoomState with _$ChatRoomState {
 
     final messages = Map.fromEntries(this.messages.entries);
     messages[uniqueId] = m;
+
+    listState?.insertItem(idx);
     return copyWith(
       messageList: messageList,
       messages: messages,
