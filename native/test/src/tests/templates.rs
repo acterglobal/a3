@@ -39,8 +39,9 @@ url = "https://github.com/acterglobal/a3"
 #[tokio::test]
 async fn template_creates_space() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) =
+    let (user, sync_state, _engine) =
         random_user_with_template("template_create_space", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
