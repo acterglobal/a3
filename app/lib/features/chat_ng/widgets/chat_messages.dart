@@ -1,5 +1,5 @@
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/features/chat_ng/widgets/events/chat_event_widget.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,26 +17,11 @@ class ChatMessages extends ConsumerWidget {
       initialItemCount: messages.length,
       reverse: true,
       key: animatedListKey,
-      itemBuilder: (_, index, animation) => _messageBuilder(
-        ref.watch(
-          chatRoomMessageProvider((roomId, messages[index])),
-        ),
-        animation,
+      itemBuilder: (_, index, animation) => ChatEventWidget(
+        roomId: roomId,
+        eventId: messages[index],
+        animation: animation,
       ),
-    );
-  }
-
-  Widget _messageBuilder(RoomMessage? msg, Animation<double> animation) {
-    final inner = msg?.eventItem();
-    if (inner == null) {
-      return const SizedBox.shrink();
-    }
-    return Wrap(
-      children: [
-        Text(inner.sender()),
-        const Text(':'),
-        Text(inner.msgContent()?.body() ?? 'no body'),
-      ],
     );
   }
 }
