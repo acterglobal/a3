@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Comment, CommentsManager;
+    show Comment, CommentsManager, NewsEntry;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -43,8 +43,9 @@ final commentsListProvider = FutureProvider.family
   return (await manager.comments()).toList();
 });
 
-final commentsCountProvider = FutureProvider.family
-    .autoDispose<int, Future<CommentsManager>>((ref, manager) async {
+final newsCommentsCountProvider =
+    FutureProvider.family.autoDispose<int, NewsEntry>((ref, newsEntry) async {
+  final manager = newsEntry.comments();
   final commentManager =
       await ref.watch(commentsManagerProvider(manager).future);
   final commentList =
