@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -36,41 +37,58 @@ AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
 );
 
 extension ActerEditorStateHelpers on EditorState {
-  String intoHtml({
-    AppFlowyEditorHTMLCodec? codec,
-  }) {
+  String intoHtml({AppFlowyEditorHTMLCodec? codec}) {
     return (codec ?? defaultHtmlCodec).encode(document);
   }
 
-  String intoMarkdown({
-    AppFlowyEditorMarkdownCodec? codec,
-  }) {
+  String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {
     return (codec ?? defaultMarkdownCodec).encode(document);
   }
 }
 
 extension ActerDocumentHelpers on Document {
-  static Document fromHtml(
+  static Document? _fromHtml(
     String content, {
     AppFlowyEditorHTMLCodec? codec,
   }) {
-    return (codec ?? defaultHtmlCodec).decode(content);
+    if (content.isEmpty) {
+      return null;
+    }
+
+    Document document = (codec ?? defaultHtmlCodec).decode(content);
+    if (document.isEmpty) {
+      return null;
+    }
+    return document;
   }
 
-  static Document fromMarkdown(
+  static Document _fromMarkdown(
     String content, {
     AppFlowyEditorMarkdownCodec? codec,
   }) {
     return (codec ?? defaultMarkdownCodec).decode(content);
   }
 
-  static Document fromMsgContent(MsgContent msgContent) {
-    final formattedBody = msgContent.formattedBody();
-    if (formattedBody != null) {
-      return ActerDocumentHelpers.fromHtml(formattedBody);
-    } else {
-      return ActerDocumentHelpers.fromMarkdown(msgContent.body());
+  static Document parse(
+    String content, {
+    String? htmlContent,
+    AppFlowyEditorMarkdownCodec? codec,
+  }) {
+    if (htmlContent != null) {
+      final document = ActerDocumentHelpers._fromHtml(htmlContent);
+      if (document != null) {
+        return document;
+      }
     }
+    // fallback: parse from markdown
+    return ActerDocumentHelpers._fromMarkdown(content);
+  }
+
+  static Document fromMsgContent(MsgContent msgContent) {
+    return ActerDocumentHelpers.parse(
+      msgContent.body(),
+      htmlContent: msgContent.formattedBody(),
+    );
   }
 }
 
@@ -91,6 +109,7 @@ class HtmlEditor extends StatefulWidget {
   final ExportCallback? onSave;
   final ExportCallback? onChanged;
   final Function()? onCancel;
+
   const HtmlEditor({
     super.key,
     this.editorState,
@@ -143,11 +162,9 @@ class HtmlEditorState extends State<HtmlEditor> {
       );
 
       _changeListener?.cancel();
-      if (widget.onChanged != null) {
+      widget.onChanged.map((cb) {
         _changeListener = editorState.transactionStream.listen(
-          (data) {
-            _triggerExport(widget.onChanged!);
-          },
+          (data) => _triggerExport(cb),
           onError: (e, s) {
             _log.severe('tx stream errored', e, s);
           },
@@ -155,7 +172,7 @@ class HtmlEditorState extends State<HtmlEditor> {
             _log.info('tx stream ended');
           },
         );
-      }
+      });
     });
   }
 
@@ -205,15 +222,15 @@ class HtmlEditorState extends State<HtmlEditor> {
         width: 10,
       ),
     );
-    if (widget.onSave != null) {
+    widget.onSave.map((cb) {
       children.add(
         ActerPrimaryActionButton(
           key: HtmlEditor.saveEditKey,
-          onPressed: () => _triggerExport(widget.onSave!),
+          onPressed: () => _triggerExport(cb),
           child: const Text('Save'),
         ),
       );
-    }
+    });
 
     if (children.isNotEmpty) {
       return Padding(
@@ -294,9 +311,7 @@ class HtmlEditorState extends State<HtmlEditor> {
             onLookUp: null,
             onSearchWeb: null,
             onShare: null,
-            anchors: TextSelectionToolbarAnchors(
-              primaryAnchor: anchor,
-            ),
+            anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
           );
         },
         child: AppFlowyEditor(
@@ -322,7 +337,10 @@ class HtmlEditorState extends State<HtmlEditor> {
       selectionColor: Theme.of(context).colorScheme.secondaryContainer,
       textStyleConfiguration: widget.textStyleConfiguration ??
           TextStyleConfiguration(
-            text: Theme.of(context).textTheme.bodySmall!,
+            text: Theme.of(context)
+                .textTheme
+                .bodySmall
+                .expect('bodySmall style not available'),
           ),
     );
   }
@@ -334,7 +352,10 @@ class HtmlEditorState extends State<HtmlEditor> {
       selectionColor: Theme.of(context).colorScheme.secondaryContainer,
       textStyleConfiguration: widget.textStyleConfiguration ??
           TextStyleConfiguration(
-            text: Theme.of(context).textTheme.bodySmall!,
+            text: Theme.of(context)
+                .textTheme
+                .bodySmall
+                .expect('bodySmall style not available'),
           ),
     );
   }

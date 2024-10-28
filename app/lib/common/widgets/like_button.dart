@@ -8,17 +8,15 @@ final _log = Logger('a3::common::like_button');
 class LikeButton extends StatefulWidget {
   final bool isLiked;
   final int likeCount;
-  final TextStyle style;
+  final TextStyle? style;
   final Color color;
-  final int index;
   final Future<void> Function() onTap;
 
   const LikeButton({
     super.key,
     required this.likeCount,
-    required this.style,
+    this.style,
     required this.color,
-    required this.index,
     this.isLiked = false,
     required this.onTap,
   });
@@ -71,7 +69,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
         ),
       ],
     ).animate(
-      CurvedAnimation(parent: controller, curve: const Interval(0, 1)),
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0, 1),
+      ),
     );
 
     smallHeartOpacity = TweenSequence(
@@ -90,7 +91,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
         ),
       ],
     ).animate(
-      CurvedAnimation(parent: controller, curve: const Interval(0, 0.7)),
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0, 0.7),
+      ),
     );
 
     sizedBoxsize = TweenSequence(
@@ -109,7 +113,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
         ),
       ],
     ).animate(
-      CurvedAnimation(parent: controller, curve: const Interval(0, 0.7)),
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0, 0.7),
+      ),
     );
   }
 
@@ -150,9 +157,7 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                               fill: 1.0,
                               color: Theme.of(context).colorScheme.error,
                             )
-                          : const Icon(
-                              Atlas.heart,
-                            ),
+                          : const Icon(Atlas.heart),
                       color: widget.isLiked
                           ? Theme.of(context).colorScheme.tertiary
                           : widget.color,
@@ -184,7 +189,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
             );
           },
         ),
-        Text(widget.likeCount.toString(), style: widget.style),
+        Text(
+          widget.likeCount.toString(),
+          style: widget.style,
+        ),
       ],
     );
   }

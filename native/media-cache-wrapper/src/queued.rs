@@ -1,7 +1,6 @@
 use crate::MediaStore;
 use async_trait::async_trait;
-use matrix_sdk_base::media::MediaRequest;
-use ruma_common::MxcUri;
+use matrix_sdk_base::{media::MediaRequest, ruma::MxcUri};
 use std::sync::Arc;
 use tokio::sync::Semaphore;
 use tracing::instrument;

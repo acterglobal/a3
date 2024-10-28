@@ -1,46 +1,51 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/categories/organize_categories_page.dart';
+import 'package:acter/features/categories/utils/category_utils.dart';
+import 'package:acter/features/chat/pages/sub_chats_page.dart';
 import 'package:acter/features/events/pages/create_event_page.dart';
+import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/events/pages/event_list_page.dart';
+import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/invite_members/pages/invite_individual_users.dart';
 import 'package:acter/features/invite_members/pages/invite_page.dart';
-import 'package:acter/features/events/pages/event_details_page.dart';
-import 'package:acter/features/home/pages/dashboard.dart';
 import 'package:acter/features/invite_members/pages/invite_pending.dart';
 import 'package:acter/features/invite_members/pages/invite_space_members.dart';
 import 'package:acter/features/invite_members/pages/share_invite_code.dart';
+import 'package:acter/features/news/pages/news_list_page.dart';
 import 'package:acter/features/pins/pages/pin_details_page.dart';
 import 'package:acter/features/pins/pages/pins_list_page.dart';
+import 'package:acter/features/profile/pages/my_profile_page.dart';
+import 'package:acter/features/public_room_search/pages/search_public_directory.dart';
 import 'package:acter/features/settings/pages/backup_page.dart';
+import 'package:acter/features/settings/pages/blocked_users.dart';
 import 'package:acter/features/settings/pages/change_password.dart';
 import 'package:acter/features/settings/pages/chat_settings_page.dart';
-import 'package:acter/features/settings/pages/language_select_page.dart';
-import 'package:acter/features/settings/pages/settings_page.dart';
-import 'package:acter/features/profile/pages/my_profile_page.dart';
-import 'package:acter/features/settings/pages/blocked_users.dart';
 import 'package:acter/features/settings/pages/email_addresses.dart';
 import 'package:acter/features/settings/pages/info_page.dart';
 import 'package:acter/features/settings/pages/labs_page.dart';
+import 'package:acter/features/settings/pages/language_select_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
 import 'package:acter/features/settings/pages/notifications_page.dart';
 import 'package:acter/features/settings/pages/sessions_page.dart';
-import 'package:acter/features/space/pages/space_details_page.dart';
-import 'package:acter/features/space/settings/pages/visibility_accessibility_page.dart';
-import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
-import 'package:acter/features/super_invites/pages/super_invites.dart';
-import 'package:acter/features/space/pages/chats_page.dart';
+import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';
-import 'package:acter/features/space/pages/sub_spaces_page.dart';
+import 'package:acter/features/space/pages/space_details_page.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/space/settings/pages/notification_configuration_page.dart';
-import 'package:acter/features/public_room_search/pages/search_public_directory.dart';
+import 'package:acter/features/space/settings/pages/visibility_accessibility_page.dart';
+import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter/features/spaces/pages/create_space_page.dart';
-import 'package:acter/features/spaces/pages/spaces_page.dart';
+import 'package:acter/features/spaces/pages/space_list_page.dart';
+import 'package:acter/features/spaces/pages/sub_spaces_page.dart';
+import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/tasks/pages/task_item_detail_page.dart';
 import 'package:acter/features/tasks/pages/task_list_details_page.dart';
 import 'package:acter/features/tasks/pages/tasks_list_page.dart';
 import 'package:acter/router/router.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:go_router/go_router.dart';
 
 final homeShellRoutes = [
@@ -212,14 +217,45 @@ final homeShellRoutes = [
     },
   ),
   GoRoute(
-    name: Routes.spaceRelatedSpaces.name,
-    path: Routes.spaceRelatedSpaces.route,
+    name: Routes.subSpaces.name,
+    path: Routes.subSpaces.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('subSpaces route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: SubSpacesPage(
-          spaceIdOrAlias: state.pathParameters['spaceId']!,
+        child: SubSpacesPage(spaceId: spaceId),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.subChats.name,
+    path: Routes.subChats.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('subChats route needs spaceId as path param');
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: SubChatsPage(spaceId: spaceId),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.organizeCategories.name,
+    path: Routes.organizeCategories.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('organizeCategories route needs spaceId as path param');
+      final categoriesFor = state.pathParameters['categoriesFor']
+          .expect('organizeCategories route needs categoriesFor as path param');
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: OrganizeCategoriesPage(
+          spaceId: spaceId,
+          categoriesFor: CategoryUtils().getCategoryEnumFromName(categoriesFor),
         ),
       );
     },
@@ -229,11 +265,11 @@ final homeShellRoutes = [
     path: Routes.spaceMembers.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('spaceMembers route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: SpaceMembersPage(
-          spaceIdOrAlias: state.pathParameters['spaceId']!,
-        ),
+        child: SpaceMembersPage(spaceIdOrAlias: spaceId),
       );
     },
   ),
@@ -242,11 +278,11 @@ final homeShellRoutes = [
     path: Routes.spacePins.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('spacePins route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: PinsListPage(
-          spaceId: state.pathParameters['spaceId'],
-        ),
+        child: PinsListPage(spaceId: spaceId),
       );
     },
   ),
@@ -255,24 +291,11 @@ final homeShellRoutes = [
     path: Routes.spaceEvents.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('spaceEvents route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: EventListPage(
-          spaceId: state.pathParameters['spaceId']!,
-        ),
-      );
-    },
-  ),
-  GoRoute(
-    name: Routes.spaceChats.name,
-    path: Routes.spaceChats.route,
-    redirect: authGuardRedirect,
-    pageBuilder: (context, state) {
-      return NoTransitionPage(
-        key: state.pageKey,
-        child: SpaceChatsPage(
-          spaceIdOrAlias: state.pathParameters['spaceId']!,
-        ),
+        child: EventListPage(spaceId: spaceId),
       );
     },
   ),
@@ -281,11 +304,24 @@ final homeShellRoutes = [
     path: Routes.spaceTasks.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('spaceTasks route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: TasksListPage(
-          spaceId: state.pathParameters['spaceId']!,
-        ),
+        child: TasksListPage(spaceId: spaceId),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.spaceUpdates.name,
+    path: Routes.spaceUpdates.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('spaceUpdates route needs spaceId as path param');
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: NewsListPage(spaceId: spaceId),
       );
     },
   ),
@@ -294,11 +330,10 @@ final homeShellRoutes = [
     path: Routes.searchPublicDirectory.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final query = state.uri.queryParameters['query'];
       return NoTransitionPage(
         key: state.pageKey,
-        child: SearchPublicDirectory(
-          query: state.uri.queryParameters['query'],
-        ),
+        child: SearchPublicDirectory(query: query),
       );
     },
   ),
@@ -307,11 +342,11 @@ final homeShellRoutes = [
     path: Routes.space.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('space route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: SpaceDetailsPage(
-          spaceId: state.pathParameters['spaceId']!,
-        ),
+        child: SpaceDetailsPage(spaceId: spaceId),
       );
     },
   ),
@@ -320,9 +355,10 @@ final homeShellRoutes = [
     path: Routes.spaces.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final searchQuery = state.uri.queryParameters['searchQuery'];
       return NoTransitionPage(
         key: state.pageKey,
-        child: const SpacesPage(),
+        child: SpaceListPage(searchQuery: searchQuery),
       );
     },
   ),
@@ -332,11 +368,11 @@ final homeShellRoutes = [
     path: Routes.spaceSettings.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('spaceSettings route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: SpaceSettingsMenuIndexPage(
-          spaceId: state.pathParameters['spaceId']!,
-        ),
+        child: SpaceSettingsMenuIndexPage(spaceId: spaceId),
       );
     },
   ),
@@ -345,11 +381,11 @@ final homeShellRoutes = [
     path: Routes.spaceSettingsApps.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('spaceSettingsApps route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: SpaceAppsSettingsPage(
-          spaceId: state.pathParameters['spaceId']!,
-        ),
+        child: SpaceAppsSettingsPage(spaceId: spaceId),
       );
     },
   ),
@@ -358,16 +394,13 @@ final homeShellRoutes = [
     path: Routes.spaceSettingsVisibility.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['spaceId']!;
+      final spaceId = state.pathParameters['spaceId']
+          .expect('spaceSettingsVisibility route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
         child: WithSidebar(
-          sidebar: SpaceSettingsMenu(
-            spaceId: roomId,
-          ),
-          child: VisibilityAccessibilityPage(
-            roomId: roomId,
-          ),
+          sidebar: SpaceSettingsMenu(spaceId: spaceId),
+          child: VisibilityAccessibilityPage(roomId: spaceId),
         ),
       );
     },
@@ -377,11 +410,12 @@ final homeShellRoutes = [
     path: Routes.spaceSettingsNotifications.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'spaceSettingsNotifications route needs spaceId as path param',
+      );
       return NoTransitionPage(
         key: state.pageKey,
-        child: SpaceNotificationConfigurationPage(
-          spaceId: state.pathParameters['spaceId']!,
-        ),
+        child: SpaceNotificationConfigurationPage(spaceId: spaceId),
       );
     },
   ),
@@ -401,11 +435,15 @@ final homeShellRoutes = [
     path: Routes.taskItemDetails.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final taskListId = state.pathParameters['taskListId']
+          .expect('taskItemDetails route needs taskListId as path param');
+      final taskId = state.pathParameters['taskId']
+          .expect('taskItemDetails route needs taskId as path param');
       return NoTransitionPage(
         key: state.pageKey,
         child: TaskItemDetailPage(
-          taskListId: state.pathParameters['taskListId']!,
-          taskId: state.pathParameters['taskId']!,
+          taskListId: taskListId,
+          taskId: taskId,
         ),
       );
     },
@@ -415,11 +453,11 @@ final homeShellRoutes = [
     path: Routes.taskListDetails.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final taskListId = state.pathParameters['taskListId']
+          .expect('taskListDetails route needs taskListId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: TaskListDetailPage(
-          taskListId: state.pathParameters['taskListId']!,
-        ),
+        child: TaskListDetailPage(taskListId: taskListId),
       );
     },
   ),
@@ -428,9 +466,10 @@ final homeShellRoutes = [
     path: Routes.pins.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final searchQuery = state.uri.queryParameters['searchQuery'];
       return NoTransitionPage(
         key: state.pageKey,
-        child: const PinsListPage(),
+        child: PinsListPage(searchQuery: searchQuery),
       );
     },
   ),
@@ -439,9 +478,11 @@ final homeShellRoutes = [
     path: Routes.pin.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final pinId = state.pathParameters['pinId']
+          .expect('pin route needs pinId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: PinDetailsPage(pinId: state.pathParameters['pinId']!),
+        child: PinDetailsPage(pinId: pinId),
       );
     },
   ),
@@ -460,10 +501,17 @@ final homeShellRoutes = [
     name: Routes.createEvent.name,
     path: Routes.createEvent.route,
     pageBuilder: (context, state) {
+      final extra = state.extra;
+      CalendarEvent? templateEvent;
+      if (extra != null && extra is CalendarEvent) {
+        templateEvent = extra;
+      }
+      final String? spaceId = state.uri.queryParameters['spaceId'];
       return NoTransitionPage(
         key: state.pageKey,
         child: CreateEventPage(
-          initialSelectedSpace: state.uri.queryParameters['spaceId'],
+          initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
+          templateEvent: templateEvent,
         ),
       );
     },
@@ -473,11 +521,23 @@ final homeShellRoutes = [
     path: Routes.calendarEvent.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final calendarId = state.pathParameters['calendarId']
+          .expect('calendarEvent route needs calendarId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: EventDetailPage(
-          calendarId: state.pathParameters['calendarId']!,
-        ),
+        child: EventDetailPage(calendarId: calendarId),
+      );
+    },
+  ),
+
+  GoRoute(
+    name: Routes.updateList.name,
+    path: Routes.updateList.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: const NewsListPage(),
       );
     },
   ),
@@ -486,11 +546,10 @@ final homeShellRoutes = [
     path: Routes.createSpace.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final parentSpaceId = state.uri.queryParameters['parentSpaceId'];
       return NoTransitionPage(
         key: state.pageKey,
-        child: CreateSpacePage(
-          initialParentsSpaceId: state.uri.queryParameters['parentSpaceId'],
-        ),
+        child: CreateSpacePage(initialParentsSpaceId: parentSpaceId),
       );
     },
   ),
@@ -499,11 +558,11 @@ final homeShellRoutes = [
     path: Routes.spaceInvite.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('spaceInvite route needs spaceId as path param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: InvitePage(
-          roomId: state.pathParameters['spaceId']!,
-        ),
+        child: InvitePage(roomId: spaceId),
       );
     },
   ),
@@ -512,11 +571,11 @@ final homeShellRoutes = [
     path: Routes.inviteIndividual.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final roomId = state.uri.queryParameters['roomId']
+          .expect('inviteIndividual route needs roomId as query param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: InviteIndividualUsers(
-          roomId: state.uri.queryParameters['roomId']!,
-        ),
+        child: InviteIndividualUsers(roomId: roomId),
       );
     },
   ),
@@ -525,11 +584,11 @@ final homeShellRoutes = [
     path: Routes.inviteSpaceMembers.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final roomId = state.uri.queryParameters['roomId']
+          .expect('inviteSpaceMembers route needs roomId as query param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: InviteSpaceMembers(
-          roomId: state.uri.queryParameters['roomId']!,
-        ),
+        child: InviteSpaceMembers(roomId: roomId),
       );
     },
   ),
@@ -538,11 +597,15 @@ final homeShellRoutes = [
     path: Routes.shareInviteCode.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final inviteCode = state.uri.queryParameters['inviteCode']
+          .expect('shareInviteCode route needs inviteCode as query param');
+      final roomId = state.uri.queryParameters['roomId']
+          .expect('shareInviteCode route needs roomId as query param');
       return NoTransitionPage(
         key: state.pageKey,
         child: ShareInviteCode(
-          inviteCode: state.uri.queryParameters['inviteCode']!,
-          roomId: state.uri.queryParameters['roomId']!,
+          inviteCode: inviteCode,
+          roomId: roomId,
         ),
       );
     },
@@ -552,11 +615,11 @@ final homeShellRoutes = [
     path: Routes.invitePending.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final roomId = state.uri.queryParameters['roomId']
+          .expect('invitePending route needs roomId as query param');
       return NoTransitionPage(
         key: state.pageKey,
-        child: InvitePending(
-          roomId: state.uri.queryParameters['roomId']!,
-        ),
+        child: InvitePending(roomId: roomId),
       );
     },
   ),

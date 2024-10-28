@@ -255,54 +255,18 @@ object UserProfile {
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Option<string>;
+    fn display_name() -> Option<string>;
+
+    /// which rooms you are sharing with that profile
+    fn shared_rooms() -> Vec<string>;
 }
 
-
-/// Deliver receipt event from rust to flutter
-object ReceiptEvent {
-    /// Get transaction id or flow id
-    fn room_id() -> RoomId;
-
-    /// Get records
-    fn receipt_records() -> Vec<ReceiptRecord>;
-}
-
-/// ReceiptThread wrapper
-object ReceiptThread {
-    /// whether receipt thread is Main
-    fn is_main() -> bool;
-
-    /// whether receipt thread is Unthreaded
-    fn is_unthreaded() -> bool;
-
-    /// Get event id for receipt thread that is neither Main nor Unthreaded
-    fn thread_id() -> Option<EventId>;
-}
-
-/// Deliver receipt record from rust to flutter
-object ReceiptRecord {
-    /// Get id of event that this user read message from peer
-    fn event_id() -> string;
-
-    /// Get id of user that read this message
-    fn seen_by() -> string;
-
-    /// Get time that this user read message from peer in milliseconds
-    fn timestamp() -> Option<u64>;
-
-    /// Get the receipt type, one of m.read or m.read.private
-    fn receipt_type() -> string;
-
-    /// Get the receipt thread wrapper
-    fn receipt_thread() -> ReceiptThread;
-}
 
 /// Deliver typing event from rust
 object TypingEvent {
     /// Get list of user id
     fn user_ids() -> Vec<UserId>;
-} 
+}
 
 object TextMessageContent {
     fn body() -> string;
@@ -434,12 +398,18 @@ object NewsEntry {
 
     /// get event id
     fn event_id() -> EventId;
-    
+
+    /// get timestamp of this event
+    fn origin_server_ts() -> u64;
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
     /// get the reaction manager
     fn reactions() -> Future<Result<ReactionManager>>;
+
+    /// get the read receipt manager
+    fn read_receipts() -> Future<Result<ReadReceiptsManager>>;
 
     /// get the comment manager
     fn comments() -> Future<Result<CommentsManager>>;
@@ -607,7 +577,7 @@ object CalendarEvent {
     fn utc_end() -> UtcDateTime;
     /// whether to show the time or just the dates
     fn show_without_time() -> bool;
-    /// locations
+    // /// locations
     // fn locations() -> Vec<Location>;
     /// event id
     fn event_id() -> EventId;
@@ -638,7 +608,7 @@ object CalendarEvent {
     /// Generate a iCal as a String for sharing with others
     fn ical_for_sharing(file_name: string) -> Result<bool>;
 
-    /// get the physical location(s) details 
+    /// get the physical location(s) details
     fn physical_locations() -> Vec<EventLocationInfo>;
 
     /// get the virtual location(s) details
@@ -686,7 +656,7 @@ object CalendarEventDraft {
 
     /// set the description html for this calendar event
     fn description_html(text: string, html: string);
-    
+
     fn unset_description();
 
     /// set the utc_start for this calendar event in rfc3339 format
@@ -752,7 +722,7 @@ object RsvpManager {
     /// get rsvp entries
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
-    /// get Yes/Maybe/No or None for the user's own status
+    /// get Yes/Maybe/No or None for the user’s own status
     fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
 
     /// get the count of Yes/Maybe/No
@@ -787,13 +757,14 @@ object Rsvp {
     fn status() -> string;
 }
 
-//  ### ##   ### ###    ##      ## ##   #### ##    ####    ## ##   ###  ##   ## ##   
-//  ##  ##   ##  ##     ##    ##   ##  # ## ##     ##    ##   ##    ## ##  ##   ##  
-//  ##  ##   ##       ## ##   ##         ##        ##    ##   ##   # ## #  ####     
-//  ## ##    ## ##    ##  ##  ##         ##        ##    ##   ##   ## ##    #####   
-//  ## ##    ##       ## ###  ##         ##        ##    ##   ##   ##  ##      ###  
-//  ##  ##   ##  ##   ##  ##  ##   ##    ##        ##    ##   ##   ##  ##  ##   ##  
-// #### ##  ### ###  ###  ##   ## ##    ####      ####    ## ##   ###  ##   ## ## 
+
+//  ########  ########    ###     ######  ######## ####  #######  ##    ## 
+//  ##     ## ##         ## ##   ##    ##    ##     ##  ##     ## ###   ## 
+//  ##     ## ##        ##   ##  ##          ##     ##  ##     ## ####  ## 
+//  ########  ######   ##     ## ##          ##     ##  ##     ## ## ## ## 
+//  ##   ##   ##       ######### ##          ##     ##  ##     ## ##  #### 
+//  ##    ##  ##       ##     ## ##    ##    ##     ##  ##     ## ##   ### 
+//  ##     ## ######## ##     ##  ######     ##    ####  #######  ##    ## 
 
 
 object ReactionManager {
@@ -851,6 +822,35 @@ object Reaction {
 }
 
 
+//  ########  ########    ###    ########     ########  ########  ######  ######## #### ########  ########  ######  
+//  ##     ## ##         ## ##   ##     ##    ##     ## ##       ##    ## ##        ##  ##     ##    ##    ##    ## 
+//  ##     ## ##        ##   ##  ##     ##    ##     ## ##       ##       ##        ##  ##     ##    ##    ##       
+//  ########  ######   ##     ## ##     ##    ########  ######   ##       ######    ##  ########     ##     ######  
+//  ##   ##   ##       ######### ##     ##    ##   ##   ##       ##       ##        ##  ##           ##          ## 
+//  ##    ##  ##       ##     ## ##     ##    ##    ##  ##       ##    ## ##        ##  ##           ##    ##    ## 
+//  ##     ## ######## ##     ## ########     ##     ## ########  ######  ######## #### ##           ##     ######  
+
+
+
+object ReadReceiptsManager {
+    /// mark this as read for the others in the room to know
+    fn announce_read() -> Future<Result<bool>>;
+
+    /// total of users that announced they had seen this
+    fn read_count() -> u32;
+
+    /// whether I have already marked this as read, publicly or privately
+    fn read_by_me() -> bool;
+
+    /// get informed about changes to this manager
+    fn subscribe_stream() -> Stream<bool>;
+
+    /// reload this manager
+    fn reload() -> Future<Result<ReadReceiptsManager>>;
+
+}
+
+
 //  ########   #######   #######  ##     ##    ######## ##     ## ######## ##    ## ########  ######  
 //  ##     ## ##     ## ##     ## ###   ###    ##       ##     ## ##       ###   ##    ##    ##    ## 
 //  ##     ## ##     ## ##     ## #### ####    ##       ##     ## ##       ####  ##    ##    ##       
@@ -861,21 +861,18 @@ object Reaction {
 
 /// Sending state of outgoing message.
 object EventSendState {
-    // one of NotSentYet/SendingFailed/Cancelled/Sent
+    /// one of NotSentYet/SendingFailed/Cancelled/Sent
     fn state() -> string;
-    
-    // gives error value for SendingFailed only
+
+    /// gives error value for SendingFailed only
     fn error() -> Option<string>;
 
-    // gives event id for Sent only
+    /// gives event id for Sent only
     fn event_id() -> Option<EventId>;
 }
 
 /// A room Message metadata and content
 object RoomEventItem {
-    /// Unique ID of this event
-    fn unique_id() -> string;
-
     /// The User, who sent that event
     fn sender() -> string;
 
@@ -888,6 +885,9 @@ object RoomEventItem {
 
     /// one of Message/Redaction/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
     fn event_type() -> string;
+
+    /// ID of this event
+    fn event_id() -> Option<string>;
 
     /// the type of massage, like text, image, audio, video, file etc
     fn msg_type() -> Option<string>;
@@ -929,6 +929,9 @@ object RoomVirtualItem {
 object RoomMessage {
     /// one of event/virtual
     fn item_type() -> string;
+
+    /// Unique ID of this event
+    fn unique_id() -> string;
 
     /// valid only if item_type is "event"
     fn event_item() -> Option<RoomEventItem>;
@@ -1099,9 +1102,9 @@ object Room {
 
     /// Unset the `mute` for this room.
     fn unmute() -> Future<Result<bool>>;
-    
+
     /// set the RoomNotificationMode
-    fn set_notification_mode(new_mode: Option<string>) -> Future<Result<bool>>; 
+    fn set_notification_mode(new_mode: Option<string>) -> Future<Result<bool>>;
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
@@ -1168,7 +1171,10 @@ object MsgDraft {
 
     /// whether to mention the entire room
     fn add_room_mention(mention: bool) -> Result<MsgDraft>;
-    
+
+    /// available for only image/audio/video/file
+    fn mimetype(value: string) -> MsgDraft;
+
     /// available for only image/audio/video/file
     fn size(value: u64) -> MsgDraft;
 
@@ -1184,13 +1190,22 @@ object MsgDraft {
     /// available for only image/video
     fn blurhash(value: string) -> MsgDraft;
 
+    /// Provide the file system path to a static thumbnail
+    /// for this media to be read and shared upon sending
+    ///
+    /// available for only image/video/file/location
+    fn thumbnail_file_path(value: string) -> MsgDraft;
+
+    /// available for only image/video/file/location
+    fn thumbnail_info(width: Option<u64>, height: Option<u64>, mimetype: Option<string>, size: Option<u64>) -> MsgDraft;
+
     /// available for only file
     fn filename(value: string) -> MsgDraft;
 
     /// available for only location
     fn geo_uri(value: string) -> MsgDraft;
 
-    // convert this into a NewsSlideDraft;
+    /// convert this into a NewsSlideDraft;
     fn into_news_slide_draft() -> NewsSlideDraft;
 }
 
@@ -1234,7 +1249,6 @@ object TimelineStream {
     /// send reaction to event
     /// if sent twice, reaction is redacted
     fn toggle_reaction(event_id: string, key: string) -> Future<Result<bool>>;
-
 }
 
 
@@ -1362,9 +1376,6 @@ object Convo {
     /// return None when never downloaded
     fn media_path(event_id: string, is_thumb: bool) -> Future<Result<OptionString>>;
 
-    /// initially called to get receipt status of room members
-    fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
-
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
 
@@ -1382,7 +1393,7 @@ object Convo {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
-    /// it's the callers job to ensure the person has the privileges to
+    /// it’s the callers job to ensure the person has the privileges to
     /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
@@ -1424,7 +1435,7 @@ object Comment {
     fn sender() -> UserId;
     /// When was this comment acknowledged by the server
     fn origin_server_ts() -> u64;
-    /// what is the comment's content
+    /// what is the comment’s content
     fn msg_content() -> MsgContent;
     /// create a draft builder to reply to this comment
     fn reply_builder() -> CommentDraft;
@@ -1531,10 +1542,10 @@ object AttachmentsManager {
     /// create attachment for given link draft
     fn link_draft(url: string, name: Option<string>) -> Future<Result<AttachmentDraft>>;
 
-    // inform about the changes to this manager
+    /// inform about the changes to this manager
     fn reload() -> Future<Result<AttachmentsManager>>;
-    
-    // redact attachment 
+
+    /// redact attachment
     fn redact(attachment_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// subscribe to the changes of this model key
@@ -1631,7 +1642,7 @@ object Task {
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<Task>>;
-    
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
@@ -1918,7 +1929,7 @@ object SpaceHierarchyRoomInfo {
     fn join_rule_str() -> string;
     /// whether to have avatar
     fn has_avatar() -> bool;
-    
+
     /// is this a suggested room?
     fn suggested() -> bool;
 
@@ -1926,7 +1937,7 @@ object SpaceHierarchyRoomInfo {
     /// if thumb size is given, avatar thumbnail is returned
     /// if thumb size is not given, avatar file is returned
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
-    // recommended server to try to join via
+    /// recommended server to try to join via
     fn via_server_name() -> Option<string>;
 }
 
@@ -1972,8 +1983,18 @@ object RoomPowerLevels {
     fn task_lists_key() -> string;
 }
 
-object SimpleSettingWithTurnOff {
+object SimpleOnOffSetting {
+    fn active() -> bool;
+}
 
+object SimpleOnOffSettingBuilder {
+    fn active(active: bool);
+    fn build() -> Result<SimpleOnOffSetting>;
+}
+
+
+object SimpleSettingWithTurnOff {
+    fn active() -> bool;
 }
 
 object SimpleSettingWithTurnOffBuilder {
@@ -1982,10 +2003,6 @@ object SimpleSettingWithTurnOffBuilder {
 }
 
 
-object TasksSettingsBuilder {
-    fn active(active: bool);
-    fn build() -> Result<TasksSettings>;
-}
 object NewsSettings {
     fn active() -> bool;
     fn updater() -> SimpleSettingWithTurnOffBuilder;
@@ -1993,7 +2010,7 @@ object NewsSettings {
 
 object TasksSettings {
     fn active() -> bool;
-    fn updater() -> TasksSettingsBuilder;
+    fn updater() -> SimpleOnOffSettingBuilder;
 }
 
 object EventsSettings {
@@ -2018,7 +2035,7 @@ object ActerAppSettingsBuilder {
     fn news(news: Option<SimpleSettingWithTurnOff>);
     fn pins(pins: Option<SimpleSettingWithTurnOff>);
     fn events(events: Option<SimpleSettingWithTurnOff>);
-    fn tasks(tasks: Option<TasksSettings>);
+    fn tasks(tasks: Option<SimpleOnOffSetting>);
 }
 
 
@@ -2032,9 +2049,8 @@ object ActerAppSettingsBuilder {
 
 
 object Category {
-    fn id() -> string;
     fn title() -> string;
-    fn entries() -> string;
+    fn entries() -> Vec<string>;
     fn display() -> Option<Display>;
     fn update_builder() -> CategoryBuilder;
 }
@@ -2229,7 +2245,7 @@ object Space {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
-    /// it's the callers job to ensure the person has the privileges to
+    /// it’s the callers job to ensure the person has the privileges to
     /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
@@ -2329,7 +2345,7 @@ object Member {
 object ActerUserAppSettings {
     /// either of 'always', 'never' or 'wifiOnly'
     fn auto_download_chat() -> Option<string>;
-    
+
     /// whether to allow sending typing notice of users
     fn typing_notice() -> Option<bool>;
 
@@ -2396,8 +2412,8 @@ object Account {
     /// listen to updates to the app settings
     fn subscribe_app_settings_stream() -> Stream<bool>;
 
-    // deactivate the account. This can not be reversed. The username will
-    // be blocked from any future usage, all personal data will be removed.
+    /// deactivate the account. This can not be reversed. The username will
+    /// be blocked from any future usage, all personal data will be removed.
     fn deactivate(password: string) -> Future<Result<bool>>;
 
     /// change password
@@ -2577,7 +2593,7 @@ object NotificationItem {
     fn image() -> Future<Result<buffer<u8>>>;
     fn image_path(tmp_dir: string) -> Future<Result<string>>;
 
-    // if this is an invite, this the room it invites to
+    /// if this is an invite, this the room it invites to
     fn room_invite() -> Option<string>;
 }
 
@@ -2640,7 +2656,7 @@ object CreateSpaceSettingsBuilder {
     /// set the name of convo
     fn set_name(value: string);
 
-    /// set the space's visibility to either Public or Private
+    /// set the space’s visibility to either Public or Private
     fn set_visibility(value: string);
 
     /// append user id that will be invited to this space
@@ -2747,7 +2763,7 @@ object Client {
     fn invitations_rx() -> Stream<Vec<Invitation>>;
 
     /// the users out of room
-    fn suggested_users_to_invite(room_name: string) -> Future<Result<Vec<UserProfile>>>;
+    fn suggested_users(room_name: Option<string>) -> Future<Result<Vec<UserProfile>>>;
 
     /// search the user directory
     fn search_users(search_term: string) -> Future<Result<Vec<UserProfile>>>;
@@ -2782,9 +2798,6 @@ object Client {
 
     /// Return the typing event receiver
     fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;
-
-    /// Return the receipt event receiver
-    fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 
     /// create convo
     fn create_convo(settings: CreateConvoSettings) -> Future<Result<RoomId>>;
@@ -2860,7 +2873,7 @@ object Client {
 
     /// getting a notification item from the notification data;
     fn get_notification_item(room_id: string, event_id: string) -> Future<Result<NotificationItem>>;
-    
+
     /// get all upcoming events, whether I responded or not
     fn all_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
 
@@ -2916,7 +2929,7 @@ object NotificationSettings {
 
     /// set default RoomNotificationMode for this combination
     fn set_default_notification_mode(is_encrypted: bool, is_one_on_one: bool, mode: string) -> Future<Result<bool>>;
-    
+
     /// app settings
     fn global_content_setting(app_key: string) -> Future<Result<bool>>;
     fn set_global_content_setting(app_key: string, enabled: bool) -> Future<Result<bool>>;
@@ -3094,7 +3107,7 @@ object VerificationEvent {
     /// Alice says to Bob that SAS verification matches and vice versa
     fn confirm_sas_verification() -> Future<Result<bool>>;
 
-    /// Alice says to Bob that SAS verification doesn't match and vice versa
+    /// Alice says to Bob that SAS verification doesn’t match and vice versa
     fn mismatch_sas_verification() -> Future<Result<bool>>;
 }
 
@@ -3205,7 +3218,7 @@ object BackupManager {
     /// state as a string via a stream. Issues the current state immediately
     fn state_stream() -> Stream<string>;
 
-    /// Open the existing secret store using the given key and import the keys 
+    /// Open the existing secret store using the given key and import the keys
     fn recover(secret: string) -> Future<Result<bool>>;
 
 }

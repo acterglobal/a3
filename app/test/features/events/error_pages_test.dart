@@ -1,6 +1,6 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/events/pages/event_list_page.dart';
@@ -60,6 +60,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
+          roomMembershipProvider.overrideWith((a, b) => null),
           eventListSearchFilterProvider.overrideWith((a, b) {
             if (shouldFail) {
               // toggle failure so the retry works
@@ -82,6 +83,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
+          roomMembershipProvider.overrideWith((a, b) => null),
           searchValueProvider
               .overrideWith((_) => 'some search'), // set a search string
           eventListSearchFilterProvider.overrideWith((a, b) {

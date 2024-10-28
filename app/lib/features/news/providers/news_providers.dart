@@ -4,8 +4,8 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show NewsEntry, ReactionManager;
 import 'package:riverpod/riverpod.dart';
 
-final newsListProvider =
-    AsyncNotifierProvider.autoDispose<AsyncNewsListNotifier, List<NewsEntry>>(
+final newsListProvider = AsyncNotifierProvider.family<AsyncNewsListNotifier,
+    List<NewsEntry>, String?>(
   () => AsyncNewsListNotifier(),
 );
 

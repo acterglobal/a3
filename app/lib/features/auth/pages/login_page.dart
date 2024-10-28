@@ -53,9 +53,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   AppBar _buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-    );
+    return AppBar(backgroundColor: Colors.transparent);
   }
 
   Widget _buildLoginPage(BuildContext context) {
@@ -71,7 +69,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (screenHeight > 650)
-                LogoWidget(width: imageSize, height: imageSize),
+                LogoWidget(
+                  width: imageSize,
+                  height: imageSize,
+                ),
               _buildHeadlineText(context),
               const SizedBox(height: 24),
               _buildUsernameInputField(context),
@@ -91,12 +92,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Widget _buildHeadlineText(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          L10n.of(context).welcomeBack,
+          lang.welcomeBack,
           style: Theme.of(context)
               .textTheme
               .headlineMedium
@@ -106,7 +108,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Text(
-            L10n.of(context).loginContinue,
+            lang.loginContinue,
             textAlign: TextAlign.center,
           ),
         ),
@@ -115,63 +117,55 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Widget _buildUsernameInputField(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(L10n.of(context).username),
+        Text(lang.username),
         const SizedBox(height: 10),
         TextFormField(
           key: LoginPageKeys.usernameField,
           controller: username,
-          decoration: InputDecoration(
-            hintText: L10n.of(context).hintMessageUsername,
-          ),
+          decoration: InputDecoration(hintText: lang.hintMessageUsername),
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyUsername;
-            }
-            return null;
-          },
+          // required field, space not allowed
+          validator: (val) =>
+              val == null || val.trim().isEmpty ? lang.emptyUsername : null,
         ),
       ],
     );
   }
 
   Widget _buildPasswordInputField(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(L10n.of(context).password),
+        Text(lang.password),
         const SizedBox(height: 10),
         TextFormField(
           key: LoginPageKeys.passwordField,
           controller: password,
           obscureText: !_passwordVisible,
           decoration: InputDecoration(
-            hintText: L10n.of(context).hintMessagePassword,
+            hintText: lang.hintMessagePassword,
             suffixIcon: IconButton(
               icon: Icon(
                 _passwordVisible ? Icons.visibility : Icons.visibility_off,
               ),
               onPressed: () {
-                setState(() {
-                  _passwordVisible = !_passwordVisible;
-                });
+                setState(() => _passwordVisible = !_passwordVisible);
               },
             ),
           ),
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyPassword;
-            }
-            return null;
-          },
+          // required field, space allowed
+          validator: (val) =>
+              val == null || val.isEmpty ? lang.emptyPassword : null,
         ),
       ],
     );
@@ -180,7 +174,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget _buildLoginButton(BuildContext context) {
     final authState = ref.watch(authStateProvider);
     return authState
-        ? const Center(child: CircularProgressIndicator())
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
         : ActerPrimaryActionButton(
             key: LoginPageKeys.submitBtn,
             onPressed: () => handleSubmit(context),
@@ -197,25 +193,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       child: ActerInlineTextButton(
         key: LoginPageKeys.forgotPassBtn,
         onPressed: () => context.pushNamed(Routes.forgotPassword.name),
-        child: Text(
-          L10n.of(context).forgotPassword,
-        ),
+        child: Text(L10n.of(context).forgotPassword),
       ),
     );
   }
 
   Widget _buildRegisterAccountButton(BuildContext context) {
+    final lang = L10n.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(L10n.of(context).noProfile),
+        Text(lang.noProfile),
         const SizedBox(width: 2),
         ActerInlineTextButton(
           key: LoginPageKeys.signUpBtn,
           onPressed: () => context.goNamed(Routes.authRegister.name),
-          child: Text(
-            L10n.of(context).createProfile,
-          ),
+          child: Text(lang.createProfile),
         ),
       ],
     );

@@ -1,7 +1,7 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_page_header.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
@@ -9,8 +9,9 @@ import 'package:acter/features/activities/providers/invitations_providers.dart';
 import 'package:acter/features/activities/widgets/invitation_card.dart';
 import 'package:acter/features/backups/widgets/backup_state_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/settings/providers/session_providers.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/session_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -28,18 +29,18 @@ class ActivitiesPage extends ConsumerWidget {
   const ActivitiesPage({super.key});
 
   Widget? renderSyncingState(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final syncState = ref.watch(syncStateProvider);
     final errorMsg = syncState.errorMsg;
-    final retryDuration = syncState.countDown != null
-        ? Duration(seconds: syncState.countDown!)
-        : null;
+    final retryDuration =
+        syncState.countDown.map((countDown) => Duration(seconds: countDown));
     if (!ref.watch(hasFirstSyncedProvider)) {
       return SliverToBoxAdapter(
         child: Card(
           child: ListTile(
             leading: const Icon(Atlas.arrows_dots_rotate),
-            title: Text(L10n.of(context).renderSyncingTitle),
-            subtitle: Text(L10n.of(context).renderSyncingSubTitle),
+            title: Text(lang.renderSyncingTitle),
+            subtitle: Text(lang.renderSyncingSubTitle),
           ),
         ),
       );
@@ -48,11 +49,11 @@ class ActivitiesPage extends ConsumerWidget {
         child: Card(
           child: ListTile(
             leading: const Icon(Atlas.warning),
-            title: Text(L10n.of(context).errorSyncing(errorMsg)),
+            title: Text(lang.errorSyncing(errorMsg)),
             subtitle: Text(
               retryDuration == null
-                  ? L10n.of(context).retrying
-                  : L10n.of(context).retryIn(
+                  ? lang.retrying
+                  : lang.retryIn(
                       retryDuration.inMinutes
                           .remainder(60)
                           .toString()
@@ -102,50 +103,46 @@ class ActivitiesPage extends ConsumerWidget {
   }
 
   Widget? renderSessions(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final allSessions = ref.watch(unknownSessionsProvider);
-    if (allSessions.error != null) {
+    final err = allSessions.error;
+    if (err != null) {
       return SliverToBoxAdapter(
-        child: Text(
-          L10n.of(context)
-              .errorUnverifiedSessions(allSessions.error.toString()),
-        ),
+        child: Text(lang.errorUnverifiedSessions(err.toString())),
       );
-    } else if (!allSessions.hasValue) {
-      // we can ignore
-      return null;
     }
-
-    final sessions =
-        allSessions.value!.where((session) => !session.isVerified()).toList();
-    if (sessions.isEmpty) {
-      return null;
-    } else if (sessions.length == 1) {
-      return SliverToBoxAdapter(
-        child: SessionCard(
-          key: oneUnverifiedSessionsCard,
-          deviceRecord: sessions[0],
-        ),
-      );
-    } else {
-      return SliverToBoxAdapter(
-        child: Card(
-          key: unverifiedSessionsCard,
-          child: ListTile(
-            leading: const Icon(Atlas.warning_bold),
-            title: Text(
-              L10n.of(context).unverifiedSessionsTitle(sessions.length),
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            trailing: OutlinedButton(
-              onPressed: () {
-                context.pushNamed(Routes.settingSessions.name);
-              },
-              child: Text(L10n.of(context).review),
+    return allSessions.value.map((val) {
+      final sessions = val.where((session) => !session.isVerified()).toList();
+      if (sessions.isEmpty) {
+        return null;
+      } else if (sessions.length == 1) {
+        return SliverToBoxAdapter(
+          child: SessionCard(
+            key: oneUnverifiedSessionsCard,
+            deviceRecord: sessions[0],
+          ),
+        );
+      } else {
+        return SliverToBoxAdapter(
+          child: Card(
+            key: unverifiedSessionsCard,
+            child: ListTile(
+              leading: const Icon(Atlas.warning_bold),
+              title: Text(
+                lang.unverifiedSessionsTitle(sessions.length),
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              trailing: OutlinedButton(
+                onPressed: () {
+                  context.pushNamed(Routes.settingSessions.name);
+                },
+                child: Text(lang.review),
+              ),
             ),
           ),
-        ),
-      );
-    }
+        );
+      }
+    });
   }
 
   Widget? renderBackupSection(BuildContext context, WidgetRef ref) {
@@ -153,6 +150,7 @@ class ActivitiesPage extends ConsumerWidget {
   }
 
   Widget renderUnconfirmedEmailAddrs(BuildContext context) {
+    final lang = L10n.of(context);
     return SliverToBoxAdapter(
       child: Card(
         key: unconfirmedEmails,
@@ -160,11 +158,9 @@ class ActivitiesPage extends ConsumerWidget {
         child: ListTile(
           onTap: () => context.goNamed(Routes.emailAddresses.name),
           leading: const Icon(Atlas.envelope_minus_thin),
-          title: Text(L10n.of(context).unconfirmedEmailsActivityTitle),
-          subtitle: Text(L10n.of(context).unconfirmedEmailsActivitySubtitle),
-          trailing: const Icon(
-            Icons.keyboard_arrow_right_outlined,
-          ),
+          title: Text(lang.unconfirmedEmailsActivityTitle),
+          subtitle: Text(lang.unconfirmedEmailsActivitySubtitle),
+          trailing: const Icon(Icons.keyboard_arrow_right_outlined),
         ),
       ),
     );
@@ -172,6 +168,7 @@ class ActivitiesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     // update the inner provider...
     // ignore: unused_local_variable
     final allDone = ref.watch(hasActivitiesProvider) == UrgencyBadge.none;
@@ -179,7 +176,7 @@ class ActivitiesPage extends ConsumerWidget {
 
     final syncStateWidget = renderSyncingState(context, ref);
 
-    if (ref.watch(featuresProvider).isActive(LabsFeature.encryptionBackup)) {
+    if (ref.watch(isActiveProvider(LabsFeature.encryptionBackup))) {
       final backups = renderBackupSection(context, ref);
       if (backups != null) {
         children.add(backups);
@@ -203,9 +200,9 @@ class ActivitiesPage extends ConsumerWidget {
       body: CustomScrollView(
         slivers: <Widget>[
           PageHeaderWidget(
-            title: L10n.of(context).activities,
+            title: lang.activities,
             expandedContent: Text(
-              L10n.of(context).activitiesDescription,
+              lang.activitiesDescription,
               softWrap: true,
               style: Theme.of(context).textTheme.bodySmall,
             ),
@@ -217,8 +214,8 @@ class ActivitiesPage extends ConsumerWidget {
               child: Center(
                 heightFactor: 1.5,
                 child: EmptyState(
-                  title: L10n.of(context).noActivityTitle,
-                  subtitle: L10n.of(context).noActivitySubtitle,
+                  title: lang.noActivityTitle,
+                  subtitle: lang.noActivitySubtitle,
                   image: 'assets/images/empty_activity.svg',
                 ),
               ),

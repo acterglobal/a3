@@ -34,6 +34,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
   });
 
   Future<void> changePowerLevel(BuildContext context, WidgetRef ref) async {
+    final lang = L10n.of(context);
     final roomId = member.roomIdStr();
     final userId = member.userId().toString();
     final myMembership = await ref.read(roomMembershipProvider(roomId).future);
@@ -47,7 +48,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     if (newPowerLevel == null) return;
 
     if (!context.mounted) return;
-    EasyLoading.show(status: L10n.of(context).updatingPowerLevelOf(userId));
+    EasyLoading.show(status: lang.updatingPowerLevelOf(userId));
     try {
       final room = await ref.read(maybeRoomProvider(roomId).future);
       await room?.updatePowerLevel(userId, newPowerLevel);
@@ -55,7 +56,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).powerLevelUpdateSubmitted);
+      EasyLoading.showToast(lang.powerLevelUpdateSubmitted);
     } catch (e, s) {
       _log.severe('Failed to change power level', e, s);
       if (!context.mounted) {
@@ -63,7 +64,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToChangePowerLevel(e),
+        lang.failedToChangePowerLevel(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -74,19 +75,19 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     final avatarInfo = ref.watch(
       memberAvatarInfoProvider((userId: memberId, roomId: member.roomIdStr())),
     );
+    final dispName = avatarInfo.displayName;
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 20),
             _buildAvatarUI(context, avatarInfo),
             const SizedBox(height: 20),
-            if (avatarInfo.displayName != null)
+            if (dispName != null)
               Center(
-                child:
-                    Text(avatarInfo.displayName!), // FIXME: make this prettier
+                child: Text(dispName), // FIXME: make this prettier
               ),
             const SizedBox(height: 20),
             _buildUserName(context),
@@ -99,11 +100,12 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
   }
 
   List<Widget> _buildMenu(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final myUserId = ref.watch(myUserIdStrProvider);
     final itsMe = memberId == myUserId;
     if (itsMe) {
       return [
-        Center(child: Text(L10n.of(context).itsYou)),
+        Center(child: Text(lang.itsYou)),
         const SizedBox(height: 30),
         if (isShowActions) ..._roomMenu(context, ref),
       ];
@@ -115,7 +117,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       member.isIgnored()
           ? MenuItemWidget(
               iconData: Atlas.block_thin,
-              title: L10n.of(context).unblockUser,
+              title: lang.unblockUser,
               withMenu: false,
               onTap: () async {
                 await showUnblockUserDialog(context, member);
@@ -123,7 +125,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
             )
           : MenuItemWidget(
               iconData: Atlas.block_thin,
-              title: L10n.of(context).blockUser,
+              title: lang.blockUser,
               withMenu: false,
               onTap: () async {
                 await showBlockUserDialog(context, member);
@@ -134,12 +136,13 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
   }
 
   Widget _showPowerLevel(BuildContext context, VoidCallback? onTap) {
+    final lang = L10n.of(context);
     final memberStatus = member.membershipStatusStr();
     if (memberStatus == 'Admin') {
       return Card(
         child: ListTile(
           leading: const Icon(Atlas.crown_winner_thin),
-          title: Text(L10n.of(context).admin),
+          title: Text(lang.admin),
           onTap: onTap,
         ),
       );
@@ -147,7 +150,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       return Card(
         child: ListTile(
           leading: const Icon(Atlas.shield_star_win_thin),
-          title: Text(L10n.of(context).moderator),
+          title: Text(lang.moderator),
           onTap: onTap,
         ),
       );
@@ -155,7 +158,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       return Card(
         child: ListTile(
           leading: const Icon(Atlas.shield_star_win_thin),
-          title: Text(L10n.of(context).powerLevel),
+          title: Text(lang.powerLevel),
           trailing: Text(member.powerLevel().toString()),
           onTap: onTap,
         ),
@@ -164,6 +167,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
   }
 
   List<Widget> _roomMenu(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final roomId = member.roomIdStr();
     final membershipLoader = ref.watch(roomMembershipProvider(roomId));
     return membershipLoader.when(
@@ -190,7 +194,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           menu.add(
             MenuItemWidget(
               iconData: Icons.eject_outlined,
-              title: L10n.of(context).kickUser,
+              title: lang.kickUser,
               withMenu: false,
               onTap: () async {
                 await showKickUserDialog(context, member);
@@ -203,7 +207,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
             menu.add(
               MenuItemWidget(
                 iconData: Icons.gpp_bad_outlined,
-                title: L10n.of(context).kickAndBanUser,
+                title: lang.kickAndBanUser,
                 withMenu: false,
                 onTap: () async {
                   await showKickAndBanUserDialog(context, member);
@@ -221,7 +225,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           _roomTitle(context, ref),
           MenuItemWidget(
             iconData: Atlas.triangle_exclamation_thin,
-            title: L10n.of(context).loadingFailed(e),
+            title: lang.loadingFailed(e),
             withMenu: false,
             onTap: () {},
           ),
@@ -232,7 +236,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
         Skeletonizer(
           child: MenuItemWidget(
             iconData: Atlas.medal_badge_award_thin,
-            title: L10n.of(context).changePowerLevel,
+            title: lang.changePowerLevel,
             withMenu: false,
             onTap: () {},
           ),
@@ -246,7 +250,10 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
     return ListTile(
-      leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
+      leading: RoomAvatarBuilder(
+        roomId: roomId,
+        avatarSize: 24,
+      ),
       title: Text(roomName),
     );
   }
@@ -279,7 +286,8 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     return GestureDetector(
       onTap: () async {
         Navigator.pop(context); // close the drawer
-        Clipboard.setData(ClipboardData(text: memberId));
+        await Clipboard.setData(ClipboardData(text: memberId));
+        if (!context.mounted) return;
         EasyLoading.showToast(L10n.of(context).usernameCopiedToClipboard);
       },
       child: Row(
@@ -308,9 +316,8 @@ class MemberInfoDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberLoader = ref.watch(
-      memberProvider((roomId: roomId, userId: memberId)),
-    );
+    final memberLoader =
+        ref.watch(memberProvider((roomId: roomId, userId: memberId)));
     return memberLoader.when(
       data: (member) => _MemberInfoDrawerInner(
         member: member,
@@ -320,7 +327,7 @@ class MemberInfoDrawer extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to load room member', e, s);
         return Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20),
           child: Text(L10n.of(context).errorLoadingProfile(e)),
         );
       },

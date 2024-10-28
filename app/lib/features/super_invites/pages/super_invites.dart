@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
@@ -19,19 +20,22 @@ class SuperInvitesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final tokensLoader = ref.watch(superInvitesTokensProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
           elevation: 0.0,
-          title: Text(L10n.of(context).superInvites),
+          title: Text(lang.superInvites),
           centerTitle: true,
           actions: [
             IconButton(
               icon: const Icon(Atlas.arrows_rotating_right_thin),
               iconSize: 28,
-              color: Theme.of(context).colorScheme.surface,
+              color: colorScheme.surface,
               onPressed: () {
                 ref.invalidate(superInvitesTokensProvider);
               },
@@ -40,7 +44,7 @@ class SuperInvitesPage extends ConsumerWidget {
               key: createNewToken,
               icon: const Icon(Atlas.plus_circle_thin),
               iconSize: 28,
-              color: Theme.of(context).colorScheme.surface,
+              color: colorScheme.surface,
               onPressed: () {
                 context.pushNamed(Routes.actionCreateSuperInvite.name);
               },
@@ -55,46 +59,50 @@ class SuperInvitesPage extends ConsumerWidget {
                 if (tokens.isEmpty) {
                   return SliverToBoxAdapter(
                     child: Center(
-                      child:
-                          Text(L10n.of(context).youHaveNotCreatedInviteCodes),
+                      child: Text(lang.youHaveNotCreatedInviteCodes),
                     ),
                   );
                 }
                 return SliverList.builder(
                   itemBuilder: (context, index) {
                     final token = tokens[index];
-                    final acceptedCount =
-                        L10n.of(context).usedTimes(token.acceptedCount());
-                    final tokenStr = token.token().toString();
+                    final acceptedCount = lang.usedTimes(token.acceptedCount());
+                    final tokenStr = token.token();
                     final firstRoom =
-                        token.rooms().map((t) => t.toDartString()).firstOrNull;
+                        asDartStringList(token.rooms()).firstOrNull;
                     return Card(
                       key: Key('edit-token-$tokenStr'),
                       margin: const EdgeInsets.all(5),
-                      child: ListTile(
-                        title: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Text(tokenStr),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: ListTile(
+                          title: Text(
+                            tokenStr,
+                            style: textTheme.headlineSmall,
+                          ),
+                          subtitle: Text(
+                            acceptedCount,
+                            style: textTheme.bodySmall,
+                          ),
+                          onTap: () {
+                            context.pushNamed(
+                              Routes.actionCreateSuperInvite.name,
+                              extra: token,
+                            );
+                          },
+                          trailing: firstRoom != null
+                              ? OutlinedButton(
+                                  onPressed: () => context.pushNamed(
+                                    Routes.shareInviteCode.name,
+                                    queryParameters: {
+                                      'inviteCode': tokenStr,
+                                      'roomId': firstRoom,
+                                    },
+                                  ),
+                                  child: Text(lang.share),
+                                )
+                              : null,
                         ),
-                        subtitle: Text(acceptedCount),
-                        onTap: () {
-                          context.pushNamed(
-                            Routes.actionCreateSuperInvite.name,
-                            extra: token,
-                          );
-                        },
-                        trailing: firstRoom != null
-                            ? OutlinedButton(
-                                onPressed: () => context.pushNamed(
-                                  Routes.shareInviteCode.name,
-                                  queryParameters: {
-                                    'inviteCode': tokenStr,
-                                    'roomId': firstRoom,
-                                  },
-                                ),
-                                child: Text(L10n.of(context).share),
-                              )
-                            : null,
                       ),
                     );
                   },
@@ -105,7 +113,7 @@ class SuperInvitesPage extends ConsumerWidget {
                 _log.severe('Failed to load the super invite tokens', e, s);
                 return SliverToBoxAdapter(
                   child: Center(
-                    child: Text(L10n.of(context).failedToLoadInviteCodes(e)),
+                    child: Text(lang.failedToLoadInviteCodes(e)),
                   ),
                 );
               },

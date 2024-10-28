@@ -11,9 +11,10 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::comments::create_comment');
 
 class CreateCommentWidget extends ConsumerStatefulWidget {
+  static const commentField = Key('create-comment-input-field');
+
   final CommentsManager manager;
   final void Function() onClose;
-  static const commentField = Key('create-comment-input-field');
 
   const CreateCommentWidget({
     super.key,
@@ -38,12 +39,13 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
   }
 
   Widget commentInputUI() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.only(bottom: 5),
-          child: Text(L10n.of(context).createComment),
+          child: Text(lang.createComment),
         ),
         Container(
           height: 200,
@@ -59,10 +61,12 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
             editorState: textEditorState,
             footer: const SizedBox(),
             onChanged: (body, html) {
-              final document = html != null
-                  ? ActerDocumentHelpers.fromHtml(html)
-                  : ActerDocumentHelpers.fromMarkdown(body);
-              textEditorState = EditorState(document: document);
+              textEditorState = EditorState(
+                document: ActerDocumentHelpers.parse(
+                  body,
+                  htmlContent: html,
+                ),
+              );
             },
           ),
         ),
@@ -74,12 +78,12 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
               const Spacer(),
               OutlinedButton(
                 onPressed: widget.onClose,
-                child: Text(L10n.of(context).cancel),
+                child: Text(lang.cancel),
               ),
               const SizedBox(width: 22),
               ActerPrimaryActionButton(
                 onPressed: onSubmit,
-                child: Text(L10n.of(context).submit),
+                child: Text(lang.submit),
               ),
             ],
           ),
@@ -89,13 +93,14 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
   }
 
   Future<void> onSubmit() async {
+    final lang = L10n.of(context);
     final plainDescription = textEditorState.intoMarkdown().trim();
     final htmlBodyDescription = textEditorState.intoHtml();
     if (plainDescription.isEmpty) {
-      EasyLoading.showToast(L10n.of(context).youNeedToEnterAComment);
+      EasyLoading.showToast(lang.youNeedToEnterAComment);
       return;
     }
-    EasyLoading.show(status: L10n.of(context).submittingComment);
+    EasyLoading.show(status: lang.submittingComment);
     try {
       final draft = widget.manager.commentDraft();
       draft.contentFormatted(plainDescription, htmlBodyDescription);
@@ -105,7 +110,7 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).commentSubmitted);
+      EasyLoading.showToast(lang.commentSubmitted);
     } catch (e, s) {
       _log.severe('Failed to submit comment', e, s);
       if (!mounted) {
@@ -113,7 +118,7 @@ class _CreateCommentWidgetState extends ConsumerState<CreateCommentWidget> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).errorSubmittingComment(e),
+        lang.errorSubmittingComment(e),
         duration: const Duration(seconds: 3),
       );
     }

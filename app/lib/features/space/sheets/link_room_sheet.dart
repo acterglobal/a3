@@ -1,14 +1,19 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
+import 'package:acter/features/categories/providers/categories_providers.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/space/actions/unlink_child_room.dart';
+import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -26,12 +31,12 @@ enum ChildRoomType {
 }
 
 class LinkRoomPage extends ConsumerStatefulWidget {
+  static const confirmJoinRuleUpdateKey = Key('link-room-confirm-join-rule');
+  static const denyJoinRuleUpdateKey = Key('link-room-deny-join-rule');
+
   final String parentSpaceId;
   final String pageTitle;
   final ChildRoomType childRoomType;
-
-  static const confirmJoinRuleUpdateKey = Key('link-room-confirm-join-rule');
-  static const denyJoinRuleUpdateKey = Key('link-room-deny-join-rule');
 
   const LinkRoomPage({
     super.key,
@@ -66,37 +71,31 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   }
 
 //Fetch known sub-rooms list of selected parent space
-  void fetchKnownSubChatsData() async {
+  Future<void> fetchKnownSubChatsData() async {
     final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
     if (selectedParentSpaceId == null) return;
     final space = await ref
         .read(spaceRelationsOverviewProvider(selectedParentSpaceId).future);
 
     childRoomsIds.clear();
+    recommendedChildSpaceIds.clear();
     if (widget.childRoomType == ChildRoomType.chat) {
-      for (int i = 0; i < space.knownChats.length; i++) {
-        childRoomsIds.add(space.knownChats[i]);
-      }
+      childRoomsIds.addAll(space.knownChats);
     } else {
-      for (int i = 0; i < space.knownSubspaces.length; i++) {
-        childRoomsIds.add(space.knownSubspaces[i]);
-      }
-      //Add recommended child spaces ids
-      recommendedChildSpaceIds.clear();
-      for (int i = 0; i < space.otherRelations.length; i++) {
-        recommendedChildSpaceIds.add(space.otherRelations[i].getRoomIdStr());
-      }
+      childRoomsIds.addAll(space.knownSubspaces);
+      recommendedChildSpaceIds
+          .addAll(space.otherRelations.map((other) => other.getRoomIdStr()));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final screenSize = MediaQuery.of(context).size;
 
     return SliverScaffold(
       header: widget.pageTitle,
       body: SizedBox(
-        height: size.height - 120,
+        height: screenSize.height - 120,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +113,8 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   Widget searchUI() {
     return Search(
       onChanged: (value) {
-        ref.read(roomSearchValueProvider.notifier).update((state) => value);
+        final notifier = ref.read(roomSearchValueProvider.notifier);
+        notifier.update((state) => value);
       },
       searchController: searchTextEditingController,
     );
@@ -122,30 +122,23 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //Parent space
   Widget parentSpaceDataUI() {
-    final spaceDetails = ref.watch(selectedSpaceDetailsProvider);
+    final space = ref.watch(selectedSpaceDetailsProvider);
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: spaceDetails.when(
-        data: (space) {
-          if (space == null) return const SizedBox.shrink();
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(L10n.of(context).parentSpace),
-              SpaceChip(
-                spaceId: space.roomId,
-                onTapOpenSpaceDetail: false,
-              ),
-            ],
-          );
-        },
-        error: (e, s) {
-          _log.severe('Failed to load the details of selected space', e, s);
-          return errorUI(L10n.of(context).loadingFailed(e));
-        },
-        loading: () => Container(),
-      ),
+      child: space.map(
+            (p0) => Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(L10n.of(context).parentSpace),
+                SpaceChip(
+                  spaceId: p0.roomId,
+                  onTapOpenSpaceDetail: false,
+                ),
+              ],
+            ),
+          ) ??
+          const SizedBox.shrink(),
     );
   }
 
@@ -178,14 +171,15 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
 //Show chat list based on the search term
   Widget searchedChatsList() {
+    final lang = L10n.of(context);
     final searchedList = ref.watch(roomSearchedChatsProvider);
     return searchedList.when(
       data: (chats) => chats.isEmpty
-          ? Text(L10n.of(context).noChatsFoundMatchingYourSearchTerm)
+          ? Text(lang.noChatsFoundMatchingYourSearchTerm)
           : chatListUI(chats),
       error: (e, s) {
         _log.severe('Failed to search chats', e, s);
-        return errorUI(L10n.of(context).searchingFailed(e));
+        return errorUI(lang.searchingFailed(e));
       },
       loading: () => loadingUI(),
     );
@@ -222,20 +216,20 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       return searchedSpaceList();
     }
 
-    final spaces =
-        ref.watch(spacesProvider).map((space) => space.getRoomIdStr()).toList();
-    return spaceListUI(spaces);
+    final spaces = ref.watch(spacesProvider);
+    return spaceListUI(spaces.map((space) => space.getRoomIdStr()).toList());
   }
 
 //Show space list based on the search term
   Widget searchedSpaceList() {
+    final lang = L10n.of(context);
     final searchedSpaces = ref.watch(searchedSpacesProvider);
     return searchedSpaces.when(
       data: (spaces) {
         if (spaces.isEmpty) {
           return Center(
             heightFactor: 10,
-            child: Text(L10n.of(context).noChatsFoundMatchingYourSearchTerm),
+            child: Text(lang.noChatsFoundMatchingYourSearchTerm),
           );
         }
         return spaceListUI(spaces);
@@ -243,7 +237,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       loading: () => loadingUI(),
       error: (e, s) {
         _log.severe('Failed to search spaces', e, s);
-        return errorUI(L10n.of(context).searchingFailed(e));
+        return errorUI(lang.searchingFailed(e));
       },
     );
   }
@@ -255,6 +249,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       padding: const EdgeInsets.all(8),
       itemCount: spacesList.length,
       itemBuilder: (context, index) {
+        final lang = L10n.of(context);
         final roomId = spacesList[index];
         final isSubspace = childRoomsIds.contains(roomId);
         final isLinked = widget.childRoomType == ChildRoomType.space
@@ -262,9 +257,9 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
             : recommendedChildSpaceIds.contains(roomId);
 
         final subtitle = isSubspace
-            ? Text(L10n.of(context).subspace)
+            ? Text(lang.subspace)
             : recommendedChildSpaceIds.contains(roomId)
-                ? Text(L10n.of(context).recommendedSpace)
+                ? Text(lang.recommendedSpace)
                 : null;
 
         return BriefRoomEntry(
@@ -301,24 +296,24 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   }
 
   Widget roomTrailing(String roomId, bool isLinked, bool canLink) {
+    final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       width: 100,
       child: isLinked
           ? OutlinedButton(
               onPressed: () => onTapUnlinkChildRoom(roomId),
               key: Key('room-list-unlink-$roomId'),
-              child: Text(L10n.of(context).unlink),
+              child: Text(lang.unlink),
             )
           : canLink
               ? OutlinedButton(
                   onPressed: () => onTapLinkChildRoom(context, roomId),
                   key: Key('room-list-link-$roomId'),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.success,
-                    ),
+                    side: BorderSide(color: colorScheme.success),
                   ),
-                  child: Text(L10n.of(context).link),
+                  child: Text(lang.link),
                 )
               : null,
     );
@@ -329,37 +324,33 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     Room room,
     String parentSpaceId,
   ) async {
+    final lang = L10n.of(context);
     final joinRule = room.joinRuleStr();
     List<String> currentRooms = [];
     bool parentCanSee = joinRule == 'public';
     String newRule = 'restricted';
     if (joinRule == 'restricted' || joinRule == 'knock_restricted') {
-      currentRooms =
-          room.restrictedRoomIdsStr().map((t) => t.toString()).toList();
+      currentRooms = asDartStringList(room.restrictedRoomIdsStr());
       parentCanSee = currentRooms.contains(parentSpaceId);
       newRule = joinRule;
     }
 
     if (!parentCanSee) {
       final spaceAvatarInfo = ref.read(roomAvatarInfoProvider(parentSpaceId));
-      if (!mounted) return;
       final parentSpaceName =
-          // ignore: use_build_context_synchronously
-          spaceAvatarInfo.displayName ?? L10n.of(context).theParentSpace;
+          spaceAvatarInfo.displayName ?? lang.theParentSpace;
       final roomName =
           // ignore: use_build_context_synchronously
-          spaceAvatarInfo.displayName ?? L10n.of(context).theSelectedRooms;
+          spaceAvatarInfo.displayName ?? lang.theSelectedRooms;
       bool shouldChange = await showDialog(
-        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text(L10n.of(context).notVisible),
+            title: Text(lang.notVisible),
             content: Wrap(
               children: [
                 Text(
-                  L10n.of(context)
-                      .theCurrentJoinRulesOfSpace(roomName, parentSpaceName),
+                  lang.theCurrentJoinRulesOfSpace(roomName, parentSpaceName),
                 ),
               ],
             ),
@@ -367,14 +358,14 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
             actions: <Widget>[
               OutlinedButton(
                 key: LinkRoomPage.denyJoinRuleUpdateKey,
-                child: Text(L10n.of(context).noThanks),
+                child: Text(lang.noThanks),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
               ),
               ActerPrimaryActionButton(
                 key: LinkRoomPage.confirmJoinRuleUpdateKey,
-                child: Text(L10n.of(context).yesPleaseUpdate),
+                child: Text(lang.yesPleaseUpdate),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
@@ -399,22 +390,22 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   }
 
 //Link child room
-  void onTapLinkChildRoom(BuildContext context, String roomId) async {
-    final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
-    if (selectedParentSpaceId == null) return;
+  Future<void> onTapLinkChildRoom(BuildContext context, String roomId) async {
+    final spaceId = ref.read(selectedSpaceIdProvider);
+    if (spaceId == null) return;
 
     //Fetch selected parent space data and add given roomId as child
-    final space = await ref.read(spaceProvider(selectedParentSpaceId).future);
-    space.addChildRoom(roomId, false);
+    final space = await ref.read(spaceProvider(spaceId).future);
+    await space.addChildRoom(roomId, false);
 
     //Make subspace
     if (widget.childRoomType == ChildRoomType.space) {
       //Fetch selected room data and add given parentSpaceId as parent
       final room = await ref.read(maybeRoomProvider(roomId).future);
       if (room != null) {
-        room.addParentRoom(selectedParentSpaceId, true);
-        // ignore: use_build_context_synchronously
-        checkJoinRule(context, room, selectedParentSpaceId);
+        await room.addParentRoom(spaceId, true);
+        if (!context.mounted) return;
+        await checkJoinRule(context, room, spaceId);
       }
     }
 
@@ -423,20 +414,19 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     } else {
       childRoomsIds.add(roomId);
     }
-    // spaceRelations come from the server and must be manually invalidated
-    ref.invalidate(spaceRelationsProvider(selectedParentSpaceId));
-    ref.invalidate(spaceRemoteRelationsProvider(selectedParentSpaceId));
+
+    invalidateProviders(spaceId);
   }
 
 //Unlink child room
-  void onTapUnlinkChildRoom(String roomId) async {
-    final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
-    if (selectedParentSpaceId == null) return;
+  Future<void> onTapUnlinkChildRoom(String roomId) async {
+    final spaceId = ref.read(selectedSpaceIdProvider);
+    if (spaceId == null) return;
 
     await unlinkChildRoom(
       context,
       ref,
-      parentId: selectedParentSpaceId,
+      parentId: spaceId,
       roomId: roomId,
     );
 
@@ -445,5 +435,17 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     } else {
       childRoomsIds.remove(roomId);
     }
+
+    //Invalidate providers
+    invalidateProviders(spaceId);
+  }
+
+  void invalidateProviders(String selectedParentSpaceId) {
+    //Invalidate providers
+    ref.invalidate(spaceRelationsProvider(selectedParentSpaceId));
+    ref.invalidate(spaceRemoteRelationsProvider(selectedParentSpaceId));
+    ref.invalidate(subChatsListProvider(selectedParentSpaceId));
+    ref.invalidate(subSpacesListProvider(selectedParentSpaceId));
+    ref.invalidate(localCategoryListProvider);
   }
 }

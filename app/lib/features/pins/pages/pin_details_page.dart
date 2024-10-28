@@ -1,28 +1,33 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/bookmarks/types.dart';
+import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/features/pins/Utils/pins_utils.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
+import 'package:acter/features/pins/actions/pin_update_actions.dart';
 import 'package:acter/features/pins/actions/reduct_pin_action.dart';
 import 'package:acter/features/pins/actions/report_pin_action.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/fake_link_attachment_item.dart';
-import 'package:acter/features/pins/widgets/pin_icon.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::pin::detail-page');
+final _log = Logger('a3::pin::details_page');
 
 class PinDetailsPage extends ConsumerStatefulWidget {
   static const pinPageKey = Key('pin-page');
@@ -54,7 +59,10 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      actions: [_buildActionMenu()],
+      actions: [
+        BookmarkAction(bookmarker: BookmarkType.forPins(widget.pinId)),
+        _buildActionMenu(),
+      ],
     );
   }
 
@@ -116,7 +124,9 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         children: [
           Row(
             children: [
-              const Skeletonizer(child: Bone.circle(size: 100)),
+              const Skeletonizer(
+                child: Bone.circle(size: 100),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -142,14 +152,15 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
 
   // pin actions menu builder
   Widget _buildActionMenu() {
+    final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final pin = ref.watch(pinProvider(widget.pinId)).valueOrNull;
     if (pin == null) {
       return const SizedBox.shrink();
     }
     final roomId = pin.roomIdStr();
     //Get my membership details
-    final membership =
-        ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+    final membership = ref.watch(roomMembershipProvider(roomId)).valueOrNull;
     final canRedactData = ref.watch(canRedactProvider(pin));
     bool canPost = membership?.canString('CanPostPin') == true;
     bool canRedact = canRedactData.valueOrNull == true;
@@ -162,7 +173,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         PopupMenuItem<String>(
           key: PinDetailsPage.editBtnKey,
           onTap: () => showEditPintTitleDialog(context, ref, pin),
-          child: Text(L10n.of(context).editTitle),
+          child: Text(lang.editTitle),
         ),
       );
 
@@ -171,7 +182,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         PopupMenuItem<String>(
           key: PinDetailsPage.editBtnKey,
           onTap: () => showEditPintDescriptionDialog(context, ref, pin),
-          child: Text(L10n.of(context).editDescription),
+          child: Text(lang.editDescription),
         ),
       );
     }
@@ -184,10 +195,10 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           children: <Widget>[
             Icon(
               Atlas.warning_thin,
-              color: Theme.of(context).colorScheme.error,
+              color: colorScheme.error,
             ),
             const SizedBox(width: 10),
-            Text(L10n.of(context).reportPin),
+            Text(lang.reportPin),
           ],
         ),
       ),
@@ -203,8 +214,8 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
             roomId: roomId,
           ),
           child: Text(
-            L10n.of(context).removePin,
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
+            lang.removePin,
+            style: TextStyle(color: colorScheme.error),
           ),
         ),
       );
@@ -218,6 +229,10 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   }
 
   Widget _buildPinHeaderUI(ActerPin pin) {
+    //Get my membership details
+    final membership =
+        ref.watch(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+    bool canPost = membership?.canString('CanPostPin') == true;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -226,7 +241,21 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         children: [
           Row(
             children: [
-              const PinIcon(),
+              ActerIconWidget(
+                iconSize: 50,
+                color: convertColor(
+                  pin.display()?.color(),
+                  iconPickerColors[0],
+                ),
+                icon: ActerIcon.iconForPin(
+                  pin.display()?.iconStr(),
+                ),
+                onIconSelection: canPost
+                    ? (color, acterIcon) {
+                        updatePinIcon(context, ref, pin, color, acterIcon);
+                      }
+                    : null,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -249,18 +278,19 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   Widget pinTitleUI(ActerPin pin) {
     return SelectionArea(
       child: GestureDetector(
-        onTap: () {
+        onTap: () async {
           final membership =
-              ref.read(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
+              await ref.read(roomMembershipProvider(pin.roomIdStr()).future);
           if (membership?.canString('CanPostPin') == true) {
+            if (!mounted) return;
             showEditTitleBottomSheet(
               context: context,
               bottomSheetTitle: L10n.of(context).editName,
               titleValue: pin.title(),
               onSave: (newTitle) async {
-                final pinEditNotifier = ref.read(pinEditProvider(pin).notifier);
-                pinEditNotifier.setTitle(newTitle);
-                savePinTitle(context, pin, newTitle);
+                final notifier = ref.read(pinEditProvider(pin).notifier);
+                notifier.setTitle(newTitle);
+                updatePinTitle(context, pin, newTitle);
               },
             );
           }
@@ -288,6 +318,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     if (htmlBody == null && plainBody.trim().isEmpty) {
       return const SizedBox.shrink();
     }
+    final textTheme = Theme.of(context).textTheme;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -296,29 +327,27 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         const SizedBox(height: 18),
         SelectionArea(
           child: GestureDetector(
-            onTap: () {
-              showEditHtmlDescriptionBottomSheet(
-                context: context,
-                descriptionHtmlValue: description.formattedBody(),
-                descriptionMarkdownValue: plainBody,
-                onSave: (htmlBodyDescription, plainDescription) async {
-                  saveDescription(
-                    context,
-                    htmlBodyDescription,
-                    plainDescription,
-                    pin,
-                  );
-                },
-              );
-            },
+            onTap: () => showEditHtmlDescriptionBottomSheet(
+              context: context,
+              descriptionHtmlValue: description.formattedBody(),
+              descriptionMarkdownValue: plainBody,
+              onSave: (htmlBodyDescription, plainDescription) async {
+                await updatePinDescription(
+                  context,
+                  htmlBodyDescription,
+                  plainDescription,
+                  pin,
+                );
+              },
+            ),
             child: htmlBody != null
                 ? RenderHtml(
                     text: htmlBody,
-                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                    defaultTextStyle: textTheme.labelLarge,
                   )
                 : Text(
                     plainBody,
-                    style: Theme.of(context).textTheme.labelLarge,
+                    style: textTheme.labelLarge,
                   ),
           ),
         ),

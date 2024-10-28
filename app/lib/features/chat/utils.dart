@@ -1,3 +1,4 @@
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -6,17 +7,17 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:html/parser.dart';
 
 //Check for mentioned user link
-final mentionedUserLinkRegex = RegExp(
-  r'https://matrix.to/#/(?<alias>@.+):(?<server>.+)',
-);
+final mentionedUserLinkRegex =
+    RegExp(r'https://matrix.to/#/(?<alias>@.+):(?<server>.+)');
 
 bool renderCustomMessageBubble(types.CustomMessage message) {
   switch (message.metadata?['eventType']) {
@@ -115,10 +116,7 @@ UserMentionMessageData parseUserMentionMessage(
     displayName = aTagElement.text;
 
     // Replace displayName with @displayName
-    msg = msg.replaceAll(
-      aTagElement.outerHtml,
-      displayName,
-    );
+    msg = msg.replaceAll(aTagElement.outerHtml, displayName);
   }
   return UserMentionMessageData(
     parsedMessage: msg,
@@ -183,12 +181,12 @@ Future<void> navigateToRoomOrAskToJoin(
   }
 }
 
-void askToJoinRoom(
+Future<void> askToJoinRoom(
   BuildContext context,
   WidgetRef ref,
   String roomId,
 ) async {
-  showModalBottomSheet(
+  await showModalBottomSheet(
     context: context,
     isDismissible: true,
     shape: const RoundedRectangleBorder(
@@ -197,36 +195,37 @@ void askToJoinRoom(
         topLeft: Radius.circular(20),
       ),
     ),
-    builder: (context) => Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            L10n.of(context).youAreNotPartOfThisGroup,
-          ),
-          const SizedBox(height: 20),
-          ActerPrimaryActionButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              final server = roomId.split(':').last;
-              await joinRoom(
-                context,
-                ref,
-                L10n.of(context).tryingToJoin(roomId),
-                roomId,
-                server,
-                (roomId) => navigateToRoomOrAskToJoin(context, ref, roomId),
-              );
-            },
-            child: Text(L10n.of(context).joinRoom),
-          ),
-        ],
-      ),
-    ),
+    builder: (context) {
+      final lang = L10n.of(context);
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(lang.youAreNotPartOfThisGroup),
+            const SizedBox(height: 20),
+            ActerPrimaryActionButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                final server = roomId.split(':').last;
+                await joinRoom(
+                  context,
+                  ref,
+                  lang.tryingToJoin(roomId),
+                  roomId,
+                  server,
+                  (roomId) => navigateToRoomOrAskToJoin(context, ref, roomId),
+                );
+              },
+              child: Text(lang.joinRoom),
+            ),
+          ],
+        ),
+      );
+    },
   );
 }
 
@@ -275,23 +274,112 @@ String parseEditMsg(types.Message message) {
   return '';
 }
 
+Future<void> parseUserMentionText(
+  String htmlText,
+  String roomId,
+  ActerTriggerAutoCompleteTextController controller,
+  WidgetRef ref,
+) async {
+  final roomMentions = await ref.read(membersIdsProvider(roomId).future);
+  final inputNotifier = ref.read(chatInputProvider.notifier);
+  // Regular expression to match mention links
+  final mentionRegex = RegExp(r'\[@([^\]]+)\]\(https://matrix\.to/#/([^)]+)\)');
+  List<TaggedText> tags = [];
+  String parsedText = htmlText;
+  // Find all matches
+  final matches = mentionRegex.allMatches(htmlText);
+
+  int offset = 0;
+  for (final match in matches) {
+    final linkedName = match.group(1);
+    final userId = match.group(2);
+
+    String? displayName;
+    bool isValidMention = false;
+
+    if (linkedName != null && userId != null) {
+      displayName = linkedName;
+      isValidMention = roomMentions.any((uId) => uId == userId);
+    }
+    if (isValidMention && userId != null && displayName != null) {
+      final simpleMention = '@$displayName';
+      final startIndex = match.start - offset;
+      final endIndex = startIndex + simpleMention.length;
+      // restore mention state of input
+      inputNotifier.addMention(displayName, userId);
+      // restore tags
+      tags.add(
+        TaggedText(
+          trigger: '@',
+          displayText: simpleMention,
+          start: startIndex,
+          end: endIndex,
+        ),
+      );
+
+      // Replace the mention in parsed text
+      parsedText = parsedText.replaceRange(
+        startIndex,
+        match.end - offset,
+        simpleMention,
+      );
+      offset += (match.end - match.start) - simpleMention.length;
+    }
+  }
+
+  // Set the parsed text to the text controller
+  controller.text = parsedText;
+
+  // Apply the tags to the text controller
+  for (final tag in tags) {
+    controller.addTag(tag);
+  }
+}
+
 // save composer draft object handler
 Future<void> saveDraft(String text, String roomId, WidgetRef ref) async {
   // get the convo object to initiate draft
   final chat = await ref.read(chatProvider(roomId).future);
   final messageId = ref.read(chatInputProvider).selectedMessage?.id;
+  final mentions = ref.read(chatInputProvider).mentions;
+  final userMentions = [];
+  String? htmlText = text;
+  if (mentions.isNotEmpty) {
+    mentions.forEach((key, value) {
+      userMentions.add(value);
+      htmlText = htmlText?.replaceAll(
+        '@$key',
+        '[@$key](https://matrix.to/#/$value)',
+      );
+    });
+  }
 
   if (chat != null) {
     if (messageId != null) {
       final selectedMessageState =
           ref.read(chatInputProvider).selectedMessageState;
       if (selectedMessageState == SelectedMessageState.edit) {
-        await chat.saveMsgDraft(text, null, 'edit', messageId);
+        await chat.saveMsgDraft(text, htmlText, 'edit', messageId);
       } else if (selectedMessageState == SelectedMessageState.replyTo) {
-        await chat.saveMsgDraft(text, null, 'reply', messageId);
+        await chat.saveMsgDraft(text, htmlText, 'reply', messageId);
       }
     } else {
-      await chat.saveMsgDraft(text, null, 'new', null);
+      await chat.saveMsgDraft(text, htmlText, 'new', null);
     }
+  }
+}
+
+Future<void> onMessageLinkTap(Uri uri, BuildContext context) async {
+  final roomId = getRoomIdFromLink(uri);
+
+  ///If link is type of matrix room link
+  if (roomId != null) {
+    goToChat(context, roomId);
+  }
+
+  ///If link is other than matrix room link
+  ///Then open it on browser
+  else {
+    await openLink(uri.toString(), context);
   }
 }

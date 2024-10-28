@@ -1,4 +1,5 @@
 #![warn(clippy::all)]
+#![recursion_limit = "256"]
 
 mod config;
 mod ui;
@@ -81,14 +82,14 @@ async fn main() -> Result<()> {
                 Some(Either::Left(synced)) => {
                     sender.send(AppUpdate::SetSynced(synced)).unwrap();
                     if synced {
-                        // let's update the chats;
+                        // let’s update the chats;
                         let conversastions =
                             client.convos.read().await.clone().into_iter().collect();
                         sender
                             .send(AppUpdate::UpdateConvos(conversastions))
                             .unwrap();
 
-                        // let's update the spaces;
+                        // let’s update the spaces;
                         let spaces = client.spaces().await.unwrap();
                         sender.send(AppUpdate::UpdateSpaces(spaces)).unwrap();
                     }
@@ -104,7 +105,7 @@ async fn main() -> Result<()> {
                                 sender.send(AppUpdate::SetTasksList(task_lists)).unwrap();
                             }
                             Err(error) => {
-                                error!(?error, "TaskList couldn't be read");
+                                error!(?error, "TaskList couldn’t be read");
                             }
                         }
                     }

@@ -1,5 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/router/providers/router_providers.dart';
+import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +15,7 @@ class NotFoundPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentLocation = ref.watch(currentRoutingLocation);
+    final currentLocation = routerState.fullPath;
     return Scaffold(
       appBar: AppBar(title: const Text('404 - oopsie')),
       body: Center(
@@ -40,7 +40,10 @@ class NotFoundPage extends ConsumerWidget {
                 OutlinedButton.icon(
                   icon: const Icon(Atlas.bug_clipboard_thin),
                   label: const Text('Report bug'),
-                  onPressed: () => context.goNamed(Routes.bugReport.name),
+                  onPressed: () => openBugReport(
+                    context,
+                    queryParams: {'error': '404 for $currentLocation'},
+                  ),
                 ),
               ],
             ),

@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::deactivate');
+final _log = Logger('a3::common::dialogs::deactivate');
 
 const deactivateConfirmBtn = Key('deactivate-account-confirm');
 const deactivateCancelBtn = Key('deactivate-account-cancel');
@@ -19,13 +19,14 @@ const deactivatePasswordField = Key('deactivate-password-field');
 void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
   TextEditingController passwordController = TextEditingController();
   final theme = Theme.of(context).colorScheme;
+  final lang = L10n.of(context);
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
-          L10n.of(context).deactivateAccount,
+          lang.deactivateAccount,
           style: TextStyle(
             color: theme.error,
             fontSize: 26,
@@ -46,22 +47,22 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                     child: Column(
                       children: [
                         Text(
-                          L10n.of(context).deactivateAccountTitle,
+                          lang.deactivateAccountTitle,
                           style: TextStyle(
                             color: theme.error,
                             fontSize: 20,
                           ),
                         ),
-                        Text(L10n.of(context).deactivateAccountDescription),
+                        Text(lang.deactivateAccountDescription),
                       ],
                     ),
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  L10n.of(context).deactivateAccountPasswordTitle,
+                  lang.deactivateAccountPasswordTitle,
                   style: TextStyle(
                     color: theme.error,
                     fontSize: 20,
@@ -74,9 +75,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                   key: deactivatePasswordField,
                   controller: passwordController,
                   obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: L10n.of(context).password,
-                  ),
+                  decoration: InputDecoration(hintText: lang.password),
                 ),
               ),
             ],
@@ -86,7 +85,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
           OutlinedButton(
             key: deactivateCancelBtn,
             onPressed: () => Navigator.pop(context),
-            child: Text(L10n.of(context).cancel),
+            child: Text(lang.cancel),
           ),
           ActerDangerActionButton(
             key: deactivateConfirmBtn,
@@ -95,7 +94,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
               ref,
               passwordController.text,
             ),
-            child: Text(L10n.of(context).deactivate),
+            child: Text(lang.deactivate),
           ),
         ],
       );
@@ -108,7 +107,8 @@ Future<void> _onConfirm(
   WidgetRef ref,
   String password,
 ) async {
-  EasyLoading.show(status: L10n.of(context).deactivatingYourAccount);
+  final lang = L10n.of(context);
+  EasyLoading.show(status: lang.deactivatingYourAccount);
   final sdk = await ref.read(sdkProvider.future);
   try {
     final result = await sdk.deactivateAndDestroyCurrentClient(password);
@@ -119,7 +119,7 @@ Future<void> _onConfirm(
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).deactivationAndRemovingFailed,
+        lang.deactivationAndRemovingFailed,
         duration: const Duration(seconds: 3),
       );
       return;
@@ -134,7 +134,7 @@ Future<void> _onConfirm(
       return;
     }
     EasyLoading.showError(
-      L10n.of(context).deactivatingFailed(e),
+      lang.deactivatingFailed(e),
       duration: const Duration(seconds: 3),
     );
   }

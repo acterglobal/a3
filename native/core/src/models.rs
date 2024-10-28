@@ -5,6 +5,7 @@ mod common;
 mod news;
 mod pins;
 mod reactions;
+mod read_receipts;
 mod rsvp;
 mod tag;
 mod tasks;
@@ -18,20 +19,22 @@ pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use common::*;
 pub use core::fmt::Debug;
 use enum_dispatch::enum_dispatch;
+use matrix_sdk::room::Room;
+use matrix_sdk_base::ruma::{
+    events::{
+        reaction::ReactionEventContent,
+        room::redaction::{OriginalRoomRedactionEvent, RoomRedactionEventContent},
+        AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent,
+        UnsignedRoomRedactionEvent,
+    },
+    serde::Raw,
+    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId, UserId,
+};
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 pub use reactions::{Reaction, ReactionManager, ReactionStats};
+pub use read_receipts::{ReadReceipt, ReadReceiptStats, ReadReceiptsManager};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
-use ruma::RoomId;
-use ruma_common::{
-    serde::Raw, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, UserId,
-};
-use ruma_events::{
-    reaction::ReactionEventContent,
-    room::redaction::{OriginalRoomRedactionEvent, RoomRedactionEventContent},
-    AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent,
-    UnsignedRoomRedactionEvent,
-};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{
@@ -51,6 +54,7 @@ use crate::{
         comments::{CommentEventContent, CommentUpdateEventContent},
         news::{NewsEntryEventContent, NewsEntryUpdateEventContent},
         pins::{PinEventContent, PinUpdateEventContent},
+        read_receipt::ReadReceiptEventContent,
         rsvp::RsvpEventContent,
         tasks::{
             TaskEventContent, TaskListEventContent, TaskListUpdateEventContent,
@@ -68,6 +72,8 @@ pub enum Capability {
     Commentable,
     // someone can add attachment on this
     Attachmentable,
+    // users reads/views are being tracked
+    ReadTracking,
     // another custom capability
     Custom(&'static str),
 }
@@ -217,6 +223,12 @@ pub struct RedactedActerModel {
 }
 
 impl RedactedActerModel {
+    pub fn origin_type(&self) -> &str {
+        &self.orig_type
+    }
+}
+
+impl RedactedActerModel {
     pub fn new(
         orig_type: String,
         orig_indizes: Vec<String>,
@@ -252,7 +264,7 @@ impl ActerModel for RedactedActerModel {
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
-        // Transitions aren't possible anymore when the source has been redacted
+        // Transitions aren’t possible anymore when the source has been redacted
         // so we eat up the content and just log that we had to do that.
         info!(?self, ?model, "Transition on Redaction Swallowed");
         Ok(false)
@@ -292,10 +304,10 @@ impl EventMeta {
     }
 }
 
-pub async fn can_redact(room: &matrix_sdk::Room, sender_id: &UserId) -> crate::error::Result<bool> {
+pub async fn can_redact(room: &Room, sender_id: &UserId) -> crate::error::Result<bool> {
     let client = room.client();
     let Some(user_id) = client.user_id() else {
-        // not logged in means we can't redact
+        // not logged in means we can’t redact
         return Ok(false);
     };
     Ok(if sender_id == user_id {
@@ -339,6 +351,7 @@ pub enum AnyActerModel {
 
     Rsvp(Rsvp),
     Reaction(Reaction),
+    ReadReceipt(ReadReceipt),
 
     #[cfg(test)]
     TestModel(TestModel),
@@ -365,6 +378,7 @@ impl AnyActerModel {
             AnyActerModel::AttachmentUpdate(_) => AttachmentUpdateEventContent::TYPE,
             AnyActerModel::Rsvp(_) => RsvpEventContent::TYPE,
             AnyActerModel::Reaction(_) => ReactionEventContent::TYPE,
+            AnyActerModel::ReadReceipt(_) => ReadReceiptEventContent::TYPE,
             AnyActerModel::RedactedActerModel(..) => "unknown_redacted_model",
             #[cfg(test)]
             AnyActerModel::TestModel(_) => "test_model",
@@ -630,6 +644,21 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                     reason: r.unsigned.redacted_because,
                 }),
             },
+
+            AnyActerEvent::ReadReceipt(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::ReadReceipt(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                    model_type: ReadReceiptEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                        redacted: None,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
         }
     }
 }
@@ -680,7 +709,7 @@ impl TryFrom<&Raw<AnySyncTimelineEvent>> for AnyActerModel {
 mod tests {
     use super::*;
     use crate::Result;
-    use ruma_common::owned_event_id;
+    use matrix_sdk_base::ruma::owned_event_id;
     #[test]
     fn ensure_minimal_tasklist_parses() -> Result<()> {
         let json_raw = r#"{"type":"global.acter.dev.tasklist",
@@ -772,7 +801,7 @@ mod tests {
                     ..
                 })
             ),
-            "Didn't receive expected error: {acter_ev_result:?}"
+            "Didn’t receive expected error: {acter_ev_result:?}"
         );
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())
@@ -842,7 +871,7 @@ mod tests {
                     ..
                 })
             ),
-            "Didn't receive expected error: {acter_ev_result:?}"
+            "Didn’t receive expected error: {acter_ev_result:?}"
         );
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())

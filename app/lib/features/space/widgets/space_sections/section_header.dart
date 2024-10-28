@@ -5,12 +5,12 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class SectionHeader extends StatelessWidget {
   final String title;
   final bool isShowSeeAllButton;
-  final VoidCallback onTapSeeAll;
+  final VoidCallback? onTapSeeAll;
 
   const SectionHeader({
     super.key,
     required this.title,
-    required this.onTapSeeAll,
+    this.onTapSeeAll,
     this.isShowSeeAllButton = false,
   });
 
@@ -20,17 +20,18 @@ class SectionHeader extends StatelessWidget {
   }
 
   Widget sectionHeaderUI(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
-      onTap: () => onTapSeeAll(),
+      onTap: onTapSeeAll,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14),
         margin: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Theme.of(context).colorScheme.surface.withOpacity(0.9),
-              Theme.of(context).colorScheme.surface.withOpacity(0.3),
-              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.1),
+              colorScheme.surface.withOpacity(0.9),
+              colorScheme.surface.withOpacity(0.3),
+              colorScheme.secondaryContainer.withOpacity(0.1),
             ],
             begin: Alignment.topLeft,
             end: Alignment.topRight,
@@ -44,13 +45,13 @@ class SectionHeader extends StatelessWidget {
               title,
               style: Theme.of(context)
                   .textTheme
-                  .titleMedium!
-                  .copyWith(color: Theme.of(context).primaryColor),
+                  .titleMedium
+                  ?.copyWith(color: Theme.of(context).primaryColor),
             ),
             const Spacer(),
             isShowSeeAllButton
                 ? ActerInlineTextButton(
-                    onPressed: () => onTapSeeAll(),
+                    onPressed: onTapSeeAll,
                     child: Text(L10n.of(context).seeAll),
                   )
                 : const SizedBox(height: 50),

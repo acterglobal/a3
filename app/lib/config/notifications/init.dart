@@ -1,19 +1,21 @@
 import 'dart:io';
 
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/notifications/firebase_options.dart';
 import 'package:acter/config/notifications/util.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter_notifify/acter_notifify.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_notifify/acter_notifify.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::notifications');
+final _log = Logger('a3::config::notifications');
 
 const appIdPrefix = Env.pushAppPrefix;
 const appName = Env.pushAppName;
@@ -21,7 +23,7 @@ const pushServer = Env.pushServer;
 const ntfyServer = Env.ntfyServer;
 
 Future<String?> initializeNotifications() async {
-  return await initializeNotifify(
+  final initialLocationFromNotification = await initializeNotifify(
     androidFirebaseOptions: DefaultFirebaseOptions.android,
     handleMessageTap: _handleMessageTap,
     isEnabledCheck: _isEnabled,
@@ -34,6 +36,14 @@ Future<String?> initializeNotifications() async {
         Env.windowsApplicationId.isNotEmpty ? Env.windowsApplicationId : null,
     currentClientsGen: _genCurrentClients,
   );
+
+  if (initialLocationFromNotification != null) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      // push after the next render to ensure we still have the "initial" location
+      goRouter.push(initialLocationFromNotification);
+    });
+  }
+  return initialLocationFromNotification;
 }
 
 Future<bool> setupPushNotifications(
@@ -64,7 +74,7 @@ Future<bool> setupPushNotifications(
 
   final deviceId = client.deviceId().toString();
   if (!forced && await wasRejected(deviceId)) {
-    // If the user rejected and we aren't asked to force, don't bother them again.
+    // If the user rejected and we aren’t asked to force, don’t bother them again.
     return false;
   }
 
@@ -77,7 +87,7 @@ Future<bool> setupPushNotifications(
     ntfyServer: ntfyServer,
   );
   if (requested == false) {
-    // we were bluntly rejected, save and don't bother them again:
+    // we were bluntly rejected, save and don’t bother them again:
     await setRejected(deviceId, true);
   }
   return requested != null;

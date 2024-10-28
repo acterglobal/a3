@@ -1,8 +1,8 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void showAddEditLinkBottomSheet({
   required BuildContext context,
@@ -50,17 +50,16 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _linkController = TextEditingController();
-  final prefixText = 'https://';
 
   @override
   void initState() {
     super.initState();
     _titleController.text = widget.pinTitle ?? '';
-    _linkController.text = (widget.pinLink ?? '').replaceAll(prefixText, '');
   }
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
       child: Form(
@@ -72,7 +71,7 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                widget.bottomSheetTitle ?? L10n.of(context).editLink,
+                widget.bottomSheetTitle ?? lang.editLink,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
@@ -86,7 +85,7 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
                 children: [
                   OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text(L10n.of(context).cancel),
+                    child: Text(lang.cancel),
                   ),
                   const SizedBox(width: 20),
                   ActerPrimaryActionButton(
@@ -105,10 +104,10 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
                       // Need to update change of tile
                       widget.onSave(
                         _titleController.text.trim(),
-                        '$prefixText${_linkController.text.trim()}',
+                        _linkController.text.trim(),
                       );
                     },
-                    child: Text(L10n.of(context).save),
+                    child: Text(lang.save),
                   ),
                 ],
               ),
@@ -139,10 +138,11 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
   }
 
   Widget _widgetLinkField() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(L10n.of(context).link),
+        Text(lang.link),
         const SizedBox(height: 6),
         TextFormField(
           keyboardType: TextInputType.text,
@@ -150,15 +150,12 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
           controller: _linkController,
           minLines: 1,
           maxLines: 1,
-          decoration: InputDecoration(prefixText: prefixText),
-          validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return L10n.of(context).pleaseEnterALink;
-            } else if (!urlValidatorRegexp.hasMatch(value)) {
-              return L10n.of(context).pleaseEnterAValidLink;
-            }
-            return null;
-          },
+          // required field, space not allowed, custom format
+          validator: (val) => val == null || val.trim().isEmpty
+              ? lang.pleaseEnterALink
+              : !isValidUrl(val)
+                  ? lang.pleaseEnterAValidLink
+                  : null,
         ),
       ],
     );

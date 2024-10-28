@@ -10,7 +10,7 @@ class DefaultDialog extends ConsumerWidget {
   final double? minHeight;
   final double? width;
   final bool isLoader;
-  final List<Widget>? actions;
+  final List<Widget> actions;
 
   const DefaultDialog({
     super.key,
@@ -21,7 +21,7 @@ class DefaultDialog extends ConsumerWidget {
     this.minHeight,
     this.width,
     this.isLoader = false,
-    this.actions = const <Widget>[],
+    required this.actions,
   });
 
   @override
@@ -50,12 +50,12 @@ class DefaultDialog extends ConsumerWidget {
                           child: CircularProgressIndicator(),
                         ),
                       )
-                    : actions!.isNotEmpty
+                    : actions.isNotEmpty
                         ? Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: actions!,
+                              children: actions,
                             ),
                           )
                         : const SizedBox.shrink(),

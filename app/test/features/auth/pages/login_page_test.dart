@@ -22,18 +22,19 @@ void main() {
           ),
         );
         final BuildContext context = tester.element(find.byType(LoginPage));
+        final lang = L10n.of(context);
         await tester.pump();
         // check login UI components are present.
 
         expect(find.byType(SvgPicture), findsOneWidget);
 
         expect(
-          find.text(L10n.of(context).welcomeBack),
+          find.text(lang.welcomeBack),
           findsOneWidget,
         );
         expect(
           find.text(
-            L10n.of(context).loginContinue,
+            lang.loginContinue,
           ),
           findsOneWidget,
         );
@@ -43,7 +44,7 @@ void main() {
         expect(find.byKey(LoginPageKeys.submitBtn), findsOneWidget);
         expect(
           find.text(
-            L10n.of(context).noProfile,
+            lang.noProfile,
           ),
           findsOneWidget,
         );
@@ -71,8 +72,9 @@ void main() {
         ),
       );
       final BuildContext context = tester.element(find.byType(LoginPage));
-      final userNameError = find.text(L10n.of(context).emptyUsername);
-      final passwordError = find.text(L10n.of(context).emptyPassword);
+      final lang = L10n.of(context);
+      final userNameError = find.text(lang.emptyUsername);
+      final passwordError = find.text(lang.emptyPassword);
       final submitBtn = find.byKey(LoginPageKeys.submitBtn);
       await tester.tap(submitBtn);
       await tester.pump(const Duration(milliseconds: 100)); // add delay

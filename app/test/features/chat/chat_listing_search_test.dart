@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/widgets/chat/convo_card.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
+import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,14 +50,14 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.byKey(RoomsListWidget.searchBarKey),
+          find.byKey(ActerSearchWidget.searchBarKey),
           findsNothing,
         );
         await tester.tap(find.byKey(RoomsListWidget.openSearchActionButtonKey));
         await tester.pump();
         // opening the search area
         expect(
-          find.byKey(RoomsListWidget.searchBarKey),
+          find.byKey(ActerSearchWidget.searchBarKey),
           findsOneWidget,
         );
         // close again
@@ -64,7 +65,7 @@ void main() {
             .tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
         await tester.pump();
         expect(
-          find.byKey(RoomsListWidget.searchBarKey),
+          find.byKey(ActerSearchWidget.searchBarKey),
           findsNothing,
         );
       },
@@ -88,7 +89,7 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.byKey(RoomsListWidget.searchBarKey),
+          find.byKey(ActerSearchWidget.searchBarKey),
           findsNothing,
         );
         // -- we see all
@@ -104,10 +105,10 @@ void main() {
         await tester.pump();
         // opening the search area
         expect(
-          find.byKey(RoomsListWidget.searchBarKey),
+          find.byKey(ActerSearchWidget.searchBarKey),
           findsOneWidget,
         );
-        await tester.enterText(find.byKey(RoomsListWidget.searchBarKey), 'CD');
+        await tester.enterText(find.byKey(ActerSearchWidget.searchBarKey), 'CD');
         await tester.pumpProviderScope(times: 2);
         // -- we only see subset
         expect(
@@ -119,7 +120,7 @@ void main() {
           findsExactly(2),
         );
 
-        await tester.enterText(find.byKey(RoomsListWidget.searchBarKey), 'E');
+        await tester.enterText(find.byKey(ActerSearchWidget.searchBarKey), 'E');
         await tester.pumpProviderScope(times: 2);
         // -- we only see subset
         expect(
@@ -133,7 +134,7 @@ void main() {
 
         // and we clear
         await tester
-            .tap(find.byKey(RoomsListWidget.clearSearchActionButtonKey));
+            .tap(find.byKey(ActerSearchWidget.clearSearchActionButtonKey));
         // and we close
         await tester
             .tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
@@ -169,7 +170,7 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.byKey(RoomsListWidget.searchBarKey),
+          find.byKey(ActerSearchWidget.searchBarKey),
           findsNothing,
         );
         // -- we see all
@@ -185,11 +186,11 @@ void main() {
         await tester.pump();
         // opening the search area
         expect(
-          find.byKey(RoomsListWidget.searchBarKey),
+          find.byKey(ActerSearchWidget.searchBarKey),
           findsOneWidget,
         );
         await tester.enterText(
-          find.byKey(RoomsListWidget.searchBarKey), 'mA', // part of one room ID
+          find.byKey(ActerSearchWidget.searchBarKey), 'mA', // part of one room ID
         );
         await tester.pumpProviderScope(times: 2);
         // -- we only see subset
@@ -207,7 +208,7 @@ void main() {
         );
 
         await tester.enterText(
-          find.byKey(RoomsListWidget.searchBarKey), 'mD', // part of one room ID
+          find.byKey(ActerSearchWidget.searchBarKey), 'mD', // part of one room ID
         );
         await tester.pumpProviderScope(times: 2);
         // -- we only see subset
@@ -226,7 +227,7 @@ void main() {
 
         // and we clear
         await tester
-            .tap(find.byKey(RoomsListWidget.clearSearchActionButtonKey));
+            .tap(find.byKey(ActerSearchWidget.clearSearchActionButtonKey));
         // and we close
         await tester
             .tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
@@ -260,7 +261,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.byKey(RoomsListWidget.searchBarKey),
+        find.byKey(ActerSearchWidget.searchBarKey),
         findsNothing,
       );
       // -- we see all
@@ -275,11 +276,11 @@ void main() {
       await tester.pump();
       // opening the search area
       expect(
-        find.byKey(RoomsListWidget.searchBarKey),
+        find.byKey(ActerSearchWidget.searchBarKey),
         findsOneWidget,
       );
       await tester.enterText(
-        find.byKey(RoomsListWidget.searchBarKey), 'mA', // part of one room ID
+        find.byKey(ActerSearchWidget.searchBarKey), 'mA', // part of one room ID
       );
       await tester.pumpProviderScope(times: 2);
       // -- we only see subset
@@ -297,7 +298,7 @@ void main() {
       await tester.tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
       await tester.pumpProviderScope(times: 2);
       expect(
-        find.byKey(RoomsListWidget.searchBarKey),
+        find.byKey(ActerSearchWidget.searchBarKey),
         findsNothing,
       );
       // -- we still only see the subset

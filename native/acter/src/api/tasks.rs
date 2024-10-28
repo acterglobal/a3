@@ -10,8 +10,10 @@ use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use futures::stream::StreamExt;
 use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{EventId, OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
+use matrix_sdk_base::ruma::{
+    events::{room::message::TextMessageEventContent, MessageLikeEventType},
+    EventId, OwnedEventId, OwnedRoomId, OwnedUserId,
+};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -185,7 +187,7 @@ impl Space {
                     bail!("Not a Tasklist model: {key}")
                 };
                 if room_id != content.room_id() {
-                    bail!("This task doesn't belong to this room");
+                    bail!("This task doesn’t belong to this room");
                 }
 
                 Ok(TaskList {
@@ -261,7 +263,6 @@ impl TaskListDraft {
         self
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn display(&mut self, display: Box<Display>) -> &mut Self {
         self.content.display(Some(*display));
         self
@@ -340,7 +341,7 @@ impl TaskList {
     }
 
     pub fn keywords(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
@@ -351,7 +352,7 @@ impl TaskList {
     }
 
     pub fn categories(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
@@ -593,7 +594,7 @@ impl Task {
     }
 
     pub fn keywords(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
@@ -604,7 +605,7 @@ impl Task {
     }
 
     pub fn categories(&self) -> Vec<String> {
-        // don't use cloned().
+        // don’t use cloned().
         // create string vector to deallocate string item using toDartString().
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
@@ -819,7 +820,7 @@ impl TaskDraft {
 
     pub fn progress_percent(&mut self, mut progress_percent: u8) -> &mut Self {
         if progress_percent > 100 {
-            // ensure the builder won't kill us later
+            // ensure the builder won’t kill us later
             progress_percent = 100;
         }
         self.content.progress_percent(Some(progress_percent));
@@ -853,7 +854,6 @@ impl TaskDraft {
         self
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn display(&mut self, display: Box<Display>) -> &mut Self {
         self.content.display(Some(*display));
         self
@@ -935,7 +935,6 @@ impl TaskUpdateBuilder {
         self
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn display(&mut self, display: Box<Display>) -> &mut Self {
         self.content.display(Some(Some(*display)));
         self
@@ -1051,7 +1050,7 @@ impl TaskUpdateBuilder {
 
     pub fn progress_percent(&mut self, mut progress_percent: u8) -> &mut Self {
         if progress_percent > 100 {
-            // ensure the builder won't kill us later
+            // ensure the builder won’t kill us later
             progress_percent = 100;
         }
         self.content.progress_percent(Some(Some(progress_percent)));
@@ -1166,7 +1165,6 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn display(&mut self, display: Box<Display>) -> &mut Self {
         self.content.display(Some(Some(*display)));
         self

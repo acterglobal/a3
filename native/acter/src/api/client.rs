@@ -16,13 +16,14 @@ use matrix_sdk::{
     room::Room as SdkRoom,
     Client as SdkClient,
 };
-use matrix_sdk_base::RoomStateFilter;
-use ruma::OwnedRoomOrAliasId;
-use ruma_common::{
-    device_id, IdParseError, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
-    OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
+use matrix_sdk_base::{
+    ruma::{
+        device_id, events::room::MediaSource, IdParseError, OwnedDeviceId, OwnedMxcUri,
+        OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId,
+        RoomAliasId, RoomId, RoomOrAliasId, UserId,
+    },
+    RoomStateFilter,
 };
-use ruma_events::room::MediaSource;
 use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tokio::{
     sync::{broadcast::Receiver, RwLock},
@@ -35,7 +36,7 @@ use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-    receipt::ReceiptController, typing::TypingController, verification::VerificationController,
+    typing::TypingController, verification::VerificationController,
 };
 
 mod sync;
@@ -68,7 +69,6 @@ pub struct Client {
     pub(crate) verification_controller: VerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
-    pub(crate) receipt_controller: ReceiptController,
     pub spaces: Arc<RwLock<ObservableVector<Space>>>,
     pub convos: Arc<RwLock<ObservableVector<Convo>>>,
 }
@@ -87,7 +87,7 @@ impl Client {
         source: MediaSource,
         thumb_size: Option<Box<ThumbnailSize>>,
     ) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         let request = MediaRequest { source, format };
@@ -107,7 +107,7 @@ impl Client {
         tmp_path: String,
         file_suffix: &str,
     ) -> Result<String> {
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         let request = MediaRequest { source, format };
@@ -121,7 +121,7 @@ impl Client {
             "tasked to get source binary and store to file"
         );
         if !path.exists() {
-            // only download if the temp isn't already there.
+            // only download if the temp isn’t already there.
             let target_path = path.clone();
             RUNTIME
                 .spawn(async move {
@@ -147,7 +147,10 @@ impl Client {
         let parsed = RoomOrAliasId::parse(room_id_or_alias)?;
         let server_names = match server_name {
             Some(inner) => vec![OwnedServerName::try_from(inner)?],
-            None => vec![],
+            None => parsed
+                .server_name()
+                .map(|i| vec![i.to_owned()])
+                .unwrap_or_default(),
         };
 
         self.join_room_typed(parsed, server_names).await
@@ -183,7 +186,6 @@ impl Client {
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
-            receipt_controller: ReceiptController::new(),
         };
         cl.load_from_cache().await;
         Ok(cl)
@@ -290,7 +292,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().context("don't know mime type")?;
+                let content_type = guess.first().context("don’t know mime type")?;
                 let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf).await?;
                 Ok(response.content_uri)
@@ -450,7 +452,6 @@ impl Client {
         self.verification_controller
             .remove_sync_event_handler(&client);
         self.typing_controller.remove_event_handler(&client);
-        self.receipt_controller.remove_event_handler(&client);
 
         RUNTIME
             .spawn(async move {

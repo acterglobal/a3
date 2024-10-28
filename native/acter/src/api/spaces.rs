@@ -12,6 +12,7 @@ use acter_core::{
         comments::{SyncCommentEvent, SyncCommentUpdateEvent},
         news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
         pins::{SyncPinEvent, SyncPinUpdateEvent},
+        read_receipt::SyncReadReceiptEvent,
         rsvp::SyncRsvpEvent,
         tasks::{
             SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskSelfAssignEvent,
@@ -30,18 +31,19 @@ use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::{Messages, MessagesOptions, Room as SdkRoom},
 };
+use matrix_sdk_base::ruma::{
+    api::client::state::send_state_event,
+    assign,
+    events::{
+        reaction::SyncReactionEvent,
+        room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
+        space::child::SpaceChildEventContent,
+        AnyStateEventContent, MessageLikeEvent, MessageLikeEventType, StateEventType,
+    },
+    serde::Raw,
+    OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId, RoomOrAliasId, ServerName,
+};
 use matrix_sdk_ui::timeline::RoomExt;
-use ruma::assign;
-use ruma_client_api::state::send_state_event;
-use ruma_common::{
-    serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId, RoomOrAliasId, ServerName,
-};
-use ruma_events::{
-    reaction::SyncReactionEvent,
-    room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
-    space::child::SpaceChildEventContent,
-    AnyStateEventContent, MessageLikeEvent, MessageLikeEventType, StateEventType,
-};
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
 use tokio::sync::broadcast::Receiver;
@@ -118,7 +120,7 @@ impl Space {
                             error!(?room_id, ?error, "redaction failed");
                         }
                     } else {
-                        warn!(?room_id, "redaction redaction isn't supported yet");
+                        warn!(?room_id, "redaction redaction isn’t supported yet");
                     }
                 },
             ),
@@ -362,6 +364,24 @@ impl Space {
                 },
             ),
 
+            // Read Tracking
+            self.room.add_event_handler(
+                |ev: SyncReadReceiptEvent,
+                 room: SdkRoom,
+                 Ctx(executor): Ctx<Executor>| async move {
+                    let room_id = room.room_id().to_owned();
+                    // read receipts don't support redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
+                        if let Err(error) = executor
+                            .handle(AnyActerModel::ReadReceipt(t.into()))
+                            .await
+                        {
+                            error!(?error, "execution failed");
+                        }
+                    }
+                },
+            ),
+
             // Reactions
             self.room.add_event_handler(
                 |ev: SyncReactionEvent,
@@ -449,7 +469,7 @@ impl Space {
                             trace!(state_key=?state_key, "ignoring state event");
                             // ignore state keys
                         } else {
-                            error!(event=?msg.event, "Model didn't parse {:}", m);
+                            error!(event=?msg.event, "Model didn’t parse {:}", m);
                         }
                     }
                 };
@@ -494,7 +514,7 @@ impl Space {
                 .deref()
                 .timeline()
                 .await
-                .expect("Timeline creation doesn't fail"),
+                .expect("Timeline creation doesn’t fail"),
         );
         TimelineStream::new(room, timeline)
     }
@@ -552,7 +572,7 @@ impl Space {
 
     pub async fn set_acter_space_states(&self) -> Result<bool> {
         if !self.inner.is_joined() {
-            bail!("Unable to convert a space you didn't join");
+            bail!("Unable to convert a space you didn’t join");
         }
         let room = self.inner.room.clone();
         let my_id = self.client.user_id()?;
@@ -601,7 +621,7 @@ impl Space {
 
     pub async fn add_child_room(&self, room_id: String, suggested: bool) -> Result<String> {
         if !self.inner.is_joined() {
-            bail!("Unable to update a space you aren't part of");
+            bail!("Unable to update a space you aren’t part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -640,7 +660,7 @@ impl Space {
 
     pub async fn remove_child_room(&self, room_id: String, reason: Option<String>) -> Result<bool> {
         if !self.inner.is_joined() {
-            bail!("Unable to update a space you aren't part of");
+            bail!("Unable to update a space you aren’t part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -804,7 +824,7 @@ impl Client {
             let room_alias = RoomAliasId::parse(either.as_str())?;
             self.space_by_alias_typed(room_alias).await
         } else {
-            bail!("{room_id_or_alias} isn't a valid room id or alias...");
+            bail!("{room_id_or_alias} isn’t a valid room id or alias...");
         }
     }
 }

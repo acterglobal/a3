@@ -40,7 +40,7 @@ fn main() {
         std::fs::write(crate_dir.join("src").join(API_RUST_FILENAME), rst)
             .expect("Writing rust file failed.");
 
-        // then let's build the dart API
+        // then let’s build the dart API
         ffigen
             .generate_dart(dart, "acter", "acter")
             .expect("Failure generating dart side of ffigen");
@@ -51,7 +51,7 @@ fn main() {
     }
 
     if std::env::var("SKIP_CBINDGEN").is_err() {
-        // once the setup is ready, let's create the c-headers
+        // once the setup is ready, let’s create the c-headers
         // this needs the rust API to be generated first, as it
         // imports that via the `cbindings`-feature to scan an build the headers
         let config = cbindgen::Config::from_file(crate_dir.join(API_CBINDGEN_CONFIG_FILENAME))
@@ -92,13 +92,17 @@ fn setup_x86_64_android_workaround() {
                 "Unsupported OS. You must use either Linux, MacOS or Windows to build the crate."
             ),
         };
-        const DEFAULT_CLANG_VERSION: &str = "14.0.7";
+        const DEFAULT_CLANG_VERSION: &str = "18"; // ndk v27.2.12479018 uses clang v18
         let clang_version =
             std::env::var("NDK_CLANG_VERSION").unwrap_or_else(|_| DEFAULT_CLANG_VERSION.to_owned());
         let linux_x86_64_lib_dir = format!(
-            "toolchains/llvm/prebuilt/{build_os}-x86_64/lib64/clang/{clang_version}/lib/linux/"
+            "toolchains/llvm/prebuilt/{build_os}-x86_64/lib/clang/{clang_version}/lib/linux/"
         );
-        println!("cargo:rustc-link-search={android_ndk_home}/{linux_x86_64_lib_dir}");
+        let full_path = format!("{android_ndk_home}/{linux_x86_64_lib_dir}");
+        if !std::fs::exists(&full_path).unwrap() {
+            panic!("`clang_rt.builtins-x86_64-android` includes not found. `{full_path}` doesn’t exist. Please adjust `$ANDROID_NDK_HOME` and/or `$NDK_CLANG_VERSION` to fix.")
+        }
+        println!("cargo:rustc-link-search={full_path}");
         println!("cargo:rustc-link-lib=static=clang_rt.builtins-x86_64-android");
     }
 }

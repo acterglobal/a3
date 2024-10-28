@@ -1,9 +1,9 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/blinking_text.dart';
-import 'package:acter/features/events/actions/get_event_type.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent, RsvpStatusTag;
@@ -21,6 +21,7 @@ class EventItem extends StatelessWidget {
   final Function(String)? onTapEventItem;
   final bool isShowRsvp;
   final bool isShowSpaceName;
+  final EventFilters eventType;
 
   const EventItem({
     super.key,
@@ -29,19 +30,20 @@ class EventItem extends StatelessWidget {
     this.onTapEventItem,
     this.isShowRsvp = true,
     this.isShowSpaceName = false,
+    required this.eventType,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (onTapEventItem != null) {
-          onTapEventItem!(event.eventId().toString());
-          return;
-        }
-        context.pushNamed(
-          Routes.calendarEvent.name,
-          pathParameters: {'calendarId': event.eventId().toString()},
+        final eventId = event.eventId().toString();
+        onTapEventItem.map(
+          (cb) => cb(eventId),
+          orElse: () => context.pushNamed(
+            Routes.calendarEvent.name,
+            pathParameters: {'calendarId': eventId},
+          ),
         );
       },
       child: Stack(
@@ -52,7 +54,10 @@ class EventItem extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                EventDateWidget(calendarEvent: event),
+                EventDateWidget(
+                  calendarEvent: event,
+                  eventType: eventType,
+                ),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -65,7 +70,7 @@ class EventItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                if (getEventType(event) == EventFilters.ongoing)
+                if (eventType == EventFilters.ongoing)
                   _buildHappeningIndication(context),
                 const SizedBox(width: 10),
                 if (isShowRsvp) _buildRsvpStatus(context),
@@ -105,6 +110,7 @@ class EventItem extends StatelessWidget {
   }
 
   Widget _buildRsvpStatus(BuildContext context) {
+    final lang = L10n.of(context);
     return Consumer(
       builder: (context, ref, child) {
         final eventId = event.eventId().toString();
@@ -118,13 +124,13 @@ class EventItem extends StatelessWidget {
             _log.severe('Failed to load RSVP status', e, s);
             return Chip(
               label: Text(
-                L10n.of(context).errorLoadingRsvpStatus(e),
+                lang.errorLoadingRsvpStatus(e),
                 softWrap: true,
               ),
             );
           },
           loading: () => Chip(
-            label: Text(L10n.of(context).loadingRsvpStatus),
+            label: Text(lang.loadingRsvpStatus),
           ),
         );
       },
@@ -132,32 +138,37 @@ class EventItem extends StatelessWidget {
   }
 
   Widget? _getRsvpStatus(BuildContext context, RsvpStatusTag? status) {
+    final colorScheme = Theme.of(context).colorScheme;
     return switch (status) {
       RsvpStatusTag.Yes => Icon(
           Icons.check_circle,
-          color: Theme.of(context).colorScheme.secondary,
+          color: colorScheme.secondary,
         ),
       RsvpStatusTag.No => Icon(
           Icons.cancel,
-          color: Theme.of(context).colorScheme.error,
+          color: colorScheme.error,
         ),
       RsvpStatusTag.Maybe => const Icon(Icons.question_mark_rounded),
-      null => null,
+      _ => null,
     };
   }
 
   Widget _buildHappeningIndication(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 2,
+      ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
+        color: colorScheme.secondary,
         borderRadius: const BorderRadius.all(Radius.circular(100)),
       ),
       child: BlinkText(
         L10n.of(context).live,
         style: Theme.of(context).textTheme.labelLarge,
         beginColor: Colors.white,
-        endColor: Theme.of(context).colorScheme.secondary,
+        endColor: colorScheme.secondary,
       ),
     );
   }

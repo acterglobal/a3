@@ -1,37 +1,16 @@
 use super::Display;
 use derive_builder::Builder;
-use ruma_events::{EventContent, PossiblyRedactedStateEventContent, StateEventType};
-use ruma_macros::EventContent;
+use matrix_sdk_base::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
-/// The possibly redacted form of [`CategoriesEventContent`].
-///
-/// This type is used when it's not obvious whether the content is redacted or not.
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[allow(clippy::exhaustive_structs)]
-pub struct PossiblyRedactedCategoriesStateEventContent();
-
-impl EventContent for PossiblyRedactedCategoriesStateEventContent {
-    type EventType = StateEventType;
-
-    fn event_type(&self) -> Self::EventType {
-        "global.acter.category".into()
-    }
-}
-
-impl PossiblyRedactedStateEventContent for PossiblyRedactedCategoriesStateEventContent {
-    type StateKey = String;
-}
-
 #[derive(Debug, Serialize, Deserialize, Clone, EventContent)]
-#[ruma_event(type = "global.acter.category", kind = State, state_key_type = String, custom_possibly_redacted)]
+#[ruma_event(type = "global.acter.category", kind = State, state_key_type = String)]
 pub struct CategoriesStateEventContent {
     pub categories: Vec<Category>,
 }
 
 #[derive(Debug, Clone, Serialize, Eq, PartialEq, Deserialize, Builder)]
 pub struct Category {
-    pub id: String,
     pub title: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[builder(default, setter(name = "display_typed"))]
@@ -42,9 +21,6 @@ pub struct Category {
 }
 
 impl Category {
-    pub fn id(&self) -> String {
-        self.id.clone()
-    }
     pub fn title(&self) -> String {
         self.title.clone()
     }
@@ -58,7 +34,6 @@ impl Category {
     pub fn update_builder(&self) -> CategoryBuilder {
         CategoryBuilder::default()
             .entries(self.entries())
-            .id(self.id.clone())
             .title(self.title.clone())
             .display_typed(self.display.clone())
             .to_owned()

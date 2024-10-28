@@ -1,8 +1,6 @@
 enum Routes {
   // primary & quickjump actions
   // actionAddTask('/actions/addTask'),
-  actionAddPin('/actions/addPin'),
-  actionAddEvent('/actions/addEvent'),
   actionCreateSuperInvite('/actions/createSuperInvite'),
 
   // pre
@@ -31,6 +29,7 @@ enum Routes {
 
   // --- Updates
   updates('/updates'),
+  updateList('/updateList'),
   actionAddUpdate('/actions/addUpdate'),
 
   // --- search
@@ -67,12 +66,14 @@ enum Routes {
   linkRecommended('/:spaceId([!#][^/]+)/linkRecommended'),
   spaceInvite('/:spaceId([!#][^/]+)/invite'),
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
-  spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
+  subSpaces('/:spaceId([!#][^/]+)/subSpaces'),
+  subChats('/:spaceId([!#][^/]+)/subChats'),
+  organizeCategories('/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)'),
   spaceMembers('/:spaceId([!#][^/]+)/members'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
   spaceEvents('/:spaceId([!#][^/]+)/events'),
-  spaceChats('/:spaceId([!#][^/]+)/chats'),
   spaceTasks('/:spaceId([!#][^/]+)/tasks'),
+  spaceUpdates('/:spaceId([!#][^/]+)/updates'),
   // -- space Settings
   spaceSettings('/:spaceId([!#][^/]+)/settings'),
   spaceSettingsApps('/:spaceId([!#][^/]+)/settings/app'),
@@ -107,12 +108,12 @@ enum Routes {
   settingsSuperInvites('/settings/super_invites'),
   // -- utils
   bugReport('/bug-report'),
-  quickJump('/quick-jump'),
   // -- coming in from a push notification
   forward('/forward'),
   // -- fatal failure
   fatalFail('/error');
 
   const Routes(this.route);
+
   final String route;
 }

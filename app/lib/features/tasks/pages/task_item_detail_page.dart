@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
@@ -49,6 +50,8 @@ class TaskItemDetailPage extends ConsumerWidget {
     WidgetRef ref,
     AsyncValue<Task> taskLoader,
   ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return taskLoader.when(
       data: (task) => AppBar(
         title: SelectionArea(
@@ -65,7 +68,7 @@ class TaskItemDetailPage extends ConsumerWidget {
               children: [
                 Text(
                   task.title(),
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: textTheme.titleMedium,
                 ),
                 Row(
                   children: [
@@ -76,8 +79,8 @@ class TaskItemDetailPage extends ConsumerWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      L10n.of(context).taskList,
-                      style: Theme.of(context).textTheme.labelMedium,
+                      lang.taskList,
+                      style: textTheme.labelMedium,
                     ),
                   ],
                 ),
@@ -94,22 +97,22 @@ class TaskItemDetailPage extends ConsumerWidget {
                   onTap: () {
                     showEditTitleBottomSheet(
                       context: context,
-                      bottomSheetTitle: L10n.of(context).editName,
+                      bottomSheetTitle: lang.editName,
                       titleValue: task.title(),
                       onSave: (newName) =>
                           saveTitle(context, ref, task, newName),
                     );
                   },
                   child: Text(
-                    L10n.of(context).editTitle,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    lang.editTitle,
+                    style: textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
                   onTap: () => showEditDescriptionSheet(context, ref, task),
                   child: Text(
-                    L10n.of(context).editDescription,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    lang.editDescription,
+                    style: textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
@@ -119,15 +122,18 @@ class TaskItemDetailPage extends ConsumerWidget {
                     task: task,
                   ),
                   child: Text(
-                    L10n.of(context).delete,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    lang.delete,
+                    style: textTheme.bodyMedium,
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: () => showReportDialog(context: context, task: task),
+                  onTap: () => showReportDialog(
+                    context: context,
+                    task: task,
+                  ),
                   child: Text(
-                    L10n.of(context).report,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    lang.report,
+                    style: textTheme.bodyMedium,
                   ),
                 ),
               ];
@@ -138,27 +144,25 @@ class TaskItemDetailPage extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to load task', e, s);
         return AppBar(
-          title: Text(L10n.of(context).loadingFailed(e)),
+          title: Text(lang.loadingFailed(e)),
         );
       },
       loading: () => AppBar(
-        title: Text(L10n.of(context).loading),
+        title: Text(lang.loading),
       ),
     );
   }
 
   // Redact Task Item Dialog
-  void showRedactDialog({
+  Future<void> showRedactDialog({
     required BuildContext context,
     required WidgetRef ref,
     required Task task,
-  }) {
-    openRedactContentDialog(
+  }) async {
+    await openRedactContentDialog(
       context,
       title: L10n.of(context).deleteTaskItem,
-      onSuccess: () {
-        Navigator.pop(context);
-      },
+      onSuccess: () => Navigator.pop(context),
       eventId: task.eventIdStr(),
       roomId: task.roomIdStr(),
       isSpace: true,
@@ -166,14 +170,15 @@ class TaskItemDetailPage extends ConsumerWidget {
   }
 
   // Report Task Item Dialog
-  void showReportDialog({
+  Future<void> showReportDialog({
     required BuildContext context,
     required Task task,
-  }) {
-    openReportContentDialog(
+  }) async {
+    final lang = L10n.of(context);
+    await openReportContentDialog(
       context,
-      title: L10n.of(context).reportTaskItem,
-      description: L10n.of(context).reportThisContent,
+      title: lang.reportTaskItem,
+      description: lang.reportThisContent,
       eventId: task.eventIdStr(),
       senderId: task.authorStr(),
       roomId: task.roomIdStr(),
@@ -208,7 +213,7 @@ class TaskItemDetailPage extends ConsumerWidget {
   Widget taskData(BuildContext context, Task task, WidgetRef ref) {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             const SizedBox(height: 10),
@@ -231,6 +236,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     final description = task.description();
     if (description == null) return const SizedBox.shrink();
     final formattedBody = description.formattedBody();
+    final textTheme = Theme.of(context).textTheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,11 +249,11 @@ class TaskItemDetailPage extends ConsumerWidget {
             child: formattedBody != null
                 ? RenderHtml(
                     text: formattedBody,
-                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                    defaultTextStyle: textTheme.labelLarge,
                   )
                 : Text(
                     description.body(),
-                    style: Theme.of(context).textTheme.labelLarge,
+                    style: textTheme.labelLarge,
                   ),
           ),
         ),
@@ -284,7 +290,8 @@ class TaskItemDetailPage extends ConsumerWidget {
     String htmlBodyDescription,
     String plainDescription,
   ) async {
-    EasyLoading.show(status: L10n.of(context).updatingDescription);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.updatingDescription);
     try {
       final updater = task.updateBuilder();
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
@@ -298,27 +305,30 @@ class TaskItemDetailPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).errorUpdatingDescription(e),
+        lang.errorUpdatingDescription(e),
         duration: const Duration(seconds: 3),
       );
     }
   }
 
   Widget _widgetTaskDate(BuildContext context, Task task) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final dateText =
+        task.dueDate().map((date) => taskDueDateFormat(DateTime.parse(date))) ??
+            lang.noDueDate;
     return ListTile(
       dense: true,
       leading: const Icon(Atlas.calendar_date_thin),
       title: Text(
-        L10n.of(context).dueDate,
-        style: Theme.of(context).textTheme.bodyMedium,
+        lang.dueDate,
+        style: textTheme.bodyMedium,
       ),
       trailing: Padding(
         padding: const EdgeInsets.only(right: 12),
         child: Text(
-          task.dueDate() != null
-              ? taskDueDateFormat(DateTime.parse(task.dueDate()!))
-              : L10n.of(context).noDueDate,
-          style: Theme.of(context).textTheme.bodyMedium,
+          dateText,
+          style: textTheme.bodyMedium,
         ),
       ),
       onTap: () => duePickerAction(context, task),
@@ -326,15 +336,15 @@ class TaskItemDetailPage extends ConsumerWidget {
   }
 
   Future<void> duePickerAction(BuildContext context, Task task) async {
+    final lang = L10n.of(context);
     final newDue = await showDuePicker(
       context: context,
-      initialDate: task.dueDate() != null
-          ? DateTime.parse(task.dueDate()!)
-          : DateTime.now(),
+      initialDate:
+          task.dueDate().map((date) => DateTime.parse(date)) ?? DateTime.now(),
     );
     if (!context.mounted) return;
     if (newDue == null) return;
-    EasyLoading.show(status: L10n.of(context).updatingDue);
+    EasyLoading.show(status: lang.updatingDue);
     try {
       final updater = task.updateBuilder();
       updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
@@ -353,7 +363,7 @@ class TaskItemDetailPage extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).dueSuccess);
+      EasyLoading.showToast(lang.dueSuccess);
     } catch (e, s) {
       _log.severe('Failed to change due date of task', e, s);
       if (!context.mounted) {
@@ -361,21 +371,23 @@ class TaskItemDetailPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).updatingDueFailed(e),
+        lang.updatingDueFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
   }
 
   Widget _widgetTaskAssignment(BuildContext context, Task task, WidgetRef ref) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return ListTile(
       dense: true,
       leading: const Icon(Atlas.business_man_thin),
       title: Row(
         children: [
           Text(
-            L10n.of(context).assignment,
-            style: Theme.of(context).textTheme.bodyMedium,
+            lang.assignment,
+            style: textTheme.bodyMedium,
           ),
           const Spacer(),
           ActerInlineTextButton(
@@ -383,9 +395,7 @@ class TaskItemDetailPage extends ConsumerWidget {
                 ? onUnAssign(context, task)
                 : onAssign(context, task),
             child: Text(
-              task.isAssignedToMe()
-                  ? L10n.of(context).removeMyself
-                  : L10n.of(context).assignMyself,
+              task.isAssignedToMe() ? lang.removeMyself : lang.assignMyself,
             ),
           ),
         ],
@@ -393,29 +403,28 @@ class TaskItemDetailPage extends ConsumerWidget {
       subtitle: task.isAssignedToMe()
           ? assigneeName(context, task, ref)
           : Text(
-              L10n.of(context).noAssignment,
-              style: Theme.of(context).textTheme.bodyMedium,
+              lang.noAssignment,
+              style: textTheme.bodyMedium,
             ),
     );
   }
 
   Widget assigneeName(BuildContext context, Task task, WidgetRef ref) {
-    final assignees = task.assigneesStr().map((s) => s.toDartString()).toList();
+    final assignees = asDartStringList(task.assigneesStr());
+    final roomId = task.roomIdStr();
 
     return Wrap(
       direction: Axis.horizontal,
-      children: assignees.map((i) {
-        final displayName = ref
-            .watch(
-              memberDisplayNameProvider((roomId: task.roomIdStr(), userId: i)),
-            )
+      children: assignees.map((userId) {
+        final dispName = ref
+            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
             .valueOrNull;
         return Padding(
           padding: const EdgeInsets.only(right: 8),
           child: Chip(
             labelPadding: EdgeInsets.zero,
             label: Text(
-              displayName ?? i,
+              dispName ?? userId,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -425,11 +434,12 @@ class TaskItemDetailPage extends ConsumerWidget {
   }
 
   Future<void> onAssign(BuildContext context, Task task) async {
-    EasyLoading.show(status: L10n.of(context).assigningSelf);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.assigningSelf);
     try {
       await task.assignSelf();
       if (!context.mounted) return;
-      EasyLoading.showToast(L10n.of(context).assignedYourself);
+      EasyLoading.showToast(lang.assignedYourself);
     } catch (e, s) {
       _log.severe('Failed to self-assign task', e, s);
       if (!context.mounted) {
@@ -437,18 +447,19 @@ class TaskItemDetailPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToAssignSelf(e),
+        lang.failedToAssignSelf(e),
         duration: const Duration(seconds: 3),
       );
     }
   }
 
   Future<void> onUnAssign(BuildContext context, Task task) async {
-    EasyLoading.show(status: L10n.of(context).unassigningSelf);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.unassigningSelf);
     try {
       await task.unassignSelf();
       if (!context.mounted) return;
-      EasyLoading.showToast(L10n.of(context).assignmentWithdrawn);
+      EasyLoading.showToast(lang.assignmentWithdrawn);
     } catch (e, s) {
       _log.severe('Failed to self-unassign task', e, s);
       if (!context.mounted) {
@@ -456,7 +467,7 @@ class TaskItemDetailPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToUnassignSelf(e),
+        lang.failedToUnassignSelf(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -482,7 +493,8 @@ class TaskItemDetailPage extends ConsumerWidget {
     Task task,
     String newName,
   ) async {
-    EasyLoading.show(status: L10n.of(context).updatingTask);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.updatingTask);
     final updater = task.updateBuilder();
     updater.title(newName);
     try {
@@ -497,7 +509,7 @@ class TaskItemDetailPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).updatingTaskFailed(e),
+        lang.updatingTaskFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

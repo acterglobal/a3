@@ -37,27 +37,27 @@ class IntroPage extends StatelessWidget {
   }
 
   Widget _buildTitle(BuildContext context) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: [
         RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-            text: L10n.of(context).welcomeTo,
-            style: Theme.of(context).textTheme.displayMedium!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.textHighlight,
-                ),
+            text: lang.welcomeTo,
+            style: textTheme.displayMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.textHighlight,
+            ),
             children: <TextSpan>[
-              TextSpan(
-                text: L10n.of(context).acter,
-              ),
+              TextSpan(text: lang.acter),
             ],
           ),
         ),
         const SizedBox(height: 10),
         Text(
-          L10n.of(context).yourSafeAndSecureSpace,
-          style: Theme.of(context).textTheme.titleSmall,
+          lang.yourSafeAndSecureSpace,
+          style: textTheme.titleSmall,
           textAlign: TextAlign.center,
         ),
       ],
@@ -75,6 +75,8 @@ class IntroPage extends StatelessWidget {
   }
 
   Widget _buildDescription(BuildContext context) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
@@ -83,25 +85,23 @@ class IntroPage extends StatelessWidget {
           children: [
             RichText(
               text: TextSpan(
-                text: L10n.of(context).introPageDescriptionPre,
-                style: Theme.of(context).textTheme.bodyMedium,
+                text: lang.introPageDescriptionPre,
+                style: textTheme.bodyMedium,
                 children: <TextSpan>[
                   TextSpan(
-                    text: L10n.of(context).introPageDescriptionHl,
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.textHighlight,
-                        ),
+                    text: lang.introPageDescriptionHl,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.textHighlight,
+                    ),
                   ),
-                  TextSpan(
-                    text: L10n.of(context).introPageDescriptionPost,
-                  ),
+                  TextSpan(text: lang.introPageDescriptionPost),
                 ],
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              L10n.of(context).introPageDescription2ndLine,
-              style: Theme.of(context).textTheme.bodyMedium,
+              lang.introPageDescription2ndLine,
+              style: textTheme.bodyMedium,
             ),
           ],
         ),

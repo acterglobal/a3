@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
@@ -17,19 +17,20 @@ class ChatSettingsPage extends ConsumerWidget {
   const ChatSettingsPage({super.key});
 
   AbstractSettingsTile _autoDownload(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final settingsLoader = ref.watch(userAppSettingsProvider);
     return settingsLoader.when(
       data: (settings) => OptionsSettingsTile<String>(
         selected: settings.autoDownloadChat() ?? 'always',
-        title: L10n.of(context).chatSettingsAutoDownload,
-        explainer: L10n.of(context).chatSettingsAutoDownloadExplainer,
+        title: lang.chatSettingsAutoDownload,
+        explainer: lang.chatSettingsAutoDownloadExplainer,
         options: [
-          ('always', L10n.of(context).chatSettingsAutoDownloadAlways),
-          ('wifiOnly', L10n.of(context).chatSettingsAutoDownloadWifiOnly),
-          ('never', L10n.of(context).chatSettingsAutoDownloadNever),
+          ('always', lang.chatSettingsAutoDownloadAlways),
+          ('wifiOnly', lang.chatSettingsAutoDownloadWifiOnly),
+          ('never', lang.chatSettingsAutoDownloadNever),
         ],
         onSelect: (newVal) async {
-          EasyLoading.show(status: L10n.of(context).settingsSubmitting);
+          EasyLoading.show(status: lang.settingsSubmitting);
           try {
             final updater = settings.updateBuilder();
             updater.autoDownloadChat(newVal);
@@ -39,7 +40,7 @@ class ChatSettingsPage extends ConsumerWidget {
               return;
             }
             EasyLoading.showToast(
-              L10n.of(context).settingsSubmittingSuccess,
+              lang.settingsSubmittingSuccess,
               toastPosition: EasyLoadingToastPosition.bottom,
             );
           } catch (e, s) {
@@ -49,7 +50,7 @@ class ChatSettingsPage extends ConsumerWidget {
               return;
             }
             EasyLoading.showError(
-              L10n.of(context).settingsSubmittingFailed(e),
+              lang.settingsSubmittingFailed(e),
               duration: const Duration(seconds: 3),
             );
           }
@@ -58,16 +59,16 @@ class ChatSettingsPage extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to load user app settings', e, s);
         return SettingsTile.navigation(
-          title: Text(L10n.of(context).loadingFailed(e)),
+          title: Text(lang.loadingFailed(e)),
         );
       },
       loading: () => SettingsTile.switchTile(
         title: Skeletonizer(
-          child: Text(L10n.of(context).chatSettingsAutoDownload),
+          child: Text(lang.chatSettingsAutoDownload),
         ),
         enabled: false,
         description: Skeletonizer(
-          child: Text(L10n.of(context).sharedCalendarAndEvents),
+          child: Text(lang.sharedCalendarAndEvents),
         ),
         initialValue: false,
         onToggle: (newVal) {},
@@ -76,15 +77,16 @@ class ChatSettingsPage extends ConsumerWidget {
   }
 
   AbstractSettingsTile _typingNotice(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final settingsLoader = ref.watch(userAppSettingsProvider);
     return settingsLoader.when(
       data: (settings) => SettingsTile.switchTile(
-        title: Text(L10n.of(context).chatSettingsTyping),
-        description: Text(L10n.of(context).chatSettingsTypingExplainer),
+        title: Text(lang.chatSettingsTyping),
+        description: Text(lang.chatSettingsTypingExplainer),
         enabled: true,
         initialValue: settings.typingNotice() ?? true,
         onToggle: (newVal) async {
-          EasyLoading.show(status: L10n.of(context).settingsSubmitting);
+          EasyLoading.show(status: lang.settingsSubmitting);
           try {
             final updater = settings.updateBuilder();
             updater.typingNotice(newVal);
@@ -94,7 +96,7 @@ class ChatSettingsPage extends ConsumerWidget {
               return;
             }
             EasyLoading.showToast(
-              L10n.of(context).settingsSubmittingSuccess,
+              lang.settingsSubmittingSuccess,
               toastPosition: EasyLoadingToastPosition.bottom,
             );
           } catch (e, s) {
@@ -104,7 +106,7 @@ class ChatSettingsPage extends ConsumerWidget {
               return;
             }
             EasyLoading.showError(
-              L10n.of(context).settingsSubmittingFailed(e),
+              lang.settingsSubmittingFailed(e),
               duration: const Duration(seconds: 3),
             );
           }
@@ -113,16 +115,16 @@ class ChatSettingsPage extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to load user app settings', e, s);
         return SettingsTile.navigation(
-          title: Text(L10n.of(context).loadingFailed(e)),
+          title: Text(lang.loadingFailed(e)),
         );
       },
       loading: () => SettingsTile.switchTile(
         title: Skeletonizer(
-          child: Text(L10n.of(context).chatSettingsTyping),
+          child: Text(lang.chatSettingsTyping),
         ),
         enabled: false,
         description: Skeletonizer(
-          child: Text(L10n.of(context).chatSettingsTypingExplainer),
+          child: Text(lang.chatSettingsTypingExplainer),
         ),
         initialValue: false,
         onToggle: (newVal) {},
@@ -132,24 +134,24 @@ class ChatSettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(L10n.of(context).chat),
+          title: Text(lang.chat),
           automaticallyImplyLeading: !context.isLargeScreen,
         ),
         body: SettingsList(
           sections: [
             SettingsSection(
-              title: Text(L10n.of(context).defaultModes),
+              title: Text(lang.defaultModes),
               tiles: [
                 _autoDownload(context, ref),
                 _typingNotice(context, ref),
                 SettingsTile.switchTile(
-                  title: Text(L10n.of(context).chatSettingsReadReceipts),
-                  description:
-                      Text(L10n.of(context).chatSettingsReadReceiptsExplainer),
+                  title: Text(lang.chatSettingsReadReceipts),
+                  description: Text(lang.chatSettingsReadReceiptsExplainer),
                   enabled: false,
                   initialValue: false,
                   onToggle: (newVal) {},

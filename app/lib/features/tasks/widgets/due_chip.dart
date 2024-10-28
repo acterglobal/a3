@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
@@ -58,46 +59,44 @@ class _DueChipState extends State<DueChip> {
   }
 
   Widget inner(BuildContext context) {
+    final lang = L10n.of(context);
     final textStyle =
-        widget.baseTextStyle ?? Theme.of(context).textTheme.bodySmall!;
-    if (dueDate == null) {
-      return widget.noneChild ?? const SizedBox.shrink();
-    }
-
-    String? label;
-    TextStyle? dueTheme;
-
-    if (dueDate!.isToday) {
-      label = L10n.of(context).dueToday;
-    } else if (dueDate!.isTomorrow) {
-      label = L10n.of(context).dueTomorrow;
-    } else if (dueDate!.isPast) {
-      label = dueDate!.timeago();
-      dueTheme = textStyle.copyWith(
-        color: Theme.of(context).colorScheme.error,
-      );
-    }
-    final dateText =
-        DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate!);
-
-    return Chip(
-      visualDensity: widget.visualDensity,
-      label: Text(
-        // FIXME: tooltip to show the full date?
-        label ?? L10n.of(context).due(dateText),
-        style: widget.task.isDone() ? null : dueTheme,
-      ),
-    );
+        widget.baseTextStyle ?? Theme.of(context).textTheme.bodySmall;
+    return dueDate.map((date) {
+          final dateText =
+              DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(date);
+          final label = date.isToday
+              ? lang.dueToday
+              : date.isTomorrow
+                  ? lang.dueTomorrow
+                  : date.isPast
+                      ? date.timeago()
+                      : lang.due(dateText);
+          final dueTheme = date.isPast
+              ? textStyle?.copyWith(color: Theme.of(context).colorScheme.error)
+              : null;
+          return Chip(
+            visualDensity: widget.visualDensity,
+            label: Text(
+              // FIXME: tooltip to show the full date?
+              label,
+              style: widget.task.isDone() ? null : dueTheme,
+            ),
+          );
+        }) ??
+        widget.noneChild ??
+        const SizedBox.shrink();
   }
 
   Future<void> duePickerAction(BuildContext context) async {
+    final lang = L10n.of(context);
     final newDue = await showDuePicker(
       context: context,
       initialDate: dueDate,
     ); // FIXME: add unsetting support
     if (!context.mounted) return;
     if (newDue == null) return;
-    EasyLoading.show(status: L10n.of(context).updatingDue);
+    EasyLoading.show(status: lang.updatingDue);
     try {
       final updater = widget.task.updateBuilder();
       updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
@@ -116,7 +115,7 @@ class _DueChipState extends State<DueChip> {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).dueSuccess);
+      EasyLoading.showToast(lang.dueSuccess);
     } catch (e, s) {
       _log.severe('Failed to change due date of task', e, s);
       if (!context.mounted) {
@@ -124,7 +123,7 @@ class _DueChipState extends State<DueChip> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).updatingDueFailed(e),
+        lang.updatingDueFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

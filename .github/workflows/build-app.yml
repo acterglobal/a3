@@ -53,8 +53,8 @@ jobs:
             exclude_from_release: true
             cargo_make_setup: setup-android
             cargo_make_args: android-arm
-            with_ndk_version: r25
-            java_version: "17"
+            with_ndk_version: r27
+            java_version: "21"
             flutter_build_args: "build appbundle --split-debug-info=debug_symbols"
             artifact_prefix: acter-${{inputs.artifacts_prefix}}android
             artifact_path:  app/build/app/outputs/bundle/release/
@@ -65,8 +65,8 @@ jobs:
             os: ubuntu-latest
             cargo_make_setup: setup-android
             cargo_make_args: android-arm
-            with_ndk_version: r25
-            java_version: "17"
+            with_ndk_version: r27
+            java_version: "21"
             flutter_build_args: "build apk --split-per-abi --split-debug-info=debug_symbols"
             artifact_prefix: acter-${{inputs.artifacts_prefix}}android
             artifact_path:  app/build/app/outputs/apk/release/
@@ -81,7 +81,7 @@ jobs:
             flutter_build_args: "build linux"
             artifact_prefix: acter-${{inputs.artifacts_prefix}}linux-x64
             artifact_path: app/build/linux/x64/release/bundle/
-            tar_files: lib/ data/ acter logo.png *.desktop  LICENSE*
+            tar_files: lib/ data/ acter *.png *.svg *.desktop  LICENSE*
           - name: iOS
             os: macos-14
             target: ios
@@ -95,7 +95,7 @@ jobs:
             rename_suffix: "ipa"
             with_debug_symbols: true
           - name: MacOS
-            os: macos-12
+            os: macos-13
             target: macos
             with_apple_cert: true
             cargo_make_args: desktop
@@ -138,22 +138,21 @@ jobs:
           TARGETS: ${{inputs.targets || 'all'}}
         shell: bash
         run: |
-
-          if [ "$TARGETS" = "all" ]; then
-            echo "Should build all";
-            echo "skipped=false"  >> $GITHUB_OUTPUT;
-            exit 0
-          fi
-
-          if echo $TARGET | tr "," "\n" | grep -Fxq $TARGET; then
-            echo "target among selected";
-            echo "skipped=false"  >> $GITHUB_OUTPUT;
-            exit 0
-          fi
-
-          echo "skipped=true" >> $GITHUB_OUTPUT ;
-          echo "Skipping build app for ${{ matrix.name }}"
-          exit 1
+            if [ "$TARGETS" = "all" ]; then
+              echo "Should build all";
+              echo "skipped=false"  >> $GITHUB_OUTPUT;
+              exit 0
+            fi
+            
+            if echo $TARGETS | tr "," "\n" | grep -Fxq $TARGET; then
+              echo "target among selected";
+              echo "skipped=false"  >> $GITHUB_OUTPUT;
+              exit 0
+            fi
+            
+            echo "skipped=true" >> $GITHUB_OUTPUT ;
+            echo "Skipping build app for $TARGET"
+            exit 1
     
       - uses: actions/checkout@v4
 
@@ -371,8 +370,9 @@ jobs:
       - name: Copy further assets
         if: matrix.target == 'linux'
         run: |
-          cp app/flatpak/global.acter.a3.desktop ${{ matrix.artifact_path }}
-          cp app/assets/icon/logo.png ${{ matrix.artifact_path }}
+          cp app/linux/packaging/global.acter.a3.desktop ${{ matrix.artifact_path }}
+          cp app/assets/icon/logo.png ${{ matrix.artifact_path }}/acter.png
+          cp app/assets/icon/acter-logo.svg ${{ matrix.artifact_path }}/acter.svg
           cp LICENSE* ${{ matrix.artifact_path }}
 
       - name: Rename file
@@ -400,7 +400,7 @@ jobs:
     ##     ## ##        ##       ##     ## ##     ## ##     ## 
      #######  ##        ########  #######  ##     ## ########  
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: "Upload artifacts"
         if: matrix.specific_upload_artifacts
         with:
@@ -412,14 +412,14 @@ jobs:
         if: ${{!matrix.specific_upload_artifacts}}
         run: mv ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ inputs.version }}.* .
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: "Upload artifacts"
         if: ${{!matrix.specific_upload_artifacts}}
         with:
           name: ${{ matrix.name }}
           path: ${{ matrix.artifact_prefix }}-${{ inputs.version }}.*
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: "Upload debug artifacts"
         if: ${{ matrix.with_debug_symbols }}
         with:
@@ -448,16 +448,15 @@ jobs:
             ${{ matrix.specific_upload_artifacts }}
 
       - name: Report issue
-        if: ${{ inputs.release && failure() && !steps.skipper.outputs.skipped }}
+        if: ${{ inputs.release && failure() && steps.skipper.outputs.skipped != 'true' }}
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ inputs.version }}
           NAME: ${{matrix.name}}
-          FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
-          ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          FAILED_RUN_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+          ARTIFACT_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{env.GITHUB_RUN_ID}}
         with:
           assignees: gnunicorn
           filename: .github/templates/failure-report-template.md.tmpl
           update_existing: false
-

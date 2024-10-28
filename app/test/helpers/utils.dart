@@ -1,6 +1,6 @@
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 
-import 'mocks.dart';
+import 'mock_a3sdk.dart';
 
 int id = 0;
 

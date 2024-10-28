@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/pages/not_found.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -66,8 +67,9 @@ Future<String?> forwardRedirect(
     }
     Client client;
     try {
-      final deviceId = state.uri.queryParameters['deviceId'];
-      client = await acterSdk.getClientWithDeviceId(deviceId!, true);
+      final deviceId = state.uri.queryParameters['deviceId']
+          .expect('query params should contain device id');
+      client = await acterSdk.getClientWithDeviceId(deviceId, true);
       // ignore: use_build_context_synchronously
       final ref = ProviderScope.containerOf(context);
       // ensure we have selected the right client
@@ -77,13 +79,24 @@ Future<String?> forwardRedirect(
       return null;
     }
     final roomId = state.uri.queryParameters['roomId'];
-    if (await client.hasConvo(roomId!)) {
-      // this is a chat
-      return state.namedLocation(
-        Routes.chatroom.name,
-        pathParameters: {'roomId': roomId},
+    if (roomId == null) {
+      _log.severe(
+        'Received forward without roomId failed: ${state.uri.queryParameters}.',
       );
-    } else {
+      return state.namedLocation(Routes.main.name);
+    }
+
+    final room = await client.room(roomId);
+    if (!room.isJoined()) {
+      // we haven’t joined yet or have been kicked
+      // either way, we are to be shown the thing on the activities page
+      return state.namedLocation(
+        Routes.activities.name,
+        queryParameters: state.uri.queryParameters,
+      );
+    }
+
+    if (room.isSpace()) {
       // final eventId = state.uri.queryParameters['eventId'];
       // with the event ID or further information we could figure out the specific action
       return state.namedLocation(
@@ -91,6 +104,11 @@ Future<String?> forwardRedirect(
         pathParameters: {'spaceId': roomId},
       );
     }
+    // so we assume this is a chat
+    return state.namedLocation(
+      Routes.chatroom.name,
+      pathParameters: {'roomId': roomId},
+    );
   } catch (e, s) {
     _log.severe('Forward fail', e, s);
     return state.namedLocation(
@@ -148,7 +166,8 @@ final shellBranches = [
 final goRouter = GoRouter(
   errorBuilder: (context, state) => NotFoundPage(routerState: state),
   navigatorKey: rootNavKey,
-  initialLocation: '/',
+  initialLocation: Routes.main.route,
+  restorationScopeId: 'acter-routes',
   routes: [
     ...generalRoutes,
     StatefulShellRoute.indexedStack(

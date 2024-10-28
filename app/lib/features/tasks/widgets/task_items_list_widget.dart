@@ -12,7 +12,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::tasks::widgets::list');
+final _log = Logger('a3::tasks::widgets::task_items_list');
 
 class TaskItemsListWidget extends ConsumerStatefulWidget {
   final TaskList taskList;
@@ -61,13 +61,13 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
     if (overview.openTasks.isEmpty) {
       return const SizedBox.shrink();
     }
-
+    final taskListId = widget.taskList.eventIdStr();
     return Column(
       children: [
         for (final taskId in overview.openTasks)
           TaskItem(
             onTap: () => showInlineAddTask.value = false,
-            taskListId: widget.taskList.eventIdStr(),
+            taskListId: taskListId,
             taskId: taskId,
           ),
       ],
@@ -75,7 +75,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
   }
 
   Widget inlineAddTask() {
-    final taskListEventId = widget.taskList.eventIdStr();
+    final taskListId = widget.taskList.eventIdStr();
     return ValueListenableBuilder(
       valueListenable: showInlineAddTask,
       builder: (context, value, child) {
@@ -91,7 +91,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
                   vertical: 8,
                 ),
                 child: ActerInlineTextButton(
-                  key: Key('task-list-$taskListEventId-add-task-inline'),
+                  key: Key('task-list-$taskListId-add-task-inline'),
                   onPressed: () => showInlineAddTask.value = true,
                   child: Text(L10n.of(context).addTask),
                 ),
@@ -104,22 +104,32 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
     if (overview.doneTasks.isEmpty || !widget.showCompletedTask) {
       return const SizedBox.shrink();
     }
-
+    final taskListId = widget.taskList.eventIdStr();
     return Column(
       children: [
         const SizedBox(height: 10),
         Row(
           children: [
-            const Expanded(child: Divider(indent: 20, endIndent: 20)),
+            const Expanded(
+              child: Divider(
+                indent: 20,
+                endIndent: 20,
+              ),
+            ),
             Text(
               L10n.of(context).countTasksCompleted(overview.doneTasks.length),
             ),
-            const Expanded(child: Divider(indent: 20, endIndent: 20)),
+            const Expanded(
+              child: Divider(
+                indent: 20,
+                endIndent: 20,
+              ),
+            ),
           ],
         ),
         for (final taskId in overview.doneTasks)
           TaskItem(
-            taskListId: widget.taskList.eventIdStr(),
+            taskListId: taskListId,
             taskId: taskId,
             onTap: () => showInlineAddTask.value = false,
           ),
@@ -132,7 +142,10 @@ class _InlineTaskAdd extends StatefulWidget {
   final Function() cancel;
   final TaskList taskList;
 
-  const _InlineTaskAdd({required this.cancel, required this.taskList});
+  const _InlineTaskAdd({
+    required this.cancel,
+    required this.taskList,
+  });
 
   @override
   _InlineTaskAddState createState() => _InlineTaskAddState();
@@ -151,6 +164,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     final tlId = widget.taskList.eventIdStr();
     return Form(
       key: _formKey,
@@ -165,7 +179,7 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
           focusedBorder: InputBorder.none,
           errorBorder: InputBorder.none,
           enabledBorder: InputBorder.none,
-          hintText: L10n.of(context).titleTheNewTask,
+          hintText: lang.titleTheNewTask,
           suffix: IconButton(
             onPressed: () => showCreateUpdateTaskItemBottomSheet(
               context,
@@ -194,12 +208,9 @@ class _InlineTaskAddState extends State<_InlineTaskAdd> {
             _handleSubmit(context);
           }
         },
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return L10n.of(context).aTaskMustHaveATitle;
-          }
-          return null;
-        },
+        // required field, space not allowed
+        validator: (val) =>
+            val == null || val.trim().isEmpty ? lang.aTaskMustHaveATitle : null,
       ),
     );
   }

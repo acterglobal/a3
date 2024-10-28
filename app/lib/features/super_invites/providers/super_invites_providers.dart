@@ -1,11 +1,12 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final hasSuperTokensAccess = FutureProvider<bool>((ref) async {
   final asyncVal = ref.watch(superInvitesTokensProvider);
-  return !asyncVal
-      .hasError; // if we error'd we assume it is not available on the server.
+  // if we error’d we assume it is not available on the server.
+  return !asyncVal.hasError;
 });
 
 final superInvitesTokensProvider =
@@ -18,11 +19,8 @@ final superInviteTokenProvider = FutureProvider.autoDispose
     .family<SuperInviteToken, String>((ref, tokenCode) async {
   final tokens = await ref.watch(superInvitesTokensProvider.future);
   for (final token in tokens) {
-    if (token.token() == tokenCode) {
-      return token;
-    }
+    if (token.token() == tokenCode) return token;
   }
-
   throw 'SuperInvite $tokenCode not found';
 });
 
@@ -36,10 +34,7 @@ final superInvitesForRoom = FutureProvider.autoDispose
     .family<List<SuperInviteToken>, String>((ref, roomId) async {
   final allInvites = await ref.watch(superInvitesTokensProvider.future);
   return allInvites
-      .where(
-        (invite) =>
-            invite.rooms().map((e) => e.toDartString()).contains(roomId),
-      )
+      .where((invite) => asDartStringList(invite.rooms()).contains(roomId))
       .toList();
 });
 

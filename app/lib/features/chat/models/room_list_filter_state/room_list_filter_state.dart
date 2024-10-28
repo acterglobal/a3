@@ -12,26 +12,21 @@ Future<bool> roomListFilterStateAppliesToRoom(
   switch (state.selection) {
     case FilterSelection.dmsOnly:
       final isDm = await ref.watch(isDirectChatProvider(convoId).future);
-      if (!isDm) {
-        return false;
-      }
+      if (!isDm) return false;
       break;
     case FilterSelection.favorites:
-      if (!await ref.watch(isConvoBookmarked(convoId).future)) {
-        return false;
-      }
+      final bookmarked = await ref.watch(isConvoBookmarked(convoId).future);
+      if (!bookmarked) return false;
       break;
     default: // all other case just continue
       break;
   }
-  if (state.searchTerm?.isNotEmpty == true) {
-    final searchTerm = state.searchTerm!.toLowerCase();
-    if (convoId.toLowerCase().contains(searchTerm)) {
-      return true;
-    }
+  final searchTerm = state.searchTerm;
+  if (searchTerm != null && searchTerm.isNotEmpty) {
+    final search = searchTerm.toLowerCase();
+    if (convoId.toLowerCase().contains(search)) return true;
     final displayName = await ref.read(roomDisplayNameProvider(convoId).future);
-    return (displayName != null &&
-        displayName.toLowerCase().contains(searchTerm));
+    return displayName?.toLowerCase().contains(search) == true;
   }
   return true;
 }

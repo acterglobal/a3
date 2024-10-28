@@ -13,7 +13,7 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::activities::invitation_card');
 
-class InvitationCard extends ConsumerWidget {
+class InvitationCard extends ConsumerStatefulWidget {
   final Invitation invitation;
 
   const InvitationCard({
@@ -22,13 +22,37 @@ class InvitationCard extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _InvitationCardState();
+}
+
+class _InvitationCardState extends ConsumerState<InvitationCard> {
+  String? roomTitle;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchTitle();
+  }
+
+  void _fetchTitle() async {
+    final title = await widget.invitation.room().displayName();
+    setState(() {
+      roomTitle = title.text();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      margin: const EdgeInsets.symmetric(
+        vertical: 10,
+        horizontal: 16,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          renderTile(context, ref),
+          renderTile(context),
           const Divider(indent: 5),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -38,13 +62,13 @@ class InvitationCard extends ConsumerWidget {
                 // Reject Invitation Button
                 OutlinedButton(
                   onPressed: () => _onTapDeclineInvite(context),
-                  child: Text(L10n.of(context).decline),
+                  child: Text(lang.decline),
                 ),
                 const SizedBox(width: 15),
                 // Accept Invitation Button
                 ActerPrimaryActionButton(
-                  onPressed: () => _onTapAcceptInvite(context, ref),
-                  child: Text(L10n.of(context).accept),
+                  onPressed: () => _onTapAcceptInvite(context),
+                  child: Text(lang.accept),
                 ),
               ],
             ),
@@ -54,23 +78,21 @@ class InvitationCard extends ConsumerWidget {
     );
   }
 
-  ListTile renderTile(BuildContext context, WidgetRef ref) {
-    final isDM = invitation.isDm();
+  ListTile renderTile(BuildContext context) {
+    final isDM = widget.invitation.isDm();
     if (isDM) {
-      return renderDmChatTile(context, ref);
+      return renderDmChatTile(context);
     }
-    final room = invitation.room();
+    final room = widget.invitation.room();
     if (room.isSpace()) {
-      return renderSpaceTile(context, ref);
+      return renderSpaceTile(context);
     }
-    return renderGroupChatTile(context, ref);
+    return renderGroupChatTile(context);
   }
 
-  ListTile renderSpaceTile(BuildContext context, WidgetRef ref) {
-    final roomAvatarInfo =
-        ref.watch(roomAvatarInfoProvider(invitation.roomIdStr()));
-
-    final roomId = invitation.roomIdStr();
+  ListTile renderSpaceTile(BuildContext context) {
+    final roomId = widget.invitation.roomIdStr();
+    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions(
@@ -82,19 +104,15 @@ class InvitationCard extends ConsumerWidget {
       subtitle: Wrap(
         children: [
           Text(L10n.of(context).invitationToSpace),
-          inviter(
-            context,
-            ref,
-          ),
+          inviter(context),
         ],
       ),
     );
   }
 
-  ListTile renderGroupChatTile(BuildContext context, WidgetRef ref) {
-    final roomAvatarInfo =
-        ref.watch(roomAvatarInfoProvider(invitation.roomIdStr()));
-
+  ListTile renderGroupChatTile(BuildContext context) {
+    final roomId = widget.invitation.roomIdStr();
+    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions(
@@ -102,25 +120,24 @@ class InvitationCard extends ConsumerWidget {
           size: 48,
         ),
       ),
+      title: Text(
+        roomTitle ?? roomId,
+        overflow: TextOverflow.ellipsis,
+      ),
       subtitle: Wrap(
         children: [
           Text(L10n.of(context).invitationToChat),
-          inviter(
-            context,
-            ref,
-          ),
+          inviter(context),
         ],
       ),
     );
   }
 
-  ListTile renderDmChatTile(BuildContext context, WidgetRef ref) {
+  ListTile renderDmChatTile(BuildContext context) {
     final profile =
-        ref.watch(invitationUserProfileProvider(invitation)).valueOrNull;
-
-    final senderId = invitation.senderIdStr();
-
-    final roomId = invitation.roomIdStr();
+        ref.watch(invitationUserProfileProvider(widget.invitation)).valueOrNull;
+    final senderId = widget.invitation.senderIdStr();
+    final roomId = widget.invitation.roomIdStr();
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions.DM(
@@ -139,10 +156,10 @@ class InvitationCard extends ConsumerWidget {
     );
   }
 
-  Chip inviter(BuildContext context, WidgetRef ref) {
+  Chip inviter(BuildContext context) {
     final profile =
-        ref.watch(invitationUserProfileProvider(invitation)).valueOrNull;
-    final userId = invitation.senderIdStr();
+        ref.watch(invitationUserProfileProvider(widget.invitation)).valueOrNull;
+    final userId = widget.invitation.senderIdStr();
 
     return Chip(
       visualDensity: VisualDensity.compact,
@@ -161,14 +178,14 @@ class InvitationCard extends ConsumerWidget {
   }
 
   // method for post-process invitation accept
-  void _onTapAcceptInvite(BuildContext context, WidgetRef ref) async {
-    EasyLoading.show(status: L10n.of(context).joining);
-    final client = ref.read(alwaysClientProvider);
-    final roomId = invitation.roomIdStr();
-    final isSpace = invitation.room().isSpace();
+  void _onTapAcceptInvite(BuildContext context) async {
     final lang = L10n.of(context);
+    EasyLoading.show(status: lang.joining);
+    final client = ref.read(alwaysClientProvider);
+    final roomId = widget.invitation.roomIdStr();
+    final isSpace = widget.invitation.room().isSpace();
     try {
-      await invitation.accept();
+      await widget.invitation.accept();
     } catch (e, s) {
       _log.severe('Failure accepting invite', e, s);
       if (!context.mounted) {
@@ -208,19 +225,21 @@ class InvitationCard extends ConsumerWidget {
   }
 
   void _onTapDeclineInvite(BuildContext context) async {
-    EasyLoading.show(status: L10n.of(context).rejecting);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.rejecting);
     try {
-      bool res = await invitation.reject();
+      bool res = await widget.invitation.reject();
+      ref.invalidate(invitationListProvider);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       if (res) {
-        EasyLoading.showToast(L10n.of(context).rejected);
+        EasyLoading.showToast(lang.rejected);
       } else {
         _log.severe('Failed to reject invitation');
         EasyLoading.showError(
-          L10n.of(context).failedToReject,
+          lang.failedToReject,
           duration: const Duration(seconds: 3),
         );
       }
@@ -231,7 +250,7 @@ class InvitationCard extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToRejectInvite(e),
+        lang.failedToRejectInvite(e),
         duration: const Duration(seconds: 3),
       );
     }

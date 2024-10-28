@@ -1,6 +1,6 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,11 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class SettingsPage extends ConsumerWidget {
   final bool isFullPage;
-  const SettingsPage({this.isFullPage = false, super.key});
+
+  const SettingsPage({
+    this.isFullPage = false,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -80,6 +84,7 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Widget userProfileMenuSkeletonUI(BuildContext context) {
+    final lang = L10n.of(context);
     return Skeletonizer(
       child: Card(
         child: Padding(
@@ -94,8 +99,8 @@ class SettingsPage extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).displayName),
-                  Text(L10n.of(context).username),
+                  Text(lang.displayName),
+                  Text(lang.username),
                 ],
               ),
             ],

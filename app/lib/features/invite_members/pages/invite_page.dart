@@ -81,25 +81,28 @@ class InvitePage extends ConsumerWidget {
   }
 
   Widget _buildInviteHeader(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         RoomProfileHeader(roomId: roomId),
         const SizedBox(height: 10),
         Text(
-          L10n.of(context).invite,
-          style: Theme.of(context).textTheme.titleLarge,
+          lang.invite,
+          style: textTheme.titleLarge,
         ),
         const SizedBox(height: 5),
         Text(
-          L10n.of(context).spaceInviteDescription,
-          style: Theme.of(context).textTheme.bodySmall,
+          lang.spaceInviteDescription,
+          style: textTheme.bodySmall,
         ),
       ],
     );
   }
 
   Widget _buildInviteMethods(BuildContext context) {
+    final lang = L10n.of(context);
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
@@ -108,8 +111,8 @@ class InvitePage extends ConsumerWidget {
           children: [
             MenuItemWidget(
               iconData: Icons.people_alt_outlined,
-              title: L10n.of(context).inviteSpaceMembersTitle,
-              subTitle: L10n.of(context).inviteSpaceMembersSubtitle,
+              title: lang.inviteSpaceMembersTitle,
+              subTitle: lang.inviteSpaceMembersSubtitle,
               onTap: () => context.pushNamed(
                 Routes.inviteSpaceMembers.name,
                 queryParameters: {'roomId': roomId.toString()},
@@ -117,8 +120,8 @@ class InvitePage extends ConsumerWidget {
             ),
             MenuItemWidget(
               iconData: Icons.person_add_alt_1,
-              title: L10n.of(context).inviteIndividualUsersTitle,
-              subTitle: L10n.of(context).inviteIndividualUsersSubtitle,
+              title: lang.inviteIndividualUsersTitle,
+              subTitle: lang.inviteIndividualUsersSubtitle,
               onTap: () => context.pushNamed(
                 Routes.inviteIndividual.name,
                 queryParameters: {'roomId': roomId.toString()},
@@ -131,6 +134,8 @@ class InvitePage extends ConsumerWidget {
   }
 
   Widget _buildInviteFromCode(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -147,15 +152,15 @@ class InvitePage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              L10n.of(context).inviteJoinActer,
+              lang.inviteJoinActer,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge,
+              style: textTheme.titleLarge,
             ),
             const SizedBox(height: 20),
             Text(
-              L10n.of(context).inviteJoinActerDescription,
+              lang.inviteJoinActerDescription,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
+              style: textTheme.bodySmall,
             ),
             const SizedBox(height: 20),
             InviteCodeUI(roomId: roomId),

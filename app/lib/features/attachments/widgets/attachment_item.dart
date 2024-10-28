@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/common/models/types.dart';
@@ -11,6 +14,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
 
 // Attachment item UI
 class AttachmentItem extends ConsumerWidget {
@@ -24,11 +28,12 @@ class AttachmentItem extends ConsumerWidget {
     super.key,
     required this.attachment,
     this.canEdit = false,
-    this.openView = true,
+    this.openView,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final containerColor = Theme.of(context).colorScheme.surface;
     final attachmentType = AttachmentType.values.byName(attachment.typeStr());
     final eventId = attachment.attachmentIdStr();
@@ -47,7 +52,7 @@ class AttachmentItem extends ConsumerWidget {
           ref,
           context,
           attachmentType,
-          mediaState,
+          mediaState.mediaFile,
         ),
         title: title(context, attachmentType),
         trailing: Row(
@@ -58,11 +63,12 @@ class AttachmentItem extends ConsumerWidget {
               mediaState.mediaLoadingState.isLoading || mediaState.isDownloading
                   ? loadingIndication()
                   : IconButton(
-                      onPressed: () => ref
-                          .read(
-                            attachmentMediaStateProvider(attachment).notifier,
-                          )
-                          .downloadMedia(),
+                      onPressed: () async {
+                        final notifier = ref.read(
+                          attachmentMediaStateProvider(attachment).notifier,
+                        );
+                        await notifier.downloadMedia();
+                      },
                       icon: Icon(
                         Icons.download,
                         color: Theme.of(context).primaryColor,
@@ -80,14 +86,14 @@ class AttachmentItem extends ConsumerWidget {
                         context,
                         eventId: eventId,
                         roomId: roomId,
-                        title: L10n.of(context).deleteAttachment,
-                        description: L10n.of(context)
-                            .areYouSureYouWantToRemoveAttachmentFromPin,
+                        title: lang.deleteAttachment,
+                        description:
+                            lang.areYouSureYouWantToRemoveAttachmentFromPin,
                         isSpace: true,
                       );
                     },
                     child: Text(
-                      L10n.of(context).delete,
+                      lang.delete,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.error,
                       ),
@@ -104,9 +110,8 @@ class AttachmentItem extends ConsumerWidget {
   Widget title(BuildContext context, AttachmentType attachmentType) {
     final msgContent = attachment.msgContent();
     final fileName = msgContent.body();
-    final fileNameSplit = fileName.split('.');
     final title = attachment.name() ?? fileName;
-    final fileExtension = fileNameSplit.last;
+    final fileExtension = p.extension(fileName);
     String fileSize = getHumanReadableFileSize(msgContent.size() ?? 0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,23 +162,23 @@ class AttachmentItem extends ConsumerWidget {
     WidgetRef ref,
     BuildContext context,
     AttachmentType attachmentType,
-    AttachmentMediaState mediaState,
+    File? mediaFile,
   ) async {
     // Open attachment link
     if (attachmentType == AttachmentType.link) {
-      openLink(attachment.link() ?? '', context);
-    } else if (mediaState.mediaFile == null) {
+      await openLink(attachment.link() ?? '', context);
+    } else if (mediaFile == null) {
       // If attachment is media then check media is downloaded
       // If attachment not downloaded
-      ref
-          .read(attachmentMediaStateProvider(attachment).notifier)
-          .downloadMedia();
+      final notifier =
+          ref.read(attachmentMediaStateProvider(attachment).notifier);
+      await notifier.downloadMedia();
     } else {
       // If attachment is downloaded and image or video
       if (attachmentType == AttachmentType.image ||
           attachmentType == AttachmentType.video) {
         final msgContent = attachment.msgContent();
-        showAdaptiveDialog(
+        await showAdaptiveDialog(
           context: context,
           barrierDismissible: false,
           useRootNavigator: false,
@@ -181,12 +186,12 @@ class AttachmentItem extends ConsumerWidget {
             if (attachmentType == AttachmentType.image) {
               return ImageDialog(
                 title: msgContent.body(),
-                imageFile: mediaState.mediaFile!,
+                imageFile: mediaFile,
               );
             } else {
               return VideoDialog(
                 title: msgContent.body(),
-                videoFile: mediaState.mediaFile!,
+                videoFile: mediaFile,
               );
             }
           },
@@ -194,7 +199,10 @@ class AttachmentItem extends ConsumerWidget {
       }
       // If attachment is downloaded and file or others
       else {
-        openFileShareDialog(context: context, file: mediaState.mediaFile!);
+        await openFileShareDialog(
+          context: context,
+          file: mediaFile,
+        );
       }
     }
   }
@@ -203,7 +211,9 @@ class AttachmentItem extends ConsumerWidget {
     return const SizedBox(
       width: 20,
       height: 20,
-      child: Center(child: CircularProgressIndicator()),
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 }

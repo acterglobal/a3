@@ -1,9 +1,9 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/widgets/user_builder.dart';
+import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class DirectInvite extends ConsumerWidget {
   final String userId;
@@ -32,7 +32,9 @@ class DirectInvite extends ConsumerWidget {
                 userId: userId,
                 room: room,
               )
-            : const Skeletonizer(child: Text('Loading room')),
+            : const Skeletonizer(
+                child: Text('Loading room'),
+              ),
       ),
     );
   }

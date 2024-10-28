@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -35,20 +36,21 @@ class BriefRoomEntry extends ConsumerWidget {
     );
     final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
-    Widget? trailing;
-    if (trailingBuilder != null) {
-      trailing = trailingBuilder!(canLink);
-    } else if (selectedValue == roomId) {
+    Widget? trailing = trailingBuilder.map((cb) => cb(canLink));
+    if (trailing == null && selectedValue == roomId) {
       trailing = const Icon(Icons.check_circle_outline);
     }
     return ListTile(
       key: Key('$keyPrefix-$roomId'),
       enabled: canLink,
-      leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
+      leading: RoomAvatarBuilder(
+        roomId: roomId,
+        avatarSize: 24,
+      ),
       title: Text(roomName),
       subtitle: subtitle,
       trailing: trailing,
-      onTap: canLink && onSelect != null ? () => onSelect!(roomId) : null,
+      onTap: canLink ? onSelect.map((cb) => () => cb(roomId)) : null,
     );
   }
 }

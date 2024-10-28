@@ -21,7 +21,9 @@ mixin _$SyncState {
   int? get countDown => throw _privateConstructorUsedError;
   int? get nextRetry => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SyncState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SyncStateCopyWith<SyncState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -45,6 +47,8 @@ class _$SyncStateCopyWithImpl<$Res, $Val extends SyncState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SyncState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -94,6 +98,8 @@ class __$$NewSyncStateImplCopyWithImpl<$Res>
       _$NewSyncStateImpl _value, $Res Function(_$NewSyncStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SyncState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -176,7 +182,9 @@ class _$NewSyncStateImpl with DiagnosticableTreeMixin implements _NewSyncState {
   int get hashCode =>
       Object.hash(runtimeType, initialSync, errorMsg, countDown, nextRetry);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SyncState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$NewSyncStateImplCopyWith<_$NewSyncStateImpl> get copyWith =>
@@ -198,8 +206,11 @@ abstract class _NewSyncState implements SyncState {
   int? get countDown;
   @override
   int? get nextRetry;
+
+  /// Create a copy of SyncState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$NewSyncStateImplCopyWith<_$NewSyncStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,10 +16,12 @@ import 'package:path_provider/path_provider.dart';
 final _log = Logger('a3::news::utils');
 
 class NewsUtils {
+  static ImagePicker imagePicker = ImagePicker();
+
   static Future<File?> getThumbnailData(XFile videoFile) async {
     try {
       final tempDir = await getTemporaryDirectory();
-      final videoName = videoFile.name.split('.').first;
+      final videoName = p.basenameWithoutExtension(videoFile.path);
       final destPath = p.join(tempDir.path, '$videoName.jpg');
       final destFile = File(destPath);
 
@@ -59,7 +63,7 @@ class NewsUtils {
   //Add image slide
   static Future<void> addImageSlide(WidgetRef ref) async {
     final clr = getRandomElement(Colors.primaries);
-    XFile? imageFile = await ImagePicker().pickImage(
+    XFile? imageFile = await imagePicker.pickImage(
       source: ImageSource.gallery,
     );
     if (imageFile != null) {
@@ -75,7 +79,7 @@ class NewsUtils {
   //Add video slide
   static Future<void> addVideoSlide(WidgetRef ref) async {
     final clr = getRandomElement(Colors.primaries);
-    XFile? videoFile = await ImagePicker().pickVideo(
+    XFile? videoFile = await imagePicker.pickVideo(
       source: ImageSource.gallery,
     );
     if (videoFile != null) {
@@ -86,5 +90,21 @@ class NewsUtils {
       );
       ref.read(newsStateProvider.notifier).addSlide(slide);
     }
+  }
+
+  static Color getBackgroundColor(BuildContext context, NewsSlide newsSlide) {
+    final color = newsSlide.colors();
+    return convertColor(
+      color?.background(),
+      Theme.of(context).colorScheme.surface,
+    );
+  }
+
+  static Color getForegroundColor(BuildContext context, NewsSlide newsSlide) {
+    final color = newsSlide.colors();
+    return convertColor(
+      color?.color(),
+      Theme.of(context).colorScheme.onPrimary,
+    );
   }
 }

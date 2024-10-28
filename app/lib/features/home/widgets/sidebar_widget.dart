@@ -1,14 +1,18 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/action_button_widget.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
 import 'package:acter/features/home/widgets/chats_icon.dart';
+import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -86,11 +90,11 @@ class __SidebarItemIndicatorState extends ConsumerState<_SidebarItemIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).navigationRailTheme;
+    final navigationRailTheme = Theme.of(context).navigationRailTheme;
     return NavigationIndicator(
       animation: _controller,
-      color: theme.indicatorColor,
-      shape: theme.indicatorShape,
+      color: navigationRailTheme.indicatorColor,
+      shape: navigationRailTheme.indicatorShape,
     );
   }
 }
@@ -116,21 +120,22 @@ class _SidebarItem extends StatelessWidget {
       onTap: onTap,
       child: icon,
     );
-
-    if (indicator != null) {
+    indicator.map((ind) {
       inner = Stack(
         children: [
-          Center(child: indicator!),
+          Center(child: ind),
           Center(child: inner),
         ],
       );
-    }
-
+    });
     return Container(
       height: 40,
       width: 40,
       key: tutorialGlobalKey,
-      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
+      ),
       child: inner,
     );
   }
@@ -155,7 +160,7 @@ class SidebarWidget extends ConsumerWidget {
     ];
 
     if (size.height < 600) {
-      // we don't have enough space to show more,
+      // we don’t have enough space to show more,
       // only show our main menu
       return SingleChildScrollView(
         child: SizedBox(
@@ -179,9 +184,15 @@ class SidebarWidget extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const _MyUserAvatar(),
-          const Divider(indent: 18, endIndent: 18),
+          const Divider(
+            indent: 18,
+            endIndent: 18,
+          ),
           ..._menuItems(context, ref),
-          const Divider(indent: 18, endIndent: 18),
+          const Divider(
+            indent: 18,
+            endIndent: 18,
+          ),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -189,15 +200,155 @@ class SidebarWidget extends ConsumerWidget {
               ),
             ),
           ),
+          const Divider(
+            indent: 18,
+            endIndent: 18,
+          ),
+          _quickActionButton(context, ref),
           if (isBugReportingEnabled) ..._bugReporter(context),
+          const SizedBox(height: 12),
         ],
       ),
     );
   }
 
+  Widget _quickActionButton(BuildContext context, WidgetRef ref) {
+    final hasSpaces = ref.watch(hasSpacesProvider);
+    return hasSpaces
+        ? quickActionWhenHasSpaces(context, ref)
+        : quickActionWhenNoSpaces(context, ref);
+  }
+
+  PopupMenuButton quickActionWhenHasSpaces(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    final lang = L10n.of(context);
+    List<PopupMenuEntry> actions = [];
+    final canAddPin =
+        ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
+            false;
+    final canAddEvent =
+        ref.watch(hasSpaceWithPermissionProvider('CanPostEvent')).valueOrNull ??
+            false;
+    final canAddTask = ref
+            .watch(hasSpaceWithPermissionProvider('CanPostTaskList'))
+            .valueOrNull ??
+        false;
+    final canAddBoost =
+        ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
+            false;
+    if (canAddPin) {
+      actions.add(
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.pin,
+            color: pinFeatureColor,
+            title: lang.addPin,
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.createPin.name);
+            },
+          ),
+        ),
+      );
+    }
+    if (canAddTask) {
+      actions.add(
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.list,
+            title: lang.addTaskList,
+            color: taskFeatureColor,
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              showCreateUpdateTaskListBottomSheet(context);
+            },
+          ),
+        ),
+      );
+    }
+    if (canAddEvent) {
+      actions.add(
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.calendar_dots,
+            title: lang.addEvent,
+            color: eventFeatureColor,
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.createEvent.name);
+            },
+          ),
+        ),
+      );
+    }
+    if (canAddBoost) {
+      actions.add(
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.megaphone_thin,
+            title: lang.addBoost,
+            color: boastFeatureColor,
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.actionAddUpdate.name);
+            },
+          ),
+        ),
+      );
+    }
+
+    return PopupMenuButton(
+      icon: const Icon(Atlas.plus_circle),
+      iconSize: 28,
+      color: Theme.of(context).colorScheme.surface,
+      itemBuilder: (BuildContext context) => actions,
+    );
+  }
+
+  PopupMenuButton quickActionWhenNoSpaces(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    final lang = L10n.of(context);
+    return PopupMenuButton(
+      icon: const Icon(Atlas.plus_circle),
+      iconSize: 28,
+      color: Theme.of(context).colorScheme.surface,
+      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.users,
+            color: Colors.purpleAccent.withAlpha(70),
+            title: lang.createSpace,
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.createSpace.name);
+            },
+          ),
+        ),
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Atlas.chats,
+            title: lang.createChat,
+            color: Colors.green.withAlpha(70),
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.createChat.name);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   List<Widget> _bugReporter(BuildContext context) {
     return [
-      const Divider(indent: 18, endIndent: 18),
+      const Divider(
+        indent: 18,
+        endIndent: 18,
+      ),
       InkWell(
         onTap: () => openBugReport(context),
         child: Padding(
@@ -225,6 +376,7 @@ class SidebarWidget extends ConsumerWidget {
   }
 
   List<_SidebarItem> _menuItems(BuildContext context, WidgetRef ref) {
+    final textTheme = Theme.of(context).textTheme;
     return [
       _SidebarItem(
         icon: const Icon(
@@ -234,12 +386,12 @@ class SidebarWidget extends ConsumerWidget {
         ),
         label: Text(
           'Jump',
-          style: Theme.of(context).textTheme.labelSmall,
+          style: textTheme.labelSmall,
           softWrap: false,
         ),
-        onTap: () => context.pushNamed(Routes.quickJump.name),
+        onTap: () => goToBranch(ShellBranch.searchShell),
         tutorialGlobalKey: jumpToKey,
-        indicator: const _SidebarItemIndicator(routes: [Routes.quickJump]),
+        indicator: const _SidebarItemIndicator(routes: [Routes.search]),
       ),
       _SidebarItem(
         icon: const Icon(
@@ -249,7 +401,7 @@ class SidebarWidget extends ConsumerWidget {
         ),
         label: Text(
           'Home',
-          style: Theme.of(context).textTheme.labelSmall,
+          style: textTheme.labelSmall,
           softWrap: false,
         ),
         onTap: () => goToBranch(ShellBranch.homeShell),
@@ -257,7 +409,7 @@ class SidebarWidget extends ConsumerWidget {
         indicator: const _SidebarItemIndicator(
           reversed: true,
           routes: [
-            Routes.quickJump,
+            Routes.search,
             Routes.chat,
             Routes.activities,
           ],
@@ -267,7 +419,7 @@ class SidebarWidget extends ConsumerWidget {
         icon: const ChatsIcon(),
         label: Text(
           'Chat',
-          style: Theme.of(context).textTheme.labelSmall,
+          style: textTheme.labelSmall,
           softWrap: false,
         ),
         onTap: () => goToBranch(ShellBranch.chatsShell),
@@ -280,11 +432,14 @@ class SidebarWidget extends ConsumerWidget {
           children: [
             Text(
               'Activities',
-              style: Theme.of(context).textTheme.labelSmall,
+              style: textTheme.labelSmall,
               softWrap: false,
             ),
             const SizedBox(height: 10),
-            const Divider(indent: 10, endIndent: 10),
+            const Divider(
+              indent: 10,
+              endIndent: 10,
+            ),
           ],
         ),
         onTap: () => goToBranch(ShellBranch.activitiesShell),
@@ -295,9 +450,10 @@ class SidebarWidget extends ConsumerWidget {
   }
 
   List<_SidebarItem> _spacesList(BuildContext context, WidgetRef ref) {
-    final spaces = ref.watch(spacesProvider);
+    final bookmarkedSpaces = ref.watch(bookmarkedSpacesProvider);
+    final otherSpaces = ref.watch(unbookmarkedSpacesProvider);
 
-    return spaces.map((space) {
+    return [].followedBy(bookmarkedSpaces).followedBy(otherSpaces).map((space) {
       final roomId = space.getRoomIdStr();
       final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
       final parentBadges =
@@ -320,8 +476,12 @@ class SidebarWidget extends ConsumerWidget {
           style: Theme.of(context).textTheme.labelSmall,
           softWrap: false,
         ),
-        onTap: () => context
-            .goNamed(Routes.space.name, pathParameters: {'spaceId': roomId}),
+        onTap: () {
+          context.goNamed(
+            Routes.space.name,
+            pathParameters: {'spaceId': roomId},
+          );
+        },
       );
     }).toList();
   }

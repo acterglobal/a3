@@ -44,6 +44,7 @@ class SasAcceptedView extends StatelessWidget {
   }
 
   Widget buildTitleBar(BuildContext context) {
+    final lang = L10n.of(context);
     // has no close button
     return Row(
       children: [
@@ -52,11 +53,7 @@ class SasAcceptedView extends StatelessWidget {
           child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
         ),
         const SizedBox(width: 5),
-        Text(
-          isVerifier
-              ? L10n.of(context).verifyOtherSession
-              : L10n.of(context).verifyThisSession,
-        ),
+        Text(isVerifier ? lang.verifyOtherSession : lang.verifyThisSession),
       ],
     );
   }

@@ -15,7 +15,7 @@ import 'package:convert/convert.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::notifify');
+final _log = Logger('a3::notifify::matrix');
 int id = 0;
 
 const bool isProduction = bool.fromEnvironment('dart.vm.product');
@@ -46,7 +46,7 @@ Future<bool> handleMatrixMessage(
     await _showNotification(notification);
     return true;
   } catch (e, s) {
-    _log.severe('Parsing Notification failed', e, s);
+    _log.severe('Parsing Notification failed: $message', e, s);
   }
   return false;
 }

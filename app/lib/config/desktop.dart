@@ -5,16 +5,19 @@ import 'package:acter/router/router.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:logging/logging.dart';
 
-final _log = Logger('a3::desktop');
+final _log = Logger('a3::config::desktop');
 
 class DesktopSupport extends StatefulWidget {
   final Widget child;
 
-  const DesktopSupport({super.key, required this.child});
+  const DesktopSupport({
+    super.key,
+    required this.child,
+  });
 
   @override
   State<DesktopSupport> createState() => _DesktopSupportState();
@@ -51,6 +54,10 @@ class _DesktopSupportState extends State<DesktopSupport>
     );
     Menu menu = Menu(
       items: [
+        MenuItem(
+          key: 'search',
+          label: 'Search',
+        ),
         MenuItem(
           key: 'home',
           label: 'Home',
@@ -122,13 +129,17 @@ class _DesktopSupportState extends State<DesktopSupport>
   void onTrayMenuItemClick(MenuItem menuItem) async {
     if (menuItem.key == 'exit_app') {
       _log.info('exit app');
+      await trayManager.destroy();
       await windowManager.destroy();
       return;
     }
 
     await windowManager.show();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) async {
-      if (menuItem.key == 'home') {
+      if (menuItem.key == 'search') {
+        _log.info('route search');
+        rootNavKey.currentContext!.pushNamed(Routes.search.name);
+      } else if (menuItem.key == 'home') {
         _log.info('route home');
         rootNavKey.currentContext!.pushNamed(Routes.main.name);
       } else if (menuItem.key == 'chat') {

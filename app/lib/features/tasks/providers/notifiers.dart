@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Client, Task, TaskList;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -19,10 +20,11 @@ class TaskItemsListNotifier
     List<String> openTasks = [];
     List<String> doneTasks = [];
     for (final task in tasks) {
+      final eventId = task.eventIdStr();
       if (task.isDone()) {
-        doneTasks.add(task.eventIdStr());
+        doneTasks.add(eventId);
       } else {
-        openTasks.add(task.eventIdStr());
+        openTasks.add(eventId);
       }
     }
 
@@ -130,7 +132,7 @@ class AsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
 
     _poller = _listener.listen(
       (data) async {
-        state = await AsyncValue.guard(() => _getTasksList(client));
+        state = await AsyncValue.guard(() async => await _getTasksList(client));
       },
       onError: (e, s) {
         _log.severe('all tasks stream errored', e, s);

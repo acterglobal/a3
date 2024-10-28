@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -23,25 +24,27 @@ class EventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final calEventsLoader = ref.watch(
       eventListSearchFilterProvider((spaceId: spaceId, searchText: '')),
     );
     return calEventsLoader.when(
-      data: (calEvents) => buildEventsSectionUI(context, calEvents),
+      data: (calEvents) => buildEventsSectionUI(context, ref, calEvents),
       error: (e, s) {
         _log.severe('Failed to search cal events in space', e, s);
         return Center(
-          child: Text(L10n.of(context).searchingFailed(e)),
+          child: Text(lang.searchingFailed(e)),
         );
       },
       loading: () => Center(
-        child: Text(L10n.of(context).loading),
+        child: Text(lang.loading),
       ),
     );
   }
 
   Widget buildEventsSectionUI(
     BuildContext context,
+    WidgetRef ref,
     List<CalendarEvent> events,
   ) {
     final hasMore = events.length > limit;
@@ -58,20 +61,21 @@ class EventsSection extends ConsumerWidget {
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        eventsListUI(events, count),
+        eventsListUI(ref, events, count),
       ],
     );
   }
 
-  Widget eventsListUI(List<CalendarEvent> events, int count) {
+  Widget eventsListUI(WidgetRef ref, List<CalendarEvent> events, int count) {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: count,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return EventItem(event: events[index]);
-      },
+      itemBuilder: (context, index) => EventItem(
+        event: events[index],
+        eventType: ref.watch(eventTypeProvider(events[index])),
+      ),
     );
   }
 }

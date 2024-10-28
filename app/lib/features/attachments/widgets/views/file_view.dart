@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/features/files/actions/file_share.dart';
@@ -9,10 +12,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class FileView extends ConsumerWidget {
   final Attachment attachment;
   final bool? openView;
+
   const FileView({
     super.key,
     required this.attachment,
-    this.openView = true,
+    this.openView,
   });
 
   @override
@@ -20,10 +24,12 @@ class FileView extends ConsumerWidget {
     final mediaState = ref.watch(attachmentMediaStateProvider(attachment));
     if (mediaState.mediaLoadingState.isLoading || mediaState.isDownloading) {
       return loadingIndication(context);
-    } else if (mediaState.mediaFile == null) {
-      return filePlaceholder(context, attachment, mediaState, ref);
+    }
+    final mediaFile = mediaState.mediaFile;
+    if (mediaFile == null) {
+      return filePlaceholder(context, attachment, ref);
     } else {
-      return fileUI(context, mediaState);
+      return fileUI(context, mediaFile);
     }
   }
 
@@ -31,26 +37,25 @@ class FileView extends ConsumerWidget {
     return const SizedBox(
       width: 150,
       height: 150,
-      child: Center(child: CircularProgressIndicator()),
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 
   Widget filePlaceholder(
     BuildContext context,
     Attachment attachment,
-    AttachmentMediaState mediaState,
     WidgetRef ref,
   ) {
     final msgContent = attachment.msgContent();
+    final size =
+        msgContent.size().expect('size of file attachment not available');
     return InkWell(
       onTap: () async {
-        if (mediaState.mediaFile != null) {
-          openFileShareDialog(context: context, file: mediaState.mediaFile!);
-        } else {
-          ref
-              .read(attachmentMediaStateProvider(attachment).notifier)
-              .downloadMedia();
-        }
+        final notifier =
+            ref.read(attachmentMediaStateProvider(attachment).notifier);
+        await notifier.downloadMedia();
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -75,8 +80,8 @@ class FileView extends ConsumerWidget {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  formatBytes(msgContent.size()!.truncate()),
-                  style: Theme.of(context).textTheme.labelSmall!,
+                  formatBytes(size.truncate()),
+                  style: Theme.of(context).textTheme.labelSmall,
                   textScaler: const TextScaler.linear(0.7),
                 ),
               ],
@@ -87,19 +92,18 @@ class FileView extends ConsumerWidget {
     );
   }
 
-  Widget fileUI(BuildContext context, AttachmentMediaState mediaState) {
+  Widget fileUI(BuildContext context, File mediaFile) {
     return InkWell(
-      onTap: openView!
-          ? () async {
-              openFileShareDialog(
-                context: context,
-                file: mediaState.mediaFile!,
-              );
-            }
+      onTap: openView != false
+          ? () async =>
+              await openFileShareDialog(context: context, file: mediaFile)
           : null,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
-        child: const Icon(Icons.description, size: 22),
+        child: const Icon(
+          Icons.description,
+          size: 22,
+        ),
       ),
     );
   }

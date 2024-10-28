@@ -1,5 +1,6 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/room/actions/avatar_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -37,22 +38,20 @@ class FullScreenAvatarPage extends ConsumerWidget {
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
     final profileData = ref.watch(roomAvatarInfoProvider(roomId));
-
-    if (profileData.avatar == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Center(
-      child: PinchZoomReleaseUnzoomWidget(
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.fitWidth,
-              image: profileData.avatar!,
+    return profileData.avatar.map(
+          (data) => Center(
+            child: PinchZoomReleaseUnzoomWidget(
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.fitWidth,
+                    image: data,
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ) ??
+        const SizedBox.shrink();
   }
 }

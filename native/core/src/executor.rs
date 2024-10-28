@@ -1,5 +1,7 @@
-use ruma::OwnedRoomId;
-use ruma_events::{room::redaction::OriginalRoomRedactionEvent, UnsignedRoomRedactionEvent};
+use matrix_sdk_base::ruma::{
+    events::{room::redaction::OriginalRoomRedactionEvent, UnsignedRoomRedactionEvent},
+    OwnedRoomId,
+};
 use scc::hash_map::{Entry, HashMap};
 use std::sync::Arc;
 use tokio::sync::broadcast::{channel, Receiver, Sender};
@@ -121,7 +123,12 @@ impl Executor {
         reason: UnsignedRoomRedactionEvent,
     ) -> Result<()> {
         trace!(event_id=?event_meta.event_id, ?model_type, "asked to redact");
-        match self.store.get(event_meta.event_id.as_str()).await {
+        let event_id = event_meta.event_id.to_string();
+
+        match self.store.get(&event_id).await {
+            Ok(AnyActerModel::RedactedActerModel(_)) => {
+                info!(?event_id, "live redacted: Already redacted");
+            }
             Ok(model) => {
                 trace!("previous model found. overwriting");
                 let redacted = RedactedActerModel::new(
@@ -159,13 +166,18 @@ impl Executor {
 
     pub async fn live_redact(&self, event: OriginalRoomRedactionEvent) -> Result<()> {
         let Some(meta) = EventMeta::for_redacted_source(&event) else {
-            warn!(?event, "Redaction didn't contain any target. skipping.");
+            warn!(?event, "Redaction didn’t contain any target. skipping.");
             return Ok(());
         };
 
-        match self.store.get(meta.event_id.as_str()).await {
+        let event_id = meta.event_id.to_string();
+
+        match self.store.get(&event_id).await {
+            Ok(AnyActerModel::RedactedActerModel(_)) => {
+                info!(?event_id, "live redacted: Already redacted");
+            }
             Ok(model) => {
-                trace!("redacting model live");
+                trace!("live redacted: model found");
                 let redacted = RedactedActerModel::new(
                     model.model_type().to_owned(),
                     model.indizes(self.store.user_id()),
@@ -173,19 +185,12 @@ impl Executor {
                     event.into(),
                 );
                 let keys = model.redact(&self.store, redacted).await?;
-                info!(
-                    "******************** found model live redacted: {:?}",
-                    keys.clone()
-                );
+                info!(?event_id, "live redacted: {:?}", keys.clone());
                 self.notify(keys);
             }
             Err(Error::ModelNotFound(_)) => {
-                trace!("no model found");
-                info!(
-                    "******************** not found live redacted: {:?}",
-                    meta.event_id.clone()
-                );
-                self.notify(vec![meta.event_id.to_string()]);
+                info!(?event_id, "live redaction: not found");
+                self.notify(vec![event_id]);
             }
             Err(error) => return Err(error),
         }
@@ -195,15 +200,20 @@ impl Executor {
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
     use crate::{
         events::{comments::CommentEventContent, BelongsTo},
         models::{Comment, TestModelBuilder},
     };
     use matrix_sdk::Client;
-    use matrix_sdk_base::store::{MemoryStore, StoreConfig};
-    use ruma_common::{api::MatrixVersion, event_id, user_id};
-    use ruma_events::room::message::TextMessageEventContent;
+    use matrix_sdk_base::{
+        ruma::{
+            api::MatrixVersion, event_id, events::room::message::TextMessageEventContent, user_id,
+        },
+        store::{MemoryStore, StoreConfig},
+    };
+    use serde_json::{from_value, json};
 
     async fn fresh_executor() -> Result<Executor> {
         let config = StoreConfig::default().state_store(MemoryStore::new());
@@ -227,7 +237,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn subscribe_simle_model() -> Result<()> {
+    async fn subscribe_simple_model() -> Result<()> {
         let _ = env_logger::try_init();
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
@@ -346,6 +356,67 @@ mod tests {
         };
 
         assert_eq!(inner_model, model);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn double_redact_model() -> Result<()> {
+        let _ = env_logger::try_init();
+        let executor = fresh_executor().await?;
+        let model = TestModelBuilder::default().simple().build().unwrap();
+        let model_id = model.event_id().to_string();
+        // nothing in the store
+        assert!(executor.store().get(&model_id).await.is_err());
+
+        let waiter = executor.wait_for(model_id.clone());
+        executor.handle(model.clone().into()).await?;
+
+        let new_model = waiter.await?;
+
+        let AnyActerModel::TestModel(inner_model) = new_model else {
+            panic!("Not a test model");
+        };
+
+        assert_eq!(inner_model, model);
+
+        // now let’s redact this model;
+
+        let redaction: UnsignedRoomRedactionEvent = from_value(json!({
+            "event_id" : format!("{model_id}:redacted"),
+            "sender": "@someone:example.org",
+            "origin_server_ts": 123456,
+            "content": { "redacts" : model_id, },
+        }))?;
+
+        executor
+            .redact("test_model".to_owned(), model.event_meta(), redaction)
+            .await?;
+
+        let AnyActerModel::RedactedActerModel(redaction) = executor.store().get(&model_id).await?
+        else {
+            panic!("Model was not redacten :(");
+        };
+        assert_eq!(redaction.origin_type(), "test_model");
+
+        // redacting again
+
+        let redaction: UnsignedRoomRedactionEvent = from_value(json!({
+            "event_id" : format!("{model_id}:redacted2"),
+            "sender": "@someone:example.org",
+            "origin_server_ts": 123456,
+            "content": { "redacts" : model_id, },
+        }))?;
+
+        executor
+            .redact("test_model".to_owned(), model.event_meta(), redaction)
+            .await?;
+
+        let AnyActerModel::RedactedActerModel(redaction) = executor.store().get(&model_id).await?
+        else {
+            panic!("Model was not redacten :(");
+        };
+        assert_eq!(redaction.origin_type(), "test_model"); // we stay with the existing redaction
+
         Ok(())
     }
 }

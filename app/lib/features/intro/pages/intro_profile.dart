@@ -29,7 +29,10 @@ class IntroProfile extends StatelessWidget {
             child: Column(
               children: [
                 const Spacer(),
-                LogoWidget(height: imageSize, width: imageSize),
+                LogoWidget(
+                  height: imageSize,
+                  width: imageSize,
+                ),
                 const SizedBox(height: 30),
                 _buildHeadlineText(context),
                 const SizedBox(height: 10),
@@ -54,20 +57,21 @@ class IntroProfile extends StatelessWidget {
   }
 
   Widget _buildHeadlineText(BuildContext context) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: [
         Text(
-          L10n.of(context).makeADifference,
-          style: Theme.of(context).textTheme.headlineMedium,
+          lang.makeADifference,
+          style: textTheme.headlineMedium,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 10),
         Text(
-          L10n.of(context).joinActer,
-          style: Theme.of(context)
-              .textTheme
-              .headlineMedium
-              ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
+          lang.joinActer,
+          style: textTheme.headlineMedium?.copyWith(
+            color: Theme.of(context).colorScheme.textHighlight,
+          ),
         ),
       ],
     );
@@ -101,6 +105,8 @@ class IntroProfile extends StatelessWidget {
   }
 
   Widget _buildActionButtons(BuildContext context) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
@@ -111,14 +117,14 @@ class IntroProfile extends StatelessWidget {
               key: LoginPageKeys.signUpBtn,
               onPressed: () => context.pushNamed(Routes.authRegister.name),
               child: Text(
-                L10n.of(context).signUp,
-                style: Theme.of(context).textTheme.bodyMedium,
+                lang.signUp,
+                style: textTheme.bodyMedium,
               ),
             ),
             const SizedBox(height: 16),
             Text(
-              L10n.of(context).or,
-              style: Theme.of(context).textTheme.bodyMedium,
+              lang.or,
+              style: textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -126,8 +132,8 @@ class IntroProfile extends StatelessWidget {
               key: Keys.loginBtn,
               onPressed: () => context.pushNamed(Routes.authLogin.name),
               child: Text(
-                L10n.of(context).logIn,
-                style: Theme.of(context).textTheme.bodyMedium,
+                lang.logIn,
+                style: textTheme.bodyMedium,
               ),
             ),
           ],

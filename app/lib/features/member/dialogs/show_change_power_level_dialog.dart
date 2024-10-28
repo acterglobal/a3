@@ -55,22 +55,20 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     final member = widget.member;
     final memberStatus = member.membershipStatusStr();
     final currentPowerLevel = member.powerLevel();
     return AlertDialog(
-      title: Text(L10n.of(context).updatePowerLevel),
+      title: Text(lang.updatePowerLevel),
       content: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(L10n.of(context).changeThePowerLevelOf),
+            Text(lang.changeThePowerLevelOf),
             Text(member.userId().toString()),
-            Text(
-              L10n.of(context)
-                  .changeThePowerFromTo(memberStatus, currentPowerLevel),
-            ),
+            Text(lang.changeThePowerFromTo(memberStatus, currentPowerLevel)),
             Padding(
               padding: const EdgeInsets.all(5),
               child: DropdownButtonFormField(
@@ -80,21 +78,21 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                   if (widget.maxPowerLevel >= 100)
                     DropdownMenuItem(
                       value: 'Admin',
-                      child: Text(L10n.of(context).admin),
+                      child: Text(lang.admin),
                     ),
                   if (widget.maxPowerLevel >= 50)
                     DropdownMenuItem(
                       value: 'Mod',
-                      child: Text(L10n.of(context).moderator),
+                      child: Text(lang.moderator),
                     ),
                   if (widget.maxPowerLevel >= 0)
                     DropdownMenuItem(
                       value: 'Regular',
-                      child: Text(L10n.of(context).regular),
+                      child: Text(lang.regular),
                     ),
                   DropdownMenuItem(
                     value: 'Custom',
-                    child: Text(L10n.of(context).custom),
+                    child: Text(lang.custom),
                   ),
                 ],
               ),
@@ -105,26 +103,28 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                 padding: const EdgeInsets.all(5),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    hintText: L10n.of(context).anyNumber,
-                    labelText: L10n.of(context).customPowerLevel,
+                    hintText: lang.anyNumber,
+                    labelText: lang.customPowerLevel,
                   ),
                   onChanged: _newCustomLevel,
                   initialValue: currentPowerLevel.toString(),
                   keyboardType:
                       const TextInputType.numberWithOptions(signed: true),
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
                   // Only numbers
-                  validator: (String? value) {
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  // required field under custom
+                  validator: (val) {
                     if (currentMemberStatus == 'Custom') {
-                      if (value == null || int.tryParse(value) == null) {
-                        return L10n.of(context)
-                            .youNeedToEnterCustomValueAsNumber;
+                      if (val == null) {
+                        return lang.youNeedToEnterCustomValueAsNumber;
                       }
-                      if ((int.tryParse(value) ?? 0) > widget.maxPowerLevel) {
-                        return L10n.of(context)
-                            .youCantExceedPowerLevel(widget.maxPowerLevel);
+                      final level = int.tryParse(val);
+                      if (level == null) {
+                        return lang.youNeedToEnterCustomValueAsNumber;
+                      }
+                      final maxPowerLevel = widget.maxPowerLevel;
+                      if (level > maxPowerLevel) {
+                        return lang.youCantExceedPowerLevel(maxPowerLevel);
                       }
                     }
                     return null;
@@ -141,7 +141,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
-          child: Text(L10n.of(context).cancel),
+          child: Text(lang.cancel),
         ),
         ActerPrimaryActionButton(
           onPressed: () {
@@ -170,7 +170,7 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
 
             Navigator.pop(context, newValue);
           },
-          child: Text(L10n.of(context).submit),
+          child: Text(lang.submit),
         ),
       ],
     );

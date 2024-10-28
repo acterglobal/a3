@@ -1,4 +1,5 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/options.dart';
+import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:flutter/material.dart';
 
 class RoomVisibilityItem extends StatelessWidget {
@@ -36,9 +37,7 @@ class RoomVisibilityItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
-        key: spaceVisibilityValue != null
-            ? generateKey(spaceVisibilityValue!)
-            : null,
+        key: spaceVisibilityValue.map((val) => generateKey(val)),
         leading: Icon(iconData),
         title: Text(
           title,
@@ -48,23 +47,22 @@ class RoomVisibilityItem extends StatelessWidget {
           subtitle,
           style: Theme.of(context).textTheme.labelMedium,
         ),
-        onTap: isShowRadio && spaceVisibilityValue != null && onChanged != null
-            ? () => onChange(spaceVisibilityValue, context)
-            : null,
-        trailing: isShowRadio && spaceVisibilityValue != null
-            ? Radio<RoomVisibility>(
-                value: spaceVisibilityValue!,
-                groupValue: selectedVisibilityValue,
-                onChanged: onChanged != null
-                    ? (value) => onChange(value, context)
-                    : null,
+        onTap: isShowRadio && onChanged != null
+            ? spaceVisibilityValue.map(
+                (val) => onChanged.map((cb) => () => cb(val)),
               )
-            : const Icon(Icons.keyboard_arrow_down_sharp),
+            : null,
+        trailing: !isShowRadio
+            ? const Icon(Icons.keyboard_arrow_down_sharp)
+            : spaceVisibilityValue.map(
+                  (val) => Radio<RoomVisibility>(
+                    value: val,
+                    groupValue: selectedVisibilityValue,
+                    onChanged: onChanged.map((cb) => (value) => cb(value)),
+                  ),
+                ) ??
+                const Icon(Icons.keyboard_arrow_down_sharp),
       ),
     );
-  }
-
-  void onChange(RoomVisibility? value, BuildContext context) {
-    if (onChanged != null) onChanged!(value);
   }
 }

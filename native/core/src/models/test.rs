@@ -1,6 +1,7 @@
 use derive_builder::Builder;
-use ruma::{OwnedRoomId, RoomId};
-use ruma_common::{user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, UserId};
+use matrix_sdk_base::ruma::{
+    user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, RoomId, UserId,
+};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -47,6 +48,18 @@ impl TestModelBuilder {
             self.room_id = OwnedRoomId::try_from(format!("!{room_id}:example.org")).ok();
         }
         self.derive_builder_build()
+    }
+}
+
+impl TestModel {
+    pub fn event_meta(&self) -> EventMeta {
+        EventMeta {
+            event_id: self.event_id.clone(),
+            sender: user_id!("@test:example.org").to_owned(),
+            origin_server_ts: MilliSecondsSinceUnixEpoch(123567890u32.into()),
+            room_id: self.room_id.clone(),
+            redacted: None,
+        }
     }
 }
 

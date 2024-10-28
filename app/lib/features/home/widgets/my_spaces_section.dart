@@ -1,12 +1,13 @@
 import 'dart:math';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,8 @@ class MySpacesSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bookmarkedSpaces = ref.watch(bookmarkedSpacesProvider);
     final spaces = ref.watch(spacesProvider);
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     if (bookmarkedSpaces.isNotEmpty) {
       return _RenderSpacesSection(
         spaces: bookmarkedSpaces,
@@ -33,8 +36,8 @@ class MySpacesSection extends ConsumerWidget {
         showAll: true,
         showAllCounter: spaces.length,
         title: Text(
-          L10n.of(context).bookmarkedSpaces,
-          style: Theme.of(context).textTheme.titleSmall,
+          lang.bookmarkedSpaces,
+          style: textTheme.titleSmall,
         ),
       );
     }
@@ -44,7 +47,7 @@ class MySpacesSection extends ConsumerWidget {
       return const _NoSpacesWidget();
     }
 
-    final count = limit == null ? spaces.length : min(spaces.length, limit!);
+    final count = limit.map((val) => min(val, spaces.length)) ?? spaces.length;
     return _RenderSpacesSection(
       spaces: spaces,
       limit: count,
@@ -55,8 +58,8 @@ class MySpacesSection extends ConsumerWidget {
         key: DashboardKeys.widgetMySpacesHeader,
         onTap: () => context.pushNamed(Routes.spaces.name),
         child: Text(
-          L10n.of(context).mySpaces,
-          style: Theme.of(context).textTheme.titleSmall,
+          lang.mySpaces,
+          style: textTheme.titleSmall,
         ),
       ),
     );
@@ -82,6 +85,7 @@ class _RenderSpacesSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -92,7 +96,7 @@ class _RenderSpacesSection extends ConsumerWidget {
             if (showAll)
               ActerInlineTextButton(
                 onPressed: () => context.pushNamed(Routes.spaces.name),
-                child: Text(L10n.of(context).seeAll),
+                child: Text(lang.seeAll),
               ),
           ],
         ),
@@ -101,12 +105,10 @@ class _RenderSpacesSection extends ConsumerWidget {
           shrinkWrap: true,
           itemCount: limit,
           physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            return SpaceCard(
-              roomId: spaces[index].getRoomIdStr(),
-              margin: const EdgeInsets.only(bottom: 14),
-            );
-          },
+          itemBuilder: (context, index) => RoomCard(
+            roomId: spaces[index].getRoomIdStr(),
+            margin: const EdgeInsets.only(bottom: 14),
+          ),
         ),
         if (showActions)
           Padding(
@@ -119,14 +121,14 @@ class _RenderSpacesSection extends ConsumerWidget {
               children: [
                 OutlinedButton(
                   onPressed: () => context.pushNamed(Routes.createSpace.name),
-                  child: Text(L10n.of(context).createSpace),
+                  child: Text(lang.createSpace),
                 ),
                 const SizedBox(height: 10),
                 ActerPrimaryActionButton(
-                  onPressed: () => context.pushNamed(
-                    Routes.searchPublicDirectory.name,
-                  ),
-                  child: Text(L10n.of(context).joinSpace),
+                  onPressed: () {
+                    context.pushNamed(Routes.searchPublicDirectory.name);
+                  },
+                  child: Text(lang.joinSpace),
                 ),
               ],
             ),
@@ -152,39 +154,41 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: <Widget>[
         const SizedBox(height: 15),
         Text(
-          L10n.of(context).youAreCurrentlyNotConnectedToAnySpaces,
-          style: Theme.of(context).textTheme.bodyMedium,
+          lang.youAreCurrentlyNotConnectedToAnySpaces,
+          style: textTheme.bodyMedium,
         ),
         const SizedBox(height: 30),
         RichText(
           text: TextSpan(
             children: <TextSpan>[
               TextSpan(
-                text: L10n.of(context).create,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.bold,
-                    ),
+                text: lang.create,
+                style: textTheme.bodyMedium?.copyWith(
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              TextSpan(text: L10n.of(context).or),
+              TextSpan(text: lang.or),
               TextSpan(
-                text: L10n.of(context).join,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.bold,
-                    ),
+                text: lang.join,
+                style: textTheme.bodyMedium?.copyWith(
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               TextSpan(
                 text: ' ',
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: textTheme.bodyMedium,
               ),
               TextSpan(
-                text: L10n.of(context).spaceShortDescription,
-                style: Theme.of(context).textTheme.bodyMedium,
+                text: lang.spaceShortDescription,
+                style: textTheme.bodyMedium,
               ),
             ],
           ),
@@ -196,7 +200,7 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
             key: createNewSpaceKey,
             icon: const Icon(Icons.chevron_right_outlined),
             onPressed: () => context.pushNamed(Routes.createSpace.name),
-            label: Text(L10n.of(context).createNewSpace),
+            label: Text(lang.createNewSpace),
           ),
         ),
         const SizedBox(height: 36),
@@ -206,7 +210,7 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
             onPressed: () {
               context.pushNamed(Routes.searchPublicDirectory.name);
             },
-            child: Text(L10n.of(context).joinExistingSpace),
+            child: Text(lang.joinExistingSpace),
           ),
         ),
       ],

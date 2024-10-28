@@ -7,6 +7,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class StickerMessageWidget extends StatelessWidget {
   final CustomMessage message;
   final int messageWidth;
+
   const StickerMessageWidget({
     super.key,
     required this.message,
@@ -20,7 +21,7 @@ class StickerMessageWidget extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       constraints: const BoxConstraints(minWidth: 57),
       child: Image.memory(
-        base64Decode(message.metadata?['base64']),
+        base64Decode(message.metadata?['base64'] ?? ''),
         errorBuilder: stickerErrorBuilder,
         frameBuilder: stickerFrameBuilder,
         cacheWidth: 256,

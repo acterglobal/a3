@@ -12,18 +12,17 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
   await showDialog(
     context: context,
     builder: (BuildContext context) {
+      final lang = L10n.of(context);
       return AlertDialog(
-        title: Text(L10n.of(context).unblockTitle(userId)),
+        title: Text(lang.unblockTitle(userId)),
         content: RichText(
           textAlign: TextAlign.left,
           text: TextSpan(
-            text: L10n.of(context).youAreAboutToUnblock(userId),
+            text: lang.youAreAboutToUnblock(userId),
             style: Theme.of(context).textTheme.headlineMedium,
             children: <TextSpan>[
-              TextSpan(
-                text: L10n.of(context).thisWillAllowThemToContactYouAgain,
-              ),
-              TextSpan(text: L10n.of(context).continueQuestion),
+              TextSpan(text: lang.thisWillAllowThemToContactYouAgain),
+              TextSpan(text: lang.continueQuestion),
             ],
           ),
         ),
@@ -31,18 +30,18 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
         actions: <Widget>[
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(L10n.of(context).no),
+            child: Text(lang.no),
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
-              EasyLoading.show(status: L10n.of(context).unblockingUserProgress);
+              EasyLoading.show(status: lang.unblockingUserProgress);
               try {
                 await member.unignore();
                 if (!context.mounted) {
                   EasyLoading.dismiss();
                   return;
                 }
-                EasyLoading.showToast(L10n.of(context).unblockingUserSuccess);
+                EasyLoading.showToast(lang.unblockingUserSuccess);
               } catch (e, s) {
                 _log.severe('Failed to unblock user', e, s);
                 if (!context.mounted) {
@@ -50,13 +49,13 @@ Future<void> showUnblockUserDialog(BuildContext context, Member member) async {
                   return;
                 }
                 EasyLoading.showError(
-                  L10n.of(context).unblockingUserFailed(e),
+                  lang.unblockingUserFailed(e),
                   duration: const Duration(seconds: 3),
                 );
               }
               Navigator.pop(context);
             },
-            child: Text(L10n.of(context).yes),
+            child: Text(lang.yes),
           ),
         ],
       );

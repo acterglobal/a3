@@ -1,7 +1,6 @@
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
-import 'dart:ui' show lerpDouble;
 
 /// ActionButton for dangerous actions
 ///
@@ -44,7 +43,10 @@ class ActerDangerActionButton extends ElevatedButton {
       autofocus: autofocus ?? false,
       clipBehavior: clipBehavior = Clip.none,
       statesController: statesController,
-      child: _IconLabelChild(icon: icon, label: label),
+      child: _IconLabelChild(
+        icon: icon,
+        label: label,
+      ),
     );
   }
 
@@ -57,23 +59,20 @@ class ActerDangerActionButton extends ElevatedButton {
 
 // copied from the original OutlinedButton
 class _IconLabelChild extends StatelessWidget {
+  final Widget label;
+  final Widget icon;
+
   const _IconLabelChild({
     required this.label,
     required this.icon,
   });
 
-  final Widget label;
-  final Widget icon;
-
   @override
   Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
-    final double scale = MediaQuery.textScalerOf(context).textScaleFactor;
-    final double gap =
-        scale <= 1 ? 8 : lerpDouble(8, 4, math.min(scale - 1, 1))!;
+    final double gap = calcGap(context) ?? 8;
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[icon, SizedBox(width: gap), Flexible(child: label)],
+      children: [icon, SizedBox(width: gap), Flexible(child: label)],
     );
   }
 }

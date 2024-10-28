@@ -1,10 +1,12 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use ruma_events::room::message::{
-    AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
-    LocationMessageEventContent, MessageType, VideoMessageEventContent,
+use matrix_sdk_base::ruma::events::{
+    macros::EventContent,
+    room::message::{
+        AudioMessageEventContent, FileMessageEventContent, ImageMessageEventContent,
+        LocationMessageEventContent, MessageType, VideoMessageEventContent,
+    },
 };
-use ruma_macros::EventContent;
 use serde::{Deserialize, Serialize};
 
 use super::{BelongsTo, Update};
@@ -152,6 +154,7 @@ impl AttachmentContent {
             AttachmentContent::Fallback(f) => f.name(),
         }
     }
+
     pub fn type_str(&self) -> String {
         match self {
             AttachmentContent::Image(_) => "image".to_owned(),
@@ -174,7 +177,7 @@ impl AttachmentContent {
 
     pub fn video(&self) -> Option<VideoMessageEventContent> {
         match self {
-            AttachmentContent::Video(body) => Some(body.clone()),
+            AttachmentContent::Video(content) => Some(content.clone()),
             AttachmentContent::Fallback(f) => f.video(),
             _ => None,
         }
@@ -182,7 +185,7 @@ impl AttachmentContent {
 
     pub fn audio(&self) -> Option<AudioMessageEventContent> {
         match self {
-            AttachmentContent::Audio(body) => Some(body.clone()),
+            AttachmentContent::Audio(content) => Some(content.clone()),
             AttachmentContent::Fallback(f) => f.audio(),
             _ => None,
         }
@@ -203,6 +206,7 @@ impl AttachmentContent {
             _ => None,
         }
     }
+
     pub fn link(&self) -> Option<String> {
         if let AttachmentContent::Link(LinkAttachmentContent { link, .. }) = self {
             Some(link.clone())

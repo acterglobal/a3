@@ -1,4 +1,4 @@
-use ruma::{OwnedMxcUri, OwnedUserId};
+use matrix_sdk_base::ruma::{OwnedMxcUri, OwnedUserId};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -44,7 +44,7 @@ pub struct UpdateToken {
 pub mod api {
     pub mod list {
 
-        use ruma_common::{
+        use matrix_sdk_base::ruma::{
             api::{request, response, Metadata},
             metadata,
         };
@@ -90,7 +90,7 @@ pub mod api {
 
     pub mod create {
 
-        use ruma_common::{
+        use matrix_sdk_base::ruma::{
             api::{request, response, Metadata},
             metadata,
         };
@@ -126,7 +126,7 @@ pub mod api {
 
     pub mod update {
 
-        use ruma_common::{
+        use matrix_sdk_base::ruma::{
             api::{request, response, Metadata},
             metadata,
         };
@@ -162,7 +162,7 @@ pub mod api {
 
     pub mod delete {
 
-        use ruma_common::{
+        use matrix_sdk_base::ruma::{
             api::{request, response, Metadata},
             metadata,
         };
@@ -194,7 +194,7 @@ pub mod api {
 
     pub mod redeem {
 
-        use ruma_common::{
+        use matrix_sdk_base::ruma::{
             api::{request, response, Metadata},
             metadata,
         };
@@ -228,7 +228,7 @@ pub mod api {
 
     pub mod info {
 
-        use ruma_common::{
+        use matrix_sdk_base::ruma::{
             api::{request, response, Metadata},
             metadata,
         };

@@ -1,6 +1,6 @@
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/bookmarks/types.dart';
-import 'package:acter/features/events/actions/get_event_type.dart';
+import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/actions/sort_event_list.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
 import 'package:acter/features/events/providers/notifiers/rsvp_notifier.dart';
@@ -43,7 +43,9 @@ final allOngoingEventListProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
   final allEventList = await ref.watch(allEventListProvider(spaceId).future);
   List<ffi.CalendarEvent> allOngoingEventList = allEventList
-      .where((event) => getEventType(event) == EventFilters.ongoing)
+      .where(
+        (event) => ref.watch(eventTypeProvider(event)) == EventFilters.ongoing,
+      )
       .toList();
   return sortEventListAscTime(allOngoingEventList);
 });
@@ -69,7 +71,9 @@ final allUpcomingEventListProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
   final allEventList = await ref.watch(allEventListProvider(spaceId).future);
   List<ffi.CalendarEvent> allUpcomingEventList = allEventList
-      .where((event) => getEventType(event) == EventFilters.upcoming)
+      .where(
+        (event) => ref.watch(eventTypeProvider(event)) == EventFilters.upcoming,
+      )
       .toList();
   return sortEventListAscTime(allUpcomingEventList);
 });
@@ -95,7 +99,9 @@ final allPastEventListProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
   final allEventList = await ref.watch(allEventListProvider(spaceId).future);
   List<ffi.CalendarEvent> allPastEventList = allEventList
-      .where((event) => getEventType(event) == EventFilters.past)
+      .where(
+        (event) => ref.watch(eventTypeProvider(event)) == EventFilters.past,
+      )
       .toList();
   return sortEventListDscTime(allPastEventList);
 });

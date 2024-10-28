@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -17,45 +18,49 @@ class PostAttachmentOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return ListView(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
         ListTile(
-          title: Text(L10n.of(context).newUpdate),
+          title: Text(lang.newUpdate),
         ),
         ListTile(
           key: NewsUpdateKeys.addTextSlide,
           onTap: () {
             Navigator.pop(context);
-            if (onTapAddText != null) onTapAddText!();
+            onTapAddText.map((cb) => cb());
           },
           leading: const Icon(Atlas.size_text),
-          title: Text(L10n.of(context).addTextSlide),
+          title: Text(lang.addTextSlide),
         ),
         ListTile(
           key: NewsUpdateKeys.addImageSlide,
           onTap: () {
             Navigator.pop(context);
-            if (onTapImage != null) onTapImage!();
+            onTapImage.map((cb) => cb());
           },
           leading: const Icon(Atlas.file_image),
-          title: Text(L10n.of(context).selectPicture),
+          title: Text(lang.selectPicture),
         ),
         ListTile(
           key: NewsUpdateKeys.addVideoSlide,
           onTap: () {
             Navigator.pop(context);
-            if (onTapVideo != null) onTapVideo!();
+            onTapVideo.map((cb) => cb());
           },
           leading: const Icon(Atlas.file_video),
-          title: Text(L10n.of(context).selectVideo),
+          title: Text(lang.selectVideo),
         ),
         ListTile(
           key: NewsUpdateKeys.cancelButton,
           onTap: () => Navigator.pop(context),
-          contentPadding: const EdgeInsets.all(0),
-          title: Text(L10n.of(context).cancel, textAlign: TextAlign.center),
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            lang.cancel,
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );

@@ -1,3 +1,4 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/bookmarks/providers/notifiers.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -11,7 +12,7 @@ final bookmarksManagerProvider =
 final bookmarkByTypeProvider =
     FutureProvider.family<List<String>, BookmarkType>((ref, type) async {
   final bookmarks = await ref.watch(bookmarksManagerProvider.future);
-  return (bookmarks.entries(type.name)).map((s) => s.toDartString()).toList();
+  return asDartStringList(bookmarks.entries(type.name));
 });
 
 final isBookmarkedProvider =

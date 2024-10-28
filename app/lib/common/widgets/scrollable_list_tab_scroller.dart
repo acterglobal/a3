@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:scrolls_to_top/scrolls_to_top.dart';
@@ -224,7 +225,7 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
 
     if (orderedListByPositionIndex.length > 1 &&
         orderedListByPositionIndex.last.index == widget.itemCount - 1) {
-      // I dont know why it's not perfectly 1.0
+      // I dont know why it’s not perfectly 1.0
       // 1.01 LGTM
       const fullBottomEdge = 1.01;
       if (orderedListByPositionIndex.last.itemTrailingEdge < fullBottomEdge) {
@@ -287,23 +288,26 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
         ),
         buildCustomBodyContainerOrDefault(
           context: context,
-          child: Builder(builder: (context) {
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              final size = context.size;
-              if (size != null) {
-                _currentPositionedListSize = size;
-              }
-            });
-            return ScrollsToTop(
-              onScrollsToTop: _onScrollsToTop,
-              child: widget.onRefresh != null
-                  ? RefreshIndicator(
-                      onRefresh: widget.onRefresh!,
-                      child: buildScrollabelPositionedList(),
-                    )
-                  : buildScrollabelPositionedList(),
-            );
-          },),
+          child: Builder(
+            builder: (context) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                final size = context.size;
+                if (size != null) {
+                  _currentPositionedListSize = size;
+                }
+              });
+              return ScrollsToTop(
+                onScrollsToTop: _onScrollsToTop,
+                child: widget.onRefresh.map(
+                      (cb) => RefreshIndicator(
+                        onRefresh: cb,
+                        child: buildScrollabelPositionedList(),
+                      ),
+                    ) ??
+                    buildScrollabelPositionedList(),
+              );
+            },
+          ),
         ),
       ],
     );
@@ -363,37 +367,56 @@ class DefaultHeaderWidget extends StatefulWidget {
 }
 
 class _DefaultHeaderWidgetState extends State<DefaultHeaderWidget>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
+    with TickerProviderStateMixin {
+  TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(
+    _setController();
+  }
+
+  void _setController() {
+    _tabController?.dispose();
+    widget.selectedTabIndex.removeListener(externalTabChangeListener);
+    final controller = TabController(
       length: widget.itemCount,
       vsync: this,
     );
-    _tabController.addListener(tabChangeListener);
+    controller.addListener(tabChangeListener);
+    _tabController = controller;
     widget.selectedTabIndex.addListener(externalTabChangeListener);
   }
 
   @override
+  void didUpdateWidget(covariant DefaultHeaderWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.itemCount != widget.itemCount) {
+      _setController();
+    }
+  }
+
+  @override
   void dispose() {
-    _tabController.dispose();
+    _tabController?.dispose();
     widget.selectedTabIndex.removeListener(externalTabChangeListener);
     super.dispose();
   }
 
   void tabChangeListener() {
-    widget.onTapTab(_tabController.index);
+    _tabController.map((controller) => widget.onTapTab(controller.index));
   }
 
   void externalTabChangeListener() {
-    _tabController.index = widget.selectedTabIndex.value;
+    _tabController.map((controller) {
+      controller.index = widget.selectedTabIndex.value;
+    });
   }
 
   void _onTapTab(_) {
-    _tabController.index = widget.selectedTabIndex.value;
+    _tabController.map((controller) {
+      controller.index = widget.selectedTabIndex.value;
+    });
   }
 
   @override

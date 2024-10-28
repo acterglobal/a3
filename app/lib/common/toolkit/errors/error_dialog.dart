@@ -1,12 +1,13 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:quickalert/widgets/quickalert_buttons.dart';
-import 'package:quickalert/widgets/quickalert_container.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:quickalert/models/quickalert_options.dart';
 import 'package:quickalert/quickalert.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:quickalert/widgets/quickalert_buttons.dart';
+import 'package:quickalert/widgets/quickalert_container.dart';
 
 class ActerErrorDialog extends StatelessWidget {
   static const retryBtn = Key('error-dialog-retry-btn');
@@ -89,7 +90,7 @@ class ActerErrorDialog extends StatelessWidget {
             ErrorCode.notFound => lang.notFound,
             _ => lang.fatalError,
           },
-      text: text ?? (textBuilder != null ? textBuilder!(error) : null),
+      text: text ?? textBuilder.map((cb) => cb(error)),
       type: switch (err) {
         ErrorCode.notFound => QuickAlertType.warning,
         _ => QuickAlertType.error,
@@ -99,14 +100,12 @@ class ActerErrorDialog extends StatelessWidget {
       cancelBtnText: lang.back,
       borderRadius: borderRadius,
     );
-    if (onRetryTap != null) {
+    onRetryTap.map((cb) {
       options.showConfirmBtn = true;
       options.confirmBtnColor = theme.primaryColor;
       options.confirmBtnText = lang.retry;
-      options.onConfirmBtnTap = () {
-        onRetryTap!();
-      };
-    }
+      options.onConfirmBtnTap = cb;
+    });
 
     return _ActerErrorAlert(
       error: error,
@@ -152,9 +151,7 @@ class _ActerErrorAlert extends QuickAlertContainer {
               final queryParams = {
                 'error': error.toString(),
               };
-              if (stack != null) {
-                queryParams['stack'] = stack.toString();
-              }
+              stack.map((s) => queryParams['stack'] = s.toString());
               return openBugReport(
                 context,
                 queryParams: queryParams,
@@ -197,7 +194,8 @@ class _ActerErrorActionButtons extends QuickAlertButtons {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
-      color: options.confirmBtnColor ?? Theme.of(context!).primaryColor,
+      color: options.confirmBtnColor ??
+          context.map((ctx) => Theme.of(ctx).primaryColor),
       onPressed: onTap,
       child: Center(
         child: Padding(

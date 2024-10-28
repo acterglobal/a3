@@ -1,10 +1,12 @@
 use acter::{
-    matrix_sdk::config::StoreConfig, ruma_common::OwnedRoomId, testing::ensure_user, Client, Convo,
-    CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder, SyncState,
+    api::{Client, Convo, CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder, SyncState},
+    testing::ensure_user,
 };
 use acter_core::templates::Engine;
 use anyhow::Result;
 use futures::{pin_mut, stream::StreamExt};
+use matrix_sdk::config::StoreConfig;
+use matrix_sdk_base::ruma::OwnedRoomId;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -22,7 +24,7 @@ pub async fn wait_for_convo_joined(client: Client, convo_id: OwnedRoomId) -> Res
     .await
 }
 
-pub async fn accept_all_invites(client: Client) -> Result<Vec<OwnedRoomId>> {
+pub async fn accept_all_invites(client: &Client) -> Result<Vec<OwnedRoomId>> {
     let user_id = client.user_id()?;
     let mut rooms = vec![];
     for invited in client.invited_rooms().iter() {
@@ -35,24 +37,11 @@ pub async fn accept_all_invites(client: Client) -> Result<Vec<OwnedRoomId>> {
 }
 
 pub async fn random_user(prefix: &str) -> Result<Client> {
-    let uuid = Uuid::new_v4().to_string();
-    let user = ensure_user(
-        option_env!("DEFAULT_HOMESERVER_URL")
-            .unwrap_or("http://localhost:8118")
-            .to_string(),
-        option_env!("DEFAULT_HOMESERVER_NAME")
-            .unwrap_or("localhost")
-            .to_string(),
-        format!("it-{prefix}-{uuid}"),
-        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
-        "acter-integration-tests".to_owned(),
-        StoreConfig::default(),
-    )
-    .await?;
+    let (user, _uuid) = _random_user_with_uuid(prefix).await?;
     Ok(user)
 }
 
-pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, OwnedRoomId)> {
+async fn _random_user_with_uuid(prefix: &str) -> Result<(Client, String)> {
     let uuid = Uuid::new_v4().to_string();
     let user = ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
@@ -67,12 +56,49 @@ pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, Owne
         StoreConfig::default(),
     )
     .await?;
+    Ok((user, uuid))
+}
+
+pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, OwnedRoomId)> {
+    let (user, uuid) = _random_user_with_uuid(prefix).await?;
 
     let settings = CreateSpaceSettingsBuilder::default()
         .name(format!("it-room-{prefix}-{uuid}"))
         .build()?;
     let room_id = user.create_acter_space(Box::new(settings)).await?;
     Ok((user, room_id))
+}
+
+pub async fn random_users_with_random_space(
+    prefix: &str,
+    user_count: u8,
+) -> Result<(Vec<Client>, OwnedRoomId)> {
+    let (main_user, uuid) = _random_user_with_uuid(prefix).await?;
+    let mut settings = CreateSpaceSettingsBuilder::default();
+    settings.name(format!("it-room-{prefix}-{uuid}"));
+
+    let mut users = vec![];
+    for _x in 0..user_count {
+        let (new_user, _uuid) = _random_user_with_uuid(prefix).await?;
+        settings.add_invitee(new_user.user_id()?.to_string())?;
+        users.push(new_user)
+    }
+
+    let room_id = main_user
+        .create_acter_space(Box::new(settings.build()?))
+        .await?;
+
+    for user in users.iter() {
+        loop {
+            user.sync_once(Default::default()).await?;
+            let room_ids = accept_all_invites(user).await?;
+            if room_ids.contains(&room_id) {
+                break;
+            }
+        }
+    }
+    users.insert(0, main_user);
+    Ok((users, room_id))
 }
 
 pub async fn random_user_with_random_convo(prefix: &str) -> Result<(Client, OwnedRoomId)> {

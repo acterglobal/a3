@@ -15,7 +15,7 @@ async fn acter_default_push_rules() -> Result<()> {
             .underride
             .iter()
             .any(|r| &r.rule_id == "global.acter.dev.news" && r.enabled),
-        "Push Rule for updates wasn't installed"
+        "Push Rule for updates wasn’t installed"
     );
     Ok(())
 }

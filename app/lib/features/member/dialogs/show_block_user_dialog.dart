@@ -12,34 +12,35 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
   await showDialog(
     context: context,
     builder: (BuildContext context) {
+      final lang = L10n.of(context);
       return AlertDialog(
-        title: Text(L10n.of(context).blockTitle(userId)),
+        title: Text(lang.blockTitle(userId)),
         content: RichText(
           textAlign: TextAlign.left,
           text: TextSpan(
-            text: L10n.of(context).youAreAboutToBlock(userId),
+            text: lang.youAreAboutToBlock(userId),
             style: Theme.of(context).textTheme.headlineMedium,
             children: <TextSpan>[
-              TextSpan(text: L10n.of(context).blockInfoText),
-              TextSpan(text: L10n.of(context).continueQuestion),
+              TextSpan(text: lang.blockInfoText),
+              TextSpan(text: lang.continueQuestion),
             ],
           ),
         ),
         actions: <Widget>[
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(L10n.of(context).no),
+            child: Text(lang.no),
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
-              EasyLoading.show(status: L10n.of(context).blockingUserProgress);
+              EasyLoading.show(status: lang.blockingUserProgress);
               try {
                 await member.ignore();
                 if (!context.mounted) {
                   EasyLoading.dismiss();
                   return;
                 }
-                EasyLoading.showToast(L10n.of(context).blockingUserSuccess);
+                EasyLoading.showToast(lang.blockingUserSuccess);
               } catch (e, s) {
                 _log.severe('Failed to block user', e, s);
                 if (!context.mounted) {
@@ -47,13 +48,13 @@ Future<void> showBlockUserDialog(BuildContext context, Member member) async {
                   return;
                 }
                 EasyLoading.showError(
-                  L10n.of(context).blockingUserFailed(e),
+                  lang.blockingUserFailed(e),
                   duration: const Duration(seconds: 3),
                 );
               }
               Navigator.pop(context);
             },
-            child: Text(L10n.of(context).yes),
+            child: Text(lang.yes),
           ),
         ],
       );

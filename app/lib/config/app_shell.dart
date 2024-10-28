@@ -1,20 +1,19 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/config/notifications/init.dart';
-import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/auth/pages/logged_out_screen.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/cross_signing/widgets/cross_signing.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
+import 'package:acter/features/main/widgets/bottom_navigation_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,7 +26,7 @@ import 'package:logging/logging.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake_detector/shake_detector.dart';
 
-final _log = Logger('a3::home::home_shell');
+final _log = Logger('a3::config::home_shell');
 
 final ScreenshotController screenshotController = ScreenshotController();
 
@@ -61,9 +60,9 @@ class AppShellState extends ConsumerState<AppShell> {
     initShake();
 
     // these want to be sure to execute in order
-    await initNotifications();
+    await _initNotifications();
     // calendar sync
-    await initCalendarSync();
+    await _initCalendarSync();
   }
 
   Future<void> initShake() async {
@@ -78,7 +77,7 @@ class AppShellState extends ConsumerState<AppShell> {
     }
   }
 
-  Future<void> initNotifications() async {
+  Future<void> _initNotifications() async {
     final client = ref.read(clientProvider);
     if (client != null) {
       _initPushForClient(client);
@@ -90,12 +89,23 @@ class AppShellState extends ConsumerState<AppShell> {
     });
   }
 
-  Future<void> _initPushForClient(Client client) async {
-    if (!ref.read(
-      isActiveProvider(LabsFeature.mobilePushNotifications),
-    )) {
-      return;
+  Future<void> _initCalendarSync() async {
+    final client = ref.read(clientProvider);
+    if (client != null) {
+      // calendar sync only works if we have a client
+      await initCalendarSync();
     }
+    ref.listenManual(clientProvider, (previous, next) {
+      if (next != null) {
+        initCalendarSync();
+      }
+    });
+  }
+
+  Future<void> _initPushForClient(Client client) async {
+    final pushActive =
+        ref.read(isActiveProvider(LabsFeature.mobilePushNotifications));
+    if (!pushActive) return;
     _log.info('Attempting to ask for push notifications');
     setupPushNotifications(client);
   }
@@ -123,10 +133,10 @@ class AppShellState extends ConsumerState<AppShell> {
     return CallbackShortcuts(
       bindings: <LogicalKeySet, VoidCallback>{
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): () {
-          context.pushNamed(Routes.quickJump.name);
+          context.goNamed(Routes.search.name);
         },
         LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyK): () {
-          context.pushNamed(Routes.quickJump.name);
+          context.goNamed(Routes.search.name);
         },
       },
       child: KeyboardDismissOnTap(
@@ -171,7 +181,7 @@ class AppShellState extends ConsumerState<AppShell> {
   SlotLayout primaryNavigationLayout() {
     return SlotLayout(
       config: <Breakpoint, SlotLayoutConfig?>{
-        Breakpoints.large: SlotLayout.from(
+        Breakpoints.mediumLargeAndUp: SlotLayout.from(
           key: const Key('primaryNavigation'),
           builder: (BuildContext context) => SidebarWidget(
             navigationShell: widget.navigationShell,
@@ -192,48 +202,6 @@ class AppShellState extends ConsumerState<AppShell> {
     );
   }
 
-  Widget bottomNavigationWidget(BuildContext context) {
-    final keyboardVisibility = ref.watch(keyboardVisibleProvider);
-    if (keyboardVisibility.valueOrNull != false) {
-      return const SizedBox.shrink();
-    }
-    return Stack(
-      children: [
-        SizedBox(
-          height: 50,
-          child: Row(
-            children: bottomBarItems
-                .map(
-                  (bottomBarNav) => Expanded(
-                    child: Center(
-                      child: SizedBox(
-                        key: bottomBarNav.tutorialGlobalKey,
-                        height: 40,
-                        width: 40,
-                      ),
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-        BottomNavigationBar(
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          currentIndex: widget.navigationShell.currentIndex,
-          onTap: (index) {
-            widget.navigationShell.goBranch(
-              index,
-              initialLocation: index == widget.navigationShell.currentIndex,
-            );
-          },
-          items: bottomBarItems,
-          type: BottomNavigationBarType.fixed,
-        ),
-      ],
-    );
-  }
-
   SlotLayout bottomNavigationLayout() {
     return SlotLayout(
       config: <Breakpoint, SlotLayoutConfig>{
@@ -241,13 +209,15 @@ class AppShellState extends ConsumerState<AppShell> {
           key: Keys.mainNav,
           inAnimation: AdaptiveScaffold.bottomToTop,
           outAnimation: AdaptiveScaffold.topToBottom,
-          builder: bottomNavigationWidget,
+          builder: (context) =>
+              BottomNavigationWidget(navigationShell: widget.navigationShell),
         ),
         Breakpoints.medium: SlotLayout.from(
           key: Keys.mainNav,
           inAnimation: AdaptiveScaffold.bottomToTop,
           outAnimation: AdaptiveScaffold.topToBottom,
-          builder: bottomNavigationWidget,
+          builder: (context) =>
+              BottomNavigationWidget(navigationShell: widget.navigationShell),
         ),
       },
     );

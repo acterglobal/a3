@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -23,16 +23,14 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final canPush = (isOnSupportedPlatform && pushServer.isNotEmpty) ||
         (!isOnSupportedPlatform && ntfyServer.isNotEmpty);
     return SettingsTile.switchTile(
-      title: Text(title ?? L10n.of(context).mobilePushNotifications),
-      description:
-          !canPush ? Text(L10n.of(context).noPushServerConfigured) : null,
+      title: Text(title ?? lang.mobilePushNotifications),
+      description: !canPush ? Text(lang.noPushServerConfigured) : null,
       initialValue: canPush &&
-          ref.watch(
-            isActiveProvider(LabsFeature.mobilePushNotifications),
-          ),
+          ref.watch(isActiveProvider(LabsFeature.mobilePushNotifications)),
       enabled: canPush,
       onToggle: (newVal) => onToggle(context, ref, newVal),
     );
@@ -61,15 +59,13 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
         return;
       }
       // second attempt, even sending the user to the settings, they do not
-      // approve. Let's kick it back off
+      // approve. Let’s kick it back off
       await updateFeatureState(ref, LabsFeature.mobilePushNotifications, false);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(
-        lang.changedPushNotificationSettingsSuccessfully,
-      );
+      EasyLoading.showToast(lang.changedPushNotificationSettingsSuccessfully);
     } catch (e, s) {
       _log.severe('Failed to change settings of push notification', e, s);
       if (!context.mounted) {

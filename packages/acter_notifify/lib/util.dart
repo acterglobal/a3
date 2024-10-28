@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter_notifify/platform/android.dart';
 import 'package:acter_notifify/local.dart';
 import 'package:acter_notifify/platform/windows.dart';
+import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -14,6 +15,12 @@ final useLocal = Platform.isAndroid ||
 
 final usePush = Platform.isAndroid || Platform.isIOS;
 
+Future<int> notificationsCount() async {
+  if (Platform.isLinux) return 0; // not supported
+  return (await flutterLocalNotificationsPlugin.getActiveNotifications())
+      .length;
+}
+
 Future<void> removeNotificationsForRoom(String roomId) async {
   await cancelInThread(roomId);
   if (Platform.isAndroid) {
@@ -21,10 +28,17 @@ Future<void> removeNotificationsForRoom(String roomId) async {
   } else if (Platform.isWindows) {
     windowsClearNotificationsCache(roomId);
   }
+  await updateBadgeCount(await notificationsCount());
+}
+
+Future<void> updateBadgeCount(int newCount) async {
+  if (await AppBadgePlus.isSupported()) {
+    await AppBadgePlus.updateBadge(newCount);
+  }
 }
 
 Future<void> cancelInThread(String threadId) async {
-  if (!useLocal) {
+  if (Platform.isLinux || !useLocal) {
     return; // nothing for us to do here.
   }
 

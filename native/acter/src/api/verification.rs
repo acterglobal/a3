@@ -12,16 +12,18 @@ use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     Client as SdkClient,
 };
-use ruma::assign;
-use ruma_client_api::{
-    device::delete_device,
-    uiaa::{AuthData, Password, UserIdentifier},
-};
-use ruma_common::{device_id, OwnedDeviceId, OwnedUserId};
-use ruma_events::{
-    key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
-    room::message::{MessageType, OriginalSyncRoomMessageEvent},
-    AnyToDeviceEvent, EventContent,
+use matrix_sdk_base::ruma::{
+    api::client::{
+        device::delete_device,
+        uiaa::{AuthData, Password, UserIdentifier},
+    },
+    assign, device_id,
+    events::{
+        key::verification::{accept::AcceptMethod, start::StartMethod, VerificationMethod},
+        room::message::{MessageType, OriginalSyncRoomMessageEvent},
+        AnyToDeviceEvent, EventContent,
+    },
+    OwnedDeviceId, OwnedUserId,
 };
 use std::{
     collections::HashMap,
@@ -514,7 +516,7 @@ async fn sas_verification_handler(
                 let value = match serde_json::to_string(&decimals) {
                     Ok(e) => e,
                     Err(e) => {
-                        error!("KeysExchanged: couldn't convert decimals to string");
+                        error!("KeysExchanged: couldn’t convert decimals to string");
                         return Err(e.into());
                     }
                 };
@@ -823,7 +825,7 @@ impl VerificationController {
                                 let secret = match serde_json::to_string(&content.secret) {
                                     Ok(e) => e,
                                     Err(e) => {
-                                        error!("ReciprocateV1: couldn't convert secret to string");
+                                        error!("ReciprocateV1: couldn’t convert secret to string");
                                         return;
                                     }
                                 };
@@ -910,7 +912,7 @@ impl VerificationController {
                         let mac = match serde_json::to_string(&evt.content.mac) {
                             Ok(e) => e,
                             Err(e) => {
-                                error!("KeyVerificationMac: couldn't convert mac to string");
+                                error!("KeyVerificationMac: couldn’t convert mac to string");
                                 return;
                             }
                         };

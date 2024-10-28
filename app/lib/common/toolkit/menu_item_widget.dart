@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:flutter/material.dart';
 
 class MenuItemWidget extends StatelessWidget {
@@ -9,6 +10,7 @@ class MenuItemWidget extends StatelessWidget {
   final VoidCallback? onTap;
   final bool enabled;
   final bool withMenu;
+  final Widget? trailing;
   final Key? innerKey;
   final VisualDensity? visualDensity;
 
@@ -17,6 +19,7 @@ class MenuItemWidget extends StatelessWidget {
     this.innerKey,
     this.iconData,
     this.iconColor,
+    this.trailing,
     required this.title,
     this.visualDensity,
     this.titleStyles,
@@ -28,36 +31,30 @@ class MenuItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final disabledColor = Theme.of(context).disabledColor;
     return Card(
       child: ListTile(
         key: innerKey,
         onTap: onTap,
         visualDensity: visualDensity,
-        leading: iconData != null
-            ? Icon(
-                iconData,
-                color: enabled ? iconColor : Theme.of(context).disabledColor,
-              )
-            : null,
-        title: Text(
-          title,
-          style: titleStyles?.copyWith(
-            color: enabled ? null : Theme.of(context).disabledColor,
+        leading: iconData.map(
+          (data) => Icon(
+            data,
+            color: enabled ? iconColor : disabledColor,
           ),
         ),
-        subtitle: subTitle != null
-            ? Text(
-                subTitle!,
-                style: titleStyles?.copyWith(
-                  color: enabled ? null : Theme.of(context).disabledColor,
-                ),
-              )
-            : null,
-        trailing: withMenu
-            ? const Icon(
-                Icons.keyboard_arrow_right_outlined,
-              )
-            : null,
+        title: Text(
+          title,
+          style: titleStyles?.copyWith(color: enabled ? null : disabledColor),
+        ),
+        subtitle: subTitle.map(
+          (t) => Text(
+            t,
+            style: titleStyles?.copyWith(color: enabled ? null : disabledColor),
+          ),
+        ),
+        trailing: trailing ??
+            (withMenu ? const Icon(Icons.keyboard_arrow_right_outlined) : null),
       ),
     );
   }

@@ -3,19 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // reusable outer attachment container UI
 class AttachmentContainer extends ConsumerWidget {
+  final String name;
+  final Widget child;
+
   const AttachmentContainer({
     super.key,
     required this.name,
     required this.child,
   });
-  final String name;
-  final Widget child;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final containerColor = Theme.of(context).colorScheme.surface;
     final borderColor = Theme.of(context).colorScheme.primary;
-    final containerTextStyle = Theme.of(context).textTheme.bodySmall;
+    final containerStyle = Theme.of(context).textTheme.bodySmall;
     return Container(
       height: 100,
       width: 100,
@@ -30,11 +31,13 @@ class AttachmentContainer extends ConsumerWidget {
         children: [
           Expanded(child: child),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 3,
+              vertical: 6,
+            ),
             child: Text(
               name,
-              style:
-                  containerTextStyle!.copyWith(overflow: TextOverflow.ellipsis),
+              style: containerStyle?.copyWith(overflow: TextOverflow.ellipsis),
             ),
           ),
         ],

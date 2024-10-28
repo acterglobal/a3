@@ -1,10 +1,11 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/common/widgets/visibility/room_visibilty_type.dart';
+import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -178,11 +179,12 @@ class _VisibilityAccessibilityPageState
     Widget? subtitle,
     void Function()? removeAction,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 5),
       shape: RoundedRectangleBorder(
         side: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
+          color: colorScheme.primary,
           width: 1.5,
         ),
         borderRadius: BorderRadius.circular(6),
@@ -202,7 +204,7 @@ class _VisibilityAccessibilityPageState
           onPressed: removeAction,
           icon: Icon(
             Atlas.trash,
-            color: Theme.of(context).colorScheme.error,
+            color: colorScheme.error,
           ),
         ),
       ),
@@ -210,19 +212,8 @@ class _VisibilityAccessibilityPageState
   }
 
   Widget _spaceItemUI(String spaceId, bool canEdit) {
-    final spaceLoader = ref.watch(briefSpaceItemProvider(spaceId));
-    return spaceLoader.when(
-      data: (space) => _spaceFoundUI(space, canEdit),
-      error: (e, s) {
-        _log.severe('Failed to load brief of space', e, s);
-        return _spaceItemCard(
-          spaceId,
-          subtitle: Text(L10n.of(context).failedToLoadSpace(e)),
-          removeAction: canEdit ? () => removeSpace(spaceId) : null,
-        );
-      },
-      loading: _loadingSpaceItem,
-    );
+    final space = ref.watch(briefSpaceItemProvider(spaceId));
+    return _spaceFoundUI(space, canEdit);
   }
 
   Widget _spaceFoundUI(SpaceItem spaceItem, bool canEdit) {
@@ -246,10 +237,9 @@ class _VisibilityAccessibilityPageState
   }
 
   Future<void> removeSpace(String spaceId) async {
-    final newList =
-        (await ref.read(joinRulesAllowedRoomsProvider(spaceId).future))
-            .where((id) => id != spaceId)
-            .toList();
+    final allowedRooms =
+        await ref.read(joinRulesAllowedRoomsProvider(widget.roomId).future);
+    final newList = allowedRooms.where((id) => id != spaceId).toList();
     final visibility =
         newList.isEmpty ? RoomVisibility.Private : RoomVisibility.SpaceVisible;
     await updateSpaceVisibility(visibility, spaceIds: newList);
@@ -260,7 +250,7 @@ class _VisibilityAccessibilityPageState
       final spaceId = await selectSpaceDrawer(context: context);
       if (spaceId != null) {
         final spaceList =
-            await ref.read(joinRulesAllowedRoomsProvider(spaceId).future);
+            await ref.read(joinRulesAllowedRoomsProvider(roomId).future);
         final isAlreadyAdded = spaceList.any((roomId) => roomId == spaceId);
         if (!isAlreadyAdded) {
           spaceList.add(spaceId);
@@ -305,7 +295,7 @@ class _VisibilityAccessibilityPageState
           break;
         case RoomVisibility.SpaceVisible:
           update.joinRule('restricted');
-          for (var roomId in (spaceIds ?? [])) {
+          for (final roomId in (spaceIds ?? [])) {
             update.addRoom(roomId);
           }
           break;

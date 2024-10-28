@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/widgets/emoji/emoji_reaction_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -41,57 +42,52 @@ class _EmojiContainerState extends State<EmojiContainer>
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> reactions = {};
-    List<String> keys = [];
-    final metadata = widget.message.metadata;
-    if (metadata == null || !metadata.containsKey('reactions')) {
-      return const SizedBox();
-    }
-    reactions = metadata['reactions'];
-    keys = reactions.keys.toList();
+    final colorScheme = Theme.of(context).colorScheme;
+    Map<String, dynamic>? reactions = widget.message.metadata?['reactions'];
+    if (reactions == null) return const SizedBox();
+    final children = reactions.keys.map((key) {
+      final records = reactions[key] as List<ReactionRecord>;
+      final sentByMe = records.any((x) => x.sentByMe());
+      final emoji = Text(key, style: EmojiConfig.emojiTextStyle);
+      final moreThanOne = records.length > 1;
+      return InkWell(
+        onLongPress: () {
+          showEmojiReactionsSheet(reactions, widget.roomId);
+        },
+        onTap: () {
+          widget.onToggle(widget.message.id, key);
+        },
+        child: Chip(
+          padding: moreThanOne
+              ? const EdgeInsets.only(right: 4)
+              : const EdgeInsets.symmetric(horizontal: 2),
+          backgroundColor:
+              sentByMe ? colorScheme.secondaryContainer : colorScheme.surface,
+          visualDensity: VisualDensity.compact,
+          labelPadding: const EdgeInsets.all(0),
+          shape: const StadiumBorder(
+            side: BorderSide(color: Colors.transparent),
+          ),
+          avatar: moreThanOne ? emoji : null,
+          label: moreThanOne
+              ? Text(
+                  records.length.toString(),
+                  style: Theme.of(context).textTheme.labelSmall,
+                )
+              : emoji,
+        ),
+      );
+    }).toList();
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-      color: Theme.of(context).colorScheme.surface,
+      margin: const EdgeInsets.symmetric(
+        horizontal: 5,
+        vertical: 2,
+      ),
+      color: colorScheme.surface,
       child: Wrap(
         direction: Axis.horizontal,
         runSpacing: 3,
-        children: List.generate(keys.length, (int index) {
-          String key = keys[index];
-          final records = reactions[key]! as List<ReactionRecord>;
-          final sentByMe = records.any((x) => x.sentByMe());
-          final emoji = Text(key, style: EmojiConfig.emojiTextStyle);
-          final moreThanOne = records.length > 1;
-          return InkWell(
-            onLongPress: () {
-              showEmojiReactionsSheet(reactions, widget.roomId);
-            },
-            onTap: () {
-              widget.onToggle(widget.message.id, key);
-            },
-            child: Chip(
-              padding: moreThanOne
-                  ? const EdgeInsets.only(right: 4)
-                  : const EdgeInsets.symmetric(horizontal: 2),
-              backgroundColor: sentByMe
-                  ? Theme.of(context).colorScheme.secondaryContainer
-                  : Theme.of(context).colorScheme.surface,
-              visualDensity: VisualDensity.compact,
-              labelPadding: const EdgeInsets.all(0),
-              shape: const StadiumBorder(
-                side: BorderSide(
-                  color: Colors.transparent,
-                ),
-              ),
-              avatar: moreThanOne ? emoji : null,
-              label: moreThanOne
-                  ? Text(
-                      records.length.toString(),
-                      style: Theme.of(context).textTheme.labelSmall,
-                    )
-                  : emoji,
-            ),
-          );
-        }),
+        children: children,
       ),
     );
   }
@@ -112,24 +108,32 @@ class _EmojiContainerState extends State<EmojiContainer>
           userId,
           () => List<String>.empty(growable: true),
         );
-        usersByReaction[key]!.add(userId);
-        reactionsByUsers[userId]!.add(key);
+        usersByReaction[key]
+            .expect('reactors of $key not available')
+            .add(userId);
+        reactionsByUsers[userId]
+            .expect('reactions from $userId not available')
+            .add(key);
       }
     });
     // sort the users per item on the number of emojis sent - highest first
     usersByReaction.forEach((key, users) {
-      users.sort(
-        (userIdA, userIdB) => reactionsByUsers[userIdB]!
-            .length
-            .compareTo(reactionsByUsers[userIdA]!.length),
-      );
+      users.sort((userIdA, userIdB) {
+        final reactionsA = reactionsByUsers[userIdA]
+            .expect('reactions from $userIdA not available');
+        final reactionsB = reactionsByUsers[userIdB]
+            .expect('reactions from $userIdB not available');
+        return reactionsB.length.compareTo(reactionsA.length);
+      });
     });
     final allUsers = reactionsByUsers.keys.toList();
-    allUsers.sort(
-      (userIdA, userIdB) => reactionsByUsers[userIdB]!
-          .length
-          .compareTo(reactionsByUsers[userIdA]!.length),
-    );
+    allUsers.sort((userIdA, userIdB) {
+      final reactionsA = reactionsByUsers[userIdA]
+          .expect('reactions from $userIdA not available');
+      final reactionsB = reactionsByUsers[userIdB]
+          .expect('reactions from $userIdB not available');
+      return reactionsB.length.compareTo(reactionsA.length);
+    });
 
     num total = 0;
     if (mounted) {
@@ -139,7 +143,10 @@ class _EmojiContainerState extends State<EmojiContainer>
           reactionTabs.add(
             Tab(
               child: Chip(
-                avatar: Text(key, style: EmojiConfig.emojiTextStyle),
+                avatar: Text(
+                  key,
+                  style: EmojiConfig.emojiTextStyle,
+                ),
                 label: Text('${value.length}'),
               ),
             ),
@@ -201,10 +208,11 @@ class _EmojiContainerState extends State<EmojiContainer>
                       users: allUsers,
                       usersMap: reactionsByUsers,
                     ),
-                    for (var key in keys)
+                    for (final key in keys)
                       _ReactionListing(
                         roomId: roomId,
-                        users: usersByReaction[key]!,
+                        users: usersByReaction[key]
+                            .expect('reactors of $key not available'),
                         usersMap: reactionsByUsers,
                       ),
                   ],
@@ -240,10 +248,11 @@ class _ReactionListing extends StatelessWidget {
       shrinkWrap: true,
       itemCount: users.length,
       itemBuilder: (BuildContext context, int index) {
+        final userId = users[index];
         return EmojiReactionItem(
           roomId: roomId,
-          userId: users[index],
-          emojis: usersMap[users[index]]!,
+          userId: userId,
+          emojis: usersMap[userId].expect('emojis from $userId not available'),
         );
       },
       separatorBuilder: (BuildContext context, int index) {

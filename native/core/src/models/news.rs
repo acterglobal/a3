@@ -1,5 +1,4 @@
-use ruma_common::{EventId, RoomId, UserId};
-use ruma_events::OriginalMessageLikeEvent;
+use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
@@ -58,7 +57,11 @@ impl ActerModel for NewsEntry {
     }
 
     fn capabilities(&self) -> &[Capability] {
-        &[Capability::Commentable, Capability::Reactable]
+        &[
+            Capability::Commentable,
+            Capability::Reactable,
+            Capability::ReadTracking,
+        ]
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

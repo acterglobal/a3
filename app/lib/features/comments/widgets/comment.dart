@@ -22,14 +22,17 @@ class CommentWidget extends ConsumerWidget {
     final userId = comment.sender().toString();
     final msgContent = comment.msgContent();
     final formatted = msgContent.formattedBody();
-    var commentTime =
-        DateTime.fromMillisecondsSinceEpoch(comment.originServerTs());
-    final time = commentTime.timeago();
+    final commentTime = DateTime.fromMillisecondsSinceEpoch(
+      comment.originServerTs(),
+      isUtc: true,
+    );
+    final time = commentTime.toLocal().timeago();
     final avatarInfo = ref.watch(
       memberAvatarInfoProvider((roomId: roomID, userId: userId)),
     );
-
     final displayName = avatarInfo.displayName;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -43,24 +46,22 @@ class CommentWidget extends ConsumerWidget {
             ),
             title: Text(
               displayName ?? userId,
-              style: Theme.of(context).textTheme.titleSmall,
+              style: textTheme.titleSmall,
             ),
             subtitle: displayName == null ? null : Text(userId),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: formatted != null
-                ? RenderHtml(
-                    text: formatted,
-                  )
+                ? RenderHtml(text: formatted)
                 : Text(msgContent.body()),
           ),
           const SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              time.toString(),
-              style: Theme.of(context).textTheme.labelMedium,
+              time,
+              style: textTheme.labelMedium,
             ),
           ),
           const SizedBox(height: 16),

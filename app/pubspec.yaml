@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
 
   # UI
-  flutter_adaptive_scaffold: ^0.2.2
+  flutter_adaptive_scaffold: ^0.3.1
   atlas_icons: ^0.0.12
   skeletonizer: ^1.1.1
   flutter_chat_ui: ^1.6.9
@@ -49,7 +49,7 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   expandable_text: ^2.3.0
   cached_network_image: ^3.4.1
-  fc_native_video_thumbnail: ^0.11.1
+  fc_native_video_thumbnail: ^0.12.0
   flutter_matrix_html:
     # path: "../../flutter_matrix_html"
     git:
@@ -76,7 +76,6 @@ dependencies:
   freezed: ^2.5.7
   acter_flutter_sdk:
     path: ../packages/rust_sdk
-  mockito: ^5.4.4
 
   # State Management
   flutter_riverpod: ^2.5.1
@@ -134,7 +133,11 @@ dependencies:
   firebase_core: ^3.4.0
   scrolls_to_top: ^2.1.1
   scrollable_positioned_list: ^0.3.8
-  secure_application: ^4.0.1
+  secure_application: 
+    # path: "../../secure_application"
+    git:
+      url: https://github.com/acterglobal/secure_application
+      ref: acter
   flutter_simple_calculator: ^2.3.0
   diffutil_dart: ^4.0.1
   tray_manager: ^0.2.3
@@ -149,15 +152,18 @@ dependencies:
     path: ../packages/shake_detector
   open_filex: ^4.5.0
   phosphor_flutter: ^2.1.0
-  device_calendar: ^4.3.2
+  device_calendar: ^4.3.3-20240801
   quickalert: ^1.1.0
+  drag_and_drop_lists: ^0.4.1
+  permission_handler: ^11.3.1
+  hooks_riverpod: ^2.6.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
-  icons_launcher: ^2.0.7
+  icons_launcher: ^3.0.0
   flutter_lints: ^4.0.0
   build_runner: ^2.4.12
   convenient_test: ^1.3.7
@@ -167,39 +173,25 @@ dev_dependencies:
       url: https://github.com/gnunicorn/flutter_convenient_test/
       ref: ben-cli-limit-tests
       path: packages/convenient_test_manager_dart
-  msix: #^3.7.0
-    # FIXME mainline `msix` comes with outdated VS redistribution libs
-    # that make our app crash. We already copy over the proper ones in the
-    # CI job, it we need a msix-version that doesn't copy over its own bad ones
-    # see https://github.com/YehudaKremer/msix/issues/272#issuecomment-2181634105
-    git:
-      url: https://github.com/insertjokehere/msix.git
-      ref: msvc_redist
-  # mockito: ^5.4.2
+  msix: ^3.7.0
   uuid: ^4.0.0
   enough_mail: ^2.1.6
   sentry_dart_plugin: ^2.0.0
   translations_cleaner: ^0.0.5
   enven: ^1.0.1
+  mockingjay: ^0.6.0
+  mocktail: ^1.0.4
 
 dependency_overrides:
-  flutter_secure_storage_linux:
-    git:
-      url: https://github.com/gnunicorn/flutter_secure_storage/
-      ref: ben-fix-linux-secret-store-problem
-      path: flutter_secure_storage_linux
 
-  firebase_core:
-    git:
-      url: https://github.com/firebase/flutterfire/
-      path:  packages/firebase_core/firebase_core
-      ref: feat/update-web100
-
-  firebase_core_web:
-    git:
-      url: https://github.com/firebase/flutterfire/
-      path:  packages/firebase_core/firebase_core_web
-      ref: feat/update-web100
+  # msix: #^3.7.0
+  #   # FIXME mainline `msix` comes with outdated VS redistribution libs
+  #   # that make our app crash. We already copy over the proper ones in the
+  #   # CI job, it we need a msix-version that doesn't copy over its own bad ones
+  #   # see https://github.com/YehudaKremer/msix/issues/272#issuecomment-2181634105
+  #   git:
+  #     url: https://github.com/insertjokehere/msix.git
+  #     ref: msvc_redist
 sentry:
   upload_debug_symbols: true
   upload_source_maps: false

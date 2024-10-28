@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
@@ -9,6 +10,7 @@ import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -24,15 +26,16 @@ final _log = Logger('a3::cal_event::list');
 class EventListPage extends ConsumerStatefulWidget {
   final String? spaceId;
 
-  const EventListPage({super.key, this.spaceId});
+  const EventListPage({
+    super.key,
+    this.spaceId,
+  });
 
   @override
   ConsumerState<EventListPage> createState() => _EventListPageState();
 }
 
 class _EventListPageState extends ConsumerState<EventListPage> {
-  final TextEditingController searchTextController = TextEditingController();
-
   String get searchValue => ref.watch(searchValueProvider);
 
   EventFilters get eventFilterValue => ref.watch(eventFilterProvider);
@@ -46,6 +49,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
   }
 
   AppBar _buildAppBar() {
+    final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
       title: Column(
@@ -53,15 +57,13 @@ class _EventListPageState extends ConsumerState<EventListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(L10n.of(context).events),
-          if (widget.spaceId != null)
-            SpaceNameWidget(
-              spaceId: widget.spaceId!,
-            ),
+          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
         ],
       ),
       actions: [
         AddButtonWithCanPermission(
           canString: 'CanPostEvent',
+          spaceId: widget.spaceId,
           onPressed: () => context.pushNamed(
             Routes.createEvent.name,
             queryParameters: {'spaceId': widget.spaceId},
@@ -81,7 +83,13 @@ class _EventListPageState extends ConsumerState<EventListPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActerSearchWidget(searchTextController: searchTextController),
+        ActerSearchWidget(
+          onChanged: (value) {
+            final notifier = ref.read(searchValueProvider.notifier);
+            notifier.state = value;
+          },
+          onClear: () => ref.read(searchValueProvider.notifier).state = '',
+        ),
         filterChipsButtons(),
         Expanded(
           child: calEventsLoader.when(
@@ -109,50 +117,59 @@ class _EventListPageState extends ConsumerState<EventListPage> {
   }
 
   Widget filterChipsButtons() {
+    final lang = L10n.of(context);
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 4,
+        ),
         child: Wrap(
           children: [
             FilterChip(
               selected: eventFilterValue == EventFilters.all,
-              label: Text(L10n.of(context).all),
-              onSelected: (value) => ref
-                  .read(eventFilterProvider.notifier)
-                  .state = EventFilters.all,
+              label: Text(lang.all),
+              onSelected: (value) {
+                final notifier = ref.read(eventFilterProvider.notifier);
+                notifier.state = EventFilters.all;
+              },
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: eventFilterValue == EventFilters.bookmarked,
-              label: Text(L10n.of(context).bookmarked),
-              onSelected: (value) => ref
-                  .read(eventFilterProvider.notifier)
-                  .state = EventFilters.bookmarked,
+              label: Text(lang.bookmarked),
+              onSelected: (value) {
+                final notifier = ref.read(eventFilterProvider.notifier);
+                notifier.state = EventFilters.bookmarked;
+              },
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: eventFilterValue == EventFilters.ongoing,
-              label: Text(L10n.of(context).happeningNow),
-              onSelected: (value) => ref
-                  .read(eventFilterProvider.notifier)
-                  .state = EventFilters.ongoing,
+              label: Text(lang.happeningNow),
+              onSelected: (value) {
+                final notifier = ref.read(eventFilterProvider.notifier);
+                notifier.state = EventFilters.ongoing;
+              },
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: eventFilterValue == EventFilters.upcoming,
-              label: Text(L10n.of(context).upcoming),
-              onSelected: (value) => ref
-                  .read(eventFilterProvider.notifier)
-                  .state = EventFilters.upcoming,
+              label: Text(lang.upcoming),
+              onSelected: (value) {
+                final notifier = ref.read(eventFilterProvider.notifier);
+                notifier.state = EventFilters.upcoming;
+              },
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: eventFilterValue == EventFilters.past,
-              label: Text(L10n.of(context).past),
-              onSelected: (value) => ref
-                  .read(eventFilterProvider.notifier)
-                  .state = EventFilters.past,
+              label: Text(lang.past),
+              onSelected: (value) {
+                final notifier = ref.read(eventFilterProvider.notifier);
+                notifier.state = EventFilters.past;
+              },
             ),
           ],
         ),
@@ -171,10 +188,11 @@ class _EventListPageState extends ConsumerState<EventListPage> {
       child: StaggeredGrid.count(
         crossAxisCount: max(1, min(widthCount, minCount)),
         children: [
-          for (var event in events)
+          for (final event in events)
             EventItem(
               event: event,
               isShowSpaceName: widget.spaceId == null,
+              eventType: ref.watch(eventTypeProvider(event)),
             ),
         ],
       ),
@@ -184,18 +202,18 @@ class _EventListPageState extends ConsumerState<EventListPage> {
   Widget _buildEventsEmptyState() {
     var canAdd = false;
     if (searchValue.isEmpty) {
-      final canPostLoader = ref.watch(
-        hasSpaceWithPermissionProvider('CanPostEvent'),
-      );
+      final canPostLoader =
+          ref.watch(hasSpaceWithPermissionProvider('CanPostEvent'));
       if (canPostLoader.valueOrNull == true) canAdd = true;
     }
+    final lang = L10n.of(context);
     return Center(
       heightFactor: 1,
       child: EmptyState(
         title: searchValue.isNotEmpty
-            ? L10n.of(context).noMatchingEventsFound
-            : L10n.of(context).noEventsFound,
-        subtitle: L10n.of(context).noEventAvailableDescription,
+            ? lang.noMatchingEventsFound
+            : lang.noEventsFound,
+        subtitle: lang.noEventAvailableDescription,
         image: 'assets/images/empty_event.svg',
         primaryButton: canAdd
             ? ActerPrimaryActionButton(
@@ -203,7 +221,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
                   Routes.createEvent.name,
                   queryParameters: {'spaceId': widget.spaceId},
                 ),
-                child: Text(L10n.of(context).addEvent),
+                child: Text(lang.addEvent),
               )
             : null,
       ),

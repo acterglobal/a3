@@ -10,7 +10,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 
-final _log = Logger('a3::bug_report');
+final _log = Logger('a3::bug_report::submit_bug_report');
 
 Future<String> submitBugReport({
   bool withLog = false,
@@ -54,12 +54,14 @@ Future<String> submitBugReport({
   if (withPrevLogFile) {
     String? prevLogFile = sdk.previousLogPath;
     if (prevLogFile != null) {
+      final basename = basenameWithoutExtension(prevLogFile);
+      final suffix = Random().nextInt(10000);
       request.files.add(
         http.MultipartFile.fromBytes(
           'log',
           File(prevLogFile).readAsBytesSync(),
-          filename:
-              '${basenameWithoutExtension(prevLogFile)}-${Random().nextInt(10000)}.log', // randomize to ensure the server doesn't overwrite any previous one...
+          // randomize to ensure the server doesn’t overwrite any previous one...
+          filename: '$basename-$suffix.log',
           contentType: MediaType('text', 'plain'),
         ),
       );

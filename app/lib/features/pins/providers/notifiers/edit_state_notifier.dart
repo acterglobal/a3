@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:flutter/material.dart';
@@ -6,7 +7,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::pins::edit_state');
+final _log = Logger('a3::pins::edit_state_notifier');
 
 class PinEditNotifier extends StateNotifier<PinEditState> {
   final ActerPin pin;
@@ -70,12 +71,12 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
           hasChanges = true;
         }
 
-        if (state.html != null) {
-          if (content.formattedBody() != state.html) {
-            updateBuilder.contentHtml(state.markdown, state.html!);
+        state.html.map((html) {
+          if (content.formattedBody() != html) {
+            updateBuilder.contentHtml(state.markdown, html);
             hasChanges = true;
           }
-        }
+        });
       }
 
       if (hasChanges) {

@@ -1,4 +1,5 @@
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -62,6 +63,8 @@ Future<String?> selectEventDrawer({
                         itemBuilder: (context, index) => EventItem(
                           event: calEvents[index],
                           isShowRsvp: false,
+                          eventType:
+                              ref.read(eventTypeProvider(calEvents[index])),
                           onTapEventItem: (event) {
                             Navigator.pop(context, event);
                           },

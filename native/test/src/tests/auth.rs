@@ -1,14 +1,12 @@
-use acter::{
-    api::{
-        guest_client, login_new_client, login_new_client_under_config,
-        login_with_token_under_config, make_client_config, request_password_change_token_via_email,
-        request_registration_token_via_email, reset_password,
-    },
-    matrix_sdk::reqwest::{Client as ReqClient, Response as ReqResponse},
+use acter::api::{
+    guest_client, login_new_client, login_new_client_under_config, login_with_token_under_config,
+    make_client_config, request_password_change_token_via_email,
+    request_registration_token_via_email, reset_password,
 };
 use anyhow::{bail, Context, Result};
 use mail_parser::MessageParser;
 use mailhog_rs::{MailHog, MessageList, SearchKind, SearchParams};
+use matrix_sdk::reqwest::{Client as ReqClient, Response as ReqResponse};
 use regex::Regex;
 use tempfile::TempDir;
 use tokio_retry::{
@@ -227,10 +225,10 @@ async fn user_changes_password() -> Result<()> {
     let result = account
         .change_password(password.clone(), new_password.clone())
         .await?;
-    assert!(result, "Couldn't change password successfully");
+    assert!(result, "Couldn’t change password successfully");
 
     let result = client.logout().await?;
-    assert!(result, "Couldn't logout successfully");
+    assert!(result, "Couldn’t logout successfully");
 
     let base_dir = TempDir::new()?;
     let media_dir = TempDir::new()?;
@@ -247,7 +245,7 @@ async fn user_changes_password() -> Result<()> {
 
     let old_pswd_res =
         login_new_client_under_config(config.clone(), uid.clone(), password, None, None).await;
-    assert!(old_pswd_res.is_err(), "Can't login with old password");
+    assert!(old_pswd_res.is_err(), "Can’t login with old password");
 
     let new_pswd_res = login_new_client_under_config(config, uid, new_password, None, None).await;
     assert!(

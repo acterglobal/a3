@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
@@ -23,17 +24,19 @@ class TasksListPage extends ConsumerStatefulWidget {
   static const scrollView = Key('space-task-lists');
   static const createNewTaskListKey = Key('tasks-create-list');
   static const taskListsKey = Key('tasks-task-lists');
+
   final String? spaceId;
 
-  const TasksListPage({super.key, this.spaceId});
+  const TasksListPage({
+    super.key,
+    this.spaceId,
+  });
 
   @override
   ConsumerState<TasksListPage> createState() => _TasksListPageConsumerState();
 }
 
 class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
-  final TextEditingController searchTextController = TextEditingController();
-
   String get searchValue => ref.watch(searchValueProvider);
   final ValueNotifier<bool> showCompletedTask = ValueNotifier(false);
 
@@ -46,17 +49,16 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   }
 
   AppBar _buildAppBar() {
+    final lang = L10n.of(context);
+    final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
       title: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(L10n.of(context).tasks),
-          if (widget.spaceId != null)
-            SpaceNameWidget(
-              spaceId: widget.spaceId!,
-            ),
+          Text(lang.tasks),
+          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
         ],
       ),
       actions: [
@@ -71,11 +73,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
                     : Icons.visibility_outlined,
                 size: 18,
               ),
-              label: Text(
-                value
-                    ? L10n.of(context).hideCompleted
-                    : L10n.of(context).showCompleted,
-              ),
+              label: Text(value ? lang.hideCompleted : lang.showCompleted),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
               ),
@@ -84,10 +82,11 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         ),
         AddButtonWithCanPermission(
           key: TasksListPage.createNewTaskListKey,
+          spaceId: spaceId,
           canString: 'CanPostTaskList',
           onPressed: () => showCreateUpdateTaskListBottomSheet(
             context,
-            initialSelectedSpace: widget.spaceId,
+            initialSelectedSpace: spaceId,
           ),
         ),
       ],
@@ -104,7 +103,14 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
-          searchTextController: searchTextController,
+          onChanged: (value) {
+            final notifier = ref.read(searchValueProvider.notifier);
+            notifier.state = value;
+          },
+          onClear: () {
+            final notifier = ref.read(searchValueProvider.notifier);
+            notifier.state = '';
+          },
         ),
         Expanded(
           child: tasklistsLoader.when(
@@ -115,9 +121,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
                 background: const TasksListSkeleton(),
                 error: error,
                 stack: stack,
-                onRetryTap: () {
-                  ref.invalidate(allTasksListsProvider);
-                },
+                onRetryTap: () => ref.invalidate(allTasksListsProvider),
               );
             },
             loading: () => const TasksListSkeleton(),
@@ -139,7 +143,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
       child: StaggeredGrid.count(
         crossAxisCount: max(1, min(widthCount, minCount)),
         children: [
-          for (var tasklistId in tasklists)
+          for (final tasklistId in tasklists)
             ValueListenableBuilder(
               valueListenable: showCompletedTask,
               builder: (context, value, child) => TaskListItemCard(
@@ -154,20 +158,20 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   }
 
   Widget _buildTasklistsEmptyState() {
+    final lang = L10n.of(context);
     var canAdd = false;
     if (searchValue.isEmpty) {
-      final canPostLoader = ref.watch(
-        hasSpaceWithPermissionProvider('CanPostTaskList'),
-      );
+      final canPostLoader =
+          ref.watch(hasSpaceWithPermissionProvider('CanPostTaskList'));
       if (canPostLoader.valueOrNull == true) canAdd = true;
     }
     return Center(
       heightFactor: 1,
       child: EmptyState(
         title: searchValue.isNotEmpty
-            ? L10n.of(context).noMatchingTasksListFound
-            : L10n.of(context).noTasksListAvailableYet,
-        subtitle: L10n.of(context).noTasksListAvailableDescription,
+            ? lang.noMatchingTasksListFound
+            : lang.noTasksListAvailableYet,
+        subtitle: lang.noTasksListAvailableDescription,
         image: 'assets/images/tasks.svg',
         primaryButton: canAdd
             ? ActerPrimaryActionButton(
@@ -175,7 +179,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
                   context,
                   initialSelectedSpace: widget.spaceId,
                 ),
-                child: Text(L10n.of(context).createTaskList),
+                child: Text(lang.createTaskList),
               )
             : null,
       ),
