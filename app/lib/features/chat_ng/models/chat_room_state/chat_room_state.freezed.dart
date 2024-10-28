@@ -617,7 +617,8 @@ abstract class _ChatRoomLoadingStateError implements ChatRoomLoadingState {
 
 /// @nodoc
 mixin _$ChatRoomState {
-  List<Message> get messages => throw _privateConstructorUsedError;
+  List<String> get messageList => throw _privateConstructorUsedError;
+  Map<String, RoomMessage> get messages => throw _privateConstructorUsedError;
   ChatRoomLoadingState get loading => throw _privateConstructorUsedError;
   bool get hasMore => throw _privateConstructorUsedError;
 
@@ -635,7 +636,10 @@ abstract class $ChatRoomStateCopyWith<$Res> {
       _$ChatRoomStateCopyWithImpl<$Res, ChatRoomState>;
   @useResult
   $Res call(
-      {List<Message> messages, ChatRoomLoadingState loading, bool hasMore});
+      {List<String> messageList,
+      Map<String, RoomMessage> messages,
+      ChatRoomLoadingState loading,
+      bool hasMore});
 
   $ChatRoomLoadingStateCopyWith<$Res> get loading;
 }
@@ -655,15 +659,20 @@ class _$ChatRoomStateCopyWithImpl<$Res, $Val extends ChatRoomState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? messageList = null,
     Object? messages = null,
     Object? loading = null,
     Object? hasMore = null,
   }) {
     return _then(_value.copyWith(
+      messageList: null == messageList
+          ? _value.messageList
+          : messageList // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       messages: null == messages
           ? _value.messages
           : messages // ignore: cast_nullable_to_non_nullable
-              as List<Message>,
+              as Map<String, RoomMessage>,
       loading: null == loading
           ? _value.loading
           : loading // ignore: cast_nullable_to_non_nullable
@@ -695,7 +704,10 @@ abstract class _$$ChatRoomStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<Message> messages, ChatRoomLoadingState loading, bool hasMore});
+      {List<String> messageList,
+      Map<String, RoomMessage> messages,
+      ChatRoomLoadingState loading,
+      bool hasMore});
 
   @override
   $ChatRoomLoadingStateCopyWith<$Res> get loading;
@@ -714,15 +726,20 @@ class __$$ChatRoomStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? messageList = null,
     Object? messages = null,
     Object? loading = null,
     Object? hasMore = null,
   }) {
     return _then(_$ChatRoomStateImpl(
+      messageList: null == messageList
+          ? _value._messageList
+          : messageList // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       messages: null == messages
           ? _value._messages
           : messages // ignore: cast_nullable_to_non_nullable
-              as List<Message>,
+              as Map<String, RoomMessage>,
       loading: null == loading
           ? _value.loading
           : loading // ignore: cast_nullable_to_non_nullable
@@ -737,20 +754,32 @@ class __$$ChatRoomStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ChatRoomStateImpl implements _ChatRoomState {
+class _$ChatRoomStateImpl extends _ChatRoomState {
   const _$ChatRoomStateImpl(
-      {final List<Message> messages = const [],
+      {final List<String> messageList = const [],
+      final Map<String, RoomMessage> messages = const {},
       this.loading = const ChatRoomLoadingState.initial(),
       this.hasMore = true})
-      : _messages = messages;
+      : _messageList = messageList,
+        _messages = messages,
+        super._();
 
-  final List<Message> _messages;
+  final List<String> _messageList;
   @override
   @JsonKey()
-  List<Message> get messages {
-    if (_messages is EqualUnmodifiableListView) return _messages;
+  List<String> get messageList {
+    if (_messageList is EqualUnmodifiableListView) return _messageList;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_messages);
+    return EqualUnmodifiableListView(_messageList);
+  }
+
+  final Map<String, RoomMessage> _messages;
+  @override
+  @JsonKey()
+  Map<String, RoomMessage> get messages {
+    if (_messages is EqualUnmodifiableMapView) return _messages;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_messages);
   }
 
   @override
@@ -762,7 +791,7 @@ class _$ChatRoomStateImpl implements _ChatRoomState {
 
   @override
   String toString() {
-    return 'ChatRoomState(messages: $messages, loading: $loading, hasMore: $hasMore)';
+    return 'ChatRoomState(messageList: $messageList, messages: $messages, loading: $loading, hasMore: $hasMore)';
   }
 
   @override
@@ -770,14 +799,20 @@ class _$ChatRoomStateImpl implements _ChatRoomState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ChatRoomStateImpl &&
+            const DeepCollectionEquality()
+                .equals(other._messageList, _messageList) &&
             const DeepCollectionEquality().equals(other._messages, _messages) &&
             (identical(other.loading, loading) || other.loading == loading) &&
             (identical(other.hasMore, hasMore) || other.hasMore == hasMore));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType,
-      const DeepCollectionEquality().hash(_messages), loading, hasMore);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_messageList),
+      const DeepCollectionEquality().hash(_messages),
+      loading,
+      hasMore);
 
   /// Create a copy of ChatRoomState
   /// with the given fields replaced by the non-null parameter values.
@@ -788,14 +823,18 @@ class _$ChatRoomStateImpl implements _ChatRoomState {
       __$$ChatRoomStateImplCopyWithImpl<_$ChatRoomStateImpl>(this, _$identity);
 }
 
-abstract class _ChatRoomState implements ChatRoomState {
+abstract class _ChatRoomState extends ChatRoomState {
   const factory _ChatRoomState(
-      {final List<Message> messages,
+      {final List<String> messageList,
+      final Map<String, RoomMessage> messages,
       final ChatRoomLoadingState loading,
       final bool hasMore}) = _$ChatRoomStateImpl;
+  const _ChatRoomState._() : super._();
 
   @override
-  List<Message> get messages;
+  List<String> get messageList;
+  @override
+  Map<String, RoomMessage> get messages;
   @override
   ChatRoomLoadingState get loading;
   @override
