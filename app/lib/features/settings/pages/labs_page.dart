@@ -33,6 +33,11 @@ class SettingsLabsPage extends ConsumerWidget {
               title: Text(lang.labsAppFeatures),
               tiles: [
                 const LabsNotificationsSettingsTile(),
+              ],
+            ),
+            SettingsSection(
+              title: Text(lang.securityAndPrivacy),
+              tiles: [
                 SettingsTile.switchTile(
                   title: Text(lang.encryptionBackupKeyBackup),
                   description: Text(lang.sharedCalendarAndEvents),
@@ -41,6 +46,18 @@ class SettingsLabsPage extends ConsumerWidget {
                   onToggle: (newVal) async => await updateFeatureState(
                     ref,
                     LabsFeature.encryptionBackup,
+                    newVal,
+                  ),
+                ),
+                SettingsTile.switchTile(
+                  title: const Text('Hide App behind Calculator'),
+                  description: const Text(
+                      'Show a calculator when starting or switching to the app. Press 1984 enter to pass'),
+                  initialValue:
+                      ref.watch(isActiveProvider(LabsFeature.obfuscatedApp)),
+                  onToggle: (newVal) => updateFeatureState(
+                    ref,
+                    LabsFeature.obfuscatedApp,
                     newVal,
                   ),
                 ),

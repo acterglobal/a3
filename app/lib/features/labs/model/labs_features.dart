@@ -11,6 +11,7 @@ enum LabsFeature {
   // specific features
   chatUnread,
   chatNG,
+  obfuscatedApp,
 
   // system features
   deviceCalendarSync,

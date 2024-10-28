@@ -133,6 +133,12 @@ dependencies:
   firebase_core: ^3.4.0
   scrolls_to_top: ^2.1.1
   scrollable_positioned_list: ^0.3.8
+  secure_application: 
+    # path: "../../secure_application"
+    git:
+      url: https://github.com/acterglobal/secure_application
+      ref: acter
+  flutter_simple_calculator: ^2.3.0
   diffutil_dart: ^4.0.1
   tray_manager: ^0.2.3
   window_manager:  #^0.4.0
