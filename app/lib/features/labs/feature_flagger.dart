@@ -12,7 +12,7 @@ extension on Enum {
 Features<T> featuresFromJson<T extends Enum>(
   List<dynamic> json,
   List<T> defaultOn,
-  Function fromString,
+  T Function(String) fromString,
 ) {
   return Features<T>(
     flags: featureFlagsFromJson(json, fromString),
@@ -22,16 +22,23 @@ Features<T> featuresFromJson<T extends Enum>(
 
 List<FeatureFlag<T>> featureFlagsFromJson<T extends Enum>(
   List<dynamic> json,
-  Function fromString,
+  T? Function(String) fromString,
 ) {
   List<FeatureFlag<T>> flags = List.from(
     json.map((json) {
-      final key = json['key'].expect('json should contain key');
       try {
-        final feature = fromString(key).expect('enum parsing from $key failed');
-        final active = json['active'];
+        final key = json['key'] as String?;
+        if (key == null) {
+          throw 'json should contain key';
+        }
+        final feature = fromString(key);
+        if (feature == null) {
+          throw 'enum parsing from $key failed';
+        }
+        final active = json['active'] as bool;
         return FeatureFlag<T>(feature: feature, active: active);
-      } catch (e) {
+      } catch (e, s) {
+        _log.severe('Failed to parse FeatureFlag: $json', e, s);
         return null;
       }
     }).where((x) => x != null),

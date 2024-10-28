@@ -49,12 +49,12 @@ class SharedPrefFeaturesNotifier extends StateNotifier<Features<LabsFeature>> {
   }
 
   // Let’s the UI update the state of a flag
-  Future<void> setActive(LabsFeature f, bool active) {
-    return newState(state.updateFlag(f, active));
+  Future<void> setActive(LabsFeature f, bool active) async {
+    await newState(state.updateFlag(f, active));
   }
 
   // Allow higher level to reset the features flagged
-  Future<void> resetFeatures(List<FeatureFlag<LabsFeature>> features) {
-    return newState(Features(flags: features, defaultOn: state.defaultOn));
+  Future<void> resetFeatures(List<FeatureFlag<LabsFeature>> features) async {
+    await newState(Features(flags: features, defaultOn: state.defaultOn));
   }
 }
