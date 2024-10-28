@@ -185,6 +185,12 @@ impl SyncState {
         trace!("Waiting for history to sync");
         let signal = self.history_loading.signal_cloned().to_stream();
         pin_mut!(signal);
+        {
+            let current = self.history_loading.lock_ref();
+            if (current.is_done_loading()) {
+                return Ok(current.total_spaces() as u32);
+            }
+        }
         while let Some(next_state) = signal.next().await {
             trace!(?next_state, "History updated");
             if next_state.is_done_loading() {
