@@ -18,28 +18,26 @@ Future<String?> joinRoom(
   String? server,
   Function(String)? forward,
 ) async {
+  final lang = L10n.of(context);
   EasyLoading.show(status: displayMsg);
   final client = ref.read(alwaysClientProvider);
   try {
     final newRoom = await client.joinRoom(roomIdOrAlias, server);
     final roomId = newRoom.roomIdStr();
-    EasyLoading.dismiss();
     // ensure we re-evaluate the room data on our end. This is necessary
     // if we knew of the room prior (e.g. we had left it), but hadn’t joined
     // this should properly re-evaluate all possible readers
     ref.invalidate(maybeRoomProvider(roomId));
     ref.invalidate(chatProvider(roomId));
     ref.invalidate(spaceProvider(roomId));
+    await client.waitForRoom(roomId, 5);
+    EasyLoading.dismiss();
     if (forward != null) forward(roomId);
     return roomId;
   } catch (e, s) {
     _log.severe('Failed to join room', e, s);
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return null;
-    }
     EasyLoading.showError(
-      L10n.of(context).joiningFailed(e),
+      lang.joiningFailed(e),
       duration: const Duration(seconds: 3),
     );
     return null;
