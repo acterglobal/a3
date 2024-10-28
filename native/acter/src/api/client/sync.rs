@@ -23,7 +23,7 @@ use ruma::events::AnySyncEphemeralRoomEvent;
 use std::{
     collections::{btree_map::Entry, BTreeMap, HashMap},
     io::Write,
-    ops::Deref,
+    ops::{Deref, Index},
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -46,51 +46,55 @@ use super::Client;
 #[derive(Clone, Debug, Default)]
 pub struct HistoryLoadState {
     pub has_started: bool,
-    known_spaces: BTreeMap<OwnedRoomId, bool>,
+    loading_spaces: BTreeMap<OwnedRoomId, bool>,
+    done_spaces: Vec<OwnedRoomId>,
 }
 
 // internal API
 impl HistoryLoadState {
-    fn initialize(&mut self, known_spaces: Vec<OwnedRoomId>) {
-        trace!(?known_spaces, "Starting History loading");
+    fn initialize(&mut self, loading_spaces: Vec<OwnedRoomId>) {
+        trace!(?loading_spaces, "Starting History loading");
         self.has_started = true;
-        self.known_spaces.clear();
-        for space_id in known_spaces.into_iter() {
-            self.known_spaces.insert(space_id, false);
+        self.loading_spaces.clear();
+        for space_id in loading_spaces.into_iter() {
+            self.loading_spaces.insert(space_id, false);
         }
     }
 
     fn forget_room(&mut self, room_id: &OwnedRoomId) {
-        self.known_spaces.remove(room_id);
+        self.loading_spaces.remove(room_id);
+        self.done_spaces.retain(|v| v != room_id);
     }
 
     fn knows_room(&self, room_id: &OwnedRoomId) -> bool {
-        self.known_spaces.contains_key(room_id)
+        self.done_spaces.contains(room_id) || self.loading_spaces.contains_key(room_id)
     }
 
     // start the loading process. If we are already loading return false
     fn start_loading(&mut self, room_id: OwnedRoomId) -> bool {
-        matches!(self.known_spaces.insert(room_id, true), Some(true))
+        matches!(self.loading_spaces.insert(room_id, true), Some(true))
     }
 
     fn done_loading(&mut self, room_id: OwnedRoomId) {
         trace!(?room_id, "Setting room as done loading");
-        self.known_spaces.insert(room_id, false);
+        if self.loading_spaces.remove(&room_id).is_some() {
+            self.done_spaces.push(room_id);
+        }
     }
 }
 
 // Public API
 impl HistoryLoadState {
     pub fn is_done_loading(&self) -> bool {
-        self.has_started && !self.known_spaces.values().any(|x| *x)
+        self.has_started && self.loading_spaces.is_empty()
     }
 
     pub fn loaded_spaces(&self) -> usize {
-        self.known_spaces.iter().filter(|(k, v)| !**v).count()
+        self.done_spaces.len()
     }
 
     pub fn total_spaces(&self) -> usize {
-        self.known_spaces.len()
+        self.loading_spaces.len() + self.done_spaces.len()
     }
 }
 

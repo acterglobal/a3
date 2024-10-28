@@ -90,13 +90,21 @@ async fn edit_calendar_event() -> Result<()> {
 
     let main_event = cal_events.first().unwrap();
 
-    let mut cal_update = main_event.subscribe();
+    let subscriber = main_event.subscribe();
 
     let mut builder = main_event.update_builder()?;
     builder.title("Onboarding on Acter1".to_owned());
     builder.send().await?;
 
     let cal_event = main_event.clone();
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if subscriber.is_empty() {
+            bail!("not been alerted to reload");
+        }
+        Ok(())
+    })
+    .await?;
 
     Retry::spawn(retry_strategy.clone(), move || {
         let cal_event = cal_event.clone();
@@ -109,8 +117,6 @@ async fn edit_calendar_event() -> Result<()> {
         }
     })
     .await?;
-
-    assert!(cal_update.try_recv().is_ok(), "No update received");
 
     Ok(())
 }
