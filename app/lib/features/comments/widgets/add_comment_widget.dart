@@ -53,17 +53,18 @@ class _AddCommentWidgetState extends ConsumerState<AddCommentWidget> {
         hintText: lang.addComment,
         suffixIcon: IconButton(
           onPressed: () => showEditHtmlDescriptionBottomSheet(
-              context: context,
-              bottomSheetTitle: L10n.of(context).addComment,
-              descriptionHtmlValue: _commentController.text,
-              onSave: (htmlBodyDescription, plainDescription) async {
-                await addComment(
-                  plainDescription: plainDescription,
-                  htmlBodyDescription: htmlBodyDescription,
-                );
-                if (!context.mounted) return;
-                Navigator.pop(context);
-              }),
+            context: context,
+            bottomSheetTitle: L10n.of(context).addComment,
+            descriptionHtmlValue: _commentController.text,
+            onSave: (htmlBodyDescription, plainDescription) async {
+              await addComment(
+                plainDescription: plainDescription,
+                htmlBodyDescription: htmlBodyDescription,
+              );
+              if (!context.mounted) return;
+              Navigator.pop(context);
+            },
+          ),
           icon: const Icon(Atlas.arrows_up_right_down_left, size: 14),
         ),
       ),
