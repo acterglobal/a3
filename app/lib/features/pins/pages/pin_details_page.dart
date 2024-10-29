@@ -12,7 +12,6 @@ import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
-import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
 import 'package:acter/features/pins/actions/pin_update_actions.dart';
