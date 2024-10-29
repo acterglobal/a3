@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/notifications/firebase_options.dart';
 import 'package:acter/config/notifications/util.dart';
+import 'package:acter/config/setup.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/router/router.dart';
@@ -94,22 +94,38 @@ Future<bool> setupPushNotifications(
 }
 
 bool _handleMessageTap(Map<String?, Object?> data) {
-  _log.info('Notification was tapped. Data: \n $data');
+  final context = rootNavKey.currentContext;
+  if (context == null) {
+    // no context "et", delay by 300ms and try again;
+    Future.delayed(
+      const Duration(milliseconds: 300),
+      () => _handleMessageTap(data),
+    );
+    return false;
+  }
+  return _handleMessageTapForContext(context, data);
+}
+
+bool _handleMessageTapForContext(
+  BuildContext context,
+  Map<String?, Object?> data,
+) {
+  _log.info('Notification  was tapped. Data: \n $data');
   try {
     final uri = data['payload'] as String?;
     if (uri != null) {
       _log.info('Uri found $uri');
       if (isCurrentRoute(uri)) {
         // ensure we reload
-        rootNavKey.currentContext!.replace(uri);
+        context.replace(uri);
       } else {
         _log.info('Different page, routing');
         if (shouldReplaceCurrentRoute(uri)) {
           // this is a chat-room page, replace this to allow for
           // a smother "back"-navigation story
-          rootNavKey.currentContext!.pushReplacement(uri);
+          context.pushReplacement(uri);
         } else {
-          rootNavKey.currentContext!.push(uri);
+          context.push(uri);
         }
       }
       return true;
@@ -123,7 +139,7 @@ bool _handleMessageTap(Map<String?, Object?> data) {
       return false;
     }
     // fallback support
-    rootNavKey.currentContext!.push(
+    context.push(
       makeForward(roomId: roomId, deviceId: deviceId, eventId: eventId),
     );
   } catch (e, s) {
@@ -136,7 +152,7 @@ bool _handleMessageTap(Map<String?, Object?> data) {
 bool _isEnabled() {
   try {
     // ignore: use_build_context_synchronously
-    if (!rootNavKey.currentContext!
+    if (!mainProviderContainer
         .read(isActiveProvider(LabsFeature.mobilePushNotifications))) {
       _log.info(
         'Showing push notifications has been disabled on this device. Ignoring',
@@ -153,7 +169,7 @@ bool _shouldShow(String url) {
   // we ignore if we are in foreground and looking at that URL
   if (isCurrentRoute(url) &&
       // ignore: use_build_context_synchronously
-      rootNavKey.currentContext!.read(isAppInForeground)) {
+      mainProviderContainer.read(isAppInForeground)) {
     return false;
   }
   return true;
@@ -164,13 +180,7 @@ Future<List<Client>> _genCurrentClients() async {
     'Received the update information for the token. Updating all clients.',
   );
   List<Client> clients = [];
-  // ignore: use_build_context_synchronously
-  final currentContext = rootNavKey.currentContext;
-  if (currentContext == null) {
-    _log.warning('No currentContext found. skipping setting of new token');
-    return clients;
-  }
-  final sdk = await currentContext.read(sdkProvider.future);
+  final sdk = await mainProviderContainer.read(sdkProvider.future);
 
   for (final client in sdk.clients) {
     final deviceId = client.deviceId().toString();

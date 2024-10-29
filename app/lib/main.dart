@@ -69,6 +69,10 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
     app = DesktopSupport(child: app);
   }
 
+  // use the globally defined ProviderContainer
+  final wrappedApp =
+      UncontrolledProviderScope(container: mainProviderContainer, child: app);
+
   if (withSentry) {
     await SentryFlutter.init(
       (options) {
@@ -81,10 +85,10 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
         // and prevent reporting otherwise.
         options.beforeSend = sentryBeforeSend;
       },
-      appRunner: () => runApp(app),
+      appRunner: () => runApp(wrappedApp),
     );
   } else {
-    runApp(app);
+    runApp(wrappedApp);
   }
 }
 
