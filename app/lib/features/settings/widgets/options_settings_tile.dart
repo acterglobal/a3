@@ -34,18 +34,15 @@ class __OptionsSettingsTileState<T> extends State<_OptionsSettingsTile<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final tileTextTheme = Theme.of(context).textTheme.bodySmall;
-    final selectedTitle = widget.options
-        .firstWhere(
-          (element) => element.$1 == widget.selected,
-          orElse: () => (widget.selected, L10n.of(context).unknown),
-        )
-        .$2;
+    final (selectedEnum, selectedTitle) = widget.options.firstWhere(
+      (element) => element.$1 == widget.selected,
+      orElse: () => (widget.selected, L10n.of(context).unknown),
+    );
     return SettingsTile(
       onPressed: (context) => menuController.open(),
       title: Text(
         widget.title,
-        style: tileTextTheme,
+        style: Theme.of(context).textTheme.bodySmall,
       ),
       description: widget.explainer.map((explainer) => Text(explainer)),
       leading: widget.icon,

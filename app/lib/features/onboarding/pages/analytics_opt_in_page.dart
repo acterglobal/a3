@@ -17,6 +17,7 @@ class AnalyticsOptInPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     // ensure we are triggering a sync and do not delay this process
     // ignore: unused_local_variable, no_leading_underscores_for_local_identifiers
     final _syncState = ref.read(syncStateProvider);
@@ -31,20 +32,20 @@ class AnalyticsOptInPage extends ConsumerWidget {
               const Spacer(),
               Text(
                 lang.analyticsTitle,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
+                style: textTheme.headlineMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
               Text(
                 lang.analyticsDescription1,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: textTheme.bodyMedium,
               ),
               const SizedBox(height: 10),
               Text(
                 lang.analyticsDescription2,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: textTheme.bodyMedium,
               ),
               _buildCrashAnalytics(context, ref),
               const SizedBox(height: 40),
@@ -63,7 +64,7 @@ class AnalyticsOptInPage extends ConsumerWidget {
         ref.watch(allowSentryReportingProvider).valueOrNull ?? isNightly;
 
     void toggle(bool? input) {
-      setCanReportToSentry(input ?? (!allowReportSending));
+      setCanReportToSentry(input ?? !allowReportSending);
       ref.invalidate(allowSentryReportingProvider);
     }
 

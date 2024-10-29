@@ -46,8 +46,7 @@ class _EmojiContainerState extends State<EmojiContainer>
     Map<String, dynamic>? reactions = widget.message.metadata?['reactions'];
     if (reactions == null) return const SizedBox();
     final children = reactions.keys.map((key) {
-      final records = reactions[key].expect('reactions of $key not available')
-          as List<ReactionRecord>;
+      final records = reactions[key] as List<ReactionRecord>;
       final sentByMe = records.any((x) => x.sentByMe());
       final emoji = Text(key, style: EmojiConfig.emojiTextStyle);
       final moreThanOne = records.length > 1;

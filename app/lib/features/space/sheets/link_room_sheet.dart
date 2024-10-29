@@ -90,12 +90,12 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final screenSize = MediaQuery.of(context).size;
 
     return SliverScaffold(
       header: widget.pageTitle,
       body: SizedBox(
-        height: size.height - 120,
+        height: screenSize.height - 120,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,6 +297,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
   Widget roomTrailing(String roomId, bool isLinked, bool canLink) {
     final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       width: 100,
       child: isLinked
@@ -310,9 +311,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
                   onPressed: () => onTapLinkChildRoom(context, roomId),
                   key: Key('room-list-link-$roomId'),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.success,
-                    ),
+                    side: BorderSide(color: colorScheme.success),
                   ),
                   child: Text(lang.link),
                 )

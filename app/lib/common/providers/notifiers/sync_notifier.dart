@@ -32,13 +32,17 @@ class SyncNotifier extends StateNotifier<SyncState> {
   }
 
   void _tickSyncState() {
-    final countDown = state.countDown;
-    if (countDown == null || countDown == 0) {
-      _restartSync();
-    } else {
-      // just count down.
-      state = state.copyWith(countDown: countDown - 1);
-    }
+    state.countDown.map(
+      (countDown) {
+        if (countDown == 0) {
+          _restartSync();
+        } else {
+          // just count down.
+          state = state.copyWith(countDown: countDown - 1);
+        }
+      },
+      orElse: () => _restartSync(),
+    );
   }
 
   void _restartSync() {

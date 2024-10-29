@@ -44,6 +44,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideListUI(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final currentSlide = ref.watch(newsStateProvider).currentNewsSlide;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -76,13 +77,10 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                           horizontal: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
+                          color: colorScheme.surface,
                           borderRadius: BorderRadius.circular(5),
                           border: currentSlide == slidePost
-                              ? Border.all(
-                                  color:
-                                      Theme.of(context).colorScheme.textColor,
-                                )
+                              ? Border.all(color: colorScheme.textColor)
                               : null,
                         ),
                         child: getIconAsPerSlideType(
@@ -102,7 +100,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                         },
                         child: Icon(
                           Icons.remove_circle_outlined,
-                          color: Theme.of(context).colorScheme.error,
+                          color: colorScheme.error,
                         ),
                       ),
                     ),

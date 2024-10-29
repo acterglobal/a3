@@ -55,6 +55,7 @@ class SessionsPage extends ConsumerWidget {
 
   Widget buildSessions(BuildContext context, List<DeviceRecord> sessions) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final unverifiedSessions = sessions.where((s) => !s.isVerified()).toList();
 
     if (unverifiedSessions.isEmpty) {
@@ -68,7 +69,7 @@ class SessionsPage extends ConsumerWidget {
               ),
               child: Text(
                 lang.verifiedSessionsDescription,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: textTheme.bodyMedium,
               ),
             ),
           ),
@@ -100,7 +101,7 @@ class SessionsPage extends ConsumerWidget {
               ),
               Text(
                 lang.unverifiedSessions,
-                style: Theme.of(context).textTheme.headlineSmall,
+                style: textTheme.headlineSmall,
               ),
             ],
           ),
@@ -114,7 +115,7 @@ class SessionsPage extends ConsumerWidget {
           ),
           child: Text(
             lang.unverifiedSessionsDescription,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: textTheme.bodyMedium,
           ),
         ),
       ),
@@ -138,7 +139,7 @@ class SessionsPage extends ConsumerWidget {
             ),
             child: Text(
               '${lang.verified} ${lang.sessions}',
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: textTheme.headlineSmall,
             ),
           ),
         ),

@@ -20,7 +20,9 @@ mixin _$PublicSearchFilters {
   String? get server => throw _privateConstructorUsedError;
   FilterBy get filterBy => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PublicSearchFilters
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PublicSearchFiltersCopyWith<PublicSearchFilters> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -44,6 +46,8 @@ class _$PublicSearchFiltersCopyWithImpl<$Res, $Val extends PublicSearchFilters>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of PublicSearchFilters
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -90,6 +94,8 @@ class __$$NewPublicSearchFiltersImplCopyWithImpl<$Res>
       $Res Function(_$NewPublicSearchFiltersImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PublicSearchFilters
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -160,7 +166,9 @@ class _$NewPublicSearchFiltersImpl
   @override
   int get hashCode => Object.hash(runtimeType, searchTerm, server, filterBy);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PublicSearchFilters
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$NewPublicSearchFiltersImplCopyWith<_$NewPublicSearchFiltersImpl>
@@ -180,8 +188,11 @@ abstract class _NewPublicSearchFilters implements PublicSearchFilters {
   String? get server;
   @override
   FilterBy get filterBy;
+
+  /// Create a copy of PublicSearchFilters
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$NewPublicSearchFiltersImplCopyWith<_$NewPublicSearchFiltersImpl>
       get copyWith => throw _privateConstructorUsedError;
 }

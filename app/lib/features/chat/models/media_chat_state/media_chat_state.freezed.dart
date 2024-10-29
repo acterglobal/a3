@@ -86,6 +86,9 @@ class _$MediaChatLoadingStateCopyWithImpl<$Res,
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of MediaChatLoadingState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -105,6 +108,9 @@ class __$$MediaChatLoadingStateNotYetStartedImplCopyWithImpl<$Res>
       _$MediaChatLoadingStateNotYetStartedImpl _value,
       $Res Function(_$MediaChatLoadingStateNotYetStartedImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of MediaChatLoadingState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -227,6 +233,9 @@ class __$$MediaChatLoadingStateLoadingImplCopyWithImpl<$Res>
       _$MediaChatLoadingStateLoadingImpl _value,
       $Res Function(_$MediaChatLoadingStateLoadingImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of MediaChatLoadingState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -348,6 +357,9 @@ class __$$MediaChatLoadingStateLoadedImplCopyWithImpl<$Res>
       _$MediaChatLoadingStateLoadedImpl _value,
       $Res Function(_$MediaChatLoadingStateLoadedImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of MediaChatLoadingState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -472,6 +484,8 @@ class __$$MediaChatLoadingStateErrorImplCopyWithImpl<$Res>
       $Res Function(_$MediaChatLoadingStateErrorImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of MediaChatLoadingState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -510,7 +524,9 @@ class _$MediaChatLoadingStateErrorImpl implements _MediaChatLoadingStateError {
   @override
   int get hashCode => Object.hash(runtimeType, error);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of MediaChatLoadingState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$MediaChatLoadingStateErrorImplCopyWith<_$MediaChatLoadingStateErrorImpl>
@@ -598,7 +614,10 @@ abstract class _MediaChatLoadingStateError implements MediaChatLoadingState {
       _$MediaChatLoadingStateErrorImpl;
 
   String? get error;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of MediaChatLoadingState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$MediaChatLoadingStateErrorImplCopyWith<_$MediaChatLoadingStateErrorImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
@@ -611,7 +630,9 @@ mixin _$MediaChatState {
   File? get videoThumbnailFile => throw _privateConstructorUsedError;
   bool get isDownloading => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of MediaChatState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $MediaChatStateCopyWith<MediaChatState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -641,6 +662,8 @@ class _$MediaChatStateCopyWithImpl<$Res, $Val extends MediaChatState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of MediaChatState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -669,6 +692,8 @@ class _$MediaChatStateCopyWithImpl<$Res, $Val extends MediaChatState>
     ) as $Val);
   }
 
+  /// Create a copy of MediaChatState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $MediaChatLoadingStateCopyWith<$Res> get mediaChatLoadingState {
@@ -705,6 +730,8 @@ class __$$MediaChatStateImplCopyWithImpl<$Res>
       _$MediaChatStateImpl _value, $Res Function(_$MediaChatStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of MediaChatState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -778,7 +805,9 @@ class _$MediaChatStateImpl implements _MediaChatState {
   int get hashCode => Object.hash(runtimeType, mediaChatLoadingState, mediaFile,
       videoThumbnailFile, isDownloading);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of MediaChatState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$MediaChatStateImplCopyWith<_$MediaChatStateImpl> get copyWith =>
@@ -801,8 +830,11 @@ abstract class _MediaChatState implements MediaChatState {
   File? get videoThumbnailFile;
   @override
   bool get isDownloading;
+
+  /// Create a copy of MediaChatState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$MediaChatStateImplCopyWith<_$MediaChatStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

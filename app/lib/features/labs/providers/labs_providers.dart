@@ -47,5 +47,5 @@ Future<bool> updateFeatureState(
   bool value,
 ) async {
   await ref.read(featuresProvider.notifier).setActive(f, value);
-  return ref.read(featuresProvider).isActive(f);
+  return ref.read(isActiveProvider(f));
 }

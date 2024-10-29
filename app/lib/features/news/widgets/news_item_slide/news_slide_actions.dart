@@ -79,6 +79,7 @@ class NewsSlideActions extends ConsumerWidget {
     WidgetRef ref,
     RefDetails referenceDetails,
   ) {
+    final textTheme = Theme.of(context).textTheme;
     final uri = referenceDetails.uri();
     if (uri == null) {
       // malformatted
@@ -99,7 +100,7 @@ class NewsSlideActions extends ConsumerWidget {
             title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium,
+            style: textTheme.labelMedium,
           ),
           subtitle: Text(
             uri,
@@ -117,7 +118,7 @@ class NewsSlideActions extends ConsumerWidget {
             uri,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium,
+            style: textTheme.labelMedium,
           ),
         ),
       );

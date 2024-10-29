@@ -51,6 +51,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   AppBar _buildAppbar() {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
     return tasklistLoader.when(
       data: (tasklist) {
@@ -95,7 +96,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
                   child: Text(
                     key: TaskListDetailPage.taskListTitleKey,
                     tasklist.name(),
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: textTheme.titleMedium,
                   ),
                 ),
               ),
@@ -110,21 +111,21 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
                     onTap: () => showEditDescriptionSheet(tasklist),
                     child: Text(
                       lang.editDescription,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: textTheme.bodyMedium,
                     ),
                   ),
                   PopupMenuItem(
                     onTap: () => showRedactDialog(taskList: tasklist),
                     child: Text(
                       lang.delete,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: textTheme.bodyMedium,
                     ),
                   ),
                   PopupMenuItem(
                     onTap: () => showReportDialog(tasklist),
                     child: Text(
                       lang.report,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: textTheme.bodyMedium,
                     ),
                   ),
                 ];
@@ -210,6 +211,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     final description = taskListData.description();
     if (description == null) return const SizedBox.shrink();
     final formattedBody = description.formattedBody();
+    final textTheme = Theme.of(context).textTheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,11 +224,11 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             child: formattedBody != null
                 ? RenderHtml(
                     text: formattedBody,
-                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                    defaultTextStyle: textTheme.labelLarge,
                   )
                 : Text(
                     description.body(),
-                    style: Theme.of(context).textTheme.labelLarge,
+                    style: textTheme.labelLarge,
                   ),
           ),
         ),

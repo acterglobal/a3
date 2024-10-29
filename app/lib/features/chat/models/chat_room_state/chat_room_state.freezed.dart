@@ -85,6 +85,9 @@ class _$ChatRoomLoadingStateCopyWithImpl<$Res,
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of ChatRoomLoadingState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -104,6 +107,9 @@ class __$$ChatRoomLoadingStateInitialImplCopyWithImpl<$Res>
       _$ChatRoomLoadingStateInitialImpl _value,
       $Res Function(_$ChatRoomLoadingStateInitialImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of ChatRoomLoadingState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -224,6 +230,9 @@ class __$$ChatRoomLoadingStateLoadingImplCopyWithImpl<$Res>
       _$ChatRoomLoadingStateLoadingImpl _value,
       $Res Function(_$ChatRoomLoadingStateLoadingImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of ChatRoomLoadingState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -344,6 +353,9 @@ class __$$ChatRoomLoadingStateLoadedImplCopyWithImpl<$Res>
       _$ChatRoomLoadingStateLoadedImpl _value,
       $Res Function(_$ChatRoomLoadingStateLoadedImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of ChatRoomLoadingState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -466,6 +478,8 @@ class __$$ChatRoomLoadingStateErrorImplCopyWithImpl<$Res>
       $Res Function(_$ChatRoomLoadingStateErrorImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ChatRoomLoadingState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -504,7 +518,9 @@ class _$ChatRoomLoadingStateErrorImpl implements _ChatRoomLoadingStateError {
   @override
   int get hashCode => Object.hash(runtimeType, error);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChatRoomLoadingState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ChatRoomLoadingStateErrorImplCopyWith<_$ChatRoomLoadingStateErrorImpl>
@@ -591,7 +607,10 @@ abstract class _ChatRoomLoadingStateError implements ChatRoomLoadingState {
       _$ChatRoomLoadingStateErrorImpl;
 
   String? get error;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ChatRoomLoadingState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ChatRoomLoadingStateErrorImplCopyWith<_$ChatRoomLoadingStateErrorImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
@@ -602,7 +621,9 @@ mixin _$ChatRoomState {
   ChatRoomLoadingState get loading => throw _privateConstructorUsedError;
   bool get hasMore => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChatRoomState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ChatRoomStateCopyWith<ChatRoomState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -629,6 +650,8 @@ class _$ChatRoomStateCopyWithImpl<$Res, $Val extends ChatRoomState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ChatRoomState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -652,6 +675,8 @@ class _$ChatRoomStateCopyWithImpl<$Res, $Val extends ChatRoomState>
     ) as $Val);
   }
 
+  /// Create a copy of ChatRoomState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $ChatRoomLoadingStateCopyWith<$Res> get loading {
@@ -684,6 +709,8 @@ class __$$ChatRoomStateImplCopyWithImpl<$Res>
       _$ChatRoomStateImpl _value, $Res Function(_$ChatRoomStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ChatRoomState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -752,7 +779,9 @@ class _$ChatRoomStateImpl implements _ChatRoomState {
   int get hashCode => Object.hash(runtimeType,
       const DeepCollectionEquality().hash(_messages), loading, hasMore);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChatRoomState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ChatRoomStateImplCopyWith<_$ChatRoomStateImpl> get copyWith =>
@@ -771,8 +800,11 @@ abstract class _ChatRoomState implements ChatRoomState {
   ChatRoomLoadingState get loading;
   @override
   bool get hasMore;
+
+  /// Create a copy of ChatRoomState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ChatRoomStateImplCopyWith<_$ChatRoomStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

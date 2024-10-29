@@ -20,6 +20,7 @@ class SectionHeader extends StatelessWidget {
   }
 
   Widget sectionHeaderUI(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTapSeeAll,
       child: Container(
@@ -28,9 +29,9 @@ class SectionHeader extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Theme.of(context).colorScheme.surface.withOpacity(0.9),
-              Theme.of(context).colorScheme.surface.withOpacity(0.3),
-              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.1),
+              colorScheme.surface.withOpacity(0.9),
+              colorScheme.surface.withOpacity(0.3),
+              colorScheme.secondaryContainer.withOpacity(0.1),
             ],
             begin: Alignment.topLeft,
             end: Alignment.topRight,
@@ -44,8 +45,8 @@ class SectionHeader extends StatelessWidget {
               title,
               style: Theme.of(context)
                   .textTheme
-                  .titleMedium!
-                  .copyWith(color: Theme.of(context).primaryColor),
+                  .titleMedium
+                  ?.copyWith(color: Theme.of(context).primaryColor),
             ),
             const Spacer(),
             isShowSeeAllButton
