@@ -14,7 +14,7 @@ void main() {
   late MockAvatarInfo mockAvatarInfo;
 
   setUp(() {
-    mockCommentsManager = MockCommentsManager(fakeRoomId: 'roomId');
+    mockCommentsManager = MockCommentsManager();
     mockAvatarInfo = MockAvatarInfo();
   });
 

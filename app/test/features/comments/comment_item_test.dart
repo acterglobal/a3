@@ -19,7 +19,7 @@ void main() {
   late MockAvatarInfo mockAvatarInfo;
 
   setUp(() {
-    mockCommentsManager = MockCommentsManager(fakeRoomId: 'roomId');
+    mockCommentsManager = MockCommentsManager();
     mockComment = MockComment(
       fakeSender: MockUserId(),
       fakeMsgContent: MockMsgContent(bodyText: 'This is a test message'),

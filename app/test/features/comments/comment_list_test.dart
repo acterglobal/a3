@@ -15,7 +15,7 @@ void main() {
   testWidgets('displays empty state when there are no comments',
       (tester) async {
     // Arrange
-    final mockCommentsManager = MockCommentsManager(fakeRoomId: 'roomId');
+    final mockCommentsManager = MockCommentsManager();
 
     // Build the widget tree with the mocked provider
     await tester.pumpWidget(
@@ -48,7 +48,7 @@ void main() {
       'displays error state when there are issue in loading comment list',
       (tester) async {
     // Arrange
-    final mockCommentsManager = MockCommentsManager(fakeRoomId: 'roomId');
+    final mockCommentsManager = MockCommentsManager();
 
     // Build the widget tree with the mocked provider
     await tester.pumpWidget(
@@ -76,7 +76,7 @@ void main() {
     bool shouldFail = true;
 
     // Arrange
-    final mockCommentsManager = MockCommentsManager(fakeRoomId: 'roomId');
+    final mockCommentsManager = MockCommentsManager();
 
     // Build the widget tree with the mocked provider
     await tester.pumpWidget(
@@ -106,7 +106,7 @@ void main() {
 
   testWidgets('displays list state when there are comments', (tester) async {
     // Arrange
-    final mockCommentsManager = MockCommentsManager(fakeRoomId: 'roomId');
+    final mockCommentsManager = MockCommentsManager();
     final mockUser1 = MockComment(
       fakeSender: MockUserId(),
       fakeMsgContent: MockMsgContent(bodyText: 'message 1'),

@@ -10,6 +10,6 @@ class MockAsyncCommentsManagerNotifier extends Mock
     implements AsyncCommentsManagerNotifier {
   @override
   FutureOr<CommentsManager> build(Future<CommentsManager> arg) async {
-    return MockCommentsManager(fakeRoomId: 'roomId');
+    return MockCommentsManager();
   }
 }
