@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/config/setup.dart';
 import 'package:acter/features/calendar_sync/providers/events_to_sync_provider.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
-import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:device_calendar/device_calendar.dart';
@@ -32,7 +31,7 @@ ProviderSubscription<AsyncValue<List<EventAndRsvp>>>? _subscription;
 
 Future<bool> _isEnabled() async {
   try {
-    return (await rootNavKey.currentContext!
+    return (await mainProviderContainer
         .read(asyncIsActiveProvider(LabsFeature.deviceCalendarSync).future));
   } catch (e, s) {
     _log.severe('Reading current context failed', e, s);
@@ -87,9 +86,7 @@ Future<void> initCalendarSync({bool ignoreRejection = false}) async {
   // clear if it existed before
   _subscription?.close();
   // start listening
-  _subscription =
-      ProviderScope.containerOf(rootNavKey.currentContext!, listen: true)
-          .listen(
+  _subscription = mainProviderContainer.listen(
     eventsToSyncProvider,
     (prev, next) async {
       final events = next.valueOrNull;
