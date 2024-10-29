@@ -11,6 +11,7 @@ import 'package:acter_notifify/util.dart';
 import 'package:acter_notifify/platform/windows.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:logging/logging.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 final _log = Logger('a3::notifify::acter');
 
@@ -87,6 +88,7 @@ Future<String?> initializeNotifify({
         );
       } catch (error, stack) {
         final deviceId = client.deviceId().toString();
+        Sentry.captureException(error, stackTrace: stack);
         _log.severe('Failed to setup ntfy for $deviceId', error, stack);
       }
     }
