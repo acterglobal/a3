@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import '../../common/mock_providers/mock_avatarinfo_provider.dart';
+import '../../common/mock_data/mock_avatar_info.dart';
 import 'mock_data/mock_comments_manager.dart';
 
 void main() {

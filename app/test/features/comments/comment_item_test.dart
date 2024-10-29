@@ -11,7 +11,7 @@ import 'mock_data/mock_comment.dart';
 import 'mock_data/mock_comments_manager.dart';
 import 'mock_data/mock_message_content.dart';
 import '../../common/mock_data/mock_user_id.dart';
-import '../../common/mock_providers/mock_avatarinfo_provider.dart';
+import '../../common/mock_data/mock_avatar_info.dart';
 
 
 void main() {
