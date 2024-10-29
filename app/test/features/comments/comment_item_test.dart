@@ -13,30 +13,23 @@ import 'mock_data/mock_message_content.dart';
 import '../../common/mock_data/mock_user_id.dart';
 import '../../common/mock_data/mock_avatar_info.dart';
 
-
 void main() {
   late MockComment mockComment;
   late MockCommentsManager mockCommentsManager;
   late MockAvatarInfo mockAvatarInfo;
-  late MockUserId mockUserId;
-  late MockMsgContent mockMsgContent;
 
   setUp(() {
-    mockComment = MockComment();
-    mockCommentsManager = MockCommentsManager();
+    mockCommentsManager = MockCommentsManager(fakeRoomId: 'roomId');
+    mockComment = MockComment(
+      fakeSender: MockUserId(),
+      fakeMsgContent: MockMsgContent(bodyText: 'This is a test message'),
+      fakeOriginServerTs: DateTime.now().millisecondsSinceEpoch,
+    );
     mockAvatarInfo = MockAvatarInfo();
-    mockUserId = MockUserId();
-    mockMsgContent = MockMsgContent();
 
     // Mock the values expected by the widget
     when(() => mockCommentsManager.roomIdStr()).thenReturn('roomId');
-    when(() => mockComment.sender()).thenReturn(mockUserId);
-    when(() => mockComment.msgContent()).thenReturn(mockMsgContent);
-    when(() => mockMsgContent.body()).thenReturn('This is a test message');
-    when(() => mockComment.originServerTs())
-        .thenReturn(DateTime.now().millisecondsSinceEpoch);
     when(() => mockAvatarInfo.displayName).thenReturn('Test User');
-    when(() => mockAvatarInfo.uniqueId).thenReturn('unique-avatar-id');
   });
 
   testWidgets(

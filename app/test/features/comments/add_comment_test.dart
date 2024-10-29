@@ -15,7 +15,7 @@ void main() {
   late MockAvatarInfo mockAvatarInfo;
 
   setUp(() {
-    mockCommentsManager = MockCommentsManager();
+    mockCommentsManager = MockCommentsManager(fakeRoomId: 'roomId');
     mockAvatarInfo = MockAvatarInfo();
   });
 
@@ -61,7 +61,7 @@ void main() {
         ),
       ),
     );
-
+    //TODO-Check button with Key instead of IconData
     // Initially, send button should not be visible
     expect(find.byIcon(PhosphorIcons.paperPlaneTilt()), findsNothing);
 
