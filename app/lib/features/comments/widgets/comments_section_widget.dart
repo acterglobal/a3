@@ -1,7 +1,7 @@
 import 'package:acter/common/toolkit/errors/error_page.dart';
-import 'package:acter/features/comments/providers/comments.dart';
+import 'package:acter/features/comments/providers/comments_providers.dart';
 import 'package:acter/features/comments/widgets/add_comment_widget.dart';
-import 'package:acter/features/comments/widgets/comment_list_skeleton_widget.dart';
+import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
 import 'package:acter/features/comments/widgets/comment_list_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
