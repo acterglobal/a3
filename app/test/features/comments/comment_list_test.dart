@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/features/comments/providers/comments_providers.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/features/comments/widgets/comment_list_empty_state_widget.dart';
+import 'package:mocktail/mocktail.dart';
 import '../../common/mock_data/mock_user_id.dart';
 import '../../helpers/error_helpers.dart';
 import 'mock_data/mock_comment.dart';
@@ -106,7 +107,7 @@ void main() {
 
   testWidgets('displays list state when there are comments', (tester) async {
     // Arrange
-    final mockCommentsManager = MockCommentsManager();
+
     final mockUser1 = MockComment(
       fakeSender: MockUserId(),
       fakeMsgContent: MockMsgContent(bodyText: 'message 1'),
@@ -122,6 +123,9 @@ void main() {
       fakeMsgContent: MockMsgContent(bodyText: 'message 3'),
       fakeOriginServerTs: DateTime.now().millisecondsSinceEpoch,
     );
+
+    final mockCommentsManager = MockCommentsManager();
+    when(() => mockCommentsManager.roomIdStr()).thenReturn('roomId');
 
     // Build the widget tree with the mocked provider
     await tester.pumpWidget(

@@ -25,4 +25,12 @@ class MockComment extends Fake implements Comment {
   int originServerTs() => fakeOriginServerTs;
 }
 
-class MockFfiListComment extends Mock implements FfiListComment {}
+class MockFfiListComment extends Mock implements FfiListComment {
+  final List<MockComment> comments;
+
+  MockFfiListComment({required this.comments});
+
+  @override
+  List<MockComment> toList({bool growable = false}) =>
+      comments.toList(growable: growable);
+}
