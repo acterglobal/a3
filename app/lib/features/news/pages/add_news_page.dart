@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
-import 'package:acter/common/widgets/html_editor.dart';
+import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
