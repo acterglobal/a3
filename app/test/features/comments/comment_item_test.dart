@@ -3,21 +3,16 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/comments/widgets/comment_item_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
-import '../../helpers/mock_avatarinfo_provider.dart';
+import 'mock_data/mock_comment.dart';
+import 'mock_data/mock_comments_manager.dart';
+import 'mock_data/mock_message_content.dart';
+import '../../common/mock_data/mock_user_id.dart';
+import '../../common/mock_providers/mock_avatarinfo_provider.dart';
 
-// Mocking dependencies with mocktail
-class MockComment extends Mock implements Comment {}
-
-class MockCommentsManager extends Mock implements CommentsManager {}
-
-class MockUserId extends Mock implements UserId {}
-
-class MockMsgContent extends Mock implements MsgContent {}
 
 void main() {
   late MockComment mockComment;

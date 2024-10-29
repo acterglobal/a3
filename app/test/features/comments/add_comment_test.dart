@@ -1,20 +1,14 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/comments/widgets/add_comment_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import '../../helpers/mock_avatarinfo_provider.dart';
-
-class MockCommentsManager extends Mock implements CommentsManager {}
-
-class MockComment extends Mock implements Comment {}
-
+import '../../common/mock_providers/mock_avatarinfo_provider.dart';
+import 'mock_data/mock_comments_manager.dart';
 
 void main() {
   late MockCommentsManager mockCommentsManager;
