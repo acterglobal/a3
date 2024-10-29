@@ -10,6 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class AddCommentWidget extends ConsumerStatefulWidget {
+  static const addCommentButton = Key('add-comment-button');
+
   final CommentsManager manager;
 
   const AddCommentWidget({
@@ -83,6 +85,7 @@ class _AddCommentWidgetState extends ConsumerState<AddCommentWidget> {
                   borderRadius: const BorderRadius.all(Radius.circular(100)),
                 ),
                 child: IconButton(
+                  key: AddCommentWidget.addCommentButton,
                   onPressed: () =>
                       addComment(plainDescription: _commentController.text),
                   icon: Icon(PhosphorIcons.paperPlaneTilt()),
