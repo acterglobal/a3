@@ -31,6 +31,7 @@ enum LabsFeature {
 
   static List<LabsFeature> get releaseDefaults => [
         LabsFeature.mobilePushNotifications,
+        LabsFeature.deviceCalendarSync,
       ];
 
   static List<LabsFeature> get nightlyDefaults => [
