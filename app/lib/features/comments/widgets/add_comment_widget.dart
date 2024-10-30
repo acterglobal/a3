@@ -59,12 +59,14 @@ class _AddCommentWidgetState extends ConsumerState<AddCommentWidget> {
             bottomSheetTitle: L10n.of(context).addComment,
             descriptionHtmlValue: _commentController.text,
             onSave: (htmlBodyDescription, plainDescription) async {
-              await addComment(
+              final success = await addComment(
                 plainDescription: plainDescription,
                 htmlBodyDescription: htmlBodyDescription,
               );
-              if (!context.mounted) return;
-              Navigator.pop(context);
+              if (success) {
+                if (!context.mounted) return;
+                Navigator.pop(context);
+              }
             },
           ),
           icon: const Icon(Atlas.arrows_up_right_down_left, size: 14),
@@ -96,17 +98,20 @@ class _AddCommentWidgetState extends ConsumerState<AddCommentWidget> {
     );
   }
 
-  Future<void> addComment({
+  Future<bool> addComment({
     required String plainDescription,
     String? htmlBodyDescription,
   }) async {
-    await submitComment(
-      context,
+    final success = await submitComment(
+      L10n.of(context),
       plainDescription,
       htmlBodyDescription ?? plainDescription,
       widget.manager,
     );
-    _commentController.clear();
-    showSendButton.value = false;
+    if (success) {
+      _commentController.clear();
+      showSendButton.value = false;
+    }
+    return success;
   }
 }

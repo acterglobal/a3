@@ -1,8 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/message_content_widget.dart';
+import 'package:acter/common/widgets/time_ago_widget.dart';
+import 'package:acter/common/widgets/user_display_name_widget.dart';
+import 'package:acter/common/widgets/user_id_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -37,9 +39,9 @@ class CommentItemWidget extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   userNameUI(context, avatarInfo),
-                  messageContentUI(context),
+                  MessageContentWidget(msgContent: comment.msgContent()),
                   const SizedBox(height: 4),
-                  messageTimeUI(context),
+                  TimeAgoWidget(originServerTs: comment.originServerTs()),
                 ],
               ),
             ),
@@ -54,42 +56,14 @@ class CommentItemWidget extends ConsumerWidget {
   }
 
   Widget userNameUI(BuildContext context, AvatarInfo avatarInfo) {
-    final userId = comment.sender().toString();
+    final userId = avatarInfo.uniqueId;
     final displayName = avatarInfo.displayName;
-    final displayNameTextStyle = Theme.of(context)
-        .textTheme
-        .bodySmall
-        ?.copyWith(fontWeight: FontWeight.bold);
-    final usrNameTextStyle = Theme.of(context).textTheme.labelMedium;
-
     return Wrap(
       children: [
-        Text(displayName ?? userId, style: displayNameTextStyle),
+        UserDisplayNameWidget(displayName: displayName ?? userId),
         const SizedBox(width: 8),
-        if (displayName != null) Text(userId, style: usrNameTextStyle),
+        if (displayName != null) UserIdWidget(userId: userId),
       ],
-    );
-  }
-
-  Widget messageContentUI(BuildContext context) {
-    final msgContent = comment.msgContent();
-    final formatted = msgContent.formattedBody();
-    final messageTextStyle = Theme.of(context).textTheme.bodyMedium;
-
-    return formatted != null
-        ? RenderHtml(text: formatted, defaultTextStyle: messageTextStyle)
-        : Text(msgContent.body(), style: messageTextStyle);
-  }
-
-  Widget messageTimeUI(BuildContext context) {
-    final commentTime = DateTime.fromMillisecondsSinceEpoch(
-      comment.originServerTs(),
-      isUtc: true,
-    );
-    final time = commentTime.toLocal().timeago();
-    return Text(
-      time,
-      style: Theme.of(context).textTheme.labelMedium,
     );
   }
 }
