@@ -40,7 +40,11 @@ class AsyncCommentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
 
 final commentsListProvider = FutureProvider.family
     .autoDispose<List<Comment>, CommentsManager>((ref, manager) async {
-  return (await manager.comments()).toList();
+  final commentList = (await manager.comments()).toList();
+  commentList.sort(
+    (a, b) => a.originServerTs().compareTo(b.originServerTs()),
+  );
+  return commentList;
 });
 
 final newsCommentsCountProvider =
