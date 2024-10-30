@@ -1,15 +1,14 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/comments/providers/comments_providers.dart';
+import 'package:acter/features/comments/widgets/comment_list_empty_state_widget.dart';
 import 'package:acter/features/comments/widgets/comment_list_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/features/comments/providers/comments_providers.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/features/comments/widgets/comment_list_empty_state_widget.dart';
 import 'package:mocktail/mocktail.dart';
+
 import '../../common/mock_data/mock_user_id.dart';
 import '../../helpers/error_helpers.dart';
+import '../../helpers/test_util.dart';
 import 'mock_data/mock_comment.dart';
 import 'mock_data/mock_comments_manager.dart';
 import 'mock_data/mock_message_content.dart';
@@ -22,19 +21,12 @@ void main() {
       final mockCommentsManager = MockCommentsManager();
 
       // Build the widget tree with the mocked provider
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            commentsListProvider.overrideWith((ref, manager) async => []),
-          ],
-          child: MaterialApp(
-            localizationsDelegates: const [L10n.delegate],
-            home: Scaffold(
-              body: CommentListWidget(
-                manager: mockCommentsManager, // Provide the mock manager
-              ),
-            ),
-          ),
+      await tester.pumpProviderWidget(
+        overrides: [
+          commentsListProvider.overrideWith((ref, manager) async => []),
+        ],
+        child: CommentListWidget(
+          manager: mockCommentsManager, // Provide the mock manager
         ),
       );
 
@@ -55,20 +47,13 @@ void main() {
       final mockCommentsManager = MockCommentsManager();
 
       // Build the widget tree with the mocked provider
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            commentsListProvider
-                .overrideWith((ref, manager) async => throw 'Some Error'),
-          ],
-          child: MaterialApp(
-            localizationsDelegates: const [L10n.delegate],
-            home: Scaffold(
-              body: CommentListWidget(
-                manager: mockCommentsManager, // Provide the mock manager
-              ),
-            ),
-          ),
+      await tester.pumpProviderWidget(
+        overrides: [
+          commentsListProvider
+              .overrideWith((ref, manager) async => throw 'Some Error'),
+        ],
+        child: CommentListWidget(
+          manager: mockCommentsManager, // Provide the mock manager
         ),
       );
       await tester.ensureErrorPageWorks();
@@ -83,26 +68,19 @@ void main() {
       final mockCommentsManager = MockCommentsManager();
 
       // Build the widget tree with the mocked provider
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            commentsListProvider.overrideWith((ref, manager) async {
-              if (shouldFail) {
-                shouldFail = false;
-                throw 'Some Error';
-              } else {
-                return [];
-              }
-            }),
-          ],
-          child: MaterialApp(
-            localizationsDelegates: const [L10n.delegate],
-            home: Scaffold(
-              body: CommentListWidget(
-                manager: mockCommentsManager, // Provide the mock manager
-              ),
-            ),
-          ),
+      await tester.pumpProviderWidget(
+        overrides: [
+          commentsListProvider.overrideWith((ref, manager) async {
+            if (shouldFail) {
+              shouldFail = false;
+              throw 'Some Error';
+            } else {
+              return [];
+            }
+          }),
+        ],
+        child: CommentListWidget(
+          manager: mockCommentsManager, // Provide the mock manager
         ),
       );
       await tester.ensureErrorPageWithRetryWorks();
@@ -131,30 +109,23 @@ void main() {
       when(() => mockCommentsManager.roomIdStr()).thenReturn('roomId');
 
       // Build the widget tree with the mocked provider
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            memberAvatarInfoProvider
-                .overrideWith((a, i) => const AvatarInfo(uniqueId: 'uniqueId')),
-            commentsListProvider.overrideWith(
-              (ref, manager) async => [
-                mockComment1,
-                mockComment2,
-                mockComment3,
-              ],
-            ),
-          ],
-          child: MaterialApp(
-            localizationsDelegates: const [L10n.delegate],
-            home: Scaffold(
-              body: CommentListWidget(
-                manager: mockCommentsManager, // Provide the mock manager
-              ),
-            ),
+      // Build the widget tree with the mocked provider
+      await tester.pumpProviderWidget(
+        overrides: [
+          memberAvatarInfoProvider
+              .overrideWith((a, i) => const AvatarInfo(uniqueId: 'uniqueId')),
+          commentsListProvider.overrideWith(
+            (ref, manager) async => [
+              mockComment1,
+              mockComment2,
+              mockComment3,
+            ],
           ),
+        ],
+        child: CommentListWidget(
+          manager: mockCommentsManager, // Provide the mock manager
         ),
       );
-
       // Act
       await tester.pumpAndSettle(); // Allow the widget to settle
 
