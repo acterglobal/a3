@@ -109,7 +109,6 @@ void main() {
       when(() => mockCommentsManager.roomIdStr()).thenReturn('roomId');
 
       // Build the widget tree with the mocked provider
-      // Build the widget tree with the mocked provider
       await tester.pumpProviderWidget(
         overrides: [
           memberAvatarInfoProvider
