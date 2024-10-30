@@ -1,13 +1,8 @@
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_menu.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-const userMentionTrigger = '@';
-const roomMentionTrigger = '#';
 
 List<CharacterShortcutEvent> getMentionShortcuts(
   BuildContext context,
@@ -15,24 +10,24 @@ List<CharacterShortcutEvent> getMentionShortcuts(
 ) {
   return [
     CharacterShortcutEvent(
-      character: userMentionTrigger,
+      character: '@',
       handler: (editorState) => _handleMentionTrigger(
         context: context,
         editorState: editorState,
-        triggerChar: userMentionTrigger,
+        type: MentionType.user,
         query: query,
       ),
-      key: userMentionTrigger,
+      key: '@',
     ),
     CharacterShortcutEvent(
-      character: roomMentionTrigger,
+      character: '#',
       handler: (editorState) => _handleMentionTrigger(
         context: context,
         editorState: editorState,
-        triggerChar: roomMentionTrigger,
+        type: MentionType.room,
         query: query,
       ),
-      key: roomMentionTrigger,
+      key: '#',
     ),
   ];
 }
@@ -40,7 +35,7 @@ List<CharacterShortcutEvent> getMentionShortcuts(
 Future<bool> _handleMentionTrigger({
   required BuildContext context,
   required EditorState editorState,
-  required String triggerChar,
+  required MentionType type,
   required RoomQuery query,
 }) async {
   final selection = editorState.selection;
@@ -51,30 +46,17 @@ Future<bool> _handleMentionTrigger({
   }
   // Insert the trigger character
   await editorState.insertTextAtPosition(
-    triggerChar,
+    MentionType.toStr(type),
     position: selection.start,
   );
 
-  /// Riverpod code to fetch mention items here
-  List<String> items = [];
-  if (context.mounted) {
-    final ref = ProviderScope.containerOf(context);
-    // users of room
-    if (triggerChar == '@') {
-      items = await ref.read(membersIdsProvider(query.roomId).future);
-    }
-    // rooms
-    if (triggerChar == '#') {
-      items = await ref.read(chatIdsProvider);
-    }
-  }
   // Show menu
   if (context.mounted) {
     final menu = MentionMenu(
       context: context,
       editorState: editorState,
-      items: items,
-      mentionTrigger: triggerChar,
+      query: query,
+      mentionType: type,
       style: const MentionMenuStyle.dark(),
     );
 

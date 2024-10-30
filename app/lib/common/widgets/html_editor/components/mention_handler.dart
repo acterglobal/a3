@@ -1,4 +1,7 @@
+import 'package:acter/common/models/types.dart';
+import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_menu.dart';
+import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -13,16 +16,16 @@ class MentionHandler extends ConsumerStatefulWidget {
   const MentionHandler({
     super.key,
     required this.editorState,
-    required this.items,
-    required this.mentionTrigger,
+    required this.query,
+    required this.mentionType,
     required this.onDismiss,
     required this.onSelectionUpdate,
     required this.style,
   });
 
   final EditorState editorState;
-  final List<String> items;
-  final String mentionTrigger;
+  final RoomQuery query;
+  final MentionType mentionType;
   final VoidCallback onDismiss;
   final VoidCallback onSelectionUpdate;
   final MentionMenuStyle style;
@@ -32,10 +35,9 @@ class MentionHandler extends ConsumerStatefulWidget {
 }
 
 class _MentionHandlerState extends ConsumerState<MentionHandler> {
-  final _focusNode = FocusNode(debugLabel: 'mention_handler');
+  final _focusNode = FocusNode();
   final _scrollController = ScrollController();
 
-  late List<MentionItem> filteredItems = widget.items;
   int _selectedIndex = 0;
   late int startOffset;
   String _search = '';
@@ -58,9 +60,22 @@ class _MentionHandlerState extends ConsumerState<MentionHandler> {
 
   @override
   Widget build(BuildContext context) {
+    final suggestions = ref.watch(
+      mentionSuggestionsProvider((widget.query.roomId, widget.mentionType)),
+    );
+
+    final filteredItems = suggestions.entries.where((entry) {
+      final normalizedId = entry.key.toLowerCase();
+      final normalizedName = entry.value.toLowerCase();
+      final normalizedQuery = widget.query.query.toLowerCase();
+
+      return normalizedId.contains(normalizedQuery) ||
+          normalizedName.contains(normalizedQuery);
+    }).toList();
+
     return Focus(
       focusNode: _focusNode,
-      onKeyEvent: _handleKeyEvent,
+      onKeyEvent: (node, event) => _handleKeyEvent(node, event, filteredItems),
       child: Container(
         constraints: const BoxConstraints(
           maxHeight: kMentionMenuHeight,
@@ -83,7 +98,7 @@ class _MentionHandlerState extends ConsumerState<MentionHandler> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                widget.mentionTrigger == '@' ? 'Users' : 'Rooms',
+                widget.mentionType == MentionType.user ? 'Users' : 'Rooms',
                 style: TextStyle(
                   color: widget.style.textColor,
                   fontWeight: FontWeight.bold,
@@ -103,12 +118,16 @@ class _MentionHandlerState extends ConsumerState<MentionHandler> {
                   : ListView.builder(
                       controller: _scrollController,
                       itemCount: filteredItems.length,
-                      itemBuilder: (context, index) => _MentionListItem(
-                        item: filteredItems[index],
-                        isSelected: index == _selectedIndex,
-                        style: widget.style,
-                        onTap: () => _selectItem(filteredItems[index]),
-                      ),
+                      itemBuilder: (context, index) {
+                        final item = filteredItems[index];
+                        return _MentionListItem(
+                          userId: item.key,
+                          displayName: item.value,
+                          isSelected: index == _selectedIndex,
+                          style: widget.style,
+                          onTap: () => _selectItem(item.key, item.value),
+                        );
+                      },
                     ),
             ),
           ],
@@ -117,7 +136,11 @@ class _MentionHandlerState extends ConsumerState<MentionHandler> {
     );
   }
 
-  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+  KeyEventResult _handleKeyEvent(
+    FocusNode node,
+    KeyEvent event,
+    List<MapEntry<String, String>> filteredItems,
+  ) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
     switch (event.logicalKey) {
@@ -127,8 +150,10 @@ class _MentionHandlerState extends ConsumerState<MentionHandler> {
 
       case LogicalKeyboardKey.enter:
         if (filteredItems.isNotEmpty) {
-          _selectItem(filteredItems[_selectedIndex]);
+          final selectedItem = filteredItems[_selectedIndex];
+          _selectItem(selectedItem.key, selectedItem.value);
         }
+
         return KeyEventResult.handled;
 
       case LogicalKeyboardKey.arrowUp:
@@ -191,23 +216,12 @@ class _MentionHandlerState extends ConsumerState<MentionHandler> {
     final text = node.delta?.toPlainText() ?? '';
     if (text.length < startOffset) return;
 
-    _search = text.substring(startOffset);
-    _filterItems(_search);
-  }
-
-  void _filterItems(String search) {
-    final searchLower = search.toLowerCase();
     setState(() {
-      filteredItems = widget.items
-          .where((item) =>
-              item.id.toLowerCase().contains(searchLower) ||
-              item.displayName.toLowerCase().contains(searchLower))
-          .toList();
-      _selectedIndex = 0;
+      _search = text.substring(startOffset);
     });
   }
 
-  void _selectItem(MentionItem item) {
+  void _selectItem(String id, String displayName) {
     final selection = widget.editorState.selection;
     if (selection == null) return;
 
@@ -226,16 +240,14 @@ class _MentionHandlerState extends ConsumerState<MentionHandler> {
     transaction.insertText(
       node,
       startOffset - 1,
-      item.displayName,
+      displayName.isNotEmpty ? displayName : id,
       attributes: {
         MentionBlockKeys.mention: {
-          MentionBlockKeys.type: widget.mentionTrigger == '@'
-              ? MentionType.user.name
-              : MentionType.room.name,
-          if (widget.mentionTrigger == '@')
-            MentionBlockKeys.userId: item.id
+          MentionBlockKeys.type: widget.mentionType.name,
+          if (widget.mentionType == MentionType.user)
+            MentionBlockKeys.userId: id
           else
-            MentionBlockKeys.roomId: item.id,
+            MentionBlockKeys.roomId: id,
         },
       },
     );
@@ -300,13 +312,15 @@ class _MentionHandlerState extends ConsumerState<MentionHandler> {
 
 class _MentionListItem extends StatelessWidget {
   const _MentionListItem({
-    required this.item,
+    required this.userId,
+    required this.displayName,
     required this.isSelected,
     required this.style,
     required this.onTap,
   });
 
-  final MentionItem item;
+  final String userId;
+  final String displayName;
   final bool isSelected;
   final MentionMenuStyle style;
   final VoidCallback onTap;
@@ -324,21 +338,22 @@ class _MentionListItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              item.displayName,
+              displayName.isNotEmpty ? displayName : userId,
               style: TextStyle(
                 color: isSelected ? style.selectedTextColor : style.textColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            Text(
-              item.id,
-              style: TextStyle(
-                fontSize: 12,
-                color: isSelected
-                    ? style.selectedTextColor.withOpacity(0.7)
-                    : style.hintColor,
+            if (displayName.isNotEmpty)
+              Text(
+                userId,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isSelected
+                      ? style.selectedTextColor.withOpacity(0.7)
+                      : style.hintColor,
+                ),
               ),
-            ),
           ],
         ),
       ),

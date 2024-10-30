@@ -7,10 +7,14 @@ enum MentionType {
   user,
   room;
 
-  static MentionType fromString(String value) => switch (value) {
-        'user' => user,
-        'room' => room,
+  static MentionType fromStr(String str) => switch (str) {
+        '@' => user,
+        '#' => room,
         _ => throw UnimplementedError(),
+      };
+  static String toStr(MentionType type) => switch (type) {
+        MentionType.user => '@',
+        MentionType.room => '#',
       };
 }
 
@@ -44,7 +48,7 @@ class MentionBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final type = MentionType.fromString(mention[MentionBlockKeys.type]);
+    final type = MentionType.fromStr(mention[MentionBlockKeys.type]);
 
     switch (type) {
       case MentionType.user:

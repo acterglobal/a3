@@ -1,3 +1,5 @@
+import 'package:acter/common/models/types.dart';
+import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_handler.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
@@ -37,16 +39,16 @@ class MentionMenu {
   MentionMenu({
     required this.context,
     required this.editorState,
-    required this.items,
+    required this.query,
     required this.style,
-    required this.mentionTrigger,
+    required this.mentionType,
   });
 
   final BuildContext context;
   final EditorState editorState;
-  final List<String> items;
+  final RoomQuery query;
   final MentionMenuStyle style;
-  final String mentionTrigger;
+  final MentionType mentionType;
 
   OverlayEntry? _menuEntry;
   bool selectionChangedByMenu = false;
@@ -83,11 +85,11 @@ class MentionMenu {
               scrollDirection: Axis.horizontal,
               child: MentionHandler(
                 editorState: editorState,
-                items: items,
+                query: query,
                 onDismiss: dismiss,
                 onSelectionUpdate: _onSelectionUpdate,
                 style: style,
-                mentionTrigger: mentionTrigger,
+                mentionType: mentionType,
               ),
             ),
           ),
