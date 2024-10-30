@@ -6,7 +6,6 @@ import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/features/attachments/widgets/attachment_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Attachment, AttachmentsManager;
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -122,15 +121,10 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
 
   Widget attachmentHeader(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final attachmentTitleTextStyle = Theme.of(context).textTheme.labelLarge;
+    final attachmentTitleTextStyle = Theme.of(context).textTheme.titleSmall;
     return Row(
       children: [
-        const Icon(Atlas.paperclip_attachment_thin, size: 14),
-        const SizedBox(width: 5),
-        Text(
-          lang.attachments,
-          style: attachmentTitleTextStyle,
-        ),
+        Text(lang.attachments, style: attachmentTitleTextStyle),
         const Spacer(),
         ActerInlineTextButton(
           onPressed: () => selectAttachment(
