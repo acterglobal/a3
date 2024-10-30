@@ -2263,5 +2263,7 @@
   "deleteDraftBtn": "Entwurf löschen",
   "@deleteDraftBtn": {},
   "errorProcessingSlide": "Erstellen von Seite {slideIdx} fehlgeschlagen: {error}",
-  "@errorProcessingSlide": {}
+  "@errorProcessingSlide": {},
+  "addComment": "Kommentieren",
+  "@addComment": {}
 }
