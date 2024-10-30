@@ -66,14 +66,14 @@ class CommentsSectionWidget extends ConsumerWidget {
     if (shrinkWrap) {
       return CommentListWidget(
         manager: commentManager,
-        useCompactEmptyState: useCompactEmptyState,
+        useCompactEmptyState: true,
       );
     }
     return Expanded(
       child: CommentListWidget(
         manager: commentManager,
         shrinkWrap: shrinkWrap,
-        useCompactEmptyState: useCompactEmptyState,
+        useCompactEmptyState: true,
       ),
     );
   }

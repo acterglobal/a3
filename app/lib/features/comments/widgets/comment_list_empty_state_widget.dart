@@ -36,7 +36,7 @@ class CommentListEmptyStateWidget extends StatelessWidget {
 
   Widget compactEmptyState(BuildContext context, Color color) {
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
