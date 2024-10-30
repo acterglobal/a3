@@ -6,6 +6,8 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
+import 'package:acter/features/comments/providers/comments_providers.dart';
+import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/read_receipts/widgets/read_counter.dart';
@@ -35,6 +37,9 @@ class NewsSideBar extends ConsumerWidget {
     final isLikedByMe = ref.watch(likedByMeProvider(news));
     final likesCount = ref.watch(totalLikesForNewsProvider(news));
     final space = ref.watch(briefSpaceItemProvider(roomId));
+    final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
+    final commentCount =
+        ref.watch(newsCommentsCountProvider(news)).valueOrNull ?? 0;
     final bodyLarge = Theme.of(context).textTheme.bodyLarge;
 
     return Align(
@@ -64,6 +69,28 @@ class NewsSideBar extends ConsumerWidget {
                 await manager.redactLike(null, null);
               }
             },
+          ),
+          const SizedBox(height: 10),
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                showDragHandle: true,
+                builder: (context) => CommentsSectionWidget(
+                  manager: news.comments(),
+                  shrinkWrap: false,
+                  centerTitle: true,
+                  useCompactEmptyState: false,
+                ),
+              );
+            },
+            icon: Column(
+              children: [
+                const Icon(Atlas.comment_blank),
+                const SizedBox(height: 4),
+                Text(commentCount.toString(), style: style),
+              ],
+            ),
           ),
           const SizedBox(height: 10),
           InkWell(

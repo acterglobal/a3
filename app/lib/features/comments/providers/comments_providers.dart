@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Comment, CommentsManager;
+    show Comment, CommentsManager, NewsEntry;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -40,5 +40,19 @@ class AsyncCommentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
 
 final commentsListProvider = FutureProvider.family
     .autoDispose<List<Comment>, CommentsManager>((ref, manager) async {
-  return (await manager.comments()).toList();
+  final commentList = (await manager.comments()).toList();
+  commentList.sort(
+    (a, b) => a.originServerTs().compareTo(b.originServerTs()),
+  );
+  return commentList;
+});
+
+final newsCommentsCountProvider =
+    FutureProvider.family.autoDispose<int, NewsEntry>((ref, newsEntry) async {
+  final manager = newsEntry.comments();
+  final commentManager =
+      await ref.watch(commentsManagerProvider(manager).future);
+  final commentList =
+      await ref.watch(commentsListProvider(commentManager).future);
+  return commentList.length;
 });

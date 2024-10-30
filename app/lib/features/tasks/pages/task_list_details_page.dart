@@ -9,7 +9,7 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
-import 'package:acter/features/comments/widgets/comments_section.dart';
+import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/tasks/actions/update_tasklist.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
@@ -293,7 +293,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         const SizedBox(height: 20),
         AttachmentSectionWidget(manager: taskListData.attachments()),
         const SizedBox(height: 20),
-        CommentsSection(manager: taskListData.comments()),
+        CommentsSectionWidget(manager: taskListData.comments()),
         const SizedBox(height: 20),
       ],
     );
