@@ -32,7 +32,6 @@ class SettingsLabsPage extends ConsumerWidget {
             SettingsSection(
               title: Text(lang.labsAppFeatures),
               tiles: [
-                const LabsNotificationsSettingsTile(),
                 SettingsTile.switchTile(
                   title: Text(lang.encryptionBackupKeyBackup),
                   description: Text(lang.sharedCalendarAndEvents),
