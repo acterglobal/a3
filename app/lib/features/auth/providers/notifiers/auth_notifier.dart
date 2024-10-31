@@ -53,7 +53,6 @@ class AuthStateNotifier extends StateNotifier<bool> {
     String password,
     String displayName,
     String token,
-    BuildContext context,
   ) async {
     state = true;
     final sdk = await ref.read(sdkProvider.future);
@@ -64,7 +63,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
       return null;
     } catch (e) {
       state = false;
-      return e.toString();
+      rethrow;
     }
   }
 
