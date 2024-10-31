@@ -1,1 +1,0 @@
-- [Labs] calendar events should now show up in your device calendar (unless you have rejected them) by default. This is sill under labs, if you run into trouble you can disable it from the Settings -> labs and let us know what problem you had.
