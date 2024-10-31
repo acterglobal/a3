@@ -27,9 +27,10 @@ class EventListPage extends ConsumerStatefulWidget {
 }
 
 class _EventListPageState extends ConsumerState<EventListPage> {
-  String get searchValue => ref.watch(searchValueProvider);
+  ValueNotifier<EventFilters> eventFilter =
+      ValueNotifier<EventFilters>(EventFilters.all);
 
-  EventFilters get eventFilterValue => ref.watch(eventFilterProvider);
+  String get searchValue => ref.watch(searchValueProvider);
 
   @override
   void initState() {
@@ -89,15 +90,22 @@ class _EventListPageState extends ConsumerState<EventListPage> {
             notifier.state = '';
           },
         ),
-        filterChipsButtons(),
+        ValueListenableBuilder(
+          valueListenable: eventFilter,
+          builder: (context, showHeader, child) => filterChipsButtons(),
+        ),
         Expanded(
-          child: EventListWidget(
-            spaceId: widget.spaceId,
-            shrinkWrap: false,
-            searchValue: searchValue,
-            emptyState: EventListEmptyState(
+          child: ValueListenableBuilder(
+            valueListenable: eventFilter,
+            builder: (context, showHeader, child) => EventListWidget(
               spaceId: widget.spaceId,
-              isSearchApplied: searchValue.isNotEmpty,
+              shrinkWrap: false,
+              searchValue: searchValue,
+              eventFiler: eventFilter.value,
+              emptyState: EventListEmptyState(
+                spaceId: widget.spaceId,
+                isSearchApplied: searchValue.isNotEmpty,
+              ),
             ),
           ),
         ),
@@ -117,48 +125,34 @@ class _EventListPageState extends ConsumerState<EventListPage> {
         child: Wrap(
           children: [
             FilterChip(
-              selected: eventFilterValue == EventFilters.all,
+              selected: eventFilter.value == EventFilters.all,
               label: Text(lang.all),
-              onSelected: (value) {
-                final notifier = ref.read(eventFilterProvider.notifier);
-                notifier.state = EventFilters.all;
-              },
+              onSelected: (value) => eventFilter.value = EventFilters.all,
             ),
             const SizedBox(width: 10),
             FilterChip(
-              selected: eventFilterValue == EventFilters.bookmarked,
+              selected: eventFilter.value == EventFilters.bookmarked,
               label: Text(lang.bookmarked),
-              onSelected: (value) {
-                final notifier = ref.read(eventFilterProvider.notifier);
-                notifier.state = EventFilters.bookmarked;
-              },
+              onSelected: (value) =>
+                  eventFilter.value = EventFilters.bookmarked,
             ),
             const SizedBox(width: 10),
             FilterChip(
-              selected: eventFilterValue == EventFilters.ongoing,
+              selected: eventFilter.value == EventFilters.ongoing,
               label: Text(lang.happeningNow),
-              onSelected: (value) {
-                final notifier = ref.read(eventFilterProvider.notifier);
-                notifier.state = EventFilters.ongoing;
-              },
+              onSelected: (value) => eventFilter.value = EventFilters.ongoing,
             ),
             const SizedBox(width: 10),
             FilterChip(
-              selected: eventFilterValue == EventFilters.upcoming,
+              selected: eventFilter.value == EventFilters.upcoming,
               label: Text(lang.upcoming),
-              onSelected: (value) {
-                final notifier = ref.read(eventFilterProvider.notifier);
-                notifier.state = EventFilters.upcoming;
-              },
+              onSelected: (value) => eventFilter.value = EventFilters.upcoming,
             ),
             const SizedBox(width: 10),
             FilterChip(
-              selected: eventFilterValue == EventFilters.past,
+              selected: eventFilter.value == EventFilters.past,
               label: Text(lang.past),
-              onSelected: (value) {
-                final notifier = ref.read(eventFilterProvider.notifier);
-                notifier.state = EventFilters.past;
-              },
+              onSelected: (value) => eventFilter.value = EventFilters.past,
             ),
           ],
         ),

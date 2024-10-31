@@ -17,6 +17,7 @@ class EventListWidget extends ConsumerWidget {
   final int? limit;
   final bool showSectionHeader;
   final VoidCallback? onClickSectionHeader;
+  final EventFilters eventFiler;
   final bool shrinkWrap;
   final Widget emptyState;
 
@@ -27,6 +28,7 @@ class EventListWidget extends ConsumerWidget {
     this.searchValue,
     this.showSectionHeader = false,
     this.onClickSectionHeader,
+    this.eventFiler = EventFilters.all,
     this.shrinkWrap = true,
     this.emptyState = const SizedBox.shrink(),
   });
@@ -35,7 +37,11 @@ class EventListWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final calEventsLoader = ref.watch(
       eventListSearchFilterProvider(
-        (spaceId: spaceId, searchText: searchValue ?? ''),
+        (
+          spaceId: spaceId,
+          searchText: searchValue ?? '',
+          eventFilter: eventFiler,
+        ),
       ),
     );
 
@@ -59,11 +65,7 @@ class EventListWidget extends ConsumerWidget {
       stack: stack,
       textBuilder: L10n.of(context).loadingFailed,
       onRetryTap: () {
-        ref.invalidate(
-          eventListSearchFilterProvider(
-            (spaceId: spaceId, searchText: searchValue ?? ''),
-          ),
-        );
+        ref.invalidate(allEventListProvider);
       },
     );
   }
