@@ -76,6 +76,7 @@ class NewsSideBar extends ConsumerWidget {
               showModalBottomSheet(
                 context: context,
                 showDragHandle: true,
+                useSafeArea: true,
                 builder: (context) => CommentsSectionWidget(
                   manager: news.comments(),
                   shrinkWrap: false,
