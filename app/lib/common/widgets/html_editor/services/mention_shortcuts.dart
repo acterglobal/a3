@@ -1,12 +1,11 @@
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_menu.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 
-List<CharacterShortcutEvent> getMentionShortcuts(
+List<CharacterShortcutEvent> mentionShortcuts(
   BuildContext context,
-  RoomQuery query,
+  String roomId,
 ) {
   return [
     CharacterShortcutEvent(
@@ -15,7 +14,7 @@ List<CharacterShortcutEvent> getMentionShortcuts(
         context: context,
         editorState: editorState,
         type: MentionType.user,
-        query: query,
+        roomId: roomId,
       ),
       key: '@',
     ),
@@ -25,7 +24,7 @@ List<CharacterShortcutEvent> getMentionShortcuts(
         context: context,
         editorState: editorState,
         type: MentionType.room,
-        query: query,
+        roomId: roomId,
       ),
       key: '#',
     ),
@@ -36,7 +35,7 @@ Future<bool> _handleMentionTrigger({
   required BuildContext context,
   required EditorState editorState,
   required MentionType type,
-  required RoomQuery query,
+  required String roomId,
 }) async {
   final selection = editorState.selection;
   if (selection == null) return false;
@@ -55,7 +54,7 @@ Future<bool> _handleMentionTrigger({
     final menu = MentionMenu(
       context: context,
       editorState: editorState,
-      query: query,
+      roomId: roomId,
       mentionType: type,
       style: const MentionMenuStyle.dark(),
     );

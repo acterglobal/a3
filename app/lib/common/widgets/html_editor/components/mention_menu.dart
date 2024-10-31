@@ -1,4 +1,3 @@
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_handler.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -39,14 +38,14 @@ class MentionMenu {
   MentionMenu({
     required this.context,
     required this.editorState,
-    required this.query,
+    required this.roomId,
     required this.style,
     required this.mentionType,
   });
 
   final BuildContext context;
   final EditorState editorState;
-  final RoomQuery query;
+  final String roomId;
   final MentionMenuStyle style;
   final MentionType mentionType;
 
@@ -85,7 +84,7 @@ class MentionMenu {
               scrollDirection: Axis.horizontal,
               child: MentionHandler(
                 editorState: editorState,
-                query: query,
+                roomId: roomId,
                 onDismiss: dismiss,
                 onSelectionUpdate: _onSelectionUpdate,
                 style: style,

@@ -1,6 +1,6 @@
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_menu.dart';
+import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +16,7 @@ class MentionHandler extends ConsumerStatefulWidget {
   const MentionHandler({
     super.key,
     required this.editorState,
-    required this.query,
+    required this.roomId,
     required this.mentionType,
     required this.onDismiss,
     required this.onSelectionUpdate,
@@ -24,7 +24,7 @@ class MentionHandler extends ConsumerStatefulWidget {
   });
 
   final EditorState editorState;
-  final RoomQuery query;
+  final String roomId;
   final MentionType mentionType;
   final VoidCallback onDismiss;
   final VoidCallback onSelectionUpdate;
@@ -61,13 +61,13 @@ class _MentionHandlerState extends ConsumerState<MentionHandler> {
   @override
   Widget build(BuildContext context) {
     final suggestions = ref.watch(
-      mentionSuggestionsProvider((widget.query.roomId, widget.mentionType)),
+      mentionSuggestionsProvider((widget.roomId, widget.mentionType)),
     );
 
     final filteredItems = suggestions.entries.where((entry) {
       final normalizedId = entry.key.toLowerCase();
       final normalizedName = entry.value.toLowerCase();
-      final normalizedQuery = widget.query.query.toLowerCase();
+      final normalizedQuery = widget.editorState.intoMarkdown();
 
       return normalizedId.contains(normalizedQuery) ||
           normalizedName.contains(normalizedQuery);
