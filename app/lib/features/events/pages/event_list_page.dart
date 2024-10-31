@@ -10,7 +10,6 @@ import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
-import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -192,7 +191,6 @@ class _EventListPageState extends ConsumerState<EventListPage> {
             EventItem(
               event: event,
               isShowSpaceName: widget.spaceId == null,
-              eventType: ref.watch(eventTypeProvider(event)),
             ),
         ],
       ),

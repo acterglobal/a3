@@ -1,6 +1,5 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
-import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -72,10 +71,7 @@ class EventsSection extends ConsumerWidget {
       itemCount: count,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) => EventItem(
-        event: events[index],
-        eventType: ref.watch(eventTypeProvider(events[index])),
-      ),
+      itemBuilder: (context, index) => EventItem(event: events[index]),
     );
   }
 }

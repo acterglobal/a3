@@ -3,6 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/blinking_text.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -15,13 +16,12 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::cal_event::event_item');
 
-class EventItem extends StatelessWidget {
+class EventItem extends ConsumerWidget {
   final CalendarEvent event;
   final EdgeInsetsGeometry? margin;
   final Function(String)? onTapEventItem;
   final bool isShowRsvp;
   final bool isShowSpaceName;
-  final EventFilters eventType;
 
   const EventItem({
     super.key,
@@ -30,11 +30,11 @@ class EventItem extends StatelessWidget {
     this.onTapEventItem,
     this.isShowRsvp = true,
     this.isShowSpaceName = false,
-    required this.eventType,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final eventType = ref.watch(eventTypeProvider(event));
     return InkWell(
       onTap: () {
         final eventId = event.eventId().toString();
