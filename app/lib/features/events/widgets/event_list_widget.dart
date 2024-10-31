@@ -65,7 +65,15 @@ class EventListWidget extends ConsumerWidget {
       stack: stack,
       textBuilder: L10n.of(context).loadingFailed,
       onRetryTap: () {
-        ref.invalidate(allEventListProvider);
+        ref.invalidate(
+          eventListSearchFilterProvider(
+            (
+              spaceId: spaceId,
+              searchText: searchValue ?? '',
+              eventFilter: eventFiler,
+            ),
+          ),
+        );
       },
     );
   }
