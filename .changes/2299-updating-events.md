@@ -1,1 +1,0 @@
-- Fix: Update event information when time progresses
