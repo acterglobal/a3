@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
@@ -13,10 +14,12 @@ import 'package:go_router/go_router.dart';
 
 class EventListPage extends ConsumerStatefulWidget {
   final String? spaceId;
+  final String? searchQuery;
 
   const EventListPage({
     super.key,
     this.spaceId,
+    this.searchQuery,
   });
 
   @override
@@ -27,6 +30,16 @@ class _EventListPageState extends ConsumerState<EventListPage> {
   String get searchValue => ref.watch(searchValueProvider);
 
   EventFilters get eventFilterValue => ref.watch(eventFilterProvider);
+
+  @override
+  void initState() {
+    super.initState();
+    widget.searchQuery.map((query) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        ref.read(searchValueProvider.notifier).state = query;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +79,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
+          initialText: widget.searchQuery,
           onChanged: (value) {
             final notifier = ref.read(searchValueProvider.notifier);
             notifier.state = value;

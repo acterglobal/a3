@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
+import 'package:acter/features/events/widgets/event_list_widget.dart';
 import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:acter/features/search/providers/quick_search_providers.dart';
 import 'package:acter/features/spaces/widgets/space_list_widget.dart';
@@ -72,6 +73,15 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
             showSectionHeader: true,
             onClickSectionHeader: () => context.pushNamed(
               Routes.pins.name,
+              queryParameters: {'searchQuery': searchValue},
+            ),
+          ),
+          EventListWidget(
+            limit: 3,
+            searchValue: searchValue,
+            showSectionHeader: true,
+            onClickSectionHeader: () => context.pushNamed(
+              Routes.calendarEvents.name,
               queryParameters: {'searchQuery': searchValue},
             ),
           ),
