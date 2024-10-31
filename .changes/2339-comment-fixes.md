@@ -1,0 +1,2 @@
+- [Fix] : Add comment issue in iOS device is fixed now
+- [Improvement] : Comment list will show latest comments as default

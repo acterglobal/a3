@@ -42,7 +42,7 @@ final commentsListProvider = FutureProvider.family
     .autoDispose<List<Comment>, CommentsManager>((ref, manager) async {
   final commentList = (await manager.comments()).toList();
   commentList.sort(
-    (a, b) => a.originServerTs().compareTo(b.originServerTs()),
+    (a, b) => b.originServerTs().compareTo(a.originServerTs()),
   );
   return commentList;
 });

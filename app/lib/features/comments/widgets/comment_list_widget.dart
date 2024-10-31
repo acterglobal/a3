@@ -42,6 +42,7 @@ class CommentListWidget extends ConsumerWidget {
       shrinkWrap: shrinkWrap,
       itemCount: commentList.length,
       padding: EdgeInsets.zero,
+      reverse: true,
       physics: shrinkWrap ? const NeverScrollableScrollPhysics() : null,
       itemBuilder: (context, index) {
         return CommentItemWidget(
