@@ -17,6 +17,8 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::cal_event::event_item');
 
 class EventItem extends ConsumerWidget {
+  static const eventItemClick = Key('event_item_click');
+
   final CalendarEvent event;
   final EdgeInsetsGeometry? margin;
   final Function(String)? onTapEventItem;
@@ -36,6 +38,7 @@ class EventItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final eventType = ref.watch(eventTypeProvider(event));
     return InkWell(
+      key: eventItemClick,
       onTap: () {
         final eventId = event.eventId().toString();
         onTapEventItem.map(

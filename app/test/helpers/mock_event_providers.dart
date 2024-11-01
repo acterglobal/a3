@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/features/datetime/providers/notifiers/now_notifier.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
 import 'package:acter/features/events/providers/notifiers/rsvp_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -31,19 +32,31 @@ class MockAsyncRsvpStatusNotifier
     implements AsyncRsvpStatusNotifier {
   @override
   Future<RsvpStatusTag?> build(String arg) async {
-    return null;
+    return switch (arg) {
+      'yes' => RsvpStatusTag.Yes,
+      'no' => RsvpStatusTag.No,
+      'maybe' => RsvpStatusTag.Maybe,
+      _ => null,
+    };
   }
 }
 
 class MockEvent extends Fake implements CalendarEvent {
   @override
+  EventId eventId() => MockEventId();
+
+  @override
   String roomIdStr() => 'testRoomId';
+
   @override
   String title() => 'Fake Event';
+
   @override
   TextMessageContent? description() => null;
+
   @override
   UtcDateTime utcStart() => FakeUtcDateTime();
+
   @override
   UtcDateTime utcEnd() => FakeUtcDateTime();
 
@@ -63,3 +76,7 @@ class FakeUtcDateTime extends Fake implements UtcDateTime {
   @override
   int timestampMillis() => 10;
 }
+
+class MockUtcNowNotifier extends Mock implements UtcNowNotifier {}
+
+class MockEventId extends Mock implements EventId {}
