@@ -84,10 +84,9 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
       ),
       child: ActerInlineTextButton(
         key: Key('task-list-$taskListId-add-task-inline'),
-        onPressed: () => showCreateUpdateTaskItemBottomSheet(
+        onPressed: () => showCreateTaskBottomSheet(
           context,
           taskList: widget.taskList,
-          taskName: '',
         ),
         child: Text(L10n.of(context).addTask),
       ),

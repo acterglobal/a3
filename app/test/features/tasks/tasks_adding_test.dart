@@ -17,14 +17,14 @@ void main() {
           .thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
         overrides: [],
-        child: CreateUpdateTaskItemList(
+        child: CreateTaskWidget(
           taskName: '',
           taskList: mockTaskList,
         ),
       );
       // try to submit without a title
 
-      final submitBtn = find.byKey(CreateUpdateTaskItemList.submitBtn);
+      final submitBtn = find.byKey(CreateTaskWidget.submitBtn);
       expect(submitBtn, findsOneWidget);
       await tester.tap(submitBtn);
 
@@ -33,7 +33,7 @@ void main() {
 
       // add the title
 
-      final title = find.byKey(CreateUpdateTaskItemList.titleField);
+      final title = find.byKey(CreateTaskWidget.titleField);
       expect(title, findsOneWidget);
       await tester.enterText(title, 'My new Task');
 

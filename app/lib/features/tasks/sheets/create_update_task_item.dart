@@ -12,11 +12,10 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::tasks::create_update_task_item');
 
-Future<void> showCreateUpdateTaskItemBottomSheet(
+Future<void> showCreateTaskBottomSheet(
   BuildContext context, {
   required TaskList taskList,
-  required String taskName,
-  Task? task,
+  String? taskName,
   Function()? cancel,
 }) async {
   await showModalBottomSheet(
@@ -24,40 +23,36 @@ Future<void> showCreateUpdateTaskItemBottomSheet(
     showDragHandle: false,
     useSafeArea: true,
     isScrollControlled: true,
-    builder: (context) => CreateUpdateTaskItemList(
+    builder: (context) => CreateTaskWidget(
       taskList: taskList,
       taskName: taskName,
-      task: task,
       cancel: () => Navigator.of(context).pop(),
     ),
   );
 }
 
-class CreateUpdateTaskItemList extends ConsumerStatefulWidget {
+class CreateTaskWidget extends ConsumerStatefulWidget {
   static const submitBtn = Key('create-task-submit');
   static const titleField = Key('create-task-title-field');
   final TaskList taskList;
-  final String taskName;
-  final Task? task;
+  final String? taskName;
   final Function()? cancel;
 
-  const CreateUpdateTaskItemList({
+  const CreateTaskWidget({
     super.key,
     required this.taskList,
-    required this.taskName,
-    this.task,
+    this.taskName,
     this.cancel,
   });
 
   @override
-  ConsumerState<CreateUpdateTaskItemList> createState() =>
-      _CreateUpdateItemListConsumerState();
+  ConsumerState<CreateTaskWidget> createState() =>
+      _CreateTaskWidgetConsumerState();
 }
 
-class _CreateUpdateItemListConsumerState
-    extends ConsumerState<CreateUpdateTaskItemList> {
+class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
   final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'update task list form');
+      GlobalKey<FormState>(debugLabel: 'create task list form');
   final TextEditingController _taskNameController = TextEditingController();
   final TextEditingController _taskDescriptionController =
       TextEditingController();
@@ -67,22 +62,7 @@ class _CreateUpdateItemListConsumerState
   @override
   void initState() {
     super.initState();
-    _taskNameController.text = widget.taskName;
-    setUpdateData();
-  }
-
-  void setUpdateData() {
-    widget.task.map((task) {
-      task.description().map((description) {
-        _taskDescriptionController.text = description.body();
-      });
-      task.dueDate().map((dueDate) {
-        DateTime.parse(dueDate).map((date) {
-          selectedDate = date;
-          _taskDueDateController.text = taskDueDateFormat(date);
-        });
-      });
-    });
+    _taskNameController.text = widget.taskName ?? '';
   }
 
   @override
@@ -105,7 +85,7 @@ class _CreateUpdateItemListConsumerState
               ),
               const SizedBox(height: 20),
               Text(
-                widget.task == null ? lang.addTask : lang.updateTask,
+                lang.addTask,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
@@ -136,7 +116,7 @@ class _CreateUpdateItemListConsumerState
         ),
         const SizedBox(height: 5),
         TextFormField(
-          key: CreateUpdateTaskItemList.titleField,
+          key: CreateTaskWidget.titleField,
           autofocus: true,
           decoration: InputDecoration(hintText: lang.name),
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -232,9 +212,9 @@ class _CreateUpdateItemListConsumerState
   Widget _widgetAddButton() {
     final lang = L10n.of(context);
     return ElevatedButton(
-      key: CreateUpdateTaskItemList.submitBtn,
-      onPressed: widget.task == null ? addTask : updateTask,
-      child: Text(widget.task == null ? lang.addTask : lang.updateTask),
+      key: CreateTaskWidget.submitBtn,
+      onPressed: addTask,
+      child: Text(lang.addTask),
     );
   }
 
@@ -265,39 +245,6 @@ class _CreateUpdateItemListConsumerState
       }
       EasyLoading.showError(
         lang.creatingTaskFailed(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> updateTask() async {
-    final lang = L10n.of(context);
-    if (!_formKey.currentState!.validate()) return;
-    final task = widget.task;
-    if (task == null) return;
-    EasyLoading.show(status: lang.updatingTask);
-    final updater = task.updateBuilder();
-    updater.title(_taskNameController.text);
-    if (_taskDescriptionController.text.isNotEmpty) {
-      updater.descriptionText(_taskDescriptionController.text);
-    }
-    final date = selectedDate;
-    if (date != null) {
-      updater.dueDate(date.year, date.month, date.day);
-    }
-    try {
-      await updater.send();
-      EasyLoading.dismiss();
-      if (!mounted) return;
-      Navigator.pop(context);
-    } catch (e, s) {
-      _log.severe('Failed to change task', e, s);
-      if (!mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        lang.updatingTaskFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
