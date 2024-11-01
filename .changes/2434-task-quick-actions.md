@@ -1,0 +1,1 @@
+- Create Tasks right from the quick actions, including to select the target space and list.
