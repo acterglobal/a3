@@ -38,6 +38,8 @@ class CreateTaskWidget extends ConsumerStatefulWidget {
   static const dueDateTodayBtn = Key('create-task-due-today-btn');
   static const dueDateTomorrowBtn = Key('create-task-due-tomorrow-btn');
   static const descField = Key('create-task-desc-field');
+  static const closeDescAction = Key('create-task-actions-close-desc');
+  static const closeDueDateAction = Key('create-task-actions-close-due-date');
   final TaskList taskList;
   final String? taskName;
 
@@ -166,6 +168,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
               style: Theme.of(context).textTheme.bodySmall,
             ),
             IconButton(
+              key: CreateTaskWidget.closeDescAction,
               onPressed: () {
                 setState(() {
                   showDescriptionField = false;
@@ -177,8 +180,9 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
         ),
         const SizedBox(height: 5),
         TextFormField(
+          key: CreateTaskWidget.descField,
           decoration: InputDecoration(hintText: lang.description),
-          minLines: 4,
+          minLines: 2,
           maxLines: 4,
           controller: _taskDescriptionController,
         ),
@@ -199,6 +203,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
               style: Theme.of(context).textTheme.bodySmall,
             ),
             IconButton(
+              key: CreateTaskWidget.closeDueDateAction,
               onPressed: () {
                 setState(() {
                   showDueDate = false;

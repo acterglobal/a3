@@ -1,7 +1,7 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
-import 'package:acter/features/tasks/sheets/create_update_task_item.dart';
+import 'package:acter/features/tasks/actions/create_task.dart';
 import 'package:acter/features/tasks/widgets/skeleton/task_items_skeleton.dart';
 import 'package:acter/features/tasks/widgets/task_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
