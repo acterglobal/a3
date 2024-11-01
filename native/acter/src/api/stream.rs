@@ -146,7 +146,7 @@ impl TimelineStream {
                     bail!("Unable to find event");
                 };
 
-                if item.is_editable() {
+                if !item.is_editable() {
                     bail!("Unable to edit an event not sent by own user");
                 }
 

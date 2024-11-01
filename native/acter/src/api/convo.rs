@@ -200,6 +200,17 @@ impl Convo {
         TimelineStream::new(self.inner.clone(), self.timeline.clone())
     }
 
+    pub async fn items(&self) -> Vec<RoomMessage> {
+        let user_id = self.client.user_id().expect("User must be logged in");
+        self.timeline
+            .items()
+            .await
+            .clone()
+            .into_iter()
+            .map(|x| RoomMessage::from((x, user_id.clone())))
+            .collect()
+    }
+
     pub fn num_unread_notification_count(&self) -> u64 {
         self.inner.unread_notification_counts().notification_count
     }
