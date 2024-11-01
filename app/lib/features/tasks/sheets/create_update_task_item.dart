@@ -1,5 +1,5 @@
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -16,7 +16,6 @@ Future<void> showCreateTaskBottomSheet(
   BuildContext context, {
   required TaskList taskList,
   String? taskName,
-  Function()? cancel,
 }) async {
   await showModalBottomSheet(
     context: context,
@@ -26,7 +25,6 @@ Future<void> showCreateTaskBottomSheet(
     builder: (context) => CreateTaskWidget(
       taskList: taskList,
       taskName: taskName,
-      cancel: () => Navigator.of(context).pop(),
     ),
   );
 }
@@ -34,15 +32,19 @@ Future<void> showCreateTaskBottomSheet(
 class CreateTaskWidget extends ConsumerStatefulWidget {
   static const submitBtn = Key('create-task-submit');
   static const titleField = Key('create-task-title-field');
+  static const addDueDateAction = Key('create-task-actions-add-due');
+  static const addDescAction = Key('create-task-actions-add-desc');
+  static const dueDateField = Key('create-task-due-field');
+  static const dueDateTodayBtn = Key('create-task-due-today-btn');
+  static const dueDateTomorrowBtn = Key('create-task-due-tomorrow-btn');
+  static const descField = Key('create-task-desc-field');
   final TaskList taskList;
   final String? taskName;
-  final Function()? cancel;
 
   const CreateTaskWidget({
     super.key,
     required this.taskList,
     this.taskName,
-    this.cancel,
   });
 
   @override
@@ -59,15 +61,40 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
   final TextEditingController _taskDueDateController = TextEditingController();
   DateTime? selectedDate;
 
+  bool showDescriptionField = false;
+  bool showDueDate = false;
+
   @override
   void initState() {
     super.initState();
-    _taskNameController.text = widget.taskName ?? '';
+    widget.taskName.map((text) {
+      _taskNameController.text = text;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
+
+    final fields = [
+      const SizedBox(height: 20),
+      _widgetTaskName(),
+    ];
+
+    if (showDescriptionField) {
+      fields.addAll([
+        const SizedBox(height: 20),
+        _widgetDescriptionName(),
+      ]);
+    }
+
+    if (showDueDate) {
+      fields.addAll([
+        const SizedBox(height: 20),
+        _widgetDueDate(),
+      ]);
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SingleChildScrollView(
@@ -89,14 +116,11 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
+              ...fields,
               const SizedBox(height: 20),
-              _widgetTaskName(),
+              _addFields(),
               const SizedBox(height: 20),
-              _widgetDescriptionName(),
-              const SizedBox(height: 20),
-              _widgetDueDate(),
-              const SizedBox(height: 20),
-              _widgetAddButton(),
+              _widgetCreateButton(),
               const SizedBox(height: 20),
             ],
           ),
@@ -134,9 +158,22 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          lang.description,
-          style: Theme.of(context).textTheme.bodySmall,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              lang.description,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  showDescriptionField = false;
+                });
+              },
+              icon: const Icon(Icons.close),
+            ),
+          ],
         ),
         const SizedBox(height: 5),
         TextFormField(
@@ -154,13 +191,27 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          lang.dueDate,
-          style: Theme.of(context).textTheme.bodySmall,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              lang.dueDate,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  showDueDate = false;
+                });
+              },
+              icon: const Icon(Icons.close),
+            ),
+          ],
         ),
         const SizedBox(height: 5),
         TextFormField(
           readOnly: true,
+          key: CreateTaskWidget.dueDateField,
           decoration: InputDecoration(
             hintText: lang.dueDate,
             suffixIcon: IconButton(
@@ -175,6 +226,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             ActerInlineTextButton(
+              key: CreateTaskWidget.dueDateTodayBtn,
               onPressed: () => setState(() {
                 final date = DateTime.now();
                 selectedDate = date;
@@ -183,6 +235,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
               child: Text(lang.today),
             ),
             ActerInlineTextButton(
+              key: CreateTaskWidget.dueDateTomorrowBtn,
               onPressed: () => setState(() {
                 final date = DateTime.now().addDays(1);
                 selectedDate = date;
@@ -209,7 +262,45 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
     });
   }
 
-  Widget _widgetAddButton() {
+  Widget _addFields() {
+    final lang = L10n.of(context);
+    final actions = [];
+    if (!showDescriptionField) {
+      actions.add(
+        ActerInlineTextButton(
+          key: CreateTaskWidget.addDescAction,
+          onPressed: () => setState(() {
+            showDescriptionField = true;
+          }),
+          child: Text(lang.description),
+        ),
+      );
+    }
+    if (!showDueDate) {
+      actions.add(
+        ActerInlineTextButton(
+          key: CreateTaskWidget.addDueDateAction,
+          onPressed: () => setState(() {
+            showDueDate = true;
+          }),
+          child: Text(lang.dueDate),
+        ),
+      );
+    }
+    if (actions.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Row(
+      children: [
+        Text(lang.add),
+        const SizedBox(width: 5),
+        ...actions,
+      ],
+    );
+  }
+
+  Widget _widgetCreateButton() {
     final lang = L10n.of(context);
     return ElevatedButton(
       key: CreateTaskWidget.submitBtn,
@@ -224,18 +315,17 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
     EasyLoading.show(status: lang.addingTask);
     final taskDraft = widget.taskList.taskBuilder();
     taskDraft.title(_taskNameController.text);
-    if (_taskDescriptionController.text.isNotEmpty) {
+    if (showDescriptionField && _taskDescriptionController.text.isNotEmpty) {
       taskDraft.descriptionText(_taskDescriptionController.text);
     }
     final date = selectedDate;
-    if (date != null) {
+    if (showDueDate && date != null) {
       taskDraft.dueDate(date.year, date.month, date.day);
     }
     try {
       await taskDraft.send();
       EasyLoading.dismiss();
       if (!mounted) return;
-      widget.cancel.map((cb) => cb());
       Navigator.pop(context);
     } catch (e, s) {
       _log.severe('Failed to create task', e, s);
