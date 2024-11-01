@@ -123,7 +123,7 @@ impl RoomEventItem {
                     })
                     .collect(),
             )
-            .editable(event.is_editable());
+            .editable(event.is_editable()); // which means _images_ can't be edited right now ... but that is probably fine
 
         match event.content() {
             TimelineItemContent::Message(msg) => {

@@ -146,8 +146,9 @@ impl TimelineStream {
                     bail!("Unable to find event");
                 };
 
-                if !item.is_editable() {
-                    bail!("Unable to edit an event not sent by own user");
+                if !item.is_own() {
+                    // !item.is_editable() { // FIXME: matrix-sdk is_editable doesn't allow us to post other things
+                    bail!("You can't edit other peoples messages");
                 }
 
                 let item = timeline
