@@ -1,7 +1,12 @@
+import 'package:acter/common/actions/select_space.dart';
 import 'package:acter/common/drag_handle_widget.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/tasks/actions/select_tasklist.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
@@ -15,7 +20,7 @@ final _log = Logger('a3::tasks::create_update_task_item');
 
 Future<void> showCreateTaskBottomSheet(
   BuildContext context, {
-  required TaskList taskList,
+  TaskList? taskList,
   String? taskName,
 }) async {
   await showModalBottomSheet(
@@ -41,12 +46,12 @@ class CreateTaskWidget extends ConsumerStatefulWidget {
   static const descField = Key('create-task-desc-field');
   static const closeDescAction = Key('create-task-actions-close-desc');
   static const closeDueDateAction = Key('create-task-actions-close-due-date');
-  final TaskList taskList;
+  final TaskList? taskList;
   final String? taskName;
 
   const CreateTaskWidget({
     super.key,
-    required this.taskList,
+    this.taskList,
     this.taskName,
   });
 
@@ -67,11 +72,30 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
   bool showDescriptionField = false;
   bool showDueDate = false;
 
+  TaskList? taskList;
+
   @override
   void initState() {
     super.initState();
+    widget.taskList.map((tl) {
+      WidgetsBinding.instance.addPostFrameCallback((d) {
+        setState(() {
+          taskList = tl;
+          ref.read(selectedSpaceIdProvider.notifier).state = tl.spaceIdStr();
+        });
+      });
+    });
     widget.taskName.map((text) {
       _taskNameController.text = text;
+    });
+    ref.listenManual(selectedSpaceIdProvider, (prev, next) {
+      // if the space changed and this isn't our list now, we
+      // need to reset
+      if (next != taskList?.spaceIdStr()) {
+        setState(() {
+          taskList = null;
+        });
+      }
     });
   }
 
@@ -114,6 +138,28 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
                 lang.addTask,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+                child: Row(
+                  children: [
+                    const SelectSpaceFormField(
+                      canCheck: 'CanPostTask',
+                      useCompatView: true,
+                    ),
+                    const Text(' > '),
+                    if (taskList == null)
+                      ActerInlineTextButton(
+                        child: Text(lang.selectTaskList),
+                        onPressed: () => _selectTaskList(),
+                      )
+                    else
+                      InkWell(
+                        onTap: () => _selectTaskList(),
+                        child: Text(taskList?.name() ?? ''),
+                      ),
+                  ],
+                ),
               ),
               ...fields,
               const SizedBox(height: 20),
@@ -311,11 +357,54 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
     );
   }
 
+  Future<void> _selectTaskList() async {
+    final lang = L10n.of(context);
+    String? spaceId = ref.read(selectedSpaceIdProvider);
+    spaceId ??= await selectSpace(
+      context: context,
+      ref: ref,
+      canCheck: 'CanPostTask',
+    );
+    if (!mounted) return;
+
+    if (spaceId == null) {
+      EasyLoading.showError(
+        lang.pleaseSelectSpace,
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
+    final taskListId = await selectTaskList(context: context, spaceId: spaceId);
+    if (!mounted) return;
+    if (taskListId == null) {
+      return;
+    }
+
+    final newTaskList = await ref.read(taskListItemProvider(taskListId).future);
+    setState(() {
+      taskList = newTaskList;
+    });
+    }
+
   Future<void> addTask() async {
     final lang = L10n.of(context);
     if (!_formKey.currentState!.validate()) return;
+
+    if (taskList == null) {
+      await _selectTaskList();
+    }
+    final tl = taskList;
+    if (tl == null) {
+      EasyLoading.showError(
+        lang.selectTaskList,
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
     EasyLoading.show(status: lang.addingTask);
-    final taskDraft = widget.taskList.taskBuilder();
+    final taskDraft = tl.taskBuilder();
     taskDraft.title(_taskNameController.text);
     if (showDescriptionField && _taskDescriptionController.text.isNotEmpty) {
       taskDraft.descriptionText(_taskDescriptionController.text);

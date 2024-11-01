@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/tasks/actions/create_task.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -7,7 +8,7 @@ import '../../helpers/mock_tasks_providers.dart';
 import '../../helpers/test_util.dart';
 
 void main() {
-  group('Create Task Widget', () {
+  group('Create Task Widget on TaskList', () {
     testWidgets('Simple only title', (tester) async {
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
@@ -16,9 +17,10 @@ void main() {
       when(() => mockTaskDraft.send())
           .thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
-        overrides: [],
+        overrides: [
+          selectedSpaceDetailsProvider.overrideWith((_) => null),
+        ],
         child: CreateTaskWidget(
-          taskName: '',
           taskList: mockTaskList,
         ),
       );
@@ -53,9 +55,10 @@ void main() {
       when(() => mockTaskDraft.send())
           .thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
-        overrides: [],
+        overrides: [
+          selectedSpaceDetailsProvider.overrideWith((_) => null),
+        ],
         child: CreateTaskWidget(
-          taskName: '',
           taskList: mockTaskList,
         ),
       );
@@ -111,9 +114,10 @@ void main() {
       when(() => mockTaskDraft.send())
           .thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
-        overrides: [],
+        overrides: [
+          selectedSpaceDetailsProvider.overrideWith((_) => null),
+        ],
         child: CreateTaskWidget(
-          taskName: '',
           taskList: mockTaskList,
         ),
       );
@@ -176,9 +180,10 @@ void main() {
       when(() => mockTaskDraft.send())
           .thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
-        overrides: [],
+        overrides: [
+          selectedSpaceDetailsProvider.overrideWith((_) => null),
+        ],
         child: CreateTaskWidget(
-          taskName: '',
           taskList: mockTaskList,
         ),
       );
@@ -243,9 +248,10 @@ void main() {
       when(() => mockTaskDraft.send())
           .thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
-        overrides: [],
+        overrides: [
+          selectedSpaceDetailsProvider.overrideWith((_) => null),
+        ],
         child: CreateTaskWidget(
-          taskName: '',
           taskList: mockTaskList,
         ),
       );
@@ -304,6 +310,43 @@ void main() {
         ),
       );
       verify(() => mockTaskDraft.send()).called(1);
+    });
+  });
+
+  group('Create Task no Tasklist', () {
+    testWidgets('Simple only title no tasklist', (tester) async {
+      final mockTaskList = MockTaskList();
+      final mockTaskDraft = MockTaskDraft();
+      when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
+      when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
+      when(() => mockTaskDraft.send())
+          .thenAnswer((_) async => MockEventId(id: 'test'));
+      await tester.pumpProviderWidget(
+        overrides: [
+          selectedSpaceDetailsProvider.overrideWith((_) => null),
+        ],
+        child: const CreateTaskWidget(),
+      );
+      // try to submit without a title
+
+      final submitBtn = find.byKey(CreateTaskWidget.submitBtn);
+      expect(submitBtn, findsOneWidget);
+      await tester.tap(submitBtn);
+
+      // not called
+      verifyNever(() => mockTaskList.taskBuilder());
+
+      // add the title
+
+      final title = find.byKey(CreateTaskWidget.titleField);
+      expect(title, findsOneWidget);
+      await tester.enterText(title, 'My new Task');
+
+      expect(submitBtn, findsOneWidget);
+      await tester.tap(submitBtn);
+
+      // blocks because we have no task list yet
+      verifyNever(() => mockTaskList.taskBuilder());
     });
   });
 }

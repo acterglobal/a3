@@ -882,6 +882,7 @@
   "pleaseProvideYourUserPassword": "Please provide your user password to confirm you want to end that session.",
   "@pleaseProvideYourUserPassword": {},
   "pleaseSelectSpace": "Please select space",
+  "selectTaskList": "Select Task List",
   "@pleaseSelectSpace": {},
   "pleaseWait": "Please wait…",
   "@pleaseWait": {},

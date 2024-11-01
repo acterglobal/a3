@@ -2,16 +2,15 @@ import 'dart:math';
 
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
-import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter/features/tasks/widgets/skeleton/tasks_list_skeleton.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
+import 'package:acter/features/tasks/widgets/task_lists_empty.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -158,31 +157,16 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   }
 
   Widget _buildTasklistsEmptyState() {
-    final lang = L10n.of(context);
     var canAdd = false;
     if (searchValue.isEmpty) {
       final canPostLoader =
           ref.watch(hasSpaceWithPermissionProvider('CanPostTaskList'));
       if (canPostLoader.valueOrNull == true) canAdd = true;
     }
-    return Center(
-      heightFactor: 1,
-      child: EmptyState(
-        title: searchValue.isNotEmpty
-            ? lang.noMatchingTasksListFound
-            : lang.noTasksListAvailableYet,
-        subtitle: lang.noTasksListAvailableDescription,
-        image: 'assets/images/tasks.svg',
-        primaryButton: canAdd
-            ? ActerPrimaryActionButton(
-                onPressed: () => showCreateUpdateTaskListBottomSheet(
-                  context,
-                  initialSelectedSpace: widget.spaceId,
-                ),
-                child: Text(lang.createTaskList),
-              )
-            : null,
-      ),
+    return TaskListsEmptyState(
+      canAdd: canAdd,
+      inSearch: searchValue.isNotEmpty,
+      spaceId: widget.spaceId,
     );
   }
 }
