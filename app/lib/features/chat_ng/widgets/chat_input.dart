@@ -1,18 +1,24 @@
 import 'dart:async';
 
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/custom_input.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/common/extensions/options.dart';
 
 final _log = Logger('a3::chat::custom_input');
 
@@ -162,6 +168,8 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
       _inputUpdate();
       _updateHeight();
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft);
   }
 
   @override
@@ -174,6 +182,9 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
   @override
   void didUpdateWidget(covariant _InputWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.roomId != widget.roomId) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
+    }
   }
 
   void _inputUpdate() {
@@ -185,7 +196,7 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
     // delay operation to avoid excessive re-writes
     _debounceTimer = Timer(const Duration(milliseconds: 300), () async {
       // save composing draft
-      // await saveDraft(textController.text, widget.roomId, ref);
+      await saveDraft(textEditorState.intoMarkdown(), widget.roomId, ref);
       _log.info('compose draft saved for room: ${widget.roomId}');
     });
   }
@@ -200,6 +211,112 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
     setState(() {
       _cHeight = (0.05 + (lineCount - 1) * 0.02).clamp(0.05, 0.15);
     });
+  }
+
+  // composer draft load state handler
+  Future<void> _loadDraft() async {
+    final draft =
+        await ref.read(chatComposerDraftProvider(widget.roomId).future);
+
+    if (draft != null) {
+      final inputNotifier = ref.read(chatInputProvider.notifier);
+      inputNotifier.unsetSelectedMessage();
+      draft.eventId().map((eventId) {
+        final draftType = draft.draftType();
+        final m = ref
+            .read(chatMessagesProvider(widget.roomId))
+            .firstWhere((x) => x.id == eventId);
+        if (draftType == 'edit') {
+          inputNotifier.setEditMessage(m);
+        } else if (draftType == 'reply') {
+          inputNotifier.setReplyToMessage(m);
+        }
+      });
+      await draft.htmlText().mapAsync(
+        (html) async {
+          final doc = ActerDocumentHelpers.parse(
+            draft.plainText(),
+            htmlContent: draft.htmlText(),
+          );
+          final transaction = textEditorState.transaction;
+          transaction.insertNodes([0], doc.root.children);
+
+          textEditorState.apply(transaction);
+        },
+        orElse: () {
+          final doc = ActerDocumentHelpers.parse(
+            draft.plainText(),
+          );
+          final transaction = textEditorState.transaction;
+          transaction.insertNodes([0], doc.root.children);
+          textEditorState.apply(transaction);
+        },
+      );
+      _log.info('compose draft loaded for room: ${widget.roomId}');
+    }
+  }
+
+  Future<void> onSendButtonPressed(String body, String? html) async {
+    final lang = L10n.of(context);
+    ref.read(chatInputProvider.notifier).startSending();
+
+    try {
+      // end the typing notification
+      widget.onTyping?.map((cb) => cb(false));
+
+      // make the actual draft
+      final client = ref.read(alwaysClientProvider);
+      late MsgDraft draft;
+      if (html != null) {
+        draft = client.textHtmlDraft(html, body);
+      } else {
+        draft = client.textMarkdownDraft(body);
+      }
+
+      // actually send it out
+      final inputState = ref.read(chatInputProvider);
+      final stream =
+          await ref.read(timelineStreamProvider(widget.roomId).future);
+
+      if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+        final remoteId = inputState.selectedMessage?.remoteId;
+        if (remoteId == null) throw 'remote id of sel msg not available';
+        await stream.replyMessage(remoteId, draft);
+      } else if (inputState.selectedMessageState == SelectedMessageState.edit) {
+        final remoteId = inputState.selectedMessage?.remoteId;
+        if (remoteId == null) throw 'remote id of sel msg not available';
+        await stream.editMessage(remoteId, draft);
+      } else {
+        await stream.sendMessage(draft);
+      }
+
+      ref.read(chatInputProvider.notifier).messageSent();
+      // TODO: currently issuing with the focus and transaction state
+      // need to approach differently
+      textEditorState = EditorState.blank();
+
+      // also clear composed state
+      final convo = await ref.read(chatProvider(widget.roomId).future);
+      if (convo != null) {
+        await convo.saveMsgDraft(
+          textEditorState.intoMarkdown(),
+          null,
+          'new',
+          null,
+        );
+      }
+    } catch (e, s) {
+      _log.severe('Sending chat message failed', e, s);
+      EasyLoading.showError(
+        lang.failedToSend(e),
+        duration: const Duration(seconds: 3),
+      );
+      ref.read(chatInputProvider.notifier).sendingFailed();
+    }
+
+    if (!chatFocus.hasFocus) {
+      chatFocus.requestFocus();
+    }
   }
 
   Widget _editorWidget() {
@@ -243,7 +360,13 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
                           horizontal: 10,
                           vertical: 5,
                         ),
-                        onChanged: (body, html) {},
+                        onChanged: (body, html) {
+                          if (html != null) {
+                            widget.onTyping?.map((cb) => cb(html.isNotEmpty));
+                          } else {
+                            widget.onTyping?.map((cb) => cb(body.isNotEmpty));
+                          }
+                        },
                       ),
                     ),
                   ),
@@ -272,13 +395,14 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
   // attachment/send button
   Widget trailingButton(String roomId, bool isEmpty) {
     final allowEditing = ref.watch(_allowEdit(roomId));
-
+    final body = textEditorState.intoMarkdown();
+    final html = textEditorState.intoHtml();
     if (allowEditing && !isEmpty) {
       return IconButton.filled(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         key: CustomChatInput.sendBtnKey,
         iconSize: 20,
-        onPressed: () => {},
+        onPressed: () => onSendButtonPressed(body, html),
         icon: const Icon(Icons.send),
       );
     }
