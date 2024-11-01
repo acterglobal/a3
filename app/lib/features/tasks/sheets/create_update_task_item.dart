@@ -28,7 +28,7 @@ Future<void> showCreateUpdateTaskItemBottomSheet(
       taskList: taskList,
       taskName: taskName,
       task: task,
-      cancel: cancel,
+      cancel: () => Navigator.of(context).pop(),
     ),
   );
 }
@@ -85,10 +85,6 @@ class _CreateUpdateItemListConsumerState
 
   @override
   Widget build(BuildContext context) {
-    return _buildBody(context);
-  }
-
-  Widget _buildBody(BuildContext context) {
     final lang = L10n.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
