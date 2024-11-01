@@ -1,3 +1,4 @@
+import 'package:acter/common/drag_handle_widget.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -106,12 +107,8 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 20),
-              const Divider(
-                indent: 150,
-                endIndent: 150,
-                thickness: 2,
-              ),
+              const SizedBox(height: 10),
+              const Center(child: DragHandleWidget()),
               const SizedBox(height: 20),
               Text(
                 lang.addTask,
