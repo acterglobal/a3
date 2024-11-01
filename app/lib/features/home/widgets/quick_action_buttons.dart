@@ -4,7 +4,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/action_button_widget.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter/features/tasks/actions/create_task.dart';
-import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';

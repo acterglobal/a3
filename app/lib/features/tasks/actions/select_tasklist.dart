@@ -1,12 +1,15 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter/features/tasks/widgets/skeleton/tasks_list_skeleton.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter/features/tasks/widgets/task_lists_empty.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 const Key selectSpaceDrawerKey = Key('space-widgets-select-space-drawer');
 
@@ -35,6 +38,11 @@ class _SelectTaskList extends ConsumerWidget {
         (spaceId: spaceId, searchText: ''),
       ),
     );
+    final canAdd = ref
+            .watch(roomMembershipProvider(spaceId))
+            .valueOrNull
+            ?.canString('CanPostTaskList') ==
+        true;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -44,18 +52,26 @@ class _SelectTaskList extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Row(
-            children: [Expanded(child: Text(lang.selectTaskList))],
+            children: [
+              Expanded(child: Text(lang.selectTaskList)),
+              if (canAdd)
+                ActerInlineTextButton.icon(
+                  icon: Icon(PhosphorIcons.plus()),
+                  onPressed: () {
+                    showCreateUpdateTaskListBottomSheet(
+                      context,
+                      initialSelectedSpace: spaceId,
+                    );
+                  },
+                  label: Text(lang.addTaskList),
+                ),
+            ],
           ),
         ),
         Expanded(
           child: tasklistsLoader.when(
             data: (tasklists) {
               if (tasklists.isEmpty) {
-                final canAdd = ref
-                        .watch(roomMembershipProvider(spaceId))
-                        .valueOrNull
-                        ?.canString('CanPostTaskList') ==
-                    true;
                 return TaskListsEmptyState(
                   canAdd: canAdd,
                   inSearch: false,
