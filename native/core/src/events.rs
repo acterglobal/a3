@@ -183,7 +183,7 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
             _ => {
                 if let Ok(event) = ::matrix_sdk_base::ruma::exports::serde_json::from_str::<
                     AnyTimelineEvent,
-                >(&json.get())
+                >(json.get())
                 {
                     Ok(Self::RegularTimelineEvent(event))
                 } else {
