@@ -3,6 +3,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/action_button_widget.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
+import 'package:acter/features/tasks/actions/create_task.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -42,10 +43,9 @@ class QuickActionButtons extends ConsumerWidget {
     final canAddEvent =
         ref.watch(hasSpaceWithPermissionProvider('CanPostEvent')).valueOrNull ??
             false;
-    final canAddTask = ref
-            .watch(hasSpaceWithPermissionProvider('CanPostTaskList'))
-            .valueOrNull ??
-        false;
+    final canAddTask =
+        ref.watch(hasSpaceWithPermissionProvider('CanPostTask')).valueOrNull ??
+            false;
     final canAddBoost =
         ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
             false;
@@ -64,12 +64,12 @@ class QuickActionButtons extends ConsumerWidget {
       if (canAddTask)
         ActionButtonWidget(
           iconData: Atlas.list,
-          title: lang.addTaskList,
+          title: lang.addTask,
           color: taskFeatureColor,
           padding: const EdgeInsets.symmetric(vertical: 6),
           onPressed: () {
             ref.read(quickActionVisibilityProvider.notifier).state = false;
-            showCreateUpdateTaskListBottomSheet(context);
+            showCreateTaskBottomSheet(context);
           },
         ),
       if (canAddEvent)
