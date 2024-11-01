@@ -43,10 +43,10 @@ default-features = false
 # not used directly but needed to enable specific features from ruma
 # ATTENTION: _MUST_ stay in sync with the ruma-rev used by matrix-sdk!
 [workspace.dependencies.ruma]
- version = "0.11.0"
+ version = "0.11.1"
 # - see comment above
 [workspace.dependencies.ruma-common]
- version = "0.14.0"
+ version = "0.14.1"
 
 [workspace.dependencies.url]
 version = "2.5.0"
