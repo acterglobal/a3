@@ -76,7 +76,7 @@ class EventItem extends ConsumerWidget {
                 if (eventType == EventFilters.ongoing)
                   _buildHappeningIndication(context),
                 const SizedBox(width: 10),
-                if (isShowRsvp) _buildRsvpStatus(context),
+                if (isShowRsvp) _buildRsvpStatus(context, ref),
                 const SizedBox(width: 10),
               ],
             ),
@@ -112,31 +112,27 @@ class EventItem extends ConsumerWidget {
     );
   }
 
-  Widget _buildRsvpStatus(BuildContext context) {
+  Widget _buildRsvpStatus(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    return Consumer(
-      builder: (context, ref, child) {
-        final eventId = event.eventId().toString();
-        final rsvpLoader = ref.watch(myRsvpStatusProvider(eventId));
-        return rsvpLoader.when(
-          data: (status) {
-            final widget = _getRsvpStatus(context, status); // kebab-case
-            return widget ?? const SizedBox.shrink();
-          },
-          error: (e, s) {
-            _log.severe('Failed to load RSVP status', e, s);
-            return Chip(
-              label: Text(
-                lang.errorLoadingRsvpStatus(e),
-                softWrap: true,
-              ),
-            );
-          },
-          loading: () => Chip(
-            label: Text(lang.loadingRsvpStatus),
+    final eventId = event.eventId().toString();
+    final rsvpLoader = ref.watch(myRsvpStatusProvider(eventId));
+    return rsvpLoader.when(
+      data: (status) {
+        final widget = _getRsvpStatus(context, status); // kebab-case
+        return widget ?? const SizedBox.shrink();
+      },
+      error: (e, s) {
+        _log.severe('Failed to load RSVP status', e, s);
+        return Chip(
+          label: Text(
+            lang.errorLoadingRsvpStatus(e),
+            softWrap: true,
           ),
         );
       },
+      loading: () => Chip(
+        label: Text(lang.loadingRsvpStatus),
+      ),
     );
   }
 

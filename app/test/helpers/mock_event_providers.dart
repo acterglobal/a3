@@ -30,9 +30,13 @@ class MockAsyncRsvpStatusNotifier
     extends AutoDisposeFamilyAsyncNotifier<RsvpStatusTag?, String>
     with Mock
     implements AsyncRsvpStatusNotifier {
+  String? status;
+
+  MockAsyncRsvpStatusNotifier({this.status});
+
   @override
   Future<RsvpStatusTag?> build(String arg) async {
-    return switch (arg) {
+    return switch (status) {
       'yes' => RsvpStatusTag.Yes,
       'no' => RsvpStatusTag.No,
       'maybe' => RsvpStatusTag.Maybe,

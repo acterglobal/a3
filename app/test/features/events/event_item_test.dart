@@ -5,6 +5,7 @@ import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import '../../helpers/mock_event_providers.dart';
@@ -94,5 +95,61 @@ void main() {
     final expectedDateTime =
         '${formatDate(mockEvent)} (${formatTime(mockEvent)})';
     expect(find.text(expectedDateTime), findsOneWidget);
+  });
+
+  testWidgets('displays RSVP status icon when RSVP is Yes', (tester) async {
+    // Arrange: Set up the RSVP status to Yes
+
+    mockAsyncRsvpStatusNotifier = MockAsyncRsvpStatusNotifier(status: 'yes');
+
+    await createWidgetUnderTest(tester: tester);
+
+    // Act: Trigger a frame
+    await tester.pumpAndSettle();
+
+    // Assert: Check if the Yes icon is displayed
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
+  });
+
+  testWidgets('displays RSVP status icon when RSVP is No', (tester) async {
+    // Arrange: Set up the RSVP status to No
+
+    mockAsyncRsvpStatusNotifier = MockAsyncRsvpStatusNotifier(status: 'no');
+
+    await createWidgetUnderTest(tester: tester);
+
+    // Act: Trigger a frame
+    await tester.pumpAndSettle();
+
+    // Assert: Check if the No icon is displayed
+    expect(find.byIcon(Icons.cancel), findsOneWidget);
+  });
+
+  testWidgets('displays RSVP status icon when RSVP is Maybe', (tester) async {
+    // Arrange: Set up the RSVP status to Maybe
+
+    mockAsyncRsvpStatusNotifier = MockAsyncRsvpStatusNotifier(status: 'maybe');
+
+    await createWidgetUnderTest(tester: tester);
+
+    // Act: Trigger a frame
+    await tester.pumpAndSettle();
+
+    // Assert: Check if the Maybe icon is displayed
+    expect(find.byIcon(Icons.question_mark_rounded), findsOneWidget);
+  });
+
+  testWidgets('does not show RSVP status when isShowRsvp is false',
+      (tester) async {
+    // Arrange: Prepare the widget with isShowRsvp set to false
+    await createWidgetUnderTest(tester: tester, isShowRsvp: false);
+
+    // Act: Trigger a frame
+    await tester.pumpAndSettle();
+
+    // Assert: Check that no RSVP status icon is displayed
+    expect(find.byIcon(Icons.check_circle), findsNothing);
+    expect(find.byIcon(Icons.cancel), findsNothing);
+    expect(find.byIcon(Icons.question_mark_rounded), findsNothing);
   });
 }
