@@ -34,6 +34,8 @@ Future<void> showCreateUpdateTaskItemBottomSheet(
 }
 
 class CreateUpdateTaskItemList extends ConsumerStatefulWidget {
+  static const submitBtn = Key('create-task-submit');
+  static const titleField = Key('create-task-title-field');
   final TaskList taskList;
   final String taskName;
   final Task? task;
@@ -134,6 +136,7 @@ class _CreateUpdateItemListConsumerState
         ),
         const SizedBox(height: 5),
         TextFormField(
+          key: CreateUpdateTaskItemList.titleField,
           autofocus: true,
           decoration: InputDecoration(hintText: lang.name),
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -229,6 +232,7 @@ class _CreateUpdateItemListConsumerState
   Widget _widgetAddButton() {
     final lang = L10n.of(context);
     return ElevatedButton(
+      key: CreateUpdateTaskItemList.submitBtn,
       onPressed: widget.task == null ? addTask : updateTask,
       child: Text(widget.task == null ? lang.addTask : lang.updateTask),
     );

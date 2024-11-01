@@ -24,22 +24,22 @@ class MockAsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>>
   }
 }
 
-class MockTaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String>
+class FakeTaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String>
     with Mock
     implements TaskListItemNotifier {
   bool shouldFail;
 
-  MockTaskListItemNotifier({this.shouldFail = true});
+  FakeTaskListItemNotifier({this.shouldFail = true});
 
   @override
-  Future<MockTaskList> build(String arg) async {
+  Future<FakeTaskList> build(String arg) async {
     if (shouldFail) {
       // toggle failure so the retry works
       shouldFail = !shouldFail;
       throw 'Expected fail';
     }
 
-    return MockTaskList();
+    return FakeTaskList();
   }
 }
 
@@ -52,7 +52,9 @@ class MockTaskItemNotifier extends FamilyAsyncNotifier<Task, Task>
   }
 }
 
-class MockTaskList extends Fake implements TaskList {
+class MockTaskDraft extends Mock implements TaskDraft {}
+
+class FakeTaskList extends Fake implements TaskList {
   bool shouldFail = true;
 
   @override
@@ -85,6 +87,8 @@ class MockTaskList extends Fake implements TaskList {
     return MockTask();
   }
 }
+
+class MockTaskList extends FakeTaskList with Mock {}
 
 class MockTask extends Fake implements Task {
   @override

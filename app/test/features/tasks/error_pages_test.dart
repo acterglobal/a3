@@ -76,7 +76,7 @@ void main() {
   });
   group('TaskList Details Error Pages', () {
     testWidgets('body error page', (tester) async {
-      final mockedNotifier = MockTaskListItemNotifier();
+      final mockedNotifier = FakeTaskListItemNotifier();
       await tester.pumpProviderWidget(
         overrides: [
           taskListItemProvider.overrideWith(() => mockedNotifier),
@@ -90,7 +90,7 @@ void main() {
   });
   group('Task Details Error Pages', () {
     testWidgets('body error page', (tester) async {
-      final mockedNotifier = MockTaskListItemNotifier(shouldFail: false);
+      final mockedNotifier = FakeTaskListItemNotifier(shouldFail: false);
       await tester.pumpProviderWidget(
         overrides: [
           notifierTaskProvider.overrideWith(() => MockTaskItemNotifier()),
