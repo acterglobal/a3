@@ -42,14 +42,18 @@ class MockAsyncRsvpStatusNotifier
 }
 
 class MockEvent extends Fake implements CalendarEvent {
+  final String fakeEventTitle;
+
+  MockEvent({this.fakeEventTitle = 'Fake Event'});
+
   @override
-  EventId eventId() => MockEventId();
+  EventId eventId() => MockEventId('eventId');
 
   @override
   String roomIdStr() => 'testRoomId';
 
   @override
-  String title() => 'Fake Event';
+  String title() => fakeEventTitle;
 
   @override
   TextMessageContent? description() => null;
@@ -79,4 +83,10 @@ class FakeUtcDateTime extends Fake implements UtcDateTime {
 
 class MockUtcNowNotifier extends Mock implements UtcNowNotifier {}
 
-class MockEventId extends Mock implements EventId {}
+class MockEventId extends Mock implements EventId {
+  final String fakeEventId;
+
+  MockEventId(this.fakeEventId);
+}
+
+class MockEventListSearchFilterProvider extends Mock {}
