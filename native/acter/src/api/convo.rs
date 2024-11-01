@@ -20,6 +20,7 @@ use matrix_sdk_base::ruma::{
     RoomOrAliasId, ServerName, UserId,
 };
 use matrix_sdk_ui::{timeline::RoomExt, Timeline};
+use ruma::OwnedTransactionId;
 use std::{
     ops::Deref,
     path::PathBuf,
@@ -163,11 +164,7 @@ impl Convo {
                 };
                 let room_id = latest_msg_room.room_id();
 
-                let full_event = RoomMessage::new_event_item(
-                    user_id.clone(),
-                    &msg,
-                    format!("{room_id}:latest_msg"),
-                );
+                let full_event = RoomMessage::new_event_item(user_id.clone(), &msg);
                 set_latest_msg(&latest_msg_client, room_id, &last_msg_lock_tl, full_event).await;
             }
             warn!(room_id=?latest_msg_room.room_id(), "Timeline stopped")
@@ -201,6 +198,17 @@ impl Convo {
 
     pub fn timeline_stream(&self) -> TimelineStream {
         TimelineStream::new(self.inner.clone(), self.timeline.clone())
+    }
+
+    pub async fn items(&self) -> Vec<RoomMessage> {
+        let user_id = self.client.user_id().expect("User must be logged in");
+        self.timeline
+            .items()
+            .await
+            .clone()
+            .into_iter()
+            .map(|x| RoomMessage::from((x, user_id.clone())))
+            .collect()
     }
 
     pub fn num_unread_notification_count(&self) -> u64 {

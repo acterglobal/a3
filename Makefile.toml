@@ -109,10 +109,6 @@ dependencies = [
     "post-android",
 ]
 
-[tasks.mock-data]
-command = "cargo"
-args = ["run", "-p", "acter-cli", "mock", "--homeserver-url",  "http://localhost:8118", "--homeserver-name", "localhost"]
-
 [tasks.fixup]
 dependencies = [
     "format-fixup",

@@ -42,7 +42,7 @@ impl HistoryOpts {
             } = room.messages(msg_options).await?;
 
             for msg in chunk {
-                let evt = msg.event;
+                let evt = msg.kind.raw().clone();
                 println!("- {}", evt.into_json());
             }
 
