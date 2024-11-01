@@ -51,7 +51,9 @@ void main() {
 
     const inputText = 'new search';
     await tester.enterText(
-        find.byKey(ActerSearchWidget.searchBarKey), inputText);
+      find.byKey(ActerSearchWidget.searchBarKey),
+      inputText,
+    );
 
     verify(() => mockOnChanged(inputText)).called(1);
   });
@@ -62,7 +64,9 @@ void main() {
         .pumpWidget(createWidgetUnderTest(initialText: 'text to clear'));
 
     await tester.enterText(
-        find.byKey(ActerSearchWidget.searchBarKey), 'text to clear');
+      find.byKey(ActerSearchWidget.searchBarKey),
+      'text to clear',
+    );
     await tester.pump();
 
     // Ensure the clear button is displayed
