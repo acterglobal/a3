@@ -49,7 +49,7 @@ use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::{error, trace, warn};
+use tracing::{error, info, trace, warn};
 
 use crate::{Client, Room, TimelineStream, RUNTIME};
 
@@ -441,6 +441,10 @@ impl Space {
 
             for msg in chunk {
                 let event = match msg.kind.raw().deserialize_as::<AnyActerEvent>() {
+                    Ok(AnyActerEvent::RegularTimelineEvent(event)) => {
+                        info!(?event, "Received regular event. Ignoring for now");
+                        continue;
+                    }
                     Ok(e) => e,
                     Err(error) => {
                         error!(?error, ?room_id, "Not a proper acter event");

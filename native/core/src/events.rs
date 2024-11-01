@@ -13,6 +13,7 @@ pub mod tasks;
 pub mod three_pid;
 
 pub use common::*;
+use matrix_sdk::ruma::events::AnyTimelineEvent;
 use matrix_sdk_base::ruma::{
     events::{
         reaction::{ReactionEvent, ReactionEventContent},
@@ -51,6 +52,9 @@ pub enum AnyActerEvent {
     Reaction(ReactionEvent),
     ReadReceipt(ReadReceiptEvent),
     Rsvp(rsvp::RsvpEvent),
+
+    // Regular Matrix / Ruma Event
+    RegularTimelineEvent(AnyTimelineEvent),
 }
 
 impl<'de> serde::Deserialize<'de> for AnyActerEvent {
@@ -176,29 +180,38 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                 Ok(Self::Reaction(event))
             }
 
-            _ => Err(SerdeDeError::unknown_variant(
-                &ev_type,
-                &[
-                    calendar::CalendarEventEventContent::TYPE,
-                    calendar::CalendarEventUpdateEventContent::TYPE,
-                    pins::PinEventContent::TYPE,
-                    pins::PinUpdateEventContent::TYPE,
-                    news::NewsEntryEventContent::TYPE,
-                    news::NewsEntryUpdateEventContent::TYPE,
-                    tasks::TaskListEventContent::TYPE,
-                    tasks::TaskListUpdateEventContent::TYPE,
-                    tasks::TaskEventContent::TYPE,
-                    tasks::TaskUpdateEventContent::TYPE,
-                    tasks::TaskSelfAssignEventContent::TYPE,
-                    tasks::TaskSelfUnassignEventContent::TYPE,
-                    comments::CommentEventContent::TYPE,
-                    comments::CommentUpdateEventContent::TYPE,
-                    attachments::AttachmentEventContent::TYPE,
-                    attachments::AttachmentUpdateEventContent::TYPE,
-                    rsvp::RsvpEventContent::TYPE,
-                    ReactionEventContent::TYPE,
-                ],
-            )),
+            _ => {
+                if let Ok(event) = ::matrix_sdk_base::ruma::exports::serde_json::from_str::<
+                    AnyTimelineEvent,
+                >(&json.get())
+                {
+                    Ok(Self::RegularTimelineEvent(event))
+                } else {
+                    Err(SerdeDeError::unknown_variant(
+                        &ev_type,
+                        &[
+                            calendar::CalendarEventEventContent::TYPE,
+                            calendar::CalendarEventUpdateEventContent::TYPE,
+                            pins::PinEventContent::TYPE,
+                            pins::PinUpdateEventContent::TYPE,
+                            news::NewsEntryEventContent::TYPE,
+                            news::NewsEntryUpdateEventContent::TYPE,
+                            tasks::TaskListEventContent::TYPE,
+                            tasks::TaskListUpdateEventContent::TYPE,
+                            tasks::TaskEventContent::TYPE,
+                            tasks::TaskUpdateEventContent::TYPE,
+                            tasks::TaskSelfAssignEventContent::TYPE,
+                            tasks::TaskSelfUnassignEventContent::TYPE,
+                            comments::CommentEventContent::TYPE,
+                            comments::CommentUpdateEventContent::TYPE,
+                            attachments::AttachmentEventContent::TYPE,
+                            attachments::AttachmentUpdateEventContent::TYPE,
+                            rsvp::RsvpEventContent::TYPE,
+                            ReactionEventContent::TYPE,
+                        ],
+                    ))
+                }
+            }
         }
     }
 }
