@@ -4,7 +4,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
 //Single Task List Item based on the task list id
-final taskListItemProvider =
+final taskListProvider =
     AsyncNotifierProvider.family<TaskListItemNotifier, TaskList, String>(
   () => TaskListItemNotifier(),
 );
@@ -28,12 +28,6 @@ final taskListsProvider =
   }
 });
 
-final taskListProvider =
-    FutureProvider.family<TaskList?, String>((ref, eventId) async {
-  final allTaskLists = await ref.watch(allTasksListsProvider.future);
-  return allTaskLists.where((e) => e.eventIdStr() == eventId).firstOrNull;
-});
-
 //Search any tasks list
 typedef TasksListSearchParams = ({String? spaceId, String searchText});
 
@@ -49,8 +43,7 @@ final tasksListSearchProvider = FutureProvider.autoDispose
   List<String> filteredTaskList = [];
   for (final taskListId in tasksList) {
     //Check search param in task list
-    final taskListItem =
-        await ref.watch(taskListItemProvider(taskListId).future);
+    final taskListItem = await ref.watch(taskListProvider(taskListId).future);
     if (taskListItem.name().toLowerCase().contains(search)) {
       filteredTaskList.add(taskListId);
       continue;

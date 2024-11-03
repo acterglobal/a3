@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
@@ -37,7 +36,7 @@ class TaskListItemCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final tasklistLoader = ref.watch(taskListItemProvider(taskListId));
+    final tasklistLoader = ref.watch(taskListProvider(taskListId));
     return tasklistLoader.when(
       data: (taskList) => Card(
         key: Key('task-list-card-$taskListId'),

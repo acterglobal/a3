@@ -97,7 +97,7 @@ class TaskItem extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     final description = task.description()?.body();
     final tasklistId = task.taskListIdStr();
-    final tasklistLoader = ref.watch(taskListItemProvider(tasklistId));
+    final tasklistLoader = ref.watch(taskListProvider(tasklistId));
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: Column(
