@@ -124,49 +124,52 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   Widget _buildBody() {
     final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
-    return tasklistLoader.when(
-      data: (tasklist) => _buildTaskListData(tasklist),
-      error: (error, stack) {
-        _log.severe('Failed to load tasklist', error, stack);
-        return ErrorPage(
-          background: _loadingSkeleton(),
-          error: error,
-          stack: stack,
-          onRetryTap: () {
-            ref.invalidate(taskListItemProvider(widget.taskListId));
-          },
-        );
-      },
-      loading: () => _loadingSkeleton(),
-      skipLoadingOnReload: true, // don't refresh to weirdly
-    );
+    final errored = tasklistLoader.asError;
+    if (errored != null) {
+      _log.severe('Failed to load tasklist', errored.error, errored.stackTrace);
+      return ErrorPage(
+        background: _buildTaskListInner(null),
+        error: errored,
+        stack: errored.stackTrace,
+        onRetryTap: () {
+          ref.invalidate(taskListItemProvider(widget.taskListId));
+        },
+      );
+    }
+
+    return _buildTaskListInner(tasklistLoader.valueOrNull);
   }
 
-  Widget _buildTaskListData(TaskList taskListData) {
+  Widget _buildTaskListInner(TaskList? taskListData) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
-            _taskListHeader(taskListData),
-            const SizedBox(height: 20),
-            _widgetDescription(taskListData),
-            const SizedBox(height: 30),
-            _widgetTasksListHeader(),
-            ValueListenableBuilder(
-              valueListenable: showCompletedTask,
-              builder: (context, value, child) => TaskItemsListWidget(
-                taskList: taskListData,
-                showCompletedTask: value,
+            if (taskListData != null) ...[
+              const SizedBox(height: 10),
+              _taskListHeader(taskListData),
+              const SizedBox(height: 20),
+              _widgetDescription(taskListData),
+              const SizedBox(height: 30),
+              _widgetTasksListHeader(),
+              ValueListenableBuilder(
+                valueListenable: showCompletedTask,
+                builder: (context, value, child) => TaskItemsListWidget(
+                  taskList: taskListData,
+                  showCompletedTask: value,
+                ),
               ),
-            ),
+            ] else
+              _loadingSkeleton(),
             const SizedBox(height: 20),
-            AttachmentSectionWidget(manager: taskListData.attachments()),
+            taskListData != null
+                ? AttachmentSectionWidget(manager: taskListData.attachments())
+                : AttachmentSectionWidget.loading(),
             const SizedBox(height: 20),
             CommentsSectionWidget(
-              managerProvider: taskListData.asCommentsManagerProvider(),
+              managerProvider: taskListData?.asCommentsManagerProvider(),
             ),
             const SizedBox(height: 20),
           ],
@@ -367,11 +370,6 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
               ],
             ),
             TaskItemsListWidget.loading(),
-            const SizedBox(height: 20),
-            AttachmentSectionWidget.loading(),
-            const SizedBox(height: 20),
-            CommentsSectionWidget.loading(),
-            const SizedBox(height: 20),
           ],
         ),
       );

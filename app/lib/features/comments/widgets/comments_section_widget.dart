@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/comments/providers/comments_providers.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/add_comment_widget.dart';
@@ -13,7 +14,7 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::comments::section');
 
 class CommentsSectionWidget extends ConsumerWidget {
-  final CommentsManagerProvider managerProvider;
+  final CommentsManagerProvider? managerProvider;
   final bool shrinkWrap;
   final bool centerTitle;
   final bool useCompactEmptyState;
@@ -28,13 +29,23 @@ class CommentsSectionWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final managerLoader = ref.watch(commentsManagerProvider(managerProvider));
-    return managerLoader.when(
-      data: (commentManager) => buildCommentSectionUI(context, commentManager),
-      error: (error, stack) =>
-          commentManagerErrorWidget(context, ref, error, stack),
-      loading: () => const CommentListSkeletonWidget(),
-    );
+    final provider = managerProvider;
+    if (provider == null) {
+      // we show the loading state
+      return const CommentListSkeletonWidget();
+    }
+    final managerLoader = ref.watch(commentsManagerProvider(provider));
+    final errored = managerLoader.asError;
+    if (errored != null) {
+      return commentManagerErrorWidget(
+          context, ref, errored.error, errored.stackTrace);
+    }
+
+    final manager = managerLoader.valueOrNull;
+    if (manager == null) {
+      return const CommentListSkeletonWidget();
+    }
+    return buildCommentSectionUI(context, manager);
   }
 
   static CommentListSkeletonWidget loading() =>
@@ -94,8 +105,8 @@ class CommentsSectionWidget extends ConsumerWidget {
       error: error,
       stack: stack,
       textBuilder: L10n.of(context).loadingFailed,
-      onRetryTap: () =>
-          ref.invalidate(commentsManagerProvider(managerProvider)),
+      onRetryTap: () => managerProvider
+          .map((manager) => ref.invalidate(commentsManagerProvider(manager))),
     );
   }
 }
