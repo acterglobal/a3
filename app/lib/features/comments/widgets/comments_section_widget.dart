@@ -1,5 +1,6 @@
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/features/comments/providers/comments_providers.dart';
+import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/add_comment_widget.dart';
 import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
 import 'package:acter/features/comments/widgets/comment_list_widget.dart';
@@ -12,7 +13,7 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::comments::section');
 
 class CommentsSectionWidget extends ConsumerWidget {
-  final Future<CommentsManager> manager;
+  final CommentsManagerProvider managerProvider;
   final bool shrinkWrap;
   final bool centerTitle;
   final bool useCompactEmptyState;
@@ -22,12 +23,12 @@ class CommentsSectionWidget extends ConsumerWidget {
     this.shrinkWrap = true,
     this.centerTitle = false,
     this.useCompactEmptyState = true,
-    required this.manager,
+    required this.managerProvider,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final managerLoader = ref.watch(commentsManagerProvider(manager));
+    final managerLoader = ref.watch(commentsManagerProvider(managerProvider));
     return managerLoader.when(
       data: (commentManager) => buildCommentSectionUI(context, commentManager),
       error: (error, stack) =>
@@ -93,7 +94,8 @@ class CommentsSectionWidget extends ConsumerWidget {
       error: error,
       stack: stack,
       textBuilder: L10n.of(context).loadingFailed,
-      onRetryTap: () => ref.invalidate(commentsManagerProvider(manager)),
+      onRetryTap: () =>
+          ref.invalidate(commentsManagerProvider(managerProvider)),
     );
   }
 }
