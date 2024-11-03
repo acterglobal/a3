@@ -1,4 +1,3 @@
-import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/util.dart';
 import 'package:acter/features/pins/models/create_pin_state/create_pin_state.dart';
