@@ -15,7 +15,7 @@ final allTasksListsProvider =
   () => AsyncAllTaskListsNotifier(),
 );
 
-final taskListProvider =
+final taskListsProvider =
     FutureProvider.family<List<String>, String?>((ref, spaceId) async {
   final allTaskLists = await ref.watch(allTasksListsProvider.future);
   if (spaceId == null) {
@@ -28,12 +28,18 @@ final taskListProvider =
   }
 });
 
+final taskListProvider =
+    FutureProvider.family<TaskList?, String>((ref, eventId) async {
+  final allTaskLists = await ref.watch(allTasksListsProvider.future);
+  return allTaskLists.where((e) => e.eventIdStr() == eventId).firstOrNull;
+});
+
 //Search any tasks list
 typedef TasksListSearchParams = ({String? spaceId, String searchText});
 
 final tasksListSearchProvider = FutureProvider.autoDispose
     .family<List<String>, TasksListSearchParams>((ref, params) async {
-  final tasksList = await ref.watch(taskListProvider(params.spaceId).future);
+  final tasksList = await ref.watch(taskListsProvider(params.spaceId).future);
 
   //Return all task list if search text is empty
   if (params.searchText.isEmpty) return tasksList;

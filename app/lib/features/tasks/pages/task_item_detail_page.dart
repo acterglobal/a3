@@ -6,21 +6,30 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
+import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter/features/tasks/widgets/skeleton/task_item_detail_page_skeleton.dart';
+import 'package:acter/features/tasks/widgets/task_status_widget.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::tasks::task_item_details');
@@ -37,120 +46,78 @@ class TaskItemDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final taskLoader =
-        ref.watch(taskItemProvider((taskListId: taskListId, taskId: taskId)));
     return Scaffold(
-      appBar: _buildAppBar(context, ref, taskLoader),
-      body: _buildBody(context, ref, taskLoader),
+      appBar: _buildAppBar(context, ref),
+      body: _buildBody(context, ref),
     );
   }
 
   AppBar _buildAppBar(
     BuildContext context,
     WidgetRef ref,
-    AsyncValue<Task> taskLoader,
   ) {
+    final task = ref
+        .watch(taskItemProvider((taskListId: taskListId, taskId: taskId)))
+        .valueOrNull;
+
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
-    return taskLoader.when(
-      data: (task) => AppBar(
-        title: SelectionArea(
-          child: GestureDetector(
-            onTap: () => showEditTaskItemNameBottomSheet(
-              context: context,
-              ref: ref,
-              task: task,
-              titleValue: task.title(),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  task.title(),
-                  style: textTheme.titleMedium,
+    final actions = List<Widget>.empty(growable: true);
+    if (task != null) {
+      actions.addAll([
+        PopupMenuButton(
+          icon: const Icon(Icons.more_vert),
+          itemBuilder: (context) {
+            return [
+              PopupMenuItem(
+                onTap: () {
+                  showEditTitleBottomSheet(
+                    context: context,
+                    bottomSheetTitle: lang.editName,
+                    titleValue: task.title(),
+                    onSave: (newName) => saveTitle(context, ref, task, newName),
+                  );
+                },
+                child: Text(
+                  lang.editTitle,
+                  style: textTheme.bodyMedium,
                 ),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.list,
-                      color: Colors.white54,
-                      size: 22,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      lang.taskList,
-                      style: textTheme.labelMedium,
-                    ),
-                  ],
+              ),
+              PopupMenuItem(
+                onTap: () => showEditDescriptionSheet(context, ref, task),
+                child: Text(
+                  lang.editDescription,
+                  style: textTheme.bodyMedium,
                 ),
-              ],
-            ),
-          ),
+              ),
+              PopupMenuItem(
+                onTap: () => showRedactDialog(
+                  context: context,
+                  ref: ref,
+                  task: task,
+                ),
+                child: Text(
+                  lang.delete,
+                  style: textTheme.bodyMedium,
+                ),
+              ),
+              PopupMenuItem(
+                onTap: () => showReportDialog(
+                  context: context,
+                  task: task,
+                ),
+                child: Text(
+                  lang.report,
+                  style: textTheme.bodyMedium,
+                ),
+              ),
+            ];
+          },
         ),
-        actions: [
-          PopupMenuButton(
-            icon: const Icon(Icons.more_vert),
-            itemBuilder: (context) {
-              return [
-                PopupMenuItem(
-                  onTap: () {
-                    showEditTitleBottomSheet(
-                      context: context,
-                      bottomSheetTitle: lang.editName,
-                      titleValue: task.title(),
-                      onSave: (newName) =>
-                          saveTitle(context, ref, task, newName),
-                    );
-                  },
-                  child: Text(
-                    lang.editTitle,
-                    style: textTheme.bodyMedium,
-                  ),
-                ),
-                PopupMenuItem(
-                  onTap: () => showEditDescriptionSheet(context, ref, task),
-                  child: Text(
-                    lang.editDescription,
-                    style: textTheme.bodyMedium,
-                  ),
-                ),
-                PopupMenuItem(
-                  onTap: () => showRedactDialog(
-                    context: context,
-                    ref: ref,
-                    task: task,
-                  ),
-                  child: Text(
-                    lang.delete,
-                    style: textTheme.bodyMedium,
-                  ),
-                ),
-                PopupMenuItem(
-                  onTap: () => showReportDialog(
-                    context: context,
-                    task: task,
-                  ),
-                  child: Text(
-                    lang.report,
-                    style: textTheme.bodyMedium,
-                  ),
-                ),
-              ];
-            },
-          ),
-        ],
-      ),
-      error: (e, s) {
-        _log.severe('Failed to load task', e, s);
-        return AppBar(
-          title: Text(lang.loadingFailed(e)),
-        );
-      },
-      loading: () => AppBar(
-        title: Text(lang.loading),
-      ),
-    );
+      ]);
+    }
+
+    return AppBar(actions: actions);
   }
 
   // Redact Task Item Dialog
@@ -189,39 +156,42 @@ class TaskItemDetailPage extends ConsumerWidget {
   Widget _buildBody(
     BuildContext context,
     WidgetRef ref,
-    AsyncValue<Task> taskLoader,
-  ) {
-    return taskLoader.when(
-      data: (task) => taskData(context, task, ref),
-      error: (error, stack) {
-        _log.severe('Failed to load task', error, stack);
-        return ErrorPage(
-          background: const TaskItemDetailPageSkeleton(),
-          error: error,
-          stack: stack,
-          onRetryTap: () {
-            ref.invalidate(
-              taskItemProvider((taskListId: taskListId, taskId: taskId)),
-            );
-          },
-        );
-      },
-      loading: () => const TaskItemDetailPageSkeleton(),
-    );
-  }
+  ) =>
+      ref
+          .watch(taskItemProvider((taskListId: taskListId, taskId: taskId)))
+          .when(
+            data: (task) => taskData(context, task, ref),
+            error: (error, stack) {
+              _log.severe('Failed to load task', error, stack);
+              return ErrorPage(
+                background: const TaskItemDetailPageSkeleton(),
+                error: error,
+                stack: stack,
+                onRetryTap: () {
+                  ref.invalidate(
+                    taskItemProvider((taskListId: taskListId, taskId: taskId)),
+                  );
+                },
+              );
+            },
+            loading: () => const TaskItemDetailPageSkeleton(),
+            skipLoadingOnReload: true,
+          );
 
   Widget taskData(BuildContext context, Task task, WidgetRef ref) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
-            _widgetDescription(context, task, ref),
+            _taskHeader(context, task, ref),
             const SizedBox(height: 10),
             _widgetTaskDate(context, task),
             _widgetTaskAssignment(context, task, ref),
-            const SizedBox(height: 20),
+            ..._widgetDescription(context, task, ref),
+            const SizedBox(height: 40),
             AttachmentSectionWidget(manager: task.attachments()),
             const SizedBox(height: 20),
             CommentsSectionWidget(manager: task.comments()),
@@ -232,20 +202,80 @@ class TaskItemDetailPage extends ConsumerWidget {
     );
   }
 
-  Widget _widgetDescription(BuildContext context, Task task, WidgetRef ref) {
+  Widget _taskHeader(BuildContext context, Task task, WidgetRef ref) {
+    final textTheme = Theme.of(context).textTheme;
+    final taskList = ref.watch(taskListProvider(taskListId)).valueOrNull;
+    return ListTile(
+      dense: true,
+      leading: TaskStatusWidget(task: task, size: 40),
+      title: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: () => showEditTaskItemNameBottomSheet(
+              context: context,
+              ref: ref,
+              task: task,
+              titleValue: task.title(),
+            ),
+            child: Text(
+              task.title(),
+              style: textTheme.titleMedium,
+            ),
+          ),
+          if (taskList != null)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SpaceChip(spaceId: taskList.spaceIdStr(), useCompactView: true),
+                const SizedBox(width: 5),
+                ActerIconWidget(
+                  iconSize: 22,
+                  color: convertColor(
+                    taskList.display()?.color(),
+                    iconPickerColors[0],
+                  ),
+                  icon: ActerIcon.iconForTask(
+                    taskList.display()?.iconStr(),
+                  ),
+                ),
+                InkWell(
+                  onTap: () => context.pushNamed(
+                    Routes.taskListDetails.name,
+                    pathParameters: {'taskListId': taskListId},
+                  ),
+                  child: Text(
+                    taskList.name(),
+                    style: textTheme.labelMedium,
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _widgetDescription(
+    BuildContext context,
+    Task task,
+    WidgetRef ref,
+  ) {
     final description = task.description();
-    if (description == null) return const SizedBox.shrink();
+    if (description == null) return [];
     final formattedBody = description.formattedBody();
     final textTheme = Theme.of(context).textTheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SelectionArea(
-          child: GestureDetector(
-            onTap: () {
-              showEditDescriptionSheet(context, ref, task);
-            },
+    return [
+      const SizedBox(height: 20),
+      SelectionArea(
+        child: GestureDetector(
+          onTap: () {
+            showEditDescriptionSheet(context, ref, task);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
             child: formattedBody != null
                 ? RenderHtml(
                     text: formattedBody,
@@ -257,9 +287,8 @@ class TaskItemDetailPage extends ConsumerWidget {
                   ),
           ),
         ),
-        const SizedBox(height: 10),
-      ],
-    );
+      ),
+    ];
   }
 
   void showEditDescriptionSheet(
@@ -319,7 +348,10 @@ class TaskItemDetailPage extends ConsumerWidget {
             lang.noDueDate;
     return ListTile(
       dense: true,
-      leading: const Icon(Atlas.calendar_date_thin),
+      leading: const Padding(
+        padding: EdgeInsets.only(left: 15),
+        child: Icon(Atlas.calendar_date_thin),
+      ),
       title: Text(
         lang.dueDate,
         style: textTheme.bodyMedium,
@@ -382,7 +414,10 @@ class TaskItemDetailPage extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     return ListTile(
       dense: true,
-      leading: const Icon(Atlas.business_man_thin),
+      leading: const Padding(
+        padding: EdgeInsets.only(left: 15),
+        child: Icon(Atlas.business_man_thin),
+      ),
       title: Row(
         children: [
           Text(
