@@ -12,16 +12,17 @@ Future<List<T>> priotizeBookmarked<T>(
   if (bookmarks.isEmpty) {
     return items;
   }
+  final remaining = List.of(items);
   final beginning = List<T>.empty(growable: true);
   for (final b in bookmarks) {
-    for (final (idx, item) in items.indexed) {
+    for (final (idx, item) in remaining.indexed) {
       if (getId(item) == b) {
         beginning.add(item);
-        items.removeAt(idx);
+        remaining.removeAt(idx);
         break;
       }
     }
   }
 
-  return beginning.followedBy(items).toList();
+  return beginning.followedBy(remaining).toList();
 }
