@@ -1,3 +1,5 @@
+import 'package:acter/features/bookmarks/types.dart';
+import 'package:acter/features/bookmarks/util.dart';
 import 'package:acter/features/tasks/providers/notifiers.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -17,7 +19,12 @@ final allTasksListsProvider =
 
 final taskListsProvider =
     FutureProvider.family<List<String>, String?>((ref, spaceId) async {
-  final allTaskLists = await ref.watch(allTasksListsProvider.future);
+  final allTaskLists = await priotizeBookmarked(
+    ref,
+    BookmarkType.task_lists,
+    await ref.watch(allTasksListsProvider.future),
+    getId: (e) => e.eventIdStr(),
+  );
   if (spaceId == null) {
     return allTaskLists.map((e) => e.eventIdStr()).toList();
   } else {
