@@ -70,36 +70,36 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
 
   Widget _buildBodyUI() {
     final pinData = ref.watch(pinProvider(widget.pinId));
-    return pinData.when(
-      data: (pin) {
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              _buildPinHeaderUI(pin),
-              const SizedBox(height: 20),
-              AttachmentSectionWidget(manager: pin.attachments()),
-              FakeLinkAttachmentItem(pinId: pin.eventIdStr()),
-              const SizedBox(height: 20),
-              CommentsSectionWidget(
-                managerProvider: pin.asCommentsManagerProvider(),
-              ),
-            ],
+    final errored = pinData.asError;
+    if (errored != null) {
+      _log.severe('Error loading pin', errored.error, errored.stackTrace);
+      return ErrorPage(
+        background: _contentLoader(),
+        error: errored.error,
+        stack: errored.stackTrace,
+        onRetryTap: () {
+          ref.invalidate(pinProvider(widget.pinId));
+        },
+      );
+    }
+    final pin = pinData.valueOrNull;
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          pin == null ? _loadingPinHeaderUI() : _buildPinHeaderUI(pin),
+          const SizedBox(height: 20),
+          pin == null
+              ? AttachmentSectionWidget.loading()
+              : AttachmentSectionWidget(manager: pin.attachments()),
+          FakeLinkAttachmentItem(pinId: widget.pinId),
+          const SizedBox(height: 20),
+          CommentsSectionWidget(
+            managerProvider: pin?.asCommentsManagerProvider(),
           ),
-        );
-      },
-      loading: _contentLoader,
-      error: (error, stack) {
-        _log.severe('Error loading pin', error, stack);
-        return ErrorPage(
-          background: _contentLoader(),
-          error: error,
-          stack: stack,
-          onRetryTap: () {
-            ref.invalidate(pinProvider(widget.pinId));
-          },
-        );
-      },
+        ],
+      ),
     );
   }
 

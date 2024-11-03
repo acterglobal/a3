@@ -38,7 +38,11 @@ class CommentsSectionWidget extends ConsumerWidget {
     final errored = managerLoader.asError;
     if (errored != null) {
       return commentManagerErrorWidget(
-          context, ref, errored.error, errored.stackTrace);
+        context,
+        ref,
+        errored.error,
+        errored.stackTrace,
+      );
     }
 
     final manager = managerLoader.valueOrNull;
