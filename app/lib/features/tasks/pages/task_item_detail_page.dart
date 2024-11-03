@@ -225,29 +225,34 @@ class TaskItemDetailPage extends ConsumerWidget {
             ),
           ),
           if (taskList != null)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 SpaceChip(spaceId: taskList.spaceIdStr(), useCompactView: true),
                 const SizedBox(width: 5),
-                ActerIconWidget(
-                  iconSize: 22,
-                  color: convertColor(
-                    taskList.display()?.color(),
-                    iconPickerColors[0],
-                  ),
-                  icon: ActerIcon.iconForTask(
-                    taskList.display()?.iconStr(),
-                  ),
-                ),
                 InkWell(
                   onTap: () => context.pushNamed(
                     Routes.taskListDetails.name,
                     pathParameters: {'taskListId': taskListId},
                   ),
-                  child: Text(
-                    taskList.name(),
-                    style: textTheme.labelMedium,
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      ActerIconWidget(
+                        iconSize: 22,
+                        color: convertColor(
+                          taskList.display()?.color(),
+                          iconPickerColors[0],
+                        ),
+                        icon: ActerIcon.iconForTask(
+                          taskList.display()?.iconStr(),
+                        ),
+                      ),
+                      Text(
+                        taskList.name(),
+                        style: textTheme.labelMedium,
+                      ),
+                    ],
                   ),
                 ),
               ],

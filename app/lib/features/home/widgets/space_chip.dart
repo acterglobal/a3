@@ -45,9 +45,7 @@ class SpaceChip extends ConsumerWidget {
       );
 
   static Widget loadingCompact() => const Skeletonizer(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Wrap(
           children: [
             Text('In: '),
             SizedBox(width: 4),
@@ -60,9 +58,8 @@ class SpaceChip extends ConsumerWidget {
     final lang = L10n.of(context);
     final displayName =
         ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull ?? spaceId;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Text(
           lang.inSpaceLabelInline,
