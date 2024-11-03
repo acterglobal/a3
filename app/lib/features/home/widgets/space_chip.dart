@@ -10,47 +10,65 @@ import 'package:skeletonizer/skeletonizer.dart';
 class SpaceChip extends ConsumerWidget {
   final String spaceId;
   final bool onTapOpenSpaceDetail;
-  final bool useCompatView;
+  final bool useCompactView;
   final VoidCallback? onTapSelectSpace;
 
   const SpaceChip({
     super.key,
     required this.spaceId,
     this.onTapOpenSpaceDetail = true,
-    this.useCompatView = false,
+    this.useCompactView = false,
     this.onTapSelectSpace,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (useCompatView) {
+    if (useCompactView) {
       return renderCompactView(context, ref);
     }
     return renderFullChip(context, ref);
   }
 
-  static Widget loading() {
-    return Skeletonizer(
-      child: Chip(
-        avatar: ActerAvatar(
-          options: const AvatarOptions(
-            AvatarInfo(uniqueId: 'unique Id'),
-            size: 24,
+  static Widget loading({useCompactView = false}) =>
+      useCompactView ? loadingCompact() : loadingFull();
+
+  static Widget loadingFull() => Skeletonizer(
+        child: Chip(
+          avatar: ActerAvatar(
+            options: const AvatarOptions(
+              AvatarInfo(uniqueId: 'unique Id'),
+              size: 24,
+            ),
           ),
+          label: const Text('unique name'),
         ),
-        label: const Text('unique name'),
-      ),
-    );
-  }
+      );
+
+  static Widget loadingCompact() => const Skeletonizer(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('In: '),
+            SizedBox(width: 4),
+            Text('displayName'),
+          ],
+        ),
+      );
 
   Widget renderCompactView(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final displayName =
         ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull ?? spaceId;
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(lang.inSpaceLabelInline),
-        Text(lang.colonCharacter),
+        Text(
+          lang.inSpaceLabelInline,
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
+        const SizedBox(width: 4),
         InkWell(
           onTap: () {
             if (onTapOpenSpaceDetail) {

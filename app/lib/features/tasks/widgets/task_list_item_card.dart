@@ -118,8 +118,6 @@ class TaskListItemCard extends ConsumerWidget {
 
   Widget? subtitle(WidgetRef ref, TaskList taskList) {
     if (!showSpace) return null;
-    final spaceId = taskList.spaceIdStr();
-    final spaceProfile = ref.watch(roomAvatarInfoProvider(spaceId));
-    return Text(spaceProfile.displayName ?? '');
+    return SpaceChip(spaceId: taskList.spaceIdStr(), useCompactView: true);
   }
 }

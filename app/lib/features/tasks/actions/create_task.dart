@@ -145,7 +145,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
                   children: [
                     const SelectSpaceFormField(
                       canCheck: 'CanPostTask',
-                      useCompatView: true,
+                      useCompactView: true,
                     ),
                     const Text(' > '),
                     if (taskList == null)
