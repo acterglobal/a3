@@ -59,10 +59,11 @@ class FakeActerPin extends Fake implements ActerPin {
   final String eventId;
   final String pinTitle;
 
-  FakeActerPin(
-      {this.roomId = '!roomId',
-      this.eventId = 'evtId',
-      this.pinTitle = 'Pin Title'});
+  FakeActerPin({
+    this.roomId = '!roomId',
+    this.eventId = 'evtId',
+    this.pinTitle = 'Pin Title',
+  });
 
   @override
   String roomIdStr() => roomId;

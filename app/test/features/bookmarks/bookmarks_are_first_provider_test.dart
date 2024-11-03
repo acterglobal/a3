@@ -18,11 +18,12 @@ void main() {
         FakeActerPin(eventId: 'c'),
       ]);
 
+      List<String> bookmarksLists = ['2', '1', '3'];
       final container = ProviderContainer(
         overrides: [
           pinListProvider.overrideWith(() => mockedPinsList),
           bookmarkByTypeProvider.overrideWith(
-            (a, b) => (b == BookmarkType.pins) ? ['2', '1', '3'] : [],
+            (a, b) => (b == BookmarkType.pins) ? bookmarksLists : [],
           ),
         ],
       );
@@ -30,6 +31,13 @@ void main() {
       final pins = await container.read(pinsProvider(null).future);
       // check if they were reordered correctly
       expect(pins.map((e) => e.eventIdStr()), ['2', '1', 'a', 'b', 'c']);
+      // let's update
+      bookmarksLists = ['1', '4'];
+      container.refresh(bookmarkByTypeProvider(BookmarkType.pins));
+
+      final newPins = await container.read(pinsProvider(null).future);
+      // check if they were reordered correctly
+      expect(newPins.map((e) => e.eventIdStr()), ['1', 'a', 'b', '2', 'c']);
     });
 
     test('TaskList', () async {
@@ -41,12 +49,13 @@ void main() {
         FakeTaskList(eventId: 'c'),
       ]);
 
+      List<String> bookmarksLists = ['4', '2', '1', '3'];
+
       final container = ProviderContainer(
         overrides: [
           allTasksListsProvider.overrideWith(() => mockedTaskLists),
           bookmarkByTypeProvider.overrideWith(
-            (a, b) =>
-                (b == BookmarkType.task_lists) ? ['4', '2', '1', '3'] : [],
+            (a, b) => (b == BookmarkType.task_lists) ? bookmarksLists : [],
           ),
         ],
       );
@@ -54,6 +63,13 @@ void main() {
       final taskLists = await container.read(taskListsProvider(null).future);
       // check if they were reordered correctly
       expect(taskLists, ['2', '1', 'a', 'b', 'c']);
+      // let's update
+      bookmarksLists = ['1'];
+      container.refresh(bookmarkByTypeProvider(BookmarkType.task_lists));
+
+      final newTaskLists = await container.read(taskListsProvider(null).future);
+      // check if they were reordered correctly
+      expect(newTaskLists, ['1', 'a', 'b', '2', 'c']);
     });
   });
 }
