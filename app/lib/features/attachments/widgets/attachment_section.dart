@@ -3,6 +3,7 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
+import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Attachment, AttachmentsManager;
@@ -19,16 +20,21 @@ class AttachmentSectionWidget extends ConsumerWidget {
   static const redactBtnKey = Key('attachments-redact-btn');
   static const addAttachmentBtnKey = Key('attachments-add-btn');
   static const confirmRedactKey = Key('attachments-confirm-redact');
-  final Future<AttachmentsManager> manager;
+  final AttachmentsManagerProvider? manager;
 
   const AttachmentSectionWidget({
     super.key,
-    required this.manager,
+    this.manager,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final managerLoader = ref.watch(attachmentsManagerProvider(manager));
+    final managerProvider = manager;
+    if (managerProvider == null) {
+      return loading();
+    }
+    final managerLoader =
+        ref.watch(attachmentsManagerProvider(managerProvider));
     return managerLoader.when(
       data: (manager) => FoundAttachmentSectionWidget(
         attachmentManager: manager,

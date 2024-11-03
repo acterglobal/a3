@@ -11,6 +11,7 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/types.dart';
@@ -295,9 +296,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             const SizedBox(height: 40),
           ] else
             const EventDetailsSkeleton(),
-          calendarEvent == null
-              ? AttachmentSectionWidget.loading()
-              : AttachmentSectionWidget(manager: calendarEvent.attachments()),
+          AttachmentSectionWidget(
+            manager: calendarEvent?.asAttachmentsManagerProvider(),
+          ),
           const SizedBox(height: 40),
           CommentsSectionWidget(
             managerProvider: calendarEvent?.asCommentsManagerProvider(),

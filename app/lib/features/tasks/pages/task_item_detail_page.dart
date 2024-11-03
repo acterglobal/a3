@@ -15,6 +15,7 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -195,8 +196,9 @@ class TaskItemDetailPage extends ConsumerWidget {
               const SizedBox(height: 40),
             ] else
               const TaskItemDetailPageSkeleton(),
-            if (task != null)
-              AttachmentSectionWidget(manager: task.attachments()),
+            AttachmentSectionWidget(
+              manager: task?.asAttachmentsManagerProvider(),
+            ),
             const SizedBox(height: 20),
             CommentsSectionWidget(
               managerProvider: task?.asCommentsManagerProvider(),

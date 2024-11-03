@@ -8,6 +8,7 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
@@ -90,9 +91,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           const SizedBox(height: 20),
           pin == null ? _loadingPinHeaderUI() : _buildPinHeaderUI(pin),
           const SizedBox(height: 20),
-          pin == null
-              ? AttachmentSectionWidget.loading()
-              : AttachmentSectionWidget(manager: pin.attachments()),
+          AttachmentSectionWidget(manager: pin?.asAttachmentsManagerProvider()),
           FakeLinkAttachmentItem(pinId: widget.pinId),
           const SizedBox(height: 20),
           CommentsSectionWidget(
