@@ -63,52 +63,62 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   @override
   Widget build(BuildContext context) {
     final calEventLoader = ref.watch(calendarEventProvider(widget.calendarId));
+    final errored = calEventLoader.asError;
+    if (errored != null) {
+      _log.severe(
+        'Failed to load cal event',
+        errored.error,
+        errored.stackTrace,
+      );
+      return ErrorPage(
+        background: const EventDetailsSkeleton(),
+        error: errored.error,
+        stack: errored.stackTrace,
+        textBuilder: L10n.of(context).errorLoadingEventDueTo,
+        onRetryTap: () {
+          ref.invalidate(calendarEventProvider(widget.calendarId));
+        },
+      );
+    }
+    ref.listen(calendarEventProvider(widget.calendarId), (prev, next) async {
+      final ev = next.valueOrNull;
+      if (ev != null) {
+        final participants = asDartStringList(await ev.participants());
+        _log.info('Event Participants => $participants');
+        if (!mounted) return;
+        setState(() {
+          eventParticipantsList.value = participants;
+        });
+      } else {
+        setState(() {
+          eventParticipantsList.value = [];
+        });
+      }
+    });
+    final calEvent = calEventLoader.valueOrNull;
     return Scaffold(
-      body: calEventLoader.when(
-        data: (calEvent) {
-          // Update event participants list
-          updateEventParticipantsList(calEvent);
-
-          return CustomScrollView(
-            slivers: [
-              _buildEventAppBar(calEvent),
-              _buildEventBody(calEvent),
-            ],
-          );
-        },
-        error: (error, stack) {
-          _log.severe('Failed to load cal event', error, stack);
-          return ErrorPage(
-            background: const EventDetailsSkeleton(),
-            error: error,
-            stack: stack,
-            textBuilder: L10n.of(context).errorLoadingEventDueTo,
-            onRetryTap: () {
-              ref.invalidate(calendarEventProvider(widget.calendarId));
-            },
-          );
-        },
-        loading: () => const EventDetailsSkeleton(),
+      body: CustomScrollView(
+        slivers: [
+          _buildEventAppBar(calEvent),
+          _buildEventBody(calEvent),
+        ],
       ),
     );
   }
 
-  Future<void> updateEventParticipantsList(CalendarEvent ev) async {
-    final participants = asDartStringList(await ev.participants());
-    _log.info('Event Participants => $participants');
-    if (!mounted) return;
-    eventParticipantsList.value = participants;
-  }
-
-  Widget _buildEventAppBar(CalendarEvent calendarEvent) {
+  Widget _buildEventAppBar(CalendarEvent? calendarEvent) {
     return SliverAppBar(
       expandedHeight: 200.0,
       pinned: true,
-      actions: [
-        _buildShareAction(calendarEvent),
-        BookmarkAction(bookmarker: BookmarkType.forEvent(widget.calendarId)),
-        _buildActionMenu(calendarEvent),
-      ],
+      actions: calendarEvent != null
+          ? [
+              _buildShareAction(calendarEvent),
+              BookmarkAction(
+                bookmarker: BookmarkType.forEvent(widget.calendarId),
+              ),
+              _buildActionMenu(calendarEvent),
+            ]
+          : [],
       flexibleSpace: Container(
         padding: const EdgeInsets.only(top: 20),
         child: const FlexibleSpaceBar(
@@ -267,25 +277,30 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildEventBody(CalendarEvent calendarEvent) {
+  Widget _buildEventBody(CalendarEvent? calendarEvent) {
     return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         key: Key('cal-event-${widget.calendarId}'),
         children: [
-          const SizedBox(height: 20),
-          _buildEventBasicDetails(calendarEvent),
-          const SizedBox(height: 10),
-          _buildEventRsvpActions(calendarEvent),
-          const SizedBox(height: 10),
-          _buildEventDataSet(calendarEvent),
-          const SizedBox(height: 10),
-          _buildEventDescription(calendarEvent),
-          const SizedBox(height: 40),
-          AttachmentSectionWidget(manager: calendarEvent.attachments()),
+          if (calendarEvent != null) ...[
+            const SizedBox(height: 20),
+            _buildEventBasicDetails(calendarEvent),
+            const SizedBox(height: 10),
+            _buildEventRsvpActions(calendarEvent),
+            const SizedBox(height: 10),
+            _buildEventDataSet(calendarEvent),
+            const SizedBox(height: 10),
+            _buildEventDescription(calendarEvent),
+            const SizedBox(height: 40),
+          ] else
+            const EventDetailsSkeleton(),
+          calendarEvent == null
+              ? AttachmentSectionWidget.loading()
+              : AttachmentSectionWidget(manager: calendarEvent.attachments()),
           const SizedBox(height: 40),
           CommentsSectionWidget(
-            managerProvider: calendarEvent.asCommentsManagerProvider(),
+            managerProvider: calendarEvent?.asCommentsManagerProvider(),
           ),
           const SizedBox(height: 40),
         ],
