@@ -385,7 +385,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
     setState(() {
       taskList = newTaskList;
     });
-    }
+  }
 
   Future<void> addTask() async {
     final lang = L10n.of(context);

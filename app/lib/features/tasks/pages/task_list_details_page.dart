@@ -10,6 +10,7 @@ import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
+import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/actions/update_tasklist.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::tasks::tasklist_details');
 
@@ -52,98 +54,45 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   AppBar _buildAppbar() {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
-    final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
-    return tasklistLoader.when(
-      data: (tasklist) {
-        final membership = ref
-            .watch(roomMembershipProvider(tasklist.spaceIdStr()))
-            .valueOrNull;
-        bool canPost = membership?.canString('CanPostTaskList') == true;
-        return AppBar(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              ActerIconWidget(
-                iconSize: 40,
-                color: convertColor(
-                  tasklist.display()?.color(),
-                  iconPickerColors[0],
-                ),
-                icon: ActerIcon.iconForTask(
-                  tasklist.display()?.iconStr(),
-                ),
-                onIconSelection: canPost
-                    ? (color, acterIcon) {
-                        updateTaskListIcon(
-                          context,
-                          ref,
-                          tasklist,
-                          color,
-                          acterIcon,
-                        );
-                      }
-                    : null,
-              ),
-              const SizedBox(width: 10),
-              SelectionArea(
-                child: GestureDetector(
-                  onTap: () => showEditTaskListNameBottomSheet(
-                    context: context,
-                    ref: ref,
-                    taskList: tasklist,
-                    titleValue: tasklist.name(),
-                  ),
+    final tasklist =
+        ref.watch(taskListItemProvider(widget.taskListId)).valueOrNull;
+    final actions = List<Widget>.empty(growable: true);
+    if (tasklist != null) {
+      actions.addAll(
+        [
+          PopupMenuButton(
+            icon: const Icon(Icons.more_vert),
+            itemBuilder: (context) {
+              return [
+                // FIXME: check permissions for all theses
+                PopupMenuItem(
+                  onTap: () => showEditDescriptionSheet(tasklist),
                   child: Text(
-                    key: TaskListDetailPage.taskListTitleKey,
-                    tasklist.name(),
-                    style: textTheme.titleMedium,
+                    lang.editDescription,
+                    style: textTheme.bodyMedium,
                   ),
                 ),
-              ),
-            ],
+                PopupMenuItem(
+                  onTap: () => showRedactDialog(taskList: tasklist),
+                  child: Text(
+                    lang.delete,
+                    style: textTheme.bodyMedium,
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () => showReportDialog(tasklist),
+                  child: Text(
+                    lang.report,
+                    style: textTheme.bodyMedium,
+                  ),
+                ),
+              ];
+            },
           ),
-          actions: [
-            PopupMenuButton(
-              icon: const Icon(Icons.more_vert),
-              itemBuilder: (context) {
-                return [
-                  PopupMenuItem(
-                    onTap: () => showEditDescriptionSheet(tasklist),
-                    child: Text(
-                      lang.editDescription,
-                      style: textTheme.bodyMedium,
-                    ),
-                  ),
-                  PopupMenuItem(
-                    onTap: () => showRedactDialog(taskList: tasklist),
-                    child: Text(
-                      lang.delete,
-                      style: textTheme.bodyMedium,
-                    ),
-                  ),
-                  PopupMenuItem(
-                    onTap: () => showReportDialog(tasklist),
-                    child: Text(
-                      lang.report,
-                      style: textTheme.bodyMedium,
-                    ),
-                  ),
-                ];
-              },
-            ),
-          ],
-        );
-      },
-      error: (e, s) {
-        _log.severe('Failed to load tasklist', e, s);
-        return AppBar(
-          title: Text(lang.loadingFailed(e)),
-        );
-      },
-      loading: () => AppBar(
-        title: Text(lang.loading),
-      ),
-    );
+        ],
+      );
+    }
+    return AppBar(actions: actions);
   }
 
   // Redact Task List Dialog
@@ -173,14 +122,13 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   Widget _buildBody() {
-    final lang = L10n.of(context);
     final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
     return tasklistLoader.when(
       data: (tasklist) => _buildTaskListData(tasklist),
       error: (error, stack) {
         _log.severe('Failed to load tasklist', error, stack);
         return ErrorPage(
-          background: Text(lang.loading),
+          background: _loadingSkeleton(),
           error: error,
           stack: stack,
           onRetryTap: () {
@@ -188,7 +136,8 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           },
         );
       },
-      loading: () => Text(lang.loading),
+      loading: () => _loadingSkeleton(),
+      skipLoadingOnReload: true, // don't refresh to weirdly
     );
   }
 
@@ -197,13 +146,77 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
+            _taskListHeader(taskListData),
+            const SizedBox(height: 20),
             _widgetDescription(taskListData),
-            _widgetTasksList(taskListData),
+            const SizedBox(height: 30),
+            _widgetTasksListHeader(),
+            ValueListenableBuilder(
+              valueListenable: showCompletedTask,
+              builder: (context, value, child) => TaskItemsListWidget(
+                taskList: taskListData,
+                showCompletedTask: value,
+              ),
+            ),
+            const SizedBox(height: 20),
+            AttachmentSectionWidget(manager: taskListData.attachments()),
+            const SizedBox(height: 20),
+            CommentsSectionWidget(manager: taskListData.comments()),
+            const SizedBox(height: 20),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _taskListHeader(TaskList tasklist) {
+    final textTheme = Theme.of(context).textTheme;
+    final canPost = ref
+            .watch(roomMembershipProvider(tasklist.spaceIdStr()))
+            .valueOrNull
+            ?.canString('CanPostTaskList') ==
+        true;
+    return ListTile(
+      leading: ActerIconWidget(
+        iconSize: 40,
+        color: convertColor(
+          tasklist.display()?.color(),
+          iconPickerColors[0],
+        ),
+        icon: ActerIcon.iconForTask(
+          tasklist.display()?.iconStr(),
+        ),
+        onIconSelection: canPost
+            ? (color, acterIcon) {
+                updateTaskListIcon(
+                  context,
+                  ref,
+                  tasklist,
+                  color,
+                  acterIcon,
+                );
+              }
+            : null,
+      ),
+      title: SelectionArea(
+        child: GestureDetector(
+          onTap: () => showEditTaskListNameBottomSheet(
+            context: context,
+            ref: ref,
+            taskList: tasklist,
+            titleValue: tasklist.name(),
+          ),
+          child: Text(
+            key: TaskListDetailPage.taskListTitleKey,
+            tasklist.name(),
+            style: textTheme.titleMedium,
+          ),
+        ),
+      ),
+      subtitle: SpaceChip(spaceId: tasklist.spaceIdStr(), useCompactView: true),
     );
   }
 
@@ -213,32 +226,21 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     final formattedBody = description.formattedBody();
     final textTheme = Theme.of(context).textTheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SelectionArea(
-          child: GestureDetector(
-            onTap: () {
-              showEditDescriptionSheet(taskListData);
-            },
-            child: formattedBody != null
-                ? RenderHtml(
-                    text: formattedBody,
-                    defaultTextStyle: textTheme.labelLarge,
-                  )
-                : Text(
-                    description.body(),
-                    style: textTheme.labelLarge,
-                  ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        const Divider(
-          indent: 10,
-          endIndent: 18,
-        ),
-        const SizedBox(height: 10),
-      ],
+    return SelectionArea(
+      child: GestureDetector(
+        onTap: () {
+          showEditDescriptionSheet(taskListData);
+        },
+        child: formattedBody != null
+            ? RenderHtml(
+                text: formattedBody,
+                defaultTextStyle: textTheme.labelLarge,
+              )
+            : Text(
+                description.body(),
+                style: textTheme.labelLarge,
+              ),
+      ),
     );
   }
 
@@ -279,32 +281,15 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     }
   }
 
-  Widget _widgetTasksList(TaskList taskListData) {
-    return Column(
-      children: [
-        _widgetTasksListHeader(),
-        ValueListenableBuilder(
-          valueListenable: showCompletedTask,
-          builder: (context, value, child) => TaskItemsListWidget(
-            taskList: taskListData,
-            showCompletedTask: value,
-          ),
-        ),
-        const SizedBox(height: 20),
-        AttachmentSectionWidget(manager: taskListData.attachments()),
-        const SizedBox(height: 20),
-        CommentsSectionWidget(manager: taskListData.comments()),
-        const SizedBox(height: 20),
-      ],
-    );
-  }
-
   Widget _widgetTasksListHeader() {
     final lang = L10n.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(lang.tasks),
+        Text(
+          lang.tasks,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         ValueListenableBuilder(
           valueListenable: showCompletedTask,
           builder: (context, value, child) {
@@ -340,4 +325,51 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       onSave: (newName) => updateTaskListTitle(context, taskList, newName),
     );
   }
+
+  Widget _loadingSkeleton() => Skeletonizer.zone(
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Bone.icon(size: 40),
+                const SizedBox(width: 10),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Task List Title',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    SpaceChip.loadingCompact(),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            const Text('Task description'),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  L10n.of(context).tasks,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                const Bone.iconButton(
+                  size: 18,
+                ),
+              ],
+            ),
+            TaskItemsListWidget.loading(),
+            const SizedBox(height: 20),
+            AttachmentSectionWidget.loading(),
+            const SizedBox(height: 20),
+            CommentsSectionWidget.loading(),
+            const SizedBox(height: 20),
+          ],
+        ),
+      );
 }

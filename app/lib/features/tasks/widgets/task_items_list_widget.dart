@@ -22,6 +22,8 @@ class TaskItemsListWidget extends ConsumerStatefulWidget {
     this.showCompletedTask = false,
   });
 
+  static TaskItemsSkeleton loading() => const TaskItemsSkeleton();
+
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
       TaskItemsListWidgetState();
