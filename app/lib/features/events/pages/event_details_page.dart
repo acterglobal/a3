@@ -339,7 +339,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                   ),
                 ),
               ),
-              SpaceChip(spaceId: spaceId),
+              SpaceChip(
+                spaceId: spaceId,
+                useCompactView: true,
+              ),
               const SizedBox(height: 5),
               Row(
                 children: [
