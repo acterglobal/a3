@@ -32,7 +32,7 @@ Future<void> updateTaskListIcon(
   try {
     await updateBuilder.send();
     EasyLoading.dismiss();
-    ref.invalidate(taskListProvider);
+    ref.invalidate(taskListsProvider);
     if (!context.mounted) return;
   } catch (e, s) {
     _log.severe('Failed to rename tasklist', e, s);

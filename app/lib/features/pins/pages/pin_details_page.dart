@@ -307,7 +307,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   Widget pinSpaceNameUI(ActerPin pin) {
     return SpaceChip(
       spaceId: pin.roomIdStr(),
-      useCompatView: true,
+      useCompactView: true,
     );
   }
 

@@ -14,7 +14,7 @@ class SelectSpaceFormField extends ConsumerWidget {
   final String? emptyText;
   final String canCheck;
   final bool mandatory;
-  final bool useCompatView;
+  final bool useCompactView;
 
   const SelectSpaceFormField({
     super.key,
@@ -23,7 +23,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     this.emptyText,
     this.mandatory = true,
     required this.canCheck,
-    this.useCompatView = false,
+    this.useCompactView = false,
   });
 
   void selectSpace(BuildContext context, WidgetRef ref) async {
@@ -55,7 +55,7 @@ class SelectSpaceFormField extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (!useCompatView)
+                  if (!useCompactView)
                     Text(
                       title ?? lang.space,
                       style: Theme.of(context).textTheme.bodyMedium,
@@ -105,9 +105,9 @@ class SelectSpaceFormField extends ConsumerWidget {
           (p0) => SpaceChip(
             spaceId: p0.roomId,
             onTapOpenSpaceDetail: false,
-            useCompatView: useCompatView,
+            useCompactView: useCompactView,
             onTapSelectSpace: () {
-              if (useCompatView) selectSpace(context, ref);
+              if (useCompactView) selectSpace(context, ref);
             },
           ),
         ) ??

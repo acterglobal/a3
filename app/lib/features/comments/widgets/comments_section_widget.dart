@@ -36,6 +36,9 @@ class CommentsSectionWidget extends ConsumerWidget {
     );
   }
 
+  static CommentListSkeletonWidget loading() =>
+      const CommentListSkeletonWidget();
+
   Widget buildCommentSectionUI(
     BuildContext context,
     CommentsManager commentManager,

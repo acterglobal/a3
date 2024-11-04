@@ -47,7 +47,7 @@ final tabsProvider =
     }
 
     if (appSettings.tasks().active()) {
-      final taskList = await ref.watch(taskListProvider(spaceId).future);
+      final taskList = await ref.watch(taskListsProvider(spaceId).future);
       if (taskList.isNotEmpty) {
         tabs.add(TabEntry.tasks);
       }

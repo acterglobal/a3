@@ -76,12 +76,13 @@ void main() {
   });
   group('TaskList Details Error Pages', () {
     testWidgets('body error page', (tester) async {
-      final mockedNotifier = MockTaskListItemNotifier();
+      final mockedNotifier = FakeTaskListItemNotifier();
       await tester.pumpProviderWidget(
         overrides: [
-          taskListItemProvider.overrideWith(() => mockedNotifier),
+          taskListProvider.overrideWith(() => mockedNotifier),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
           roomMembershipProvider.overrideWith((a, b) => null),
+          roomDisplayNameProvider.overrideWith((a, b) async => 'Space'),
         ],
         child: const TaskListDetailPage(taskListId: 'taskListId'),
       );
@@ -90,12 +91,13 @@ void main() {
   });
   group('Task Details Error Pages', () {
     testWidgets('body error page', (tester) async {
-      final mockedNotifier = MockTaskListItemNotifier(shouldFail: false);
+      final mockedNotifier = FakeTaskListItemNotifier(shouldFail: false);
       await tester.pumpProviderWidget(
         overrides: [
           notifierTaskProvider.overrideWith(() => MockTaskItemNotifier()),
-          taskListItemProvider.overrideWith(() => mockedNotifier),
+          taskListProvider.overrideWith(() => mockedNotifier),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
+          roomDisplayNameProvider.overrideWith((a, b) async => 'Space'),
         ],
         child: const TaskItemDetailPage(
           taskListId: 'taskListId',
