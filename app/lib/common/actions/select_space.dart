@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const Key selectSpaceDrawerKey = Key('space-widgets-select-space-drawer');
-
 Future<String?> selectSpace({
   required BuildContext context,
   required WidgetRef ref,
