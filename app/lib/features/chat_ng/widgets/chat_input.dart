@@ -163,12 +163,15 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
     super.initState();
     scrollController =
         EditorScrollController(editorState: textEditorState, shrinkWrap: true);
+    _updateListener?.cancel();
     // listener for editor input state
     _updateListener = textEditorState.transactionStream.listen((data) {
       _inputUpdate();
+      // expand when user types more than one line upto exceed limit
       _updateHeight();
     });
-
+    // have it call the first time to adjust height
+    _updateHeight();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft);
   }
 
@@ -207,9 +210,9 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
     final lineCount = '\n'.allMatches(text).length;
 
     // Calculate new height based on line count
-    // Start with 5% and increase by 2% per line up to 20%
+    // Start with 5% and increase by 4% per line up to 20%
     setState(() {
-      _cHeight = (0.05 + (lineCount - 1) * 0.02).clamp(0.05, 0.15);
+      _cHeight = (0.05 + (lineCount - 1) * 0.04).clamp(0.05, 0.15);
     });
   }
 
@@ -291,9 +294,16 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
       }
 
       ref.read(chatInputProvider.notifier).messageSent();
-      // TODO: currently issuing with the focus and transaction state
-      // need to approach differently
-      textEditorState = EditorState.blank();
+      final transaction = textEditorState.transaction;
+      final nodes = transaction.document.root.children;
+      // delete all nodes of document (reset)
+      transaction.document.delete([0], nodes.length);
+      final delta = Delta()..insert('');
+      // insert empty text node
+      transaction.document.insert([0], [paragraphNode(delta: delta)]);
+      await textEditorState.apply(transaction, withUpdateSelection: false);
+      // FIXME: works for single text, but doesn't get focus on multi-line
+      textEditorState.moveCursorForward(SelectionMoveRange.line);
 
       // also clear composed state
       final convo = await ref.read(chatProvider(widget.roomId).future);
@@ -331,20 +341,15 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
             leadingButton(),
             IntrinsicHeight(
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
+                duration: const Duration(milliseconds: 100),
                 height: widgetSize.height * _cHeight,
                 width: widgetSize.width * 0.75,
                 margin: const EdgeInsets.symmetric(vertical: 12),
-
                 decoration: BoxDecoration(
                   color:
                       Theme.of(context).unselectedWidgetColor.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                // constraints: BoxConstraints(
-                //   maxHeight: widgetSize.height * 0.15,
-                //   minHeight: widgetSize.height * 0.06,
-                // ),
                 child: SingleChildScrollView(
                   child: IntrinsicHeight(
                     child: Focus(
