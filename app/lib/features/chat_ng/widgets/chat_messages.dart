@@ -15,7 +15,7 @@ class ChatMessages extends ConsumerWidget {
 
     return AnimatedList(
       initialItemCount: messages.length,
-      reverse: true,
+      reverse: false,
       key: animatedListKey,
       itemBuilder: (_, index, animation) => ChatEventWidget(
         roomId: roomId,
