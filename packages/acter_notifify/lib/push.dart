@@ -6,6 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/acter_notifify.dart';
 import 'package:acter_notifify/matrix.dart';
 import 'package:logging/logging.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:push/push.dart';
 
 final _log = Logger('a3::notifify::push');
@@ -77,12 +78,14 @@ Future<void> initializePush({
               pushServerUrl: pushServerUrl);
         } catch (error, st) {
           _log.severe('Setting token for $deviceId failed', error, st);
+          Sentry.captureException(error, stackTrace: st);
         }
       }
     });
   } catch (e, s) {
     // this fails on hot-reload and in integration tests... if so, ignore for now
     _log.severe('Push initialization error', e, s);
+    Sentry.captureException(e, stackTrace: s);
   }
 }
 

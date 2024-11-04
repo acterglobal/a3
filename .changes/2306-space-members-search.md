@@ -1,1 +1,0 @@
-- [New] : Space members listing now contains search option to search members by name

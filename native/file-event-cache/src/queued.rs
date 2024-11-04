@@ -79,4 +79,18 @@ where
             .expect("We never close the semaphore");
         self.inner.remove_media_content_for_uri(uri).await
     }
+
+    #[instrument(skip_all)]
+    async fn replace_media_key(
+        &self,
+        from: &MediaRequest,
+        to: &MediaRequest,
+    ) -> Result<(), Self::Error> {
+        let _handle = self
+            .queue
+            .acquire()
+            .await
+            .expect("We never close the semaphore");
+        self.inner.replace_media_key(from, to).await
+    }
 }

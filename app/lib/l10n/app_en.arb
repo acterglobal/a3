@@ -882,6 +882,7 @@
   "pleaseProvideYourUserPassword": "Please provide your user password to confirm you want to end that session.",
   "@pleaseProvideYourUserPassword": {},
   "pleaseSelectSpace": "Please select space",
+  "selectTaskList": "Select Task List",
   "@pleaseSelectSpace": {},
   "pleaseWait": "Please wait…",
   "@pleaseWait": {},
@@ -2186,7 +2187,7 @@
   "@audio": {},
   "pinDetails": "Pin Details",
   "@pinDetails": {},
-  "inSpaceLabelInline": "In",
+  "inSpaceLabelInline": "In:",
   "@inSpaceLabelInline": {},
   "comingSoon": "Not supported yet, coming soon!",
   "@comingSoon": {},
@@ -2264,5 +2265,6 @@
   "@calenderWithEvents": {},
   "addBoost": "Add Boost",
   "addTaskList": "Add TaskList",
+  "addComment": "Add Comment",
   "@addBoost": {}
 }

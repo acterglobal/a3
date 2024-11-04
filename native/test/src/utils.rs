@@ -37,11 +37,11 @@ pub async fn accept_all_invites(client: &Client) -> Result<Vec<OwnedRoomId>> {
 }
 
 pub async fn random_user(prefix: &str) -> Result<Client> {
-    let (user, _uuid) = _random_user_with_uuid(prefix).await?;
+    let (user, _uuid) = random_user_with_uuid(prefix).await?;
     Ok(user)
 }
 
-async fn _random_user_with_uuid(prefix: &str) -> Result<(Client, String)> {
+async fn random_user_with_uuid(prefix: &str) -> Result<(Client, String)> {
     let uuid = Uuid::new_v4().to_string();
     let user = ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
@@ -60,7 +60,7 @@ async fn _random_user_with_uuid(prefix: &str) -> Result<(Client, String)> {
 }
 
 pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, OwnedRoomId)> {
-    let (user, uuid) = _random_user_with_uuid(prefix).await?;
+    let (user, uuid) = random_user_with_uuid(prefix).await?;
 
     let settings = CreateSpaceSettingsBuilder::default()
         .name(format!("it-room-{prefix}-{uuid}"))
@@ -73,13 +73,13 @@ pub async fn random_users_with_random_space(
     prefix: &str,
     user_count: u8,
 ) -> Result<(Vec<Client>, OwnedRoomId)> {
-    let (main_user, uuid) = _random_user_with_uuid(prefix).await?;
+    let (main_user, uuid) = random_user_with_uuid(prefix).await?;
     let mut settings = CreateSpaceSettingsBuilder::default();
     settings.name(format!("it-room-{prefix}-{uuid}"));
 
     let mut users = vec![];
     for _x in 0..user_count {
-        let (new_user, _uuid) = _random_user_with_uuid(prefix).await?;
+        let (new_user, _uuid) = random_user_with_uuid(prefix).await?;
         settings.add_invitee(new_user.user_id()?.to_string())?;
         users.push(new_user)
     }
@@ -102,20 +102,7 @@ pub async fn random_users_with_random_space(
 }
 
 pub async fn random_user_with_random_convo(prefix: &str) -> Result<(Client, OwnedRoomId)> {
-    let uuid = Uuid::new_v4().to_string();
-    let user = ensure_user(
-        option_env!("DEFAULT_HOMESERVER_URL")
-            .unwrap_or("http://localhost:8118")
-            .to_string(),
-        option_env!("DEFAULT_HOMESERVER_NAME")
-            .unwrap_or("localhost")
-            .to_string(),
-        format!("it-{prefix}-{uuid}"),
-        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
-        "acter-integration-tests".to_owned(),
-        StoreConfig::default(),
-    )
-    .await?;
+    let (user, uuid) = random_user_with_uuid(prefix).await?;
 
     let settings = CreateConvoSettingsBuilder::default()
         .name(format!("it-room-{prefix}-{uuid}"))
@@ -144,50 +131,9 @@ pub async fn random_user_under_token(prefix: &str, registration_token: &str) -> 
 pub async fn random_users_with_random_convo(
     prefix: &str,
 ) -> Result<(Client, Client, Client, OwnedRoomId)> {
-    let uuid = Uuid::new_v4().to_string();
-    let sisko = ensure_user(
-        option_env!("DEFAULT_HOMESERVER_URL")
-            .unwrap_or("http://localhost:8118")
-            .to_string(),
-        option_env!("DEFAULT_HOMESERVER_NAME")
-            .unwrap_or("localhost")
-            .to_string(),
-        format!("it-{prefix}-{uuid}"),
-        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
-        "acter-integration-tests".to_owned(),
-        StoreConfig::default(),
-    )
-    .await?;
-
-    let uuid = Uuid::new_v4().to_string();
-    let kyra = ensure_user(
-        option_env!("DEFAULT_HOMESERVER_URL")
-            .unwrap_or("http://localhost:8118")
-            .to_string(),
-        option_env!("DEFAULT_HOMESERVER_NAME")
-            .unwrap_or("localhost")
-            .to_string(),
-        format!("it-{prefix}-{uuid}"),
-        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
-        "acter-integration-tests".to_owned(),
-        StoreConfig::default(),
-    )
-    .await?;
-
-    let uuid = Uuid::new_v4().to_string();
-    let worf = ensure_user(
-        option_env!("DEFAULT_HOMESERVER_URL")
-            .unwrap_or("http://localhost:8118")
-            .to_string(),
-        option_env!("DEFAULT_HOMESERVER_NAME")
-            .unwrap_or("localhost")
-            .to_string(),
-        format!("it-{prefix}-{uuid}"),
-        option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
-        "acter-integration-tests".to_owned(),
-        StoreConfig::default(),
-    )
-    .await?;
+    let (sisko, _) = random_user_with_uuid(prefix).await?;
+    let (kyra, _) = random_user_with_uuid(prefix).await?;
+    let (worf, _) = random_user_with_uuid(prefix).await?;
 
     let uuid = Uuid::new_v4().to_string();
     let settings = CreateConvoSettingsBuilder::default()

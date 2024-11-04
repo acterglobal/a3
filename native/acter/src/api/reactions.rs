@@ -161,8 +161,10 @@ impl ReactionManager {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&event_id, None).await?;
-                let event_content = evt.event.deserialize_as::<ReactionEvent>()?;
-                let permitted = if event_content.sender() == my_id {
+                let Some(sender) = evt.kind.raw().get_field::<OwnedUserId>("sender")? else {
+                    bail!("Could not determine the sender of the previous event");
+                };
+                let permitted = if sender == my_id {
                     room.can_user_redact_own(&my_id).await?
                 } else {
                     room.can_user_redact_other(&my_id).await?

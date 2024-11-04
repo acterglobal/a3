@@ -14,6 +14,7 @@ import 'package:acter_notifify/platform/windows.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:logging/logging.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 final _log = Logger('a3::notifify::matrix');
 int id = 0;
@@ -47,6 +48,7 @@ Future<bool> handleMatrixMessage(
     return true;
   } catch (e, s) {
     _log.severe('Parsing Notification failed: $message', e, s);
+    Sentry.captureException(e, stackTrace: s);
   }
   return false;
 }

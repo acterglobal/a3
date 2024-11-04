@@ -370,7 +370,7 @@ async fn request_verification_handler(
             }
             VerificationRequestState::Requested {
                 their_methods,
-                other_device_id,
+                other_device_data,
             } => {
                 let device_id = client.device_id()?;
                 let event_type = "VerificationRequestState::Requested".to_string();
@@ -388,7 +388,10 @@ async fn request_verification_handler(
                     .collect::<Vec<String>>()
                     .join(",");
                 msg.set_content("their_methods".to_string(), methods);
-                msg.set_content("other_device_id".to_string(), other_device_id.to_string());
+                msg.set_content(
+                    "other_device_id".to_string(),
+                    other_device_data.device_id().to_string(),
+                );
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     error!("Dropping flow for {}: {}", flow_id, e);
                 }
@@ -396,7 +399,7 @@ async fn request_verification_handler(
             VerificationRequestState::Ready {
                 their_methods,
                 our_methods,
-                other_device_id,
+                other_device_data,
             } => {
                 let device_id = client.device_id()?;
                 let event_type = "VerificationRequestState::Ready".to_string();
@@ -420,7 +423,10 @@ async fn request_verification_handler(
                     .collect::<Vec<String>>()
                     .join(",");
                 msg.set_content("our_methods".to_string(), methods);
-                msg.set_content("other_device_id".to_string(), other_device_id.to_string());
+                msg.set_content(
+                    "other_device_id".to_string(),
+                    other_device_data.device_id().to_string(),
+                );
                 if let Err(e) = controller.event_tx.try_send(msg) {
                     error!("Dropping flow for {}: {}", flow_id, e);
                 }

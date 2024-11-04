@@ -8,9 +8,10 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
+import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
-import 'package:acter/features/comments/widgets/comments_section.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
 import 'package:acter/features/pins/actions/pin_update_actions.dart';
@@ -79,7 +80,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
               AttachmentSectionWidget(manager: pin.attachments()),
               FakeLinkAttachmentItem(pinId: pin.eventIdStr()),
               const SizedBox(height: 20),
-              CommentsSection(manager: pin.comments()),
+              CommentsSectionWidget(manager: pin.comments()),
             ],
           ),
         );
@@ -109,7 +110,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           const SizedBox(height: 20),
           AttachmentSectionWidget.loading(),
           const SizedBox(height: 20),
-          CommentsSection.loading(context),
+          const CommentListSkeletonWidget(),
         ],
       ),
     );
@@ -306,7 +307,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   Widget pinSpaceNameUI(ActerPin pin) {
     return SpaceChip(
       spaceId: pin.roomIdStr(),
-      useCompatView: true,
+      useCompactView: true,
     );
   }
 
