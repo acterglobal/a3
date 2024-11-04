@@ -12,7 +12,7 @@ import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
 import 'package:acter/features/home/widgets/chats_icon.dart';
-import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
+import 'package:acter/features/tasks/actions/create_task.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -231,10 +231,9 @@ class SidebarWidget extends ConsumerWidget {
     final canAddEvent =
         ref.watch(hasSpaceWithPermissionProvider('CanPostEvent')).valueOrNull ??
             false;
-    final canAddTask = ref
-            .watch(hasSpaceWithPermissionProvider('CanPostTaskList'))
-            .valueOrNull ??
-        false;
+    final canAddTask =
+        ref.watch(hasSpaceWithPermissionProvider('CanPostTask')).valueOrNull ??
+            false;
     final canAddBoost =
         ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
             false;
@@ -258,11 +257,11 @@ class SidebarWidget extends ConsumerWidget {
         PopupMenuItem(
           child: ActionButtonWidget(
             iconData: Atlas.list,
-            title: lang.addTaskList,
+            title: lang.addTask,
             color: taskFeatureColor,
             onPressed: () {
               if (context.canPop()) Navigator.pop(context);
-              showCreateUpdateTaskListBottomSheet(context);
+              showCreateTaskBottomSheet(context);
             },
           ),
         ),

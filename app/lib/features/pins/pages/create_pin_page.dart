@@ -118,7 +118,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                         alignment: Alignment.centerLeft,
                         child: SelectSpaceFormField(
                           canCheck: 'CanPostPin',
-                          useCompatView: true,
+                          useCompactView: true,
                         ),
                       ),
                       const SizedBox(height: 14),

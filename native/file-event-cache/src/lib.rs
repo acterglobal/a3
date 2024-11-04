@@ -104,6 +104,19 @@ impl EventCacheStore for FileEventCacheStore {
             .map_err(|e| EventCacheStoreError::Backend(Box::new(e)))?;
         Ok(())
     }
+
+    #[instrument(skip_all)]
+    async fn replace_media_key(
+        &self,
+        from: &MediaRequest,
+        to: &MediaRequest,
+    ) -> Result<(), Self::Error> {
+        let from_filename = self.encode_key(from.source.unique_key());
+        let to_filename = self.encode_key(to.source.unique_key());
+        fs::rename(from_filename, to_filename)
+            .map_err(|e| EventCacheStoreError::Backend(Box::new(e)))?;
+        Ok(())
+    }
 }
 
 #[cfg(feature = "queued")]

@@ -16,7 +16,7 @@ use matrix_sdk_base::ruma::{
         device,
         push::{
             get_pushers, get_pushrules_all, set_pusher, set_pushrule, EmailPusherData,
-            Pusher as RumaPusher, PusherIds, PusherInit, PusherKind, RuleScope,
+            Pusher as RumaPusher, PusherIds, PusherInit, PusherKind,
         },
     },
     assign,
@@ -553,10 +553,7 @@ impl Client {
             .spawn(async move {
                 for rule in default_rules() {
                     let resp = client
-                        .send(
-                            set_pushrule::v3::Request::new(RuleScope::Global, rule),
-                            None,
-                        )
+                        .send(set_pushrule::v3::Request::new(rule), None)
                         .await?;
                 }
                 Ok(true)

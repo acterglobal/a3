@@ -1126,7 +1126,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&event_id, None).await?;
-                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
+                let event_content = evt.kind.raw().deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
                     .context("Couldn’t get original msg")?;
@@ -1200,6 +1200,7 @@ impl Room {
             RoomState::Joined => "joined".to_string(),
             RoomState::Left => "left".to_string(),
             RoomState::Invited => "invited".to_string(),
+            RoomState::Knocked => "knocked".to_string(),
         }
     }
 
@@ -1325,7 +1326,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&evt_id, None).await?;
-                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
+                let event_content = evt.kind.raw().deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
                     .context("Unable to get original msg")?;
@@ -1531,7 +1532,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let evt = room.event(&evt_id, None).await?;
-                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
+                let event_content = evt.kind.raw().deserialize_as::<RoomMessageEvent>()?;
                 let original = event_content
                     .as_original()
                     .context("Couldn’t get original msg")?;

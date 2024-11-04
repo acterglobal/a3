@@ -1,3 +1,4 @@
+import 'package:acter/common/actions/select_space.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -5,7 +6,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
-import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -417,7 +417,11 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   Future<void> _handleCreateEvent() async {
     final lang = L10n.of(context);
     String? spaceId = ref.read(selectedSpaceIdProvider);
-    spaceId ??= await selectSpace();
+    spaceId ??= await selectSpace(
+      context: context,
+      ref: ref,
+      canCheck: 'CanPostEvent',
+    );
     if (!mounted) return;
 
     if (spaceId == null) {
@@ -486,16 +490,5 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
         duration: const Duration(seconds: 3),
       );
     }
-  }
-
-  Future<String?> selectSpace() async {
-    final newSelectedSpaceId = await selectSpaceDrawer(
-      context: context,
-      currentSpaceId: ref.read(selectedSpaceIdProvider),
-      canCheck: 'CanPostEvent',
-      title: Text(L10n.of(context).selectSpace),
-    );
-    ref.read(selectedSpaceIdProvider.notifier).state = newSelectedSpaceId;
-    return newSelectedSpaceId;
   }
 }
