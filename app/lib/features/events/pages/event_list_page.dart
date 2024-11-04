@@ -82,30 +82,26 @@ class _EventListPageState extends ConsumerState<EventListPage> {
         ActerSearchWidget(
           initialText: widget.searchQuery,
           onChanged: (value) {
-            final notifier = ref.read(searchValueProvider.notifier);
+            final notifier =
+                ref.read(eventListSearchTermProvider(widget.spaceId).notifier);
             notifier.state = value;
           },
           onClear: () {
-            final notifier = ref.read(searchValueProvider.notifier);
+            final notifier =
+                ref.read(eventListSearchTermProvider(widget.spaceId).notifier);
             notifier.state = '';
           },
         ),
-        ValueListenableBuilder(
-          valueListenable: eventFilter,
-          builder: (context, showHeader, child) => filterChipsButtons(),
-        ),
+        filterChipsButtons(),
         Expanded(
-          child: ValueListenableBuilder(
-            valueListenable: eventFilter,
-            builder: (context, showHeader, child) => EventListWidget(
+          child: EventListWidget(
+            isShowSpaceName: widget.spaceId == null,
+            shrinkWrap: false,
+            listProvider: eventListSearchedAndFilterProvider(widget.spaceId),
+            eventFiler: eventFilter.value,
+            emptyState: EventListEmptyState(
               spaceId: widget.spaceId,
-              shrinkWrap: false,
-              searchValue: searchValue,
-              eventFiler: eventFilter.value,
-              emptyState: EventListEmptyState(
-                spaceId: widget.spaceId,
-                isSearchApplied: searchValue.isNotEmpty,
-              ),
+              isSearchApplied: searchValue.isNotEmpty,
             ),
           ),
         ),
@@ -115,6 +111,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
 
   Widget filterChipsButtons() {
     final lang = L10n.of(context);
+    final currentFilter = ref.watch(eventListFilterProvider(widget.spaceId));
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
@@ -125,34 +122,43 @@ class _EventListPageState extends ConsumerState<EventListPage> {
         child: Wrap(
           children: [
             FilterChip(
-              selected: eventFilter.value == EventFilters.all,
+              selected: currentFilter == EventFilters.all,
               label: Text(lang.all),
-              onSelected: (value) => eventFilter.value = EventFilters.all,
+              onSelected: (value) => ref
+                  .read(eventListFilterProvider(widget.spaceId).notifier)
+                  .state = EventFilters.all,
             ),
             const SizedBox(width: 10),
             FilterChip(
-              selected: eventFilter.value == EventFilters.bookmarked,
+              selected: currentFilter == EventFilters.bookmarked,
               label: Text(lang.bookmarked),
-              onSelected: (value) =>
-                  eventFilter.value = EventFilters.bookmarked,
+              onSelected: (value) => ref
+                  .read(eventListFilterProvider(widget.spaceId).notifier)
+                  .state = EventFilters.bookmarked,
             ),
             const SizedBox(width: 10),
             FilterChip(
-              selected: eventFilter.value == EventFilters.ongoing,
+              selected: currentFilter == EventFilters.ongoing,
               label: Text(lang.happeningNow),
-              onSelected: (value) => eventFilter.value = EventFilters.ongoing,
+              onSelected: (value) => ref
+                  .read(eventListFilterProvider(widget.spaceId).notifier)
+                  .state = EventFilters.ongoing,
             ),
             const SizedBox(width: 10),
             FilterChip(
-              selected: eventFilter.value == EventFilters.upcoming,
+              selected: currentFilter == EventFilters.upcoming,
               label: Text(lang.upcoming),
-              onSelected: (value) => eventFilter.value = EventFilters.upcoming,
+              onSelected: (value) => ref
+                  .read(eventListFilterProvider(widget.spaceId).notifier)
+                  .state = EventFilters.upcoming,
             ),
             const SizedBox(width: 10),
             FilterChip(
-              selected: eventFilter.value == EventFilters.past,
+              selected: currentFilter == EventFilters.past,
               label: Text(lang.past),
-              onSelected: (value) => eventFilter.value = EventFilters.past,
+              onSelected: (value) => ref
+                  .read(eventListFilterProvider(widget.spaceId).notifier)
+                  .state = EventFilters.past,
             ),
           ],
         ),

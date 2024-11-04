@@ -3,6 +3,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_list_widget.dart';
 import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:acter/features/space/dialogs/suggested_rooms.dart';
@@ -273,8 +274,9 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         ),
       TabEntry.tasks => TasksSection(spaceId: widget.spaceId),
       TabEntry.events => EventListWidget(
-          spaceId: widget.spaceId,
+          isShowSpaceName: false,
           showSectionHeader: true,
+          listProvider: allEventListProvider(widget.spaceId),
           limit: 3,
           onClickSectionHeader: () => context.pushNamed(
             Routes.spaceEvents.name,

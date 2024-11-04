@@ -12,20 +12,20 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::event-list-widget');
 
 class EventListWidget extends ConsumerWidget {
-  final String? spaceId;
-  final String? searchValue;
+  final ProviderBase<AsyncValue<List<CalendarEvent>>> listProvider;
   final int? limit;
   final bool showSectionHeader;
   final VoidCallback? onClickSectionHeader;
   final EventFilters eventFiler;
   final bool shrinkWrap;
+  final bool isShowSpaceName;
   final Widget emptyState;
 
   const EventListWidget({
     super.key,
     this.limit,
-    this.spaceId,
-    this.searchValue,
+    this.isShowSpaceName = true,
+    required this.listProvider,
     this.showSectionHeader = false,
     this.onClickSectionHeader,
     this.eventFiler = EventFilters.all,
@@ -35,15 +35,7 @@ class EventListWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final calEventsLoader = ref.watch(
-      eventListSearchFilterProvider(
-        (
-          spaceId: spaceId,
-          searchText: searchValue ?? '',
-          eventFilter: eventFiler,
-        ),
-      ),
-    );
+    final calEventsLoader = ref.watch(listProvider);
 
     return calEventsLoader.when(
       data: (eventList) => buildEventSectionUI(context, eventList),
@@ -65,15 +57,7 @@ class EventListWidget extends ConsumerWidget {
       stack: stack,
       textBuilder: L10n.of(context).loadingFailed,
       onRetryTap: () {
-        ref.invalidate(
-          eventListSearchFilterProvider(
-            (
-              spaceId: spaceId,
-              searchText: searchValue ?? '',
-              eventFilter: eventFiler,
-            ),
-          ),
-        );
+        ref.invalidate(listProvider);
       },
     );
   }
@@ -111,7 +95,7 @@ class EventListWidget extends ConsumerWidget {
       itemBuilder: (context, index) {
         return EventItem(
           event: eventList[index],
-          isShowSpaceName: spaceId == null,
+          isShowSpaceName: isShowSpaceName,
         );
       },
     );
