@@ -40,15 +40,16 @@ class _UserMentionBlockState extends State<UserMentionBlock> {
             onTap: _handleUserTap,
             behavior: HitTestBehavior.opaque,
             child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: MentionContentWidget(
-                  mentionId: widget.userId,
-                  displayName: widget.displayName,
-                  textStyle: widget.textStyle,
-                  editorState: widget.editorState,
-                  node: widget.node,
-                  index: widget.index,
-                )),
+              cursor: SystemMouseCursors.click,
+              child: MentionContentWidget(
+                mentionId: widget.userId,
+                displayName: widget.displayName,
+                textStyle: widget.textStyle,
+                editorState: widget.editorState,
+                node: widget.node,
+                index: widget.index,
+              ),
+            ),
           )
         : GestureDetector(
             onTap: _handleUserTap,

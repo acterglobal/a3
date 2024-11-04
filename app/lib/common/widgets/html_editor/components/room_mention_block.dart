@@ -40,15 +40,16 @@ class _RoomMentionBlockState extends State<RoomMentionBlock> {
             onTap: _handleRoomTap,
             behavior: HitTestBehavior.opaque,
             child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: MentionContentWidget(
-                  mentionId: widget.roomId,
-                  displayName: widget.displayName,
-                  textStyle: widget.textStyle,
-                  editorState: widget.editorState,
-                  node: widget.node,
-                  index: widget.index,
-                )),
+              cursor: SystemMouseCursors.click,
+              child: MentionContentWidget(
+                mentionId: widget.roomId,
+                displayName: widget.displayName,
+                textStyle: widget.textStyle,
+                editorState: widget.editorState,
+                node: widget.node,
+                index: widget.index,
+              ),
+            ),
           )
         : GestureDetector(
             onTap: _handleRoomTap,
