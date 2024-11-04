@@ -4,7 +4,9 @@ import 'package:acter/features/datetime/providers/utc_now_provider.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/widgets/event_list_widget.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockingjay/mockingjay.dart';
 import '../../helpers/error_helpers.dart';
@@ -17,14 +19,14 @@ void main() {
         (tester) async {
       //Arrange:
       const emptyState = Text('empty state');
+      final provider = FutureProvider<List<CalendarEvent>>((ref) async => []);
 
-      // Build the widget tree with the mocked provider
+      // Build the widget tree with an empty provider
       await tester.pumpProviderWidget(
-        overrides: [
-          eventListSearchFilterProvider
-              .overrideWith((ref, manager) async => []),
-        ],
-        child: const EventListWidget(emptyState: emptyState),
+        child: EventListWidget(
+          listProvider: provider,
+          emptyStateBuilder: () => emptyState,
+        ),
       );
 
       // Act
@@ -42,19 +44,20 @@ void main() {
         (tester) async {
       bool shouldFail = true;
 
+      final provider = FutureProvider<List<CalendarEvent>>((ref) async {
+        if (shouldFail) {
+          shouldFail = false;
+          throw 'Some Error';
+        } else {
+          return [];
+        }
+      });
+
       // Build the widget tree with the mocked provider
       await tester.pumpProviderWidget(
-        overrides: [
-          eventListSearchFilterProvider.overrideWith((ref, manager) async {
-            if (shouldFail) {
-              shouldFail = false;
-              throw 'Some Error';
-            } else {
-              return [];
-            }
-          }),
-        ],
-        child: const EventListWidget(),
+        child: EventListWidget(
+          listProvider: provider,
+        ),
       );
       await tester.ensureErrorPageWithRetryWorks();
     });
@@ -72,6 +75,14 @@ void main() {
       final mockEvent2 = MockEvent(fakeEventTitle: 'Fake Event2');
       final mockEvent3 = MockEvent(fakeEventTitle: 'Fake Event3');
 
+      final finalListProvider = FutureProvider<List<CalendarEvent>>(
+        (ref) async => [
+          mockEvent1,
+          mockEvent2,
+          mockEvent3,
+        ],
+      );
+
       // Build the widget tree with the mocked provider
       await tester.pumpProviderWidget(
         overrides: [
@@ -83,19 +94,14 @@ void main() {
           isBookmarkedProvider.overrideWith((a, b) => false),
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
           bookmarkedEventListProvider.overrideWith((ref, spaceId) => []),
-          allEventListProvider.overrideWith(() => any()),
+          allEventListProvider.overrideWith((ref, spaceId) => any()),
           allOngoingEventListProvider.overrideWith((ref, spaceId) => []),
           allUpcomingEventListProvider.overrideWith((ref, spaceId) => []),
           allPastEventListProvider.overrideWith((ref, spaceId) => []),
-          eventListSearchFilterProvider.overrideWith(
-            (ref, manager) async => [
-              mockEvent1,
-              mockEvent2,
-              mockEvent3,
-            ],
-          ),
         ],
-        child: const EventListWidget(),
+        child: EventListWidget(
+          listProvider: finalListProvider,
+        ),
       );
       // Act
       await tester.pumpAndSettle(); // Allow the widget to settle

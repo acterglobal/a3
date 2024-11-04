@@ -1,5 +1,4 @@
 import 'package:acter/common/toolkit/errors/error_page.dart';
-import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
