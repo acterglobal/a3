@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
+import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
@@ -12,6 +13,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -329,7 +331,73 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
     }
   }
 
-  Widget _editorWidget() {
+  // UI handler for emoji picker widget
+  void onEmojiBtnTap(bool emojiPickerVisible) {
+    final chatInputNotifier = ref.read(chatInputProvider.notifier);
+    if (!emojiPickerVisible) {
+      //Hide soft keyboard and then show Emoji Picker
+      chatInputNotifier.emojiPickerVisible(true);
+    } else {
+      //Hide Emoji Picker
+      chatInputNotifier.emojiPickerVisible(false);
+    }
+  }
+
+  void _handleEmojiSelected(Category? category, Emoji emoji) {
+    final selection = textEditorState.selection;
+    final transaction = textEditorState.transaction;
+    if (selection != null) {
+      if (selection.isCollapsed) {
+        final node = textEditorState.getNodeAtPath(selection.end.path);
+        if (node == null) return;
+        // we're at the start
+        transaction.insertText(node, selection.endIndex, emoji.emoji);
+        transaction.afterSelection = Selection.collapsed(
+          Position(
+            path: selection.end.path,
+            offset: selection.end.offset + emoji.emoji.length,
+          ),
+        );
+      } else {
+        // we have selected some text part to replace with emoji
+        final startNode = textEditorState.getNodeAtPath(selection.start.path);
+        if (startNode == null) return;
+        transaction.deleteText(
+          startNode,
+          selection.startIndex,
+          selection.end.offset - selection.start.offset,
+        );
+        transaction.insertText(
+          startNode,
+          selection.startIndex,
+          emoji.emoji,
+        );
+
+        transaction.afterSelection = Selection.collapsed(
+          Position(
+            path: selection.start.path,
+            offset: selection.start.offset + emoji.emoji.length,
+          ),
+        );
+      }
+
+      textEditorState.apply(transaction);
+    }
+    return;
+  }
+
+  // editor picker widget backspace handling
+  void _handleBackspacePressed() {
+    final isEmpty = textEditorState.transaction.document.isEmpty;
+    if (isEmpty) {
+      // nothing left to clear, close the emoji picker
+      ref.read(chatInputProvider.notifier).emojiPickerVisible(false);
+      return;
+    }
+    textEditorState.deleteBackward();
+  }
+
+  Widget _editorWidget(bool emojiPickerVisible) {
     final widgetSize = MediaQuery.sizeOf(context);
     return FrostEffect(
       child: DecoratedBox(
@@ -338,7 +406,7 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
         ),
         child: Row(
           children: [
-            leadingButton(),
+            leadingButton(emojiPickerVisible),
             IntrinsicHeight(
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 100),
@@ -390,9 +458,9 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
   }
 
   // emoji button
-  Widget leadingButton() {
+  Widget leadingButton(bool emojiPickerVisible) {
     return IconButton(
-      onPressed: () {},
+      onPressed: () => onEmojiBtnTap(emojiPickerVisible),
       icon: const Icon(Icons.emoji_emotions, size: 20),
     );
   }
@@ -424,10 +492,21 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
   @override
   Widget build(BuildContext context) {
     final isKeyboardVisible = ref.watch(keyboardVisibleProvider).valueOrNull;
+    final emojiPickerVisible = ref
+        .watch(chatInputProvider.select((value) => value.emojiPickerVisible));
+    final screenSize = MediaQuery.sizeOf(context);
     final viewInsets = MediaQuery.viewInsetsOf(context).bottom;
     return Column(
       children: <Widget>[
-        _editorWidget(),
+        _editorWidget(emojiPickerVisible),
+        if (emojiPickerVisible)
+          EmojiPickerWidget(
+            size: Size(screenSize.width, screenSize.height / 3),
+            onEmojiSelected: _handleEmojiSelected,
+            onBackspacePressed: _handleBackspacePressed,
+            onClosePicker: () =>
+                ref.read(chatInputProvider.notifier).emojiPickerVisible(false),
+          ),
         // adjust bottom viewport so toolbar doesn't obscure field when visible
         if (isKeyboardVisible != null && isKeyboardVisible)
           SizedBox(height: viewInsets + 50),
