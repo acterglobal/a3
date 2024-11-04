@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/utils.dart';
@@ -18,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:mime/mime.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/extensions/options.dart';
@@ -343,7 +347,7 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
     }
   }
 
-  void _handleEmojiSelected(Category? category, Emoji emoji) {
+  void handleEmojiSelected(Category? category, Emoji emoji) {
     final selection = textEditorState.selection;
     final transaction = textEditorState.transaction;
     if (selection != null) {
@@ -387,7 +391,7 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
   }
 
   // editor picker widget backspace handling
-  void _handleBackspacePressed() {
+  void handleBackspacePressed() {
     final isEmpty = textEditorState.transaction.document.isEmpty;
     if (isEmpty) {
       // nothing left to clear, close the emoji picker
@@ -395,6 +399,78 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
       return;
     }
     textEditorState.deleteBackward();
+  }
+
+  // attachment upload handler
+  Future<void> handleFileUpload(
+    List<File> files,
+    AttachmentType attachmentType,
+  ) async {
+    final client = ref.read(alwaysClientProvider);
+    final inputState = ref.read(chatInputProvider);
+    final lang = L10n.of(context);
+    final stream = await ref.read(timelineStreamProvider(widget.roomId).future);
+
+    try {
+      for (final file in files) {
+        String? mimeType = lookupMimeType(file.path);
+        if (mimeType == null) throw lang.failedToDetectMimeType;
+        final fileLen = file.lengthSync();
+        if (mimeType.startsWith('image/') &&
+            attachmentType == AttachmentType.image) {
+          final bytes = file.readAsBytesSync();
+          final image = await decodeImageFromList(bytes);
+          final imageDraft = client
+              .imageDraft(file.path, mimeType)
+              .size(fileLen)
+              .width(image.width)
+              .height(image.height);
+          if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+            final remoteId = inputState.selectedMessage?.remoteId;
+            if (remoteId == null) throw 'remote id of sel msg not available';
+            await stream.replyMessage(remoteId, imageDraft);
+          } else {
+            await stream.sendMessage(imageDraft);
+          }
+        } else if (mimeType.startsWith('audio/') &&
+            attachmentType == AttachmentType.audio) {
+          final audioDraft =
+              client.audioDraft(file.path, mimeType).size(file.lengthSync());
+          if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+            final remoteId = inputState.selectedMessage?.remoteId;
+            if (remoteId == null) throw 'remote id of sel msg not available';
+            await stream.replyMessage(remoteId, audioDraft);
+          } else {
+            await stream.sendMessage(audioDraft);
+          }
+        } else if (mimeType.startsWith('video/') &&
+            attachmentType == AttachmentType.video) {
+          final videoDraft =
+              client.videoDraft(file.path, mimeType).size(file.lengthSync());
+          if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+            final remoteId = inputState.selectedMessage?.remoteId;
+            if (remoteId == null) throw 'remote id of sel msg not available';
+            await stream.replyMessage(remoteId, videoDraft);
+          } else {
+            await stream.sendMessage(videoDraft);
+          }
+        } else {
+          final fileDraft =
+              client.fileDraft(file.path, mimeType).size(file.lengthSync());
+          if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
+            final remoteId = inputState.selectedMessage?.remoteId;
+            if (remoteId == null) throw 'remote id of sel msg not available';
+            await stream.replyMessage(remoteId, fileDraft);
+          } else {
+            await stream.sendMessage(fileDraft);
+          }
+        }
+      }
+    } catch (e, s) {
+      _log.severe('error occurred', e, s);
+    }
+
+    ref.read(chatInputProvider.notifier).unsetSelectedMessage();
   }
 
   Widget _editorWidget(bool emojiPickerVisible) {
@@ -449,7 +525,7 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
             ValueListenableBuilder<bool>(
               valueListenable: _isInputEmptyNotifier,
               builder: (context, isEmpty, child) =>
-                  trailingButton(widget.roomId, isEmpty),
+                  trailingButton(context, widget.roomId, isEmpty),
             ),
           ],
         ),
@@ -466,7 +542,7 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
   }
 
   // attachment/send button
-  Widget trailingButton(String roomId, bool isEmpty) {
+  Widget trailingButton(BuildContext context, String roomId, bool isEmpty) {
     final allowEditing = ref.watch(_allowEdit(roomId));
     final body = textEditorState.intoMarkdown();
     final html = textEditorState.intoHtml();
@@ -481,7 +557,10 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
     }
 
     return IconButton(
-      onPressed: () {},
+      onPressed: () => selectAttachment(
+        context: context,
+        onSelected: handleFileUpload,
+      ),
       icon: const Icon(
         Atlas.paperclip_attachment_thin,
         size: 20,
@@ -502,8 +581,8 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
         if (emojiPickerVisible)
           EmojiPickerWidget(
             size: Size(screenSize.width, screenSize.height / 3),
-            onEmojiSelected: _handleEmojiSelected,
-            onBackspacePressed: _handleBackspacePressed,
+            onEmojiSelected: handleEmojiSelected,
+            onBackspacePressed: handleBackspacePressed,
             onClosePicker: () =>
                 ref.read(chatInputProvider.notifier).emojiPickerVisible(false),
           ),
