@@ -161,9 +161,11 @@ List<ffi.CalendarEvent> _filterEventBySearchTerm(
 }
 
 final eventListSearchTermProvider =
-    StateProvider.autoDispose.family<String, String?>((ref, spaceId) => '');
-final eventListFilterProvider = StateProvider.autoDispose
-    .family<EventFilters, String?>((ref, spaceId) => EventFilters.all);
+    StateProvider.family<String, String?>((ref, spaceId) => '');
+
+final eventListFilterProvider = StateProvider.family<EventFilters, String?>(
+  (ref, spaceId) => EventFilters.all,
+);
 
 final eventListSearchedProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
@@ -186,9 +188,8 @@ final eventListQuickSearchedProvider =
 final eventListSearchedAndFilterProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
   //Declare filtered event list
-  List<ffi.CalendarEvent> filteredEventList = [];
-
-  filteredEventList = switch (ref.watch(eventListFilterProvider(spaceId))) {
+  final filteredEventList =
+      switch (ref.watch(eventListFilterProvider(spaceId))) {
     EventFilters.bookmarked =>
       await ref.watch(bookmarkedEventListProvider(spaceId).future),
     EventFilters.ongoing =>

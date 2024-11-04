@@ -16,10 +16,9 @@ class EventListWidget extends ConsumerWidget {
   final int? limit;
   final bool showSectionHeader;
   final VoidCallback? onClickSectionHeader;
-  final EventFilters eventFiler;
   final bool shrinkWrap;
   final bool isShowSpaceName;
-  final Widget emptyState;
+  final Widget Function()? emptyStateBuilder;
 
   const EventListWidget({
     super.key,
@@ -28,9 +27,8 @@ class EventListWidget extends ConsumerWidget {
     required this.listProvider,
     this.showSectionHeader = false,
     this.onClickSectionHeader,
-    this.eventFiler = EventFilters.all,
     this.shrinkWrap = true,
-    this.emptyState = const SizedBox.shrink(),
+    this.emptyStateBuilder,
   });
 
   @override
@@ -41,6 +39,8 @@ class EventListWidget extends ConsumerWidget {
       data: (eventList) => buildEventSectionUI(context, eventList),
       error: (error, stack) => eventListErrorWidget(context, ref, error, stack),
       loading: () => const EventListSkeleton(),
+      skipLoadingOnReload: true,
+      skipLoadingOnRefresh: true,
     );
   }
 
@@ -66,7 +66,9 @@ class EventListWidget extends ConsumerWidget {
     BuildContext context,
     List<CalendarEvent> eventList,
   ) {
-    if (eventList.isEmpty) return emptyState;
+    if (eventList.isEmpty) {
+      return (emptyStateBuilder ?? () => const SizedBox.shrink())();
+    }
 
     final count = (limit ?? eventList.length).clamp(0, eventList.length);
     return showSectionHeader

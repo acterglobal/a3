@@ -27,18 +27,12 @@ class EventListPage extends ConsumerStatefulWidget {
 }
 
 class _EventListPageState extends ConsumerState<EventListPage> {
-  ValueNotifier<EventFilters> eventFilter =
-      ValueNotifier<EventFilters>(EventFilters.all);
-
-  String get searchValue => ref.watch(searchValueProvider);
-
   @override
   void initState() {
     super.initState();
-    widget.searchQuery.map((query) {
-      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        ref.read(searchValueProvider.notifier).state = query;
-      });
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      ref.read(eventListSearchTermProvider(widget.spaceId).notifier).state =
+          widget.searchQuery ?? '';
     });
   }
 
@@ -82,14 +76,14 @@ class _EventListPageState extends ConsumerState<EventListPage> {
         ActerSearchWidget(
           initialText: widget.searchQuery,
           onChanged: (value) {
-            final notifier =
-                ref.read(eventListSearchTermProvider(widget.spaceId).notifier);
-            notifier.state = value;
+            ref
+                .read(eventListSearchTermProvider(widget.spaceId).notifier)
+                .state = value;
           },
           onClear: () {
-            final notifier =
-                ref.read(eventListSearchTermProvider(widget.spaceId).notifier);
-            notifier.state = '';
+            ref
+                .read(eventListSearchTermProvider(widget.spaceId).notifier)
+                .state = '';
           },
         ),
         filterChipsButtons(),
@@ -98,10 +92,11 @@ class _EventListPageState extends ConsumerState<EventListPage> {
             isShowSpaceName: widget.spaceId == null,
             shrinkWrap: false,
             listProvider: eventListSearchedAndFilterProvider(widget.spaceId),
-            eventFiler: eventFilter.value,
-            emptyState: EventListEmptyState(
+            emptyStateBuilder: () => EventListEmptyState(
               spaceId: widget.spaceId,
-              isSearchApplied: searchValue.isNotEmpty,
+              isSearchApplied: ref
+                  .read(eventListSearchTermProvider(widget.spaceId))
+                  .isNotEmpty,
             ),
           ),
         ),
