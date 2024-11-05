@@ -3,6 +3,7 @@ import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/actions/sort_event_list.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
+import 'package:acter/features/events/providers/notifiers/participants_notifier.dart';
 import 'package:acter/features/events/providers/notifiers/rsvp_notifier.dart';
 import 'package:acter/features/search/providers/quick_search_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
@@ -18,6 +19,12 @@ final calendarEventProvider = AsyncNotifierProvider.autoDispose
 final myRsvpStatusProvider = AsyncNotifierProvider.autoDispose
     .family<AsyncRsvpStatusNotifier, ffi.RsvpStatusTag?, String>(
   () => AsyncRsvpStatusNotifier(),
+);
+
+//MY RSVP STATUS PROVIDER
+final participantsProvider = AsyncNotifierProvider.autoDispose
+    .family<AsyncParticipantsNotifier, List<String>, String>(
+  () => AsyncParticipantsNotifier(),
 );
 
 //SpaceId == null : GET LIST OF ALL PINs

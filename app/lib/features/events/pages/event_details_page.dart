@@ -6,7 +6,6 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -59,8 +58,6 @@ class EventDetailPage extends ConsumerStatefulWidget {
 }
 
 class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
-  ValueNotifier<List<String>> eventParticipantsList = ValueNotifier([]);
-
   @override
   Widget build(BuildContext context) {
     final calEventLoader = ref.watch(calendarEventProvider(widget.calendarId));
@@ -81,21 +78,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         },
       );
     }
-    ref.listen(calendarEventProvider(widget.calendarId), (prev, next) async {
-      final ev = next.valueOrNull;
-      if (ev != null) {
-        final participants = asDartStringList(await ev.participants());
-        _log.info('Event Participants => $participants');
-        if (!mounted) return;
-        setState(() {
-          eventParticipantsList.value = participants;
-        });
-      } else {
-        setState(() {
-          eventParticipantsList.value = [];
-        });
-      }
-    });
     final calEvent = calEventLoader.valueOrNull;
     return Scaffold(
       body: CustomScrollView(
@@ -314,6 +296,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final canPostEvent = membership?.canString('CanPostEvent') == true;
     final eventType = ref.watch(eventTypeProvider(calendarEvent));
+    final eventParticipantsList =
+        ref.watch(participantsProvider(widget.calendarId)).valueOrNull;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -349,14 +333,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                 children: [
                   const Icon(Atlas.accounts_group_people),
                   const SizedBox(width: 10),
-                  ValueListenableBuilder(
-                    valueListenable: eventParticipantsList,
-                    builder: (context, eventParticipantsList, child) {
-                      final lang = L10n.of(context);
-                      return Text(
-                        lang.peopleGoing(eventParticipantsList.length),
-                      );
-                    },
+                  Text(
+                    L10n.of(context)
+                        .peopleGoing(eventParticipantsList?.length ?? 0),
                   ),
                 ],
               ),
@@ -586,52 +565,52 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget participantsListUI(String roomId) {
-    return ValueListenableBuilder(
-      valueListenable: eventParticipantsList,
-      builder: (context, eventParticipantsList, child) {
-        if (eventParticipantsList.isEmpty) {
-          return Text(L10n.of(context).noParticipantsGoing);
-        }
+    final eventParticipantsList =
+        ref.watch(participantsProvider(widget.calendarId)).valueOrNull ?? [];
+    if (eventParticipantsList.isEmpty) {
+      return Text(L10n.of(context).noParticipantsGoing);
+    }
 
-        final membersCount = eventParticipantsList.length;
-        List<String> firstFiveEventParticipantsList = eventParticipantsList;
-        if (membersCount > 5) {
-          firstFiveEventParticipantsList =
-              firstFiveEventParticipantsList.sublist(0, 5);
-        }
+    final membersCount = eventParticipantsList.length;
+    List<String> firstFiveEventParticipantsList = eventParticipantsList;
+    if (membersCount > 5) {
+      firstFiveEventParticipantsList =
+          firstFiveEventParticipantsList.sublist(0, 5);
+    }
 
-        return GestureDetector(
-          onTap: () => showAllParticipantListDialog(roomId),
-          child: Wrap(
-            direction: Axis.horizontal,
-            spacing: -10,
-            children: [
-              ...firstFiveEventParticipantsList.map(
-                (a) => MemberAvatar(
-                  memberId: a,
-                  roomId: roomId,
+    return GestureDetector(
+      onTap: () => showAllParticipantListDialog(roomId, eventParticipantsList),
+      child: Wrap(
+        direction: Axis.horizontal,
+        spacing: -10,
+        children: [
+          ...firstFiveEventParticipantsList.map(
+            (a) => MemberAvatar(
+              memberId: a,
+              roomId: roomId,
+            ),
+          ),
+          if (membersCount > 5)
+            CircleAvatar(
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Text(
+                  '+${membersCount - 5}',
+                  textAlign: TextAlign.center,
+                  textScaler: const TextScaler.linear(0.8),
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
-              if (membersCount > 5)
-                CircleAvatar(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      '+${membersCount - 5}',
-                      textAlign: TextAlign.center,
-                      textScaler: const TextScaler.linear(0.8),
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
+            ),
+        ],
+      ),
     );
   }
 
-  void showAllParticipantListDialog(String roomId) {
+  void showAllParticipantListDialog(
+    String roomId,
+    List<String> eventParticipantsList,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -643,7 +622,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           heightFactor: 1,
           child: ParticipantsList(
             roomId: roomId,
-            participants: eventParticipantsList.value,
+            participants: eventParticipantsList,
           ),
         );
       },
