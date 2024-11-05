@@ -308,7 +308,7 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
       // insert empty text node
       transaction.document.insert([0], [paragraphNode(delta: delta)]);
       await textEditorState.apply(transaction, withUpdateSelection: false);
-      // FIXME: works for single text, but doesn't get focus on multi-line
+      // FIXME: works for single text, but doesn't get focus on multi-line (iOS)
       textEditorState.moveCursorForward(SelectionMoveRange.line);
 
       // also clear composed state
@@ -483,39 +483,44 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
         child: Row(
           children: [
             leadingButton(emojiPickerVisible),
-            IntrinsicHeight(
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 100),
-                height: widgetSize.height * _cHeight,
-                width: widgetSize.width * 0.75,
-                margin: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color:
-                      Theme.of(context).unselectedWidgetColor.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: SingleChildScrollView(
-                  child: IntrinsicHeight(
-                    child: Focus(
-                      focusNode: chatFocus,
-                      child: HtmlEditor(
-                        footer: null,
-                        roomId: widget.roomId,
-                        editable: true,
-                        shrinkWrap: true,
-                        editorState: textEditorState,
-                        scrollController: scrollController,
-                        editorPadding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
+            Expanded(
+              child: IntrinsicHeight(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 100),
+                  height: widgetSize.height * _cHeight,
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .unselectedWidgetColor
+                        .withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: SingleChildScrollView(
+                    child: IntrinsicHeight(
+                      child: Focus(
+                        focusNode: chatFocus,
+                        child: HtmlEditor(
+                          footer: null,
+                          roomId: widget.roomId,
+                          editable: true,
+                          shrinkWrap: true,
+                          editorState: textEditorState,
+                          scrollController: scrollController,
+                          editorPadding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          onChanged: (body, html) {
+                            if (html != null) {
+                              widget.onTyping?.map((cb) => cb(html.isNotEmpty));
+                            } else {
+                              widget.onTyping?.map((cb) => cb(body.isNotEmpty));
+                            }
+                          },
                         ),
-                        onChanged: (body, html) {
-                          if (html != null) {
-                            widget.onTyping?.map((cb) => cb(html.isNotEmpty));
-                          } else {
-                            widget.onTyping?.map((cb) => cb(body.isNotEmpty));
-                          }
-                        },
                       ),
                     ),
                   ),
@@ -536,6 +541,7 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
   // emoji button
   Widget leadingButton(bool emojiPickerVisible) {
     return IconButton(
+      padding: const EdgeInsets.only(left: 8),
       onPressed: () => onEmojiBtnTap(emojiPickerVisible),
       icon: const Icon(Icons.emoji_emotions, size: 20),
     );
@@ -547,23 +553,29 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
     final body = textEditorState.intoMarkdown();
     final html = textEditorState.intoHtml();
     if (allowEditing && !isEmpty) {
-      return IconButton.filled(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        key: CustomChatInput.sendBtnKey,
-        iconSize: 20,
-        onPressed: () => onSendButtonPressed(body, html),
-        icon: const Icon(Icons.send),
+      return Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: IconButton.filled(
+          alignment: Alignment.center,
+          key: CustomChatInput.sendBtnKey,
+          iconSize: 20,
+          onPressed: () => onSendButtonPressed(body, html),
+          icon: const Icon(Icons.send),
+        ),
       );
     }
 
-    return IconButton(
-      onPressed: () => selectAttachment(
-        context: context,
-        onSelected: handleFileUpload,
-      ),
-      icon: const Icon(
-        Atlas.paperclip_attachment_thin,
-        size: 20,
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: IconButton(
+        onPressed: () => selectAttachment(
+          context: context,
+          onSelected: handleFileUpload,
+        ),
+        icon: const Icon(
+          Atlas.paperclip_attachment_thin,
+          size: 20,
+        ),
       ),
     );
   }
