@@ -202,7 +202,6 @@ void main() {
       await tester.enterText(title, 'Another Task');
 
       // add due date
-
       final addDueDateAction = find.byKey(CreateTaskWidget.addDueDateAction);
       final dueDateField = find.byKey(CreateTaskWidget.dueDateField);
       final dueTomorrow = find.byKey(CreateTaskWidget.dueDateTomorrowBtn);
@@ -219,10 +218,14 @@ void main() {
       expect(dueDateField, findsOneWidget);
       expect(dueTomorrow, findsOneWidget);
 
+      await tester.ensureVisible(dueTomorrow);
       await tester.tap(dueTomorrow);
+      await tester.pump();
 
       expect(submitBtn, findsOneWidget);
+      await tester.ensureVisible(submitBtn);
       await tester.tap(submitBtn);
+      await tester.pump();
 
       final expectedDate = DateTime.now().add(const Duration(days: 1));
 

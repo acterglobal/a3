@@ -18,9 +18,7 @@ Future<(String, String)?> addTask({
 }) async {
   final lang = L10n.of(context);
 
-  if (taskList == null) {
-    await selectTaskList(context: context, ref: ref);
-  }
+  taskList ??= await selectTaskList(context: context, ref: ref);
   if (taskList == null) {
     EasyLoading.showError(
       lang.selectTaskList,
