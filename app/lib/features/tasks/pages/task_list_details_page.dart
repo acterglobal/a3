@@ -56,8 +56,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   AppBar _buildAppbar() {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
-    final tasklist =
-        ref.watch(taskListItemProvider(widget.taskListId)).valueOrNull;
+    final tasklist = ref.watch(taskListProvider(widget.taskListId)).valueOrNull;
     final actions = List<Widget>.empty(growable: true);
     if (tasklist != null) {
       actions.addAll(
@@ -124,7 +123,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   Widget _buildBody() {
-    final tasklistLoader = ref.watch(taskListItemProvider(widget.taskListId));
+    final tasklistLoader = ref.watch(taskListProvider(widget.taskListId));
     final errored = tasklistLoader.asError;
     if (errored != null) {
       _log.severe('Failed to load tasklist', errored.error, errored.stackTrace);
@@ -133,7 +132,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         error: errored,
         stack: errored.stackTrace,
         onRetryTap: () {
-          ref.invalidate(taskListItemProvider(widget.taskListId));
+          ref.invalidate(taskListProvider(widget.taskListId));
         },
       );
     }
@@ -333,45 +332,55 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     );
   }
 
-  Widget _loadingSkeleton() => Skeletonizer.zone(
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+  Widget _loadingSkeleton() => SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Skeletonizer.zone(
+            child: Column(
               children: [
-                const Bone.icon(size: 40),
-                const SizedBox(width: 10),
-                Column(
+                const SizedBox(height: 10),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Task List Title',
-                      style: Theme.of(context).textTheme.titleMedium,
+                    const Bone.icon(size: 40),
+                    const SizedBox(width: 10),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Task List Title',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        SpaceChip.loadingCompact(),
+                      ],
                     ),
-                    SpaceChip.loadingCompact(),
                   ],
                 ),
+                const SizedBox(height: 20),
+                const Text('Task description'),
+                const SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      L10n.of(context).tasks,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const Bone.iconButton(
+                      size: 18,
+                    ),
+                  ],
+                ),
+                TaskItemsListWidget.loading(),
+                const SizedBox(height: 20),
+                AttachmentSectionWidget.loading(),
+                const SizedBox(height: 20),
+                CommentsSectionWidget.loading(),
+                const SizedBox(height: 20),
               ],
             ),
-            const SizedBox(height: 20),
-            const Text('Task description'),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  L10n.of(context).tasks,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const Bone.iconButton(
-                  size: 18,
-                ),
-              ],
-            ),
-            TaskItemsListWidget.loading(),
-          ],
+          ),
         ),
       );
 }

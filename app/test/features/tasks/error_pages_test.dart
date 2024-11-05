@@ -79,9 +79,10 @@ void main() {
       final mockedNotifier = FakeTaskListItemNotifier();
       await tester.pumpProviderWidget(
         overrides: [
-          taskListItemProvider.overrideWith(() => mockedNotifier),
+          taskListProvider.overrideWith(() => mockedNotifier),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
           roomMembershipProvider.overrideWith((a, b) => null),
+          roomDisplayNameProvider.overrideWith((a, b) async => 'Space'),
         ],
         child: const TaskListDetailPage(taskListId: 'taskListId'),
       );
@@ -94,8 +95,9 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           notifierTaskProvider.overrideWith(() => MockTaskItemNotifier()),
-          taskListItemProvider.overrideWith(() => mockedNotifier),
+          taskListProvider.overrideWith(() => mockedNotifier),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
+          roomDisplayNameProvider.overrideWith((a, b) async => 'Space'),
         ],
         child: const TaskItemDetailPage(
           taskListId: 'taskListId',

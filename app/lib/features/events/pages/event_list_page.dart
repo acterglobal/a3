@@ -1,34 +1,23 @@
-import 'dart:math';
-
-import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
-import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
-import 'package:acter/features/events/providers/event_type_provider.dart';
-import 'package:acter/features/events/widgets/event_item.dart';
-import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/features/events/widgets/event_list_empty_state.dart';
+import 'package:acter/features/events/widgets/event_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger('a3::cal_event::list');
 
 class EventListPage extends ConsumerStatefulWidget {
   final String? spaceId;
+  final String? searchQuery;
 
   const EventListPage({
     super.key,
     this.spaceId,
+    this.searchQuery,
   });
 
   @override
@@ -36,9 +25,14 @@ class EventListPage extends ConsumerStatefulWidget {
 }
 
 class _EventListPageState extends ConsumerState<EventListPage> {
-  String get searchValue => ref.watch(searchValueProvider);
-
-  EventFilters get eventFilterValue => ref.watch(eventFilterProvider);
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      ref.read(eventListSearchTermProvider(widget.spaceId).notifier).state =
+          widget.searchQuery ?? '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,42 +68,34 @@ class _EventListPageState extends ConsumerState<EventListPage> {
   }
 
   Widget _buildBody() {
-    final calEventsLoader = ref.watch(
-      eventListSearchFilterProvider(
-        (spaceId: widget.spaceId, searchText: searchValue),
-      ),
-    );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
+          initialText: widget.searchQuery,
           onChanged: (value) {
-            final notifier = ref.read(searchValueProvider.notifier);
-            notifier.state = value;
+            ref
+                .read(eventListSearchTermProvider(widget.spaceId).notifier)
+                .state = value;
           },
-          onClear: () => ref.read(searchValueProvider.notifier).state = '',
+          onClear: () {
+            ref
+                .read(eventListSearchTermProvider(widget.spaceId).notifier)
+                .state = '';
+          },
         ),
         filterChipsButtons(),
         Expanded(
-          child: calEventsLoader.when(
-            data: (calEvents) => _buildEventList(calEvents),
-            error: (error, stack) {
-              _log.severe('Failed to search events in space', error, stack);
-              return ErrorPage(
-                background: const EventListSkeleton(),
-                error: error,
-                stack: stack,
-                onRetryTap: () {
-                  ref.invalidate(
-                    eventListSearchFilterProvider(
-                      (spaceId: widget.spaceId, searchText: searchValue),
-                    ),
-                  );
-                },
-              );
-            },
-            loading: () => const EventListSkeleton(),
+          child: EventListWidget(
+            isShowSpaceName: widget.spaceId == null,
+            shrinkWrap: false,
+            listProvider: eventListSearchedAndFilterProvider(widget.spaceId),
+            emptyStateBuilder: () => EventListEmptyState(
+              spaceId: widget.spaceId,
+              isSearchApplied: ref
+                  .read(eventListSearchTermProvider(widget.spaceId))
+                  .isNotEmpty,
+            ),
           ),
         ),
       ],
@@ -118,6 +104,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
 
   Widget filterChipsButtons() {
     final lang = L10n.of(context);
+    final currentFilter = ref.watch(eventListFilterProvider(widget.spaceId));
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
@@ -128,102 +115,46 @@ class _EventListPageState extends ConsumerState<EventListPage> {
         child: Wrap(
           children: [
             FilterChip(
-              selected: eventFilterValue == EventFilters.all,
+              selected: currentFilter == EventFilters.all,
               label: Text(lang.all),
-              onSelected: (value) {
-                final notifier = ref.read(eventFilterProvider.notifier);
-                notifier.state = EventFilters.all;
-              },
+              onSelected: (value) => ref
+                  .read(eventListFilterProvider(widget.spaceId).notifier)
+                  .state = EventFilters.all,
             ),
             const SizedBox(width: 10),
             FilterChip(
-              selected: eventFilterValue == EventFilters.bookmarked,
+              selected: currentFilter == EventFilters.bookmarked,
               label: Text(lang.bookmarked),
-              onSelected: (value) {
-                final notifier = ref.read(eventFilterProvider.notifier);
-                notifier.state = EventFilters.bookmarked;
-              },
+              onSelected: (value) => ref
+                  .read(eventListFilterProvider(widget.spaceId).notifier)
+                  .state = EventFilters.bookmarked,
             ),
             const SizedBox(width: 10),
             FilterChip(
-              selected: eventFilterValue == EventFilters.ongoing,
+              selected: currentFilter == EventFilters.ongoing,
               label: Text(lang.happeningNow),
-              onSelected: (value) {
-                final notifier = ref.read(eventFilterProvider.notifier);
-                notifier.state = EventFilters.ongoing;
-              },
+              onSelected: (value) => ref
+                  .read(eventListFilterProvider(widget.spaceId).notifier)
+                  .state = EventFilters.ongoing,
             ),
             const SizedBox(width: 10),
             FilterChip(
-              selected: eventFilterValue == EventFilters.upcoming,
+              selected: currentFilter == EventFilters.upcoming,
               label: Text(lang.upcoming),
-              onSelected: (value) {
-                final notifier = ref.read(eventFilterProvider.notifier);
-                notifier.state = EventFilters.upcoming;
-              },
+              onSelected: (value) => ref
+                  .read(eventListFilterProvider(widget.spaceId).notifier)
+                  .state = EventFilters.upcoming,
             ),
             const SizedBox(width: 10),
             FilterChip(
-              selected: eventFilterValue == EventFilters.past,
+              selected: currentFilter == EventFilters.past,
               label: Text(lang.past),
-              onSelected: (value) {
-                final notifier = ref.read(eventFilterProvider.notifier);
-                notifier.state = EventFilters.past;
-              },
+              onSelected: (value) => ref
+                  .read(eventListFilterProvider(widget.spaceId).notifier)
+                  .state = EventFilters.past,
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildEventList(List<CalendarEvent> events) {
-    final size = MediaQuery.of(context).size;
-    final widthCount = (size.width ~/ 500).toInt();
-    const int minCount = 2;
-
-    if (events.isEmpty) return _buildEventsEmptyState();
-
-    return SingleChildScrollView(
-      child: StaggeredGrid.count(
-        crossAxisCount: max(1, min(widthCount, minCount)),
-        children: [
-          for (final event in events)
-            EventItem(
-              event: event,
-              isShowSpaceName: widget.spaceId == null,
-              eventType: ref.watch(eventTypeProvider(event)),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEventsEmptyState() {
-    var canAdd = false;
-    if (searchValue.isEmpty) {
-      final canPostLoader =
-          ref.watch(hasSpaceWithPermissionProvider('CanPostEvent'));
-      if (canPostLoader.valueOrNull == true) canAdd = true;
-    }
-    final lang = L10n.of(context);
-    return Center(
-      heightFactor: 1,
-      child: EmptyState(
-        title: searchValue.isNotEmpty
-            ? lang.noMatchingEventsFound
-            : lang.noEventsFound,
-        subtitle: lang.noEventAvailableDescription,
-        image: 'assets/images/empty_event.svg',
-        primaryButton: canAdd
-            ? ActerPrimaryActionButton(
-                onPressed: () => context.pushNamed(
-                  Routes.createEvent.name,
-                  queryParameters: {'spaceId': widget.spaceId},
-                ),
-                child: Text(lang.addEvent),
-              )
-            : null,
       ),
     );
   }

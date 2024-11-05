@@ -36,7 +36,7 @@ class TaskListItemCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final tasklistLoader = ref.watch(taskListItemProvider(taskListId));
+    final tasklistLoader = ref.watch(taskListProvider(taskListId));
     return tasklistLoader.when(
       data: (taskList) => Card(
         key: Key('task-list-card-$taskListId'),

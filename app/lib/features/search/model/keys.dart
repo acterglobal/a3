@@ -11,3 +11,11 @@ class QuickJumpKeys {
   static const createPinAction = Key('quick-jump-create-pin');
   static const createEventAction = Key('quick-jump-create-event');
 }
+
+//EVENT FILTERS
+enum QuickSearchFilters {
+  all,
+  spaces,
+  pins,
+  events,
+}

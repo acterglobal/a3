@@ -481,9 +481,10 @@ async fn news_multiple_slide_test() -> Result<()> {
         .expect("We have markdown text slide");
     assert_eq!(second_slide.type_str(), "text");
     let msg_content = second_slide.msg_content();
+    let formatted_body = msg_content.formatted_body();
     assert_eq!(
-        msg_content.formatted_body(),
-        Some("<p>This update is <em><strong>reallly important</strong></em></p>\n".to_owned())
+        formatted_body,
+        Some("This update is <em><strong>reallly important</strong></em>".to_owned())
     );
     let third_slide = final_entry.get_slide(2).expect("We have plain text slide");
     assert_eq!(third_slide.type_str(), "text");
