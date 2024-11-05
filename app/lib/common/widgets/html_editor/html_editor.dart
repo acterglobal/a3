@@ -288,6 +288,7 @@ class HtmlEditorState extends State<HtmlEditor> {
             if (widget.roomId != null)
               ...mentionShortcuts(context, widget.roomId!),
           ],
+          commandShortcutEvents: [...standardCommandShortcutEvents],
         ),
       ),
     );

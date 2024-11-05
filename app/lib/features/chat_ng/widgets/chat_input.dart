@@ -18,6 +18,7 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -67,17 +68,16 @@ class ChatInput extends ConsumerWidget {
                         .withOpacity(0.5),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: SingleChildScrollView(
+                  child: const SingleChildScrollView(
                     child: IntrinsicHeight(
                       child: HtmlEditor(
                         footer: null,
                         editable: true,
                         shrinkWrap: true,
-                        editorPadding: const EdgeInsets.symmetric(
+                        editorPadding: EdgeInsets.symmetric(
                           horizontal: 10,
                           vertical: 5,
                         ),
-                        onChanged: (body, html) {},
                       ),
                     ),
                   ),
@@ -172,13 +172,13 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
     _updateListener?.cancel();
     // listener for editor input state
     _updateListener = textEditorState.transactionStream.listen((data) {
-      _inputUpdate();
+      _inputUpdate(data.$2);
       // expand when user types more than one line upto exceed limit
       _updateHeight();
     });
     // have it call the first time to adjust height
     _updateHeight();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
   }
 
   @override
@@ -196,16 +196,18 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
     }
   }
 
-  void _inputUpdate() {
+  void _inputUpdate(Transaction data) {
     // check if actual document content is empty
-    final state = textEditorState.document.root.children
+    final state = data.document.root.children
         .every((node) => node.delta?.toPlainText().isEmpty ?? true);
     _isInputEmptyNotifier.value = state;
     _debounceTimer?.cancel();
     // delay operation to avoid excessive re-writes
     _debounceTimer = Timer(const Duration(milliseconds: 300), () async {
       // save composing draft
-      await saveDraft(textEditorState.intoMarkdown(), widget.roomId, ref);
+      final text = textEditorState.intoMarkdown();
+      final htmlText = textEditorState.intoHtml();
+      await saveDraft(text, htmlText, widget.roomId, ref);
       _log.info('compose draft saved for room: ${widget.roomId}');
     });
   }
@@ -241,26 +243,18 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
           inputNotifier.setReplyToMessage(m);
         }
       });
-      await draft.htmlText().mapAsync(
-        (html) async {
-          final doc = ActerDocumentHelpers.parse(
-            draft.plainText(),
-            htmlContent: draft.htmlText(),
-          );
-          final transaction = textEditorState.transaction;
-          transaction.insertNodes([0], doc.root.children);
 
-          textEditorState.apply(transaction);
-        },
-        orElse: () {
-          final doc = ActerDocumentHelpers.parse(
-            draft.plainText(),
-          );
-          final transaction = textEditorState.transaction;
-          transaction.insertNodes([0], doc.root.children);
-          textEditorState.apply(transaction);
-        },
+      final transaction = textEditorState.transaction;
+      final doc = ActerDocumentHelpers.parse(
+        draft.plainText(),
+        htmlContent: draft.htmlText(),
       );
+      Node rootNode = doc.root;
+      transaction.document.insert([0], rootNode.children);
+      transaction.afterSelection =
+          Selection.single(path: rootNode.path, startOffset: 0);
+      textEditorState.apply(transaction);
+
       _log.info('compose draft loaded for room: ${widget.roomId}');
     }
   }
@@ -308,7 +302,7 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
       // insert empty text node
       transaction.document.insert([0], [paragraphNode(delta: delta)]);
       await textEditorState.apply(transaction, withUpdateSelection: false);
-      // FIXME: works for single text, but doesn't get focus on multi-line (iOS)
+      // FIXME: works for single line text, but doesn't get focus on multi-line (iOS)
       textEditorState.moveCursorForward(SelectionMoveRange.line);
 
       // also clear composed state
@@ -500,26 +494,42 @@ class __InputWidgetState extends ConsumerState<_InputWidget> {
                   ),
                   child: SingleChildScrollView(
                     child: IntrinsicHeight(
-                      child: Focus(
-                        focusNode: chatFocus,
-                        child: HtmlEditor(
-                          footer: null,
-                          roomId: widget.roomId,
-                          editable: true,
-                          shrinkWrap: true,
-                          editorState: textEditorState,
-                          scrollController: scrollController,
-                          editorPadding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          onChanged: (body, html) {
-                            if (html != null) {
-                              widget.onTyping?.map((cb) => cb(html.isNotEmpty));
-                            } else {
-                              widget.onTyping?.map((cb) => cb(body.isNotEmpty));
-                            }
+                      // keyboard shortcuts (desktop)
+                      child: CallbackShortcuts(
+                        bindings: <ShortcutActivator, VoidCallback>{
+                          const SingleActivator(LogicalKeyboardKey.enter): () {
+                            final body = textEditorState.intoMarkdown();
+                            final html = textEditorState.intoHtml();
+                            onSendButtonPressed(body, html);
                           },
+                          LogicalKeySet(
+                            LogicalKeyboardKey.enter,
+                            LogicalKeyboardKey.shift,
+                          ): () => textEditorState.insertNewLine(),
+                        },
+                        child: Focus(
+                          focusNode: chatFocus,
+                          child: HtmlEditor(
+                            footer: null,
+                            roomId: widget.roomId,
+                            editable: true,
+                            shrinkWrap: true,
+                            editorState: textEditorState,
+                            scrollController: scrollController,
+                            editorPadding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            onChanged: (body, html) {
+                              if (html != null) {
+                                widget.onTyping
+                                    ?.map((cb) => cb(html.isNotEmpty));
+                              } else {
+                                widget.onTyping
+                                    ?.map((cb) => cb(body.isNotEmpty));
+                              }
+                            },
+                          ),
                         ),
                       ),
                     ),

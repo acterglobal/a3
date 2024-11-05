@@ -285,7 +285,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     // delay operation to avoid excessive re-writes
     _debounceTimer = Timer(const Duration(milliseconds: 300), () async {
       // save composing draft
-      await saveDraft(textController.text, widget.roomId, ref);
+      await saveDraft(textController.text, null, widget.roomId, ref);
       _log.info('compose draft saved for room: ${widget.roomId}');
     });
   }
@@ -779,7 +779,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           (next.selectedMessage != prev?.selectedMessage ||
               prev?.selectedMessageState != next.selectedMessageState)) {
         // controller doesn’t update text so manually save draft state
-        saveDraft(widget.controller.text, widget.roomId, ref);
+        saveDraft(widget.controller.text, null, widget.roomId, ref);
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();
         });
