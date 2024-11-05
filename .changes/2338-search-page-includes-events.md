@@ -1,0 +1,2 @@
+- [New] : Search page now also includes Events Search.
+- [New] : Search page now have Quick Filters which make your searching experience event better
