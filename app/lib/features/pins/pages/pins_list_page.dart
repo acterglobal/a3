@@ -1,4 +1,3 @@
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
@@ -31,10 +30,9 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
   @override
   void initState() {
     super.initState();
-    widget.searchQuery.map((query) {
-      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        ref.read(pinListSearchTermProvider.notifier).state = query;
-      });
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      ref.read(pinListSearchTermProvider.notifier).state =
+          widget.searchQuery ?? '';
     });
   }
 
@@ -76,7 +74,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
-          initialText: _searchValue,
+          initialText: widget.searchQuery,
           onChanged: (value) {
             final notifier = ref.read(pinListSearchTermProvider.notifier);
             notifier.state = value;
