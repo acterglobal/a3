@@ -1,23 +1,15 @@
-import 'dart:math';
-
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
-import 'package:acter/features/tasks/widgets/skeleton/tasks_list_skeleton.dart';
-import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
+import 'package:acter/features/tasks/widgets/task_list_widget.dart';
 import 'package:acter/features/tasks/widgets/task_lists_empty.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger('a3::tasks::tasklist');
 
 class TasksListPage extends ConsumerStatefulWidget {
   static const scrollView = Key('space-task-lists');
@@ -93,11 +85,6 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   }
 
   Widget _buildBody() {
-    final tasklistsLoader = ref.watch(
-      tasksListSearchProvider(
-        (spaceId: widget.spaceId, searchText: searchValue),
-      ),
-    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -112,51 +99,24 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
           },
         ),
         Expanded(
-          child: tasklistsLoader.when(
-            data: (tasklists) => _buildTasklists(tasklists),
-            error: (error, stack) {
-              _log.severe('Failed to search tasklists in space', error, stack);
-              return ErrorPage(
-                background: const TasksListSkeleton(),
-                error: error,
-                stack: stack,
-                onRetryTap: () => ref.invalidate(allTasksListsProvider),
-              );
-            },
-            loading: () => const TasksListSkeleton(),
+          child: ValueListenableBuilder(
+            valueListenable: showCompletedTask,
+            builder: (context, value, child) => TaskListWidget(
+              taskListProvider: tasksListSearchProvider(
+                (spaceId: widget.spaceId, searchText: searchValue),
+              ),
+              spaceId: widget.spaceId,
+              shrinkWrap: false,
+              showCompletedTask: showCompletedTask.value,
+              emptyState: _taskListsEmptyState(),
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTasklists(List<String> tasklists) {
-    final size = MediaQuery.of(context).size;
-    final widthCount = (size.width ~/ 500).toInt();
-    const int minCount = 2;
-
-    if (tasklists.isEmpty) return _buildTasklistsEmptyState();
-
-    return SingleChildScrollView(
-      key: TasksListPage.scrollView,
-      child: StaggeredGrid.count(
-        crossAxisCount: max(1, min(widthCount, minCount)),
-        children: [
-          for (final tasklistId in tasklists)
-            ValueListenableBuilder(
-              valueListenable: showCompletedTask,
-              builder: (context, value, child) => TaskListItemCard(
-                taskListId: tasklistId,
-                showCompletedTask: value,
-                showSpace: widget.spaceId == null,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTasklistsEmptyState() {
+  Widget _taskListsEmptyState() {
     var canAdd = false;
     if (searchValue.isEmpty) {
       final canPostLoader =
