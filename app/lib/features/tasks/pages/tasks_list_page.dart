@@ -17,10 +17,12 @@ class TasksListPage extends ConsumerStatefulWidget {
   static const taskListsKey = Key('tasks-task-lists');
 
   final String? spaceId;
+  final String? searchQuery;
 
   const TasksListPage({
     super.key,
     this.spaceId,
+    this.searchQuery,
   });
 
   @override
@@ -30,6 +32,14 @@ class TasksListPage extends ConsumerStatefulWidget {
 class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   String get searchValue => ref.watch(searchValueProvider);
   final ValueNotifier<bool> showCompletedTask = ValueNotifier(false);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      ref.read(searchValueProvider.notifier).state = widget.searchQuery ?? '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +99,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
+          initialText: widget.searchQuery,
           onChanged: (value) {
             final notifier = ref.read(searchValueProvider.notifier);
             notifier.state = value;

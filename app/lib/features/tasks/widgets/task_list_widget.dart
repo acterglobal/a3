@@ -14,6 +14,7 @@ class TaskListWidget extends ConsumerWidget {
   final ProviderBase<AsyncValue<List<String>>> taskListProvider;
   final String? spaceId;
   final int? limit;
+  final bool initiallyExpanded;
   final bool showCompletedTask;
   final bool showSectionHeader;
   final VoidCallback? onClickSectionHeader;
@@ -25,6 +26,7 @@ class TaskListWidget extends ConsumerWidget {
     required this.taskListProvider,
     this.limit,
     this.spaceId,
+    this.initiallyExpanded = true,
     this.showCompletedTask = false,
     this.showSectionHeader = false,
     this.onClickSectionHeader,
@@ -90,6 +92,7 @@ class TaskListWidget extends ConsumerWidget {
         return TaskListItemCard(
           taskListId: taskList[index],
           showCompletedTask: showCompletedTask,
+          initiallyExpanded: initiallyExpanded,
           showSpace: spaceId == null,
         );
       },
