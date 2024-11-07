@@ -5,6 +5,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_list_widget.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:acter/features/space/dialogs/suggested_rooms.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
@@ -264,6 +265,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.overview => AboutSection(spaceId: widget.spaceId),
       TabEntry.news => NewsSection(spaceId: widget.spaceId),
       TabEntry.pins => PinListWidget(
+          pinListProvider: allPinListWithBookmarkFrontProvider(widget.spaceId),
           spaceId: widget.spaceId,
           showSectionHeader: true,
           limit: 3,

@@ -14,11 +14,18 @@ import '../../helpers/test_util.dart';
 void main() {
   group('Pin List Error Pages', () {
     testWidgets('full list', (tester) async {
-      final mockedPinListNotifier = RetryMockAsyncPinListNotifier();
+      bool shouldFail = true;
       await tester.pumpProviderWidget(
         overrides: [
           bookmarkByTypeProvider.overrideWith((a, r) => []),
-          pinListProvider.overrideWith(() => mockedPinListNotifier),
+          pinListSearchedProvider.overrideWith((ref, spaceId) {
+            if (shouldFail) {
+              // toggle failure so the retry works
+              shouldFail = !shouldFail;
+              throw 'Expected fail: Space not loaded';
+            }
+            return [];
+          }),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const PinsListPage(),
@@ -30,9 +37,9 @@ void main() {
 
       await tester.pumpProviderWidget(
         overrides: [
-          searchValueProvider
+          pinListSearchTermProvider
               .overrideWith((_) => 'some string'), // set a search string
-          pinListSearchProvider.overrideWith((_, params) async {
+          pinListSearchedProvider.overrideWith((_, params) async {
             if (shouldFail) {
               shouldFail = false;
               throw 'Some Error';
@@ -48,12 +55,19 @@ void main() {
     });
 
     testWidgets('space list', (tester) async {
-      final mockedPinListNotifier = RetryMockAsyncPinListNotifier();
+      bool shouldFail = true;
       await tester.pumpProviderWidget(
         overrides: [
           bookmarkByTypeProvider.overrideWith((a, r) => []),
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
-          pinListProvider.overrideWith(() => mockedPinListNotifier),
+          pinListSearchedProvider.overrideWith((ref, spaceId) {
+            if (shouldFail) {
+              // toggle failure so the retry works
+              shouldFail = !shouldFail;
+              throw 'Expected fail: Space not loaded';
+            }
+            return [];
+          }),
           roomMembershipProvider.overrideWith((a, b) => null),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
@@ -70,9 +84,9 @@ void main() {
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
           roomMembershipProvider.overrideWith((a, b) => null),
-          searchValueProvider
+          pinListSearchTermProvider
               .overrideWith((_) => 'some other string'), // set a search string
-          pinListSearchProvider.overrideWith((_, params) async {
+          pinListSearchedProvider.overrideWith((_, params) async {
             if (shouldFail) {
               shouldFail = false;
               throw 'Some Error';
