@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/tasks/pages/task_item_detail_page.dart';
@@ -15,10 +14,17 @@ import '../../helpers/test_util.dart';
 void main() {
   group('TaskList List Error Pages', () {
     testWidgets('full list', (tester) async {
-      final mockedTaskListNotifier = MockAsyncAllTaskListsNotifier();
+      bool shouldFail = true;
       await tester.pumpProviderWidget(
         overrides: [
-          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
+          tasksListSearchProvider.overrideWith((ref, spaceId) {
+            if (shouldFail) {
+              // toggle failure so the retry works
+              shouldFail = !shouldFail;
+              throw 'Expected fail: Task not loaded';
+            }
+            return [];
+          }),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const TasksListPage(),
@@ -26,13 +32,18 @@ void main() {
       await tester.ensureErrorPageWithRetryWorks();
     });
     testWidgets('full list with search', (tester) async {
-      final mockedTaskListNotifier = MockAsyncAllTaskListsNotifier();
+      bool shouldFail = true;
 
       await tester.pumpProviderWidget(
         overrides: [
-          searchValueProvider
-              .overrideWith((_) => 'some string'), // set a search string
-          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
+          tasksListSearchProvider.overrideWith((ref, spaceId) {
+            if (shouldFail) {
+              // toggle failure so the retry works
+              shouldFail = !shouldFail;
+              throw 'Expected fail: Task not loaded';
+            }
+            return [];
+          }),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const TasksListPage(),
@@ -41,12 +52,19 @@ void main() {
     });
 
     testWidgets('space list', (tester) async {
-      final mockedTaskListNotifier = MockAsyncAllTaskListsNotifier();
+      bool shouldFail = true;
       await tester.pumpProviderWidget(
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
           roomMembershipProvider.overrideWith((a, b) => null),
-          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
+          tasksListSearchProvider.overrideWith((ref, spaceId) {
+            if (shouldFail) {
+              // toggle failure so the retry works
+              shouldFail = !shouldFail;
+              throw 'Expected fail: Task not loaded';
+            }
+            return [];
+          }),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const TasksListPage(
@@ -57,19 +75,22 @@ void main() {
     });
 
     testWidgets('space list with search', (tester) async {
-      final mockedTaskListNotifier = MockAsyncAllTaskListsNotifier();
+      bool shouldFail = true;
       await tester.pumpProviderWidget(
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
           roomMembershipProvider.overrideWith((a, b) => null),
-          searchValueProvider
-              .overrideWith((_) => 'some search'), // set a search string
-          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
+          tasksListSearchProvider.overrideWith((ref, spaceId) {
+            if (shouldFail) {
+              // toggle failure so the retry works
+              shouldFail = !shouldFail;
+              throw 'Expected fail: Task not loaded';
+            }
+            return [];
+          }),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
-        child: const TasksListPage(
-          spaceId: '!test',
-        ),
+        child: const TasksListPage(spaceId: '!test'),
       );
       await tester.ensureErrorPageWithRetryWorks();
     });
