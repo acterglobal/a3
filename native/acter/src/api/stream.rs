@@ -20,7 +20,8 @@ use matrix_sdk_base::ruma::{
     },
     EventId, OwnedEventId, OwnedTransactionId,
 };
-use matrix_sdk_ui::timeline::Timeline;
+use matrix_sdk_ui::timeline::{Timeline, TimelineEventItemId};
+use ruma::TransactionId;
 use std::{ops::Deref, sync::Arc};
 use tracing::info;
 
@@ -90,11 +91,7 @@ impl TimelineStream {
                 let Some(tl) = timeline.item_by_event_id(&event_id).await else {
                     bail!("Event not found")
                 };
-                Ok(RoomMessage::new_event_item(
-                    user_id,
-                    &tl,
-                    event_id.to_string(),
-                ))
+                Ok(RoomMessage::new_event_item(user_id, &tl))
             })
             .await?
     }
@@ -145,14 +142,13 @@ impl TimelineStream {
                     bail!("No permissions to send message in this room");
                 }
 
-                let event_content = room
-                    .event(&event_id, None)
-                    .await?
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()?;
+                let Some(item) = timeline.item_by_event_id(&event_id).await else {
+                    bail!("Unable to find event");
+                };
 
-                if event_content.sender() != my_id {
-                    bail!("Unable to edit an event not sent by own user");
+                if !item.is_own() {
+                    // !item.is_editable() { // FIXME: matrix-sdk is_editable doesn't allow us to post other things
+                    bail!("You can't edit other peoples messages");
                 }
 
                 let item = timeline
@@ -161,7 +157,7 @@ impl TimelineStream {
                     .context("Not found which item would be edited")?;
                 let event_content = draft.into_room_msg(&room).await?;
                 let new_content = EditedContent::RoomMessage(event_content);
-                timeline.edit(&item, new_content).await?;
+                timeline.edit(&item.identifier(), new_content).await?;
                 Ok(true)
             })
             .await?
@@ -306,6 +302,11 @@ impl TimelineStream {
         let room = self.room.clone();
         let my_id = self.room.user_id()?;
         let timeline = self.timeline.clone();
+        let unique_id =
+            match OwnedEventId::try_from(unique_id.clone()).map(TimelineEventItemId::EventId) {
+                Ok(o) => o,
+                Err(e) => TimelineEventItemId::TransactionId(OwnedTransactionId::from(unique_id)),
+            };
 
         RUNTIME
             .spawn(async move {

@@ -381,7 +381,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
       return;
     }
 
-    final newTaskList = await ref.read(taskListItemProvider(taskListId).future);
+    final newTaskList = await ref.read(taskListProvider(taskListId).future);
     setState(() {
       taskList = newTaskList;
     });

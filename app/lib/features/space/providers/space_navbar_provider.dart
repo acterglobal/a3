@@ -40,7 +40,7 @@ final tabsProvider =
     }
 
     if (appSettings.pins().active()) {
-      final pinsList = await ref.watch(pinListProvider(spaceId).future);
+      final pinsList = await ref.watch(pinsProvider(spaceId).future);
       if (pinsList.isNotEmpty) {
         tabs.add(TabEntry.pins);
       }

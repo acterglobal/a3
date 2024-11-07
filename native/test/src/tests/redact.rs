@@ -103,7 +103,7 @@ async fn message_redaction() -> Result<()> {
 
     // but it is possible to get redaction event by event id on convo
     let ev = convo.event(&redact_id, None).await?;
-    let event_content = ev.event.deserialize_as::<RoomRedactionEvent>()?;
+    let event_content = ev.kind.raw().deserialize_as::<RoomRedactionEvent>()?;
     let original = event_content
         .as_original()
         .context("Redaction event should get original event")?;

@@ -499,7 +499,7 @@ impl MsgDraft {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room
                         .client()
-                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .upload_encrypted_file(&content_type, &mut reader)
                         .await?;
                     let body = path
                         .file_name()
@@ -538,7 +538,7 @@ impl MsgDraft {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room
                         .client()
-                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .upload_encrypted_file(&content_type, &mut reader)
                         .await?;
                     let body = path
                         .file_name()
@@ -577,7 +577,7 @@ impl MsgDraft {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room
                         .client()
-                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .upload_encrypted_file(&content_type, &mut reader)
                         .await?;
                     let body = path
                         .file_name()
@@ -616,7 +616,7 @@ impl MsgDraft {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room
                         .client()
-                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .upload_encrypted_file(&content_type, &mut reader)
                         .await?;
                     let body = path
                         .file_name()

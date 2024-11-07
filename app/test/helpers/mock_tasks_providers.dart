@@ -117,7 +117,13 @@ class MockTaskList extends FakeTaskList with Mock {}
 
 class MockTask extends Fake implements Task {
   @override
+  bool isDone() => false;
+
+  @override
   String title() => 'Test';
+
+  @override
+  String eventIdStr() => 'eventId';
 
   @override
   MsgContent? description() => null;

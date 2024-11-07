@@ -491,9 +491,10 @@ final homeShellRoutes = [
     path: Routes.calendarEvents.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
+      final searchQuery = state.uri.queryParameters['searchQuery'];
       return NoTransitionPage(
         key: state.pageKey,
-        child: const EventListPage(),
+        child: EventListPage(searchQuery: searchQuery),
       );
     },
   ),

@@ -1,10 +1,9 @@
-use acter::api::{login_new_client, VerificationEvent};
+use acter::api::VerificationEvent;
 use anyhow::Result;
 use futures::{channel::mpsc::Receiver, stream::StreamExt};
-use tempfile::TempDir;
 use tracing::info;
 
-use crate::utils::default_user_password;
+use crate::utils::random_user;
 
 fn wait_for_verification_event(
     rx: &mut Receiver<VerificationEvent>,
@@ -24,40 +23,12 @@ fn wait_for_verification_event(
 async fn interactive_verification_started_from_request() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let alice_dir = TempDir::new()?;
-    let mut alice = login_new_client(
-        alice_dir.path().to_string_lossy().to_string(),
-        alice_dir.path().to_string_lossy().to_string(),
-        "@sisko".to_string(),
-        default_user_password("sisko"),
-        option_env!("DEFAULT_HOMESERVER_NAME")
-            .unwrap_or("localhost")
-            .to_string(),
-        option_env!("DEFAULT_HOMESERVER_URL")
-            .unwrap_or("http://localhost:8118")
-            .to_string(),
-        Some("ALICE_DEV".to_string()),
-    )
-    .await?;
+    let mut alice = random_user("interactive_verification_started_from_request_alice").await?;
 
     let alice_device_id = alice.device_id().expect("alice should get device id");
     info!("alice device id: {}", alice_device_id);
 
-    let bob_dir = TempDir::new()?;
-    let mut bob = login_new_client(
-        bob_dir.path().to_string_lossy().to_string(),
-        bob_dir.path().to_string_lossy().to_string(),
-        "@sisko".to_string(),
-        default_user_password("sisko"),
-        option_env!("DEFAULT_HOMESERVER_NAME")
-            .unwrap_or("localhost")
-            .to_string(),
-        option_env!("DEFAULT_HOMESERVER_URL")
-            .unwrap_or("http://localhost:8118")
-            .to_string(),
-        Some("BOB_DEV".to_string()),
-    )
-    .await?;
+    let mut bob = random_user("interactive_verification_started_from_request_bob").await?;
 
     let bob_device_id = bob.device_id().expect("bob should get device id");
     info!("bob device id: {}", bob_device_id);

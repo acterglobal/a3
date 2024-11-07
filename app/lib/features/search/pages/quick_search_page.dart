@@ -1,6 +1,10 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/widgets/event_list_widget.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_widget.dart';
+import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/search/providers/quick_search_providers.dart';
 import 'package:acter/features/spaces/widgets/space_list_widget.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +21,8 @@ class QuickSearchPage extends ConsumerStatefulWidget {
 
 class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
   String get searchValue => ref.watch(quickSearchValueProvider);
+  ValueNotifier<QuickSearchFilters> quickSearchFilters =
+      ValueNotifier<QuickSearchFilters>(QuickSearchFilters.all);
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +53,61 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
             notifier.state = '';
           },
         ),
-        Expanded(child: quickSearchSectionsUI()),
+        ValueListenableBuilder(
+          valueListenable: quickSearchFilters,
+          builder: (context, showHeader, child) => filterChipsButtons(),
+        ),
+        Expanded(
+          child: ValueListenableBuilder(
+            valueListenable: quickSearchFilters,
+            builder: (context, showHeader, child) => quickSearchSectionsUI(),
+          ),
+        ),
       ],
+    );
+  }
+
+  Widget filterChipsButtons() {
+    final lang = L10n.of(context);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 4,
+        ),
+        child: Wrap(
+          children: [
+            FilterChip(
+              selected: quickSearchFilters.value == QuickSearchFilters.all,
+              label: Text(lang.all),
+              onSelected: (value) =>
+                  quickSearchFilters.value = QuickSearchFilters.all,
+            ),
+            const SizedBox(width: 10),
+            FilterChip(
+              selected: quickSearchFilters.value == QuickSearchFilters.spaces,
+              label: Text(lang.spaces),
+              onSelected: (value) =>
+                  quickSearchFilters.value = QuickSearchFilters.spaces,
+            ),
+            const SizedBox(width: 10),
+            FilterChip(
+              selected: quickSearchFilters.value == QuickSearchFilters.pins,
+              label: Text(lang.pins),
+              onSelected: (value) =>
+                  quickSearchFilters.value = QuickSearchFilters.pins,
+            ),
+            const SizedBox(width: 10),
+            FilterChip(
+              selected: quickSearchFilters.value == QuickSearchFilters.events,
+              label: Text(lang.events),
+              onSelected: (value) =>
+                  quickSearchFilters.value = QuickSearchFilters.events,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -57,24 +116,40 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SpaceListWidget(
-            limit: 3,
-            searchValue: searchValue,
-            showSectionHeader: true,
-            onClickSectionHeader: () => context.pushNamed(
-              Routes.spaces.name,
-              queryParameters: {'searchQuery': searchValue},
+          if (quickSearchFilters.value == QuickSearchFilters.all ||
+              quickSearchFilters.value == QuickSearchFilters.spaces)
+            SpaceListWidget(
+              limit: 3,
+              searchValue: searchValue,
+              showSectionHeader: true,
+              onClickSectionHeader: () => context.pushNamed(
+                Routes.spaces.name,
+                queryParameters: {'searchQuery': searchValue},
+              ),
             ),
-          ),
-          PinListWidget(
-            limit: 3,
-            searchValue: searchValue,
-            showSectionHeader: true,
-            onClickSectionHeader: () => context.pushNamed(
-              Routes.pins.name,
-              queryParameters: {'searchQuery': searchValue},
+          if (quickSearchFilters.value == QuickSearchFilters.all ||
+              quickSearchFilters.value == QuickSearchFilters.pins)
+            PinListWidget(
+              pinListProvider: pinListQuickSearchedProvider,
+              limit: 3,
+              searchValue: searchValue,
+              showSectionHeader: true,
+              onClickSectionHeader: () => context.pushNamed(
+                Routes.pins.name,
+                queryParameters: {'searchQuery': searchValue},
+              ),
             ),
-          ),
+          if (quickSearchFilters.value == QuickSearchFilters.all ||
+              quickSearchFilters.value == QuickSearchFilters.events)
+            EventListWidget(
+              limit: 3,
+              listProvider: eventListQuickSearchedProvider,
+              showSectionHeader: true,
+              onClickSectionHeader: () => context.pushNamed(
+                Routes.calendarEvents.name,
+                queryParameters: {'searchQuery': searchValue},
+              ),
+            ),
         ],
       ),
     );
