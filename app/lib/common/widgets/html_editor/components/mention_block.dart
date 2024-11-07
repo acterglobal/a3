@@ -1,34 +1,8 @@
-import 'package:acter/common/widgets/html_editor/components/room_mention_block.dart';
-import 'package:acter/common/widgets/html_editor/components/user_mention_block.dart';
+import 'package:acter/common/widgets/html_editor/components/mention_content.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_block_keys.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
-
-enum MentionType {
-  user,
-  room;
-
-  static MentionType fromStr(String str) => switch (str) {
-        '@' => user,
-        '#' => room,
-        _ => throw UnimplementedError(),
-      };
-  static String toStr(MentionType type) => switch (type) {
-        MentionType.user => '@',
-        MentionType.room => '#',
-      };
-}
-
-class MentionBlockKeys {
-  const MentionBlockKeys._();
-  static const mention = 'mention';
-  static const type = 'type'; // MentionType, String
-  static const blockId = 'block_id';
-  static const userId = 'user_id';
-  static const roomId = 'room_id';
-  static const displayName = 'display_name';
-  static const userMentionChar = '@';
-  static const roomMentionChar = '#';
-}
 
 class MentionBlock extends StatelessWidget {
   const MentionBlock({
@@ -53,45 +27,86 @@ class MentionBlock extends StatelessWidget {
     switch (type) {
       case MentionType.user:
         final String? userId = mention[MentionBlockKeys.userId] as String?;
+        final String? blockId = mention[MentionBlockKeys.blockId] as String?;
         final String? displayName =
             mention[MentionBlockKeys.displayName] as String?;
+
         if (userId == null) {
           return const SizedBox.shrink();
         }
 
-        final String? blockId = mention[MentionBlockKeys.blockId] as String?;
-
-        return UserMentionBlock(
-          key: ValueKey(userId),
+        return _mentionContent(
+          context: context,
+          mentionId: userId,
+          blockId: blockId,
           editorState: editorState,
           displayName: displayName,
-          userId: userId,
-          blockId: blockId,
           node: node,
-          textStyle: textStyle,
           index: index,
         );
       case MentionType.room:
         final String? roomId = mention[MentionBlockKeys.roomId] as String?;
+        final String? blockId = mention[MentionBlockKeys.blockId] as String?;
         final String? displayName =
             mention[MentionBlockKeys.displayName] as String?;
+
         if (roomId == null) {
           return const SizedBox.shrink();
         }
-        final String? blockId = mention[MentionBlockKeys.blockId] as String?;
 
-        return RoomMentionBlock(
-          key: ValueKey(roomId),
+        return _mentionContent(
+          context: context,
+          mentionId: roomId,
+          blockId: blockId,
           editorState: editorState,
           displayName: displayName,
-          roomId: roomId,
-          blockId: blockId,
           node: node,
-          textStyle: textStyle,
           index: index,
         );
       default:
         return const SizedBox.shrink();
     }
+  }
+
+  Widget _mentionContent({
+    required BuildContext context,
+    required EditorState editorState,
+    required String mentionId,
+    String? blockId,
+    required String? displayName,
+    TextStyle? textStyle,
+    required Node node,
+    required int index,
+  }) {
+    final desktopPlatforms = [
+      TargetPlatform.linux,
+      TargetPlatform.macOS,
+      TargetPlatform.windows,
+    ];
+    final mentionContentWidget = MentionContentWidget(
+      mentionId: mentionId,
+      displayName: displayName,
+      textStyle: textStyle,
+      editorState: editorState,
+      node: node,
+      index: index,
+    );
+
+    final Widget content = GestureDetector(
+      onTap: _handleUserTap,
+      behavior: HitTestBehavior.opaque,
+      child: desktopPlatforms.contains(Theme.of(context).platform)
+          ? MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: mentionContentWidget,
+            )
+          : mentionContentWidget,
+    );
+
+    return content;
+  }
+
+  void _handleUserTap() {
+    // Implement user tap action (e.g., show profile, start chat)
   }
 }

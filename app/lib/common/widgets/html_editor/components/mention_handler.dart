@@ -1,6 +1,6 @@
-import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_menu.dart';
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_block_keys.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,6 +37,7 @@ class MentionHandler extends ConsumerStatefulWidget {
 class _MentionHandlerState extends ConsumerState<MentionHandler> {
   final _focusNode = FocusNode();
   final _scrollController = ScrollController();
+  List<MapEntry<String, String>> filteredItems = [];
 
   int _selectedIndex = 0;
   late int startOffset;
@@ -45,6 +46,20 @@ class _MentionHandlerState extends ConsumerState<MentionHandler> {
   @override
   void initState() {
     super.initState();
+    ref.listenManual(
+        mentionSuggestionsProvider((widget.roomId, widget.mentionType)),
+        (prev, next) {
+      if (next != null && next.isNotEmpty) {
+        filteredItems = next.entries.where((entry) {
+          final normalizedId = entry.key.toLowerCase();
+          final normalizedName = entry.value.toLowerCase();
+          final normalizedQuery = _search.toLowerCase();
+
+          return normalizedId.contains(normalizedQuery) ||
+              normalizedName.contains(normalizedQuery);
+        }).toList();
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
     });
@@ -60,19 +75,6 @@ class _MentionHandlerState extends ConsumerState<MentionHandler> {
 
   @override
   Widget build(BuildContext context) {
-    final suggestions = ref.watch(
-      mentionSuggestionsProvider((widget.roomId, widget.mentionType)),
-    );
-
-    final filteredItems = suggestions.entries.where((entry) {
-      final normalizedId = entry.key.toLowerCase();
-      final normalizedName = entry.value.toLowerCase();
-      final normalizedQuery = widget.editorState.intoMarkdown();
-
-      return normalizedId.contains(normalizedQuery) ||
-          normalizedName.contains(normalizedQuery);
-    }).toList();
-
     return Focus(
       focusNode: _focusNode,
       onKeyEvent: (node, event) => _handleKeyEvent(node, event, filteredItems),

@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_room_messages_notifier.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -55,7 +55,8 @@ final renderableChatMessagesProvider =
 });
 
 final mentionSuggestionsProvider =
-    Provider.family<Map<String, String>, (String, MentionType)>((ref, params) {
+    StateProvider.family<Map<String, String>?, (String, MentionType)>(
+        (ref, params) {
   final roomId = params.$1;
   final mentionType = params.$2;
   final client = ref.watch(alwaysClientProvider);
@@ -86,5 +87,5 @@ final mentionSuggestionsProvider =
         return map;
       });
   }
-  return {};
+  return null;
 });
