@@ -33,7 +33,7 @@ class MySpacesSection extends ConsumerWidget {
     if (allSpacesList.isEmpty) return const _NoSpacesWidget();
 
     //Bookmarked Spaces : If available
-    if (!bookmarkedSpacesList.isNotEmpty) {
+    if (bookmarkedSpacesList.isNotEmpty) {
       return SpaceListWidget(
         spaceListProvider: bookmarkedSpacesProvider,
         showSectionHeader: true,
