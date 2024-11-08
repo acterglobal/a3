@@ -76,61 +76,34 @@ class _NoSpacesWidgetState extends ConsumerState<_NoSpacesWidget> {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         const SizedBox(height: 15),
         Text(
           lang.youAreCurrentlyNotConnectedToAnySpaces,
           style: textTheme.bodyMedium,
+          textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 30),
-        RichText(
-          text: TextSpan(
-            children: <TextSpan>[
-              TextSpan(
-                text: lang.create,
-                style: textTheme.bodyMedium?.copyWith(
-                  decoration: TextDecoration.underline,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextSpan(text: lang.or),
-              TextSpan(
-                text: lang.join,
-                style: textTheme.bodyMedium?.copyWith(
-                  decoration: TextDecoration.underline,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextSpan(
-                text: ' ',
-                style: textTheme.bodyMedium,
-              ),
-              TextSpan(
-                text: lang.spaceShortDescription,
-                style: textTheme.bodyMedium,
-              ),
-            ],
-          ),
-          softWrap: true,
-        ),
-        SizedBox(height: MediaQuery.of(context).size.height * 0.15),
-        Center(
-          child: OutlinedButton.icon(
-            key: createNewSpaceKey,
-            icon: const Icon(Icons.chevron_right_outlined),
-            onPressed: () => context.pushNamed(Routes.createSpace.name),
-            label: Text(lang.createNewSpace),
-          ),
+        const SizedBox(height: 6),
+        Text(
+          lang.spaceShortDescription,
+          style: textTheme.labelLarge,
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 36),
-        Center(
-          child: ActerPrimaryActionButton(
-            key: joinExistingSpaceKey,
-            onPressed: () {
-              context.pushNamed(Routes.searchPublicDirectory.name);
-            },
-            child: Text(lang.joinExistingSpace),
-          ),
+        OutlinedButton.icon(
+          key: createNewSpaceKey,
+          onPressed: () => context.pushNamed(Routes.createSpace.name),
+          label: Text(lang.createNewSpace),
+        ),
+        const SizedBox(height: 16),
+        ActerPrimaryActionButton(
+          key: joinExistingSpaceKey,
+          onPressed: () {
+            context.pushNamed(Routes.searchPublicDirectory.name);
+          },
+          child: Text(lang.joinExistingSpace),
         ),
       ],
     );
