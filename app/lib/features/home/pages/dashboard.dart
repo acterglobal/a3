@@ -49,10 +49,7 @@ class Dashboard extends ConsumerWidget {
                       const SizedBox(height: 12),
                       const MyEventsSection(eventFilters: EventFilters.ongoing),
                       const MyTasksSection(limit: 5),
-                      const MyEventsSection(
-                        limit: 3,
-                        eventFilters: EventFilters.upcoming,
-                      ),
+                      const MyEventsSection(limit: 3),
                       const MySpacesSection(limit: 5),
                     ],
                   )
