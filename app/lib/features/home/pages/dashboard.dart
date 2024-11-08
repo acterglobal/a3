@@ -48,7 +48,10 @@ class Dashboard extends ConsumerWidget {
                       SizedBox(height: 12),
                       MyEventsSection(eventFilters: EventFilters.ongoing),
                       MyTasksSection(limit: 5),
-                      MyEventsSection(limit: 3),
+                      MyEventsSection(
+                        limit: 3,
+                        eventFilters: EventFilters.ongoing,
+                      ),
                       MySpacesSection(limit: 5),
                     ],
                   )
