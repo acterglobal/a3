@@ -29,7 +29,6 @@ class Dashboard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(alwaysClientProvider);
-    final hasSpaces = ref.watch(hasSpacesProvider);
     return InDashboard(
       child: SafeArea(
         bottom: false,
@@ -40,23 +39,7 @@ class Dashboard extends ConsumerWidget {
           floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
           appBar: _buildDashboardAppBar(context, client),
           floatingActionButton: manageQuickAddButton(context, ref),
-          body: SingleChildScrollView(
-            child: hasSpaces
-                ? const Column(
-                    children: [
-                      FeaturesNavWidget(),
-                      SizedBox(height: 12),
-                      MyEventsSection(eventFilters: EventFilters.ongoing),
-                      MyTasksSection(limit: 5),
-                      MyEventsSection(
-                        limit: 3,
-                        eventFilters: EventFilters.upcoming,
-                      ),
-                      MySpacesSection(limit: 5),
-                    ],
-                  )
-                : emptyState(context),
-          ),
+          body: _buildDashboardBodyUI(context, ref),
         ),
       ),
     );
@@ -122,6 +105,27 @@ class Dashboard extends ConsumerWidget {
       },
       backgroundColor: Theme.of(context).primaryColor,
       child: Icon(showQuickActions ? Icons.close : Icons.add),
+    );
+  }
+
+  Widget _buildDashboardBodyUI(BuildContext context, WidgetRef ref) {
+    final hasSpaces = ref.watch(hasSpacesProvider);
+    return SingleChildScrollView(
+      child: hasSpaces
+          ? const Column(
+              children: [
+                FeaturesNavWidget(),
+                SizedBox(height: 12),
+                MyEventsSection(eventFilters: EventFilters.ongoing),
+                MyTasksSection(limit: 5),
+                MyEventsSection(
+                  limit: 3,
+                  eventFilters: EventFilters.upcoming,
+                ),
+                MySpacesSection(limit: 5),
+              ],
+            )
+          : emptyState(context),
     );
   }
 
