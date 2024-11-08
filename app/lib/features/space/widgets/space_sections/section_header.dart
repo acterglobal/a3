@@ -27,7 +27,10 @@ class SectionHeader extends StatelessWidget {
         Theme.of(context).textTheme.titleMedium?.copyWith(
               color: Theme.of(context).primaryColor,
             );
-    final titleSmallTextStyle = Theme.of(context).textTheme.titleSmall;
+    final titleSmallTextStyle = Theme.of(context)
+        .textTheme
+        .titleSmall
+        ?.copyWith(fontWeight: FontWeight.normal);
     return GestureDetector(
       onTap: onTapSeeAll,
       child: Container(
