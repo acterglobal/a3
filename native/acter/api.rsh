@@ -1972,15 +1972,23 @@ object RoomPowerLevels {
     fn events_key() -> string;
     fn pins() -> Option<i64>;
     fn pins_key() -> string;
-    fn events_default() -> i64;
-    fn users_default() -> i64;
-    fn max_power_level() -> i64;
 
     fn tasks() -> Option<i64>;
     fn tasks_key() -> string;
 
     fn task_lists() -> Option<i64>;
     fn task_lists_key() -> string;
+
+    // -- defaults
+
+    fn events_default() -> i64;
+    fn users_default() -> i64;
+    fn max_power_level() -> i64;
+
+    fn kick() -> i64;
+    fn ban() -> i64;
+    fn redact() -> i64;
+    fn invite() -> i64;
 }
 
 object SimpleOnOffSetting {
@@ -2237,6 +2245,9 @@ object Space {
 
     /// update the power level for a feature
     fn update_feature_power_levels(feature: string, level: Option<i32>) -> Future<Result<bool>>;
+
+    /// update the power level for a regular room feature
+    fn update_regular_power_levels(feature: string, level: i32) -> Future<Result<bool>>;
 
     /// report an event from this room
     /// score - The score to rate this content as where -100 is most offensive and 0 is inoffensive (optional).

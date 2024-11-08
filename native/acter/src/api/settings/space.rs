@@ -95,6 +95,18 @@ impl RoomPowerLevels {
     pub fn max_power_level(&self) -> i64 {
         self.inner.max().into()
     }
+    pub fn kick(&self) -> i64 {
+        self.inner.kick.into()
+    }
+    pub fn ban(&self) -> i64 {
+        self.inner.ban.into()
+    }
+    pub fn invite(&self) -> i64 {
+        self.inner.invite.into()
+    }
+    pub fn redact(&self) -> i64 {
+        self.inner.redact.into()
+    }
 }
 
 #[derive(Clone)]
@@ -144,6 +156,42 @@ impl Room {
             .await?
     }
 
+    pub async fn update_regular_power_levels(
+        &self,
+        name: String,
+        power_level: i32,
+    ) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("Unable to update a space you aren’t part of");
+        }
+        let mut current_power_levels = self.power_levels_content().await?;
+
+        match name.to_lowercase().as_str() {
+            "events_default" => {
+                current_power_levels.events_default = Int::from(power_level);
+            }
+            "ban" => {
+                current_power_levels.ban = Int::from(power_level);
+            }
+            "kick" => {
+                current_power_levels.kick = Int::from(power_level);
+            }
+            "redact" => {
+                current_power_levels.redact = Int::from(power_level);
+            }
+            "invite" => {
+                current_power_levels.invite = Int::from(power_level);
+            }
+            "state_default" => {
+                current_power_levels.state_default = Int::from(power_level);
+            }
+            _ => {
+                bail!("Power level {name} unknown");
+            }
+        }
+        self.update_power_levels(current_power_levels).await
+    }
+
     pub async fn update_feature_power_levels(
         &self,
         name: String,
@@ -175,7 +223,10 @@ impl Room {
         if !updated {
             return Ok(false);
         }
+        self.update_power_levels(current_power_levels).await
+    }
 
+    async fn update_power_levels(&self, current_power_levels: RumaRoomPowerLevels) -> Result<bool> {
         if !self
             .get_my_membership()
             .await?
