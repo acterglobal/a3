@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
+  final bool showSectionBg;
   final bool isShowSeeAllButton;
   final VoidCallback? onTapSeeAll;
 
@@ -11,6 +12,7 @@ class SectionHeader extends StatelessWidget {
     super.key,
     required this.title,
     this.onTapSeeAll,
+    this.showSectionBg = true,
     this.isShowSeeAllButton = false,
   });
 
@@ -21,32 +23,36 @@ class SectionHeader extends StatelessWidget {
 
   Widget sectionHeaderUI(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final titleMediumTextStyle =
+        Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: Theme.of(context).primaryColor,
+            );
+    final titleSmallTextStyle = Theme.of(context).textTheme.titleSmall;
     return GestureDetector(
       onTap: onTapSeeAll,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14),
         margin: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              colorScheme.surface.withOpacity(0.9),
-              colorScheme.surface.withOpacity(0.3),
-              colorScheme.secondaryContainer.withOpacity(0.1),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.topRight,
-            stops: const [0.0, 0.5, 1.0],
-            tileMode: TileMode.mirror,
-          ),
-        ),
+        decoration: showSectionBg
+            ? BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    colorScheme.surface.withOpacity(0.9),
+                    colorScheme.surface.withOpacity(0.3),
+                    colorScheme.secondaryContainer.withOpacity(0.1),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.topRight,
+                  stops: const [0.0, 0.5, 1.0],
+                  tileMode: TileMode.mirror,
+                ),
+              )
+            : null,
         child: Row(
           children: [
             Text(
               title,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(color: Theme.of(context).primaryColor),
+              style: showSectionBg ? titleMediumTextStyle : titleSmallTextStyle,
             ),
             const Spacer(),
             isShowSeeAllButton

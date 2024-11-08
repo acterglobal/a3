@@ -41,33 +41,22 @@ class Dashboard extends ConsumerWidget {
           floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
           appBar: _buildDashboardAppBar(context, client),
           floatingActionButton: manageQuickAddButton(context, ref),
-          body: Padding(
-            padding: const EdgeInsets.only(
-              top: 20,
-              left: 20,
-              right: 20,
-            ),
-            child: SingleChildScrollView(
-              child: hasSpaces
-                  ? Column(
-                      children: [
-                        featuresNav(context),
-                        const SizedBox(height: 20),
-                        const MyEventsSection(
-                          eventFilters: EventFilters.ongoing,
-                        ),
-                        const SizedBox(height: 12),
-                        const MyTasksSection(limit: 5),
-                        const SizedBox(height: 20),
-                        const MyEventsSection(
-                          limit: 3,
-                          eventFilters: EventFilters.upcoming,
-                        ),
-                        const MySpacesSection(limit: 5),
-                      ],
-                    )
-                  : emptyState(context),
-            ),
+          body: SingleChildScrollView(
+            child: hasSpaces
+                ? Column(
+                    children: [
+                      featuresNav(context),
+                      const SizedBox(height: 12),
+                      const MyEventsSection(eventFilters: EventFilters.ongoing),
+                      const MyTasksSection(limit: 5),
+                      const MyEventsSection(
+                        limit: 3,
+                        eventFilters: EventFilters.upcoming,
+                      ),
+                      const MySpacesSection(limit: 5),
+                    ],
+                  )
+                : emptyState(context),
           ),
         ),
       ),
@@ -108,49 +97,52 @@ class Dashboard extends ConsumerWidget {
 
   Widget featuresNav(BuildContext context) {
     final lang = L10n.of(context);
-    return Column(
-      children: [
-        const SizedBox(height: 20),
-        Row(
-          children: [
-            featuresNavItem(
-              context: context,
-              title: lang.pins,
-              iconData: Atlas.pin,
-              color: pinFeatureColor,
-              onTap: () => context.pushNamed(Routes.pins.name),
-            ),
-            const SizedBox(width: 20),
-            featuresNavItem(
-              context: context,
-              title: lang.events,
-              iconData: Atlas.calendar_dots,
-              color: eventFeatureColor,
-              onTap: () => context.pushNamed(Routes.calendarEvents.name),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        Row(
-          children: [
-            featuresNavItem(
-              context: context,
-              title: lang.tasks,
-              iconData: Atlas.list,
-              color: taskFeatureColor,
-              onTap: () => context.pushNamed(Routes.tasks.name),
-            ),
-            const SizedBox(width: 20),
-            featuresNavItem(
-              context: context,
-              title: lang.boosts,
-              iconData: Atlas.megaphone_thin,
-              color: boastFeatureColor,
-              onTap: () => context.pushNamed(Routes.updateList.name),
-            ),
-          ],
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              featuresNavItem(
+                context: context,
+                title: lang.pins,
+                iconData: Atlas.pin,
+                color: pinFeatureColor,
+                onTap: () => context.pushNamed(Routes.pins.name),
+              ),
+              const SizedBox(width: 20),
+              featuresNavItem(
+                context: context,
+                title: lang.events,
+                iconData: Atlas.calendar_dots,
+                color: eventFeatureColor,
+                onTap: () => context.pushNamed(Routes.calendarEvents.name),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              featuresNavItem(
+                context: context,
+                title: lang.tasks,
+                iconData: Atlas.list,
+                color: taskFeatureColor,
+                onTap: () => context.pushNamed(Routes.tasks.name),
+              ),
+              const SizedBox(width: 20),
+              featuresNavItem(
+                context: context,
+                title: lang.boosts,
+                iconData: Atlas.megaphone_thin,
+                color: boastFeatureColor,
+                onTap: () => context.pushNamed(Routes.updateList.name),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

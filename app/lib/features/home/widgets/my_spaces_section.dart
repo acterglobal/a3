@@ -38,6 +38,7 @@ class MySpacesSection extends ConsumerWidget {
         spaceListProvider: bookmarkedSpacesProvider,
         showSectionHeader: true,
         isShowSeeAllButton: true,
+        showSectionBg: false,
         sectionHeaderTitle: lang.bookmarkedSpaces,
         onClickSectionHeader: () => context.pushNamed(Routes.spaces.name),
       );
@@ -51,6 +52,7 @@ class MySpacesSection extends ConsumerWidget {
       showSectionHeader: true,
       sectionHeaderTitle: lang.mySpaces,
       limit: limit,
+      showSectionBg: false,
       isShowSeeAllButton: count != allSpacesList.length,
       onClickSectionHeader: () => context.pushNamed(Routes.spaces.name),
     );
