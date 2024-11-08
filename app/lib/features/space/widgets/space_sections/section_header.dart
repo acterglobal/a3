@@ -32,7 +32,7 @@ class SectionHeader extends StatelessWidget {
       onTap: onTapSeeAll,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14),
-        margin: const EdgeInsets.symmetric(vertical: 12),
+        margin: showSectionBg ? const EdgeInsets.symmetric(vertical: 12) : null,
         decoration: showSectionBg
             ? BoxDecoration(
                 gradient: LinearGradient(
