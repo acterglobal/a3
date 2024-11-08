@@ -1979,6 +1979,15 @@ object RoomPowerLevels {
     fn task_lists() -> Option<i64>;
     fn task_lists_key() -> string;
 
+    fn rsvp() -> Option<i64>;
+    fn rsvp_key() -> string;
+
+    fn comments() -> Option<i64>;
+    fn comments_key() -> string;
+
+    fn attachments() -> Option<i64>;
+    fn attachments_key() -> string;
+
     // -- defaults
 
     fn events_default() -> i64;

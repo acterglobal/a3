@@ -4,9 +4,12 @@ pub use acter_core::events::settings::{
     TasksSettings,
 };
 use acter_core::events::{
+    attachments::AttachmentEventContent,
     calendar::CalendarEventEventContent,
+    comments::CommentEventContent,
     news::NewsEntryEventContent,
     pins::PinEventContent,
+    rsvp::RsvpEventContent,
     settings::ActerAppSettingsContentBuilder,
     tasks::{TaskEventContent, TaskListEventContent},
 };
@@ -85,6 +88,24 @@ impl RoomPowerLevels {
     }
     pub fn pins_key(&self) -> String {
         <PinEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn comments(&self) -> Option<i64> {
+        self.get_for_key(<CommentEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn comments_key(&self) -> String {
+        <CommentEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn attachments(&self) -> Option<i64> {
+        self.get_for_key(<AttachmentEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn attachments_key(&self) -> String {
+        <AttachmentEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn rsvp(&self) -> Option<i64> {
+        self.get_for_key(<RsvpEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn rsvp_key(&self) -> String {
+        <RsvpEventContent as StaticEventContent>::TYPE.into()
     }
     pub fn events_default(&self) -> i64 {
         self.inner.events_default.into()

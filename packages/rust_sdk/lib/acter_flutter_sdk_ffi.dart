@@ -23780,6 +23780,69 @@ class Api {
           _RoomPowerLevelsTaskListsKeyReturn Function(
             int,
           )>();
+  late final _roomPowerLevelsRsvpPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPowerLevelsRsvpReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPowerLevels_rsvp");
+
+  late final _roomPowerLevelsRsvp = _roomPowerLevelsRsvpPtr.asFunction<
+      _RoomPowerLevelsRsvpReturn Function(
+        int,
+      )>();
+  late final _roomPowerLevelsRsvpKeyPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPowerLevelsRsvpKeyReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPowerLevels_rsvp_key");
+
+  late final _roomPowerLevelsRsvpKey = _roomPowerLevelsRsvpKeyPtr.asFunction<
+      _RoomPowerLevelsRsvpKeyReturn Function(
+        int,
+      )>();
+  late final _roomPowerLevelsCommentsPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPowerLevelsCommentsReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPowerLevels_comments");
+
+  late final _roomPowerLevelsComments = _roomPowerLevelsCommentsPtr.asFunction<
+      _RoomPowerLevelsCommentsReturn Function(
+        int,
+      )>();
+  late final _roomPowerLevelsCommentsKeyPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPowerLevelsCommentsKeyReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPowerLevels_comments_key");
+
+  late final _roomPowerLevelsCommentsKey =
+      _roomPowerLevelsCommentsKeyPtr.asFunction<
+          _RoomPowerLevelsCommentsKeyReturn Function(
+            int,
+          )>();
+  late final _roomPowerLevelsAttachmentsPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPowerLevelsAttachmentsReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPowerLevels_attachments");
+
+  late final _roomPowerLevelsAttachments =
+      _roomPowerLevelsAttachmentsPtr.asFunction<
+          _RoomPowerLevelsAttachmentsReturn Function(
+            int,
+          )>();
+  late final _roomPowerLevelsAttachmentsKeyPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPowerLevelsAttachmentsKeyReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPowerLevels_attachments_key");
+
+  late final _roomPowerLevelsAttachmentsKey =
+      _roomPowerLevelsAttachmentsKeyPtr.asFunction<
+          _RoomPowerLevelsAttachmentsKeyReturn Function(
+            int,
+          )>();
   late final _roomPowerLevelsEventsDefaultPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -48758,6 +48821,138 @@ class RoomPowerLevels {
     return tmp2;
   }
 
+  int? rsvp() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsRsvp(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String rsvpKey() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsRsvpKey(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int? comments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsComments(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String commentsKey() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsCommentsKey(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int? attachments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsAttachments(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String attachmentsKey() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsAttachmentsKey(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   int eventsDefault() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -60498,6 +60693,54 @@ class _RoomPowerLevelsTaskListsReturn extends ffi.Struct {
 }
 
 class _RoomPowerLevelsTaskListsKeyReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomPowerLevelsRsvpReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsRsvpKeyReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomPowerLevelsCommentsReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsCommentsKeyReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomPowerLevelsAttachmentsReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsAttachmentsKeyReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()

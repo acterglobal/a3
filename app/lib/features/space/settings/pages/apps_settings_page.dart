@@ -215,6 +215,8 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             child: Text(lang.loadingFailed(e)),
           );
         },
+        skipLoadingOnReload: true,
+        skipLoadingOnRefresh: true,
       ),
     );
   }
@@ -228,7 +230,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
     String defaultDesc,
   ) {
     return SettingsSection(
-      title: const Text('General Permissions'),
+      title: Text(L10n.of(context).powerLevelsTitle),
       tiles: [
         buildDefaultEventsTile(
           context,
@@ -270,6 +272,22 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           canEdit,
           defaultDesc,
         ),
+        buildCommentsTile(
+          context,
+          powerLevels,
+          space,
+          maxPowerLevel,
+          canEdit,
+          defaultDesc,
+        ),
+        buildAttachmentsTile(
+          context,
+          powerLevels,
+          space,
+          maxPowerLevel,
+          canEdit,
+          defaultDesc,
+        ),
       ],
     );
   }
@@ -283,24 +301,24 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
     String defaultDesc,
   ) {
     final lang = L10n.of(context);
-    final eventsDefaulLevel = powerLevels.eventsDefault();
+    final currentLevel = powerLevels.eventsDefault();
     final pwTextTL = maxPowerLevel == 100
-        ? powerLevelName(eventsDefaulLevel)
-        : 'Custom ($eventsDefaulLevel)';
+        ? powerLevelName(currentLevel)
+        : 'Custom ($currentLevel)';
 
     return SettingsTile(
       enabled: canEdit,
-      title: const Text('Required minimum level'),
-      description: Text(lang.minPowerLevelError(lang.tasks)),
+      title: Text(lang.powerLevelPostEventsTitle),
+      description: Text(lang.powerLevelPostEventsDesc),
       trailing: Text(pwTextTL),
       onPressed: (context) => updateFeatureLevelChangeDialog(
         context,
         maxPowerLevel,
-        powerLevels.eventsDefault(),
+        currentLevel,
         space,
         powerLevels,
         'events_default',
-        'Minimum level to interact',
+        lang.powerLevelPostEventsTitle,
         isGlobal: true,
       ),
     );
@@ -315,24 +333,24 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
     String defaultDesc,
   ) {
     final lang = L10n.of(context);
-    final eventsDefaulLevel = powerLevels.kick();
+    final currentLevel = powerLevels.kick();
     final pwTextTL = maxPowerLevel == 100
-        ? powerLevelName(eventsDefaulLevel)
-        : 'Custom ($eventsDefaulLevel)';
+        ? powerLevelName(currentLevel)
+        : 'Custom ($currentLevel)';
 
     return SettingsTile(
       enabled: canEdit,
-      title: const Text('Kick Power Level'),
-      description: Text(lang.minPowerLevelError(lang.tasks)),
+      title: Text(lang.powerLevelKickTitle),
+      description: Text(lang.powerLevelKickDesc),
       trailing: Text(pwTextTL),
       onPressed: (context) => updateFeatureLevelChangeDialog(
         context,
         maxPowerLevel,
-        powerLevels.eventsDefault(),
+        currentLevel,
         space,
         powerLevels,
         'kick',
-        'Minimum level to kick',
+        lang.powerLevelKickTitle,
         isGlobal: true,
       ),
     );
@@ -347,24 +365,24 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
     String defaultDesc,
   ) {
     final lang = L10n.of(context);
-    final eventsDefaulLevel = powerLevels.invite();
+    final currentLevel = powerLevels.invite();
     final pwTextTL = maxPowerLevel == 100
-        ? powerLevelName(eventsDefaulLevel)
-        : 'Custom ($eventsDefaulLevel)';
+        ? powerLevelName(currentLevel)
+        : 'Custom ($currentLevel)';
 
     return SettingsTile(
       enabled: canEdit,
-      title: const Text('Invite Power Level'),
-      description: Text(lang.minPowerLevelError(lang.tasks)),
+      title: Text(lang.powerLevelInviteTitle),
+      description: Text(lang.powerLevelInviteDesc),
       trailing: Text(pwTextTL),
       onPressed: (context) => updateFeatureLevelChangeDialog(
         context,
         maxPowerLevel,
-        powerLevels.eventsDefault(),
+        currentLevel,
         space,
         powerLevels,
         'invite',
-        'Minimum level to invite',
+        lang.powerLevelInviteTitle,
         isGlobal: true,
       ),
     );
@@ -379,24 +397,24 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
     String defaultDesc,
   ) {
     final lang = L10n.of(context);
-    final eventsDefaulLevel = powerLevels.redact();
+    final currentLevel = powerLevels.redact();
     final pwTextTL = maxPowerLevel == 100
-        ? powerLevelName(eventsDefaulLevel)
-        : 'Custom ($eventsDefaulLevel)';
+        ? powerLevelName(currentLevel)
+        : 'Custom ($currentLevel)';
 
     return SettingsTile(
       enabled: canEdit,
-      title: const Text('Redact Power Level'),
-      description: Text(lang.minPowerLevelError(lang.tasks)),
+      title: Text(lang.powerLevelRedactTitle),
+      description: Text(lang.powerLevelRedactDesc),
       trailing: Text(pwTextTL),
       onPressed: (context) => updateFeatureLevelChangeDialog(
         context,
         maxPowerLevel,
-        powerLevels.eventsDefault(),
+        currentLevel,
         space,
         powerLevels,
         'redact',
-        'Minimum level to redact',
+        lang.powerLevelRedactTitle,
         isGlobal: true,
       ),
     );
@@ -411,25 +429,127 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
     String defaultDesc,
   ) {
     final lang = L10n.of(context);
-    final eventsDefaulLevel = powerLevels.ban();
+    final currentLevel = powerLevels.ban();
     final pwTextTL = maxPowerLevel == 100
-        ? powerLevelName(eventsDefaulLevel)
-        : 'Custom ($eventsDefaulLevel)';
+        ? powerLevelName(currentLevel)
+        : 'Custom ($currentLevel)';
 
     return SettingsTile(
       enabled: canEdit,
-      title: const Text('Ban Power Level'),
-      description: Text(lang.minPowerLevelError(lang.tasks)),
+      title: Text(lang.powerLevelBanTitle),
+      description: Text(lang.powerLevelBanDesc),
       trailing: Text(pwTextTL),
       onPressed: (context) => updateFeatureLevelChangeDialog(
         context,
         maxPowerLevel,
-        powerLevels.eventsDefault(),
+        currentLevel,
         space,
         powerLevels,
         'ban',
-        'Minimum level to ban',
+        lang.powerLevelBanDesc,
         isGlobal: true,
+      ),
+    );
+  }
+
+  SettingsTile buildCommentsTile(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+    final powerLevel = powerLevels.comments();
+    final pwTextTL = maxPowerLevel == 100
+        ? powerLevelName(powerLevel)
+        : 'Custom ($powerLevel)';
+
+    return SettingsTile(
+      enabled: canEdit,
+      title: Text(lang.comments),
+      description: Text(
+        lang.minPowerLevelDesc(lang.comments),
+      ),
+      trailing: Text(pwTextTL),
+      onPressed: (context) => updateFeatureLevelChangeDialog(
+        context,
+        maxPowerLevel,
+        powerLevel,
+        space,
+        powerLevels,
+        powerLevels.commentsKey(),
+        lang.minPowerLevelDesc(lang.comments),
+        isGlobal: false,
+      ),
+    );
+  }
+
+  SettingsTile buildAttachmentsTile(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+    final powerLevel = powerLevels.attachments();
+    final pwTextTL = maxPowerLevel == 100
+        ? powerLevelName(powerLevel)
+        : 'Custom ($powerLevel)';
+
+    return SettingsTile(
+      enabled: canEdit,
+      title: Text(lang.attachments),
+      description: Text(
+        lang.minPowerLevelDesc(lang.attachments),
+      ),
+      trailing: Text(pwTextTL),
+      onPressed: (context) => updateFeatureLevelChangeDialog(
+        context,
+        maxPowerLevel,
+        powerLevel,
+        space,
+        powerLevels,
+        powerLevels.attachmentsKey(),
+        lang.minPowerLevelDesc(lang.attachments),
+        isGlobal: false,
+      ),
+    );
+  }
+
+  SettingsTile buildRsvpTile(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+    final powerLevel = powerLevels.rsvp();
+    final pwTextTL = maxPowerLevel == 100
+        ? powerLevelName(powerLevel)
+        : 'Custom ($powerLevel)';
+
+    return SettingsTile(
+      enabled: canEdit,
+      title: Text(lang.rsvpPowerLevel),
+      description: Text(
+        lang.minPowerLevelDesc(lang.rsvp),
+      ),
+      trailing: Text(pwTextTL),
+      onPressed: (context) => updateFeatureLevelChangeDialog(
+        context,
+        maxPowerLevel,
+        powerLevel,
+        space,
+        powerLevels,
+        powerLevels.rsvpKey(),
+        lang.minPowerLevelDesc(lang.rsvp),
+        isGlobal: false,
       ),
     );
   }
@@ -454,7 +574,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         SettingsTile(
           enabled: canEdit,
           title: Text(lang.requiredPowerLevel),
-          description: Text(lang.minPowerLevelError(lang.boost)),
+          description: Text(lang.minPowerLevelDesc(lang.boost)),
           trailing: Text(currentPw != null ? pwText : defaultDesc),
           onPressed: (context) => updateFeatureLevelChangeDialog(
             context,
@@ -465,13 +585,6 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             powerLevels.newsKey(),
             lang.boosts,
           ),
-        ),
-        SettingsTile.switchTile(
-          title: Text(lang.commentsOnBoost),
-          description: Text(lang.notYetSupported),
-          enabled: false,
-          initialValue: false,
-          onToggle: (newVal) {},
         ),
       ],
     );
@@ -498,7 +611,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           enabled: canEdit,
           title: Text(lang.requiredPowerLevel),
           description: Text(
-            lang.minPowerLevelError(lang.pin),
+            lang.minPowerLevelDesc(lang.pin),
           ),
           trailing: Text(currentPw != null ? pwText : defaultDesc),
           onPressed: (context) => updateFeatureLevelChangeDialog(
@@ -510,13 +623,6 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             powerLevels.pinsKey(),
             lang.pins,
           ),
-        ),
-        SettingsTile.switchTile(
-          title: Text(lang.commentsOnPin),
-          description: Text(lang.notYetSupported),
-          enabled: false,
-          initialValue: false,
-          onToggle: (newVal) {},
         ),
       ],
     );
@@ -542,7 +648,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           enabled: canEdit,
           title: Text(lang.adminPowerLevel),
           description: Text(
-            lang.minPowerLevelError(lang.event),
+            lang.minPowerLevelDesc(lang.event),
           ),
           trailing: Text(currentPw != null ? pwText : defaultDesc),
           onPressed: (context) => updateFeatureLevelChangeDialog(
@@ -555,18 +661,13 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             lang.events,
           ),
         ),
-        SettingsTile(
-          enabled: false,
-          title: Text(lang.rsvpPowerLevel),
-          description: Text(lang.minPowerLevelRsvp),
-          trailing: Text(lang.notYetSupported),
-        ),
-        SettingsTile.switchTile(
-          title: Text(lang.comments),
-          description: Text(lang.notYetSupported),
-          enabled: false,
-          initialValue: false,
-          onToggle: (newVal) {},
+        buildRsvpTile(
+          context,
+          powerLevels,
+          space,
+          maxPowerLevel,
+          canEdit,
+          defaultDesc,
         ),
       ],
     );
@@ -596,7 +697,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         SettingsTile(
           enabled: canEdit,
           title: Text(lang.taskListPowerLevel),
-          description: Text(lang.minPowerLevelError(lang.taskList)),
+          description: Text(lang.minPowerLevelDesc(lang.taskList)),
           trailing:
               taskListCurrentPw != null ? Text(pwTextTL) : Text(defaultDesc),
           onPressed: (context) => updateFeatureLevelChangeDialog(
@@ -612,7 +713,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
         SettingsTile(
           enabled: canEdit,
           title: Text(lang.tasksPowerLevel),
-          description: Text(lang.minPowerLevelError(lang.tasks)),
+          description: Text(lang.minPowerLevelDesc(lang.tasks)),
           trailing: tasksCurrentPw != null ? Text(pwTextT) : Text(defaultDesc),
           onPressed: (context) => updateFeatureLevelChangeDialog(
             context,
@@ -623,13 +724,6 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             powerLevels.tasksKey(),
             lang.tasks,
           ),
-        ),
-        SettingsTile.switchTile(
-          title: Text(lang.comments),
-          description: Text(lang.notYetSupported),
-          enabled: false,
-          initialValue: false,
-          onToggle: (newVal) {},
         ),
       ],
     );
