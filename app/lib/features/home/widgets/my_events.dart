@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widget.dart';
+import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -44,7 +44,12 @@ class MyEventsSection extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            sectionHeader(context, sectionTitle),
+            SectionHeader(
+              title: sectionTitle,
+              showSectionBg: false,
+              isShowSeeAllButton: true,
+              onTapSeeAll: () => context.pushNamed(Routes.calendarEvents.name),
+            ),
             eventListUI(context, ref, calEvents),
           ],
         );
@@ -57,22 +62,6 @@ class MyEventsSection extends ConsumerWidget {
     );
   }
 
-  Widget sectionHeader(BuildContext context, String sectionTitle) {
-    return Row(
-      children: [
-        Text(
-          sectionTitle,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const Spacer(),
-        ActerInlineTextButton(
-          onPressed: () => context.pushNamed(Routes.calendarEvents.name),
-          child: Text(L10n.of(context).seeAll),
-        ),
-      ],
-    );
-  }
-
   Widget eventListUI(
     BuildContext context,
     WidgetRef ref,
@@ -80,6 +69,7 @@ class MyEventsSection extends ConsumerWidget {
   ) {
     final count = limit.map((val) => min(val, events.length)) ?? events.length;
     return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       shrinkWrap: true,
       itemCount: count,
       physics: const NeverScrollableScrollPhysics(),

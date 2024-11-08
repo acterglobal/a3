@@ -13,6 +13,7 @@ class SpaceListWidget extends ConsumerWidget {
   final VoidCallback? onClickSectionHeader;
   final String? sectionHeaderTitle;
   final bool? isShowSeeAllButton;
+  final bool showSectionBg;
   final bool shrinkWrap;
   final Widget emptyState;
 
@@ -24,6 +25,7 @@ class SpaceListWidget extends ConsumerWidget {
     this.onClickSectionHeader,
     this.sectionHeaderTitle,
     this.isShowSeeAllButton,
+    this.showSectionBg = true,
     this.shrinkWrap = true,
     this.emptyState = const SizedBox.shrink(),
   });
@@ -39,6 +41,7 @@ class SpaceListWidget extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               SectionHeader(
+                showSectionBg: showSectionBg,
                 title: sectionHeaderTitle ?? L10n.of(context).spaces,
                 isShowSeeAllButton:
                     isShowSeeAllButton ?? count < spaceList.length,
