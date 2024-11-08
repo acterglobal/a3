@@ -42,7 +42,7 @@ class MyEventsSection extends ConsumerWidget {
           onTapSeeAll: () => context.pushNamed(Routes.calendarEvents.name),
         ),
         EventListWidget(
-          limit: 3,
+          limit: limit,
           listProvider: eventListProvider,
         ),
       ],
