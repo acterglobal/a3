@@ -3,13 +3,10 @@ import 'dart:math';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/room/room_card.dart';
-import 'package:acter/features/home/data/keys.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/features/spaces/widgets/space_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,115 +22,37 @@ class MySpacesSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bookmarkedSpaces = ref.watch(bookmarkedSpacesProvider);
-    final spaces = ref.watch(spacesProvider);
+    //Common variable declaration
     final lang = L10n.of(context);
-    final textTheme = Theme.of(context).textTheme;
-    if (bookmarkedSpaces.isNotEmpty) {
-      return _RenderSpacesSection(
-        spaces: bookmarkedSpaces,
-        limit: bookmarkedSpaces.length,
-        showAll: true,
-        showAllCounter: spaces.length,
-        title: Text(
-          lang.bookmarkedSpaces,
-          style: textTheme.titleSmall,
-        ),
+
+    //Get spaces List Data
+    final allSpacesList = ref.watch(spacesProvider);
+    final bookmarkedSpacesList = ref.watch(bookmarkedSpacesProvider);
+
+    //Empty State
+    if (allSpacesList.isEmpty) return const _NoSpacesWidget();
+
+    //Bookmarked Spaces : If available
+    if (!bookmarkedSpacesList.isNotEmpty) {
+      return SpaceListWidget(
+        spaceListProvider: bookmarkedSpacesProvider,
+        showSectionHeader: true,
+        isShowSeeAllButton: true,
+        sectionHeaderTitle: lang.bookmarkedSpaces,
+        onClickSectionHeader: () => context.pushNamed(Routes.spaces.name),
       );
     }
 
-    // fallback
-    if (spaces.isEmpty) {
-      return const _NoSpacesWidget();
-    }
-
-    final count = limit.map((val) => min(val, spaces.length)) ?? spaces.length;
-    return _RenderSpacesSection(
-      spaces: spaces,
-      limit: count,
-      showAll: count != spaces.length,
-      showActions: count == spaces.length,
-      showAllCounter: spaces.length,
-      title: InkWell(
-        key: DashboardKeys.widgetMySpacesHeader,
-        onTap: () => context.pushNamed(Routes.spaces.name),
-        child: Text(
-          lang.mySpaces,
-          style: textTheme.titleSmall,
-        ),
-      ),
-    );
-  }
-}
-
-class _RenderSpacesSection extends ConsumerWidget {
-  final int limit;
-  final List<Space> spaces;
-  final Widget title;
-  final bool showAll;
-  final bool showActions;
-  final int showAllCounter;
-
-  const _RenderSpacesSection({
-    required this.spaces,
-    required this.limit,
-    required this.title,
-    this.showActions = false,
-    this.showAll = false,
-    this.showAllCounter = 0,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final lang = L10n.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            title,
-            const Spacer(),
-            if (showAll)
-              ActerInlineTextButton(
-                onPressed: () => context.pushNamed(Routes.spaces.name),
-                child: Text(lang.seeAll),
-              ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        ListView.builder(
-          shrinkWrap: true,
-          itemCount: limit,
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) => RoomCard(
-            roomId: spaces[index].getRoomIdStr(),
-            margin: const EdgeInsets.only(bottom: 14),
-          ),
-        ),
-        if (showActions)
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                OutlinedButton(
-                  onPressed: () => context.pushNamed(Routes.createSpace.name),
-                  child: Text(lang.createSpace),
-                ),
-                const SizedBox(height: 10),
-                ActerPrimaryActionButton(
-                  onPressed: () {
-                    context.pushNamed(Routes.searchPublicDirectory.name);
-                  },
-                  child: Text(lang.joinSpace),
-                ),
-              ],
-            ),
-          ),
-      ],
+    //All Spaces : If bookmark list is empty
+    final count = limit.map((val) => min(val, allSpacesList.length)) ??
+        allSpacesList.length;
+    return SpaceListWidget(
+      spaceListProvider: spacesProvider,
+      showSectionHeader: true,
+      sectionHeaderTitle: lang.mySpaces,
+      limit: limit,
+      isShowSeeAllButton: count != allSpacesList.length,
+      onClickSectionHeader: () => context.pushNamed(Routes.spaces.name),
     );
   }
 }
