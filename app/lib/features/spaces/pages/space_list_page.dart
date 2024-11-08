@@ -1,8 +1,8 @@
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/spaces/model/keys.dart';
+import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter/features/spaces/widgets/space_list_empty_state.dart';
 import 'package:acter/features/spaces/widgets/space_list_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -24,14 +24,14 @@ class SpaceListPage extends ConsumerStatefulWidget {
 }
 
 class _AllPinsPageConsumerState extends ConsumerState<SpaceListPage> {
-  String get searchValue => ref.watch(searchValueProvider);
+  String get searchValue => ref.watch(spaceListSearchTermProvider);
 
   @override
   void initState() {
     super.initState();
     widget.searchQuery.map((query) {
       WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        ref.read(searchValueProvider.notifier).state = query;
+        ref.read(spaceListSearchTermProvider.notifier).state = query;
       });
     });
   }
@@ -92,16 +92,16 @@ class _AllPinsPageConsumerState extends ConsumerState<SpaceListPage> {
         ActerSearchWidget(
           initialText: widget.searchQuery,
           onChanged: (value) {
-            ref.read(searchValueProvider.notifier).state = value;
+            ref.read(spaceListSearchTermProvider.notifier).state = value;
           },
           onClear: () {
-            ref.read(searchValueProvider.notifier).state = '';
+            ref.read(spaceListSearchTermProvider.notifier).state = '';
           },
         ),
         Expanded(
           child: SpaceListWidget(
+            spaceListProvider: spaceListSearchProvider,
             shrinkWrap: false,
-            searchValue: searchValue,
             emptyState: SpaceListEmptyState(searchValue: searchValue),
           ),
         ),

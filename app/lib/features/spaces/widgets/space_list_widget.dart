@@ -2,7 +2,6 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
-import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter/features/spaces/widgets/space_list_skeleton.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,7 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::space-list-widget');
 
 class SpaceListWidget extends ConsumerWidget {
-  final String? searchValue;
+  final ProviderBase<AsyncValue<List<Space>>> spaceListProvider;
   final int? limit;
   final bool showSectionHeader;
   final VoidCallback? onClickSectionHeader;
@@ -22,8 +21,8 @@ class SpaceListWidget extends ConsumerWidget {
 
   const SpaceListWidget({
     super.key,
+    required this.spaceListProvider,
     this.limit,
-    this.searchValue,
     this.showSectionHeader = false,
     this.onClickSectionHeader,
     this.shrinkWrap = true,
@@ -32,7 +31,7 @@ class SpaceListWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaceLoader = ref.watch(spaceListSearchProvider(searchValue ?? ''));
+    final spaceLoader = ref.watch(spaceListProvider);
     return spaceLoader.when(
       data: (spaceList) => buildSpaceSectionUI(context, spaceList),
       error: (error, stack) => spaceListErrorWidget(context, ref, error, stack),
@@ -54,7 +53,7 @@ class SpaceListWidget extends ConsumerWidget {
       stack: stack,
       textBuilder: L10n.of(context).loadingFailed,
       onRetryTap: () {
-        ref.invalidate(spaceListSearchProvider(searchValue ?? ''));
+        ref.invalidate(spaceListProvider);
       },
     );
   }
