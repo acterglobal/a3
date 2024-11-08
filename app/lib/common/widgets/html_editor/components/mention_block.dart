@@ -1,67 +1,57 @@
-import 'package:acter/common/widgets/html_editor/components/mention_content.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_block_keys.dart';
-import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MentionBlock extends StatelessWidget {
+class MentionBlock extends ConsumerWidget {
   const MentionBlock({
     super.key,
-    required this.editorState,
-    required this.mention,
     required this.node,
     required this.index,
-    required this.textStyle,
+    required this.mention,
+    required this.userRoomId,
   });
 
-  final EditorState editorState;
   final Map<String, dynamic> mention;
+  final String userRoomId;
   final Node node;
   final int index;
-  final TextStyle? textStyle;
-
   @override
-  Widget build(BuildContext context) {
-    final type = MentionType.fromStr(mention[MentionBlockKeys.type]);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final String type = mention[MentionBlockKeys.type];
 
     switch (type) {
-      case MentionType.user:
-        final String? userId = mention[MentionBlockKeys.userId] as String?;
-        final String? blockId = mention[MentionBlockKeys.blockId] as String?;
-        final String? displayName =
-            mention[MentionBlockKeys.displayName] as String?;
+      case 'user':
+        final String userId = mention[MentionBlockKeys.userId];
 
-        if (userId == null) {
-          return const SizedBox.shrink();
-        }
+        final String displayName = mention[MentionBlockKeys.displayName];
+
+        final avatarInfo = ref.watch(
+          memberAvatarInfoProvider((roomId: userRoomId, userId: userId)),
+        );
 
         return _mentionContent(
           context: context,
           mentionId: userId,
-          blockId: blockId,
-          editorState: editorState,
           displayName: displayName,
-          node: node,
-          index: index,
+          avatar: avatarInfo,
+          ref: ref,
         );
-      case MentionType.room:
-        final String? roomId = mention[MentionBlockKeys.roomId] as String?;
-        final String? blockId = mention[MentionBlockKeys.blockId] as String?;
-        final String? displayName =
-            mention[MentionBlockKeys.displayName] as String?;
+      case 'room':
+        final String roomId = mention[MentionBlockKeys.roomId];
 
-        if (roomId == null) {
-          return const SizedBox.shrink();
-        }
+        final String displayName = mention[MentionBlockKeys.displayName];
+
+        final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
 
         return _mentionContent(
           context: context,
           mentionId: roomId,
-          blockId: blockId,
-          editorState: editorState,
           displayName: displayName,
-          node: node,
-          index: index,
+          avatar: avatarInfo,
+          ref: ref,
         );
       default:
         return const SizedBox.shrink();
@@ -70,26 +60,36 @@ class MentionBlock extends StatelessWidget {
 
   Widget _mentionContent({
     required BuildContext context,
-    required EditorState editorState,
     required String mentionId,
-    String? blockId,
-    required String? displayName,
-    TextStyle? textStyle,
-    required Node node,
-    required int index,
+    required String displayName,
+    required WidgetRef ref,
+    required AvatarInfo avatar,
   }) {
     final desktopPlatforms = [
       TargetPlatform.linux,
       TargetPlatform.macOS,
       TargetPlatform.windows,
     ];
-    final mentionContentWidget = MentionContentWidget(
-      mentionId: mentionId,
-      displayName: displayName,
-      textStyle: textStyle,
-      editorState: editorState,
-      node: node,
-      index: index,
+    final name = displayName.isNotEmpty ? displayName : mentionId;
+    final mentionContentWidget = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).unselectedWidgetColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ActerAvatar(
+            options: AvatarOptions(
+              avatar,
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(name, style: Theme.of(context).textTheme.bodyMedium),
+        ],
+      ),
     );
 
     final Widget content = GestureDetector(

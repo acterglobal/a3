@@ -56,7 +56,6 @@ Future<bool> _handleMentionTrigger({
       editorState: editorState,
       roomId: roomId,
       mentionType: type,
-      style: const MentionMenuStyle.dark(),
     );
 
     menu.show();

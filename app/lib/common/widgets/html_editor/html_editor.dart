@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_block_keys.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter/common/widgets/html_editor/services/mention_shortcuts.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -368,6 +371,8 @@ class HtmlEditorState extends State<HtmlEditor> {
                 .bodySmall
                 .expect('bodySmall style not available'),
           ),
+      textSpanDecorator:
+          widget.roomId != null ? customizeAttributeDecorator : null,
     );
   }
 
@@ -384,6 +389,55 @@ class HtmlEditorState extends State<HtmlEditor> {
                 .expect('bodySmall style not available'),
           ),
       mobileDragHandleBallSize: const Size(12, 12),
+      textSpanDecorator:
+          widget.roomId != null ? customizeAttributeDecorator : null,
+    );
+  }
+
+  InlineSpan customizeAttributeDecorator(
+    BuildContext context,
+    Node node,
+    int index,
+    TextInsert text,
+    TextSpan before,
+    TextSpan after,
+  ) {
+    final attributes = text.attributes;
+    if (attributes == null) {
+      return before;
+    }
+    final roomId = widget.roomId;
+    // Inline Mentions
+    final mention =
+        attributes[MentionBlockKeys.mention] as Map<String, dynamic>?;
+    if (mention != null && roomId != null) {
+      final type = mention[MentionBlockKeys.type];
+      return WidgetSpan(
+        alignment: PlaceholderAlignment.middle,
+        style: after.style,
+        child: MentionBlock(
+          key: ValueKey(
+            switch (type) {
+              MentionType.user => mention[MentionBlockKeys.userId],
+              MentionType.room => mention[MentionBlockKeys.roomId],
+              _ => MentionBlockKeys.mention,
+            },
+          ),
+          userRoomId: roomId,
+          node: node,
+          index: index,
+          mention: mention,
+        ),
+      );
+    }
+
+    return defaultTextSpanDecoratorForAttribute(
+      context,
+      node,
+      index,
+      text,
+      before,
+      after,
     );
   }
 }
