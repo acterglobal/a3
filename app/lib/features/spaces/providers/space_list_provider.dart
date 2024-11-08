@@ -27,17 +27,15 @@ final subSpacesListProvider =
 });
 
 final allSpaceListWithBookmarkFrontProvider =
-    FutureProvider.autoDispose<List<Space>>((ref) {
+    Provider.autoDispose<List<Space>>((ref) {
   final bookmarkedSpaceList = ref.watch(bookmarkedSpacesProvider);
   final othersSpaceList = ref.watch(unbookmarkedSpacesProvider);
   final spaceList = bookmarkedSpaceList.followedBy(othersSpaceList);
   return spaceList.toList();
 });
 
-final spaceListSearchProvider =
-    FutureProvider.autoDispose<List<Space>>((ref) async {
-  final spaceList =
-      await ref.watch(allSpaceListWithBookmarkFrontProvider.future);
+final spaceListSearchProvider = Provider.autoDispose<List<Space>>((ref) {
+  final spaceList = ref.watch(allSpaceListWithBookmarkFrontProvider);
   final searchTerm =
       ref.watch(spaceListSearchTermProvider).trim().toLowerCase();
 
@@ -56,10 +54,8 @@ final spaceListSearchProvider =
 });
 
 //Space list for quick search value provider
-final spaceListQuickSearchedProvider =
-    FutureProvider.autoDispose<List<Space>>((ref) async {
-  final spaceList =
-      await ref.watch(allSpaceListWithBookmarkFrontProvider.future);
+final spaceListQuickSearchedProvider = Provider.autoDispose<List<Space>>((ref) {
+  final spaceList = ref.watch(allSpaceListWithBookmarkFrontProvider);
   final searchTerm = ref.watch(quickSearchValueProvider).trim().toLowerCase();
 
   //Return all spaces if search is empty
