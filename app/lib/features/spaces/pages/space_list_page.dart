@@ -1,4 +1,3 @@
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/spaces/model/keys.dart';
@@ -29,10 +28,9 @@ class _AllPinsPageConsumerState extends ConsumerState<SpaceListPage> {
   @override
   void initState() {
     super.initState();
-    widget.searchQuery.map((query) {
-      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        ref.read(spaceListSearchTermProvider.notifier).state = query;
-      });
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      ref.read(spaceListSearchTermProvider.notifier).state =
+          widget.searchQuery ?? '';
     });
   }
 
