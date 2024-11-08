@@ -146,19 +146,29 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
         return KeyEventResult.handled;
 
       case LogicalKeyboardKey.backspace:
+        final selection = widget.editorState.selection;
+        if (selection == null) return KeyEventResult.handled;
+
+        final node = widget.editorState.getNodeAtPath(selection.end.path);
+        if (node == null) return KeyEventResult.handled;
+
+        // Get text before cursor
+        final text = node.delta?.toPlainText() ?? '';
+        final cursorPosition = selection.end.offset;
+
         if (_canDeleteLastCharacter()) {
+          // Check if we're about to delete an mention symbol
+          if (cursorPosition > 0 &&
+              text[cursorPosition - 1] ==
+                  MentionType.toStr(widget.mentionType)) {
+            widget.onDismiss(); // Dismiss menu when @ is deleted
+          }
           widget.editorState.deleteBackward();
         } else {
           // Workaround for editor regaining focus
           widget.editorState.apply(
-            widget.editorState.transaction
-              ..afterSelection = widget.editorState.selection,
+            widget.editorState.transaction..afterSelection = selection,
           );
-        }
-        final isEmpty = widget.editorState.selection?.end.offset == 0;
-
-        if (isEmpty) {
-          widget.onDismiss();
         }
         return KeyEventResult.handled;
 
@@ -181,14 +191,29 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
 
     final transaction = widget.editorState.transaction;
     final node = widget.editorState.getNodeAtPath(selection.end.path);
-    final length = selection.end.offset - (selection.start.offset - 1);
-
     if (node == null) return;
+
+    final text = node.delta?.toPlainText() ?? '';
+    final cursorPosition = selection.end.offset;
+
+    // Find the trigger symbol position by searching backwards from cursor
+    int atSymbolPosition = -1;
+    for (int i = cursorPosition - 1; i >= 0; i--) {
+      if (text[i] == MentionType.toStr(widget.mentionType)) {
+        atSymbolPosition = i;
+        break;
+      }
+    }
+
+    if (atSymbolPosition == -1) return; // No trigger found
+
+    // Calculate length from trigger to cursor
+    final lengthToReplace = cursorPosition - atSymbolPosition;
 
     transaction.replaceText(
       node,
-      selection.start.offset - 1,
-      length,
+      atSymbolPosition, // Start exactly from trigger
+      lengthToReplace, // Replace everything including trigger
       ' ',
       attributes: {
         MentionBlockKeys.mention: {
