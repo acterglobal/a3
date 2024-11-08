@@ -50,7 +50,7 @@ class Dashboard extends ConsumerWidget {
                       MyTasksSection(limit: 5),
                       MyEventsSection(
                         limit: 3,
-                        eventFilters: EventFilters.ongoing,
+                        eventFilters: EventFilters.upcoming,
                       ),
                       MySpacesSection(limit: 5),
                     ],
