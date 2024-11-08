@@ -6,6 +6,7 @@ import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/search/providers/quick_search_providers.dart';
+import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter/features/spaces/widgets/space_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -119,8 +120,8 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
           if (quickSearchFilters.value == QuickSearchFilters.all ||
               quickSearchFilters.value == QuickSearchFilters.spaces)
             SpaceListWidget(
+              spaceListProvider: spaceListQuickSearchedProvider,
               limit: 3,
-              searchValue: searchValue,
               showSectionHeader: true,
               onClickSectionHeader: () => context.pushNamed(
                 Routes.spaces.name,
