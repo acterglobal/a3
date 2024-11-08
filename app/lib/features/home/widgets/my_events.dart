@@ -21,7 +21,7 @@ class MyEventsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
 
-    //Event Provide
+    //Event Provider
     final eventListProvider = switch (eventFilters) {
       EventFilters.ongoing => myOngoingEventListProvider(null),
       _ => myUpcomingEventListProvider(null),
