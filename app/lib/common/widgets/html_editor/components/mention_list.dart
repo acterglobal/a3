@@ -77,19 +77,20 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
         padding: const EdgeInsets.all(8.0),
         child: Text(
           widget.mentionType == MentionType.user
-              ? L10n.of(context).foundUsers
-              : 'Rooms',
+              ? L10n.of(context).users
+              : L10n.of(context).chats,
         ),
       );
 
   Widget _buildMenuList(Map<String, String> suggestions) {
+    final String notFound = widget.mentionType == MentionType.user
+        ? L10n.of(context).noUserFoundTitle
+        : L10n.of(context).noChatsFound;
     return Flexible(
       child: suggestions.isEmpty
-          ? const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'No results found',
-              ),
+          ? Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(notFound),
             )
           : ListView.builder(
               shrinkWrap: true,
@@ -161,7 +162,7 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
           if (cursorPosition > 0 &&
               text[cursorPosition - 1] ==
                   MentionType.toStr(widget.mentionType)) {
-            widget.onDismiss(); // Dismiss menu when @ is deleted
+            widget.onDismiss(); // Dismiss menu when is deleted
           }
           widget.editorState.deleteBackward();
         } else {

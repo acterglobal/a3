@@ -1314,6 +1314,7 @@
   "@usedTimes": {},
   "userAddedToBlockList": "{user} added to block list. UI might take a bit too update",
   "@userAddedToBlockList": {},
+  "users": "Users",
   "usersfoundDirectory": "Users found in public directory",
   "@usersfoundDirectory": {},
   "username": "Username",
