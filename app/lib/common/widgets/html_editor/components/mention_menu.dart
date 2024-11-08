@@ -52,7 +52,7 @@ class MentionMenu {
         left: position.dx + 20, // Align with left edge of input
         // Position above input with some padding
         bottom: 70,
-        width: size.width, // Match input width
+        width: size.width * 0.75,
         child: Material(
           elevation: 8, // Add some elevation for better visibility
           borderRadius: BorderRadius.circular(8),

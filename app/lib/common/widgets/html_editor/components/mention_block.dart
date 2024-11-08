@@ -21,41 +21,26 @@ class MentionBlock extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final String type = mention[MentionBlockKeys.type];
+    final String displayName = mention[MentionBlockKeys.displayName];
+    final String mentionId = type == 'user'
+        ? mention[MentionBlockKeys.userId]
+        : mention[MentionBlockKeys.roomId];
+    final avatarInfo = type == 'user'
+        ? ref.watch(
+            memberAvatarInfoProvider((roomId: userRoomId, userId: mentionId)),
+          )
+        : ref.watch(roomAvatarInfoProvider(mentionId));
+    final options = type == 'user'
+        ? AvatarOptions.DM(avatarInfo, size: 8)
+        : AvatarOptions(avatarInfo, size: 16);
 
-    switch (type) {
-      case 'user':
-        final String userId = mention[MentionBlockKeys.userId];
-
-        final String displayName = mention[MentionBlockKeys.displayName];
-
-        final avatarInfo = ref.watch(
-          memberAvatarInfoProvider((roomId: userRoomId, userId: userId)),
-        );
-
-        return _mentionContent(
-          context: context,
-          mentionId: userId,
-          displayName: displayName,
-          avatar: avatarInfo,
-          ref: ref,
-        );
-      case 'room':
-        final String roomId = mention[MentionBlockKeys.roomId];
-
-        final String displayName = mention[MentionBlockKeys.displayName];
-
-        final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-
-        return _mentionContent(
-          context: context,
-          mentionId: roomId,
-          displayName: displayName,
-          avatar: avatarInfo,
-          ref: ref,
-        );
-      default:
-        return const SizedBox.shrink();
-    }
+    return _mentionContent(
+      context: context,
+      mentionId: mentionId,
+      displayName: displayName,
+      avatarOptions: options,
+      ref: ref,
+    );
   }
 
   Widget _mentionContent({
@@ -63,7 +48,7 @@ class MentionBlock extends ConsumerWidget {
     required String mentionId,
     required String displayName,
     required WidgetRef ref,
-    required AvatarInfo avatar,
+    required AvatarOptions avatarOptions,
   }) {
     final desktopPlatforms = [
       TargetPlatform.linux,
@@ -80,12 +65,7 @@ class MentionBlock extends ConsumerWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ActerAvatar(
-            options: AvatarOptions(
-              avatar,
-              size: 16,
-            ),
-          ),
+          ActerAvatar(options: avatarOptions),
           const SizedBox(width: 4),
           Text(name, style: Theme.of(context).textTheme.bodyMedium),
         ],

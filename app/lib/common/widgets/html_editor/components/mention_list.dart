@@ -1,4 +1,6 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_item.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_block_keys.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
@@ -86,6 +88,7 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     final String notFound = widget.mentionType == MentionType.user
         ? L10n.of(context).noUserFoundTitle
         : L10n.of(context).noChatsFound;
+
     return Flexible(
       child: suggestions.isEmpty
           ? Padding(
@@ -97,13 +100,26 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
               controller: _scrollController,
               itemCount: suggestions.length,
               itemBuilder: (context, index) {
-                final userId = suggestions.keys.elementAt(index);
+                final mentionId = suggestions.keys.elementAt(index);
                 final displayName = suggestions.values.elementAt(index);
+                final avatar = widget.mentionType == MentionType.user
+                    ? ref.watch(
+                        memberAvatarInfoProvider(
+                          (roomId: widget.roomId, userId: mentionId),
+                        ),
+                      )
+                    : ref.watch(roomAvatarInfoProvider(mentionId));
+                final options = widget.mentionType == MentionType.user
+                    ? AvatarOptions.DM(avatar, size: 18)
+                    : AvatarOptions(avatar, size: 28);
+
                 return MentionItem(
-                  userId: userId,
+                  mentionId: mentionId,
+                  mentionType: widget.mentionType,
                   displayName: displayName,
+                  avatarOptions: options,
                   isSelected: index == _selectedIndex,
-                  onTap: () => _selectItem(userId, displayName),
+                  onTap: () => _selectItem(mentionId, displayName),
                 );
               },
             ),
