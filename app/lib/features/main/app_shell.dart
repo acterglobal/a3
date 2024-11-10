@@ -14,6 +14,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
+import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter/features/main/widgets/bottom_navigation_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +60,7 @@ class AppShellState extends ConsumerState<AppShell> {
       () => bottomNavigationTutorials(context: context),
     );
     initShake();
+    _initDeepLinking();
 
     // these want to be sure to execute in order
     await _initNotifications();
@@ -111,6 +113,12 @@ class AppShellState extends ConsumerState<AppShell> {
     if (!pushActive) return;
     _log.info('Attempting to ask for push notifications');
     setupPushNotifications(client);
+  }
+
+  Future<void> _initDeepLinking() async {
+    appLinks.uriLinkStream.listen((Uri incoming) {
+      debugPrint('Received Deep Link URI: $incoming');
+    });
   }
 
   @override
