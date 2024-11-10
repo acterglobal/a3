@@ -9,7 +9,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/error_helpers.dart';
 import '../../helpers/mock_event_providers.dart';
-import '../../helpers/mock_space_providers.dart';
 import '../../helpers/test_util.dart';
 
 void main() {
@@ -109,12 +108,13 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           isBookmarkedProvider.overrideWith((a, b) => false),
-          roomAvatarInfoProvider
-              .overrideWith(() => MockRoomAvatarInfoNotifier()),
           calendarEventProvider.overrideWith(() => mockedNofitier),
+          participantsProvider
+              .overrideWith(() => MockAsyncParticipantsNotifier()),
           myRsvpStatusProvider
               .overrideWith(() => MockAsyncRsvpStatusNotifier()),
           roomMembershipProvider.overrideWith((a, b) => null),
+          roomDisplayNameProvider.overrideWith((a, b) => 'RoomName'),
         ],
         child: const EventDetailPage(
           calendarId: '!asdf',
