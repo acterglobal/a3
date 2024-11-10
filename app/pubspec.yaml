@@ -278,3 +278,5 @@ msix_config:
   icons_background_color: transparent
   architecture: x64
   capabilities: "internetClient,removableStorage"
+  protocol_activation: https, matrix, acter
+  app_uri_handler_hosts: app.global.acter
