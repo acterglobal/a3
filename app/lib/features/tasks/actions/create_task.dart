@@ -144,8 +144,8 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
                     const Text(' > '),
                     if (taskList == null)
                       ActerInlineTextButton(
-                        child: Text(lang.selectTaskList),
                         onPressed: _selectTaskList,
+                        child: Text(lang.selectTaskList),
                       )
                     else
                       InkWell(
