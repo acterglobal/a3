@@ -10,12 +10,30 @@ class SchemeNotSupported extends UriParseError {
 
 class ParsingFailed extends UriParseError {}
 
-UriParseResult? parseUri(Uri uri) => switch (uri.scheme) {
+UriParseResult parseUri(Uri uri) => switch (uri.scheme) {
       'matrix' => _parseMatrixUri(uri),
+      'https' || 'http' => _parseMatrixHttpsUri(uri),
       _ => throw SchemeNotSupported(scheme: uri.scheme),
     };
 
-UriParseResult? _parseMatrixUri(Uri uri) {
+UriParseResult _parseMatrixHttpsUri(Uri uri) {
+  String end = Uri.decodeComponent(uri.fragment);
+  final split = end.split('?');
+  final path = split.first;
+  final prefix = switch (path[1]) {
+    '#' => 'r',
+    '!' => 'roomid',
+    '@' => 'u',
+    _ => throw ParsingFailed(),
+  };
+  uri = uri.replace(
+    path: '$prefix/${path.substring(2).replaceFirst('/\$', '/e/')}',
+    query: split.lastOrNull,
+  );
+  return _parseMatrixUri(uri);
+}
+
+UriParseResult _parseMatrixUri(Uri uri) {
   final path = uri.pathSegments.first;
   return switch (path) {
     'r' => UriParseResult(
@@ -33,7 +51,7 @@ UriParseResult? _parseMatrixUri(Uri uri) {
   };
 }
 
-UriParseResult? _parseMatrixUriRoomId(Uri uri) {
+UriParseResult _parseMatrixUriRoomId(Uri uri) {
   final path = uri.pathSegments;
   if (path.length == 4) {
     final roomId = path[1];
