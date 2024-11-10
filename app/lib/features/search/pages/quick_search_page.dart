@@ -2,6 +2,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_list_widget.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/search/providers/quick_search_providers.dart';
@@ -129,6 +130,7 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
           if (quickSearchFilters.value == QuickSearchFilters.all ||
               quickSearchFilters.value == QuickSearchFilters.pins)
             PinListWidget(
+              pinListProvider: pinListQuickSearchedProvider,
               limit: 3,
               searchValue: searchValue,
               showSectionHeader: true,

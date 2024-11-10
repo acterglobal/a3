@@ -9,13 +9,15 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
-import 'package:acter/features/attachments/types.dart';
-import 'package:acter/features/comments/types.dart';
+import 'package:acter/features/bookmarks/types.dart';
+import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/actions/update_tasklist.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
+import 'package:acter/features/attachments/types.dart';
+import 'package:acter/features/comments/types.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +59,9 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     final tasklist = ref.watch(taskListProvider(widget.taskListId)).valueOrNull;
-    final actions = List<Widget>.empty(growable: true);
+    final List<Widget> actions = [
+      BookmarkAction(bookmarker: BookmarkType.forTaskList(widget.taskListId)),
+    ];
     if (tasklist != null) {
       actions.addAll(
         [
