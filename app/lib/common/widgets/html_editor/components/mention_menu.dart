@@ -20,17 +20,13 @@ class MentionMenu {
   bool selectionChangedByMenu = false;
 
   void dismiss() {
-    if (_menuEntry != null) {
-      editorState.service.keyboardService?.enable();
-      editorState.service.scrollService?.enable();
-      keepEditorFocusNotifier.decrease();
-    }
+    editorState.service.keyboardService?.enable();
+    editorState.service.scrollService?.enable();
+    keepEditorFocusNotifier.decrease();
 
     _menuEntry?.remove();
     _menuEntry = null;
   }
-
-  void _onSelectionUpdate() => selectionChangedByMenu = true;
 
   void show() {
     WidgetsBinding.instance.addPostFrameCallback((_) => _show());
@@ -68,7 +64,6 @@ class MentionMenu {
                 editorState: editorState,
                 roomId: roomId,
                 onDismiss: dismiss,
-                onSelectionUpdate: _onSelectionUpdate,
                 mentionType: mentionType,
               ),
             ),

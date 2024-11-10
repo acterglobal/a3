@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_item.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -17,14 +18,12 @@ class MentionList extends ConsumerStatefulWidget {
     required this.roomId,
     required this.mentionType,
     required this.onDismiss,
-    required this.onSelectionUpdate,
   });
 
   final EditorState editorState;
   final String roomId;
   final MentionType mentionType;
   final VoidCallback onDismiss;
-  final VoidCallback onSelectionUpdate;
 
   @override
   ConsumerState<MentionList> createState() => _MentionHandlerState();
@@ -46,6 +45,7 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
 
   @override
   void dispose() {
+    widget.onDismiss();
     _scrollController.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -53,26 +53,31 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
     // All suggestions list
     final suggestions = ref
         .watch(mentionSuggestionsProvider((widget.roomId, widget.mentionType)));
     if (suggestions == null) {
       return ErrorWidget(L10n.of(context).loadingFailed);
     }
-
-    return Focus(
-      focusNode: _focusNode,
-      onKeyEvent: (node, event) => _handleKeyEvent(node, event, suggestions),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildMenuHeader(),
-          const Divider(height: 1, endIndent: 5, indent: 5),
-          const SizedBox(height: 8),
-          _buildMenuList(suggestions),
-        ],
-      ),
+    final menuWidget = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildMenuHeader(),
+        const Divider(height: 1, endIndent: 5, indent: 5),
+        const SizedBox(height: 8),
+        _buildMenuList(suggestions),
+      ],
     );
+    if (isDesktop) {
+      // we only want to listen keyboard events on desktop
+      return Focus(
+        focusNode: _focusNode,
+        onKeyEvent: (node, event) => _handleKeyEvent(node, event, suggestions),
+        child: menuWidget,
+      );
+    }
+    return menuWidget;
   }
 
   Widget _buildMenuHeader() => Padding(
@@ -194,7 +199,6 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
                 !HardwareKeyboard.instance.isAltPressed &&
                 !HardwareKeyboard.instance.isMetaPressed ||
             !HardwareKeyboard.instance.isShiftPressed) {
-          widget.onSelectionUpdate();
           widget.editorState.insertTextAtCurrentSelection(event.character!);
           return KeyEventResult.handled;
         }
