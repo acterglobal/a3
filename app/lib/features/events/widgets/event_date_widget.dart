@@ -7,11 +7,15 @@ class EventDateWidget extends StatelessWidget {
   final CalendarEvent calendarEvent;
   final EventFilters eventType;
 
-  const EventDateWidget(
-      {super.key, required this.calendarEvent, required this.eventType,});
+  const EventDateWidget({
+    super.key,
+    required this.calendarEvent,
+    required this.eventType,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final day = getDayFromDate(calendarEvent.utcStart());
     final month = getMonthFromDate(calendarEvent.utcStart());
     final startTime = getTimeFromDate(context, calendarEvent.utcStart());
@@ -29,12 +33,12 @@ class EventDateWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(month, style: Theme.of(context).textTheme.titleSmall),
+                Text(month, style: textTheme.titleSmall),
                 const SizedBox(width: 4),
-                Text(day, style: Theme.of(context).textTheme.titleSmall),
+                Text(day, style: textTheme.titleSmall),
               ],
             ),
-            Text(startTime, style: Theme.of(context).textTheme.labelMedium),
+            Text(startTime, style: textTheme.labelMedium),
           ],
         ),
       ),

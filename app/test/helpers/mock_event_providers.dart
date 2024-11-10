@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:acter/features/datetime/providers/notifiers/now_notifier.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
+import 'package:acter/features/events/providers/notifiers/participants_notifier.dart';
 import 'package:acter/features/events/providers/notifiers/rsvp_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
@@ -25,25 +27,67 @@ class MockAsyncCalendarEventNotifier
   }
 }
 
+class MockAsyncParticipantsNotifier
+    extends AutoDisposeFamilyAsyncNotifier<List<String>, String>
+    with Mock
+    implements AsyncParticipantsNotifier {
+  bool shouldFail;
+  List<String> participants;
+  MockAsyncParticipantsNotifier({
+    this.shouldFail = true,
+    this.participants = const [],
+  });
+
+  @override
+  Future<List<String>> build(String arg) async {
+    if (shouldFail) {
+      // toggle failure so the retry works
+      shouldFail = !shouldFail;
+      throw 'Expected fail: Space not loaded';
+    }
+    return participants;
+  }
+}
+
 class MockAsyncRsvpStatusNotifier
     extends AutoDisposeFamilyAsyncNotifier<RsvpStatusTag?, String>
     with Mock
     implements AsyncRsvpStatusNotifier {
+  String? status;
+
+  MockAsyncRsvpStatusNotifier({this.status});
+
   @override
   Future<RsvpStatusTag?> build(String arg) async {
-    return null;
+    return switch (status) {
+      'yes' => RsvpStatusTag.Yes,
+      'no' => RsvpStatusTag.No,
+      'maybe' => RsvpStatusTag.Maybe,
+      _ => null,
+    };
   }
 }
 
 class MockEvent extends Fake implements CalendarEvent {
+  final String fakeEventTitle;
+
+  MockEvent({this.fakeEventTitle = 'Fake Event'});
+
+  @override
+  EventId eventId() => MockEventId('eventId');
+
   @override
   String roomIdStr() => 'testRoomId';
+
   @override
-  String title() => 'Fake Event';
+  String title() => fakeEventTitle;
+
   @override
   TextMessageContent? description() => null;
+
   @override
   UtcDateTime utcStart() => FakeUtcDateTime();
+
   @override
   UtcDateTime utcEnd() => FakeUtcDateTime();
 
@@ -63,3 +107,13 @@ class FakeUtcDateTime extends Fake implements UtcDateTime {
   @override
   int timestampMillis() => 10;
 }
+
+class MockUtcNowNotifier extends Mock implements UtcNowNotifier {}
+
+class MockEventId extends Mock implements EventId {
+  final String fakeEventId;
+
+  MockEventId(this.fakeEventId);
+}
+
+class MockEventListSearchFilterProvider extends Mock {}

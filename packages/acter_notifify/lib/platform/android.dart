@@ -5,6 +5,7 @@ import 'package:acter_notifify/local.dart';
 import 'package:acter_notifify/matrix.dart';
 import 'package:acter_notifify/util.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::notifify::android');
@@ -24,6 +25,7 @@ Future<ByteArrayAndroidBitmap?> _fetchImage(
       return ByteArrayAndroidBitmap(image.asTypedList());
     } catch (e, s) {
       _log.severe('fetching image data failed', e, s);
+      Sentry.captureException(e, stackTrace: s);
     }
   }
   return null;
@@ -41,6 +43,7 @@ Future<Person> _makeSenderPerson(NotificationItem notification) async {
       );
     } catch (e, s) {
       _log.severe('fetching image data failed', e, s);
+      Sentry.captureException(e, stackTrace: s);
     }
   }
   return Person(key: sender.userId(), name: sender.displayName());
@@ -56,6 +59,7 @@ Future<ByteArrayAndroidBitmap?> _fetchRoomAvatar(
       return ByteArrayAndroidBitmap(image.asTypedList());
     } catch (e, s) {
       _log.severe('fetching room avatar failed', e, s);
+      Sentry.captureException(e, stackTrace: s);
     }
   }
   return null;

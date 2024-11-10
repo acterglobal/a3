@@ -2068,7 +2068,7 @@
   "@text": {},
   "audio": "Audio",
   "@audio": {},
-  "inSpaceLabelInline": "In",
+  "inSpaceLabelInline": "In:",
   "@inSpaceLabelInline": {},
   "comingSoon": "Noch nicht unterstützt. kommt bald!",
   "@comingSoon": {},
@@ -2253,5 +2253,17 @@
   "chatNG": "Next-Generation Chat",
   "@chatNG": {},
   "chatNGExplainer": "Wechsle zum Chat der nächsten Generation. Features sind evtl. noch nicht stabil",
-  "@chatNGExplainer": {}
+  "@chatNGExplainer": {},
+  "addTaskList": "Aufgabenliste hinzufügen",
+  "@addTaskList": {},
+  "deleteNewsDraftTitle": "Entwurf löschen?",
+  "@deleteNewsDraftTitle": {},
+  "deleteNewsDraftText": "Sicher, dass der Entwurf gelöscht werden soll? Das kann nicht rückgängig gemacht werden.",
+  "@deleteNewsDraftText": {},
+  "deleteDraftBtn": "Entwurf löschen",
+  "@deleteDraftBtn": {},
+  "errorProcessingSlide": "Erstellen von Seite {slideIdx} fehlgeschlagen: {error}",
+  "@errorProcessingSlide": {},
+  "addComment": "Kommentieren",
+  "@addComment": {}
 }

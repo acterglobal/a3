@@ -5,6 +5,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/sync_state/sync_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 // ignore_for_file: avoid_print
 class SyncNotifier extends StateNotifier<SyncState> {
@@ -32,13 +33,17 @@ class SyncNotifier extends StateNotifier<SyncState> {
   }
 
   void _tickSyncState() {
-    final countDown = state.countDown;
-    if (countDown == null || countDown == 0) {
-      _restartSync();
-    } else {
-      // just count down.
-      state = state.copyWith(countDown: countDown - 1);
-    }
+    state.countDown.map(
+      (countDown) {
+        if (countDown == 0) {
+          _restartSync();
+        } else {
+          // just count down.
+          state = state.copyWith(countDown: countDown - 1);
+        }
+      },
+      orElse: () => _restartSync(),
+    );
   }
 
   void _restartSync() {
@@ -60,6 +65,7 @@ class SyncNotifier extends StateNotifier<SyncState> {
 
     _errorListener = syncState.syncErrorRx(); // keep it resident in memory
     _errorPoller = _errorListener.listen((msg) {
+      Sentry.captureMessage('Sync failure: $msg', level: SentryLevel.error);
       if (mounted) {
         if (msg == 'SoftLogout' || msg == 'Unauthorized') {
           // regular logout, we do nothing here

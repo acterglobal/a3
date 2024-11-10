@@ -82,7 +82,8 @@ class SubChatsPage extends ConsumerWidget {
           key: SubChatsPage.createSubChatKey,
           onTap: () => context.pushNamed(
             Routes.createChat.name,
-            queryParameters: {'parentSpaceId': spaceId},
+            queryParameters: {'spaceId': spaceId},
+            extra: 1,
           ),
           child: Row(
             children: <Widget>[

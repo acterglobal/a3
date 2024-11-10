@@ -9,7 +9,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/error_helpers.dart';
 import '../../helpers/mock_event_providers.dart';
-import '../../helpers/mock_space_providers.dart';
 import '../../helpers/test_util.dart';
 
 void main() {
@@ -18,7 +17,7 @@ void main() {
       bool shouldFail = true;
       await tester.pumpProviderWidget(
         overrides: [
-          eventListSearchFilterProvider.overrideWith((a, b) {
+          eventListSearchedAndFilterProvider.overrideWith((a, b) {
             if (shouldFail) {
               // toggle failure so the retry works
               shouldFail = !shouldFail;
@@ -40,7 +39,7 @@ void main() {
           searchValueProvider
               .overrideWith((_) => 'some string'), // set a search string
 
-          eventListSearchFilterProvider.overrideWith((a, b) {
+          eventListSearchedAndFilterProvider.overrideWith((a, b) {
             if (shouldFail) {
               // toggle failure so the retry works
               shouldFail = !shouldFail;
@@ -61,7 +60,7 @@ void main() {
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
           roomMembershipProvider.overrideWith((a, b) => null),
-          eventListSearchFilterProvider.overrideWith((a, b) {
+          eventListSearchedAndFilterProvider.overrideWith((a, b) {
             if (shouldFail) {
               // toggle failure so the retry works
               shouldFail = !shouldFail;
@@ -86,7 +85,7 @@ void main() {
           roomMembershipProvider.overrideWith((a, b) => null),
           searchValueProvider
               .overrideWith((_) => 'some search'), // set a search string
-          eventListSearchFilterProvider.overrideWith((a, b) {
+          eventListSearchedAndFilterProvider.overrideWith((a, b) {
             if (shouldFail) {
               // toggle failure so the retry works
               shouldFail = !shouldFail;
@@ -109,12 +108,13 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           isBookmarkedProvider.overrideWith((a, b) => false),
-          roomAvatarInfoProvider
-              .overrideWith(() => MockRoomAvatarInfoNotifier()),
           calendarEventProvider.overrideWith(() => mockedNofitier),
+          participantsProvider
+              .overrideWith(() => MockAsyncParticipantsNotifier()),
           myRsvpStatusProvider
               .overrideWith(() => MockAsyncRsvpStatusNotifier()),
           roomMembershipProvider.overrideWith((a, b) => null),
+          roomDisplayNameProvider.overrideWith((a, b) => 'RoomName'),
         ],
         child: const EventDetailPage(
           calendarId: '!asdf',

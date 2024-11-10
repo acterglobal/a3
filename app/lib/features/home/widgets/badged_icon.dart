@@ -14,17 +14,18 @@ class BadgedIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return switch (urgency) {
       UrgencyBadge.important => Badge(
-          backgroundColor: Theme.of(context).colorScheme.badgeImportant,
+          backgroundColor: colorScheme.badgeImportant,
           child: child,
         ),
       UrgencyBadge.urgent => Badge(
-          backgroundColor: Theme.of(context).colorScheme.badgeUrgent,
+          backgroundColor: colorScheme.badgeUrgent,
           child: child,
         ),
       UrgencyBadge.unread => Badge(
-          backgroundColor: Theme.of(context).colorScheme.badgeUnread,
+          backgroundColor: colorScheme.badgeUnread,
           child: child,
         ),
       // read and none, we do not show any icon to prevent notification fatigue

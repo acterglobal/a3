@@ -4,7 +4,6 @@ import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
-import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -32,7 +31,6 @@ class SettingsLabsPage extends ConsumerWidget {
             SettingsSection(
               title: Text(lang.labsAppFeatures),
               tiles: [
-                const LabsNotificationsSettingsTile(),
                 SettingsTile.switchTile(
                   title: Text(lang.encryptionBackupKeyBackup),
                   description: Text(lang.sharedCalendarAndEvents),

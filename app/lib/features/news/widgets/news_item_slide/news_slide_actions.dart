@@ -1,7 +1,6 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/toolkit/errors/error_dialog.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
-import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
@@ -46,10 +45,7 @@ class NewsSlideActions extends ConsumerWidget {
     final lang = L10n.of(context);
     final calEventLoader = ref.watch(calendarEventProvider(eventId));
     return calEventLoader.when(
-      data: (calEvent) => EventItem(
-        event: calEvent,
-        eventType: ref.watch(eventTypeProvider(calEvent)),
-      ),
+      data: (calEvent) => EventItem(event: calEvent),
       loading: () => const EventItemSkeleton(),
       error: (e, s) {
         _log.severe('Failed to load cal event', e, s);
@@ -79,6 +75,7 @@ class NewsSlideActions extends ConsumerWidget {
     WidgetRef ref,
     RefDetails referenceDetails,
   ) {
+    final textTheme = Theme.of(context).textTheme;
     final uri = referenceDetails.uri();
     if (uri == null) {
       // malformatted
@@ -99,7 +96,7 @@ class NewsSlideActions extends ConsumerWidget {
             title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium,
+            style: textTheme.labelMedium,
           ),
           subtitle: Text(
             uri,
@@ -117,7 +114,7 @@ class NewsSlideActions extends ConsumerWidget {
             uri,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelMedium,
+            style: textTheme.labelMedium,
           ),
         ),
       );

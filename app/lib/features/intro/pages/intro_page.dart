@@ -38,16 +38,17 @@ class IntroPage extends StatelessWidget {
 
   Widget _buildTitle(BuildContext context) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: [
         RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
             text: lang.welcomeTo,
-            style: Theme.of(context).textTheme.displayMedium!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.textHighlight,
-                ),
+            style: textTheme.displayMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.textHighlight,
+            ),
             children: <TextSpan>[
               TextSpan(text: lang.acter),
             ],
@@ -56,7 +57,7 @@ class IntroPage extends StatelessWidget {
         const SizedBox(height: 10),
         Text(
           lang.yourSafeAndSecureSpace,
-          style: Theme.of(context).textTheme.titleSmall,
+          style: textTheme.titleSmall,
           textAlign: TextAlign.center,
         ),
       ],
@@ -75,6 +76,7 @@ class IntroPage extends StatelessWidget {
 
   Widget _buildDescription(BuildContext context) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
@@ -84,24 +86,22 @@ class IntroPage extends StatelessWidget {
             RichText(
               text: TextSpan(
                 text: lang.introPageDescriptionPre,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: textTheme.bodyMedium,
                 children: <TextSpan>[
                   TextSpan(
                     text: lang.introPageDescriptionHl,
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.textHighlight,
-                        ),
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.textHighlight,
+                    ),
                   ),
-                  TextSpan(
-                    text: lang.introPageDescriptionPost,
-                  ),
+                  TextSpan(text: lang.introPageDescriptionPost),
                 ],
               ),
             ),
             const SizedBox(height: 10),
             Text(
               lang.introPageDescription2ndLine,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: textTheme.bodyMedium,
             ),
           ],
         ),

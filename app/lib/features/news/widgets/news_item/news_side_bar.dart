@@ -6,6 +6,9 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
+import 'package:acter/features/comments/providers/comments_providers.dart';
+import 'package:acter/features/comments/types.dart';
+import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/read_receipts/widgets/read_counter.dart';
@@ -36,6 +39,15 @@ class NewsSideBar extends ConsumerWidget {
     final likesCount = ref.watch(totalLikesForNewsProvider(news));
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
+    final commentCount = ref
+            .watch(
+              newsCommentsCountProvider(
+                news.asCommentsManagerProvider(),
+              ),
+            )
+            .valueOrNull ??
+        0;
+    final bodyLarge = Theme.of(context).textTheme.bodyLarge;
 
     return Align(
       alignment: Alignment.bottomRight,
@@ -51,7 +63,7 @@ class NewsSideBar extends ConsumerWidget {
           LikeButton(
             isLiked: isLikedByMe.valueOrNull ?? false,
             likeCount: likesCount.valueOrNull ?? 0,
-            style: style,
+            style: bodyLarge?.copyWith(fontSize: 13),
             color: Theme.of(context).colorScheme.textColor,
             onTap: () async {
               final manager =
@@ -64,6 +76,29 @@ class NewsSideBar extends ConsumerWidget {
                 await manager.redactLike(null, null);
               }
             },
+          ),
+          const SizedBox(height: 10),
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                showDragHandle: true,
+                useSafeArea: true,
+                builder: (context) => CommentsSectionWidget(
+                  managerProvider: news.asCommentsManagerProvider(),
+                  shrinkWrap: false,
+                  centerTitle: true,
+                  useCompactEmptyState: false,
+                ),
+              );
+            },
+            icon: Column(
+              children: [
+                const Icon(Atlas.comment_blank),
+                const SizedBox(height: 4),
+                Text(commentCount.toString(), style: style),
+              ],
+            ),
           ),
           const SizedBox(height: 10),
           InkWell(
@@ -81,7 +116,7 @@ class NewsSideBar extends ConsumerWidget {
             child: _SideBarItem(
               icon: const Icon(Atlas.dots_horizontal_thin),
               label: '',
-              style: style,
+              style: bodyLarge?.copyWith(fontSize: 13),
             ),
           ),
           const SizedBox(height: 10),
@@ -106,7 +141,7 @@ class NewsSideBar extends ConsumerWidget {
 class _SideBarItem extends StatelessWidget {
   final Widget icon;
   final String label;
-  final TextStyle style;
+  final TextStyle? style;
 
   const _SideBarItem({
     required this.icon,
@@ -120,7 +155,10 @@ class _SideBarItem extends StatelessWidget {
       children: [
         icon,
         const SizedBox(height: 5),
-        Text(label, style: style),
+        Text(
+          label,
+          style: style,
+        ),
       ],
     );
   }

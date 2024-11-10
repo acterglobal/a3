@@ -55,11 +55,11 @@ class UploadAvatarPage extends ConsumerWidget {
   }
 
   Widget _buildHeadlineText(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Text(
       L10n.of(context).avatarAddTitle,
-      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: Theme.of(context).colorScheme.secondary,
-          ),
+      style: textTheme.headlineMedium?.copyWith(color: colorScheme.secondary),
       textAlign: TextAlign.center,
     );
   }
@@ -76,6 +76,7 @@ class UploadAvatarPage extends ConsumerWidget {
   }
 
   Widget _buildAvatarUI(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       key: UploadAvatarPage.selectUserAvatar,
       onTap: () => onSelectAvatar(context, ref),
@@ -87,7 +88,7 @@ class UploadAvatarPage extends ConsumerWidget {
             borderRadius: BorderRadius.circular(100),
             border: Border.all(
               width: 2,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: colorScheme.onSurface,
             ),
           ),
           child: Stack(
@@ -119,9 +120,9 @@ class UploadAvatarPage extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(100),
                       border: Border.all(
                         width: 1,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: colorScheme.onSurface,
                       ),
-                      color: Theme.of(context).colorScheme.surface,
+                      color: colorScheme.surface,
                     ),
                     child: const Icon(
                       Icons.add,

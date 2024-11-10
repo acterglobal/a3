@@ -123,9 +123,7 @@ class _RedactContentWidget extends ConsumerWidget {
         _log.info('Content from $redactedId reason:$reason}');
       } else {
         final room = await ref.read(chatProvider(roomId).future);
-        if (room == null) {
-          throw RoomNotFound();
-        }
+        if (room == null) throw RoomNotFound();
         final redactedId = await room.redactContent(eventId, reason);
         _log.info('Content from $redactedId reason:$reason}');
       }

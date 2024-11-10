@@ -12,7 +12,7 @@ import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
 import 'package:acter/features/home/widgets/chats_icon.dart';
-import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
+import 'package:acter/features/tasks/actions/create_task.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -90,11 +90,11 @@ class __SidebarItemIndicatorState extends ConsumerState<_SidebarItemIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context).navigationRailTheme;
+    final navigationRailTheme = Theme.of(context).navigationRailTheme;
     return NavigationIndicator(
       animation: _controller,
-      color: theme.indicatorColor,
-      shape: theme.indicatorShape,
+      color: navigationRailTheme.indicatorColor,
+      shape: navigationRailTheme.indicatorShape,
     );
   }
 }
@@ -184,9 +184,15 @@ class SidebarWidget extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const _MyUserAvatar(),
-          const Divider(indent: 18, endIndent: 18),
+          const Divider(
+            indent: 18,
+            endIndent: 18,
+          ),
           ..._menuItems(context, ref),
-          const Divider(indent: 18, endIndent: 18),
+          const Divider(
+            indent: 18,
+            endIndent: 18,
+          ),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -194,7 +200,10 @@ class SidebarWidget extends ConsumerWidget {
               ),
             ),
           ),
-          const Divider(indent: 18, endIndent: 18),
+          const Divider(
+            indent: 18,
+            endIndent: 18,
+          ),
           _quickActionButton(context, ref),
           if (isBugReportingEnabled) ..._bugReporter(context),
           const SizedBox(height: 12),
@@ -222,10 +231,9 @@ class SidebarWidget extends ConsumerWidget {
     final canAddEvent =
         ref.watch(hasSpaceWithPermissionProvider('CanPostEvent')).valueOrNull ??
             false;
-    final canAddTask = ref
-            .watch(hasSpaceWithPermissionProvider('CanPostTaskList'))
-            .valueOrNull ??
-        false;
+    final canAddTask =
+        ref.watch(hasSpaceWithPermissionProvider('CanPostTask')).valueOrNull ??
+            false;
     final canAddBoost =
         ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
             false;
@@ -249,11 +257,11 @@ class SidebarWidget extends ConsumerWidget {
         PopupMenuItem(
           child: ActionButtonWidget(
             iconData: Atlas.list,
-            title: lang.addTaskList,
+            title: lang.addTask,
             color: taskFeatureColor,
             onPressed: () {
               if (context.canPop()) Navigator.pop(context);
-              showCreateUpdateTaskListBottomSheet(context);
+              showCreateTaskBottomSheet(context);
             },
           ),
         ),
@@ -367,6 +375,7 @@ class SidebarWidget extends ConsumerWidget {
   }
 
   List<_SidebarItem> _menuItems(BuildContext context, WidgetRef ref) {
+    final textTheme = Theme.of(context).textTheme;
     return [
       _SidebarItem(
         icon: const Icon(
@@ -376,7 +385,7 @@ class SidebarWidget extends ConsumerWidget {
         ),
         label: Text(
           'Jump',
-          style: Theme.of(context).textTheme.labelSmall,
+          style: textTheme.labelSmall,
           softWrap: false,
         ),
         onTap: () => goToBranch(ShellBranch.searchShell),
@@ -391,7 +400,7 @@ class SidebarWidget extends ConsumerWidget {
         ),
         label: Text(
           'Home',
-          style: Theme.of(context).textTheme.labelSmall,
+          style: textTheme.labelSmall,
           softWrap: false,
         ),
         onTap: () => goToBranch(ShellBranch.homeShell),
@@ -409,7 +418,7 @@ class SidebarWidget extends ConsumerWidget {
         icon: const ChatsIcon(),
         label: Text(
           'Chat',
-          style: Theme.of(context).textTheme.labelSmall,
+          style: textTheme.labelSmall,
           softWrap: false,
         ),
         onTap: () => goToBranch(ShellBranch.chatsShell),
@@ -422,7 +431,7 @@ class SidebarWidget extends ConsumerWidget {
           children: [
             Text(
               'Activities',
-              style: Theme.of(context).textTheme.labelSmall,
+              style: textTheme.labelSmall,
               softWrap: false,
             ),
             const SizedBox(height: 10),

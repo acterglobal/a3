@@ -61,7 +61,7 @@ class _DueChipState extends State<DueChip> {
   Widget inner(BuildContext context) {
     final lang = L10n.of(context);
     final textStyle =
-        widget.baseTextStyle ?? Theme.of(context).textTheme.bodySmall!;
+        widget.baseTextStyle ?? Theme.of(context).textTheme.bodySmall;
     return dueDate.map((date) {
           final dateText =
               DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(date);
@@ -73,7 +73,7 @@ class _DueChipState extends State<DueChip> {
                       ? date.timeago()
                       : lang.due(dateText);
           final dueTheme = date.isPast
-              ? textStyle.copyWith(color: Theme.of(context).colorScheme.error)
+              ? textStyle?.copyWith(color: Theme.of(context).colorScheme.error)
               : null;
           return Chip(
             visualDensity: widget.visualDensity,

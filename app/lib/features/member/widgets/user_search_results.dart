@@ -22,6 +22,7 @@ class UserSearchResults extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final suggestedUsers =
         ref.watch(filteredSuggestedUsersProvider(roomId)).valueOrNull ?? [];
     final foundUsers = ref.watch(searchResultProvider).valueOrNull ?? [];
@@ -63,7 +64,7 @@ class UserSearchResults extends ConsumerWidget {
                 ),
                 child: Text(
                   lang.suggestedUsers,
-                  style: Theme.of(context).textTheme.titleSmall,
+                  style: textTheme.titleSmall,
                 ),
               ),
               userWidget,
@@ -81,7 +82,7 @@ class UserSearchResults extends ConsumerWidget {
                 ),
                 child: Text(
                   lang.usersfoundDirectory,
-                  style: Theme.of(context).textTheme.titleSmall,
+                  style: textTheme.titleSmall,
                 ),
               ),
               userWidget,

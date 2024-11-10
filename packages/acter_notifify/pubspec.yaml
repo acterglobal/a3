@@ -24,6 +24,7 @@ dependencies:
   dio: ^5.5.0+1
   windows_notification: ^1.2.0
   app_badge_plus: ^1.1.5
+  sentry: any
 
 dev_dependencies:
   flutter_test:

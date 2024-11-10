@@ -105,9 +105,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
               child: PageView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 onPageChanged: (index) {
-                  setState(() {
-                    currIdx = index;
-                  });
+                  setState(() => currIdx = index);
                 },
                 controller: controller,
                 itemBuilder: ((context, index) => pages[currIdx]),
@@ -223,10 +221,9 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
 
   Widget renderSelectedUsers(BuildContext context) {
     final selectedUsers = ref.watch(createChatSelectedUsersProvider).toList();
-
-    if (selectedUsers.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    if (selectedUsers.isEmpty) return const SizedBox.shrink();
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -240,9 +237,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              border: Border.all(color: colorScheme.onSurface),
             ),
             child: Consumer(
               builder: (context, ref, child) {
@@ -265,9 +260,9 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                     const SizedBox(width: 5),
                     Text(
                       displayName ?? userId,
-                      style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
+                      style: textTheme.labelMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                      ),
                     ),
                     const SizedBox(width: 10),
                     InkWell(
@@ -275,7 +270,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
                       child: Icon(
                         Icons.close_outlined,
                         size: 18,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -475,7 +470,10 @@ class _CreateRoomFormWidgetConsumerState
     final lang = L10n.of(context);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 15,
+        vertical: 18,
+      ),
       child: ListView(
         shrinkWrap: true,
         children: <Widget>[

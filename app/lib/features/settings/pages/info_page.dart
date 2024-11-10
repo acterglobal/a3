@@ -42,6 +42,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final appNameDigest = sha1.convert(utf8.encode(Env.rageshakeAppName));
     final urlDigest = sha1.convert(utf8.encode(Env.rageshakeUrl));
     final deviceId = ref.watch(deviceIdProvider);
@@ -55,7 +57,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
           automaticallyImplyLeading: !context.isLargeScreen,
           title: Text(
             '${lang.acterApp} ${lang.info}',
-            style: Theme.of(context).textTheme.titleLarge,
+            style: textTheme.titleLarge,
           ),
         ),
         body: SettingsList(
@@ -63,30 +65,28 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             SettingsSection(
               title: Text(
                 lang.appDefaults,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.primary),
+                style:
+                    textTheme.bodyLarge?.copyWith(color: colorScheme.primary),
               ),
               tiles: <SettingsTile>[
                 SettingsTile(
                   title: Text(
                     lang.homeServerName,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: textTheme.bodyMedium,
                   ),
                   value: const Text(Env.defaultHomeserverName),
                 ),
                 SettingsTile(
                   title: Text(
                     lang.homeServerURL,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: textTheme.bodyMedium,
                   ),
                   value: const Text(Env.defaultHomeserverUrl),
                 ),
                 SettingsTile(
                   title: Text(
                     lang.sessionTokenName,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: textTheme.bodyMedium,
                   ),
                   value: const Text(Env.defaultActerSession),
                 ),
@@ -95,10 +95,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             SettingsSection(
               title: Text(
                 lang.debugInfo,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.primary),
+                style:
+                    textTheme.bodyLarge?.copyWith(color: colorScheme.primary),
               ),
               tiles: <SettingsTile>[
                 SettingsTile.switchTile(
@@ -113,7 +111,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 SettingsTile(
                   title: Text(
                     lang.version,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: textTheme.bodyMedium,
                   ),
                   value: const Text(Env.rageshakeAppVersion),
                 ),
@@ -121,14 +119,14 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                     ? SettingsTile(
                         title: Text(
                           lang.rageShakeAppName,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: textTheme.bodyMedium,
                         ),
                         value: const Text(Env.rageshakeAppName),
                       )
                     : SettingsTile(
                         title: Text(
                           lang.rageShakeAppNameDigest,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: textTheme.bodyMedium,
                         ),
                         value: Text(appNameDigest.toString()),
                       ),
@@ -136,14 +134,14 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                     ? SettingsTile(
                         title: Text(
                           lang.rageShakeTargetUrl,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: textTheme.bodyMedium,
                         ),
                         value: const Text(Env.rageshakeUrl),
                       )
                     : SettingsTile(
                         title: Text(
                           lang.rageShakeTargetUrlDigest,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: textTheme.bodyMedium,
                         ),
                         value: Text(urlDigest.toString()),
                       ),
@@ -151,21 +149,21 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                     ? SettingsTile(
                         title: Text(
                           lang.deviceId,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: textTheme.bodyMedium,
                         ),
                         value: Text(deviceId),
                       )
                     : SettingsTile(
                         title: Text(
                           lang.deviceIdDigest,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: textTheme.bodyMedium,
                         ),
                         value: Text(devIdDigest.toString()),
                       ),
                 SettingsTile(
                   title: Text(
                     lang.httpProxy,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: textTheme.bodyMedium,
                   ),
                   onPressed: _displayHttpProxyEditor,
                   value: Text(httpProxySetting),
@@ -173,7 +171,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 SettingsTile(
                   title: Text(
                     lang.logSettings,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: textTheme.bodyMedium,
                   ),
                   onPressed: _displayDebugLevelEditor,
                   value: Text(rustLogSetting),
@@ -183,10 +181,8 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             SettingsSection(
               title: Text(
                 lang.thirdParty,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.primary),
+                style:
+                    textTheme.bodyLarge?.copyWith(color: colorScheme.primary),
               ),
               tiles: [
                 SettingsTile.navigation(

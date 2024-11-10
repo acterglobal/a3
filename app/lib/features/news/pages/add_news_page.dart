@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor.dart';
-import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
@@ -59,12 +58,13 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       final isText = nextSlide != null && nextSlide.type == NewsSlideType.text;
       final changed = prevState?.currentNewsSlide != nextSlide;
       if (isText && changed) {
-        final text = nextSlide.text;
-        final html = nextSlide.html;
-        final document =
-            ActerDocumentHelpers.parse(text ?? '', htmlContent: html);
+        final document = ActerDocumentHelpers.parse(
+          nextSlide.text ?? '',
+          htmlContent: nextSlide.html,
+        );
 
-        final autoFocus = html?.isEmpty != false && text?.isEmpty != false;
+        final autoFocus = nextSlide.html?.isEmpty != false &&
+            nextSlide.text?.isEmpty != false;
 
         setState(() {
           selectedNewsPost = nextSlide;
@@ -161,9 +161,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         },
         icon: const Icon(Atlas.xmark_circle),
       ),
-      backgroundColor: selectedNewsPost == null
-          ? Colors.transparent
-          : selectedNewsPost?.backgroundColor,
+      backgroundColor: selectedNewsPost?.backgroundColor ?? Colors.transparent,
       actions: selectedNewsPost == null
           ? []
           : [
@@ -282,7 +280,6 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                           final notifier = ref.read(newsStateProvider.notifier);
                           await notifier.selectEventToShare(context);
                         },
-                        eventType: ref.watch(eventTypeProvider(calendarEvent)),
                       ),
                     );
                   },

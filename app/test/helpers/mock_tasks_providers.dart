@@ -5,6 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 
+class SimpleReturningTasklists extends AsyncNotifier<List<TaskList>>
+    with Mock
+    implements AsyncAllTaskListsNotifier {
+  final List<TaskList> response;
+
+  SimpleReturningTasklists(this.response);
+
+  @override
+  Future<List<TaskList>> build() async => response;
+}
+
 class MockAsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>>
     with Mock
     implements AsyncAllTaskListsNotifier {
@@ -24,22 +35,22 @@ class MockAsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>>
   }
 }
 
-class MockTaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String>
+class FakeTaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String>
     with Mock
     implements TaskListItemNotifier {
   bool shouldFail;
 
-  MockTaskListItemNotifier({this.shouldFail = true});
+  FakeTaskListItemNotifier({this.shouldFail = true});
 
   @override
-  Future<MockTaskList> build(String arg) async {
+  Future<FakeTaskList> build(String arg) async {
     if (shouldFail) {
       // toggle failure so the retry works
       shouldFail = !shouldFail;
       throw 'Expected fail';
     }
 
-    return MockTaskList();
+    return FakeTaskList();
   }
 }
 
@@ -52,14 +63,30 @@ class MockTaskItemNotifier extends FamilyAsyncNotifier<Task, Task>
   }
 }
 
-class MockTaskList extends Fake implements TaskList {
-  bool shouldFail = true;
+class MockTaskDraft extends Mock implements TaskDraft {}
+
+class FakeTaskList extends Fake implements TaskList {
+  bool shouldFail;
+
+  final String nameStr;
+  final String spaceId;
+  final String eventId;
+
+  FakeTaskList({
+    this.nameStr = 'Test',
+    this.spaceId = 'spaceId',
+    this.eventId = 'eventId',
+    this.shouldFail = true,
+  });
 
   @override
-  String name() => 'Test';
+  String eventIdStr() => eventId;
 
   @override
-  String spaceIdStr() => 'spaceId';
+  String name() => nameStr;
+
+  @override
+  String spaceIdStr() => spaceId;
 
   @override
   MsgContent? description() => null;
@@ -86,9 +113,17 @@ class MockTaskList extends Fake implements TaskList {
   }
 }
 
+class MockTaskList extends FakeTaskList with Mock {}
+
 class MockTask extends Fake implements Task {
   @override
+  bool isDone() => false;
+
+  @override
   String title() => 'Test';
+
+  @override
+  String eventIdStr() => 'eventId';
 
   @override
   MsgContent? description() => null;

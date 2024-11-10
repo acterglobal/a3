@@ -659,6 +659,8 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                     reason: r.unsigned.redacted_because,
                 }),
             },
+            // should not really happen
+            AnyActerEvent::RegularTimelineEvent(_) => Err(Error::UnknownEvent),
         }
     }
 }

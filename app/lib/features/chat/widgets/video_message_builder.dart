@@ -77,7 +77,10 @@ class VideoMessageBuilder extends ConsumerWidget {
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -158,9 +161,7 @@ class VideoMessageBuilder extends ConsumerWidget {
         );
       },
       errorBuilder: (context, url, error) {
-        return Text(
-          L10n.of(context).couldNotLoadImage(error.toString()),
-        );
+        return Text(L10n.of(context).couldNotLoadImage(error.toString()));
       },
       fit: BoxFit.cover,
     );

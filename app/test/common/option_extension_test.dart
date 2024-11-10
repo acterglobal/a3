@@ -58,7 +58,7 @@ void main() {
       String? target;
 
       String? targetValue = await target.mapAsync(
-        (a) {
+        (a) async {
           wasCalled = true;
           return 'inner';
         },
@@ -90,7 +90,7 @@ void main() {
       String? target;
 
       String? targetValue = await target.mapAsync(
-        (a) {
+        (a) async {
           wasCalled = true;
           return 'inner';
         },

@@ -3,7 +3,9 @@ import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/actions/sort_event_list.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
+import 'package:acter/features/events/providers/notifiers/participants_notifier.dart';
 import 'package:acter/features/events/providers/notifiers/rsvp_notifier.dart';
+import 'package:acter/features/search/providers/quick_search_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
 
@@ -19,11 +21,24 @@ final myRsvpStatusProvider = AsyncNotifierProvider.autoDispose
   () => AsyncRsvpStatusNotifier(),
 );
 
+//MY RSVP STATUS PROVIDER
+final participantsProvider = AsyncNotifierProvider.autoDispose
+    .family<AsyncParticipantsNotifier, List<String>, String>(
+  () => AsyncParticipantsNotifier(),
+);
+
 //SpaceId == null : GET LIST OF ALL PINs
 //SpaceId != null : GET LIST OF SPACE PINs
-final allEventListProvider = AsyncNotifierProvider.family<EventListNotifier,
+final _allEventListProvider = AsyncNotifierProvider.family<EventListNotifier,
     List<ffi.CalendarEvent>, String?>(
   () => EventListNotifier(),
+);
+
+final allEventListProvider =
+    FutureProvider.autoDispose.family<List<ffi.CalendarEvent>, String?>(
+  (ref, spaceId) async => sortEventListDscTime(
+    await ref.watch(_allEventListProvider(spaceId).future),
+  ),
 );
 
 //ALL ONGOING EVENTS
@@ -131,74 +146,68 @@ enum EventFilters {
   past,
 }
 
-final eventFilterProvider =
-    StateProvider.autoDispose<EventFilters>((ref) => EventFilters.all);
-
 //SEARCH EVENTS
-typedef EventListSearchParams = ({String? spaceId, String searchText});
+typedef EventListSearchParams = ({
+  String? spaceId,
+  String searchText,
+  EventFilters eventFilter
+});
 
-final eventListSearchFilterProvider = FutureProvider.autoDispose
-    .family<List<ffi.CalendarEvent>, EventListSearchParams>(
-        (ref, params) async {
+List<ffi.CalendarEvent> _filterEventBySearchTerm(
+  String term,
+  List<ffi.CalendarEvent> events,
+) {
+  final cleanedTerm = term.trim().toLowerCase();
+  if (cleanedTerm.isEmpty) {
+    return events;
+  }
+
+  return events
+      .where((e) => e.title().toLowerCase().contains(cleanedTerm))
+      .toList();
+}
+
+final eventListSearchTermProvider =
+    StateProvider.family<String, String?>((ref, spaceId) => '');
+
+final eventListFilterProvider = StateProvider.family<EventFilters, String?>(
+  (ref, spaceId) => EventFilters.all,
+);
+
+final eventListSearchedProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
+  final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
+  return _filterEventBySearchTerm(
+    searchTerm,
+    await ref.watch(allEventListProvider(spaceId).future),
+  );
+});
+
+final eventListQuickSearchedProvider =
+    FutureProvider.autoDispose<List<ffi.CalendarEvent>>((ref) async {
+  final searchTerm = ref.watch(quickSearchValueProvider);
+  return _filterEventBySearchTerm(
+    searchTerm,
+    await ref.watch(allEventListProvider(null).future),
+  );
+});
+
+final eventListSearchedAndFilterProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
   //Declare filtered event list
-  List<ffi.CalendarEvent> filteredEventList = [];
+  final filteredEventList =
+      switch (ref.watch(eventListFilterProvider(spaceId))) {
+    EventFilters.bookmarked =>
+      await ref.watch(bookmarkedEventListProvider(spaceId).future),
+    EventFilters.ongoing =>
+      await ref.watch(allOngoingEventListProvider(spaceId).future),
+    EventFilters.upcoming =>
+      await ref.watch(allUpcomingEventListProvider(spaceId).future),
+    EventFilters.past =>
+      await ref.watch(allPastEventListProvider(spaceId).future),
+    EventFilters.all => await ref.watch(allEventListProvider(spaceId).future),
+  };
 
-  //Filter events based on the selection
-  EventFilters eventFilter = ref.watch(eventFilterProvider);
-  switch (eventFilter) {
-    case EventFilters.bookmarked:
-      {
-        List<ffi.CalendarEvent> bookmarkedEventList =
-            await ref.watch(bookmarkedEventListProvider(params.spaceId).future);
-        filteredEventList = bookmarkedEventList;
-      }
-    case EventFilters.ongoing:
-      {
-        List<ffi.CalendarEvent> ongoingEventList =
-            await ref.watch(allOngoingEventListProvider(params.spaceId).future);
-        filteredEventList = ongoingEventList;
-      }
-    case EventFilters.upcoming:
-      {
-        List<ffi.CalendarEvent> upcomingEventList = await ref
-            .watch(allUpcomingEventListProvider(params.spaceId).future);
-        filteredEventList = upcomingEventList;
-      }
-    case EventFilters.past:
-      {
-        List<ffi.CalendarEvent> pastEventList =
-            await ref.watch(allPastEventListProvider(params.spaceId).future);
-        filteredEventList = pastEventList;
-      }
-    default:
-      {
-        //Get all events
-        List<ffi.CalendarEvent> ongoingEventList =
-            await ref.watch(allOngoingEventListProvider(params.spaceId).future);
-        List<ffi.CalendarEvent> upcomingEventList = await ref
-            .watch(allUpcomingEventListProvider(params.spaceId).future);
-        List<ffi.CalendarEvent> pastEventList =
-            await ref.watch(allPastEventListProvider(params.spaceId).future);
-
-        //Set all events
-        filteredEventList.addAll(ongoingEventList);
-        filteredEventList.addAll(upcomingEventList);
-        filteredEventList.addAll(pastEventList);
-      }
-  }
-
-  //Apply search on filtered event list
-  List<ffi.CalendarEvent> searchedFilteredEventList = [];
-  if (params.searchText.isNotEmpty) {
-    for (final event in filteredEventList) {
-      bool isContainSearchTerm =
-          event.title().toLowerCase().contains(params.searchText.toLowerCase());
-      if (isContainSearchTerm) {
-        searchedFilteredEventList.add(event);
-      }
-    }
-    return searchedFilteredEventList;
-  }
-
-  return filteredEventList;
+  final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
+  return _filterEventBySearchTerm(searchTerm, filteredEventList);
 });

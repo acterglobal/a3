@@ -24,7 +24,9 @@ mixin _$ChatInputState {
   Map<String, String> get mentions => throw _privateConstructorUsedError;
   bool get editBtnVisible => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChatInputState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ChatInputStateCopyWith<ChatInputState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -54,6 +56,8 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ChatInputState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -118,6 +122,8 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
       _$ChatInputStateImpl _value, $Res Function(_$ChatInputStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ChatInputState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -227,7 +233,9 @@ class _$ChatInputStateImpl implements _ChatInputState {
       const DeepCollectionEquality().hash(_mentions),
       editBtnVisible);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChatInputState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ChatInputStateImplCopyWith<_$ChatInputStateImpl> get copyWith =>
@@ -256,8 +264,11 @@ abstract class _ChatInputState implements ChatInputState {
   Map<String, String> get mentions;
   @override
   bool get editBtnVisible;
+
+  /// Create a copy of ChatInputState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ChatInputStateImplCopyWith<_$ChatInputStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

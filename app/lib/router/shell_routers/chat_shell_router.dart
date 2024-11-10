@@ -1,10 +1,11 @@
-import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/config/setup.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/widgets/chat_layout_builder.dart';
+import 'package:acter/features/chat_ng/pages/chat_room.dart';
 import 'package:acter/features/chat_ng/widgets/rooms_list.dart';
 import 'package:acter/features/invite_members/pages/invite_page.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
@@ -18,8 +19,7 @@ import 'package:go_router/go_router.dart';
 /// the chat-ng feature.
 Widget _chatLayoutBuilder({Widget? centerChild, Widget? expandedChild}) {
   final isChatNg =
-      rootNavKey.currentContext?.read(isActiveProvider(LabsFeature.chatNG)) ==
-          true;
+      mainProviderContainer.read(isActiveProvider(LabsFeature.chatNG)) == true;
   return isChatNg
       ? ChatLayoutBuilder(
           roomListWidgetBuilder: (s) => RoomsListNGWidget(onSelected: s),
@@ -38,9 +38,7 @@ final chatShellRoutes = [
     path: Routes.chat.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      rootNavKey.currentContext
-          ?.read(selectedChatIdProvider.notifier)
-          .select(null);
+      mainProviderContainer.read(selectedChatIdProvider.notifier).select(null);
       return NoTransitionPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(),
@@ -52,15 +50,24 @@ final chatShellRoutes = [
     path: Routes.chatroom.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['roomId']
-          .expect('chatroom route needs roomId as path param');
-      rootNavKey.currentContext
-          ?.read(selectedChatIdProvider.notifier)
+      final isChatNg =
+          mainProviderContainer.read(isActiveProvider(LabsFeature.chatNG)) ==
+              true;
+      final roomId = state.pathParameters['roomId']!;
+
+      mainProviderContainer
+          .read(selectedChatIdProvider.notifier)
           .select(roomId);
       return NoTransitionPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(
-          centerChild: RoomPage(roomId: roomId),
+          centerChild: isChatNg
+              ? ChatRoomNgPage(
+                  roomId: roomId,
+                )
+              : RoomPage(
+                  roomId: roomId,
+                ),
         ),
       );
     },
@@ -72,8 +79,8 @@ final chatShellRoutes = [
     pageBuilder: (context, state) {
       final roomId = state.pathParameters['roomId']
           .expect('chatProfile route needs roomId as path param');
-      rootNavKey.currentContext
-          ?.read(selectedChatIdProvider.notifier)
+      mainProviderContainer
+          .read(selectedChatIdProvider.notifier)
           .select(roomId);
       return NoTransitionPage(
         key: state.pageKey,
@@ -91,8 +98,8 @@ final chatShellRoutes = [
     pageBuilder: (context, state) {
       final roomId = state.pathParameters['roomId']
           .expect('chatSettingsVisibility route needs roomId as path param');
-      rootNavKey.currentContext
-          ?.read(selectedChatIdProvider.notifier)
+      mainProviderContainer
+          .read(selectedChatIdProvider.notifier)
           .select(roomId);
       return NoTransitionPage(
         key: state.pageKey,

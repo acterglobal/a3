@@ -1,10 +1,10 @@
 import 'package:acter/common/drag_handle_widget.dart';
+import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/features/home/providers/navigation.dart';
 import 'package:acter/features/home/widgets/quick_action_buttons.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:go_router/go_router.dart';
 
 class BottomNavigationWidget extends ConsumerWidget {
@@ -27,27 +27,17 @@ class BottomNavigationWidget extends ConsumerWidget {
       children: [
         tutorialScreenUI(),
         Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(20.0),
-              topLeft: Radius.circular(20.0),
-            ),
-          ),
+          color: Theme.of(context).colorScheme.surface,
           child: GestureDetector(
             onPanUpdate: (details) {
-              if (details.delta.dy < 0) {
-                ref.watch(quickActionVisibilityProvider.notifier).state = true;
-              } else {
-                ref.watch(quickActionVisibilityProvider.notifier).state = false;
-              }
+              ref.watch(quickActionVisibilityProvider.notifier).state =
+                  details.delta.dy < 0;
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 12),
+                const SizedBox(height: 2),
                 const DragHandleWidget(),
-                const SizedBox(height: 6),
                 bottomNavNar(ref),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),

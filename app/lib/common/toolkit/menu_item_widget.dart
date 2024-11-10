@@ -31,6 +31,7 @@ class MenuItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final disabledColor = Theme.of(context).disabledColor;
     return Card(
       child: ListTile(
         key: innerKey,
@@ -39,21 +40,17 @@ class MenuItemWidget extends StatelessWidget {
         leading: iconData.map(
           (data) => Icon(
             data,
-            color: enabled ? iconColor : Theme.of(context).disabledColor,
+            color: enabled ? iconColor : disabledColor,
           ),
         ),
         title: Text(
           title,
-          style: titleStyles?.copyWith(
-            color: enabled ? null : Theme.of(context).disabledColor,
-          ),
+          style: titleStyles?.copyWith(color: enabled ? null : disabledColor),
         ),
         subtitle: subTitle.map(
           (t) => Text(
             t,
-            style: titleStyles?.copyWith(
-              color: enabled ? null : Theme.of(context).disabledColor,
-            ),
+            style: titleStyles?.copyWith(color: enabled ? null : disabledColor),
           ),
         ),
         trailing: trailing ??

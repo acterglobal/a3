@@ -47,7 +47,9 @@ class ImageMessageBuilder extends ConsumerWidget {
     return const SizedBox(
       width: 150,
       height: 150,
-      child: Center(child: CircularProgressIndicator()),
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 
@@ -107,7 +109,7 @@ class ImageMessageBuilder extends ConsumerWidget {
   }
 
   Widget imageUI(BuildContext context, WidgetRef ref, File mediaFile) {
-    final size = MediaQuery.of(context).size;
+    final screenSize = MediaQuery.of(context).size;
     return InkWell(
       onTap: () {
         showAdaptiveDialog(
@@ -126,8 +128,8 @@ class ImageMessageBuilder extends ConsumerWidget {
             : BorderRadius.circular(15),
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: isReplyContent ? size.height * 0.2 : 300,
-            maxHeight: isReplyContent ? size.width * 0.2 : 300,
+            maxWidth: isReplyContent ? screenSize.height * 0.2 : 300,
+            maxHeight: isReplyContent ? screenSize.width * 0.2 : 300,
           ),
           child: imageFileView(context, ref, mediaFile),
         ),

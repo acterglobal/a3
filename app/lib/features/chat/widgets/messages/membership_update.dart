@@ -16,7 +16,7 @@ class MembershipUpdateWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final myUserId = ref.watch(myUserIdStrProvider);
-    String? textMsg;
+    late String textMsg;
     final msgType = message.metadata?['msgType'];
     final firstName = message.author.firstName;
     if (msgType == 'Joined') {
@@ -47,7 +47,10 @@ class MembershipUpdateWidget extends ConsumerWidget {
       textMsg = message.metadata?['body'] ?? '';
     }
     return Container(
-      padding: const EdgeInsets.only(left: 10, bottom: 5),
+      padding: const EdgeInsets.only(
+        left: 10,
+        bottom: 5,
+      ),
       child: RichText(
         text: TextSpan(
           text: textMsg,

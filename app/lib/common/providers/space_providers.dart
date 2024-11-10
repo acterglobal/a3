@@ -172,7 +172,10 @@ final searchedSpacesProvider =
   final allSpaces = await ref.watch(_spaceIdAndNames.future);
 
   if (searchValue == null || searchValue.isEmpty) {
-    return allSpaces.map((e) => e.$1).toList();
+    return allSpaces.map((item) {
+      final (roomId, dispName) = item;
+      return roomId;
+    }).toList();
   }
 
   final searchTerm = searchValue.toLowerCase();
@@ -411,11 +414,7 @@ final remoteSubspaceRelationsProvider =
 final acterAppSettingsProvider = FutureProvider.autoDispose
     .family<ActerAppSettings?, String>((ref, spaceId) async {
   final space = await ref.watch(maybeSpaceProvider(spaceId).future);
-  if (space == null) {
-    return null;
-  }
-  if (!await space.isActerSpace()) {
-    return null;
-  }
+  if (space == null) return null;
+  if (!await space.isActerSpace()) return null;
   return await space.appSettings();
 });

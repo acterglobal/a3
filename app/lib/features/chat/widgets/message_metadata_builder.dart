@@ -104,26 +104,27 @@ class _UserReceiptsWidget extends ConsumerWidget {
                     ),
                   ),
                 ]
-              : List.generate(seenList.length, (idx) {
-                  return Consumer(
-                    builder: (context, ref, child) {
-                      final memberProfile = ref.watch(
-                        memberAvatarInfoProvider(
-                          (userId: seenList[idx], roomId: roomId),
-                        ),
-                      );
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: ActerAvatar(
-                          options: AvatarOptions.DM(
-                            memberProfile,
-                            size: 8,
+              : [
+                  for (final userId in seenList)
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final memberProfile = ref.watch(
+                          memberAvatarInfoProvider(
+                            (userId: userId, roomId: roomId),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                }),
+                        );
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: ActerAvatar(
+                            options: AvatarOptions.DM(
+                              memberProfile,
+                              size: 8,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                ],
         ),
       ),
     );
@@ -132,63 +133,63 @@ class _UserReceiptsWidget extends ConsumerWidget {
   List<QudsPopupMenuBase> showDetails() {
     return [
       QudsPopupMenuWidget(
-        builder: (context) => Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  L10n.of(context).seenBy,
-                  style: Theme.of(context).textTheme.labelLarge,
+        builder: (context) {
+          final colorScheme = Theme.of(context).colorScheme;
+          final textTheme = Theme.of(context).textTheme;
+          return Container(
+            decoration: BoxDecoration(
+              color: colorScheme.primary,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    L10n.of(context).seenBy,
+                    style: textTheme.labelLarge,
+                  ),
                 ),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: seenList.length,
-                itemBuilder: (context, index) {
-                  final userId = seenList[index];
-                  return Consumer(
-                    builder: (context, ref, child) {
-                      final member = ref.watch(
-                        memberAvatarInfoProvider(
-                          (userId: userId, roomId: roomId),
-                        ),
-                      );
-                      return ListTile(
-                        leading: Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: ActerAvatar(
-                            options: AvatarOptions.DM(
-                              member,
-                              size: 8,
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: seenList.length,
+                  itemBuilder: (context, index) {
+                    final userId = seenList[index];
+                    return Consumer(
+                      builder: (context, ref, child) {
+                        final member = ref.watch(
+                          memberAvatarInfoProvider(
+                            (userId: userId, roomId: roomId),
+                          ),
+                        );
+                        return ListTile(
+                          leading: Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: ActerAvatar(
+                              options: AvatarOptions.DM(
+                                member,
+                                size: 8,
+                              ),
                             ),
                           ),
-                        ),
-                        title: Text(
-                          member.displayName ?? userId,
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
-                        trailing: Text(
-                          userId,
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelSmall!
-                              .copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
+                          title: Text(
+                            member.displayName ?? userId,
+                            style: textTheme.labelSmall,
+                          ),
+                          trailing: Text(
+                            userId,
+                            style: textTheme.labelSmall
+                                ?.copyWith(color: colorScheme.onSurface),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        },
       ),
     ];
   }

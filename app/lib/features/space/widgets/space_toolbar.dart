@@ -27,6 +27,7 @@ class SpaceToolbar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final isBookmarked =
         ref.watch(spaceIsBookmarkedProvider(spaceId)).valueOrNull ?? false;
@@ -78,7 +79,7 @@ class SpaceToolbar extends ConsumerWidget {
         onTap: () => showLeaveSpaceDialog(context, ref, spaceId),
         child: Text(
           lang.leaveSpace,
-          style: TextStyle(color: Theme.of(context).colorScheme.error),
+          style: TextStyle(color: colorScheme.error),
         ),
       ),
       if (membership?.canString('CanKick') == true &&
@@ -90,7 +91,7 @@ class SpaceToolbar extends ConsumerWidget {
           ),
           child: Text(
             lang.closeSpace,
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
+            style: TextStyle(color: colorScheme.error),
           ),
         ),
     ]);
@@ -129,7 +130,7 @@ class SpaceToolbar extends ConsumerWidget {
             key: optionsMenu,
           ),
           iconSize: 28,
-          color: Theme.of(context).colorScheme.surface,
+          color: colorScheme.surface,
           itemBuilder: (BuildContext context) => submenu,
         ),
       ],

@@ -151,9 +151,7 @@ class _ActerErrorAlert extends QuickAlertContainer {
               final queryParams = {
                 'error': error.toString(),
               };
-              if (stack != null) {
-                queryParams['stack'] = stack.toString();
-              }
+              stack.map((s) => queryParams['stack'] = s.toString());
               return openBugReport(
                 context,
                 queryParams: queryParams,

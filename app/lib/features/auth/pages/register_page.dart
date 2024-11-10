@@ -5,9 +5,8 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
+import 'package:acter/features/auth/actions/register_action.dart';
 import 'package:acter/features/auth/providers/auth_providers.dart';
-import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -19,15 +18,6 @@ import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::auth::register');
-
-Future<void> tryRedeem(SuperInvites superInvites, String token) async {
-  // try to redeem the token in a fire-and-forget-manner
-  try {
-    await superInvites.redeem(token);
-  } catch (error) {
-    _log.warning('redeeming super invite failed: $error');
-  }
-}
 
 class RegisterPage extends ConsumerStatefulWidget {
   static const usernameField = Key('reg-username-txt');
@@ -59,31 +49,26 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       showNoInternetNotification(context);
       return;
     }
-    final authNotifier = ref.read(authStateProvider.notifier);
-    final errorMsg = await authNotifier.register(
-      username.text,
-      password.text,
-      name.text,
-      token.text,
-      context,
-    );
-    if (errorMsg != null) {
-      _log.severe('Failed to register', errorMsg);
-      if (!context.mounted) return;
+    final lang = L10n.of(context);
+    try {
+      if (await register(
+        username: username.text,
+        password: password.text,
+        name: name.text,
+        token: token.text,
+        ref: ref,
+      )) {
+        if (context.mounted) {
+          context.goNamed(
+            Routes.saveUsername.name,
+            queryParameters: {'username': username.text},
+          );
+        }
+      }
+    } catch (errorMsg) {
       EasyLoading.showError(
-        L10n.of(context).registerFailed(errorMsg),
+        lang.registerFailed(errorMsg),
         duration: const Duration(seconds: 3),
-      );
-      return;
-    }
-    if (token.text.isNotEmpty) {
-      final superInvites = ref.read(superInvitesProvider);
-      tryRedeem(superInvites, token.text);
-    }
-    if (context.mounted) {
-      context.goNamed(
-        Routes.saveUsername.name,
-        queryParameters: {'username': username.text},
       );
     }
   }

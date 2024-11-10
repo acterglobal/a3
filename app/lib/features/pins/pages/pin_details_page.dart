@@ -8,7 +8,12 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
-import 'package:acter/features/comments/widgets/comments_section.dart';
+import 'package:acter/features/attachments/types.dart';
+import 'package:acter/features/comments/types.dart';
+import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
+import 'package:acter/features/comments/widgets/comments_section_widget.dart';
+import 'package:acter/features/bookmarks/types.dart';
+import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
 import 'package:acter/features/pins/actions/pin_update_actions.dart';
@@ -57,40 +62,43 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      actions: [_buildActionMenu()],
+      actions: [
+        BookmarkAction(bookmarker: BookmarkType.forPins(widget.pinId)),
+        _buildActionMenu(),
+      ],
     );
   }
 
   Widget _buildBodyUI() {
     final pinData = ref.watch(pinProvider(widget.pinId));
-    return pinData.when(
-      data: (pin) {
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              _buildPinHeaderUI(pin),
-              const SizedBox(height: 20),
-              AttachmentSectionWidget(manager: pin.attachments()),
-              FakeLinkAttachmentItem(pinId: pin.eventIdStr()),
-              const SizedBox(height: 20),
-              CommentsSection(manager: pin.comments()),
-            ],
+    final errored = pinData.asError;
+    if (errored != null) {
+      _log.severe('Error loading pin', errored.error, errored.stackTrace);
+      return ErrorPage(
+        background: _contentLoader(),
+        error: errored.error,
+        stack: errored.stackTrace,
+        onRetryTap: () {
+          ref.invalidate(pinProvider(widget.pinId));
+        },
+      );
+    }
+    final pin = pinData.valueOrNull;
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          pin == null ? _loadingPinHeaderUI() : _buildPinHeaderUI(pin),
+          const SizedBox(height: 20),
+          AttachmentSectionWidget(manager: pin?.asAttachmentsManagerProvider()),
+          FakeLinkAttachmentItem(pinId: widget.pinId),
+          const SizedBox(height: 20),
+          CommentsSectionWidget(
+            managerProvider: pin?.asCommentsManagerProvider(),
           ),
-        );
-      },
-      loading: _contentLoader,
-      error: (error, stack) {
-        _log.severe('Error loading pin', error, stack);
-        return ErrorPage(
-          background: _contentLoader(),
-          error: error,
-          stack: stack,
-          onRetryTap: () {
-            ref.invalidate(pinProvider(widget.pinId));
-          },
-        );
-      },
+        ],
+      ),
     );
   }
 
@@ -104,7 +112,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           const SizedBox(height: 20),
           AttachmentSectionWidget.loading(),
           const SizedBox(height: 20),
-          CommentsSection.loading(context),
+          const CommentListSkeletonWidget(),
         ],
       ),
     );
@@ -148,6 +156,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   // pin actions menu builder
   Widget _buildActionMenu() {
     final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final pin = ref.watch(pinProvider(widget.pinId)).valueOrNull;
     if (pin == null) {
       return const SizedBox.shrink();
@@ -189,7 +198,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           children: <Widget>[
             Icon(
               Atlas.warning_thin,
-              color: Theme.of(context).colorScheme.error,
+              color: colorScheme.error,
             ),
             const SizedBox(width: 10),
             Text(lang.reportPin),
@@ -209,7 +218,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           ),
           child: Text(
             lang.removePin,
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
+            style: TextStyle(color: colorScheme.error),
           ),
         ),
       );
@@ -300,7 +309,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   Widget pinSpaceNameUI(ActerPin pin) {
     return SpaceChip(
       spaceId: pin.roomIdStr(),
-      useCompatView: true,
+      useCompactView: true,
     );
   }
 
@@ -312,6 +321,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     if (htmlBody == null && plainBody.trim().isEmpty) {
       return const SizedBox.shrink();
     }
+    final textTheme = Theme.of(context).textTheme;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -320,29 +330,27 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         const SizedBox(height: 18),
         SelectionArea(
           child: GestureDetector(
-            onTap: () {
-              showEditHtmlDescriptionBottomSheet(
-                context: context,
-                descriptionHtmlValue: description.formattedBody(),
-                descriptionMarkdownValue: plainBody,
-                onSave: (htmlBodyDescription, plainDescription) async {
-                  await updatePinDescription(
-                    context,
-                    htmlBodyDescription,
-                    plainDescription,
-                    pin,
-                  );
-                },
-              );
-            },
+            onTap: () => showEditHtmlDescriptionBottomSheet(
+              context: context,
+              descriptionHtmlValue: description.formattedBody(),
+              descriptionMarkdownValue: plainBody,
+              onSave: (htmlBodyDescription, plainDescription) async {
+                await updatePinDescription(
+                  context,
+                  htmlBodyDescription,
+                  plainDescription,
+                  pin,
+                );
+              },
+            ),
             child: htmlBody != null
                 ? RenderHtml(
                     text: htmlBody,
-                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                    defaultTextStyle: textTheme.labelLarge,
                   )
                 : Text(
                     plainBody,
-                    style: Theme.of(context).textTheme.labelLarge,
+                    style: textTheme.labelLarge,
                   ),
           ),
         ),

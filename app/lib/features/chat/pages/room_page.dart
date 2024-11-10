@@ -48,6 +48,7 @@ class RoomPage extends ConsumerWidget {
 
   Widget appBar(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final membersLoader = ref.watch(membersIdsProvider(roomId));
     final isEncrypted =
@@ -72,13 +73,13 @@ class RoomPage extends ConsumerWidget {
             Text(
               roomAvatarInfo.displayName ?? roomId,
               overflow: TextOverflow.clip,
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: textTheme.bodyLarge,
             ),
             const SizedBox(height: 5),
             membersLoader.when(
               data: (members) => Text(
                 lang.membersCount(members.length),
-                style: Theme.of(context).textTheme.bodySmall,
+                style: textTheme.bodySmall,
               ),
               skipLoadingOnReload: false,
               error: (e, s) {
@@ -146,7 +147,7 @@ class RoomPage extends ConsumerWidget {
       onTyping: (typing) async {
         if (sendTypingNotice) {
           final chat = await ref.read(chatProvider(roomId).future);
-          if (chat != null) await chat.typingNotice(typing);
+          await chat?.typingNotice(typing);
         }
       },
     );

@@ -5,9 +5,9 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter/features/tasks/widgets/task_status_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -77,42 +77,27 @@ class TaskItem extends ConsumerWidget {
   }
 
   Widget takeItemTitle(BuildContext context, Task task) {
+    final textTheme = Theme.of(context).textTheme;
     return Text(
       task.title(),
       style: task.isDone()
-          ? Theme.of(context).textTheme.bodyMedium!.copyWith(
-                fontWeight: FontWeight.w100,
-                decoration: TextDecoration.lineThrough,
-              )
-          : Theme.of(context).textTheme.bodyMedium!,
+          ? textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w100,
+              decoration: TextDecoration.lineThrough,
+            )
+          : textTheme.bodyMedium,
     );
   }
 
-  Widget leadingWidget(Task task) {
-    final isDone = task.isDone();
-    return InkWell(
-      key: isDone ? doneKey() : notDoneKey(),
-      child: Icon(
-        isDone ? Atlas.check_circle_thin : Icons.radio_button_off_outlined,
-      ),
-      onTap: () async {
-        final updater = task.updateBuilder();
-        if (!isDone) {
-          updater.markDone();
-        } else {
-          updater.markUndone();
-        }
-        await updater.send();
-        onDone.map((cb) => cb());
-      },
-    );
-  }
+  Widget leadingWidget(Task task) =>
+      TaskStatusWidget(task: task, onDone: onDone);
 
   Widget takeItemSubTitle(WidgetRef ref, BuildContext context, Task task) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final description = task.description()?.body();
     final tasklistId = task.taskListIdStr();
-    final tasklistLoader = ref.watch(taskListItemProvider(tasklistId));
+    final tasklistLoader = ref.watch(taskListProvider(tasklistId));
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: Column(
@@ -130,7 +115,7 @@ class TaskItem extends ConsumerWidget {
                   const SizedBox(width: 6),
                   Text(
                     taskList.name(),
-                    style: Theme.of(context).textTheme.labelMedium,
+                    style: textTheme.labelMedium,
                   ),
                 ],
               ),
@@ -147,7 +132,7 @@ class TaskItem extends ConsumerWidget {
               description,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelMedium,
+              style: textTheme.labelMedium,
             ),
           dueDateWidget(context, task),
         ],
@@ -157,6 +142,8 @@ class TaskItem extends ConsumerWidget {
 
   Widget dueDateWidget(BuildContext context, Task task) {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return task.dueDate().map((dueDate) {
           final date = DateTime.parse(dueDate);
           final dateText =
@@ -168,13 +155,11 @@ class TaskItem extends ConsumerWidget {
                   : date.isPast
                       ? date.timeago()
                       : lang.due(dateText);
-          final iconColor = date.isPast
-              ? Theme.of(context).colorScheme.onSurface
-              : Colors.white54;
-          var textStyle = Theme.of(context).textTheme.labelMedium;
+          final iconColor =
+              date.isPast ? colorScheme.onSurface : Colors.white54;
+          var textStyle = textTheme.labelMedium;
           if (date.isPast) {
-            textStyle =
-                textStyle?.copyWith(color: Theme.of(context).colorScheme.error);
+            textStyle = textStyle?.copyWith(color: colorScheme.error);
           }
           return Row(
             children: [

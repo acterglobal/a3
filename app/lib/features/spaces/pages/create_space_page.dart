@@ -183,7 +183,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         const SizedBox(height: 3),
         Text(
           lang.egGlobalMovement,
-          style: Theme.of(context).textTheme.labelSmall!,
+          style: Theme.of(context).textTheme.labelSmall,
         ),
       ],
     );
@@ -238,16 +238,17 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
 
   Widget _buildVisibility() {
     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           lang.visibilityTitle,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: textTheme.bodyMedium,
         ),
         Text(
           lang.visibilitySubtitle,
-          style: Theme.of(context).textTheme.bodySmall!,
+          style: textTheme.bodySmall,
         ),
         const SizedBox(height: 10),
         InkWell(

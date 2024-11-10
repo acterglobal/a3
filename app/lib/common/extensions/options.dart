@@ -19,7 +19,7 @@ extension OptionExtension<T> on T? {
   /// if the value is not null apply the given async function and return
   /// the result
   Future<R?> mapAsync<R>(
-    R? Function(T) op, {
+    Future<R?> Function(T) op, {
     R? defaultValue,
     AsyncOrElse<R>? orElse,
   }) async {

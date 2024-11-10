@@ -22,7 +22,9 @@ mixin _$PinEditState {
   String? get html => throw _privateConstructorUsedError;
   bool get editMode => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PinEditState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PinEditStateCopyWith<PinEditState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -51,6 +53,8 @@ class _$PinEditStateCopyWithImpl<$Res, $Val extends PinEditState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of PinEditState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -109,6 +113,8 @@ class __$$PinEditStateImplCopyWithImpl<$Res>
       _$PinEditStateImpl _value, $Res Function(_$PinEditStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PinEditState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -190,7 +196,9 @@ class _$PinEditStateImpl implements _PinEditState {
   int get hashCode =>
       Object.hash(runtimeType, title, link, markdown, html, editMode);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PinEditState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PinEditStateImplCopyWith<_$PinEditStateImpl> get copyWith =>
@@ -215,8 +223,11 @@ abstract class _PinEditState implements PinEditState {
   String? get html;
   @override
   bool get editMode;
+
+  /// Create a copy of PinEditState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PinEditStateImplCopyWith<_$PinEditStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
