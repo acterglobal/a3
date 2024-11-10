@@ -4,6 +4,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
+import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/pins/actions/pin_update_actions.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -123,8 +124,9 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     String title,
     String link,
   ) async {
-    final manager =
-        await ref.read(attachmentsManagerProvider(pin.attachments()).future);
+    final manager = await ref.read(
+      attachmentsManagerProvider(pin.asAttachmentsManagerProvider()).future,
+    );
     if (!context.mounted) return;
     //Make link empty on Pin Data
     await updatePinLink(context, pin, '');

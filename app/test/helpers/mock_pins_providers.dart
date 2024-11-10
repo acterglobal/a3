@@ -86,4 +86,7 @@ class FakeActerPin extends Fake implements ActerPin {
 
   @override
   Display? display() => null;
+
+  @override
+  String url() => 'https://acter.global';
 }
