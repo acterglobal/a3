@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
 import 'package:acter/features/share/actions/mail_to.dart';
 import 'package:acter/features/share/actions/share_to_whatsapp.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ShareInviteCode extends ConsumerWidget {
@@ -114,6 +116,12 @@ class ShareInviteCode extends ConsumerWidget {
       alignment: WrapAlignment.center,
       spacing: 10,
       children: [
+        _shareIntentsItem(
+          context: context,
+          iconData: PhosphorIconsThin.qrCode,
+          onTap: () =>
+              showQrCode(context, 'acter://acter.global/i/$inviteCode'),
+        ),
         _shareIntentsItem(
           context: context,
           iconData: Atlas.envelope,
