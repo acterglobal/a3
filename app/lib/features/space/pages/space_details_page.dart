@@ -18,8 +18,9 @@ import 'package:acter/features/space/widgets/space_sections/members_section.dart
 import 'package:acter/features/space/widgets/space_sections/news_section.dart';
 import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
 import 'package:acter/features/space/widgets/space_sections/spaces_section.dart';
-import 'package:acter/features/space/widgets/space_sections/tasks_section.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter/features/tasks/widgets/task_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -274,7 +275,16 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
             pathParameters: {'spaceId': widget.spaceId},
           ),
         ),
-      TabEntry.tasks => TasksSection(spaceId: widget.spaceId),
+      TabEntry.tasks => TaskListWidget(
+          taskListProvider: taskListsProvider(widget.spaceId),
+          spaceId: widget.spaceId,
+          showSectionHeader: true,
+          limit: 3,
+          onClickSectionHeader: () => context.pushNamed(
+            Routes.spaceTasks.name,
+            pathParameters: {'spaceId': widget.spaceId},
+          ),
+        ),
       TabEntry.events => EventListWidget(
           isShowSpaceName: false,
           showSectionHeader: true,

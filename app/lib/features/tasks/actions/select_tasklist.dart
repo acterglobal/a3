@@ -67,16 +67,13 @@ Future<String?> selectTaskListId({
 
 class _SelectTaskList extends ConsumerWidget {
   final String spaceId;
+
   const _SelectTaskList({required this.spaceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final tasklistsLoader = ref.watch(
-      tasksListSearchProvider(
-        (spaceId: spaceId, searchText: ''),
-      ),
-    );
+    final tasklistsLoader = ref.watch(taskListsProvider(spaceId));
     final canAdd = ref
             .watch(roomMembershipProvider(spaceId))
             .valueOrNull
