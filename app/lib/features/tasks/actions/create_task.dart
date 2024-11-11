@@ -24,9 +24,12 @@ Future<void> showCreateTaskBottomSheet(
     showDragHandle: true,
     useSafeArea: true,
     isScrollControlled: true,
-    builder: (context) => CreateTaskWidget(
-      taskList: taskList,
-      taskName: taskName,
+    builder: (context) => Padding(
+      padding: MediaQuery.of(context).viewInsets,
+      child: CreateTaskWidget(
+        taskList: taskList,
+        taskName: taskName,
+      ),
     ),
   );
 }
