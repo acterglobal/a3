@@ -16,13 +16,15 @@ Future<bool> updateFeatureLevelChangeDialog(
   Space space,
   RoomPowerLevels powerLevels,
   String levelKey,
-  String featureName,
-) async {
+  String featureName, {
+  bool isGlobal = false,
+}) async {
   final lang = L10n.of(context);
   final newPowerLevel = await showDialog<int?>(
     context: context,
     builder: (BuildContext context) => _ChangePowerLevelDialog(
       featureName: featureName,
+      isGlobal: isGlobal,
       currentPowerLevelName:
           maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
       currentPowerLevel: currentPw,
@@ -40,6 +42,7 @@ Future<bool> updateFeatureLevelChangeDialog(
     levelKey,
     featureName,
     newPowerLevel,
+    isGlobal: isGlobal,
   );
 }
 
@@ -48,14 +51,30 @@ Future<bool> updateFeatureLevel(
   Space space,
   String levelKey,
   String featureName,
-  int? newPowerLevel,
-) async {
+  int? newPowerLevel, {
+  bool isGlobal = false,
+}) async {
   EasyLoading.show(status: lang.changingSettingOf(featureName));
   try {
-    final res = await space.updateFeaturePowerLevels(
-      levelKey,
-      newPowerLevel,
-    );
+    bool res;
+    if (isGlobal) {
+      if (newPowerLevel == null) {
+        EasyLoading.showError(
+          'You must provide a powerlevel',
+          duration: const Duration(seconds: 3),
+        );
+        return false;
+      }
+      res = await space.updateRegularPowerLevels(
+        levelKey,
+        newPowerLevel,
+      );
+    } else {
+      res = await space.updateFeaturePowerLevels(
+        levelKey,
+        newPowerLevel,
+      );
+    }
     EasyLoading.showToast(lang.powerLevelSubmitted(featureName));
     return res;
   } catch (e, s) {
@@ -72,11 +91,13 @@ class _ChangePowerLevelDialog extends StatefulWidget {
   final String featureName;
   final int? currentPowerLevel;
   final String currentPowerLevelName;
+  final bool isGlobal;
 
   const _ChangePowerLevelDialog({
     required this.featureName,
     required this.currentPowerLevelName,
     this.currentPowerLevel,
+    this.isGlobal = false,
   });
 
   @override
@@ -128,7 +149,9 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
           )
         : lang.updateFeaturePowerLevelDialogFromDefaultTo;
     return AlertDialog(
-      title: Text(lang.updateFeaturePowerLevelDialogTitle(widget.featureName)),
+      title: widget.isGlobal
+          ? Text('Update of ${widget.featureName}')
+          : Text(lang.updateFeaturePowerLevelDialogTitle(widget.featureName)),
       content: Form(
         key: _formKey,
         child: Column(
