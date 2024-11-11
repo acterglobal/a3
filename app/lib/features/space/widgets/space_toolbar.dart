@@ -2,6 +2,7 @@ import 'package:acter/common/actions/close_room.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/deep_linking/widgets/qr_code_button.dart';
 import 'package:acter/features/space/actions/set_space_title.dart';
 import 'package:acter/features/space/actions/set_space_topic.dart';
 import 'package:acter/features/space/dialogs/leave_space.dart';
@@ -100,21 +101,23 @@ class SpaceToolbar extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       title: spaceTitle,
       actions: [
-        showInviteBtn && invited.length <= 100
-            ? OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                ),
-                onPressed: () => context.pushNamed(
-                  Routes.spaceInvite.name,
-                  pathParameters: {'spaceId': spaceId},
-                ),
-                child: Text(lang.invite),
-              )
-            : const SizedBox.shrink(),
+        if (showInviteBtn && invited.length <= 100)
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
+            ),
+            onPressed: () => context.pushNamed(
+              Routes.spaceInvite.name,
+              pathParameters: {'spaceId': spaceId},
+            ),
+            child: Text(lang.invite),
+          ),
+        QrCodeButton(
+          qrCodeData: 'matrix:roomid/${spaceId.substring(1)}',
+        ),
         IconButton(
           icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
           onPressed: () async {
