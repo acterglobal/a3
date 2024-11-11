@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
@@ -26,7 +27,6 @@ void main() {
             }
             return [];
           }),
-          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
           bookmarkByTypeProvider.overrideWith((a, ref) => []),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
@@ -47,9 +47,6 @@ void main() {
             }
             return [];
           }),
-          searchValueProvider
-              .overrideWith((_) => 'some string'), // set a search string
-          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
           bookmarkByTypeProvider.overrideWith((a, ref) => []),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
@@ -72,7 +69,6 @@ void main() {
             }
             return [];
           }),
-          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
           bookmarkByTypeProvider.overrideWith((a, ref) => []),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
@@ -97,9 +93,6 @@ void main() {
             }
             return [];
           }),
-          searchValueProvider
-              .overrideWith((_) => 'some search'), // set a search string
-          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
           bookmarkByTypeProvider.overrideWith((a, ref) => []),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
