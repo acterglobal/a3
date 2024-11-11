@@ -11,6 +11,7 @@ import 'package:acter/features/auth/pages/login_page.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
+import 'package:acter/features/deep_linking/pages/scan_qr_code.dart';
 import 'package:acter/features/intro/pages/intro_page.dart';
 import 'package:acter/features/intro/pages/intro_profile.dart';
 import 'package:acter/features/news/pages/add_news_page.dart';
@@ -73,6 +74,12 @@ final generalRoutes = [
           .expect('saveUsername route needs username as query param');
       return SaveUsernamePage(username: username);
     },
+  ),
+  GoRoute(
+    parentNavigatorKey: rootNavKey,
+    name: Routes.scanQrCode.name,
+    path: Routes.scanQrCode.route,
+    builder: (context, state) => const ScanQrCode(),
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,

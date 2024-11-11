@@ -26,7 +26,7 @@ class _ShowQrCode extends StatelessWidget {
           data: qrData,
           errorCorrectLevel: QrErrorCorrectLevel.M,
           decoration: PrettyQrDecoration(
-            shape: PrettyQrRoundedSymbol(
+            shape: PrettyQrSmoothSymbol(
               color: Theme.of(context).colorScheme.inversePrimary,
             ),
             background: Theme.of(context).dialogBackgroundColor,

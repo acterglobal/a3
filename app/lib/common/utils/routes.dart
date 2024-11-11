@@ -1,8 +1,4 @@
 enum Routes {
-  // primary & quickjump actions
-  // actionAddTask('/actions/addTask'),
-  actionCreateSuperInvite('/actions/createSuperInvite'),
-
   // pre
   intro('/intro'),
   introProfile('/introProfile'),
@@ -68,7 +64,8 @@ enum Routes {
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   subSpaces('/:spaceId([!#][^/]+)/subSpaces'),
   subChats('/:spaceId([!#][^/]+)/subChats'),
-  organizeCategories('/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)'),
+  organizeCategories(
+      '/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)',),
   spaceMembers('/:spaceId([!#][^/]+)/members'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
   spaceEvents('/:spaceId([!#][^/]+)/events'),
@@ -106,8 +103,10 @@ enum Routes {
 
   // -- super invites
   settingsSuperInvites('/settings/super_invites'),
+  actionCreateSuperInvite('/actions/createSuperInvite'),
   // -- utils
   bugReport('/bug-report'),
+  scanQrCode('/scan-qr-code'),
   // -- coming in from a push notification
   forward('/forward'),
   // -- fatal failure
