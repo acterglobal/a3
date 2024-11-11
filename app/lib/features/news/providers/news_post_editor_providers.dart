@@ -1,6 +1,7 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/event/event_selector_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
+import 'package:acter/features/news/model/news_post_color_data.dart';
 import 'package:acter/features/news/model/news_post_state.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -21,7 +22,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
 
   void changeTextSlideBackgroundColor() {
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.backgroundColor = getRandomElement(Colors.primaries);
+    selectedNewsSlide?.backgroundColor = getRandomElement(newsPostColors);
     state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
 

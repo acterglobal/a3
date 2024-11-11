@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/news/model/news_post_color_data.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -51,7 +52,7 @@ class NewsUtils {
 
   //Add text slide
   static void addTextSlide(WidgetRef ref) {
-    final clr = getRandomElement(Colors.primaries);
+    final clr = getRandomElement(newsPostColors);
     NewsSlideItem textSlide = NewsSlideItem(
       type: NewsSlideType.text,
       text: '',
@@ -62,7 +63,7 @@ class NewsUtils {
 
   //Add image slide
   static Future<void> addImageSlide(WidgetRef ref) async {
-    final clr = getRandomElement(Colors.primaries);
+    final clr = getRandomElement(newsPostColors);
     XFile? imageFile = await imagePicker.pickImage(
       source: ImageSource.gallery,
     );
@@ -78,7 +79,7 @@ class NewsUtils {
 
   //Add video slide
   static Future<void> addVideoSlide(WidgetRef ref) async {
-    final clr = getRandomElement(Colors.primaries);
+    final clr = getRandomElement(newsPostColors);
     XFile? videoFile = await imagePicker.pickVideo(
       source: ImageSource.gallery,
     );
