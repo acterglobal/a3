@@ -73,7 +73,7 @@ class SpacesSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
-          title: L10n.of(context).suggestedSpaces,
+          title: L10n.of(context).spaces,
           isShowSeeAllButton: true,
           onTapSeeAll: () => context.pushNamed(
             Routes.subSpaces.name,

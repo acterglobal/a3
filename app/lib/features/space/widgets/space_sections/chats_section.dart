@@ -74,7 +74,7 @@ class ChatsSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionHeader(
-          title: L10n.of(context).suggestedChats,
+          title: L10n.of(context).chats,
           isShowSeeAllButton: true,
           onTapSeeAll: () => context.pushNamed(
             Routes.subChats.name,
