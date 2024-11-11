@@ -184,4 +184,16 @@ void main() {
       expect(result.via, ['acter.global', 'example.org']);
     });
   });
+
+  group('Testing acter:// invite-links', () {
+    test('simple invite', () async {
+      final result = parseUri(
+        Uri.parse('acter://acter.global/i/inviteCode'),
+      );
+      expect(result.type, LinkType.superInvite);
+      expect(result.target, 'inviteCode');
+      expect(result.roomId, null);
+      expect(result.via, ['acter.global']);
+    });
+  });
 }

@@ -27,8 +27,25 @@ UriParseResult _parseActerUri(Uri uri) {
   final path = uri.pathSegments.first;
   return switch (path) {
     'o' => _parseActerEvent(uri),
+    'i' => _parseSuperInvite(uri),
     _ => _parseMatrixUri(uri)
   };
+}
+
+UriParseResult _parseSuperInvite(Uri uri) {
+  final path = uri.pathSegments;
+  if (path.length < 2) {
+    throw ParsingFailed();
+  }
+  final superInviteId = path[1];
+  final via = uri.queryParametersAll['via'] ?? [];
+  via.add(uri.host);
+
+  return UriParseResult(
+    type: LinkType.superInvite,
+    target: superInviteId,
+    via: via,
+  );
 }
 
 ObjectRef? _parseActerObjectPath(List<String> remainingPath) {

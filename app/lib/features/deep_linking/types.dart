@@ -4,6 +4,7 @@ enum LinkType {
   userId,
   chatEvent,
   spaceObject,
+  superInvite,
 }
 
 enum ObjectType {
