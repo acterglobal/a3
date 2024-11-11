@@ -266,7 +266,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.overview => AboutSection(spaceId: widget.spaceId),
       TabEntry.news => NewsSection(spaceId: widget.spaceId),
       TabEntry.pins => PinListWidget(
-          pinListProvider: allPinListWithBookmarkFrontProvider(widget.spaceId),
+          pinListProvider: pinsProvider(widget.spaceId),
           spaceId: widget.spaceId,
           showSectionHeader: true,
           limit: 3,

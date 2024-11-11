@@ -7,6 +7,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/features/comments/providers/comments_providers.dart';
+import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
@@ -38,8 +39,14 @@ class NewsSideBar extends ConsumerWidget {
     final likesCount = ref.watch(totalLikesForNewsProvider(news));
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
-    final commentCount =
-        ref.watch(newsCommentsCountProvider(news)).valueOrNull ?? 0;
+    final commentCount = ref
+            .watch(
+              newsCommentsCountProvider(
+                news.asCommentsManagerProvider(),
+              ),
+            )
+            .valueOrNull ??
+        0;
     final bodyLarge = Theme.of(context).textTheme.bodyLarge;
 
     return Align(
@@ -78,7 +85,7 @@ class NewsSideBar extends ConsumerWidget {
                 showDragHandle: true,
                 useSafeArea: true,
                 builder: (context) => CommentsSectionWidget(
-                  manager: news.comments(),
+                  managerProvider: news.asCommentsManagerProvider(),
                   shrinkWrap: false,
                   centerTitle: true,
                   useCompactEmptyState: false,

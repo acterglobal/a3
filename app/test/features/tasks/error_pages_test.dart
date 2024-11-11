@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/tasks/pages/task_item_detail_page.dart';
 import 'package:acter/features/tasks/pages/task_list_details_page.dart';
 import 'package:acter/features/tasks/pages/tasks_list_page.dart';
@@ -25,6 +26,8 @@ void main() {
             }
             return [];
           }),
+          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
+          bookmarkByTypeProvider.overrideWith((a, ref) => []),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const TasksListPage(),
@@ -44,6 +47,10 @@ void main() {
             }
             return [];
           }),
+          searchValueProvider
+              .overrideWith((_) => 'some string'), // set a search string
+          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
+          bookmarkByTypeProvider.overrideWith((a, ref) => []),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const TasksListPage(),
@@ -65,6 +72,8 @@ void main() {
             }
             return [];
           }),
+          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
+          bookmarkByTypeProvider.overrideWith((a, ref) => []),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const TasksListPage(
@@ -88,6 +97,10 @@ void main() {
             }
             return [];
           }),
+          searchValueProvider
+              .overrideWith((_) => 'some search'), // set a search string
+          allTasksListsProvider.overrideWith(() => mockedTaskListNotifier),
+          bookmarkByTypeProvider.overrideWith((a, ref) => []),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const TasksListPage(spaceId: '!test'),
@@ -104,6 +117,7 @@ void main() {
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
           roomMembershipProvider.overrideWith((a, b) => null),
           roomDisplayNameProvider.overrideWith((a, b) async => 'Space'),
+          isBookmarkedProvider.overrideWith((a, ref) => false),
         ],
         child: const TaskListDetailPage(taskListId: 'taskListId'),
       );

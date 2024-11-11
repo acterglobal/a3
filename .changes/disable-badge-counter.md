@@ -1,1 +1,0 @@
-- Fix: don't show badge counter until the user can also clear that counter
