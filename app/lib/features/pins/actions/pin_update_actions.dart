@@ -115,6 +115,7 @@ Future<void> updatePinIcon(
     await updateBuilder.send();
     EasyLoading.dismiss();
     ref.invalidate(pinProvider);
+    ref.invalidate(pinListProvider);
   } catch (e, s) {
     _log.severe('Failed to change icon of pin', e, s);
     if (!context.mounted) {
