@@ -163,9 +163,7 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
               quickSearchFilters.value == QuickSearchFilters.tasks)
             TaskListWidget(
               limit: 3,
-              taskListProvider: tasksListSearchProvider(
-                (spaceId: null, searchText: searchValue),
-              ),
+              taskListProvider: taskListQuickSearchedProvider,
               initiallyExpanded: false,
               showSectionHeader: true,
               onClickSectionHeader: () => context.pushNamed(

@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
@@ -30,14 +29,15 @@ class TasksListPage extends ConsumerStatefulWidget {
 }
 
 class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
-  String get searchValue => ref.watch(searchValueProvider);
+  String get searchValue => ref.watch(taskListSearchTermProvider);
   final ValueNotifier<bool> showCompletedTask = ValueNotifier(false);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      ref.read(searchValueProvider.notifier).state = widget.searchQuery ?? '';
+      ref.read(taskListSearchTermProvider.notifier).state =
+          widget.searchQuery ?? '';
     });
   }
 
@@ -101,11 +101,11 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         ActerSearchWidget(
           initialText: widget.searchQuery,
           onChanged: (value) {
-            final notifier = ref.read(searchValueProvider.notifier);
+            final notifier = ref.read(taskListSearchTermProvider.notifier);
             notifier.state = value;
           },
           onClear: () {
-            final notifier = ref.read(searchValueProvider.notifier);
+            final notifier = ref.read(taskListSearchTermProvider.notifier);
             notifier.state = '';
           },
         ),
@@ -113,9 +113,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
           child: ValueListenableBuilder(
             valueListenable: showCompletedTask,
             builder: (context, value, child) => TaskListWidget(
-              taskListProvider: tasksListSearchProvider(
-                (spaceId: widget.spaceId, searchText: searchValue),
-              ),
+              taskListProvider: tasksListSearchProvider(widget.spaceId),
               spaceId: widget.spaceId,
               shrinkWrap: false,
               showCompletedTask: showCompletedTask.value,
