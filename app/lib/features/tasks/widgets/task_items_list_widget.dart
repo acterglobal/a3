@@ -63,6 +63,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
     }
     final taskListId = widget.taskList.eventIdStr();
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         for (final taskId in overview.openTasks)
           TaskItem(
@@ -99,6 +100,7 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
     }
     final taskListId = widget.taskList.eventIdStr();
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 10),
         Row(

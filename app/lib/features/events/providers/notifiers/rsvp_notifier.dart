@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, RsvpStatusTag;
@@ -10,7 +11,7 @@ class AsyncRsvpStatusNotifier
   late Stream<bool> _listener;
 
   Future<RsvpStatusTag?> _getMyResponse(Client client, String calEvtId) async {
-    final calEvent = await client.waitForCalendarEvent(calEvtId, null);
+    final calEvent = await ref.watch(calendarEventProvider(calEvtId).future);
     final rsvp = await calEvent.respondedByMe();
     return switch (rsvp.statusStr()) {
       'yes' => RsvpStatusTag.Yes,
