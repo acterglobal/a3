@@ -45,6 +45,7 @@ UriParseResult _parseSuperInvite(Uri uri) {
     type: LinkType.superInvite,
     target: superInviteId,
     via: via,
+    preview: ObjectPreview.fromUri(uri),
   );
 }
 
@@ -82,6 +83,7 @@ UriParseResult _parseActerEvent(Uri uri) {
     target: objectPath.objectId,
     via: uri.queryParametersAll['via'] ?? [],
     roomId: '!${path[1]}',
+    preview: ObjectPreview.fromUri(uri),
   );
 }
 
@@ -109,11 +111,13 @@ UriParseResult _parseMatrixUri(Uri uri) {
         type: LinkType.roomAlias,
         via: uri.queryParametersAll['via'] ?? [],
         target: '#${uri.pathSegments.last}',
+        preview: ObjectPreview.fromUri(uri),
       ),
     'u' => UriParseResult(
         type: LinkType.userId,
         via: uri.queryParametersAll['via'] ?? [],
         target: '@${uri.pathSegments.last}',
+        preview: ObjectPreview.fromUri(uri),
       ),
     'roomid' => _parseMatrixUriRoomId(uri),
     _ => throw ParsingFailed(),
@@ -130,12 +134,14 @@ UriParseResult _parseMatrixUriRoomId(Uri uri) {
       via: uri.queryParametersAll['via'] ?? [],
       target: '\$$eventId',
       roomId: '!$roomId',
+      preview: ObjectPreview.fromUri(uri),
     );
   } else {
     return UriParseResult(
       type: LinkType.roomId,
       via: uri.queryParametersAll['via'] ?? [],
       target: '!${uri.pathSegments.last}',
+      preview: ObjectPreview.fromUri(uri),
     );
   }
 }
