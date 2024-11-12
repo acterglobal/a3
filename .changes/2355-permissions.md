@@ -1,1 +1,0 @@
-- Access all the permissions of the space in the settings, including ban, invite, kick, redact, for comments, attachments and rsvps
