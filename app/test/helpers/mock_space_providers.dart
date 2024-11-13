@@ -8,8 +8,12 @@ import 'package:mocktail/mocktail.dart';
 class MockRoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String>
     with Mock
     implements RoomAvatarInfoNotifier {
+  final Map<String, AvatarInfo> items;
+
+  MockRoomAvatarInfoNotifier({this.items = const {}});
+
   @override
-  AvatarInfo build(arg) => AvatarInfo(uniqueId: arg);
+  AvatarInfo build(arg) => items[arg] ?? AvatarInfo(uniqueId: arg);
 }
 
 class RetryMockAsyncSpaceNotifier extends FamilyAsyncNotifier<Space?, String>
@@ -28,7 +32,21 @@ class RetryMockAsyncSpaceNotifier extends FamilyAsyncNotifier<Space?, String>
   }
 }
 
-class MockSpace extends Fake implements Space {}
+class MockSpace extends Fake implements Space {
+  final String id;
+  final bool bookmarked;
+
+  MockSpace({
+    this.id = 'id',
+    this.bookmarked = false,
+  });
+
+  @override
+  String getRoomIdStr() => id;
+
+  @override
+  bool isBookmarked() => bookmarked;
+}
 
 class MockSpaceHierarchyRoomInfo extends Fake
     implements SpaceHierarchyRoomInfo {
