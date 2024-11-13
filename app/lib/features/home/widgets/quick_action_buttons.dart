@@ -42,17 +42,29 @@ class QuickActionButtons extends ConsumerWidget {
             children: [
               IconButton(
                 icon: const Icon(PhosphorIconsThin.question),
-                onPressed: () => launchUrl(Uri.parse(Env.helpCenterUrl)),
+                onPressed: () {
+                  ref.read(quickActionVisibilityProvider.notifier).state =
+                      false;
+                  launchUrl(Uri.parse(Env.helpCenterUrl));
+                },
               ),
               if (isBugReportingEnabled)
                 ActerInlineTextButton(
-                  onPressed: () => openBugReport(context),
+                  onPressed: () {
+                    ref.read(quickActionVisibilityProvider.notifier).state =
+                        false;
+                    openBugReport(context);
+                  },
                   child: const Text('Bug Report'),
                 ),
               if (Platform.isAndroid ||
                   Platform.isIOS) // only accessible on mobile
                 IconButton(
-                  onPressed: () => context.pushNamed(Routes.scanQrCode.name),
+                  onPressed: () {
+                    ref.read(quickActionVisibilityProvider.notifier).state =
+                        false;
+                    context.pushNamed(Routes.scanQrCode.name);
+                  },
                   icon: const Icon(PhosphorIconsThin.qrCode),
                 ),
             ],

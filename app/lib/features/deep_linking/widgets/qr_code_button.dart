@@ -4,13 +4,14 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class QrCodeButton extends StatelessWidget {
   final String qrCodeData;
-  const QrCodeButton({super.key, required this.qrCodeData});
+  final Widget? qrTitle;
+  const QrCodeButton({super.key, required this.qrCodeData, this.qrTitle});
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
       icon: const Icon(PhosphorIconsRegular.qrCode),
-      onPressed: () => showQrCode(context, qrCodeData),
+      onPressed: () => showQrCode(context, qrCodeData, title: qrTitle),
     );
   }
 }

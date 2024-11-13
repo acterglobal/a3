@@ -76,6 +76,20 @@ class SettingsPage extends ConsumerWidget {
               ),
               trailing: QrCodeButton(
                 qrCodeData: 'matrix:u/${userId.substring(1)}?action=chat',
+                qrTitle: ListTile(
+                  leading: ActerAvatar(
+                    options: AvatarOptions.DM(accountInfo),
+                  ),
+                  title: Text(
+                    accountInfo.displayName ?? '',
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  subtitle: Text(
+                    userId,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ),
             ),
             Padding(

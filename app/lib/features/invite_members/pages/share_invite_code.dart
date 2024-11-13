@@ -39,9 +39,8 @@ class ShareInviteCode extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
-    final accountAvatarInfo = ref.watch(accountAvatarInfoProvider);
-    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-    final displayName = accountAvatarInfo.displayName ?? '';
+    final displayName =
+        ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? '';
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -53,13 +52,14 @@ class ShareInviteCode extends ConsumerWidget {
               context,
               ref,
               displayName,
-              roomAvatarInfo.displayName ?? '',
+              displayName,
             ),
             const SizedBox(height: 30),
             _buildShareIntents(
               context,
+              ref,
               displayName,
-              roomAvatarInfo.displayName ?? '',
+              displayName,
             ),
             const SizedBox(height: 10),
             _buildDoneButton(context),
@@ -106,6 +106,7 @@ class ShareInviteCode extends ConsumerWidget {
 
   Widget _buildShareIntents(
     BuildContext context,
+    WidgetRef ref,
     String displayName,
     String roomName,
   ) {
@@ -119,8 +120,17 @@ class ShareInviteCode extends ConsumerWidget {
         _shareIntentsItem(
           context: context,
           iconData: PhosphorIconsThin.qrCode,
-          onTap: () =>
-              showQrCode(context, 'acter://acter.global/i/$inviteCode'),
+          onTap: () async {
+            final userName = await ref.read(accountDisplayNameProvider.future);
+            final userId = ref.read(myUserIdStrProvider);
+            if (context.mounted) {
+              showQrCode(
+                context,
+                'acter://acter.global/i/$inviteCode?roomDisplayName=$displayName&userId=$userId&userDisplayName=$userName',
+                title: Text("Invite '$inviteCode'"),
+              );
+            }
+          },
         ),
         _shareIntentsItem(
           context: context,
