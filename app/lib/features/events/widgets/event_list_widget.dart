@@ -15,6 +15,9 @@ class EventListWidget extends ConsumerWidget {
   final int? limit;
   final bool showSectionHeader;
   final VoidCallback? onClickSectionHeader;
+  final String? sectionHeaderTitle;
+  final bool? isShowSeeAllButton;
+  final bool showSectionBg;
   final bool shrinkWrap;
   final bool isShowSpaceName;
   final Widget Function()? emptyStateBuilder;
@@ -26,6 +29,9 @@ class EventListWidget extends ConsumerWidget {
     required this.listProvider,
     this.showSectionHeader = false,
     this.onClickSectionHeader,
+    this.sectionHeaderTitle,
+    this.isShowSeeAllButton,
+    this.showSectionBg = true,
     this.shrinkWrap = true,
     this.emptyStateBuilder,
   });
@@ -75,8 +81,10 @@ class EventListWidget extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               SectionHeader(
-                title: L10n.of(context).events,
-                isShowSeeAllButton: count < eventList.length,
+                title: sectionHeaderTitle ?? L10n.of(context).events,
+                isShowSeeAllButton:
+                    isShowSeeAllButton ?? count < eventList.length,
+                showSectionBg: showSectionBg,
                 onTapSeeAll: () => onClickSectionHeader == null
                     ? null
                     : onClickSectionHeader!(),

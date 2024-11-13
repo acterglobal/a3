@@ -32,20 +32,14 @@ class MyEventsSection extends ConsumerWidget {
       _ => lang.myUpcomingEvents,
     };
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SectionHeader(
-          title: sectionTitle,
-          showSectionBg: false,
-          isShowSeeAllButton: true,
-          onTapSeeAll: () => context.pushNamed(Routes.calendarEvents.name),
-        ),
-        EventListWidget(
-          limit: limit,
-          listProvider: eventListProvider,
-        ),
-      ],
+    return EventListWidget(
+      showSectionHeader: true,
+      sectionHeaderTitle: sectionTitle,
+      showSectionBg: false,
+      isShowSeeAllButton: true,
+      limit: limit,
+      listProvider: eventListProvider,
+      onClickSectionHeader: () => context.pushNamed(Routes.calendarEvents.name),
     );
   }
 }
