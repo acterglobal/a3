@@ -205,22 +205,23 @@ final eventListSearchedAndFilterProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
   //Declare filtered event list
 
-  final bookmarkedEvents =
-      await ref.watch(bookmarkedEventListProvider(spaceId).future);
-  final ongoingEvents =
-      await ref.watch(allOngoingEventListProvider(spaceId).future);
-  final upcomingEvents =
-      await ref.watch(allUpcomingEventListProvider(spaceId).future);
-  final pastEvents = await ref.watch(allPastEventListProvider(spaceId).future);
-
   final List<ffi.CalendarEvent> filteredEventList =
       switch (ref.watch(eventListFilterProvider(spaceId))) {
-    EventFilters.bookmarked => bookmarkedEvents,
-    EventFilters.ongoing => ongoingEvents,
-    EventFilters.upcoming => upcomingEvents,
-    EventFilters.past => pastEvents,
+    EventFilters.bookmarked =>
+      await ref.watch(bookmarkedEventListProvider(spaceId).future),
+    EventFilters.ongoing =>
+      await ref.watch(allOngoingEventListProvider(spaceId).future),
+    EventFilters.upcoming =>
+      await ref.watch(allUpcomingEventListProvider(spaceId).future),
+    EventFilters.past =>
+      await ref.watch(allPastEventListProvider(spaceId).future),
     EventFilters.all =>
-      ongoingEvents.followedBy(upcomingEvents).followedBy(pastEvents).toList(),
+      (await ref.watch(allOngoingEventListProvider(spaceId).future))
+          .followedBy(
+            await ref.watch(allUpcomingEventListProvider(spaceId).future),
+          )
+          .followedBy(await ref.watch(allPastEventListProvider(spaceId).future))
+          .toList(),
   };
 
   final priotizeBookmarkedEvents = await priotizeBookmarked(
