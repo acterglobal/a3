@@ -201,7 +201,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   }
 
   //Select any widget for action button
-  void selectActionItemDialog(BuildContext context) {
+  void selectActionItemDialog(BuildContext buildContext) {
     showAdaptiveDialog(
       context: context,
       builder: (context) {
@@ -212,7 +212,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             onShareEventSelected: () async {
               Navigator.pop(context);
               final notifier = ref.read(newsStateProvider.notifier);
-              await notifier.selectEventToShare(context);
+              await notifier.selectEventToShare(buildContext);
             },
           ),
         );

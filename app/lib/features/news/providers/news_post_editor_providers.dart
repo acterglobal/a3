@@ -59,6 +59,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
           context: context,
           canCheck: 'CanPostNews',
         );
+    state = state.copyWith(newsPostSpaceId: newsPostSpaceId);
 
     if (newsPostSpaceId == null) {
       EasyLoading.showToast(lang.pleaseFirstSelectASpace);
