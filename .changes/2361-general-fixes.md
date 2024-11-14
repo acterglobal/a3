@@ -1,4 +1,0 @@
-- [Fix] : Pin icon changes now reflected in list immediately
-- [Fix] : No more keyboard overlay issue when we do add task from quick action buttons
-- [Improvement] : Better color contrast on Boost Post Backgrounds 
-- [Improvement] : Better boost slide scroll management on desktop
