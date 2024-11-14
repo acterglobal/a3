@@ -512,7 +512,7 @@ impl MsgDraft {
                     let response = room
                         .client()
                         .media()
-                        .upload(&content_type, image_buf)
+                        .upload(&content_type, image_buf, None)
                         .await?;
                     let body = path
                         .file_name()
@@ -551,7 +551,7 @@ impl MsgDraft {
                     let response = room
                         .client()
                         .media()
-                        .upload(&content_type, audio_buf)
+                        .upload(&content_type, audio_buf, None)
                         .await?;
                     let body = path
                         .file_name()
@@ -590,7 +590,7 @@ impl MsgDraft {
                     let response = room
                         .client()
                         .media()
-                        .upload(&content_type, video_buf)
+                        .upload(&content_type, video_buf, None)
                         .await?;
                     let body = path
                         .file_name()
@@ -629,7 +629,7 @@ impl MsgDraft {
                     let response = room
                         .client()
                         .media()
-                        .upload(&content_type, file_buf)
+                        .upload(&content_type, file_buf, None)
                         .await?;
                     let body = path
                         .file_name()
