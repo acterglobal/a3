@@ -230,7 +230,7 @@ jobs:
         run: |
           keychain initialize
 
-          app-store-connect fetch-signing-files $(xcode-project detect-bundle-id) \
+          app-store-connect fetch-signing-files global.acter.a3 \
             --platform IOS \
             --type IOS_APP_STORE \
             --certificate-key=@env:APP_STORE_CERTIFICATE_KEY \
@@ -245,7 +245,7 @@ jobs:
         run: |
           keychain initialize
 
-          app-store-connect fetch-signing-files $(xcode-project detect-bundle-id) \
+          app-store-connect fetch-signing-files global.acter.a3 \
             --platform MAC_OS \
             --type MAC_APP_STORE \
             --certificate-key=@env:APP_STORE_CERTIFICATE_KEY \
