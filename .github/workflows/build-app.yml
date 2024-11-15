@@ -111,8 +111,8 @@ jobs:
             flutter_build_args: "build macos --split-debug-info=debug_symbols --verbose"
             artifact_prefix: acter-${{inputs.artifacts_prefix}}macosx
             artifact_path: app/build/macos/Build/Products/Release/
-            rename_file: "Acter.app"
-            rename_suffix: "app"
+            rename_file: "Acter.pkg"
+            rename_suffix: "pkg"
             with_debug_symbols: true
           - name: Windows msix
             os: windows-latest
@@ -309,12 +309,6 @@ jobs:
             --build-number="${{ inputs.build_num }}"
         working-directory: ./app
 
-      # Important! Cleanup: remove the certificate and provisioning profile from the runner!
-      - name: Restore Keychain
-        if: ${{ always() && matrix.with_apple_cert }}
-        run: |
-            rm -rf private_keys
-            keychain use-login
         ########  ##    ##  ######   
         ##     ## ##   ##  ##    ##  
         ##     ## ##  ##   ##        
@@ -322,6 +316,26 @@ jobs:
         ##        ##  ##   ##    ##  
         ##        ##   ##  ##    ##  
         ##        ##    ##  ######   
+
+      - name: Create pkg
+        if: matrix.target == 'macos'
+        id: package
+        run: |
+          INSTALLER_CERT_NAME=$(keychain list-certificates \
+                  | jq '[.[]
+                    | select(.common_name
+                    | contains("Mac Developer Installer"))
+                    | .common_name][0]' \
+                  | xargs)
+          echo "Productbuild with $INSTALLER_CERT_NAME "
+          productbuild --component Acter.app /Applications --sign "$INSTALLER_CERT_NAME" Acter.pkg
+
+      # Important! Cleanup: remove the certificate and provisioning profile from the runner!
+      - name: Clears Keychain
+        if: ${{ always() && matrix.with_apple_cert }}
+        run: |
+            rm -rf private_keys
+            keychain use-login
 
       - name: Generate iOS manifest
         if: matrix.target == 'ios'
