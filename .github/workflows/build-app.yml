@@ -46,8 +46,7 @@ jobs:
 
     env:
       APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
-      APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-      APP_STORE_CERTIFICATE_KEY: ${{secrets.APP_STORE_CERTIFICATE_KEY}}
+      CERTIFICATE_PRIVATE_KEY: ${{secrets.APP_STORE_CERTIFICATE_KEY}}
       APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APPLE_API_KEY_ID }}
       APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
       BUNDLE_ID: 'global.acter.a3'
@@ -224,8 +223,7 @@ jobs:
           brew install pipx
           pipx install codemagic-cli-tools
           mkdir private_keys
-          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APPLE_API_KEY_ID.p8"
-          ls -ltas private_keys
+          echo -n "$APPLE_API_KEY_BASE64" | base64 --decode --output "private_keys/AuthKey_$APP_STORE_CONNECT_KEY_IDENTIFIER.p8"
   
       - name: Setup iOS keychain
         if: matrix.target == 'ios'
@@ -234,7 +232,6 @@ jobs:
 
           app-store-connect fetch-signing-files $BUNDLE_ID \
             --platform IOS \
-            --certificate-key=@env:APP_STORE_CERTIFICATE_KEY \
             --create
 
           keychain add-certificates
@@ -248,11 +245,13 @@ jobs:
 
           app-store-connect fetch-signing-files $BUNDLE_ID \
             --platform MAC_OS \
-            --certificate-key=@env:APP_STORE_CERTIFICATE_KEY \
+            --type MAC_APP_STORE \
             --create
 
-          keychain add-certificates
+          app-store-connect certificates list --type MAC_APP_DISTRIBUTION --save || \
+            app-store-connect certificates create --type MAC_APP_DISTRIBUTION --save
 
+          keychain add-certificates
           xcode-project use-profiles
   
       - name: Rust Setup
