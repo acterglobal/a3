@@ -50,6 +50,7 @@ jobs:
       APP_STORE_CERTIFICATE_KEY: ${{secrets.APP_STORE_CERTIFICATE_KEY}}
       APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APPLE_API_KEY_ID }}
       APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+      BUNDLE_ID: 'global.acter.a3'
 
     strategy:
       matrix:
@@ -230,7 +231,7 @@ jobs:
         run: |
           keychain initialize
 
-          app-store-connect fetch-signing-files global.acter.a3 \
+          app-store-connect fetch-signing-files $BUNDLE_ID \
             --platform IOS \
             --type IOS_APP_STORE \
             --certificate-key=@env:APP_STORE_CERTIFICATE_KEY \
@@ -245,7 +246,7 @@ jobs:
         run: |
           keychain initialize
 
-          app-store-connect fetch-signing-files global.acter.a3 \
+          app-store-connect fetch-signing-files $BUNDLE_ID \
             --platform MAC_OS \
             --type MAC_APP_STORE \
             --certificate-key=@env:APP_STORE_CERTIFICATE_KEY \
