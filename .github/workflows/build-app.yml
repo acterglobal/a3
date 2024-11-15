@@ -251,6 +251,9 @@ jobs:
           app-store-connect certificates list --type MAC_APP_DISTRIBUTION --save || \
             app-store-connect certificates create --type MAC_APP_DISTRIBUTION --save
 
+          app-store-connect certificates list --type MAC_INSTALLER_DISTRIBUTION --save || \
+          app-store-connect certificates create --type MAC_INSTALLER_DISTRIBUTION --save
+
           keychain add-certificates
           xcode-project use-profiles
   
