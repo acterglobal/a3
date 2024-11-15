@@ -224,7 +224,7 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
         shell: bash
         run: |
-          app-store-connect publish --verbose --testflight --expire-build-submitted-for-review --platform=MAC_OS --whats-new @file:CHANGELOG.md --path=*.pkg
+          app-store-connect publish --verbose --testflight --expire-build-submitted-for-review --platform=MAC_OS --whats-new @file:CHANGELOG.md --path=*.app
 
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}
