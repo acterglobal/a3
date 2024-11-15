@@ -103,7 +103,7 @@ jobs:
             rename_suffix: "ipa"
             with_debug_symbols: true
           - name: MacOS
-            os: macos-13
+            os: macos-14
             target: macos
             with_apple_cert: true
             cargo_make_args: desktop
