@@ -331,9 +331,9 @@ jobs:
                     | contains("Mac Developer Installer"))
                     | .common_name][0]' \
                   | xargs)
-          echo "Productbuild with $INSTALLER_CERT_NAME "
-          ls -ltas unsigned.pkg
-          xcrun productbuild --sign "$INSTALLER_CERT_NAME" unsigned.pkg Acter.pkg
+          echo "Productsign with $INSTALLER_CERT_NAME "
+          ls -ltash unsigned.pkg
+          xcrun productsign --sign "$INSTALLER_CERT_NAME" unsigned.pkg Acter.pkg
           rm -rf unsigned.pkg
 
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
