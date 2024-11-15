@@ -233,7 +233,6 @@ jobs:
 
           app-store-connect fetch-signing-files $BUNDLE_ID \
             --platform IOS \
-            --type IOS_APP_STORE \
             --certificate-key=@env:APP_STORE_CERTIFICATE_KEY \
             --create
 
@@ -329,15 +328,14 @@ jobs:
         working-directory: ${{ matrix.artifact_path }}
         run: |
           echo "Productbuild"
-          productbuild --component Acter.app /Applications unsigned.pkg
           INSTALLER_CERT_NAME=$(keychain list-certificates \
                   | jq '[.[]
                     | select(.common_name
                     | contains("Mac Developer Installer"))
                     | .common_name][0]' \
                   | xargs)
-          productbuild --sign "$INSTALLER_CERT_NAME" unsigned.pkg Acter.pkg
-          rm -f unsigned.pkg
+          echo "signing with $INSTALLER_CERT_NAME"
+          productbuild --component Acter.app /Applications --sign "$INSTALLER_CERT_NAME" Acter.pkg
 
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
       - name: Restore Keychain
