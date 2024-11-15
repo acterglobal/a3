@@ -68,7 +68,7 @@ class SearchPublicDirectory extends ConsumerWidget {
       ref,
       lang.tryingToJoin(spaceSearchResult.name() ?? ''),
       roomId,
-      searchServer,
+      searchServer != null ? [searchServer] : [],
       (roomId) => context.pushNamed(
         Routes.space.name,
         pathParameters: {'spaceId': roomId},

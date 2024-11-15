@@ -60,6 +60,9 @@ fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<C
 /// create a display builder
 fn new_display_builder() -> DisplayBuilder;
 
+/// Help us build a vector of strings
+fn new_vec_string_builder() -> VecStringBuilder;
+
 /// create a task ref builder
 /// target_id: event id of target
 /// task_list: event id of task list
@@ -218,6 +221,9 @@ object RefDetailsBuilder {
 //  ########  ##     ##  ######  ####  ######        ##       ##    ##        ########  ######  
 
 
+object VecStringBuilder {
+    fn add(value: string);
+}
 
 object OptionString {
     /// get text
@@ -1938,7 +1944,7 @@ object SpaceHierarchyRoomInfo {
     /// if thumb size is not given, avatar file is returned
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
     /// recommended server to try to join via
-    fn via_server_name() -> Option<string>;
+    fn via_server_names() -> Vec<string>;
 }
 
 object SpaceRelation {
@@ -2054,6 +2060,31 @@ object ActerAppSettingsBuilder {
     fn events(events: Option<SimpleSettingWithTurnOff>);
     fn tasks(tasks: Option<SimpleOnOffSetting>);
 }
+
+
+
+//  ########   #######   #######  ##     ##    ########  ########  ######## ##     ## #### ######## ##      ## 
+//  ##     ## ##     ## ##     ## ###   ###    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ## 
+//  ##     ## ##     ## ##     ## #### ####    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ## 
+//  ########  ##     ## ##     ## ## ### ##    ########  ########  ######   ##     ##  ##  ######   ##  ##  ## 
+//  ##   ##   ##     ## ##     ## ##     ##    ##        ##   ##   ##        ##   ##   ##  ##       ##  ##  ## 
+//  ##    ##  ##     ## ##     ## ##     ##    ##        ##    ##  ##         ## ##    ##  ##       ##  ##  ## 
+//  ##     ##  #######   #######  ##     ##    ##        ##     ## ########    ###    #### ########  ###  ###  
+
+
+object RoomPreview {
+    fn room_id_str() -> string;
+    fn name() -> Option<string>;
+    fn topic() -> Option<string>;
+    fn avatar_url_str() -> Option<string>;
+    fn canonical_alias_str() -> Option<string>;
+    fn room_type_str() -> string;
+    fn join_rule_str() -> string;
+    fn state_str() -> string;
+    fn is_direct() -> Option<bool>;
+    fn is_world_readable() -> bool;
+}
+
 
 
 //   ######     ###    ######## ########  ######    #######  ########  ##    ## 
@@ -2710,7 +2741,6 @@ object CreateSpaceSettings {}
 //   ######  ######## #### ######## ##    ##    ##    
 
 
-
 /// Main entry point for `acter`.
 object Client {
     /// start the sync
@@ -2771,7 +2801,7 @@ object Client {
     fn spaces_stream() -> Stream<SpaceDiff>;
 
     /// attempt to join a room
-    fn join_room(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Room>>;
+    fn join_room(room_id_or_alias: string, server_names: VecStringBuilder) -> Future<Result<Room>>;
 
     /// Get the space that user belongs to
     fn space(room_id_or_alias: string) -> Future<Result<Space>>;
@@ -2938,6 +2968,9 @@ object Client {
 
     /// get access to the backup manager
     fn backup_manager() -> BackupManager;
+
+    /// Room preview
+    fn room_preview(room_id_or_alias: string, server_names: VecStringBuilder) -> Future<Result<RoomPreview>>;
 }
 
 object NotificationSettings {

@@ -229,7 +229,7 @@ class SubChatsPage extends ConsumerWidget {
                     joinRule: roomInfo.joinRuleStr().toLowerCase(),
                     roomId: roomId,
                     roomName: roomInfo.name() ?? roomId,
-                    viaServerName: roomInfo.viaServerName(),
+                    viaServerName: roomInfo.viaServerNames().toDart(),
                     forward: (spaceId) {
                       goToChat(context, spaceId);
                       ref.invalidate(spaceRelationsProvider(parentId));

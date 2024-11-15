@@ -48,12 +48,20 @@ class MockSpace extends Fake implements Space {
   bool isBookmarked() => bookmarked;
 }
 
+class MockFfiListString extends Fake implements FfiListFfiString {
+  final List<String> items;
+
+  MockFfiListString({this.items = const []});
+
+  List<String> toDart() => items;
+}
+
 class MockSpaceHierarchyRoomInfo extends Fake
     implements SpaceHierarchyRoomInfo {
   final String roomId;
   final String? roomName;
   final String joinRule;
-  final String serverName;
+  final List<String> serverNames;
   final bool isSuggested;
 
   MockSpaceHierarchyRoomInfo({
@@ -61,7 +69,7 @@ class MockSpaceHierarchyRoomInfo extends Fake
     this.roomName,
     this.joinRule = 'Private',
     this.isSuggested = false,
-    this.serverName = '',
+    this.serverNames = const [],
   });
 
   @override
@@ -74,7 +82,7 @@ class MockSpaceHierarchyRoomInfo extends Fake
   String joinRuleStr() => joinRule;
 
   @override
-  String viaServerName() => serverName;
+  MockFfiListString viaServerNames() => MockFfiListString(items: serverNames);
 
   @override
   bool suggested() => isSuggested;
