@@ -322,7 +322,7 @@ jobs:
 
       - name: Create pkg
         if: matrix.target == 'macos'
-        id: package
+        working-directory: ${{ matrix.artifact_path }}
         run: |
           INSTALLER_CERT_NAME=$(keychain list-certificates \
                   | jq '[.[]
