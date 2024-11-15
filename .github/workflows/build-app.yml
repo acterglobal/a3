@@ -108,7 +108,7 @@ jobs:
             with_apple_cert: true
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
-            flutter_build_args: "build macos --split-debug-info=debug_symbols --verbose"
+            flutter_build_args: "build macos --release --split-debug-info=debug_symbols --verbose"
             artifact_prefix: acter-${{inputs.artifacts_prefix}}macosx
             artifact_path: app/build/macos/Build/Products/Release/
             rename_file: "Acter.pkg"
@@ -324,6 +324,7 @@ jobs:
         if: matrix.target == 'macos'
         working-directory: ${{ matrix.artifact_path }}
         run: |
+          xcrun productbuild --component Acter.app /Applications/ unsigned.pkg
           INSTALLER_CERT_NAME=$(keychain list-certificates \
                   | jq '[.[]
                     | select(.common_name
@@ -331,7 +332,9 @@ jobs:
                     | .common_name][0]' \
                   | xargs)
           echo "Productbuild with $INSTALLER_CERT_NAME "
-          productbuild --component Acter.app /Applications --sign "$INSTALLER_CERT_NAME" Acter.pkg
+          ls -ltas unsigned.pkg
+          xcrun productbuild --sign "$INSTALLER_CERT_NAME" unsigned.pkg Acter.pkg
+          rm -rf unsigned.pkg
 
       # Important! Cleanup: remove the certificate and provisioning profile from the runner!
       - name: Clears Keychain
