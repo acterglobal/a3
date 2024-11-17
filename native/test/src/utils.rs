@@ -53,7 +53,7 @@ async fn random_user_with_uuid(prefix: &str) -> Result<(Client, String)> {
         format!("it-{prefix}-{uuid}"),
         option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
         "acter-integration-tests".to_owned(),
-        StoreConfig::default(),
+        StoreConfig::new("test".to_owned()),
     )
     .await?;
     Ok((user, uuid))
@@ -123,7 +123,7 @@ pub async fn random_user_under_token(prefix: &str, registration_token: &str) -> 
         format!("it-{prefix}-{uuid}"),
         Some(registration_token.to_owned()),
         "acter-integration-tests".to_owned(),
-        StoreConfig::default(),
+        StoreConfig::new("test".to_owned()),
     )
     .await
 }
@@ -163,7 +163,7 @@ pub async fn login_test_user(username: String) -> Result<Client> {
         username,
         option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
         "acter-integration-tests".to_owned(),
-        StoreConfig::default(),
+        StoreConfig::new("login-test-user".to_owned()),
     )
     .await
 }
@@ -183,7 +183,7 @@ pub async fn random_user_with_template(
         format!("it-{prefix}-{uuid}"),
         option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
         "acter-integration-tests".to_owned(),
-        StoreConfig::default(),
+        StoreConfig::new("test".to_owned()),
     )
     .await?;
 
