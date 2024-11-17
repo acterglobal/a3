@@ -1,0 +1,1 @@
+- Fix: ignore rageshake while the app is backgrounded to avoid starting up with a bug report screen opened

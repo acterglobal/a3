@@ -1,14 +1,19 @@
 use async_trait::async_trait;
 use base64ct::{Base64UrlUnpadded, Encoding};
 use core::fmt::Debug;
+use matrix_sdk::media::{MediaRequestParameters, UniqueKey};
 use matrix_sdk_base::{
-    event_cache_store::{EventCacheStore, EventCacheStoreError},
-    media::{MediaRequest, UniqueKey},
+    event_cache::store::{EventCacheStore, EventCacheStoreError},
     ruma::MxcUri,
     StateStore,
 };
 use matrix_sdk_store_encryption::StoreCipher;
-use std::{fs, path::PathBuf};
+use serde::{Deserialize, Serialize};
+use std::{
+    fs,
+    path::PathBuf,
+    time::{Duration, Instant},
+};
 use tracing::instrument;
 
 #[cfg(feature = "queued")]
@@ -58,14 +63,62 @@ impl FileEventCacheStore {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+struct LeaveLockInfo {
+    holder: String,
+    expiration: Duration,
+}
+
 #[async_trait]
 impl EventCacheStore for FileEventCacheStore {
     type Error = EventCacheStoreError;
 
+    async fn try_take_leased_lock(
+        &self,
+        lease_duration_ms: u32,
+        key: &str,
+        holder: &str,
+    ) -> Result<bool, Self::Error> {
+        let now = Instant::now();
+        let base_filename = self.encode_key(format!("leave-lock-{key}"));
+        let full_name = self.cache_dir.join(base_filename.clone());
+        if fs::exists(&full_name).map_err(EventCacheStoreError::backend)? {
+            if let Some(current_lock) = fs::read(&full_name)
+                .ok()
+                .map(|data| self.decode_value(&data))
+                .transpose()?
+                .map(|v| serde_json::from_slice::<LeaveLockInfo>(&v))
+                .transpose()
+                .map_err(EventCacheStoreError::backend)?
+            {
+                if current_lock.expiration > now.elapsed() && current_lock.holder.as_str() != holder
+                {
+                    // there is an active lock and it has another holder, we have to decline.
+                    return Ok(false);
+                }
+            }
+        }
+        let expiration = now + Duration::from_millis(lease_duration_ms.into());
+
+        // not yet or we want to update the field, so let's do that
+        let new_lease = LeaveLockInfo {
+            expiration: expiration.elapsed(),
+            holder: holder.to_owned(),
+        };
+        fs::write(
+            full_name,
+            self.encode_value(
+                serde_json::to_vec(&new_lease).map_err(EventCacheStoreError::backend)?,
+            )?,
+        )
+        .map_err(EventCacheStoreError::backend)?;
+        Ok(true)
+    }
+
     #[instrument(skip_all)]
     async fn add_media_content(
         &self,
-        request: &MediaRequest,
+        request: &MediaRequestParameters,
         content: Vec<u8>,
     ) -> Result<(), Self::Error> {
         let base_filename = self.encode_key(request.source.unique_key());
@@ -80,7 +133,7 @@ impl EventCacheStore for FileEventCacheStore {
     #[instrument(skip_all)]
     async fn get_media_content(
         &self,
-        request: &MediaRequest,
+        request: &MediaRequestParameters,
     ) -> Result<Option<Vec<u8>>, Self::Error> {
         let base_filename = self.encode_key(request.source.unique_key());
         fs::read(self.cache_dir.join(base_filename))
@@ -90,7 +143,10 @@ impl EventCacheStore for FileEventCacheStore {
     }
 
     #[instrument(skip_all)]
-    async fn remove_media_content(&self, request: &MediaRequest) -> Result<(), Self::Error> {
+    async fn remove_media_content(
+        &self,
+        request: &MediaRequestParameters,
+    ) -> Result<(), Self::Error> {
         let base_filename = self.encode_key(request.source.unique_key());
         fs::remove_file(self.cache_dir.join(base_filename))
             .map_err(|e| EventCacheStoreError::Backend(Box::new(e)))?;
@@ -108,8 +164,8 @@ impl EventCacheStore for FileEventCacheStore {
     #[instrument(skip_all)]
     async fn replace_media_key(
         &self,
-        from: &MediaRequest,
-        to: &MediaRequest,
+        from: &MediaRequestParameters,
+        to: &MediaRequestParameters,
     ) -> Result<(), Self::Error> {
         let from_filename = self.encode_key(from.source.unique_key());
         let to_filename = self.encode_key(to.source.unique_key());
@@ -186,8 +242,8 @@ mod tests {
     use matrix_sdk_test::async_test;
     use uuid::Uuid;
 
-    fn fake_mr(id: &str) -> MediaRequest {
-        MediaRequest {
+    fn fake_mr(id: &str) -> MediaRequestParameters {
+        MediaRequestParameters {
             source: MediaSource::Plain(OwnedMxcUri::from(id)),
             format: MediaFormat::File,
         }

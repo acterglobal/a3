@@ -1,6 +1,6 @@
-import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/task_providers.dart';
+import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/features/tasks/widgets/task_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -29,8 +29,14 @@ class MyTasksSection extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            myTaskHeader(context),
+            SectionHeader(
+              title: lang.myTasks,
+              showSectionBg: false,
+              isShowSeeAllButton: true,
+              onTapSeeAll: () => context.pushNamed(Routes.tasks.name),
+            ),
             ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               separatorBuilder: (context, index) => const Divider(
@@ -55,23 +61,6 @@ class MyTasksSection extends ConsumerWidget {
         return Text(lang.loadingTasksFailed(e));
       },
       loading: () => Text(lang.loading),
-    );
-  }
-
-  Widget myTaskHeader(BuildContext context) {
-    final lang = L10n.of(context);
-    return Row(
-      children: [
-        Text(
-          lang.myTasks,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const Spacer(),
-        ActerInlineTextButton(
-          onPressed: () => context.pushNamed(Routes.tasks.name),
-          child: Text(lang.seeAll),
-        ),
-      ],
     );
   }
 }

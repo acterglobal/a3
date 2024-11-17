@@ -1,8 +1,8 @@
 use anyhow::Result;
 use matrix_sdk::{
-    media::{MediaFormat, MediaRequest},
+    media::{MediaFormat, MediaRequestParameters},
     room::RoomMember,
-    Client, DisplayName, Room,
+    Client, Room,
 };
 use matrix_sdk_base::ruma::{
     api::client::user_directory::search_users, events::room::MediaSource, OwnedRoomId, OwnedUserId,
@@ -32,7 +32,7 @@ impl PublicProfile {
         let Some(url) = self.inner.avatar_url.as_ref() else {
             return Ok(None);
         };
-        let request = MediaRequest {
+        let request = MediaRequestParameters {
             source: MediaSource::Plain(url.to_owned()),
             format,
         };

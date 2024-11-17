@@ -1,4 +1,4 @@
-library acter_notifify;
+library;
 
 import 'dart:async';
 import 'dart:io';
