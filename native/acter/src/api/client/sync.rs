@@ -72,7 +72,7 @@ impl HistoryLoadState {
 
     // start the loading process. If we are already loading return false
     fn start_loading(&mut self, room_id: OwnedRoomId) -> bool {
-        matches!(self.loading_spaces.insert(room_id, true), Some(true))
+        !matches!(self.loading_spaces.insert(room_id, true), Some(true))
     }
 
     fn done_loading(&mut self, room_id: OwnedRoomId) {
