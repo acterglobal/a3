@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -14,4 +15,17 @@ final roomPreviewProvider = FutureProvider.family
   }
   final client = ref.watch(alwaysClientProvider);
   return client.roomPreview(query.roomIdOrAlias, servers);
+});
+
+typedef RoomOrPreview = ({Room? room, RoomPreview? preview});
+
+final roomOrPreviewProvider = FutureProvider.family
+    .autoDispose<RoomOrPreview, RoomPreviewQuery>((ref, arg) async {
+  final room = await ref.watch(maybeRoomProvider(arg.roomIdOrAlias).future);
+  if (room != null) {
+    return (room: room, preview: null);
+  }
+
+  final preview = await ref.watch(roomPreviewProvider(arg).future);
+  return (room: null, preview: preview);
 });

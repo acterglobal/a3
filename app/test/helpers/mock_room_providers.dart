@@ -6,8 +6,12 @@ import 'package:mocktail/mocktail.dart';
 class MockAsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String>
     with Mock
     implements AsyncMaybeRoomNotifier {
+  final Room? retVal;
+
+  MockAsyncMaybeRoomNotifier({this.retVal});
+
   @override
-  Future<Room?> build(arg) async {
-    return null;
-  }
+  Future<Room?> build(arg) async => retVal;
 }
+
+class MockRoomPreview with Mock implements RoomPreview {}
