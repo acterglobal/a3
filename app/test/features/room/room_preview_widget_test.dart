@@ -25,6 +25,23 @@ void main() {
       expect(find.text('Test Chat'), findsOneWidget);
     });
 
+    testWidgets('Shows DM', (tester) async {
+      final roomPreview = MockRoomPreview();
+      when(() => roomPreview.roomTypeStr()).thenReturn('chat');
+      when(() => roomPreview.isDirect()).thenReturn(true);
+      when(() => roomPreview.hasAvatar()).thenReturn(false);
+      when(() => roomPreview.name()).thenReturn('Test Chat');
+      await tester.pumpProviderWidget(
+        overrides: [
+          roomPreviewProvider.overrideWith((r, a) async => roomPreview),
+          maybeRoomProvider.overrideWith(() => MockAsyncMaybeRoomNotifier()),
+        ],
+        child: const RoomPreviewWidget(roomId: 'roomId'),
+      );
+      await tester.pump();
+      expect(find.text('Test Chat'), findsOneWidget);
+    });
+
     testWidgets('Shows Space', (tester) async {
       final roomPreview = MockRoomPreview();
       when(() => roomPreview.roomTypeStr()).thenReturn('space');

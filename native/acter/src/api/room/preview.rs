@@ -44,7 +44,7 @@ impl RoomPreview {
         match self.inner.room_type {
             None => "Chat".to_owned(),
             Some(RoomType::Space) => "Space".to_owned(),
-            Some(RoomType::_Custom(_)) => "Custom".to_string(),
+            Some(RoomType::_Custom(a)) => a.to_string(),
             _ => "unknown".to_owned(),
         }
     }
