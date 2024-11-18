@@ -1,29 +1,45 @@
 use anyhow::Result;
-use matrix_sdk::{room_preview::RoomPreview as SdkRoomPreview, RoomState};
-use ruma::{room::RoomType, space::SpaceRoomJoinRule, OwnedServerName, RoomOrAliasId, ServerName};
+use matrix_sdk::{
+    media::MediaRequest, room_preview::RoomPreview as SdkRoomPreview, Client as SdkClient,
+    RoomState,
+};
+use ruma::{
+    events::room::MediaSource, room::RoomType, space::SpaceRoomJoinRule, OwnedServerName,
+    RoomOrAliasId, ServerName,
+};
 
-use crate::{api::utils::VecStringBuilder, RUNTIME};
+use crate::{api::utils::VecStringBuilder, OptionBuffer, ThumbnailSize, RUNTIME};
 
 pub struct RoomPreview {
     inner: SdkRoomPreview,
+    client: SdkClient,
 }
 
 impl RoomPreview {
     pub fn room_id_str(&self) -> String {
         self.inner.room_id.to_string()
     }
+
     pub fn name(&self) -> Option<String> {
         self.inner.name.clone()
     }
+
     pub fn topic(&self) -> Option<String> {
         self.inner.topic.clone()
     }
+
     pub fn avatar_url_str(&self) -> Option<String> {
         self.inner.avatar_url.as_ref().map(|s| s.to_string())
     }
+
+    pub fn has_avatar(&self) -> bool {
+        self.inner.avatar_url.is_some()
+    }
+
     pub fn canonical_alias_str(&self) -> Option<String> {
         self.inner.canonical_alias.as_ref().map(|s| s.to_string())
     }
+
     pub fn room_type_str(&self) -> String {
         match self.inner.room_type {
             None => "Chat".to_owned(),
@@ -82,29 +98,24 @@ impl RoomPreview {
     pub fn room_type(&self) -> Option<RoomType> {
         self.inner.room_type.clone()
     }
+    pub async fn avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
+        let Some(url) = self.inner.avatar_url.clone() else {
+            return Ok(OptionBuffer::new(None));
+        };
 
-    pub fn has_avatar(&self) -> bool {
-        self.inner.avatar_url.is_some()
+        let client = self.client.clone();
+        let format = ThumbnailSize::parse_into_media_format(thumb_size);
+        RUNTIME
+            .spawn(async move {
+                let request = MediaRequest {
+                    source: MediaSource::Plain(url),
+                    format,
+                };
+                let buf = client.media().get_media_content(&request, true).await?;
+                Ok(OptionBuffer::new(Some(buf)))
+            })
+            .await?
     }
-
-    // pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {
-    //     let Some(url) = self.chunk.avatar_url.clone() else {
-    //         return Ok(OptionBuffer::new(None));
-    //     };
-
-    //     let client = self.client.clone();
-    //     let format = ThumbnailSize::parse_into_media_format(thumb_size);
-    //     RUNTIME
-    //         .spawn(async move {
-    //             let request = MediaRequest {
-    //                 source: MediaSource::Plain(url),
-    //                 format,
-    //             };
-    //             let buf = client.media().get_media_content(&request, true).await?;
-    //             Ok(OptionBuffer::new(Some(buf)))
-    //         })
-    //         .await?
-    // }
 }
 
 impl crate::Client {
@@ -124,7 +135,7 @@ impl crate::Client {
         RUNTIME
             .spawn(async move {
                 let inner = client.get_room_preview(&room_id, servers).await?;
-                Ok(RoomPreview { inner })
+                Ok(RoomPreview { inner, client })
             })
             .await?
     }

@@ -8732,6 +8732,53 @@ class Api {
     return tmp7;
   }
 
+  OptionBuffer? __roomPreviewAvatarFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomPreviewAvatarFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionBuffer._(this, tmp13_1);
+    return tmp7;
+  }
+
   SpaceRelations? __spaceSpaceRelationsFuturePoll(
     int boxed,
     int postCobject,
@@ -24359,6 +24406,30 @@ class Api {
           int Function(
             int,
           )>();
+  late final _roomPreviewHasAvatarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__RoomPreview_has_avatar");
+
+  late final _roomPreviewHasAvatar = _roomPreviewHasAvatarPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _roomPreviewAvatarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+            ffi.IntPtr,
+          )>>("__RoomPreview_avatar");
+
+  late final _roomPreviewAvatar = _roomPreviewAvatarPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+      )>();
   late final _categoryTitlePtr = _lookup<
       ffi.NativeFunction<
           _CategoryTitleReturn Function(
@@ -30743,6 +30814,21 @@ class Api {
   late final _spaceRelationsQueryHierarchyFuturePoll =
       _spaceRelationsQueryHierarchyFuturePollPtr.asFunction<
           _SpaceRelationsQueryHierarchyFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _roomPreviewAvatarFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPreviewAvatarFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__RoomPreview_avatar_future_poll");
+
+  late final _roomPreviewAvatarFuturePoll =
+      _roomPreviewAvatarFuturePollPtr.asFunction<
+          _RoomPreviewAvatarFuturePollReturn Function(
             int,
             int,
             int,
@@ -50042,6 +50128,45 @@ class RoomPreview {
     return tmp2;
   }
 
+  bool hasAvatar() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPreviewHasAvatar(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  Future<OptionBuffer> avatar(
+    ThumbnailSize? thumbSize,
+  ) {
+    final tmp1 = thumbSize;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    final tmp5 = _api._roomPreviewAvatar(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__RoomPreview_avatar_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__roomPreviewAvatarFuturePoll);
+    return tmp6;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -64204,6 +64329,21 @@ class _SpaceHierarchyRoomInfoGetAvatarFuturePollReturn extends ffi.Struct {
 }
 
 class _SpaceRelationsQueryHierarchyFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _RoomPreviewAvatarFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

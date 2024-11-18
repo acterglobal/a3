@@ -2083,6 +2083,8 @@ object RoomPreview {
     fn state_str() -> string;
     fn is_direct() -> Option<bool>;
     fn is_world_readable() -> bool;
+    fn has_avatar() -> bool;
+    fn avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 }
 
 
