@@ -449,8 +449,9 @@ content = { body = "example pin data" }
 #[tokio::test]
 async fn image_attachment_can_support_thumbnail() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) =
+    let (user, sync_state, _engine) =
         random_user_with_template("image_attachment_thumbnail", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
@@ -542,8 +543,9 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
 #[tokio::test]
 async fn video_attachment_can_support_thumbnail() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) =
+    let (user, sync_state, _engine) =
         random_user_with_template("image_attachment_thumbnail", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();

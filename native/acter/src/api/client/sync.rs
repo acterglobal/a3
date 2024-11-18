@@ -21,9 +21,9 @@ use matrix_sdk_base::ruma::{
     OwnedRoomId,
 };
 use std::{
-    collections::{BTreeMap, HashMap},
+    collections::{btree_map::Entry, BTreeMap, HashMap},
     io::Write,
-    ops::Deref,
+    ops::{Deref, Index},
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -39,49 +39,62 @@ use tokio::{
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::{Convo, Room, Space, RUNTIME};
+use crate::{api::spaces::HistoryState, Convo, Room, Space, RUNTIME};
 
 use super::Client;
 
 #[derive(Clone, Debug, Default)]
 pub struct HistoryLoadState {
     pub has_started: bool,
-    pub known_spaces: BTreeMap<OwnedRoomId, bool>,
+    loading_spaces: BTreeMap<OwnedRoomId, bool>,
+    done_spaces: Vec<OwnedRoomId>,
 }
 
+// internal API
 impl HistoryLoadState {
-    pub fn is_done_loading(&self) -> bool {
-        self.has_started && !self.known_spaces.values().any(|x| *x)
-    }
-
-    pub fn start(&mut self, known_spaces: Vec<OwnedRoomId>) {
-        trace!(?known_spaces, "Starting History loading");
+    fn initialize(&mut self, loading_spaces: Vec<OwnedRoomId>) {
+        trace!(?loading_spaces, "Starting History loading");
         self.has_started = true;
-        self.known_spaces.clear();
-        for space in known_spaces.into_iter() {
-            self.known_spaces.insert(space, true);
+        self.loading_spaces.clear();
+        for space_id in loading_spaces.into_iter() {
+            self.loading_spaces.insert(space_id, false);
         }
     }
 
-    pub fn unknow_room(&mut self, room_id: &OwnedRoomId) -> bool {
-        self.known_spaces.remove(room_id).unwrap_or_default()
+    fn forget_room(&mut self, room_id: &OwnedRoomId) {
+        self.loading_spaces.remove(room_id);
+        self.done_spaces.retain(|v| v != room_id);
     }
 
-    pub fn knows_room(&self, room_id: &OwnedRoomId) -> bool {
-        self.known_spaces.contains_key(room_id)
+    fn knows_room(&self, room_id: &OwnedRoomId) -> bool {
+        self.done_spaces.contains(room_id) || self.loading_spaces.contains_key(room_id)
     }
 
-    pub fn is_loading(&mut self, room_id: &OwnedRoomId) -> bool {
-        self.known_spaces.get(room_id).cloned().unwrap_or(false)
+    // start the loading process. If we are already loading return false
+    fn start_loading(&mut self, room_id: OwnedRoomId) -> bool {
+        !matches!(self.loading_spaces.insert(room_id, true), Some(true))
     }
 
-    pub fn set_loading(&mut self, room_id: OwnedRoomId, value: bool) -> bool {
-        trace!(?room_id, loading = value, "Setting room for loading");
-        self.known_spaces.insert(room_id, value).unwrap_or_default()
+    fn done_loading(&mut self, room_id: OwnedRoomId) {
+        trace!(?room_id, "Setting room as done loading");
+        if self.loading_spaces.remove(&room_id).is_some() {
+            self.done_spaces.push(room_id);
+        }
+    }
+}
+
+// Public API
+impl HistoryLoadState {
+    pub fn is_done_loading(&self) -> bool {
+        self.has_started && self.loading_spaces.is_empty()
+    }
+
+    pub fn loaded_spaces(&self) -> usize {
+        self.done_spaces.len()
     }
 
     pub fn total_spaces(&self) -> usize {
-        self.known_spaces.len()
+        self.loading_spaces.len() + self.done_spaces.len()
     }
 }
 
@@ -176,6 +189,12 @@ impl SyncState {
         trace!("Waiting for history to sync");
         let signal = self.history_loading.signal_cloned().to_stream();
         pin_mut!(signal);
+        {
+            let current = self.history_loading.lock_ref();
+            if (current.is_done_loading()) {
+                return Ok(current.total_spaces() as u32);
+            }
+        }
         while let Some(next_state) = signal.next().await {
             trace!(?next_state, "History updated");
             if next_state.is_done_loading() {
@@ -203,6 +222,7 @@ impl Drop for SyncState {
 impl Client {
     fn refresh_history_on_start(
         &self,
+        sync_keys: Vec<OwnedRoomId>,
         first_sync_task: Mutable<Option<JoinHandle<Result<()>>>>,
         history: Mutable<HistoryLoadState>,
         room_handles: RoomHandlers,
@@ -218,37 +238,45 @@ impl Client {
         *first_sync_inner = Some(tokio::spawn(async move {
             trace!(user_id=?me.user_id_ref(), "refreshing history");
             let mut spaces = me.spaces().await?;
-            let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
-            history.lock_mut().start(space_ids);
+            let initial_space_setup = spaces
+                .iter()
+                .map(|r| r.room_id().to_owned())
+                .filter(|id| sync_keys.contains(id))
+                .collect();
+            history.lock_mut().initialize(initial_space_setup);
 
             futures::future::join_all(spaces.iter_mut().map(|space| async {
+                let room_id = space.room_id();
                 let is_acter_space = match space.is_acter_space().await {
                     Ok(b) => b,
                     Err(error) => {
-                        error!(room_id=?space.room_id(), ?error, "checking for is-acter-space status failed");
+                        error!(
+                            ?room_id,
+                            ?error,
+                            "checking for is-acter-space status failed"
+                        );
                         false
                     }
                 };
                 if !is_acter_space {
-                    trace!(room_id=?space.room_id(), "not an acter space");
-                    history.lock_mut().unknow_room(&space.room_id().to_owned());
+                    trace!(?room_id, "not an acter space");
+                    history.lock_mut().forget_room(&room_id.to_owned());
                     return;
                 }
 
                 let space_handles = space.setup_handles().await;
                 {
                     let mut handles = room_handles.lock().await;
-                    if let Some(h) = handles.insert(space.room_id().to_owned(), space_handles) {
-                        warn!(room_id=?space.room_id(), "handles overwritten. Might cause issues?!?");
+                    if let Some(h) = handles.insert(room_id.to_owned(), space_handles) {
+                        warn!(?room_id, "handles overwritten. Might cause issues?!?");
                     }
                 }
 
                 if let Err(err) = space.refresh_history().await {
-                    error!(?err, room_id=?space.room_id(), "Loading space history failed");
+                    error!(?err, ?room_id, "Loading space history failed");
                 };
-                history
-                    .lock_mut()
-                    .set_loading(space.room_id().to_owned(), false);
+
+                history.lock_mut().done_loading(room_id.to_owned());
             }))
             .await;
             // once done, let’s reset the first_sync_task to clear it from memory
@@ -268,35 +296,34 @@ impl Client {
         futures::future::join_all(
             new_spaces
                 .into_iter()
-                .map(|room| Space::new(self.clone(), Room::new( self.core.clone(), room )))
+                .map(|room| Space::new(self.clone(), Room::new(self.core.clone(), room)))
                 .map(|mut space| {
                     let history = history.clone();
                     let room_handles = room_handles.clone();
                     async move {
+                        let room_id = space.room_id().to_owned();
                         {
-                            let room_id = space.room_id().to_owned();
                             let mut history = history.lock_mut();
-                            if history.is_loading(&room_id) {
-                                trace!(room_id=?room_id, "Already loading room.");
+                            if !history.start_loading(room_id.clone()) {
+                                trace!(?room_id, "Already loading room.");
                                 return;
                             }
-                            history.set_loading(room_id, true);
                         }
 
                         let space_handles = space.setup_handles().await;
                         {
                             let mut handles = room_handles.lock().await;
-                            if let Some(h) = handles.insert(space.room_id().to_owned(), space_handles) {
-                                warn!(room_id=?space.room_id(), "handles overwritten. Might cause issues?!?");
+                            if let Some(h) =
+                                handles.insert(space.room_id().to_owned(), space_handles)
+                            {
+                                warn!(?room_id, "handles overwritten. Might cause issues?!?");
                             }
                         }
 
                         if let Err(err) = space.refresh_history().await {
-                            error!(?err, room_id=?space.room_id(), "refreshing history failed");
+                            error!(?err, ?room_id, "refreshing history failed");
                         }
-                        history
-                            .lock_mut()
-                            .set_loading(space.room_id().to_owned(), false);
+                        history.lock_mut().done_loading(room_id.clone());
                     }
                 }),
         )
@@ -363,10 +390,7 @@ impl Client {
 
             updated
         };
-        info!(
-            "******************** refreshed room: {:?}",
-            update_keys.clone()
-        );
+        info!("refreshed room: {:?}", update_keys.clone());
         self.executor().notify(update_keys);
     }
 }
@@ -397,6 +421,8 @@ fn insert_to_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, convo:
     // fallback: push at the end.
     target.push_back(convo);
 }
+
+static SYNC_TOKEN_KEY: &str = "sync_token";
 
 // external API
 impl Client {
@@ -435,14 +461,26 @@ impl Client {
         let handle = RUNTIME.spawn(async move {
             info!("spawning sync callback");
 
+            let mut sync_settings = SyncSettings::new().timeout(Duration::from_secs(25));
+
+            match me.store().get_raw::<Option<String>>(SYNC_TOKEN_KEY).await {
+                Ok(Some(token)) => {
+                    trace!(?token, "sync found token!");
+                    sync_settings = sync_settings.token(token);
+                }
+                Err(acter_core::Error::ModelNotFound(_)) => {
+                    trace!("First start, no sync token");
+                }
+                Err(error) => {
+                    error!(?error, "Problem loading sync token");
+                }
+                _ => {}
+            }
+
             // keep the sync timeout below the actual connection timeout to ensure we receive it
             // back before the server timeout occurred
 
-            let mut sync_stream = Box::pin(
-                client
-                    .sync_stream(SyncSettings::new().timeout(Duration::from_secs(25)))
-                    .await,
-            );
+            let mut sync_stream = Box::pin(client.sync_stream(sync_settings).await);
 
             // fetch the events that received when offline
             while let Some(result) = sync_stream.next().await {
@@ -477,8 +515,10 @@ impl Client {
                     if let Ok(mut w) = state.try_write() {
                         w.has_first_synced = true;
                     };
+                    let sync_keys = response.rooms.join.keys().cloned().collect();
                     // background and keep the handle around.
                     me.refresh_history_on_start(
+                        sync_keys,
                         first_sync_task.clone(),
                         history_loading.clone(),
                         room_handles.clone(),
@@ -486,9 +526,8 @@ impl Client {
                 } else {
                     // see if we have new spaces to catch up upon
                     let mut new_spaces = Vec::new();
-                    for room_id in response.rooms.join.keys() {
+                    for (room_id, joined_state) in response.rooms.join.iter() {
                         if history_loading.lock_mut().knows_room(room_id) {
-                            // we are already loading this room
                             continue;
                         }
                         let Some(full_room) = me.get_room(room_id) else {
@@ -548,6 +587,15 @@ impl Client {
                     if !w.is_syncing {
                         w.is_syncing = true;
                     }
+                }
+
+                trace!(token = response.next_batch, "storing sync token");
+                if let Err(error) = me
+                    .store()
+                    .set_raw(SYNC_TOKEN_KEY, &response.next_batch)
+                    .await
+                {
+                    error!(?error, "Error writing sync_token");
                 }
 
                 trace!("ready for the next round");

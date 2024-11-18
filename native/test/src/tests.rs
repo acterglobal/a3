@@ -16,6 +16,7 @@ mod reply;
 mod rsvp;
 mod spaces;
 mod super_invites;
+mod sync;
 mod tasks;
 mod templates;
 mod thumbnail;

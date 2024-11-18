@@ -23,6 +23,7 @@ use acter_core::{
     executor::Executor,
     models::{AnyActerModel, EventMeta},
     statics::default_acter_space_states,
+    store::Store,
     templates::Engine,
 };
 use anyhow::{bail, Context, Result};
@@ -82,9 +83,32 @@ impl Ord for Space {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct HistoryState {
+pub(crate) struct HistoryState {
     /// The last `end` send from the server
     seen: String,
+}
+
+impl HistoryState {
+    pub fn new(last_seen: String) -> HistoryState {
+        HistoryState { seen: last_seen }
+    }
+    pub(crate) fn storage_key(room_id: &RoomId) -> String {
+        format!("{room_id}::history")
+    }
+
+    pub(crate) async fn load(store: &Store, room_id: &RoomId) -> Result<HistoryState> {
+        let history = store
+            .get_raw::<HistoryState>(&HistoryState::storage_key(room_id))
+            .await?;
+        trace!(?room_id, seen = history.seen, "Loading history key");
+        Ok(history)
+    }
+    pub(crate) async fn store(store: &Store, room_id: &RoomId, seen: String) -> Result<()> {
+        trace!(?room_id, ?seen, "Storing history key");
+        Ok(store
+            .set_raw(&HistoryState::storage_key(room_id), &HistoryState { seen })
+            .await?)
+    }
 }
 
 // internal API
@@ -410,14 +434,7 @@ impl Space {
         let client = self.room.client();
         // self.room.sync_members().await.context("Unable to sync members of room")?;
 
-        let custom_storage_key = format!("{room_id}::history");
-
-        let mut from = if let Ok(h) = self
-            .client
-            .store()
-            .get_raw::<HistoryState>(&custom_storage_key)
-            .await
-        {
+        let mut from = if let Ok(h) = HistoryState::load(self.client.store(), room_id).await {
             trace!(name, state=?h.seen, "found history state");
             Some(h.seen)
         } else {
@@ -493,13 +510,7 @@ impl Space {
             if let Some(seen) = end {
                 from = Some(seen.clone());
                 msg_options = MessagesOptions::forward().from(from.as_deref());
-                client
-                    .store()
-                    .set_custom_value_no_read(
-                        custom_storage_key.as_bytes(),
-                        serde_json::to_vec(&HistoryState { seen })?,
-                    )
-                    .await?;
+                HistoryState::store(self.client.store(), room_id, seen).await?;
             } else {
                 // how do we want to understand this case?
                 trace!(room_id = ?self.room.room_id(), "Done loading");

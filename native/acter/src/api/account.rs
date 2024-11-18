@@ -1,7 +1,7 @@
 use acter_core::events::settings::{ActerUserAppSettingsContent, APP_USER_SETTINGS};
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{media::MediaRequest, Account as SdkAccount};
+use matrix_sdk::{media::MediaRequestParameters, Account as SdkAccount};
 use matrix_sdk_base::{
     ruma::{
         api::client::uiaa::{AuthData, Password},
@@ -95,7 +95,7 @@ impl Account {
                     },
                 };
                 let format = ThumbnailSize::parse_into_media_format(thumb_size);
-                let request = MediaRequest { source, format };
+                let request = MediaRequestParameters { source, format };
                 Ok(OptionBuffer::new(Some(
                     client.media().get_media_content(&request, true).await?,
                 )))

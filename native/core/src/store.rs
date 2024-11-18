@@ -398,7 +398,7 @@ mod tests {
     };
 
     async fn fresh_store_and_client() -> Result<(Store, Client)> {
-        let config = StoreConfig::default().state_store(MemoryStore::new());
+        let config = StoreConfig::new("tests".to_owned()).state_store(MemoryStore::new());
         let client = Client::builder()
             .homeserver_url("http://localhost")
             .server_versions([MatrixVersion::V1_5])

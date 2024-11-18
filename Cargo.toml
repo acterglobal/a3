@@ -11,13 +11,16 @@ default-members = ["native/acter"]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 # path = "../matrix-rust-sdk/crates/matrix-sdk"
 default-features = false
-features = ["experimental-sliding-sync"]
+features = [
+  "experimental-sliding-sync",
+  "rustls-tls",
+]
+
 
 [workspace.dependencies.matrix-sdk-base]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-base"
 default-features = false
-
 [workspace.dependencies.matrix-sdk-sqlite]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-sqlite"
