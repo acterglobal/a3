@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         pins::{self, PinBuilder},
-        Display, Icon,
+        Display, Icon, RefDetailsBuilder,
     },
     models::{self, can_redact, ActerModel, AnyActerModel},
     statics::KEYS,
@@ -293,6 +293,19 @@ impl Pin {
             room: self.room.clone(),
             content: self.content.updater(),
         })
+    }
+
+    pub fn new_task_list_ref_builder(&self, action: Option<String>) -> Result<RefDetailsBuilder> {
+        if !self.is_joined() {
+            bail!("Can only create tasklist from pin in joined rooms");
+        }
+        let event_id = self.content.event_id().to_owned();
+        let mut builder = RefDetailsBuilder::new_task_list_ref_builder(event_id);
+        builder.room_id(self.content.room_id().to_string());
+        if let Some(action) = action {
+            builder.action(action);
+        }
+        Ok(builder)
     }
 
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {

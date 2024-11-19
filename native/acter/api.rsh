@@ -514,6 +514,10 @@ object ActerPin {
     /// make a builder for updating the pin
     fn update_builder() -> Result<PinUpdateBuilder>;
 
+    /// create a task list ref builder
+    /// action: link/embed/embed-subscribe
+    fn new_task_list_ref_builder(action: Option<string>) -> Result<RefDetailsBuilder>;
+
     /// get informed about changes to this pin
     fn subscribe_stream() -> Stream<bool>;
 
