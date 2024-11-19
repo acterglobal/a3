@@ -1,0 +1,1 @@
+- Fix to not refresh the entire space history on every app start anymore.

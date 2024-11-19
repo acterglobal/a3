@@ -216,7 +216,7 @@ mod tests {
     use serde_json::{from_value, json};
 
     async fn fresh_executor() -> Result<Executor> {
-        let config = StoreConfig::default().state_store(MemoryStore::new());
+        let config = StoreConfig::new("tests".to_owned()).state_store(MemoryStore::new());
         let client = Client::builder()
             .homeserver_url("http://localhost")
             .server_versions([MatrixVersion::V1_5])

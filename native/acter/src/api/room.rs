@@ -19,10 +19,10 @@ use anyhow::{bail, Context, Result};
 use futures::Stream;
 use matrix_sdk::{
     deserialized_responses::SyncOrStrippedState,
-    media::{MediaFormat, MediaRequest},
+    media::{MediaFormat, MediaRequestParameters},
     notification_settings::{IsEncrypted, IsOneToOne},
     room::{Room as SdkRoom, RoomMember},
-    DisplayName, RoomMemberships, RoomState,
+    RoomDisplayName, RoomMemberships, RoomState,
 };
 use matrix_sdk_base::ruma::{
     api::client::{
@@ -458,7 +458,7 @@ impl SpaceHierarchyRoomInfo {
             let format = ThumbnailSize::parse_into_media_format(thumb_size);
             return RUNTIME
                 .spawn(async move {
-                    let request = MediaRequest {
+                    let request = MediaRequestParameters {
                         source: MediaSource::Plain(url),
                         format,
                     };
@@ -616,11 +616,11 @@ impl Room {
             .spawn(async move {
                 let result = room.compute_display_name().await?;
                 match result {
-                    DisplayName::Named(name) => Ok(OptionString::new(Some(name))),
-                    DisplayName::Aliased(name) => Ok(OptionString::new(Some(name))),
-                    DisplayName::Calculated(name) => Ok(OptionString::new(Some(name))),
-                    DisplayName::EmptyWas(name) => Ok(OptionString::new(Some(name))),
-                    DisplayName::Empty => Ok(OptionString::new(None)),
+                    RoomDisplayName::Named(name) => Ok(OptionString::new(Some(name))),
+                    RoomDisplayName::Aliased(name) => Ok(OptionString::new(Some(name))),
+                    RoomDisplayName::Calculated(name) => Ok(OptionString::new(Some(name))),
+                    RoomDisplayName::EmptyWas(name) => Ok(OptionString::new(Some(name))),
+                    RoomDisplayName::Empty => Ok(OptionString::new(None)),
                 }
             })
             .await?
@@ -797,7 +797,7 @@ impl Room {
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("don’t know mime type")?;
                 let buf = std::fs::read(path)?;
-                let response = client.media().upload(&content_type, buf).await?;
+                let response = client.media().upload(&content_type, buf, None).await?;
 
                 let content_uri = response.content_uri;
                 let info = assign!(AvatarImageInfo::new(), {
@@ -1188,7 +1188,7 @@ impl Room {
                         (source, MediaFormat::File)
                     }
                 };
-                let request = MediaRequest { source, format };
+                let request = MediaRequestParameters { source, format };
                 let data = client.media().get_media_content(&request, false).await?;
                 Ok(FfiBuffer::new(data))
             })
@@ -1338,7 +1338,7 @@ impl Room {
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest {
+                                .map(|source| MediaRequestParameters {
                                     source,
                                     format: MediaFormat::from(thumb_size),
                                 });
@@ -1358,7 +1358,7 @@ impl Room {
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest {
+                                .map(|source| MediaRequestParameters {
                                     source,
                                     format: MediaFormat::from(thumb_size),
                                 });
@@ -1378,7 +1378,7 @@ impl Room {
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest {
+                                .map(|source| MediaRequestParameters {
                                     source,
                                     format: MediaFormat::from(thumb_size),
                                 });
@@ -1398,7 +1398,7 @@ impl Room {
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest {
+                                .map(|source| MediaRequestParameters {
                                     source,
                                     format: MediaFormat::from(thumb_size),
                                 });
@@ -1418,7 +1418,7 @@ impl Room {
                     },
                     None => match &original.content.msgtype {
                         MessageType::Image(content) => {
-                            let request = MediaRequest {
+                            let request = MediaRequestParameters {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
                             };
@@ -1433,7 +1433,7 @@ impl Room {
                             (Some(request), filename)
                         }
                         MessageType::Audio(content) => {
-                            let request = MediaRequest {
+                            let request = MediaRequestParameters {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
                             };
@@ -1448,7 +1448,7 @@ impl Room {
                             (Some(request), filename)
                         }
                         MessageType::Video(content) => {
-                            let request = MediaRequest {
+                            let request = MediaRequestParameters {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
                             };
@@ -1463,7 +1463,7 @@ impl Room {
                             (Some(request), filename)
                         }
                         MessageType::File(content) => {
-                            let request = MediaRequest {
+                            let request = MediaRequestParameters {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
                             };

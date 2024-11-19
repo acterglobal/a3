@@ -1,6 +1,6 @@
 use crate::MediaStore;
 use async_trait::async_trait;
-use matrix_sdk_base::{media::MediaRequest, ruma::MxcUri};
+use matrix_sdk_base::{media::MediaRequestParameters, ruma::MxcUri};
 use std::sync::Arc;
 use tokio::sync::Semaphore;
 use tracing::instrument;
@@ -36,7 +36,7 @@ where
     #[instrument(skip_all)]
     async fn add_media_content(
         &self,
-        request: &MediaRequest,
+        request: &MediaRequestParameters,
         content: Vec<u8>,
     ) -> Result<(), Self::Error> {
         let _handle = self
@@ -50,7 +50,7 @@ where
     #[instrument(skip_all)]
     async fn get_media_content(
         &self,
-        request: &MediaRequest,
+        request: &MediaRequestParameters,
     ) -> Result<Option<Vec<u8>>, Self::Error> {
         let _handle = self
             .queue
@@ -61,7 +61,10 @@ where
     }
 
     #[instrument(skip_all)]
-    async fn remove_media_content(&self, request: &MediaRequest) -> Result<(), Self::Error> {
+    async fn remove_media_content(
+        &self,
+        request: &MediaRequestParameters,
+    ) -> Result<(), Self::Error> {
         let _handle = self
             .queue
             .acquire()

@@ -26,6 +26,7 @@ dependencies:
   app_badge_plus: ^1.1.5
   sentry: any
 
+  sentry_flutter: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
