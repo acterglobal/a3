@@ -56,6 +56,7 @@ class NewsVerticalViewState extends ConsumerState<NewsFullView> {
           PointerDeviceKind.touch,
           PointerDeviceKind.mouse,
           PointerDeviceKind.trackpad,
+          PointerDeviceKind.stylus,
         },
       ),
       child: PageView.builder(
