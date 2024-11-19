@@ -4,10 +4,12 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SelectActionItem extends StatelessWidget {
   final Function onShareEventSelected;
+  final Function onSharePinSelected;
 
   const SelectActionItem({
     super.key,
     required this.onShareEventSelected,
+    required this.onSharePinSelected,
   });
 
   @override
@@ -21,6 +23,13 @@ class SelectActionItem extends StatelessWidget {
           actionIcon: Atlas.calendar_dots,
           actionName: L10n.of(context).eventShare,
           onTap: () => onShareEventSelected(),
+        ),
+        const SizedBox(height: 20),
+        actionItemUI(
+          context: context,
+          actionIcon: Atlas.pin,
+          actionName: L10n.of(context).sharePin,
+          onTap: () => onSharePinSelected(),
         ),
         const SizedBox(height: 20),
       ],

@@ -15,6 +15,8 @@ import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -214,6 +216,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               final notifier = ref.read(newsStateProvider.notifier);
               await notifier.selectEventToShare(buildContext);
             },
+            onSharePinSelected: () async {
+              Navigator.pop(context);
+              final notifier = ref.read(newsStateProvider.notifier);
+              await notifier.selectPinToShare(buildContext);
+            },
           ),
         );
       },
@@ -280,6 +287,28 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                           final notifier = ref.read(newsStateProvider.notifier);
                           await notifier.selectEventToShare(context);
                         },
+                      ),
+                    );
+                  },
+                  loading: () => const SizedBox(
+                    width: 300,
+                    child: EventItemSkeleton(),
+                  ),
+                  error: (e, s) {
+                    _log.severe('Failed to load cal event', e, s);
+                    return Center(
+                      child: Text(lang.failedToLoadEvent(e)),
+                    );
+                  },
+                ),
+          if (newsReferences.type == NewsReferencesType.pin &&
+              calEventId != null)
+            ref.watch(pinProvider(calEventId)).when(
+                  data: (pin) {
+                    return SizedBox(
+                      width: 300,
+                      child: PinListItemWidget(
+                        pinId: pin.eventIdStr(),
                       ),
                     );
                   },

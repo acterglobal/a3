@@ -27,14 +27,23 @@ class NewsSlideActions extends ConsumerWidget {
     if (newsReferencesList.isEmpty) return const SizedBox();
     final referenceDetails = newsReferencesList.first.refDetails();
     final evtType = NewsReferencesType.fromStr(referenceDetails.typeStr());
-    final eventID = referenceDetails.targetIdStr() ?? '';
+    final id = referenceDetails.targetIdStr() ?? '';
     return switch (evtType) {
       NewsReferencesType.calendarEvent =>
-        renderCalendarEventAction(context, ref, eventID),
+        renderCalendarEventAction(context, ref, id),
+      NewsReferencesType.pin => renderPinAction(context, ref, id),
       NewsReferencesType.link =>
         renderLinkActionButton(context, ref, referenceDetails),
       _ => renderNotSupportedAction(context)
     };
+  }
+
+  Widget renderPinAction(
+    BuildContext context,
+    WidgetRef ref,
+    String pinId,
+  ) {
+    return Text('Pin $pinId');
   }
 
   Widget renderCalendarEventAction(

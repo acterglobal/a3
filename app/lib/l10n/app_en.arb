@@ -2287,5 +2287,6 @@
   "addBoost": "Add Boost",
   "addTaskList": "Add TaskList",
   "addComment": "Add Comment",
+  "sharePin": "Share Pin",
   "@addBoost": {}
 }
