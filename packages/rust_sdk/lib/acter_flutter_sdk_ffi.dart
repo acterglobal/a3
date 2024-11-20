@@ -18032,25 +18032,6 @@ class Api {
       _ActerPinUpdateBuilderReturn Function(
         int,
       )>();
-  late final _acterPinNewTaskListRefBuilderPtr = _lookup<
-      ffi.NativeFunction<
-          _ActerPinNewTaskListRefBuilderReturn Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__ActerPin_new_task_list_ref_builder");
-
-  late final _acterPinNewTaskListRefBuilder =
-      _acterPinNewTaskListRefBuilderPtr.asFunction<
-          _ActerPinNewTaskListRefBuilderReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
   late final _acterPinSubscribeStreamPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -37580,63 +37561,6 @@ class ActerPin {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp2 = PinUpdateBuilder._(_api, tmp7_1);
     return tmp2;
-  }
-
-  /// create a task list ref builder
-  /// action: link/embed/embed-subscribe
-  RefDetailsBuilder newTaskListRefBuilder(
-    String? action,
-  ) {
-    final tmp1 = action;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp4 = 0;
-    var tmp5 = 0;
-    var tmp6 = 0;
-    tmp0 = _box.borrow();
-    if (tmp1 == null) {
-      tmp2 = 0;
-    } else {
-      tmp2 = 1;
-      final tmp3 = tmp1;
-      final tmp3_0 = utf8.encode(tmp3);
-      tmp5 = tmp3_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
-      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
-      tmp4_1.setAll(0, tmp3_0);
-      tmp4 = tmp4_0.address;
-      tmp6 = tmp5;
-    }
-    final tmp7 = _api._acterPinNewTaskListRefBuilder(
-      tmp0,
-      tmp2,
-      tmp4,
-      tmp5,
-      tmp6,
-    );
-    final tmp9 = tmp7.arg0;
-    final tmp10 = tmp7.arg1;
-    final tmp11 = tmp7.arg2;
-    final tmp12 = tmp7.arg3;
-    final tmp13 = tmp7.arg4;
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        _api.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(_api, tmp13_0, "drop_box_RefDetailsBuilder");
-    tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
-    final tmp8 = RefDetailsBuilder._(_api, tmp13_1);
-    return tmp8;
   }
 
   /// get informed about changes to this pin
@@ -59506,19 +59430,6 @@ class _ActerPinRoomIdStrReturn extends ffi.Struct {
 }
 
 class _ActerPinUpdateBuilderReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
-}
-
-class _ActerPinNewTaskListRefBuilderReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
