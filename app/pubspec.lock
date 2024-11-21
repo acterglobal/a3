@@ -539,7 +539,7 @@ packages:
       path: "."
       ref: master
       resolved-ref: "4b086bcb22c41e28dd4e5094585d3d3d1f799977"
-      url: "https://github.com/kumarpalsinh25/DragAndDropLists"
+      url: "https://github.com/acterglobal/DragAndDropLists"
     source: git
     version: "0.4.1"
   emoji_picker_flutter:
