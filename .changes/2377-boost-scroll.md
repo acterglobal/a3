@@ -1,1 +1,0 @@
-- [New] : Now you can manage boost scroll on desktop with Trackpad and Stylus (Digital Pen) also as an alternate option to the Mouse and Touch Event.
