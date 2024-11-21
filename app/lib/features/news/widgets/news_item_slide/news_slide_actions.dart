@@ -4,6 +4,8 @@ import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +45,30 @@ class NewsSlideActions extends ConsumerWidget {
     WidgetRef ref,
     String pinId,
   ) {
-    return Text('Pin $pinId');
+    final lang = L10n.of(context);
+    final pinData = ref.watch(pinProvider(pinId));
+    final pinError = pinData.asError;
+    if (pinError != null) {
+      _log.severe('Error loading pin', pinError.error, pinError.stackTrace);
+      return Card(
+        child: ListTile(
+          leading: const Icon(Icons.pin),
+          title: Text(lang.pinNoLongerAvailable),
+          subtitle: Text(
+            lang.pinDeletedOrFailedToLoad,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+          onTap: () async {
+            await ActerErrorDialog.show(
+              context: context,
+              error: pinError.error,
+              stack: pinError.stackTrace,
+            );
+          },
+        ),
+      );
+    }
+    return PinListItemWidget(pinId: pinId);
   }
 
   Widget renderCalendarEventAction(

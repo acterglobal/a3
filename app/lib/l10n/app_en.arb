@@ -2224,6 +2224,8 @@
   "@eventNoLongerAvailable": {},
   "eventDeletedOrFailedToLoad": "This may due to event deletion or failed to load",
   "@eventDeletedOrFailedToLoad": {},
+  "pinNoLongerAvailable": "Pin no longer available",
+  "pinDeletedOrFailedToLoad": "This may due to pin deletion or failed to load",
   "chatNotEncrypted": "This chat is not end-to-end-encrypted",
   "@chatNotEncrypted": {},
   "updatingIcon": "Updating Icon",

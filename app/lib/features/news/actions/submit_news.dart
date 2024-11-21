@@ -197,7 +197,7 @@ ObjRef getSlideReference(ActerSdk sdk, NewsReferencesModel refModel) {
         )
         .build(),
     NewsReferencesType.pin => sdk.api
-        .newCalendarEventRefBuilder(
+        .newPinRefBuilder(
           refModel.id.expect('Referenced Pin misses id'),
           null,
           null,
