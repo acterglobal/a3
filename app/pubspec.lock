@@ -536,10 +536,11 @@ packages:
   drag_and_drop_lists:
     dependency: "direct main"
     description:
-      name: drag_and_drop_lists
-      sha256: "83fab4a9d4d99d9c683858ac5e1975028d87aa796bf68bfd654b19154004b6bb"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "4b086bcb22c41e28dd4e5094585d3d3d1f799977"
+      url: "https://github.com/acterglobal/DragAndDropLists"
+    source: git
     version: "0.4.1"
   emoji_picker_flutter:
     dependency: "direct main"
