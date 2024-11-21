@@ -2238,6 +2238,8 @@
   "@organize": {},
   "updatingCategories": "Updating categories",
   "@updatingCategories": {},
+  "uncategorized": "Uncategorized",
+  "@uncategorized": {},
   "updatingCategoriesFailed": "Updating categories failed {error}",
   "@updatingCategoriesFailed": {},
   "addingNewCategory": "Adding new category",
