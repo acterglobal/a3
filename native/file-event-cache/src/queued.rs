@@ -1,6 +1,6 @@
 use crate::EventCacheStore;
 use async_trait::async_trait;
-use matrix_sdk_base::{media::MediaRequest, ruma::MxcUri};
+use matrix_sdk::{media::MediaRequestParameters, ruma::MxcUri};
 use std::sync::Arc;
 use tokio::sync::Semaphore;
 use tracing::instrument;
@@ -33,10 +33,26 @@ where
 {
     type Error = T::Error;
 
+    async fn try_take_leased_lock(
+        &self,
+        lease_duration_ms: u32,
+        key: &str,
+        holder: &str,
+    ) -> Result<bool, Self::Error> {
+        let _handle = self
+            .queue
+            .acquire()
+            .await
+            .expect("We never close the semaphore");
+        self.inner
+            .try_take_leased_lock(lease_duration_ms, key, holder)
+            .await
+    }
+
     #[instrument(skip_all)]
     async fn add_media_content(
         &self,
-        request: &MediaRequest,
+        request: &MediaRequestParameters,
         content: Vec<u8>,
     ) -> Result<(), Self::Error> {
         let _handle = self
@@ -50,7 +66,7 @@ where
     #[instrument(skip_all)]
     async fn get_media_content(
         &self,
-        request: &MediaRequest,
+        request: &MediaRequestParameters,
     ) -> Result<Option<Vec<u8>>, Self::Error> {
         let _handle = self
             .queue
@@ -61,7 +77,10 @@ where
     }
 
     #[instrument(skip_all)]
-    async fn remove_media_content(&self, request: &MediaRequest) -> Result<(), Self::Error> {
+    async fn remove_media_content(
+        &self,
+        request: &MediaRequestParameters,
+    ) -> Result<(), Self::Error> {
         let _handle = self
             .queue
             .acquire()
@@ -83,8 +102,8 @@ where
     #[instrument(skip_all)]
     async fn replace_media_key(
         &self,
-        from: &MediaRequest,
-        to: &MediaRequest,
+        from: &MediaRequestParameters,
+        to: &MediaRequestParameters,
     ) -> Result<(), Self::Error> {
         let _handle = self
             .queue

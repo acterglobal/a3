@@ -1,7 +1,7 @@
 use anyhow::Result;
 use matrix_sdk::{
-    media::MediaRequest, room_preview::RoomPreview as SdkRoomPreview, Client as SdkClient,
-    RoomState,
+    media::MediaRequestParameters, room_preview::RoomPreview as SdkRoomPreview,
+    Client as SdkClient, RoomState,
 };
 use ruma::{
     events::room::MediaSource, room::RoomType, space::SpaceRoomJoinRule, OwnedServerName,
@@ -44,7 +44,6 @@ impl RoomPreview {
         match self.inner.room_type {
             None => "Chat".to_owned(),
             Some(RoomType::Space) => "Space".to_owned(),
-            Some(RoomType::_Custom(a)) => a.to_string(),
             _ => "unknown".to_owned(),
         }
     }
@@ -107,7 +106,7 @@ impl RoomPreview {
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         RUNTIME
             .spawn(async move {
-                let request = MediaRequest {
+                let request = MediaRequestParameters {
                     source: MediaSource::Plain(url),
                     format,
                 };

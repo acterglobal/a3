@@ -17,10 +17,12 @@ default = ["queued"]
 [dependencies]
 async-trait = "0.1.60"
 base64ct = { workspace = true, features = ["alloc"] }
+matrix-sdk = { workspace = true }
 matrix-sdk-base = { workspace = true }
 matrix-sdk-store-encryption = { workspace = true }
 rmp-serde = "1.1.2"
 serde_json = "1"
+serde = "1"
 tracing = "0.1.40"
 tokio = { version = "1.38.0", features = ["sync"], default-features = false, optional = true }
 
@@ -28,6 +30,7 @@ tokio = { version = "1.38.0", features = ["sync"], default-features = false, opt
 anyhow = "1.0.79"
 matrix-sdk-sqlite = { workspace = true }
 matrix-sdk-test = { workspace = true }
+matrix-sdk = { workspace = true, features = ["rustls-tls"] }
 tempfile = "3.9.0"
 tokio = "1.35.1"
 uuid = { version = "1.6.1", features = ["v4"] }

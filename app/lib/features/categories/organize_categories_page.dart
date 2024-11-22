@@ -2,6 +2,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/dotted_border_widget.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/categories/actions/save_categories.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
@@ -58,6 +59,13 @@ class _DraggableCategoriesListState
       dragAndDropList = List.generate(categoryList.length, (categoryIndex) {
         bool isLastItem = categoryIndex == categoryList.length - 1;
         return DragAndDropList(
+          contentsWhenEmpty: DottedBorderWidget(
+            child: Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(vertical: 35),
+              child: Text('Drag here'),
+            ),
+          ),
           canDrag: CategoryUtils().isValidCategory(categoryList[categoryIndex]),
           header: dragDropListHeaderView(categoryIndex),
           children: getDragAndDropItemList(categoryIndex),
