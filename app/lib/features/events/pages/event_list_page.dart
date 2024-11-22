@@ -13,11 +13,13 @@ import 'package:go_router/go_router.dart';
 class EventListPage extends ConsumerStatefulWidget {
   final String? spaceId;
   final String? searchQuery;
+  final Function(String)? onSelectEventItem;
 
   const EventListPage({
     super.key,
     this.spaceId,
     this.searchQuery,
+    this.onSelectEventItem,
   });
 
   @override
@@ -46,23 +48,26 @@ class _EventListPageState extends ConsumerState<EventListPage> {
     final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(L10n.of(context).events),
-          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
-        ],
-      ),
+      title: widget.onSelectEventItem != null
+          ? Text(L10n.of(context).selectEvent)
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(L10n.of(context).events),
+                if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
+              ],
+            ),
       actions: [
-        AddButtonWithCanPermission(
-          canString: 'CanPostEvent',
-          spaceId: widget.spaceId,
-          onPressed: () => context.pushNamed(
-            Routes.createEvent.name,
-            queryParameters: {'spaceId': widget.spaceId},
+        if (widget.onSelectEventItem == null)
+          AddButtonWithCanPermission(
+            canString: 'CanPostEvent',
+            spaceId: widget.spaceId,
+            onPressed: () => context.pushNamed(
+              Routes.createEvent.name,
+              queryParameters: {'spaceId': widget.spaceId},
+            ),
           ),
-        ),
       ],
     );
   }
@@ -89,6 +94,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
           child: EventListWidget(
             isShowSpaceName: widget.spaceId == null,
             shrinkWrap: false,
+            onTapEventItem: widget.onSelectEventItem,
             listProvider: eventListSearchedAndFilterProvider(widget.spaceId),
             emptyStateBuilder: () => EventListEmptyState(
               spaceId: widget.spaceId,

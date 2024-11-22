@@ -71,8 +71,9 @@ slides = []
 #[tokio::test]
 async fn leaving_spaces() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) =
+    let (user, sync_state, _engine) =
         random_user_with_template("leaving_spaces", THREE_SPACES_TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -216,7 +217,8 @@ name = "{{ main.display_name }}’s main test space"
 #[tokio::test]
 async fn create_subspace() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -258,10 +260,18 @@ async fn create_subspace() -> Result<()> {
     .await?;
 
     let space = user.space(subspace_id.to_string()).await?;
-    let space_relations = space.space_relations().await?;
-    let space_parent = space_relations
-        .main_parent()
-        .expect("Subspace doesn’t have the parent");
+    let space_parent = Retry::spawn(retry_strategy.clone(), move || {
+        let space = space.clone();
+        async move {
+            let space_relations = space.space_relations().await?;
+            let Some(space_parent) = space_relations.main_parent() else {
+                bail!("space misses main parent");
+            };
+            Ok(space_parent)
+        }
+    })
+    .await?;
+
     assert_eq!(space_parent.room_id(), first.room_id());
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
@@ -280,7 +290,8 @@ async fn create_subspace() -> Result<()> {
 #[tokio::test]
 async fn change_subspace_join_rule() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -322,10 +333,17 @@ async fn change_subspace_join_rule() -> Result<()> {
     .await?;
 
     let space = user.space(subspace_id.to_string()).await?;
-    let space_relations = space.space_relations().await?;
-    let space_parent = space_relations
-        .main_parent()
-        .expect("Subspace doesn’t have the parent");
+    let space_parent = Retry::spawn(retry_strategy.clone(), || {
+        let space = space.clone();
+        async move {
+            let space_relations = space.space_relations().await?;
+            let Some(space_parent) = space_relations.main_parent() else {
+                bail!("space misses main parent");
+            };
+            Ok(space_parent)
+        }
+    })
+    .await?;
     assert_eq!(space_parent.room_id(), first.room_id());
     assert_eq!(space.join_rule_str(), "restricted");
 
@@ -388,7 +406,8 @@ async fn change_subspace_join_rule() -> Result<()> {
 #[tokio::test]
 async fn update_name() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("space_update_name", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("space_update_name", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -510,8 +529,8 @@ async fn update_name() -> Result<()> {
 #[ignore = "topic updating seems broken"]
 async fn update_topic() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) =
-        random_user_with_template("space_update_topic", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("space_update_topic", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);

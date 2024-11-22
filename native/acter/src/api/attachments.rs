@@ -7,7 +7,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::{
-    media::{MediaFormat, MediaRequest},
+    media::{MediaFormat, MediaRequestParameters},
     room::Room,
     RoomState,
 };
@@ -124,7 +124,7 @@ impl Attachment {
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest {
+                                .map(|source| MediaRequestParameters {
                                     source,
                                     format: MediaFormat::from(thumb_size),
                                 });
@@ -144,7 +144,7 @@ impl Attachment {
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest {
+                                .map(|source| MediaRequestParameters {
                                     source,
                                     format: MediaFormat::from(thumb_size),
                                 });
@@ -164,7 +164,7 @@ impl Attachment {
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest {
+                                .map(|source| MediaRequestParameters {
                                     source,
                                     format: MediaFormat::from(thumb_size),
                                 });
@@ -184,7 +184,7 @@ impl Attachment {
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest {
+                                .map(|source| MediaRequestParameters {
                                     source,
                                     format: MediaFormat::from(thumb_size),
                                 });
@@ -204,7 +204,7 @@ impl Attachment {
                     },
                     None => match evt_content {
                         AttachmentContent::Image(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
-                            let request = MediaRequest {
+                            let request = MediaRequestParameters {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
                             };
@@ -219,7 +219,7 @@ impl Attachment {
                             (Some(request), filename)
                         }
                         AttachmentContent::Audio(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
-                            let request = MediaRequest {
+                            let request = MediaRequestParameters {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
                             };
@@ -234,7 +234,7 @@ impl Attachment {
                             (Some(request), filename)
                         }
                         AttachmentContent::Video(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
-                            let request = MediaRequest {
+                            let request = MediaRequestParameters {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
                             };
@@ -249,7 +249,7 @@ impl Attachment {
                             (Some(request), filename)
                         }
                         AttachmentContent::File(content) | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
-                            let request = MediaRequest {
+                            let request = MediaRequestParameters {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
                             };

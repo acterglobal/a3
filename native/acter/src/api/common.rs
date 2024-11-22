@@ -7,7 +7,7 @@ use acter_core::events::{
 use anyhow::{Context, Result};
 use core::time::Duration;
 use matrix_sdk::{
-    media::{MediaFormat, MediaThumbnailSettings, MediaThumbnailSize},
+    media::{MediaFormat, MediaThumbnailSettings},
     ComposerDraft, ComposerDraftType, HttpError, RumaApiError,
 };
 use matrix_sdk_base::ruma::{
@@ -675,11 +675,7 @@ impl ThumbnailSize {
 
 impl From<Box<ThumbnailSize>> for MediaFormat {
     fn from(val: Box<ThumbnailSize>) -> Self {
-        MediaFormat::Thumbnail(MediaThumbnailSettings::new(
-            get_content_thumbnail::v3::Method::Scale,
-            val.width,
-            val.height,
-        ))
+        MediaFormat::Thumbnail(MediaThumbnailSettings::new(val.width, val.height))
     }
 }
 
@@ -726,6 +722,22 @@ pub fn new_task_list_ref_builder(
 ) -> Result<RefDetailsBuilder> {
     let target_id = EventId::parse(target_id)?;
     let mut builder = RefDetailsBuilder::new_task_list_ref_builder(target_id);
+    if let Some(room_id) = room_id {
+        builder.room_id(room_id);
+    }
+    if let Some(action) = action {
+        builder.action(action);
+    }
+    Ok(builder)
+}
+
+pub fn new_pin_ref_builder(
+    target_id: String,
+    room_id: Option<String>,
+    action: Option<String>,
+) -> Result<RefDetailsBuilder> {
+    let target_id = EventId::parse(target_id)?;
+    let mut builder = RefDetailsBuilder::new_pin_ref_builder(target_id);
     if let Some(room_id) = room_id {
         builder.room_id(room_id);
     }

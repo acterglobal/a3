@@ -30,6 +30,7 @@ class CategoryHeaderView extends StatelessWidget {
   }
 
   Widget _buildCategoryHeader(BuildContext context) {
+    final title = categoryModelLocal.title;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 12,
@@ -48,7 +49,7 @@ class CategoryHeaderView extends StatelessWidget {
             icon: categoryModelLocal.icon,
           ),
           const SizedBox(width: 6),
-          Text(categoryModelLocal.title),
+          title != null ? Text(title) : Text(L10n.of(context).uncategorized),
           const Spacer(),
           if (isShowDragHandle) _buildMenuOptions(context),
         ],
@@ -60,7 +61,7 @@ class CategoryHeaderView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Text(
-        categoryModelLocal.title,
+        L10n.of(context).uncategorized,
         style: Theme.of(context)
             .textTheme
             .titleSmall

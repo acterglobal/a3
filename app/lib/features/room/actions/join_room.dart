@@ -10,6 +10,24 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::room::join');
 
+Future<T> _ensureLoadedWithinTime<T>(
+  Future<T?> Function() callback, {
+  int delayMs = 300,
+  int attempts = 20,
+}) async {
+  int remaining = attempts;
+  while (remaining > 0) {
+    remaining -= 1;
+    final res = await callback();
+    if (res != null) {
+      return res;
+    }
+    await Future.delayed(Duration(milliseconds: delayMs));
+  }
+
+  throw 'Loading timed out';
+}
+
 Future<String?> joinRoom(
   BuildContext context,
   WidgetRef ref,
@@ -24,13 +42,22 @@ Future<String?> joinRoom(
   try {
     final newRoom = await client.joinRoom(roomIdOrAlias, server);
     final roomId = newRoom.roomIdStr();
+    final isSpace = newRoom.isSpace();
     // ensure we re-evaluate the room data on our end. This is necessary
     // if we knew of the room prior (e.g. we had left it), but hadn’t joined
     // this should properly re-evaluate all possible readers
     ref.invalidate(maybeRoomProvider(roomId));
-    ref.invalidate(chatProvider(roomId));
-    ref.invalidate(spaceProvider(roomId));
-    await client.waitForRoom(roomId, 5);
+    if (isSpace) {
+      ref.invalidate(spaceProvider(roomId));
+      await _ensureLoadedWithinTime(
+        () async => await ref.read(maybeSpaceProvider(roomId).future),
+      );
+    } else {
+      ref.invalidate(chatProvider(roomId));
+    }
+    await _ensureLoadedWithinTime(
+      () async => await ref.read(chatProvider(roomId).future),
+    );
     EasyLoading.dismiss();
     if (forward != null) forward(roomId);
     return roomId;

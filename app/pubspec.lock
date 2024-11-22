@@ -112,10 +112,10 @@ packages:
     dependency: "direct main"
     description:
       name: appflowy_editor
-      sha256: f8df03fa8020feceae0cf2bd60384187b32b71e9e95b99f7e0a4dcdd44a171cf
+      sha256: "568a9e73315442157fdd0ff892aa5abed418bec0c1bf8885bb352c26d078a57f"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.0"
+    version: "4.0.0"
   archive:
     dependency: transitive
     description:
@@ -616,10 +616,11 @@ packages:
   drag_and_drop_lists:
     dependency: "direct main"
     description:
-      name: drag_and_drop_lists
-      sha256: "83fab4a9d4d99d9c683858ac5e1975028d87aa796bf68bfd654b19154004b6bb"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "4b086bcb22c41e28dd4e5094585d3d3d1f799977"
+      url: "https://github.com/acterglobal/DragAndDropLists"
+    source: git
     version: "0.4.1"
   emoji_picker_flutter:
     dependency: "direct main"
@@ -697,10 +698,10 @@ packages:
     dependency: "direct main"
     description:
       name: fc_native_video_thumbnail
-      sha256: "49441d6d2c73a3c27134f93c08bade324ce44f9aa60196be9df663b5d1903f26"
+      sha256: "61836a6fd34bb0cbda48d7ba7cd7a23242468886d4c68017ae59b9791fb42d2a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.0"
+    version: "0.16.1"
   ffi:
     dependency: transitive
     description:
@@ -931,10 +932,10 @@ packages:
     dependency: "direct dev"
     description:
       name: flutter_lints
-      sha256: "3f41d009ba7172d5ff9be5f6e6e6abb4300e263aab8866d2a0842ed2a70f8f0c"
+      sha256: "5398f14efa795ffb7a33e9b6a08798b26a180edac4ad7db3f231e40f82ce11e1"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.0"
+    version: "5.0.0"
   flutter_local_notifications:
     dependency: transitive
     description:
@@ -1469,10 +1470,10 @@ packages:
     dependency: transitive
     description:
       name: lints
-      sha256: "976c774dd944a42e83e2467f4cc670daef7eed6295b10b36ae8c85bcbf828235"
+      sha256: "3315600f3fb3b135be672bf4a178c55f274bebe368325ae18462c89ac1e3b413"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.0"
+    version: "5.0.0"
   logging:
     dependency: "direct main"
     description:
@@ -1605,10 +1606,10 @@ packages:
     dependency: "direct main"
     description:
       name: mime
-      sha256: "801fd0b26f14a4a58ccb09d5892c3fbdeff209594300a542492cf13fba9d247a"
+      sha256: "41a20518f0cb1256669420fdba0cd90d21561e560ac240f26ef8322e45bb7ed6"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.6"
+    version: "2.0.0"
   mobx:
     dependency: transitive
     description:

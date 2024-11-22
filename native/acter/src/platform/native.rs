@@ -3,7 +3,7 @@ use chrono::Local;
 use lazy_static::lazy_static;
 use log::{log_enabled, Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
-use matrix_sdk_base::{event_cache_store::EventCacheStoreError, store::StoreConfig};
+use matrix_sdk_base::{event_cache::store::EventCacheStoreError, store::StoreConfig};
 use matrix_sdk_sqlite::{OpenStoreError, SqliteCryptoStore, SqliteStateStore};
 use parse_env_filter::eager::{filters, Filter};
 use std::{
@@ -312,7 +312,11 @@ async fn make_store_config(
     media_cache_path: PathBuf,
     passphrase: Option<&str>,
 ) -> Result<StoreConfig, MakeStoreConfigError> {
-    let config = StoreConfig::new().crypto_store(SqliteCryptoStore::open(path, passphrase).await?);
+    // FIXME: this stock holder name probably needs to be decided upon
+    //        by the outer part to inform us whether this is the main
+    //        process or the background job
+    let config = StoreConfig::new("acter".to_owned())
+        .crypto_store(SqliteCryptoStore::open(path, passphrase).await?);
 
     let sql_state_store = SqliteStateStore::open(path, passphrase).await?;
     let Some(passphrase) = passphrase else {

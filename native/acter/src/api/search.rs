@@ -1,5 +1,5 @@
 use anyhow::Result;
-use matrix_sdk::media::MediaRequest;
+use matrix_sdk::media::MediaRequestParameters;
 use matrix_sdk_base::ruma::{
     api::client::directory::get_public_rooms_filtered,
     assign,
@@ -76,7 +76,7 @@ impl PublicSearchResultItem {
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         RUNTIME
             .spawn(async move {
-                let request = MediaRequest {
+                let request = MediaRequestParameters {
                     source: MediaSource::Plain(url),
                     format,
                 };
