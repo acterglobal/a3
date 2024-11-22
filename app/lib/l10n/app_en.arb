@@ -2288,6 +2288,8 @@
   "pinNoLongerAvailable": "Pin no longer available",
   "pinDeletedOrFailedToLoad": "This may due to pin deletion or failed to load",
   "sharePin": "Share Pin",
+  "selectPin": "Select Pin",
+  "selectEvent": "Select Event",
   "addBoost": "Add Boost",
   "@addBoost": {},
   "addTaskList": "Add TaskList",

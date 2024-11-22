@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class SelectActionItem extends StatelessWidget {
-  final Function onShareEventSelected;
-  final Function onSharePinSelected;
+  final VoidCallback onShareEventSelected;
+  final VoidCallback onSharePinSelected;
 
   const SelectActionItem({
     super.key,
@@ -22,14 +22,14 @@ class SelectActionItem extends StatelessWidget {
           context: context,
           actionIcon: Atlas.calendar_dots,
           actionName: L10n.of(context).eventShare,
-          onTap: () => onShareEventSelected(),
+          onTap: onShareEventSelected,
         ),
         const SizedBox(height: 20),
         actionItemUI(
           context: context,
           actionIcon: Atlas.pin,
           actionName: L10n.of(context).sharePin,
-          onTap: () => onSharePinSelected(),
+          onTap: onSharePinSelected,
         ),
         const SizedBox(height: 20),
       ],

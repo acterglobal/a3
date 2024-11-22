@@ -63,6 +63,7 @@ class NewsSlideActions extends ConsumerWidget {
               context: context,
               error: pinError.error,
               stack: pinError.stackTrace,
+              onRetryTap: () => ref.invalidate(pinProvider(pinId)),
             );
           },
         ),
@@ -96,6 +97,8 @@ class NewsSlideActions extends ConsumerWidget {
                 context: context,
                 error: e,
                 stack: s,
+                onRetryTap: () =>
+                    ref.invalidate(calendarEventProvider(eventId)),
               );
             },
           ),
