@@ -72,7 +72,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         background: const EventDetailsSkeleton(),
         error: errored.error,
         stack: errored.stackTrace,
-        textBuilder: L10n.of(context).errorLoadingEventDueTo,
+        textBuilder: (error, code) =>
+            L10n.of(context).errorLoadingEventDueTo(error),
         onRetryTap: () {
           ref.invalidate(calendarEventProvider(widget.calendarId));
         },

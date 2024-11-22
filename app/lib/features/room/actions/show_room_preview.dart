@@ -1,7 +1,10 @@
+import 'package:acter/common/extensions/record_helpers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/room/providers/room_preview_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 Future<void> showRoomPreview({
@@ -60,6 +63,11 @@ class _ShowRoomPreview extends ConsumerWidget {
           background: loading(),
           error: error,
           stack: stack,
+          textBuilder: (error, errCode) => switch (errCode) {
+            ErrorCode.forbidden =>
+              L10n.of(context).accessDeniedToRoom(query.roomIdOrAlias),
+            _ => L10n.of(context).loadingFailed(error)
+          },
           onRetryTap: () => ref.invalidate(roomPreviewProvider(query)),
         ),
         loading: loading,

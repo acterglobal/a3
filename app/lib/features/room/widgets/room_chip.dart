@@ -1,6 +1,7 @@
+import 'package:acter/common/extensions/record_helpers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
-import 'package:acter/common/toolkit/errors/inline_error_button.dart';
+import 'package:acter/common/toolkit/errors/error_dialog.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/room/actions/show_room_preview.dart';
 import 'package:acter/features/room/providers/room_preview_provider.dart';
@@ -9,6 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+
+const double defaultAvatarSize = 14.0;
 
 class RoomChip extends ConsumerStatefulWidget {
   final String roomId;
@@ -29,65 +33,108 @@ class _RoomChipState extends ConsumerState<RoomChip> {
     uri = widget.uri.map((u) => Uri.tryParse(u));
   }
 
+  RoomPreviewQuery get query => (
+        roomIdOrAlias: widget.roomId,
+        serverNames: AllHashed(uri?.queryParametersAll['via'] ?? []),
+      );
+
   @override
-  Widget build(BuildContext context) {
-    final roomName = ref.watch(roomDisplayNameProvider(widget.roomId));
-    if (roomName.error != null) {
-      // not locally found, render preview version
-      return buildPreview(context, ref);
-    }
+  Widget build(BuildContext context) => Tooltip(
+        message: widget.roomId,
+        child: ref.watch(roomOrPreviewProvider(query)).when(
+              data: (p) => p.room != null
+                  ? buildForRoom(context)
+                  : buildPreview(context),
+              error: (error, stack) => renderError(context, error, stack),
+              loading: () => loading(context),
+            ),
+      );
+
+  Widget loading(BuildContext context) => Skeletonizer(
+        child: ActerInlineTextButton.icon(
+          icon: Bone.circle(
+            size: Theme.of(context).textTheme.bodyMedium?.fontSize ??
+                defaultAvatarSize,
+          ),
+          label: Text(widget.roomId, overflow: TextOverflow.ellipsis),
+          onPressed: () async {
+            await showRoomPreview(
+              context: context,
+              ref: ref,
+              roomIdOrAlias: query.roomIdOrAlias,
+              serverNames: query.serverNames.items,
+            );
+          },
+        ),
+      );
+  Widget renderError(
+    BuildContext context,
+    Object error,
+    StackTrace stack,
+  ) =>
+      ActerInlineTextButton.icon(
+        icon: Bone.circle(
+          size: Theme.of(context).textTheme.bodyMedium?.fontSize ??
+              defaultAvatarSize,
+        ),
+        label: Text(widget.roomId, overflow: TextOverflow.ellipsis),
+        onPressed: () async {
+          ActerErrorDialog.show(
+            context: context,
+            error: error,
+            stack: stack,
+            onRetryTap: () {
+              ref.invalidate(roomOrPreviewProvider(query));
+              Navigator.pop(context);
+            },
+            includeBugReportButton: true,
+          );
+        },
+      );
+  Widget buildForRoom(BuildContext context) {
     final displayName =
         ref.watch(roomDisplayNameProvider(widget.roomId)).valueOrNull ??
             L10n.of(context).unknown;
-    final avatarSize = Theme.of(context).textTheme.bodyMedium?.fontSize ?? 14.0;
-    return Tooltip(
-      message: widget.roomId,
-      child: ActerInlineTextButton.icon(
-        icon: ActerAvatar(
-          options: AvatarOptions(
-            ref.watch(roomAvatarInfoProvider(widget.roomId)),
-            size: avatarSize,
-          ),
+    final avatarInfo = ref.watch(roomAvatarInfoProvider(widget.roomId));
+    final avatarSize =
+        Theme.of(context).textTheme.bodyMedium?.fontSize ?? defaultAvatarSize;
+    return ActerInlineTextButton.icon(
+      icon: ActerAvatar(
+        options: AvatarOptions(
+          avatarInfo,
+          size: avatarSize,
         ),
-        label: Text(displayName, overflow: TextOverflow.ellipsis),
-        onPressed: () async {
-          await navigateToRoomOrAskToJoin(context, ref, widget.roomId);
-        },
       ),
+      label: Text(displayName, overflow: TextOverflow.ellipsis),
+      onPressed: () async {
+        await navigateToRoomOrAskToJoin(context, ref, widget.roomId);
+      },
     );
   }
 
-  Widget buildPreview(BuildContext context, WidgetRef ref) {
-    final query = (
-      roomIdOrAlias: widget.roomId,
-      serverNames: uri?.queryParametersAll['via'] ?? [],
-    );
+  Widget buildPreview(BuildContext context) {
     final roomPreview = ref.watch(roomPreviewProvider(query));
-    final errored = roomPreview.asError;
-    if (errored != null) {
-      return ActerInlineErrorButton(error: errored);
-    }
-    final displayName = roomPreview.valueOrNull?.name() ?? widget.roomId;
-    final avatarSize = Theme.of(context).textTheme.bodyMedium?.fontSize ?? 14.0;
-    return Tooltip(
-      message: widget.roomId,
-      child: ActerInlineTextButton.icon(
-        icon: ActerAvatar(
-          options: AvatarOptions(
-            ref.watch(roomAvatarInfoProvider(widget.roomId)),
-            size: avatarSize,
-          ),
+    final displayName =
+        roomPreview.valueOrNull?.name() ?? L10n.of(context).unknown;
+    final avatarInfo = ref.watch(roomPreviewAvatarInfo(query));
+    final avatarSize =
+        Theme.of(context).textTheme.bodyMedium?.fontSize ?? defaultAvatarSize;
+    return ActerInlineTextButton.icon(
+      icon: ActerAvatar(
+        options: AvatarOptions(
+          avatarInfo,
+          size: avatarSize,
         ),
-        label: Text(displayName, overflow: TextOverflow.ellipsis),
-        onPressed: () async {
-          await showRoomPreview(
-            context: context,
-            ref: ref,
-            roomIdOrAlias: query.roomIdOrAlias,
-            serverNames: query.serverNames,
-          );
-        },
       ),
+      label: Text(displayName, overflow: TextOverflow.ellipsis),
+      onPressed: () async {
+        await showRoomPreview(
+          context: context,
+          ref: ref,
+          roomIdOrAlias: query.roomIdOrAlias,
+          serverNames: query.serverNames.items,
+        );
+      },
     );
   }
 }

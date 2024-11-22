@@ -167,7 +167,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       background: const SpaceDetailsSkeletons(),
       error: error,
       stack: stack,
-      textBuilder: L10n.of(context).loadingFailed,
+      textBuilder: (error, code) => L10n.of(context).loadingFailed(error),
       onRetryTap: () {
         ref.invalidate(spaceProvider(widget.spaceId));
       },

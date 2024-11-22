@@ -18,7 +18,7 @@ class ActerErrorDialog extends StatelessWidget {
 
   final String? title;
   final String? text;
-  final String Function(Object error)? textBuilder;
+  final ErrorTextBuilder? textBuilder;
   final bool includeBugReportButton;
 
   /// Dialog Border Radius
@@ -48,7 +48,7 @@ class ActerErrorDialog extends StatelessWidget {
     /// Text of the dialog
     String? text,
     VoidCallback? onRetryTap,
-    String Function(Object error)? textBuilder,
+    ErrorTextBuilder? textBuilder,
     bool includeBugReportButton = true,
 
     /// Dialog Border Radius
@@ -88,11 +88,15 @@ class ActerErrorDialog extends StatelessWidget {
       title: title ??
           switch (err) {
             ErrorCode.notFound => lang.notFound,
+            ErrorCode.forbidden => lang.forbidden,
             _ => lang.fatalError,
           },
-      text: text ?? textBuilder.map((cb) => cb(error)),
+      text: text ?? textBuilder.map((cb) => cb(error, err)),
       type: switch (err) {
-        ErrorCode.notFound => QuickAlertType.warning,
+        ErrorCode.notFound ||
+        ErrorCode.forbidden ||
+        ErrorCode.unknown =>
+          QuickAlertType.warning,
         _ => QuickAlertType.error,
       },
       showCancelBtn: true,
@@ -100,6 +104,7 @@ class ActerErrorDialog extends StatelessWidget {
       cancelBtnText: lang.back,
       borderRadius: borderRadius,
     );
+
     onRetryTap.map((cb) {
       options.showConfirmBtn = true;
       options.confirmBtnColor = theme.primaryColor;

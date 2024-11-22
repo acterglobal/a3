@@ -1,5 +1,7 @@
+import 'package:acter/common/extensions/record_helpers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/inline_error_button.dart';
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/features/room/providers/room_preview_provider.dart';
 import 'package:acter/router/utils.dart';
@@ -50,18 +52,20 @@ class RoomPreviewWidget extends ConsumerWidget {
               return renderPreview(context, ref, preview);
             } else {
               return renderError(
+                context,
                 ref,
                 "Room preview couldn't be loaded",
                 null,
               );
             }
           },
-          error: (error, stack) => renderError(ref, error, stack),
+          error: (error, stack) => renderError(context, ref, error, stack),
           loading: () => renderLoading(),
         );
   }
 
   Widget renderError(
+    BuildContext context,
     WidgetRef ref,
     Object error,
     StackTrace? stack,
@@ -69,6 +73,11 @@ class RoomPreviewWidget extends ConsumerWidget {
       ActerInlineErrorButton(
         error: error,
         stack: stack,
+        textBuilder: (error, errCode) => switch (errCode) {
+          ErrorCode.forbidden =>
+            L10n.of(context).accessDeniedToRoom(query.roomIdOrAlias),
+          _ => L10n.of(context).loadingFailed(error)
+        },
         onRetryTap: () {
           ref.invalidate(roomOrPreviewProvider(query));
           ref.invalidate(roomPreviewProvider(query));
@@ -123,6 +132,7 @@ class RoomPreviewWidget extends ConsumerWidget {
                 lang.tryingToJoin(roomName),
                 roomId,
                 viaServers,
+                null,
               );
             },
             child: Text(lang.join),
@@ -138,6 +148,7 @@ class RoomPreviewWidget extends ConsumerWidget {
                 lang.tryingToJoin(roomName),
                 roomId,
                 viaServers,
+                null,
               );
             },
             child: Text(lang.join),
