@@ -18,6 +18,7 @@ class EventListWidget extends ConsumerWidget {
   final String? sectionHeaderTitle;
   final bool? isShowSeeAllButton;
   final bool showSectionBg;
+  final Function(String)? onTapEventItem;
   final bool shrinkWrap;
   final bool isShowSpaceName;
   final Widget Function()? emptyStateBuilder;
@@ -32,6 +33,7 @@ class EventListWidget extends ConsumerWidget {
     this.sectionHeaderTitle,
     this.isShowSeeAllButton,
     this.showSectionBg = true,
+    this.onTapEventItem,
     this.shrinkWrap = true,
     this.emptyStateBuilder,
   });
@@ -105,6 +107,7 @@ class EventListWidget extends ConsumerWidget {
         return EventItem(
           event: eventList[index],
           isShowSpaceName: isShowSpaceName,
+          onTapEventItem: onTapEventItem,
         );
       },
     );

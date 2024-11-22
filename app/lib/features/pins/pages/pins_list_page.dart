@@ -13,11 +13,13 @@ import 'package:go_router/go_router.dart';
 class PinsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
   final String? searchQuery;
+  final Function(String)? onSelectPinItem;
 
   const PinsListPage({
     super.key,
     this.spaceId,
     this.searchQuery,
+    this.onSelectPinItem,
   });
 
   @override
@@ -48,23 +50,26 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
     final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(L10n.of(context).pins),
-          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
-        ],
-      ),
+      title: widget.onSelectPinItem != null
+          ? Text(L10n.of(context).selectPin)
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(L10n.of(context).pins),
+                if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
+              ],
+            ),
       actions: [
-        AddButtonWithCanPermission(
-          canString: 'CanPostPin',
-          spaceId: widget.spaceId,
-          onPressed: () => context.pushNamed(
-            Routes.createPin.name,
-            queryParameters: {'spaceId': spaceId},
+        if (widget.onSelectPinItem == null)
+          AddButtonWithCanPermission(
+            canString: 'CanPostPin',
+            spaceId: widget.spaceId,
+            onPressed: () => context.pushNamed(
+              Routes.createPin.name,
+              queryParameters: {'spaceId': spaceId},
+            ),
           ),
-        ),
       ],
     );
   }
@@ -90,6 +95,7 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
             spaceId: widget.spaceId,
             shrinkWrap: false,
             searchValue: _searchValue,
+            onTaPinItem: widget.onSelectPinItem,
             emptyState: PinListEmptyState(
               spaceId: widget.spaceId,
               isSearchApplied: _searchValue.isNotEmpty,

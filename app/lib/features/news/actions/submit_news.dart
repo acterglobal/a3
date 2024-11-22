@@ -196,6 +196,13 @@ ObjRef getSlideReference(ActerSdk sdk, NewsReferencesModel refModel) {
           null,
         )
         .build(),
+    NewsReferencesType.pin => sdk.api
+        .newPinRefBuilder(
+          refModel.id.expect('Referenced Pin misses id'),
+          null,
+          null,
+        )
+        .build(),
     NewsReferencesType.link => sdk.api
         .newLinkRefBuilder(
           refModel.title.expect('Referenced link misses title'),

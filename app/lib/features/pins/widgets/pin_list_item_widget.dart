@@ -18,10 +18,12 @@ final _log = Logger('a3::pins::list_item');
 class PinListItemWidget extends ConsumerWidget {
   final String pinId;
   final bool showSpace;
+  final Function(String)? onTaPinItem;
 
   const PinListItemWidget({
     required this.pinId,
     this.showSpace = false,
+    this.onTaPinItem,
     super.key,
   });
 
@@ -32,7 +34,7 @@ class PinListItemWidget extends ConsumerWidget {
       data: (pin) => buildPinItemUI(context, pin),
       error: (e, s) {
         _log.severe('Failed to load pin', e, s);
-        return Text(L10n.of(context).errorLoadingPin(e));
+        return Text(L10n.of(context).loadingFailed(e));
       },
       loading: () => const Skeletonizer(
         child: SizedBox(height: 100, width: 100),
@@ -43,10 +45,17 @@ class PinListItemWidget extends ConsumerWidget {
   Widget buildPinItemUI(BuildContext context, ActerPin pin) {
     return Card(
       child: ListTile(
-        onTap: () => context.pushNamed(
-          Routes.pin.name,
-          pathParameters: {'pinId': pinId},
-        ),
+        onTap: () {
+          final pinId = pin.eventIdStr();
+          if (onTaPinItem == null) {
+            context.pushNamed(
+              Routes.pin.name,
+              pathParameters: {'pinId': pinId},
+            );
+          } else {
+            onTaPinItem!(pinId);
+          }
+        },
         leading: ActerIconWidget(
           iconSize: 30,
           color: convertColor(
