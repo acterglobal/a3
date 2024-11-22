@@ -284,4 +284,4 @@ msix_config:
   architecture: x64
   capabilities: "internetClient,removableStorage"
   protocol_activation: https, matrix, acter
-  app_uri_handler_hosts: app.global.acter
+  app_uri_handler_hosts: app.global.acter,matrix.to
