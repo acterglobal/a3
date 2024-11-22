@@ -10,18 +10,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class MessageUserButton extends ConsumerWidget {
-  final Member member;
+  final UserProfile profile;
+  final String userId;
 
   const MessageUserButton({
     super.key,
-    required this.member,
+    required this.userId,
+    required this.profile,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final client = ref.watch(alwaysClientProvider);
-    final dmId = client.dmWithUser(member.userId().toString()).text();
+    final dmId = client.dmWithUser(userId).text();
     if (dmId != null) {
       return Center(
         child: OutlinedButton.icon(
@@ -38,7 +40,6 @@ class MessageUserButton extends ConsumerWidget {
         child: OutlinedButton.icon(
           icon: const Icon(Atlas.chats_thin),
           onPressed: () {
-            final profile = member.getProfile();
             final notifier = ref.read(createChatSelectedUsersProvider.notifier);
             notifier.state = [profile];
             Navigator.pop(context);

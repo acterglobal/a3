@@ -1,6 +1,7 @@
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/deep_linking/utils.dart';
 import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
+import 'package:acter/features/users/actions/show_global_user_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,8 +44,6 @@ class ScanQrCode extends ConsumerWidget {
         return;
       }
       final resp = parseUri(uri);
-      EasyLoading.showToast('Successfully detected. forwarding');
-      debugPrint(resp.toString());
       if (context.mounted) {
         final navigator = Navigator.of(context);
         if (navigator.canPop()) {
@@ -53,8 +52,10 @@ class ScanQrCode extends ConsumerWidget {
         await _handleParseResult(context, ref, resp);
       }
     } on UriParseError catch (e) {
-      EasyLoading.showError('Uri not supported: $e',
-          duration: const Duration(seconds: 3),);
+      EasyLoading.showError(
+        'Uri not supported: $e',
+        duration: const Duration(seconds: 3),
+      );
       return;
     }
   }
@@ -65,12 +66,17 @@ class ScanQrCode extends ConsumerWidget {
     UriParseResult result,
   ) async {
     final _ = switch (result.type) {
+      LinkType.userId =>
+        await showUserInfoDrawer(context: context, userId: result.target),
       LinkType.superInvite => await showReedemTokenDialog(
           context,
           ref,
           result.target,
         ),
-      _ => debugPrint('Not supported yet ${result.type}'),
+      _ => EasyLoading.showError(
+          'Link ${result.type} not yet supported.',
+          duration: const Duration(seconds: 3),
+        ),
     };
   }
 }
