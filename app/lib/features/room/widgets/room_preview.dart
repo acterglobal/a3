@@ -24,7 +24,10 @@ class RoomPreviewWidget extends ConsumerWidget {
     this.autoForward = true,
   });
 
-  get query => (roomIdOrAlias: roomId, serverNames: viaServers);
+  RoomPreviewQuery get query => (
+        roomIdOrAlias: roomId,
+        serverNames: AllHashed(viaServers),
+      );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

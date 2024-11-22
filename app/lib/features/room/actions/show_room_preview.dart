@@ -37,12 +37,13 @@ class _ShowRoomPreview extends ConsumerWidget {
     required this.serverNames,
   });
 
+  RoomPreviewQuery get query => (
+        roomIdOrAlias: roomIdOrAlias,
+        serverNames: AllHashed(serverNames),
+      );
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final query = (
-      roomIdOrAlias: roomIdOrAlias,
-      serverNames: serverNames,
-    );
     final roomPreview = ref.watch(roomPreviewProvider(query));
 
     return Container(

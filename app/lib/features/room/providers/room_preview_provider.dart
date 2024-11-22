@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:acter/common/extensions/record_helpers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -9,23 +10,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/extensions/options.dart';
 
-typedef RoomPreviewQuery = ({String roomIdOrAlias, List<String> serverNames});
+typedef RoomPreviewQuery = ({
+  String roomIdOrAlias,
+  AllHashed<String> serverNames
+});
 
-final roomPreviewProvider = FutureProvider.family
-    .autoDispose<RoomPreview, RoomPreviewQuery>((ref, query) async {
+final roomPreviewProvider =
+    FutureProvider.family<RoomPreview, RoomPreviewQuery>((ref, query) async {
   final sdk = await ref.read(sdkProvider.future);
   VecStringBuilder servers = sdk.api.newVecStringBuilder();
-  for (final server in query.serverNames) {
+  for (final server in query.serverNames.items) {
     servers.add(server);
   }
   final client = ref.watch(alwaysClientProvider);
-  return client.roomPreview(query.roomIdOrAlias, servers);
+  final prev = await client.roomPreview(query.roomIdOrAlias, servers);
+  return prev;
 });
 
 typedef RoomOrPreview = ({Room? room, RoomPreview? preview});
 
-final roomOrPreviewProvider = FutureProvider.family
-    .autoDispose<RoomOrPreview, RoomPreviewQuery>((ref, arg) async {
+final roomOrPreviewProvider =
+    FutureProvider.family<RoomOrPreview, RoomPreviewQuery>((ref, arg) async {
   final room = await ref.watch(maybeRoomProvider(arg.roomIdOrAlias).future);
   if (room != null) {
     return (room: room, preview: null);
@@ -48,7 +53,7 @@ final _roomPreviewAvatarProvider =
 });
 
 final roomPreviewAvatarInfo =
-    StateProvider.family.autoDispose<AvatarInfo, RoomPreviewQuery>((ref, q) {
+    StateProvider.family<AvatarInfo, RoomPreviewQuery>((ref, q) {
   final preview = ref.watch(roomPreviewProvider(q)).valueOrNull;
   final avatarData = ref.watch(_roomPreviewAvatarProvider(q)).valueOrNull;
   return AvatarInfo(
