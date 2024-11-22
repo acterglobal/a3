@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
 
-Future<void> showQrCode(BuildContext context, String codeData,
-    {Widget? title,}) async {
+Future<void> showQrCode(
+  BuildContext context,
+  String codeData, {
+  Widget? title,
+}) async {
   showDialog(
     context: context,
     builder: (context) => _ShowQrCode(

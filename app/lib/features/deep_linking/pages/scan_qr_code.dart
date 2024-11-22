@@ -1,5 +1,6 @@
 import 'package:acter/features/deep_linking/actions/handle_deep_link_uri.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_code_dart_scan/qr_code_dart_scan.dart';
@@ -11,7 +12,7 @@ class ScanQrCode extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan QR code'),
+        title: Text(L10n.of(context).scanQrCode),
       ),
       body: QRCodeDartScanView(
         scanInvertedQRCode:
@@ -33,7 +34,7 @@ class ScanQrCode extends ConsumerWidget {
     final uri = Uri.tryParse(result.text);
     if (uri == null) {
       EasyLoading.showError(
-        'Content is not a URI',
+        L10n.of(context).deepLinkWrongFormat,
         duration: const Duration(seconds: 3),
       );
       return;

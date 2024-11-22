@@ -3,6 +3,7 @@ import 'package:acter/features/deep_linking/utils.dart';
 import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
 import 'package:acter/features/users/actions/show_global_user_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,13 +26,13 @@ Future<void> handleDeepLinkUri({
             )
           : null,
       _ => EasyLoading.showError(
-          'Link ${result.type} not yet supported.',
+          L10n.of(context).deepLinkNotSupported(result.type),
           duration: const Duration(seconds: 3),
         ),
     };
   } on UriParseError catch (e) {
     EasyLoading.showError(
-      'Uri not supported: $e',
+      L10n.of(context).deepLinkNotSupported(e),
       duration: const Duration(seconds: 3),
     );
     return;

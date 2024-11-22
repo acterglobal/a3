@@ -2,7 +2,6 @@ import 'package:acter/common/actions/close_room.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/deep_linking/widgets/qr_code_button.dart';
 import 'package:acter/features/space/actions/set_space_title.dart';
 import 'package:acter/features/space/actions/set_space_topic.dart';
 import 'package:acter/features/space/dialogs/leave_space.dart';
