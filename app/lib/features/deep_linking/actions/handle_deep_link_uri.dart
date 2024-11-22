@@ -14,13 +14,16 @@ Future<void> handleDeepLinkUri({
   try {
     final result = parseUri(uri);
     final _ = switch (result.type) {
-      LinkType.userId =>
-        await showUserInfoDrawer(context: context, userId: result.target),
-      LinkType.superInvite => await showReedemTokenDialog(
-          context,
-          ref,
-          result.target,
-        ),
+      LinkType.userId => context.mounted
+          ? await showUserInfoDrawer(context: context, userId: result.target)
+          : null,
+      LinkType.superInvite => context.mounted
+          ? await showReedemTokenDialog(
+              context,
+              ref,
+              result.target,
+            )
+          : null,
       _ => EasyLoading.showError(
           'Link ${result.type} not yet supported.',
           duration: const Duration(seconds: 3),
