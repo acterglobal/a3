@@ -12,6 +12,7 @@ Future<void> handleDeepLinkUri({
   required WidgetRef ref,
   required Uri uri,
 }) async {
+  final lang = L10n.of(context);
   try {
     final result = parseUri(uri);
     final _ = switch (result.type) {
@@ -26,13 +27,13 @@ Future<void> handleDeepLinkUri({
             )
           : null,
       _ => EasyLoading.showError(
-          L10n.of(context).deepLinkNotSupported(result.type),
+          lang.deepLinkNotSupported(result.type),
           duration: const Duration(seconds: 3),
         ),
     };
   } on UriParseError catch (e) {
     EasyLoading.showError(
-      L10n.of(context).deepLinkNotSupported(e),
+      lang.deepLinkNotSupported(e),
       duration: const Duration(seconds: 3),
     );
     return;
