@@ -44,11 +44,13 @@
 
             <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
             <!-- App Link for https://app.acter.global -->
+            <!-- App Link for https://matrix.to/ -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" android:host="app.acter.global" android:pathPrefix="/" />
+                <data android:scheme="https" android:host="matrix.to" android:pathPrefix="/" />
             </intent-filter>
 
             <!-- Deep Link for matrix and acter-scheme -->
