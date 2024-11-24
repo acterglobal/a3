@@ -19,7 +19,7 @@ import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
-import 'package:acter/features/space/sheets/link_room_sheet.dart';
+import 'package:acter/features/link_room/pages/link_room_page.dart';
 import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';

@@ -1,5 +1,5 @@
 import 'package:acter/common/widgets/sliver_scaffold.dart';
-import 'package:acter/features/space/sheets/link_room_sheet.dart';
+import 'package:acter/features/link_room/pages/link_room_page.dart';
 import 'package:acter/features/spaces/pages/sub_spaces_page.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
