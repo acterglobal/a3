@@ -2,12 +2,10 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter/features/link_room/providers/link_room_providers.dart';
-import 'package:acter/features/link_room/widgets/link_room_trailing.dart';
+import 'package:acter/features/link_room/types.dart';
 import 'package:acter/features/link_room/widgets/link_space_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -15,12 +13,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::space::link_room_sheet');
-
-// ChildRoomType configures the sub child type of the `Spaces`
-enum ChildRoomType {
-  chat,
-  space,
-}
 
 class LinkRoomPage extends ConsumerStatefulWidget {
   static const confirmJoinRuleUpdateKey = Key('link-room-confirm-join-rule');
@@ -143,32 +135,10 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: chatList.length,
-      itemBuilder: (context, index) {
-        final roomId = chatList[index];
-        return BriefRoomEntry(
-          roomId: roomId,
-          canCheck: 'CanLinkSpaces',
-          onSelect: null,
-          keyPrefix: 'chat-list-link',
-          trailingBuilder: (canLink) => Consumer(
-            builder: (
-              context,
-              ref,
-              child,
-            ) =>
-                LinkRoomTrailing(
-              roomId: roomId,
-              parentId: widget.parentSpaceId,
-              isLinked: ref.watch(
-                isSubChatProvider(
-                  (parentId: widget.parentSpaceId, childId: roomId),
-                ),
-              ),
-              canLink: canLink,
-            ),
-          ),
-        );
-      },
+      itemBuilder: (context, index) => LinkRoomListItem(
+        parentId: widget.parentSpaceId,
+        roomId: chatList[index],
+      ),
     );
   }
 
@@ -211,7 +181,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       shrinkWrap: true,
       padding: const EdgeInsets.all(8),
       itemCount: spacesList.length,
-      itemBuilder: (context, index) => LinkSpaceListItem(
+      itemBuilder: (context, index) => LinkRoomListItem(
         parentId: widget.parentSpaceId,
         roomId: spacesList[index],
       ),

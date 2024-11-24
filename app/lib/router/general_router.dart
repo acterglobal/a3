@@ -13,6 +13,7 @@ import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/intro/pages/intro_page.dart';
 import 'package:acter/features/intro/pages/intro_profile.dart';
+import 'package:acter/features/link_room/types.dart';
 import 'package:acter/features/news/pages/add_news_page.dart';
 import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
@@ -185,36 +186,11 @@ final generalRoutes = [
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
-    name: Routes.linkSubspace.name,
-    path: Routes.linkSubspace.route,
+    name: Routes.linkSpace.name,
+    path: Routes.linkSpace.route,
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
-          .expect('linkSubspace route needs spaceId as path param');
-      return SideSheetPage(
-        key: state.pageKey,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return SlideTransition(
-            position: Tween(
-              begin: const Offset(1, 0),
-              end: const Offset(0, 0),
-            ).animate(animation),
-            child: child,
-          );
-        },
-        child: LinkRoomPage(
-          parentSpaceId: spaceId,
-          childRoomType: ChildRoomType.space,
-        ),
-      );
-    },
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
-    name: Routes.linkRecommended.name,
-    path: Routes.linkRecommended.route,
-    pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('linkRecommended route needs spaceId as path param');
+          .expect('linkSpace route needs spaceId as path param');
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {

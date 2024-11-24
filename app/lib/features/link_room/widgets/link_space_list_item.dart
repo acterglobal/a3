@@ -6,27 +6,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LinkSpaceListItem extends ConsumerWidget {
+class LinkRoomListItem extends ConsumerWidget {
   final String parentId;
   final String roomId;
-  const LinkSpaceListItem({
+  const LinkRoomListItem({
     super.key,
     required this.parentId,
     required this.roomId,
   });
 
+  Widget renderSubtitle(BuildContext context, WidgetRef ref, bool isLinked) {
+    if (isLinked) {
+      return Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Icon(
+            Icons.check_circle_outline_outlined,
+            size: Theme.of(context).textTheme.bodySmall?.fontSize,
+          ),
+          SizedBox(width: 3),
+          Text(L10n.of(context).isLinked),
+        ],
+      );
+    }
+
+    final canUpgradeChild = ref
+            .watch(roomMembershipProvider(roomId))
+            .valueOrNull
+            ?.canString('CanLinkSpaces') ==
+        true;
+
+    if (canUpgradeChild) {
+      return Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(L10n.of(context).canLink),
+        ],
+      );
+    }
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Icon(
+          Icons.warning_amber_outlined,
+          size: Theme.of(context).textTheme.bodySmall?.fontSize,
+        ),
+        SizedBox(width: 3),
+        Text(L10n.of(context).canLinkButNotUpgrade),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final query = (parentId: parentId, childId: roomId);
-    final isSubspace = ref.watch(isSubSpaceProvider(query));
-    final isRecommended = ref.watch(isRecommendedProvider(query));
-    final isLinked = isSubspace || isRecommended;
-
-    final subtitle = isSubspace
-        ? Text(L10n.of(context).subspace)
-        : isRecommended
-            ? Text(L10n.of(context).recommendedSpace)
-            : null;
+    final isLinked = ref.watch(isLinkedProvider(query));
 
     final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
@@ -38,7 +72,7 @@ class LinkSpaceListItem extends ConsumerWidget {
         avatarSize: 24,
       ),
       title: Text(roomName),
-      subtitle: subtitle,
+      subtitle: renderSubtitle(context, ref, isLinked),
       trailing: LinkRoomTrailing(
         parentId: parentId,
         roomId: roomId,

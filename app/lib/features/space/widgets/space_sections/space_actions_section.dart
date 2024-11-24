@@ -268,7 +268,7 @@ class SpaceActionsSection extends ConsumerWidget {
           iconData: Icons.link,
           title: L10n.of(context).linkSpace,
           onPressed: () => context.pushNamed(
-            Routes.linkSubspace.name,
+            Routes.linkSpace.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),

@@ -11,7 +11,6 @@ import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
 import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter/router/utils.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,7 +23,7 @@ final _log = Logger('a3::space::sub_spaces');
 class SubSpacesPage extends ConsumerWidget {
   static const moreOptionKey = Key('sub-spaces-more-actions');
   static const createSubspaceKey = Key('sub-spaces-more-create-subspace');
-  static const linkSubspaceKey = Key('sub-spaces-more-link-subspace');
+  static const LinkSpaceKey = Key('sub-spaces-more-link-subspace');
 
   final String spaceId;
 
@@ -94,9 +93,9 @@ class SubSpacesPage extends ConsumerWidget {
           ),
         ),
         PopupMenuItem(
-          key: SubSpacesPage.linkSubspaceKey,
+          key: SubSpacesPage.LinkSpaceKey,
           onTap: () => context.pushNamed(
-            Routes.linkSubspace.name,
+            Routes.linkSpace.name,
             pathParameters: {'spaceId': spaceId},
           ),
           child: Row(
@@ -104,22 +103,6 @@ class SubSpacesPage extends ConsumerWidget {
               Icon(PhosphorIcons.link()),
               const SizedBox(width: 6),
               Text(lang.linkExistingSpace),
-            ],
-          ),
-        ),
-        PopupMenuItem(
-          onTap: () => context.pushNamed(
-            Routes.linkRecommended.name,
-            pathParameters: {'spaceId': spaceId},
-          ),
-          child: Row(
-            children: [
-              const Icon(
-                Atlas.link_select,
-                size: 18,
-              ),
-              const SizedBox(width: 8),
-              Text(lang.recommendedSpaces),
             ],
           ),
         ),

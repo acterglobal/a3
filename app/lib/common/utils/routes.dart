@@ -61,14 +61,14 @@ enum Routes {
   // -- spaces
   spaces('/spaces'),
   createSpace('/spaces/create'),
-  linkSubspace('/:spaceId([!#][^/]+)/linkSubspace'),
+  linkSpace('/:spaceId([!#][^/]+)/linkSpace'),
   linkChat('/:spaceId([!#][^/]+)/linkChat'),
-  linkRecommended('/:spaceId([!#][^/]+)/linkRecommended'),
   spaceInvite('/:spaceId([!#][^/]+)/invite'),
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
   subSpaces('/:spaceId([!#][^/]+)/subSpaces'),
   subChats('/:spaceId([!#][^/]+)/subChats'),
-  organizeCategories('/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)'),
+  organizeCategories(
+      '/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)',),
   spaceMembers('/:spaceId([!#][^/]+)/members'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
   spaceEvents('/:spaceId([!#][^/]+)/events'),
