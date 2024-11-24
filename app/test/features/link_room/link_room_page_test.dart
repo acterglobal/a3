@@ -84,10 +84,6 @@ void main() {
         'unlinked-space': 'Unklinked space',
       };
 
-      // when(() => mockSpaceA.isDm()).thenReturn(false);
-      // when(() => mockSpaceB.isDm()).thenReturn(false);
-      // when(() => dmConvo.isDm()).thenReturn(true); // should not show up
-
       await tester.pumpProviderWidget(
         overrides: [
           // mocking so we can display the page in general
