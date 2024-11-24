@@ -2,8 +2,10 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/actions/activate_feature.dart';
 import 'package:acter/features/space/actions/set_acter_feature.dart';
+import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -37,118 +39,205 @@ class SpaceActionsSection extends ConsumerWidget {
   }
 
   Widget actionButtons(BuildContext context, WidgetRef ref) {
-    final lang = L10n.of(context);
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
-    bool canAddPin = membership?.canString('CanPostPin') == true;
-    bool canPostUpdate = membership?.canString('CanPostNews') == true;
     bool canChangeSetting =
         membership?.canString('CanChangeAppSettings') == true;
-    bool canAddEvent = membership?.canString('CanPostEvent') == true;
-    bool canAddTask = membership?.canString('CanPostTaskList') == true;
     bool canLinkSpaces = membership?.canString('CanLinkSpaces') == true;
+    final spaceSettings =
+        ref.watch(spaceAppSettingsProvider(spaceId)).valueOrNull;
+    final settings = spaceSettings?.settings;
 
-    final children = [
-      if (canPostUpdate || canChangeSetting)
-        simpleActionButton(
-          context: context,
-          iconData: PhosphorIcons.newspaper(),
-          title: lang.addBoost,
-          onPressed: () async {
-            if (!canPostUpdate && canChangeSetting) {
-              final result = await offerToActivateFeature(
-                context: context,
-                ref: ref,
-                spaceId: spaceId,
-                feature: SpaceFeature.boosts,
-              );
-              if (!result) return;
-            }
-            if (context.mounted) {
-              context.pushNamed(
-                Routes.actionAddUpdate.name,
-                queryParameters: {'spaceId': spaceId},
-              );
-            }
-          },
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.start,
+      children: [
+        addPostUpdateButton(
+          context,
+          ref,
+          canChangeSetting,
+          membership,
+          settings,
         ),
-      if (canAddPin || canChangeSetting)
-        simpleActionButton(
-          context: context,
-          iconData: Atlas.pin,
-          title: lang.addPin,
-          onPressed: () async {
-            if (!canAddPin && canChangeSetting) {
-              final result = await offerToActivateFeature(
-                context: context,
-                ref: ref,
-                spaceId: spaceId,
-                feature: SpaceFeature.pins,
-              );
-              if (!result) return;
-            }
-            if (context.mounted) {
-              context.pushNamed(
-                Routes.createPin.name,
-                queryParameters: {'spaceId': spaceId},
-              );
-            }
-          },
+        addPinButton(
+          context,
+          ref,
+          canChangeSetting,
+          membership,
+          settings,
         ),
-      if (canAddEvent || canChangeSetting)
-        simpleActionButton(
-          context: context,
-          iconData: Atlas.calendar_dots,
-          title: lang.addEvent,
-          onPressed: () async {
-            if (!canAddEvent && canChangeSetting) {
-              final result = await offerToActivateFeature(
-                context: context,
-                ref: ref,
-                spaceId: spaceId,
-                feature: SpaceFeature.events,
-              );
-              if (!result) return;
-            }
-            if (context.mounted) {
-              context.pushNamed(
-                Routes.createEvent.name,
-                queryParameters: {'spaceId': spaceId},
-              );
-            }
-          },
+        addEventButton(
+          context,
+          ref,
+          canChangeSetting,
+          membership,
+          settings,
         ),
-      if (canAddTask || canChangeSetting)
-        simpleActionButton(
-          context: context,
-          iconData: Atlas.list,
-          title: lang.addTask,
-          onPressed: () async {
-            if (!canAddEvent && canChangeSetting) {
-              final result = await offerToActivateFeature(
-                context: context,
-                ref: ref,
-                spaceId: spaceId,
-                feature: SpaceFeature.tasks,
-              );
-              if (!result) return;
-            }
-            if (context.mounted) {
-              showCreateUpdateTaskListBottomSheet(
-                context,
-                initialSelectedSpace: spaceId,
-              );
-            }
-          },
+        addTaskActionButton(
+          context,
+          ref,
+          canChangeSetting,
+          membership,
+          settings,
         ),
-    ];
+        if (canLinkSpaces) ...addLinkSpaceActions(context),
+      ],
+    );
+  }
 
-    if (canLinkSpaces) {
-      children.addAll([
+  Widget addEventButton(
+    BuildContext context,
+    WidgetRef ref,
+    bool canChangeSetting,
+    Member? membership,
+    ActerAppSettings? settings,
+  ) {
+    final isActive = settings?.events().active() == true;
+    final canAddEvent =
+        isActive && membership?.canString('CanPostEvent') == true;
+
+    if (canAddEvent || canChangeSetting) {
+      return simpleActionButton(
+        context: context,
+        iconData: Atlas.calendar_dots,
+        title: L10n.of(context).addEvent,
+        onPressed: () async {
+          if (!isActive && canChangeSetting) {
+            final result = await offerToActivateFeature(
+              context: context,
+              ref: ref,
+              spaceId: spaceId,
+              feature: SpaceFeature.events,
+            );
+            if (!result) return;
+          }
+          if (context.mounted) {
+            context.pushNamed(
+              Routes.createEvent.name,
+              queryParameters: {'spaceId': spaceId},
+            );
+          }
+        },
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget addPinButton(
+    BuildContext context,
+    WidgetRef ref,
+    bool canChangeSetting,
+    Member? membership,
+    ActerAppSettings? settings,
+  ) {
+    final isActive = settings?.pins().active() == true;
+    final canAddPin = isActive && membership?.canString('CanPostPin') == true;
+    if (canAddPin || canChangeSetting) {
+      return simpleActionButton(
+        context: context,
+        iconData: Atlas.pin,
+        title: L10n.of(context).addPin,
+        onPressed: () async {
+          if (!isActive && canChangeSetting) {
+            final result = await offerToActivateFeature(
+              context: context,
+              ref: ref,
+              spaceId: spaceId,
+              feature: SpaceFeature.pins,
+            );
+            if (!result) return;
+          }
+          if (context.mounted) {
+            context.pushNamed(
+              Routes.createPin.name,
+              queryParameters: {'spaceId': spaceId},
+            );
+          }
+        },
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget addPostUpdateButton(
+    BuildContext context,
+    WidgetRef ref,
+    bool canChangeSetting,
+    Member? membership,
+    ActerAppSettings? settings,
+  ) {
+    final isActive = settings?.news().active() == true;
+    final canPostUpdate =
+        isActive && membership?.canString('CanPostNews') == true;
+    if (canPostUpdate || canChangeSetting) {
+      return simpleActionButton(
+        context: context,
+        iconData: PhosphorIcons.newspaper(),
+        title: L10n.of(context).addBoost,
+        onPressed: () async {
+          if (!isActive && canChangeSetting) {
+            final result = await offerToActivateFeature(
+              context: context,
+              ref: ref,
+              spaceId: spaceId,
+              feature: SpaceFeature.boosts,
+            );
+            if (!result) return;
+          }
+          if (context.mounted) {
+            context.pushNamed(
+              Routes.actionAddUpdate.name,
+              queryParameters: {'spaceId': spaceId},
+            );
+          }
+        },
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget addTaskActionButton(
+    BuildContext context,
+    WidgetRef ref,
+    bool canChangeSetting,
+    Member? membership,
+    ActerAppSettings? settings,
+  ) {
+    final isActive = settings?.tasks().active() == true;
+    final canAddTask =
+        isActive && membership?.canString('CanPostTaskList') == true;
+
+    if (canAddTask || canChangeSetting) {
+      return simpleActionButton(
+        context: context,
+        iconData: Atlas.list,
+        title: L10n.of(context).addTask,
+        onPressed: () async {
+          if (!isActive && canChangeSetting) {
+            final result = await offerToActivateFeature(
+              context: context,
+              ref: ref,
+              spaceId: spaceId,
+              feature: SpaceFeature.tasks,
+            );
+            if (!result) return;
+          }
+          if (context.mounted) {
+            showCreateUpdateTaskListBottomSheet(
+              context,
+              initialSelectedSpace: spaceId,
+            );
+          }
+        },
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  List<Widget> addLinkSpaceActions(BuildContext context) => [
         simpleActionButton(
           key: createChatAction,
           context: context,
           iconData: Atlas.chats,
-          title: lang.addChat,
+          title: L10n.of(context).addChat,
           onPressed: () => context.pushNamed(
             Routes.createChat.name,
             queryParameters: {'spaceId': spaceId},
@@ -159,7 +248,7 @@ class SpaceActionsSection extends ConsumerWidget {
           key: createSpaceAction,
           context: context,
           iconData: Icons.people,
-          title: lang.addSpace,
+          title: L10n.of(context).addSpace,
           onPressed: () => context.pushNamed(
             Routes.createSpace.name,
             queryParameters: {'parentSpaceId': spaceId},
@@ -168,7 +257,7 @@ class SpaceActionsSection extends ConsumerWidget {
         simpleActionButton(
           context: context,
           iconData: Icons.link,
-          title: lang.linkChat,
+          title: L10n.of(context).linkChat,
           onPressed: () => context.pushNamed(
             Routes.linkChat.name,
             pathParameters: {'spaceId': spaceId},
@@ -177,20 +266,13 @@ class SpaceActionsSection extends ConsumerWidget {
         simpleActionButton(
           context: context,
           iconData: Icons.link,
-          title: lang.linkSpace,
+          title: L10n.of(context).linkSpace,
           onPressed: () => context.pushNamed(
             Routes.linkSubspace.name,
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-      ]);
-    }
-
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.start,
-      children: children,
-    );
-  }
+      ];
 
   Widget simpleActionButton({
     required BuildContext context,
