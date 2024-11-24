@@ -59,11 +59,9 @@ void main() {
         ],
         child: const LinkRoomPage(
           parentSpaceId: '!spaceId',
-          pageTitle: 'This should go away',
           childRoomType: ChildRoomType.chat,
         ),
       );
-      expect(find.text('This should go away'), findsOne);
       // find the specific chat items being rendered
       expect(find.text('Mega super chat'), findsOne);
       expect(find.text('Other cool chat'), findsOne);
@@ -101,14 +99,18 @@ void main() {
               .overrideWith(() => MockRoomAvatarInfoNotifier()),
           roomMembershipProvider.overrideWith((a, b) => null),
           spacesProvider.overrideWith(
-            (a) =>
-                MockSpaceListNotifiers([parentSpace, mockSpaceA, mockSpaceB]),
+            (a) => MockSpaceListNotifiers([
+              parentSpace,
+              mockSpaceA,
+              mockSpaceB,
+              mockSpaceC,
+            ]),
           ),
           spaceProvider.overrideWith(
             (a, b) => switch (b) {
               'parenSpace' => parentSpace,
               'space-a' => mockSpaceA,
-              'mockSpaceB' => mockSpaceB,
+              'other-space' => mockSpaceB,
               'unlinked-space' => mockSpaceC,
               _ => throw 'Room Not Found'
             },
@@ -126,21 +128,23 @@ void main() {
           ),
         ],
         child: const LinkRoomPage(
-          parentSpaceId: '!spaceId',
-          pageTitle: 'This should go away',
+          parentSpaceId: 'parentSpace',
           childRoomType: ChildRoomType.space,
         ),
       );
-      expect(find.text('This should go away'), findsOne);
+
+      await tester.pump();
+      await tester.pump();
       // find the specific chat items being rendered
       expect(find.text('Mega super space'), findsOne);
+
       expect(find.byKey(Key('room-list-unlink-space-a')), findsOneWidget);
       expect(find.text('Other cool space'), findsOne);
       expect(find.byKey(Key('room-list-unlink-other-space')), findsOneWidget);
 
       // this isn't yet linked
       expect(find.text('Unklinked space'), findsOne);
-      expect(find.byKey(Key('room-list-link-other-space')), findsOneWidget);
+      expect(find.byKey(Key('room-list-link-unlinked-space')), findsOneWidget);
     });
   });
 }

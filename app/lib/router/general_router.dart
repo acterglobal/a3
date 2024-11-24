@@ -178,7 +178,6 @@ final generalRoutes = [
         },
         child: LinkRoomPage(
           parentSpaceId: spaceId,
-          pageTitle: 'Link as Space-chat',
           childRoomType: ChildRoomType.chat,
         ),
       );
@@ -204,7 +203,6 @@ final generalRoutes = [
         },
         child: LinkRoomPage(
           parentSpaceId: spaceId,
-          pageTitle: 'Link Sub-Space',
           childRoomType: ChildRoomType.space,
         ),
       );
@@ -230,8 +228,7 @@ final generalRoutes = [
         },
         child: LinkRoomPage(
           parentSpaceId: spaceId,
-          pageTitle: 'Link Recommended-Space',
-          childRoomType: ChildRoomType.recommendedSpace,
+          childRoomType: ChildRoomType.space,
         ),
       );
     },

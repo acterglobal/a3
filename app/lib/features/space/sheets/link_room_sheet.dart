@@ -7,6 +7,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
+import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/common/widgets/search.dart';
 import 'package:acter/common/widgets/sliver_scaffold.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
@@ -14,7 +15,6 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/space/actions/unlink_child_room.dart';
 import 'package:acter/features/spaces/providers/space_list_provider.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -27,7 +27,6 @@ final _log = Logger('a3::space::link_room_sheet');
 enum ChildRoomType {
   chat,
   space,
-  recommendedSpace,
 }
 
 class LinkRoomPage extends ConsumerStatefulWidget {
@@ -35,13 +34,11 @@ class LinkRoomPage extends ConsumerStatefulWidget {
   static const denyJoinRuleUpdateKey = Key('link-room-deny-join-rule');
 
   final String parentSpaceId;
-  final String pageTitle;
   final ChildRoomType childRoomType;
 
   const LinkRoomPage({
     super.key,
     required this.parentSpaceId,
-    required this.pageTitle,
     required this.childRoomType,
   });
 
@@ -49,51 +46,52 @@ class LinkRoomPage extends ConsumerStatefulWidget {
   ConsumerState<LinkRoomPage> createState() => _LinkRoomPageConsumerState();
 }
 
+typedef RoomQuery = ({String parentId, String childId});
+
+final isSubChatProvider = StateProvider.family<bool, RoomQuery>(
+  (ref, query) =>
+      ref
+          .watch(spaceRelationsOverviewProvider(query.parentId))
+          .valueOrNull
+          ?.knownChats
+          .contains(query.childId) ==
+      true,
+);
+
+final isSubSpaceProvider = StateProvider.family<bool, RoomQuery>(
+  (ref, query) =>
+      ref
+          .watch(spaceRelationsOverviewProvider(query.parentId))
+          .valueOrNull
+          ?.knownSubspaces
+          .contains(query.childId) ==
+      true,
+);
+
+final isRecommendedProvider = StateProvider.family<bool, RoomQuery>(
+  (ref, query) =>
+      ref
+          .watch(spaceRelationsOverviewProvider(query.parentId))
+          .valueOrNull
+          ?.otherRelations
+          .map((x) => x.getRoomIdStr())
+          .contains(query.childId) ==
+      true,
+);
+
 class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
   final TextEditingController searchTextEditingController =
       TextEditingController();
-  final List<String> childRoomsIds = [];
-  final List<String> recommendedChildSpaceIds = [];
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      selectParentSpaceData();
-      fetchKnownSubChatsData();
-    });
-  }
-
-//Select parent space data
-  void selectParentSpaceData() {
-    final notifier = ref.read(selectedSpaceIdProvider.notifier);
-    notifier.state = widget.parentSpaceId;
-  }
-
-//Fetch known sub-rooms list of selected parent space
-  Future<void> fetchKnownSubChatsData() async {
-    final selectedParentSpaceId = ref.read(selectedSpaceIdProvider);
-    if (selectedParentSpaceId == null) return;
-    final space = await ref
-        .read(spaceRelationsOverviewProvider(selectedParentSpaceId).future);
-
-    childRoomsIds.clear();
-    recommendedChildSpaceIds.clear();
-    if (widget.childRoomType == ChildRoomType.chat) {
-      childRoomsIds.addAll(space.knownChats);
-    } else {
-      childRoomsIds.addAll(space.knownSubspaces);
-      recommendedChildSpaceIds
-          .addAll(space.otherRelations.map((other) => other.getRoomIdStr()));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
     return SliverScaffold(
-      header: widget.pageTitle,
+      header: switch (widget.childRoomType) {
+        ChildRoomType.chat => L10n.of(context).linkChat,
+        ChildRoomType.space => L10n.of(context).linkSpace,
+      },
       body: SizedBox(
         height: screenSize.height - 120,
         child: Column(
@@ -102,7 +100,11 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           children: [
             parentSpaceDataUI(),
             searchUI(),
-            Expanded(child: roomList()),
+            Expanded(
+              child: widget.childRoomType == ChildRoomType.chat
+                  ? chatsList()
+                  : spacesList(),
+            ),
           ],
         ),
       ),
@@ -142,15 +144,6 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-//Manage list data based on the child room type
-  Widget roomList() {
-    if (widget.childRoomType == ChildRoomType.chat) {
-      return chatsList();
-    } else {
-      return spacesList();
-    }
-  }
-
 //List of chats excluding DMs that can be linked according to the selected parent space
   Widget chatsList() {
     final searchValue = ref.watch(roomSearchValueProvider);
@@ -185,10 +178,6 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-  bool isLinked(String roomId) {
-    return childRoomsIds.contains(roomId);
-  }
-
 //Chat List
   Widget chatListUI(List<String> chatList) {
     return ListView.builder(
@@ -201,9 +190,23 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
           canCheck: 'CanLinkSpaces',
           onSelect: null,
           keyPrefix: 'chat-list-link',
-          avatarDisplayMode: DisplayMode.GroupChat,
-          trailingBuilder: (canLink) =>
-              roomTrailing(roomId, isLinked(roomId), canLink),
+          trailingBuilder: (canLink) => Consumer(
+            builder: (
+              context,
+              ref,
+              child,
+            ) =>
+                _RoomTrailing(
+              roomId: roomId,
+              parentId: widget.parentSpaceId,
+              isLinked: ref.watch(
+                isSubChatProvider(
+                  (parentId: widget.parentSpaceId, childId: roomId),
+                ),
+              ),
+              canLink: canLink,
+            ),
+          ),
         );
       },
     );
@@ -248,35 +251,10 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       shrinkWrap: true,
       padding: const EdgeInsets.all(8),
       itemCount: spacesList.length,
-      itemBuilder: (context, index) {
-        final lang = L10n.of(context);
-        final roomId = spacesList[index];
-        final isSubspace = childRoomsIds.contains(roomId);
-        final isLinked = widget.childRoomType == ChildRoomType.space
-            ? childRoomsIds.contains(roomId)
-            : recommendedChildSpaceIds.contains(roomId);
-
-        final subtitle = isSubspace
-            ? Text(lang.subspace)
-            : recommendedChildSpaceIds.contains(roomId)
-                ? Text(lang.recommendedSpace)
-                : null;
-
-        return BriefRoomEntry(
-          avatarDisplayMode: DisplayMode.Space,
-          roomId: roomId,
-          canCheck: 'CanLinkSpaces',
-          keyPrefix: 'space-list-link',
-          subtitle: subtitle,
-          trailingBuilder: (canLink) => roomTrailing(
-            roomId,
-            isLinked,
-            widget.childRoomType == ChildRoomType.recommendedSpace
-                ? !isSubspace
-                : canLink,
-          ),
-        );
-      },
+      itemBuilder: (context, index) => _SpaceListItem(
+        parentId: widget.parentSpaceId,
+        roomId: spacesList[index],
+      ),
     );
   }
 
@@ -294,21 +272,78 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
       child: Text(message),
     );
   }
+}
 
-  Widget roomTrailing(String roomId, bool isLinked, bool canLink) {
+class _SpaceListItem extends ConsumerWidget {
+  final String parentId;
+  final String roomId;
+  const _SpaceListItem({
+    required this.parentId,
+    required this.roomId,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final query = (parentId: parentId, childId: roomId);
+    final isSubspace = ref.watch(isSubSpaceProvider(query));
+    final isRecommended = ref.watch(isRecommendedProvider(query));
+    final isLinked = isSubspace || isRecommended;
+
+    final subtitle = isSubspace
+        ? Text(L10n.of(context).subspace)
+        : isRecommended
+            ? Text(L10n.of(context).recommendedSpace)
+            : null;
+
+    final roomName =
+        ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
+
+    return ListTile(
+      key: Key('space-list-link-$roomId'),
+      leading: RoomAvatarBuilder(
+        roomId: roomId,
+        avatarSize: 24,
+      ),
+      title: Text(roomName),
+      subtitle: subtitle,
+      trailing: _RoomTrailing(
+        parentId: parentId,
+        roomId: roomId,
+        isLinked: isLinked,
+        canLink: true,
+      ),
+    );
+  }
+}
+
+class _RoomTrailing extends ConsumerWidget {
+  final bool canLink;
+  final bool isLinked;
+  final String parentId;
+  final String roomId;
+
+  const _RoomTrailing({
+    required this.parentId,
+    required this.roomId,
+    required this.canLink,
+    required this.isLinked,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       width: 100,
       child: isLinked
           ? OutlinedButton(
-              onPressed: () => onTapUnlinkChildRoom(roomId),
+              onPressed: () => onTapUnlinkChildRoom(context, ref),
               key: Key('room-list-unlink-$roomId'),
               child: Text(lang.unlink),
             )
           : canLink
               ? OutlinedButton(
-                  onPressed: () => onTapLinkChildRoom(context, roomId),
+                  onPressed: () => onTapLinkChildRoom(context, ref),
                   key: Key('room-list-link-$roomId'),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: colorScheme.success),
@@ -321,6 +356,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
   Future<void> checkJoinRule(
     BuildContext context,
+    WidgetRef ref,
     Room room,
     String parentSpaceId,
   ) async {
@@ -383,69 +419,51 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
         for (final roomId in currentRooms) {
           update.addRoom(roomId);
         }
-        //FIXME : Below is not working at all.
         await room.setJoinRule(update);
       }
     }
   }
 
 //Link child room
-  Future<void> onTapLinkChildRoom(BuildContext context, String roomId) async {
-    final spaceId = ref.read(selectedSpaceIdProvider);
-    if (spaceId == null) return;
+  Future<void> onTapLinkChildRoom(BuildContext context, WidgetRef ref) async {
+    final upgradeConfiguration = true;
 
     //Fetch selected parent space data and add given roomId as child
-    final space = await ref.read(spaceProvider(spaceId).future);
+    final space = await ref.read(spaceProvider(parentId).future);
     await space.addChildRoom(roomId, false);
 
     //Make subspace
-    if (widget.childRoomType == ChildRoomType.space) {
+    if (upgradeConfiguration) {
       //Fetch selected room data and add given parentSpaceId as parent
       final room = await ref.read(maybeRoomProvider(roomId).future);
       if (room != null) {
-        await room.addParentRoom(spaceId, true);
+        await room.addParentRoom(parentId, true);
         if (!context.mounted) return;
-        await checkJoinRule(context, room, spaceId);
+        await checkJoinRule(context, ref, room, parentId);
       }
     }
 
-    if (widget.childRoomType == ChildRoomType.recommendedSpace) {
-      recommendedChildSpaceIds.add(roomId);
-    } else {
-      childRoomsIds.add(roomId);
-    }
-
-    invalidateProviders(spaceId);
+    invalidateProviders(ref);
   }
 
 //Unlink child room
-  Future<void> onTapUnlinkChildRoom(String roomId) async {
-    final spaceId = ref.read(selectedSpaceIdProvider);
-    if (spaceId == null) return;
-
+  Future<void> onTapUnlinkChildRoom(BuildContext context, WidgetRef ref) async {
     await unlinkChildRoom(
       context,
       ref,
-      parentId: spaceId,
+      parentId: parentId,
       roomId: roomId,
     );
-
-    if (widget.childRoomType == ChildRoomType.recommendedSpace) {
-      recommendedChildSpaceIds.remove(roomId);
-    } else {
-      childRoomsIds.remove(roomId);
-    }
-
     //Invalidate providers
-    invalidateProviders(spaceId);
+    invalidateProviders(ref);
   }
 
-  void invalidateProviders(String selectedParentSpaceId) {
+  void invalidateProviders(WidgetRef ref) {
     //Invalidate providers
-    ref.invalidate(spaceRelationsProvider(selectedParentSpaceId));
-    ref.invalidate(spaceRemoteRelationsProvider(selectedParentSpaceId));
-    ref.invalidate(subChatsListProvider(selectedParentSpaceId));
-    ref.invalidate(subSpacesListProvider(selectedParentSpaceId));
+    ref.invalidate(spaceRelationsProvider(parentId));
+    ref.invalidate(spaceRemoteRelationsProvider(parentId));
+    ref.invalidate(subChatsListProvider(parentId));
+    ref.invalidate(subSpacesListProvider(parentId));
     ref.invalidate(localCategoryListProvider);
   }
 }
