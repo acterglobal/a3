@@ -11,6 +11,7 @@ import 'package:acter/features/link_room/pages/link_room_page.dart';
 import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -125,21 +126,29 @@ class LinkRoomTrailing extends ConsumerWidget {
 
 //Link child room
   Future<void> onTapLinkChildRoom(BuildContext context, WidgetRef ref) async {
-    final upgradeConfiguration = true;
+    final lang = L10n.of(context);
+    final room = await ref.read(maybeRoomProvider(roomId).future);
+    if (room == null) {
+      EasyLoading.showError(lang.roomNotFound);
+      return;
+    }
+
+    final canLink = (await ref.read(roomMembershipProvider(roomId).future))
+            ?.canString('CanLinkSpaces') ==
+        true;
 
     //Fetch selected parent space data and add given roomId as child
     final space = await ref.read(spaceProvider(parentId).future);
     await space.addChildRoom(roomId, false);
 
     //Make subspace
-    if (upgradeConfiguration) {
+    if (canLink) {
       //Fetch selected room data and add given parentSpaceId as parent
-      final room = await ref.read(maybeRoomProvider(roomId).future);
-      if (room != null) {
-        await room.addParentRoom(parentId, true);
-        if (!context.mounted) return;
-        await checkJoinRule(context, ref, room, parentId);
-      }
+      await room.addParentRoom(parentId, true);
+      if (!context.mounted) return;
+      await checkJoinRule(context, ref, room, parentId);
+    } else {
+      EasyLoading.showSuccess(lang.roomLinkedButNotUpgraded);
     }
 
     invalidateProviders(ref);
