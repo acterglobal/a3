@@ -23,7 +23,7 @@ final _log = Logger('a3::space::sub_spaces');
 class SubSpacesPage extends ConsumerWidget {
   static const moreOptionKey = Key('sub-spaces-more-actions');
   static const createSubspaceKey = Key('sub-spaces-more-create-subspace');
-  static const LinkSpaceKey = Key('sub-spaces-more-link-subspace');
+  static const linkSpaceKey = Key('sub-spaces-more-link-subspace');
 
   final String spaceId;
 
@@ -93,7 +93,7 @@ class SubSpacesPage extends ConsumerWidget {
           ),
         ),
         PopupMenuItem(
-          key: SubSpacesPage.LinkSpaceKey,
+          key: SubSpacesPage.linkSpaceKey,
           onTap: () => context.pushNamed(
             Routes.linkSpace.name,
             pathParameters: {'spaceId': spaceId},

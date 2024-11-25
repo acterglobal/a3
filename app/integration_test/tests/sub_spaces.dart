@@ -43,7 +43,7 @@ void subSpaceTests() {
       await t.navigateTo([
         const Key('spaces'),
         SubSpacesPage.moreOptionKey,
-        SubSpacesPage.LinkSpaceKey,
+        SubSpacesPage.linkSpaceKey,
       ]);
 
       final roomListEntry = find.byKey(Key('room-list-link-$subSpace'));
@@ -90,7 +90,7 @@ void subSpaceTests() {
       await t.navigateTo([
         const Key('spaces'),
         SubSpacesPage.moreOptionKey,
-        SubSpacesPage.LinkSpaceKey,
+        SubSpacesPage.linkSpaceKey,
       ]);
 
       final roomListEntry = find.byKey(Key('room-list-link-$subSpace'));
