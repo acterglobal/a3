@@ -87,8 +87,11 @@ class NewsSlideActions extends ConsumerWidget {
     final taskListData = ref.watch(taskListProvider(taskListId));
     final taskListError = taskListData.asError;
     if (taskListError != null) {
-      _log.severe('Error loading task list', taskListError.error,
-          taskListError.stackTrace);
+      _log.severe(
+        'Error loading task list',
+        taskListError.error,
+        taskListError.stackTrace,
+      );
       return Card(
         child: ListTile(
           leading: const Icon(Icons.list),
