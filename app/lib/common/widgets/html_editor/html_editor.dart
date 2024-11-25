@@ -4,8 +4,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
-import 'package:acter/common/widgets/html_editor/models/mention_block_keys.dart';
-import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
 import 'package:acter/common/widgets/html_editor/services/mention_shortcuts.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -408,25 +407,19 @@ class HtmlEditorState extends State<HtmlEditor> {
     }
     final roomId = widget.roomId;
     // Inline Mentions
-    final mention =
-        attributes[MentionBlockKeys.mention] as Map<String, dynamic>?;
+    final mention = attributes.entries
+        .firstWhere((e) => e.value is MentionAttributes)
+        .value as MentionAttributes?;
     if (mention != null && roomId != null) {
-      final type = mention[MentionBlockKeys.type];
       return WidgetSpan(
         alignment: PlaceholderAlignment.middle,
         style: after.style,
         child: MentionBlock(
-          key: ValueKey(
-            switch (type) {
-              MentionType.user => mention[MentionBlockKeys.userId],
-              MentionType.room => mention[MentionBlockKeys.roomId],
-              _ => MentionBlockKeys.mention,
-            },
-          ),
+          key: ValueKey(mention.mentionId),
           userRoomId: roomId,
           node: node,
           index: index,
-          mention: mention,
+          mentionAttributes: mention,
         ),
       );
     }

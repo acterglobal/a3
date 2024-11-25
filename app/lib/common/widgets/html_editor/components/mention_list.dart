@@ -1,9 +1,8 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_item.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:acter/common/widgets/html_editor/models/mention_block_keys.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +52,6 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
     // All suggestions list
     final suggestions = ref
         .watch(mentionSuggestionsProvider((widget.roomId, widget.mentionType)));
@@ -69,15 +67,12 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
         _buildMenuList(suggestions),
       ],
     );
-    if (isDesktop) {
-      // we only want to listen keyboard events on desktop
-      return Focus(
-        focusNode: _focusNode,
-        onKeyEvent: (node, event) => _handleKeyEvent(node, event, suggestions),
-        child: menuWidget,
-      );
-    }
-    return menuWidget;
+
+    return KeyboardListener(
+      focusNode: _focusNode,
+      onKeyEvent: (event) => _handleKeyEvent(event, suggestions),
+      child: menuWidget,
+    );
   }
 
   Widget _buildMenuHeader() => Padding(
@@ -132,7 +127,6 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
   }
 
   KeyEventResult _handleKeyEvent(
-    FocusNode node,
     KeyEvent event,
     Map<String, String> suggestions,
   ) {
@@ -230,6 +224,7 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
 
     // Calculate length from trigger to cursor
     final lengthToReplace = cursorPosition - atSymbolPosition;
+    final mentionsKey = MentionType.toStr(widget.mentionType);
 
     transaction.replaceText(
       node,
@@ -237,14 +232,11 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
       lengthToReplace, // Replace everything including trigger
       ' ',
       attributes: {
-        MentionBlockKeys.mention: {
-          MentionBlockKeys.type: widget.mentionType.name,
-          if (widget.mentionType == MentionType.user)
-            MentionBlockKeys.userId: id
-          else
-            MentionBlockKeys.roomId: id,
-          MentionBlockKeys.displayName: displayName,
-        },
+        mentionsKey: MentionAttributes(
+          type: widget.mentionType,
+          mentionId: id,
+          displayName: displayName,
+        ),
       },
     );
 

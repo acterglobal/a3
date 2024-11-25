@@ -9,24 +9,24 @@ List<CharacterShortcutEvent> mentionShortcuts(
 ) {
   return [
     CharacterShortcutEvent(
-      character: '@',
+      character: userMentionChar,
       handler: (editorState) => _handleMentionTrigger(
         context: context,
         editorState: editorState,
         type: MentionType.user,
         roomId: roomId,
       ),
-      key: '@',
+      key: userMentionChar,
     ),
     CharacterShortcutEvent(
-      character: '#',
+      character: roomMentionChar,
       handler: (editorState) => _handleMentionTrigger(
         context: context,
         editorState: editorState,
         type: MentionType.room,
         roomId: roomId,
       ),
-      key: '#',
+      key: roomMentionChar,
     ),
   ];
 }

@@ -1,3 +1,6 @@
+const String userMentionChar = '@';
+const String roomMentionChar = '#';
+
 enum MentionType {
   user,
   room;

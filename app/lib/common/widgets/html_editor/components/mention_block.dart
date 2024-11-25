@@ -1,38 +1,44 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/widgets/html_editor/models/mention_block_keys.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MentionBlock extends ConsumerWidget {
+  final MentionAttributes mentionAttributes;
+  final String userRoomId;
+  final Node node;
+  final int index;
+
   const MentionBlock({
     super.key,
     required this.node,
     required this.index,
-    required this.mention,
+    required this.mentionAttributes,
     required this.userRoomId,
   });
 
-  final Map<String, dynamic> mention;
-  final String userRoomId;
-  final Node node;
-  final int index;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final String type = mention[MentionBlockKeys.type];
-    final String displayName = mention[MentionBlockKeys.displayName];
-    final String mentionId = type == 'user'
-        ? mention[MentionBlockKeys.userId]
-        : mention[MentionBlockKeys.roomId];
-    final avatarInfo = type == 'user'
-        ? ref.watch(
-            memberAvatarInfoProvider((roomId: userRoomId, userId: mentionId)),
-          )
-        : ref.watch(roomAvatarInfoProvider(mentionId));
-    final options = type == 'user'
-        ? AvatarOptions.DM(avatarInfo, size: 8)
-        : AvatarOptions(avatarInfo, size: 16);
+    final MentionType type = mentionAttributes.type;
+    final String? displayName = mentionAttributes.displayName;
+    final String mentionId = mentionAttributes.mentionId;
+
+    final avatarInfo = switch (type) {
+      MentionType.user => ref.watch(
+          memberAvatarInfoProvider(
+            (roomId: userRoomId, userId: mentionId),
+          ),
+        ),
+      MentionType.room => ref.watch(roomAvatarInfoProvider(mentionId)),
+    };
+
+    final options = switch (type) {
+      MentionType.user => AvatarOptions.DM(avatarInfo, size: 8),
+      MentionType.room => AvatarOptions(avatarInfo, size: 16),
+    };
 
     return _mentionContent(
       context: context,
@@ -46,16 +52,16 @@ class MentionBlock extends ConsumerWidget {
   Widget _mentionContent({
     required BuildContext context,
     required String mentionId,
-    required String displayName,
     required WidgetRef ref,
     required AvatarOptions avatarOptions,
+    String? displayName,
   }) {
     final desktopPlatforms = [
       TargetPlatform.linux,
       TargetPlatform.macOS,
       TargetPlatform.windows,
     ];
-    final name = displayName.isNotEmpty ? displayName : mentionId;
+    final name = displayName ?? mentionId;
     final mentionContentWidget = Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(

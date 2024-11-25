@@ -1,4 +1,3 @@
-import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -24,12 +23,12 @@ class MentionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
+    final hasKeyboard =
+        MediaQuery.of(context).navigationMode == NavigationMode.directional;
 
     return Container(
       height: 60,
-      // selection color is only for desktop with keyboard navigation
-      color: (isSelected && isDesktop)
+      color: (isSelected && hasKeyboard)
           ? Theme.of(context).colorScheme.primary
           : null,
       child: ListTile(

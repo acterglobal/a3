@@ -1,1 +1,1 @@
-- Chat-NG now supports Appflowy editor with proper markdown support. Some/Other features might be disabled or limited for now.
+[Labs] Chat-NG now offers a fresh new WYSIWYG editor. More features upcoming.
