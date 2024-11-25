@@ -73,6 +73,7 @@ class SelectedActionButton extends ConsumerWidget {
               width: 300,
               child: PinListItemWidget(
                 pinId: pin.eventIdStr(),
+                showPinIndication: true,
                 onTaPinItem: (pinId) async {
                   final notifier = ref.read(newsStateProvider.notifier);
                   await notifier.selectPinToShare(context);
@@ -100,6 +101,7 @@ class SelectedActionButton extends ConsumerWidget {
               width: 300,
               child: TaskListItemCard(
                 showOnlyTaskList: true,
+                showTaskListIndication: true,
                 taskListId: taskList.eventIdStr(),
                 onTitleTap: () async {
                   final notifier = ref.read(newsStateProvider.notifier);
