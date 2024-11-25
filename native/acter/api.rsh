@@ -71,6 +71,11 @@ fn new_task_ref_builder(target_id: string, room_id: Option<string>, task_list: s
 /// action: link/embed/embed-subscribe
 fn new_task_list_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
 
+/// create a pin ref builder
+/// target_id: event id of target
+/// action: link/embed/embed-subscribe
+fn new_pin_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
+
 /// create a calendar event ref builder
 /// target_id: event id of target
 /// action: link/embed/embed-rsvp
@@ -1972,15 +1977,32 @@ object RoomPowerLevels {
     fn events_key() -> string;
     fn pins() -> Option<i64>;
     fn pins_key() -> string;
-    fn events_default() -> i64;
-    fn users_default() -> i64;
-    fn max_power_level() -> i64;
 
     fn tasks() -> Option<i64>;
     fn tasks_key() -> string;
 
     fn task_lists() -> Option<i64>;
     fn task_lists_key() -> string;
+
+    fn rsvp() -> Option<i64>;
+    fn rsvp_key() -> string;
+
+    fn comments() -> Option<i64>;
+    fn comments_key() -> string;
+
+    fn attachments() -> Option<i64>;
+    fn attachments_key() -> string;
+
+    // -- defaults
+
+    fn events_default() -> i64;
+    fn users_default() -> i64;
+    fn max_power_level() -> i64;
+
+    fn kick() -> i64;
+    fn ban() -> i64;
+    fn redact() -> i64;
+    fn invite() -> i64;
 }
 
 object SimpleOnOffSetting {
@@ -2237,6 +2259,9 @@ object Space {
 
     /// update the power level for a feature
     fn update_feature_power_levels(feature: string, level: Option<i32>) -> Future<Result<bool>>;
+
+    /// update the power level for a regular room feature
+    fn update_regular_power_levels(feature: string, level: i32) -> Future<Result<bool>>;
 
     /// report an event from this room
     /// score - The score to rate this content as where -100 is most offensive and 0 is inoffensive (optional).

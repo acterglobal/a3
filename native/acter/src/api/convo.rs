@@ -461,7 +461,7 @@ impl Client {
                         let guess = mime_guess::from_path(path.clone());
                         let content_type = guess.first().context("don’t know mime type")?;
                         let buf = std::fs::read(path)?;
-                        let response = client.media().upload(&content_type, buf).await?;
+                        let response = client.media().upload(&content_type, buf, None).await?;
 
                         let info = assign!(ImageInfo::new(), {
                             blurhash: response.blurhash,

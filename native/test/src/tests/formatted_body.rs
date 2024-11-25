@@ -79,18 +79,10 @@ fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<String> {
     if msg.item_type() != "event" {
         return None;
     }
-    let Some(event_item) = msg.event_item() else {
-        return None;
-    };
-    let Some(msg_content) = event_item.msg_content() else {
-        return None;
-    };
-
+    let event_item = msg.event_item()?;
+    let msg_content = event_item.msg_content()?;
     let _fresh_body = msg_content.body();
-
-    let Some(formatted) = msg_content.formatted_body() else {
-        return None;
-    };
+    let formatted = msg_content.formatted_body()?;
 
     if formatted == body {
         // exclude the pending msg

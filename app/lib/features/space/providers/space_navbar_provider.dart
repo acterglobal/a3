@@ -61,14 +61,14 @@ final tabsProvider =
     }
   }
 
-  final hasSpaces = await ref.watch(hasSubSpacesProvider(spaceId).future);
-  if (hasSpaces) {
-    tabs.add(TabEntry.spaces);
-  }
-
   final hasChats = await ref.watch(hasSubChatsProvider(spaceId).future);
   if (hasChats) {
     tabs.add(TabEntry.chats);
+  }
+
+  final hasSpaces = await ref.watch(hasSubSpacesProvider(spaceId).future);
+  if (hasSpaces) {
+    tabs.add(TabEntry.spaces);
   }
 
   tabs.add(TabEntry.members);

@@ -53,7 +53,6 @@ class CategoryUtils {
     //ADD UN-CATEGORIES ITEM to LAST POSITION
     CategoryModelLocal unCategorized = CategoryModelLocal(
       entries: unCategoriesEntriesList,
-      title: '',
       isUncategorized: true,
     );
     categoryListLocal.add(unCategorized);

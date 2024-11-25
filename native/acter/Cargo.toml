@@ -97,7 +97,6 @@ features = [
     "bundled-sqlite",
     "markdown",
 #   "qrcode",
-    "rustls-tls",
     "e2e-encryption",
 ]
 

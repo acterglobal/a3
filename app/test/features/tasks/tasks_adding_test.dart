@@ -1,14 +1,26 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/tasks/actions/create_task.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mockingjay/mockingjay.dart';
 
 import '../../helpers/mock_a3sdk.dart';
+import '../../helpers/mock_go_router.dart';
 import '../../helpers/mock_tasks_providers.dart';
 import '../../helpers/test_util.dart';
 
 void main() {
   group('Create Task Widget on TaskList', () {
+    late MockGoRouter mockedGoRouter;
+    late MockNavigator navigator;
+
+    setUp(() {
+      mockedGoRouter = MockGoRouter();
+      navigator = MockNavigator();
+      when(navigator.canPop).thenReturn(true);
+      when(() => navigator.pop(any())).thenAnswer((_) async {});
+      when(() => navigator.push<void>(any())).thenAnswer((_) async {});
+    });
+
     testWidgets('Simple only title', (tester) async {
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
@@ -16,7 +28,10 @@ void main() {
       when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
       when(() => mockTaskDraft.send())
           .thenAnswer((_) async => MockEventId(id: 'test'));
+
       await tester.pumpProviderWidget(
+        navigatorOverride: navigator,
+        goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
         ],
@@ -55,6 +70,8 @@ void main() {
       when(() => mockTaskDraft.send())
           .thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
+        navigatorOverride: navigator,
+        goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
         ],
@@ -114,6 +131,8 @@ void main() {
       when(() => mockTaskDraft.send())
           .thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
+        navigatorOverride: navigator,
+        goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
         ],
@@ -180,6 +199,8 @@ void main() {
       when(() => mockTaskDraft.send())
           .thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
+        navigatorOverride: navigator,
+        goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
         ],
@@ -202,7 +223,6 @@ void main() {
       await tester.enterText(title, 'Another Task');
 
       // add due date
-
       final addDueDateAction = find.byKey(CreateTaskWidget.addDueDateAction);
       final dueDateField = find.byKey(CreateTaskWidget.dueDateField);
       final dueTomorrow = find.byKey(CreateTaskWidget.dueDateTomorrowBtn);
@@ -219,10 +239,14 @@ void main() {
       expect(dueDateField, findsOneWidget);
       expect(dueTomorrow, findsOneWidget);
 
+      await tester.ensureVisible(dueTomorrow);
       await tester.tap(dueTomorrow);
+      await tester.pump();
 
       expect(submitBtn, findsOneWidget);
+      await tester.ensureVisible(submitBtn);
       await tester.tap(submitBtn);
+      await tester.pump();
 
       final expectedDate = DateTime.now().add(const Duration(days: 1));
 
@@ -248,6 +272,8 @@ void main() {
       when(() => mockTaskDraft.send())
           .thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
+        navigatorOverride: navigator,
+        goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
         ],

@@ -12,7 +12,7 @@ use futures::{
     stream::{Stream, StreamExt},
 };
 use matrix_sdk::{
-    media::{MediaRequest, UniqueKey},
+    media::{MediaRequestParameters, UniqueKey},
     room::Room as SdkRoom,
     Client as SdkClient,
 };
@@ -90,7 +90,7 @@ impl Client {
         // any variable in self can’t be called directly in spawn
         let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
-        let request = MediaRequest { source, format };
+        let request = MediaRequestParameters { source, format };
         trace!(?request, "tasked to get source binary");
         RUNTIME
             .spawn(async move {
@@ -110,7 +110,7 @@ impl Client {
         // any variable in self can’t be called directly in spawn
         let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
-        let request = MediaRequest { source, format };
+        let request = MediaRequestParameters { source, format };
         let path = PathBuf::from(tmp_path).join(format!(
             "{}.{file_suffix}",
             Base64UrlUnpadded::encode_string(request.unique_key().as_bytes())
@@ -294,7 +294,7 @@ impl Client {
                 let guess = mime_guess::from_path(path.clone());
                 let content_type = guess.first().context("don’t know mime type")?;
                 let buf = std::fs::read(path)?;
-                let response = client.media().upload(&content_type, buf).await?;
+                let response = client.media().upload(&content_type, buf, None).await?;
                 Ok(response.content_uri)
             })
             .await?

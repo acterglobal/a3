@@ -1,6 +1,8 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/event/event_selector_drawer.dart';
+import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
+import 'package:acter/features/news/model/news_post_color_data.dart';
 import 'package:acter/features/news/model/news_post_state.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -21,7 +23,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
 
   void changeTextSlideBackgroundColor() {
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.backgroundColor = getRandomElement(Colors.primaries);
+    selectedNewsSlide?.backgroundColor = getRandomElement(newsPostColors);
     state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
 
@@ -58,6 +60,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
           context: context,
           canCheck: 'CanPostNews',
         );
+    state = state.copyWith(newsPostSpaceId: newsPostSpaceId);
 
     if (newsPostSpaceId == null) {
       EasyLoading.showToast(lang.pleaseFirstSelectASpace);
@@ -73,6 +76,35 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     final newsSpaceReference = NewsReferencesModel(
       type: NewsReferencesType.calendarEvent,
       id: eventId,
+    );
+    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
+    selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
+    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+  }
+
+  Future<void> selectPinToShare(BuildContext context) async {
+    final lang = L10n.of(context);
+    final newsPostSpaceId = state.newsPostSpaceId ??
+        await selectSpaceDrawer(
+          context: context,
+          canCheck: 'CanPostPin',
+        );
+    state = state.copyWith(newsPostSpaceId: newsPostSpaceId);
+
+    if (newsPostSpaceId == null) {
+      EasyLoading.showToast(lang.pleaseFirstSelectASpace);
+      return;
+    }
+    if (!context.mounted) {
+      return;
+    }
+    final pinId = await selectPinDrawer(
+      context: context,
+      spaceId: newsPostSpaceId,
+    );
+    final newsSpaceReference = NewsReferencesModel(
+      type: NewsReferencesType.pin,
+      id: pinId,
     );
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
     selectedNewsSlide?.newsReferencesModel = newsSpaceReference;

@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
@@ -71,7 +72,9 @@ class AppShellState extends ConsumerState<AppShell> {
       detector = ShakeDetector.autoStart(
         shakeThresholdGravity: 30.0,
         onShake: () {
-          openBugReport(context);
+          if (ref.read(isAppInForeground)) {
+            openBugReport(context);
+          }
         },
       );
     }

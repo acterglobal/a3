@@ -18,4 +18,5 @@ enum QuickSearchFilters {
   spaces,
   pins,
   events,
+  tasks,
 }

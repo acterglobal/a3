@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:acter/common/models/attachment_media_state/attachment_media_state.dart';
+import 'package:acter/features/attachments/types.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Attachment, AttachmentsManager;
 import 'package:logging/logging.dart';
@@ -11,13 +12,13 @@ import 'package:riverpod/riverpod.dart';
 final _log = Logger('a3::attachments::notifiers');
 
 class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
-    AttachmentsManager, Future<AttachmentsManager>> {
+    AttachmentsManager, AttachmentsManagerProvider> {
   late Stream<void> _listener;
   late StreamSubscription<void> _poller;
 
   @override
-  FutureOr<AttachmentsManager> build(Future<AttachmentsManager> arg) async {
-    final manager = await arg;
+  FutureOr<AttachmentsManager> build(AttachmentsManagerProvider arg) async {
+    final manager = await arg.getManager();
     _listener = manager.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen(
       (e) async {

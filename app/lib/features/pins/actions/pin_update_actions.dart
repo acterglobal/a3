@@ -114,7 +114,10 @@ Future<void> updatePinIcon(
 
     await updateBuilder.send();
     EasyLoading.dismiss();
+
+    //TODO : this only fixes the case where we do the update. if the change comes from outside - another user - this will not trigger.
     ref.invalidate(pinProvider);
+    ref.invalidate(pinListProvider);
   } catch (e, s) {
     _log.severe('Failed to change icon of pin', e, s);
     if (!context.mounted) {

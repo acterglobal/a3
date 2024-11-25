@@ -17,6 +17,7 @@ class _EventListSkeletonState extends State<EventListSkeleton> {
 
   Widget _buildSkeletonUI() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         _buildEventItemSkeletonUI(),
         _buildEventItemSkeletonUI(),

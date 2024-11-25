@@ -1,22 +1,18 @@
-import 'package:acter/common/actions/select_space.dart';
-import 'package:acter/common/drag_handle_widget.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/tasks/actions/add_task.dart';
 import 'package:acter/features/tasks/actions/select_tasklist.dart';
-import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger('a3::tasks::create_update_task_item');
+import 'package:go_router/go_router.dart';
 
 Future<void> showCreateTaskBottomSheet(
   BuildContext context, {
@@ -25,12 +21,15 @@ Future<void> showCreateTaskBottomSheet(
 }) async {
   await showModalBottomSheet(
     context: context,
-    showDragHandle: false,
+    showDragHandle: true,
     useSafeArea: true,
     isScrollControlled: true,
-    builder: (context) => CreateTaskWidget(
-      taskList: taskList,
-      taskName: taskName,
+    builder: (context) => Padding(
+      padding: MediaQuery.of(context).viewInsets,
+      child: CreateTaskWidget(
+        taskList: taskList,
+        taskName: taskName,
+      ),
     ),
   );
 }
@@ -131,8 +130,6 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 10),
-              const Center(child: DragHandleWidget()),
               const SizedBox(height: 20),
               Text(
                 lang.addTask,
@@ -150,12 +147,12 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
                     const Text(' > '),
                     if (taskList == null)
                       ActerInlineTextButton(
+                        onPressed: _selectTaskList,
                         child: Text(lang.selectTaskList),
-                        onPressed: () => _selectTaskList(),
                       )
                     else
                       InkWell(
-                        onTap: () => _selectTaskList(),
+                        onTap: _selectTaskList,
                         child: Text(taskList?.name() ?? ''),
                       ),
                   ],
@@ -192,7 +189,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
           controller: _taskNameController,
           // required field, space not allowed
           validator: (val) =>
-              val == null || val.trim().isEmpty ? lang.pleaseEnterAName : null,
+              val?.trim().isEmpty == true ? lang.pleaseEnterAName : null,
         ),
       ],
     );
@@ -310,6 +307,17 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
     });
   }
 
+  Future<void> _selectTaskList() async {
+    final newTaskList = await selectTaskList(context: context, ref: ref);
+    if (newTaskList != null) {
+      setState(() {
+        taskList = newTaskList;
+        ref.read(selectedSpaceIdProvider.notifier).state =
+            newTaskList.spaceIdStr();
+      });
+    }
+  }
+
   Widget _addFields() {
     final lang = L10n.of(context);
     final actions = [];
@@ -352,82 +360,34 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
     final lang = L10n.of(context);
     return ElevatedButton(
       key: CreateTaskWidget.submitBtn,
-      onPressed: addTask,
+      onPressed: _addTask,
       child: Text(lang.addTask),
     );
   }
 
-  Future<void> _selectTaskList() async {
-    final lang = L10n.of(context);
-    String? spaceId = ref.read(selectedSpaceIdProvider);
-    spaceId ??= await selectSpace(
+  Future<void> _addTask() async {
+    if (!_formKey.currentState!.validate()) return;
+    final result = await addTask(
       context: context,
       ref: ref,
-      canCheck: 'CanPostTask',
+      taskList: taskList,
+      title: _taskNameController.text,
+      description:
+          showDescriptionField ? _taskDescriptionController.text : null,
+      dueDate: showDueDate ? selectedDate : null,
     );
-    if (!mounted) return;
-
-    if (spaceId == null) {
-      EasyLoading.showError(
-        lang.pleaseSelectSpace,
-        duration: const Duration(seconds: 2),
-      );
-      return;
-    }
-
-    final taskListId = await selectTaskList(context: context, spaceId: spaceId);
-    if (!mounted) return;
-    if (taskListId == null) {
-      return;
-    }
-
-    final newTaskList = await ref.read(taskListProvider(taskListId).future);
-    setState(() {
-      taskList = newTaskList;
-    });
-  }
-
-  Future<void> addTask() async {
-    final lang = L10n.of(context);
-    if (!_formKey.currentState!.validate()) return;
-
-    if (taskList == null) {
-      await _selectTaskList();
-    }
-    final tl = taskList;
-    if (tl == null) {
-      EasyLoading.showError(
-        lang.selectTaskList,
-        duration: const Duration(seconds: 2),
-      );
-      return;
-    }
-
-    EasyLoading.show(status: lang.addingTask);
-    final taskDraft = tl.taskBuilder();
-    taskDraft.title(_taskNameController.text);
-    if (showDescriptionField && _taskDescriptionController.text.isNotEmpty) {
-      taskDraft.descriptionText(_taskDescriptionController.text);
-    }
-    final date = selectedDate;
-    if (showDueDate && date != null) {
-      taskDraft.dueDate(date.year, date.month, date.day);
-    }
-    try {
-      await taskDraft.send();
-      EasyLoading.dismiss();
-      if (!mounted) return;
-      Navigator.pop(context);
-    } catch (e, s) {
-      _log.severe('Failed to create task', e, s);
-      if (!mounted) {
-        EasyLoading.dismiss();
-        return;
+    if (result != null) {
+      final (taskListId, taskId) = result;
+      if (mounted) {
+        Navigator.pop(context);
+        context.pushNamed(
+          Routes.taskItemDetails.name,
+          pathParameters: {
+            'taskListId': taskListId,
+            'taskId': taskId,
+          },
+        );
       }
-      EasyLoading.showError(
-        lang.creatingTaskFailed(e),
-        duration: const Duration(seconds: 3),
-      );
     }
   }
 }

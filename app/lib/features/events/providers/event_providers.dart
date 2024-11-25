@@ -1,8 +1,10 @@
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/bookmarks/types.dart';
+import 'package:acter/features/bookmarks/util.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/actions/sort_event_list.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
+import 'package:acter/features/events/providers/notifiers/participants_notifier.dart';
 import 'package:acter/features/events/providers/notifiers/rsvp_notifier.dart';
 import 'package:acter/features/search/providers/quick_search_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
@@ -18,6 +20,12 @@ final calendarEventProvider = AsyncNotifierProvider.autoDispose
 final myRsvpStatusProvider = AsyncNotifierProvider.autoDispose
     .family<AsyncRsvpStatusNotifier, ffi.RsvpStatusTag?, String>(
   () => AsyncRsvpStatusNotifier(),
+);
+
+//MY RSVP STATUS PROVIDER
+final participantsProvider = AsyncNotifierProvider.autoDispose
+    .family<AsyncParticipantsNotifier, List<String>, String>(
+  () => AsyncParticipantsNotifier(),
 );
 
 //SpaceId == null : GET LIST OF ALL PINs
@@ -179,16 +187,25 @@ final eventListSearchedProvider = FutureProvider.autoDispose
 final eventListQuickSearchedProvider =
     FutureProvider.autoDispose<List<ffi.CalendarEvent>>((ref) async {
   final searchTerm = ref.watch(quickSearchValueProvider);
+
+  final priotizeBookmarkedEvents = await priotizeBookmarked(
+    ref,
+    BookmarkType.events,
+    await ref.watch(allEventListProvider(null).future),
+    getId: (t) => t.eventId().toString(),
+  );
+
   return _filterEventBySearchTerm(
     searchTerm,
-    await ref.watch(allEventListProvider(null).future),
+    priotizeBookmarkedEvents,
   );
 });
 
 final eventListSearchedAndFilterProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
   //Declare filtered event list
-  final filteredEventList =
+
+  final List<ffi.CalendarEvent> filteredEventList =
       switch (ref.watch(eventListFilterProvider(spaceId))) {
     EventFilters.bookmarked =>
       await ref.watch(bookmarkedEventListProvider(spaceId).future),
@@ -198,9 +215,25 @@ final eventListSearchedAndFilterProvider = FutureProvider.autoDispose
       await ref.watch(allUpcomingEventListProvider(spaceId).future),
     EventFilters.past =>
       await ref.watch(allPastEventListProvider(spaceId).future),
-    EventFilters.all => await ref.watch(allEventListProvider(spaceId).future),
+    EventFilters.all =>
+      (await ref.watch(allOngoingEventListProvider(spaceId).future))
+          .followedBy(
+            await ref.watch(allUpcomingEventListProvider(spaceId).future),
+          )
+          .followedBy(await ref.watch(allPastEventListProvider(spaceId).future))
+          .toList(),
   };
 
+  final priotizeBookmarkedEvents = await priotizeBookmarked(
+    ref,
+    BookmarkType.events,
+    filteredEventList,
+    getId: (t) => t.eventId().toString(),
+  );
+
   final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
-  return _filterEventBySearchTerm(searchTerm, filteredEventList);
+  return _filterEventBySearchTerm(
+    searchTerm,
+    priotizeBookmarkedEvents,
+  );
 });

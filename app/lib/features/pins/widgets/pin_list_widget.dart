@@ -1,6 +1,5 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
-import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
 import 'package:acter/features/pins/widgets/pin_list_skeleton.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
@@ -13,30 +12,33 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::pins::list');
 
 class PinListWidget extends ConsumerWidget {
+  final ProviderBase<AsyncValue<List<ActerPin>>> pinListProvider;
   final String? spaceId;
   final String? searchValue;
   final int? limit;
   final bool showSectionHeader;
   final VoidCallback? onClickSectionHeader;
+  final Function(String)? onTaPinItem;
   final bool shrinkWrap;
   final Widget emptyState;
 
   const PinListWidget({
     super.key,
+    required this.pinListProvider,
     this.limit,
     this.spaceId,
     this.searchValue,
     this.showSectionHeader = false,
     this.onClickSectionHeader,
+    this.onTaPinItem,
     this.shrinkWrap = true,
     this.emptyState = const SizedBox.shrink(),
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pinsLoader = ref.watch(
-      pinListSearchProvider((spaceId: spaceId, searchText: searchValue ?? '')),
-    );
+    final pinsLoader = ref.watch(pinListProvider);
+
     return pinsLoader.when(
       data: (pinList) => buildPinSectionUI(context, pinList),
       error: (error, stack) => pinListErrorWidget(context, ref, error, stack),
@@ -57,15 +59,7 @@ class PinListWidget extends ConsumerWidget {
       stack: stack,
       textBuilder: L10n.of(context).loadingFailed,
       onRetryTap: () {
-        if (searchValue?.isNotEmpty == true) {
-          ref.invalidate(
-            pinListSearchProvider(
-              (spaceId: spaceId, searchText: searchValue ?? ''),
-            ),
-          );
-        } else {
-          ref.invalidate(pinListProvider(spaceId));
-        }
+        ref.invalidate(pinListProvider);
       },
     );
   }
@@ -99,6 +93,7 @@ class PinListWidget extends ConsumerWidget {
         return PinListItemWidget(
           pinId: pinList[index].eventIdStr(),
           showSpace: spaceId == null,
+          onTaPinItem: onTaPinItem,
         );
       },
     );

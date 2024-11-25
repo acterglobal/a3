@@ -2,10 +2,14 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_list_widget.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/search/providers/quick_search_providers.dart';
+import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter/features/spaces/widgets/space_list_widget.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter/features/tasks/widgets/task_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -104,6 +108,13 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
               onSelected: (value) =>
                   quickSearchFilters.value = QuickSearchFilters.events,
             ),
+            const SizedBox(width: 10),
+            FilterChip(
+              selected: quickSearchFilters.value == QuickSearchFilters.tasks,
+              label: Text(lang.tasks),
+              onSelected: (value) =>
+                  quickSearchFilters.value = QuickSearchFilters.tasks,
+            ),
           ],
         ),
       ),
@@ -118,8 +129,8 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
           if (quickSearchFilters.value == QuickSearchFilters.all ||
               quickSearchFilters.value == QuickSearchFilters.spaces)
             SpaceListWidget(
+              spaceListProvider: spaceListQuickSearchedProvider,
               limit: 3,
-              searchValue: searchValue,
               showSectionHeader: true,
               onClickSectionHeader: () => context.pushNamed(
                 Routes.spaces.name,
@@ -129,6 +140,7 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
           if (quickSearchFilters.value == QuickSearchFilters.all ||
               quickSearchFilters.value == QuickSearchFilters.pins)
             PinListWidget(
+              pinListProvider: pinListQuickSearchedProvider,
               limit: 3,
               searchValue: searchValue,
               showSectionHeader: true,
@@ -145,6 +157,18 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
               showSectionHeader: true,
               onClickSectionHeader: () => context.pushNamed(
                 Routes.calendarEvents.name,
+                queryParameters: {'searchQuery': searchValue},
+              ),
+            ),
+          if (quickSearchFilters.value == QuickSearchFilters.all ||
+              quickSearchFilters.value == QuickSearchFilters.tasks)
+            TaskListWidget(
+              limit: 3,
+              taskListProvider: taskListQuickSearchedProvider,
+              initiallyExpanded: false,
+              showSectionHeader: true,
+              onClickSectionHeader: () => context.pushNamed(
+                Routes.tasks.name,
                 queryParameters: {'searchQuery': searchValue},
               ),
             ),

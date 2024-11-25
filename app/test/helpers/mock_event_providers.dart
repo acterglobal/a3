@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:acter/features/datetime/providers/notifiers/now_notifier.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
+import 'package:acter/features/events/providers/notifiers/participants_notifier.dart';
 import 'package:acter/features/events/providers/notifiers/rsvp_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
@@ -23,6 +24,28 @@ class MockAsyncCalendarEventNotifier
       throw 'Expected fail: Space not loaded';
     }
     return MockEvent();
+  }
+}
+
+class MockAsyncParticipantsNotifier
+    extends AutoDisposeFamilyAsyncNotifier<List<String>, String>
+    with Mock
+    implements AsyncParticipantsNotifier {
+  bool shouldFail;
+  List<String> participants;
+  MockAsyncParticipantsNotifier({
+    this.shouldFail = true,
+    this.participants = const [],
+  });
+
+  @override
+  Future<List<String>> build(String arg) async {
+    if (shouldFail) {
+      // toggle failure so the retry works
+      shouldFail = !shouldFail;
+      throw 'Expected fail: Space not loaded';
+    }
+    return participants;
   }
 }
 

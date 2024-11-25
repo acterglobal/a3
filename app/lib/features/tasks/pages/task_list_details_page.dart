@@ -9,11 +9,15 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/bookmarks/types.dart';
+import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/actions/update_tasklist.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
+import 'package:acter/features/attachments/types.dart';
+import 'package:acter/features/comments/types.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +59,9 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     final tasklist = ref.watch(taskListProvider(widget.taskListId)).valueOrNull;
-    final actions = List<Widget>.empty(growable: true);
+    final List<Widget> actions = [
+      BookmarkAction(bookmarker: BookmarkType.forTaskList(widget.taskListId)),
+    ];
     if (tasklist != null) {
       actions.addAll(
         [
@@ -122,48 +128,53 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   Widget _buildBody() {
     final tasklistLoader = ref.watch(taskListProvider(widget.taskListId));
-    return tasklistLoader.when(
-      data: (tasklist) => _buildTaskListData(tasklist),
-      error: (error, stack) {
-        _log.severe('Failed to load tasklist', error, stack);
-        return ErrorPage(
-          background: _loadingSkeleton(),
-          error: error,
-          stack: stack,
-          onRetryTap: () {
-            ref.invalidate(taskListProvider(widget.taskListId));
-          },
-        );
-      },
-      loading: () => _loadingSkeleton(),
-      skipLoadingOnReload: true, // don't refresh to weirdly
-    );
+    final errored = tasklistLoader.asError;
+    if (errored != null) {
+      _log.severe('Failed to load tasklist', errored.error, errored.stackTrace);
+      return ErrorPage(
+        background: _buildTaskListInner(null),
+        error: errored,
+        stack: errored.stackTrace,
+        onRetryTap: () {
+          ref.invalidate(taskListProvider(widget.taskListId));
+        },
+      );
+    }
+
+    return _buildTaskListInner(tasklistLoader.valueOrNull);
   }
 
-  Widget _buildTaskListData(TaskList taskListData) {
+  Widget _buildTaskListInner(TaskList? taskListData) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
-            _taskListHeader(taskListData),
-            const SizedBox(height: 20),
-            _widgetDescription(taskListData),
-            const SizedBox(height: 30),
-            _widgetTasksListHeader(),
-            ValueListenableBuilder(
-              valueListenable: showCompletedTask,
-              builder: (context, value, child) => TaskItemsListWidget(
-                taskList: taskListData,
-                showCompletedTask: value,
+            if (taskListData != null) ...[
+              const SizedBox(height: 10),
+              _taskListHeader(taskListData),
+              const SizedBox(height: 20),
+              _widgetDescription(taskListData),
+              const SizedBox(height: 30),
+              _widgetTasksListHeader(),
+              ValueListenableBuilder(
+                valueListenable: showCompletedTask,
+                builder: (context, value, child) => TaskItemsListWidget(
+                  taskList: taskListData,
+                  showCompletedTask: value,
+                ),
               ),
+            ] else
+              _loadingSkeleton(),
+            const SizedBox(height: 20),
+            AttachmentSectionWidget(
+              manager: taskListData?.asAttachmentsManagerProvider(),
             ),
             const SizedBox(height: 20),
-            AttachmentSectionWidget(manager: taskListData.attachments()),
-            const SizedBox(height: 20),
-            CommentsSectionWidget(manager: taskListData.comments()),
+            CommentsSectionWidget(
+              managerProvider: taskListData?.asCommentsManagerProvider(),
+            ),
             const SizedBox(height: 20),
           ],
         ),

@@ -1,25 +1,25 @@
 import 'dart:async';
 
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Comment, CommentsManager, NewsEntry;
+import 'package:acter/features/comments/types.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::comments::manager');
 
 final commentsManagerProvider = AsyncNotifierProvider.autoDispose.family<
-    AsyncCommentsManagerNotifier, CommentsManager, Future<CommentsManager>>(
+    AsyncCommentsManagerNotifier, CommentsManager, CommentsManagerProvider>(
   () => AsyncCommentsManagerNotifier(),
 );
 
 class AsyncCommentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
-    CommentsManager, Future<CommentsManager>> {
+    CommentsManager, CommentsManagerProvider> {
   late Stream<bool> _listener;
   late StreamSubscription<void> _poller;
 
   @override
-  FutureOr<CommentsManager> build(Future<CommentsManager> arg) async {
-    final manager = await arg;
+  FutureOr<CommentsManager> build(CommentsManagerProvider arg) async {
+    final manager = await arg.getManager();
     _listener = manager.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
@@ -47,11 +47,10 @@ final commentsListProvider = FutureProvider.family
   return commentList;
 });
 
-final newsCommentsCountProvider =
-    FutureProvider.family.autoDispose<int, NewsEntry>((ref, newsEntry) async {
-  final manager = newsEntry.comments();
+final newsCommentsCountProvider = FutureProvider.family
+    .autoDispose<int, CommentsManagerProvider>((ref, managerProvider) async {
   final commentManager =
-      await ref.watch(commentsManagerProvider(manager).future);
+      await ref.watch(commentsManagerProvider(managerProvider).future);
   final commentList =
       await ref.watch(commentsListProvider(commentManager).future);
   return commentList.length;

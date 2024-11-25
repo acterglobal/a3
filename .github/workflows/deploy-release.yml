@@ -436,7 +436,7 @@ jobs:
       - name: Clear old docs
         continue-on-error: true
         run: |
-          git rm .changes/*.md
+          git rm --ignore-unmatch .changes/*.md
 
       - name: Tag for release
         run: |

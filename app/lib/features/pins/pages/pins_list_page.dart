@@ -1,9 +1,8 @@
-import 'package:acter/common/extensions/options.dart';
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_empty_state.dart';
 import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +13,13 @@ import 'package:go_router/go_router.dart';
 class PinsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
   final String? searchQuery;
+  final Function(String)? onSelectPinItem;
 
   const PinsListPage({
     super.key,
     this.spaceId,
     this.searchQuery,
+    this.onSelectPinItem,
   });
 
   @override
@@ -26,15 +27,14 @@ class PinsListPage extends ConsumerStatefulWidget {
 }
 
 class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
-  String get searchValue => ref.watch(searchValueProvider);
+  String get _searchValue => ref.watch(pinListSearchTermProvider);
 
   @override
   void initState() {
     super.initState();
-    widget.searchQuery.map((query) {
-      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-        ref.read(searchValueProvider.notifier).state = query;
-      });
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      ref.read(pinListSearchTermProvider.notifier).state =
+          widget.searchQuery ?? '';
     });
   }
 
@@ -50,23 +50,26 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
     final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(L10n.of(context).pins),
-          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
-        ],
-      ),
+      title: widget.onSelectPinItem != null
+          ? Text(L10n.of(context).selectPin)
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(L10n.of(context).pins),
+                if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
+              ],
+            ),
       actions: [
-        AddButtonWithCanPermission(
-          canString: 'CanPostPin',
-          spaceId: widget.spaceId,
-          onPressed: () => context.pushNamed(
-            Routes.createPin.name,
-            queryParameters: {'spaceId': spaceId},
+        if (widget.onSelectPinItem == null)
+          AddButtonWithCanPermission(
+            canString: 'CanPostPin',
+            spaceId: widget.spaceId,
+            onPressed: () => context.pushNamed(
+              Routes.createPin.name,
+              queryParameters: {'spaceId': spaceId},
+            ),
           ),
-        ),
       ],
     );
   }
@@ -78,22 +81,24 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
         ActerSearchWidget(
           initialText: widget.searchQuery,
           onChanged: (value) {
-            final notifier = ref.read(searchValueProvider.notifier);
+            final notifier = ref.read(pinListSearchTermProvider.notifier);
             notifier.state = value;
           },
           onClear: () {
-            final notifier = ref.read(searchValueProvider.notifier);
+            final notifier = ref.read(pinListSearchTermProvider.notifier);
             notifier.state = '';
           },
         ),
         Expanded(
           child: PinListWidget(
+            pinListProvider: pinListSearchedProvider(widget.spaceId),
             spaceId: widget.spaceId,
             shrinkWrap: false,
-            searchValue: searchValue,
+            searchValue: _searchValue,
+            onTaPinItem: widget.onSelectPinItem,
             emptyState: PinListEmptyState(
               spaceId: widget.spaceId,
-              isSearchApplied: searchValue.isNotEmpty,
+              isSearchApplied: _searchValue.isNotEmpty,
             ),
           ),
         ),

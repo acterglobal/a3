@@ -15,6 +15,8 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/attachments/types.dart';
+import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
@@ -156,45 +158,51 @@ class TaskItemDetailPage extends ConsumerWidget {
   Widget _buildBody(
     BuildContext context,
     WidgetRef ref,
-  ) =>
-      ref
-          .watch(taskItemProvider((taskListId: taskListId, taskId: taskId)))
-          .when(
-            data: (task) => taskData(context, task, ref),
-            error: (error, stack) {
-              _log.severe('Failed to load task', error, stack);
-              return ErrorPage(
-                background: const TaskItemDetailPageSkeleton(),
-                error: error,
-                stack: stack,
-                onRetryTap: () {
-                  ref.invalidate(
-                    taskItemProvider((taskListId: taskListId, taskId: taskId)),
-                  );
-                },
-              );
-            },
-            loading: () => const TaskItemDetailPageSkeleton(),
-            skipLoadingOnReload: true,
+  ) {
+    final taskLoader =
+        ref.watch(taskItemProvider((taskListId: taskListId, taskId: taskId)));
+    final errored = taskLoader.asError;
+    if (errored != null) {
+      _log.severe('Failed to load task', errored.error, errored.stackTrace);
+      return ErrorPage(
+        background: const TaskItemDetailPageSkeleton(),
+        error: errored.error,
+        stack: errored.stackTrace,
+        onRetryTap: () {
+          ref.invalidate(
+            taskItemProvider((taskListId: taskListId, taskId: taskId)),
           );
+        },
+      );
+    }
 
-  Widget taskData(BuildContext context, Task task, WidgetRef ref) {
+    return taskData(context, taskLoader.valueOrNull, ref);
+  }
+
+  Widget taskData(BuildContext context, Task? task, WidgetRef ref) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
-            _taskHeader(context, task, ref),
-            const SizedBox(height: 10),
-            _widgetTaskDate(context, task),
-            _widgetTaskAssignment(context, task, ref),
-            ..._widgetDescription(context, task, ref),
-            const SizedBox(height: 40),
-            AttachmentSectionWidget(manager: task.attachments()),
+            if (task != null) ...[
+              const SizedBox(height: 10),
+              _taskHeader(context, task, ref),
+              const SizedBox(height: 10),
+              _widgetTaskDate(context, task),
+              _widgetTaskAssignment(context, task, ref),
+              ..._widgetDescription(context, task, ref),
+              const SizedBox(height: 40),
+            ] else
+              const TaskItemDetailPageSkeleton(),
+            AttachmentSectionWidget(
+              manager: task?.asAttachmentsManagerProvider(),
+            ),
             const SizedBox(height: 20),
-            CommentsSectionWidget(manager: task.comments()),
+            CommentsSectionWidget(
+              managerProvider: task?.asCommentsManagerProvider(),
+            ),
             const SizedBox(height: 20),
           ],
         ),

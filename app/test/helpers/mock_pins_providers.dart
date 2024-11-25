@@ -5,6 +5,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 
+class SimplyRetuningAsyncPinListNotifier
+    extends FamilyAsyncNotifier<List<ActerPin>, String?>
+    with Mock
+    implements AsyncPinListNotifier {
+  final List<ActerPin> response;
+
+  SimplyRetuningAsyncPinListNotifier(this.response);
+
+  @override
+  Future<List<ActerPin>> build(String? arg) async => response;
+}
+
 class RetryMockAsyncPinListNotifier
     extends FamilyAsyncNotifier<List<ActerPin>, String?>
     with Mock
@@ -36,19 +48,31 @@ class RetryMockAsyncPinNotifier
       shouldFail = !shouldFail;
       throw 'Expected fail';
     }
-    return MockActerPin();
+    return FakeActerPin();
   }
 }
 
-class MockActerPin extends Fake implements ActerPin {
-  @override
-  String roomIdStr() => '!roomId';
+class MockActerPin extends Mock implements ActerPin {}
+
+class FakeActerPin extends Fake implements ActerPin {
+  final String roomId;
+  final String eventId;
+  final String pinTitle;
+
+  FakeActerPin({
+    this.roomId = '!roomId',
+    this.eventId = 'evtId',
+    this.pinTitle = 'Pin Title',
+  });
 
   @override
-  String eventIdStr() => '\$evtId';
+  String roomIdStr() => roomId;
 
   @override
-  String title() => 'Pin Title';
+  String eventIdStr() => eventId;
+
+  @override
+  String title() => pinTitle;
 
   @override
   Future<AttachmentsManager> attachments() =>
@@ -62,4 +86,7 @@ class MockActerPin extends Fake implements ActerPin {
 
   @override
   Display? display() => null;
+
+  @override
+  String url() => 'https://acter.global';
 }

@@ -1,7 +1,14 @@
+import 'package:acter/features/bookmarks/types.dart';
+import 'package:acter/features/bookmarks/util.dart';
+import 'package:acter/features/search/providers/quick_search_providers.dart';
 import 'package:acter/features/tasks/providers/notifiers.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
+
+//Search Value provider for task list
+final taskListSearchTermProvider = StateProvider<String>((ref) => '');
 
 //Single Task List Item based on the task list id
 final taskListProvider =
@@ -17,7 +24,12 @@ final allTasksListsProvider =
 
 final taskListsProvider =
     FutureProvider.family<List<String>, String?>((ref, spaceId) async {
-  final allTaskLists = await ref.watch(allTasksListsProvider.future);
+  final allTaskLists = await priotizeBookmarked(
+    ref,
+    BookmarkType.task_lists,
+    await ref.watch(allTasksListsProvider.future),
+    getId: (e) => e.eventIdStr(),
+  );
   if (spaceId == null) {
     return allTaskLists.map((e) => e.eventIdStr()).toList();
   } else {
@@ -28,23 +40,41 @@ final taskListsProvider =
   }
 });
 
-//Search any tasks list
-typedef TasksListSearchParams = ({String? spaceId, String searchText});
-
 final tasksListSearchProvider = FutureProvider.autoDispose
-    .family<List<String>, TasksListSearchParams>((ref, params) async {
-  final tasksList = await ref.watch(taskListsProvider(params.spaceId).future);
+    .family<List<String>, String?>((ref, spaceId) async {
+  final tasksList = await ref.watch(taskListsProvider(spaceId).future);
+  final searchTerm = ref.watch(taskListSearchTermProvider).trim().toLowerCase();
 
   //Return all task list if search text is empty
-  if (params.searchText.isEmpty) return tasksList;
-  final search = params.searchText.toLowerCase();
+  if (searchTerm.isEmpty) return tasksList;
 
   //Return all task list filter if search text is given
+  return filterTaskListData(ref, tasksList, searchTerm);
+});
+
+final taskListQuickSearchedProvider =
+    FutureProvider.autoDispose<List<String>>((ref) async {
+  final tasksList = await ref.watch(taskListsProvider(null).future);
+  final searchTerm = ref.watch(quickSearchValueProvider).trim().toLowerCase();
+
+  //Return all task list if search text is empty
+  if (searchTerm.isEmpty) return tasksList;
+
+  //Return all task list filter if search text is given
+  return filterTaskListData(ref, tasksList, searchTerm);
+});
+
+//Filter taskList with given search term
+Future<List<String>> filterTaskListData(
+  var ref,
+  List<String> tasksList,
+  String searchTerm,
+) async {
   List<String> filteredTaskList = [];
   for (final taskListId in tasksList) {
     //Check search param in task list
     final taskListItem = await ref.watch(taskListProvider(taskListId).future);
-    if (taskListItem.name().toLowerCase().contains(search)) {
+    if (taskListItem.name().toLowerCase().contains(searchTerm)) {
       filteredTaskList.add(taskListId);
       continue;
     }
@@ -56,11 +86,11 @@ final tasksListSearchProvider = FutureProvider.autoDispose
         taskItemProvider((taskListId: taskListId, taskId: openTaskItemId))
             .future,
       );
-      if (openTaskItem.title().toLowerCase().contains(search)) {
+      if (openTaskItem.title().toLowerCase().contains(searchTerm)) {
         filteredTaskList.add(taskListId);
         break;
       }
     }
   }
   return filteredTaskList;
-});
+}

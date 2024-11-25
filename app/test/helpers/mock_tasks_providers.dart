@@ -5,6 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 
+class SimpleReturningTasklists extends AsyncNotifier<List<TaskList>>
+    with Mock
+    implements AsyncAllTaskListsNotifier {
+  final List<TaskList> response;
+
+  SimpleReturningTasklists(this.response);
+
+  @override
+  Future<List<TaskList>> build() async => response;
+}
+
 class MockAsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>>
     with Mock
     implements AsyncAllTaskListsNotifier {
@@ -55,13 +66,27 @@ class MockTaskItemNotifier extends FamilyAsyncNotifier<Task, Task>
 class MockTaskDraft extends Mock implements TaskDraft {}
 
 class FakeTaskList extends Fake implements TaskList {
-  bool shouldFail = true;
+  bool shouldFail;
+
+  final String nameStr;
+  final String spaceId;
+  final String eventId;
+
+  FakeTaskList({
+    this.nameStr = 'Test',
+    this.spaceId = 'spaceId',
+    this.eventId = 'eventId',
+    this.shouldFail = true,
+  });
 
   @override
-  String name() => 'Test';
+  String eventIdStr() => eventId;
 
   @override
-  String spaceIdStr() => 'spaceId';
+  String name() => nameStr;
+
+  @override
+  String spaceIdStr() => spaceId;
 
   @override
   MsgContent? description() => null;

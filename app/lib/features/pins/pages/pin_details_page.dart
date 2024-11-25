@@ -8,6 +8,8 @@ import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/features/attachments/types.dart';
+import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/bookmarks/types.dart';
@@ -69,34 +71,34 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
 
   Widget _buildBodyUI() {
     final pinData = ref.watch(pinProvider(widget.pinId));
-    return pinData.when(
-      data: (pin) {
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              _buildPinHeaderUI(pin),
-              const SizedBox(height: 20),
-              AttachmentSectionWidget(manager: pin.attachments()),
-              FakeLinkAttachmentItem(pinId: pin.eventIdStr()),
-              const SizedBox(height: 20),
-              CommentsSectionWidget(manager: pin.comments()),
-            ],
+    final errored = pinData.asError;
+    if (errored != null) {
+      _log.severe('Error loading pin', errored.error, errored.stackTrace);
+      return ErrorPage(
+        background: _contentLoader(),
+        error: errored.error,
+        stack: errored.stackTrace,
+        onRetryTap: () {
+          ref.invalidate(pinProvider(widget.pinId));
+        },
+      );
+    }
+    final pin = pinData.valueOrNull;
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          pin == null ? _loadingPinHeaderUI() : _buildPinHeaderUI(pin),
+          const SizedBox(height: 20),
+          AttachmentSectionWidget(manager: pin?.asAttachmentsManagerProvider()),
+          FakeLinkAttachmentItem(pinId: widget.pinId),
+          const SizedBox(height: 20),
+          CommentsSectionWidget(
+            managerProvider: pin?.asCommentsManagerProvider(),
           ),
-        );
-      },
-      loading: _contentLoader,
-      error: (error, stack) {
-        _log.severe('Error loading pin', error, stack);
-        return ErrorPage(
-          background: _contentLoader(),
-          error: error,
-          stack: stack,
-          onRetryTap: () {
-            ref.invalidate(pinProvider(widget.pinId));
-          },
-        );
-      },
+        ],
+      ),
     );
   }
 
