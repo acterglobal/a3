@@ -72,7 +72,10 @@ class NewsSlideActions extends ConsumerWidget {
         ),
       );
     }
-    return PinListItemWidget(pinId: pinId);
+    return PinListItemWidget(
+      pinId: pinId,
+      showPinIndication: true,
+    );
   }
 
   Widget renderTaskListAction(
@@ -108,6 +111,7 @@ class NewsSlideActions extends ConsumerWidget {
     return TaskListItemCard(
       taskListId: taskListId,
       showOnlyTaskList: true,
+      showTaskListIndication: true,
     );
   }
 
