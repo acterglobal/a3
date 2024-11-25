@@ -17,11 +17,15 @@ class TasksListPage extends ConsumerStatefulWidget {
 
   final String? spaceId;
   final String? searchQuery;
+  final bool showOnlyTaskList;
+  final Function(String)? onSelectTaskListItem;
 
   const TasksListPage({
     super.key,
     this.spaceId,
     this.searchQuery,
+    this.showOnlyTaskList = false,
+    this.onSelectTaskListItem,
   });
 
   @override
@@ -54,42 +58,46 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
     final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(lang.tasks),
-          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
-        ],
-      ),
+      title: widget.onSelectTaskListItem != null
+          ? Text(L10n.of(context).selectTaskList)
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(lang.tasks),
+                if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
+              ],
+            ),
       actions: [
-        ValueListenableBuilder(
-          valueListenable: showCompletedTask,
-          builder: (context, value, child) {
-            return TextButton.icon(
-              onPressed: () => showCompletedTask.value = !value,
-              icon: Icon(
-                value
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
-                size: 18,
-              ),
-              label: Text(value ? lang.hideCompleted : lang.showCompleted),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-              ),
-            );
-          },
-        ),
-        AddButtonWithCanPermission(
-          key: TasksListPage.createNewTaskListKey,
-          spaceId: spaceId,
-          canString: 'CanPostTaskList',
-          onPressed: () => showCreateUpdateTaskListBottomSheet(
-            context,
-            initialSelectedSpace: spaceId,
+        if (widget.onSelectTaskListItem == null)
+          ValueListenableBuilder(
+            valueListenable: showCompletedTask,
+            builder: (context, value, child) {
+              return TextButton.icon(
+                onPressed: () => showCompletedTask.value = !value,
+                icon: Icon(
+                  value
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  size: 18,
+                ),
+                label: Text(value ? lang.hideCompleted : lang.showCompleted),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                ),
+              );
+            },
           ),
-        ),
+        if (widget.onSelectTaskListItem == null)
+          AddButtonWithCanPermission(
+            key: TasksListPage.createNewTaskListKey,
+            spaceId: spaceId,
+            canString: 'CanPostTaskList',
+            onPressed: () => showCreateUpdateTaskListBottomSheet(
+              context,
+              initialSelectedSpace: spaceId,
+            ),
+          ),
       ],
     );
   }
@@ -116,7 +124,9 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
               taskListProvider: tasksListSearchProvider(widget.spaceId),
               spaceId: widget.spaceId,
               shrinkWrap: false,
+              showOnlyTaskList: widget.showOnlyTaskList,
               showCompletedTask: showCompletedTask.value,
+              onSelectTaskListItem: widget.onSelectTaskListItem,
               emptyState: _taskListsEmptyState(),
             ),
           ),

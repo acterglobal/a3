@@ -19,6 +19,7 @@ class TaskListItemCard extends ConsumerWidget {
   final String taskListId;
   final bool showSpace;
   final bool showCompletedTask;
+  final bool showOnlyTaskList;
   final bool initiallyExpanded;
   final bool canExpand;
   final GestureTapCallback? onTitleTap;
@@ -28,6 +29,7 @@ class TaskListItemCard extends ConsumerWidget {
     required this.taskListId,
     this.showSpace = false,
     this.showCompletedTask = false,
+    this.showOnlyTaskList = false,
     this.initiallyExpanded = true,
     this.canExpand = true,
     this.onTitleTap,
@@ -58,6 +60,7 @@ class TaskListItemCard extends ConsumerWidget {
 
   Widget expandable(BuildContext context, WidgetRef ref, TaskList taskList) =>
       ExpansionTile(
+        trailing: showOnlyTaskList ? const SizedBox() : null,
         initiallyExpanded: initiallyExpanded,
         leading: ActerIconWidget(
           iconSize: 30,
@@ -74,12 +77,14 @@ class TaskListItemCard extends ConsumerWidget {
         childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
         title: title(context, taskList),
         subtitle: subtitle(ref, taskList),
-        children: [
-          TaskItemsListWidget(
-            taskList: taskList,
-            showCompletedTask: showCompletedTask,
-          ),
-        ],
+        children: showOnlyTaskList
+            ? []
+            : [
+                TaskItemsListWidget(
+                  taskList: taskList,
+                  showCompletedTask: showCompletedTask,
+                ),
+              ],
       );
 
   Widget simple(BuildContext context, WidgetRef ref, TaskList taskList) =>

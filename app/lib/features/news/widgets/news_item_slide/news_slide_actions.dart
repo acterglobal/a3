@@ -6,6 +6,8 @@ import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widg
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +36,7 @@ class NewsSlideActions extends ConsumerWidget {
       NewsReferencesType.calendarEvent =>
         renderCalendarEventAction(context, ref, id),
       NewsReferencesType.pin => renderPinAction(context, ref, id),
+      NewsReferencesType.taskList => renderTaskListAction(context, ref, id),
       NewsReferencesType.link =>
         renderLinkActionButton(context, ref, referenceDetails),
       _ => renderNotSupportedAction(context)
@@ -70,6 +73,42 @@ class NewsSlideActions extends ConsumerWidget {
       );
     }
     return PinListItemWidget(pinId: pinId);
+  }
+
+  Widget renderTaskListAction(
+    BuildContext context,
+    WidgetRef ref,
+    String taskListId,
+  ) {
+    final lang = L10n.of(context);
+    final taskListData = ref.watch(taskListProvider(taskListId));
+    final taskListError = taskListData.asError;
+    if (taskListError != null) {
+      _log.severe('Error loading task list', taskListError.error,
+          taskListError.stackTrace);
+      return Card(
+        child: ListTile(
+          leading: const Icon(Icons.list),
+          title: Text(lang.pinNoLongerAvailable),
+          subtitle: Text(
+            lang.pinDeletedOrFailedToLoad,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+          onTap: () async {
+            await ActerErrorDialog.show(
+              context: context,
+              error: taskListError.error,
+              stack: taskListError.stackTrace,
+              onRetryTap: () => ref.invalidate(pinProvider(taskListId)),
+            );
+          },
+        ),
+      );
+    }
+    return TaskListItemCard(
+      taskListId: taskListId,
+      showOnlyTaskList: true,
+    );
   }
 
   Widget renderCalendarEventAction(

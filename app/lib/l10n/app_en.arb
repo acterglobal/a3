@@ -2292,6 +2292,7 @@
   "sharePin": "Share Pin",
   "selectPin": "Select Pin",
   "selectEvent": "Select Event",
+  "shareTaskList": "Share TaskList",
   "addBoost": "Add Boost",
   "@addBoost": {},
   "addTaskList": "Add TaskList",
