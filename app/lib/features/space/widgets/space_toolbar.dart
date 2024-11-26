@@ -114,10 +114,6 @@ class SpaceToolbar extends ConsumerWidget {
             ),
             child: Text(lang.invite),
           ),
-        // disabled until we have the proper reading facilities ready, See #2373
-        // QrCodeButton(
-        //   qrCodeData: 'matrix:roomid/${spaceId.substring(1)}',
-        // ),
         IconButton(
           icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
           onPressed: () async {
