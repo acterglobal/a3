@@ -19,15 +19,19 @@ class ObjectNotSupported extends UriParseError {
 
 class ParsingFailed extends UriParseError {}
 class IncorrectHashError extends ParsingFailed {}
+class MissingUserError extends ParsingFailed {
+  final UriParseError result;
+  MissingUserError({required this.result});
+}
 
-UriParseResult parseUri(Uri uri) => switch (uri.scheme) {
-      'acter' => _parseUri(uri),
+UriParseResult parseActerUri(Uri uri) => switch (uri.scheme) {
+      'acter' => _parseActerUri(uri),
       'matrix' => _parseMatrixUri(uri),
       'https' || 'http' => _parseHttpsUri(uri),
       _ => throw SchemeNotSupported(scheme: uri.scheme),
     };
 
-UriParseResult _parseUri(Uri uri) {
+UriParseResult _parseActerUri(Uri uri) {
   final path = uri.pathSegments.first;
   return switch (path) {
     'o' => _parseActerEvent(uri),
@@ -55,7 +59,7 @@ UriParseResult _parseHttpsUri(Uri uri) {
 
   // put the query as the path
   final extractableUri = strippedUri.replace(path: strippedUri.fragment, fragment: null);
-  return _parseUri(extractableUri);
+  return _parseActerUri(extractableUri);
 }
 
 UriParseResult _parseSuperInvite(Uri uri) {

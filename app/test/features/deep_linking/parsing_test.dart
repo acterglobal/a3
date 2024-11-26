@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:acter/features/deep_linking/types.dart';
-import 'package:acter/features/deep_linking/utils.dart';
+import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -11,7 +11,7 @@ typedef UriMaker = Uri Function(String path, String? query);
 
 void acterObjectLinksTests(UriMaker makeUri) {
   test('calendarEvent', () async {
-    final result = parseUri(
+    final result = parseActerUri(
       makeUri('o/somewhere:example.org/calendarEvent/spaceObjectId', null),
     );
     expect(result.type, LinkType.spaceObject);
@@ -23,7 +23,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
   test('pin', () async {
     final sourceUri =
         makeUri('o/room:acter.global/pin/pinId', 'via=elsewhere.ca');
-    final result = parseUri(sourceUri);
+    final result = parseActerUri(sourceUri);
     expect(result.type, LinkType.spaceObject);
     expect(result.objectPath!.objectType, ObjectType.pin);
     expect(result.target, '\$pinId');
@@ -32,7 +32,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
   });
   test('boost', () async {
     final result =
-        parseUri(makeUri('o/another:acter.global/boost/boostId', null));
+        parseActerUri(makeUri('o/another:acter.global/boost/boostId', null));
     expect(result.type, LinkType.spaceObject);
     expect(result.objectPath!.objectType, ObjectType.boost);
     expect(result.target, '\$boostId');
@@ -40,7 +40,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
     expect(result.via, []);
   });
   test('taskList', () async {
-    final result = parseUri(
+    final result = parseActerUri(
       makeUri(
         'o/room:acter.global/taskList/someEvent', 'via=acter.global&via=example.org',
       ),
@@ -53,7 +53,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
   });
 
   test('task', () async {
-    final result = parseUri(
+    final result = parseActerUri(
       makeUri(
         'o/room:acter.global/taskList/listId/task/taskId', 'via=acter.global&via=example.org',
       ),
@@ -70,7 +70,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
   });
 
   test('comment on task', () async {
-    final result = parseUri(
+    final result = parseActerUri(
       makeUri('o/room:acter.global/taskList/someEvent/task/taskId/comment/commentId', 'via=acter.global&via=example.org',
       ),
     );
@@ -90,7 +90,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
 
 void acterInviteLinkTests(UriMaker makeUri) {
   test('simple invite', () async {
-    final result = parseUri(
+    final result = parseActerUri(
       makeUri('i/acter.global/inviteCode', null),
     );
     expect(result.type, LinkType.superInvite);
@@ -100,7 +100,7 @@ void acterInviteLinkTests(UriMaker makeUri) {
     expect(result.preview.roomDisplayName, null);
   });
   test('with preview', () async {
-    final result = parseUri(
+    final result = parseActerUri(
       makeUri(
         'i/acter.global/inviteCode', 'roomDisplayName=Room+Name&userId=ben:acter.global&userDisplayName=Ben+From+Acter',
       ),
@@ -118,7 +118,7 @@ void acterInviteLinkTests(UriMaker makeUri) {
 
 void acterObjectPreviewTests(UriMaker makeUri) {
   test('calendarEvent', () async {
-    final result = parseUri(
+    final result = parseActerUri(
       makeUri('o/somewhere:example.org/calendarEvent/spaceObjectId', 'title=Our+Awesome+Event&startUtc=12334567&participants=3',
       ),
     );
@@ -133,7 +133,7 @@ void acterObjectPreviewTests(UriMaker makeUri) {
   });
 
   test('comment on task', () async {
-    final result = parseUri(
+    final result = parseActerUri(
       makeUri('o/room:acter.global/taskList/someEvent/task/taskId/comment/commentId', 'via=acter.global&via=example.org&roomDisplayName=someRoom+Name',
       ),
     );
@@ -153,7 +153,7 @@ void acterObjectPreviewTests(UriMaker makeUri) {
 
 void newSpecLinksTests(UriMaker makeUri) {
   test('roomAlias', () async {
-    final result = parseUri(makeUri('r/somewhere:example.org', null));
+    final result = parseActerUri(makeUri('r/somewhere:example.org', null));
     expect(result.type, LinkType.roomAlias);
     expect(result.target, '#somewhere:example.org');
     expect(result.via, []);
@@ -161,19 +161,19 @@ void newSpecLinksTests(UriMaker makeUri) {
   test('roomId', () async {
     final sourceUri =
         makeUri('roomid/room:acter.global', 'via=elsewhere.ca');
-    final result = parseUri(sourceUri);
+    final result = parseActerUri(sourceUri);
     expect(result.type, LinkType.roomId);
     expect(result.target, '!room:acter.global');
     expect(result.via, ['elsewhere.ca']);
   });
   test('userId', () async {
     final result =
-        parseUri(makeUri('u/alice:acter.global', 'action=chat'));
+        parseActerUri(makeUri('u/alice:acter.global', 'action=chat'));
     expect(result.type, LinkType.userId);
     expect(result.target, '@alice:acter.global');
   });
   test('eventId', () async {
-    final result = parseUri(
+    final result = parseActerUri(
       makeUri(
       'roomid/room:acter.global/e/someEvent', 'via=acter.global&via=example.org',
       ),
@@ -237,7 +237,7 @@ void main() {
   group('Testing legacy https://matrix.to/-links', () {
     test('roomAlias', () async {
       final result =
-          parseUri(Uri.parse('https://matrix.to/#/%23somewhere%3Aexample.org'));
+          parseActerUri(Uri.parse('https://matrix.to/#/%23somewhere%3Aexample.org'));
       expect(result.type, LinkType.roomAlias);
       expect(result.target, '#somewhere:example.org');
       expect(result.via, []);
@@ -246,19 +246,19 @@ void main() {
       final sourceUri = Uri.parse(
         'https://matrix.to/#/!room%3Aacter.global?via=elsewhere.ca',
       );
-      final result = parseUri(sourceUri);
+      final result = parseActerUri(sourceUri);
       expect(result.type, LinkType.roomId);
       expect(result.target, '!room:acter.global');
       expect(result.via, ['elsewhere.ca']);
     });
     test('userId', () async {
       final result =
-          parseUri(Uri.parse('https://matrix.to/#/%40alice%3Aacter.global'));
+          parseActerUri(Uri.parse('https://matrix.to/#/%40alice%3Aacter.global'));
       expect(result.type, LinkType.userId);
       expect(result.target, '@alice:acter.global');
     });
     test('eventId', () async {
-      final result = parseUri(
+      final result = parseActerUri(
         Uri.parse(
           'https://matrix.to/#/!room%3Aacter.global/%24someEvent%3Aexample.org?via=acter.global&via=example.org',
         ),
