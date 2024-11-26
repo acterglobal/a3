@@ -1,8 +1,4 @@
 enum Routes {
-  // primary & quickjump actions
-  // actionAddTask('/actions/addTask'),
-  actionCreateSuperInvite('/actions/createSuperInvite'),
-
   // pre
   intro('/intro'),
   introProfile('/introProfile'),
@@ -106,8 +102,10 @@ enum Routes {
 
   // -- super invites
   settingsSuperInvites('/settings/super_invites'),
+  actionCreateSuperInvite('/actions/createSuperInvite'),
   // -- utils
   bugReport('/bug-report'),
+  scanQrCode('/scan-qr-code'),
   // -- coming in from a push notification
   forward('/forward'),
   // -- fatal failure

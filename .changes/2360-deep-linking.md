@@ -1,0 +1,2 @@
+- [New] You can now share profiles and super invites via QR-code
+- [New] QR-Code reader for shared profiles and invites in the quick actions menu
