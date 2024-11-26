@@ -68,37 +68,38 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
                 if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
               ],
             ),
-      actions: [
-        if (widget.onSelectTaskListItem == null)
-          ValueListenableBuilder(
-            valueListenable: showCompletedTask,
-            builder: (context, value, child) {
-              return TextButton.icon(
-                onPressed: () => showCompletedTask.value = !value,
-                icon: Icon(
-                  value
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  size: 18,
+      actions: (widget.onSelectTaskListItem != null)
+          ? []
+          : [
+              ValueListenableBuilder(
+                valueListenable: showCompletedTask,
+                builder: (context, value, child) {
+                  return TextButton.icon(
+                    onPressed: () => showCompletedTask.value = !value,
+                    icon: Icon(
+                      value
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      size: 18,
+                    ),
+                    label:
+                        Text(value ? lang.hideCompleted : lang.showCompleted),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                    ),
+                  );
+                },
+              ),
+              AddButtonWithCanPermission(
+                key: TasksListPage.createNewTaskListKey,
+                spaceId: spaceId,
+                canString: 'CanPostTaskList',
+                onPressed: () => showCreateUpdateTaskListBottomSheet(
+                  context,
+                  initialSelectedSpace: spaceId,
                 ),
-                label: Text(value ? lang.hideCompleted : lang.showCompleted),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                ),
-              );
-            },
-          ),
-        if (widget.onSelectTaskListItem == null)
-          AddButtonWithCanPermission(
-            key: TasksListPage.createNewTaskListKey,
-            spaceId: spaceId,
-            canString: 'CanPostTaskList',
-            onPressed: () => showCreateUpdateTaskListBottomSheet(
-              context,
-              initialSelectedSpace: spaceId,
-            ),
-          ),
-      ],
+              ),
+            ],
     );
   }
 
