@@ -185,10 +185,11 @@ void newSpecLinksTests(UriMaker makeUri) {
   });
 }
 
-UriMaker makeUriMakerForPublicPrefix(String uriPrefix) {
+UriMaker makeUriMakerForPublicPrefix(String uriPrefix, {String? userId = 'test:example.org'}) {
   Uri makeDomainLink(String path, String? query) {
-    final hash = sha1.convert(utf8.encode('$uriPrefix?$query#$path')).toString();
-    return Uri.parse('$uriPrefix/$hash?$query#$path');
+    final finalQuery = query != null ? ( userId != null ? '?$query&userId=$userId' : '?$query') : userId != null ? '?userId=$userId' : null;
+    final hash = sha1.convert(utf8.encode('$uriPrefix$finalQuery#$path')).toString();
+    return Uri.parse('$uriPrefix/$hash$finalQuery#$path');
   }
   return makeDomainLink;
 }
@@ -232,6 +233,28 @@ void main() {
     acterObjectPreviewTests(makeUriMakerForPublicPrefix('https://app.acter.global/p/')),
   );
 
+  group('Testing broken https://app.acter.global/ ', () {
+    test('faulty hash fails', () async {
+      expect(() => parseActerUri(
+          Uri.parse('http://acter.global/p/faultyHash?via=acter.global&via=example.org#roomid/room:acter.global/e/someEvent'),
+        ),
+        throwsA(TypeMatcher<IncorrectHashError>()),
+      );
+    });
+
+    test('missing user fails', () async {
+      final makeUri = makeUriMakerForPublicPrefix('https://app.acter.global/', userId: null);
+
+      expect(() => parseActerUri(
+          makeUri(
+          'roomid/room:acter.global/e/someEvent', 'via=acter.global&via=example.org',
+          ),),
+        throwsA(TypeMatcher<MissingUserError>()),
+      );
+    });
+
+
+  });
 
   // legacy matrix.to-links (we are not creating anymore but can still read)
   group('Testing legacy https://matrix.to/-links', () {

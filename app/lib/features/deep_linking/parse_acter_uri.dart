@@ -20,7 +20,7 @@ class ObjectNotSupported extends UriParseError {
 class ParsingFailed extends UriParseError {}
 class IncorrectHashError extends ParsingFailed {}
 class MissingUserError extends ParsingFailed {
-  final UriParseError result;
+  final UriParseResult result;
   MissingUserError({required this.result});
 }
 
@@ -59,7 +59,11 @@ UriParseResult _parseHttpsUri(Uri uri) {
 
   // put the query as the path
   final extractableUri = strippedUri.replace(path: strippedUri.fragment, fragment: null);
-  return _parseActerUri(extractableUri);
+  final result = _parseActerUri(extractableUri);
+  if (result.preview.userId == null || result.preview.userId?.isEmpty == true) {
+    throw MissingUserError(result: result);
+  }
+  return result;
 }
 
 UriParseResult _parseSuperInvite(Uri uri) {
