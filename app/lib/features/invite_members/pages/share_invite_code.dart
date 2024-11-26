@@ -126,7 +126,7 @@ class ShareInviteCode extends ConsumerWidget {
             if (context.mounted) {
               showQrCode(
                 context,
-                'acter://acter.global/i/$inviteCode?roomDisplayName=$displayName&userId=$userId&userDisplayName=$userName',
+                'acter:i/acter.global/$inviteCode?roomDisplayName=$displayName&userId=$userId&userDisplayName=$userName',
                 title: Text(lang.shareInviteWithCode(inviteCode)),
               );
             }

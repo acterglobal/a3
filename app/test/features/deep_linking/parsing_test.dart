@@ -1,15 +1,18 @@
+import 'dart:convert';
+
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/deep_linking/utils.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-typedef UriMaker = Uri Function(String);
+typedef UriMaker = Uri Function(String path, String? query);
 
 // re-usable test cases
 
 void acterObjectLinksTests(UriMaker makeUri) {
   test('calendarEvent', () async {
     final result = parseUri(
-      makeUri('o/somewhere:example.org/calendarEvent/spaceObjectId'),
+      makeUri('o/somewhere:example.org/calendarEvent/spaceObjectId', null),
     );
     expect(result.type, LinkType.spaceObject);
     expect(result.objectPath!.objectType, ObjectType.calendarEvent);
@@ -19,7 +22,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
   });
   test('pin', () async {
     final sourceUri =
-        makeUri('o/room:acter.global/pin/pinId?via=elsewhere.ca');
+        makeUri('o/room:acter.global/pin/pinId', 'via=elsewhere.ca');
     final result = parseUri(sourceUri);
     expect(result.type, LinkType.spaceObject);
     expect(result.objectPath!.objectType, ObjectType.pin);
@@ -29,7 +32,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
   });
   test('boost', () async {
     final result =
-        parseUri(makeUri('o/another:acter.global/boost/boostId'));
+        parseUri(makeUri('o/another:acter.global/boost/boostId', null));
     expect(result.type, LinkType.spaceObject);
     expect(result.objectPath!.objectType, ObjectType.boost);
     expect(result.target, '\$boostId');
@@ -39,7 +42,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
   test('taskList', () async {
     final result = parseUri(
       makeUri(
-        'o/room:acter.global/taskList/someEvent?via=acter.global&via=example.org',
+        'o/room:acter.global/taskList/someEvent', 'via=acter.global&via=example.org',
       ),
     );
     expect(result.type, LinkType.spaceObject);
@@ -52,7 +55,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
   test('task', () async {
     final result = parseUri(
       makeUri(
-        'o/room:acter.global/taskList/listId/task/taskId?via=acter.global&via=example.org',
+        'o/room:acter.global/taskList/listId/task/taskId', 'via=acter.global&via=example.org',
       ),
     );
     expect(result.type, LinkType.spaceObject);
@@ -68,7 +71,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
 
   test('comment on task', () async {
     final result = parseUri(
-      makeUri('o/room:acter.global/taskList/someEvent/task/taskId/comment/commentId?via=acter.global&via=example.org',
+      makeUri('o/room:acter.global/taskList/someEvent/task/taskId/comment/commentId', 'via=acter.global&via=example.org',
       ),
     );
     expect(result.type, LinkType.spaceObject);
@@ -88,7 +91,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
 void acterInviteLinkTests(UriMaker makeUri) {
   test('simple invite', () async {
     final result = parseUri(
-      makeUri('acter.global/i/inviteCode'),
+      makeUri('i/acter.global/inviteCode', null),
     );
     expect(result.type, LinkType.superInvite);
     expect(result.target, 'inviteCode');
@@ -99,7 +102,7 @@ void acterInviteLinkTests(UriMaker makeUri) {
   test('with preview', () async {
     final result = parseUri(
       makeUri(
-        'acter.global/i/inviteCode?roomDisplayName=Room+Name&userId=ben:acter.global&userDisplayName=Ben+From+Acter',
+        'i/acter.global/inviteCode', 'roomDisplayName=Room+Name&userId=ben:acter.global&userDisplayName=Ben+From+Acter',
       ),
     );
     expect(result.type, LinkType.superInvite);
@@ -116,7 +119,7 @@ void acterInviteLinkTests(UriMaker makeUri) {
 void acterObjectPreviewTests(UriMaker makeUri) {
   test('calendarEvent', () async {
     final result = parseUri(
-      makeUri('o/somewhere:example.org/calendarEvent/spaceObjectId?title=Our+Awesome+Event&startUtc=12334567&participants=3',
+      makeUri('o/somewhere:example.org/calendarEvent/spaceObjectId', 'title=Our+Awesome+Event&startUtc=12334567&participants=3',
       ),
     );
     expect(result.type, LinkType.spaceObject);
@@ -131,7 +134,7 @@ void acterObjectPreviewTests(UriMaker makeUri) {
 
   test('comment on task', () async {
     final result = parseUri(
-      makeUri('o/room:acter.global/taskList/someEvent/task/taskId/comment/commentId?via=acter.global&via=example.org&roomDisplayName=someRoom+Name',
+      makeUri('o/room:acter.global/taskList/someEvent/task/taskId/comment/commentId', 'via=acter.global&via=example.org&roomDisplayName=someRoom+Name',
       ),
     );
     expect(result.type, LinkType.spaceObject);
@@ -150,14 +153,14 @@ void acterObjectPreviewTests(UriMaker makeUri) {
 
 void newSpecLinksTests(UriMaker makeUri) {
   test('roomAlias', () async {
-    final result = parseUri(makeUri('r/somewhere:example.org'));
+    final result = parseUri(makeUri('r/somewhere:example.org', null));
     expect(result.type, LinkType.roomAlias);
     expect(result.target, '#somewhere:example.org');
     expect(result.via, []);
   });
   test('roomId', () async {
     final sourceUri =
-        makeUri('roomid/room:acter.global?via=elsewhere.ca');
+        makeUri('roomid/room:acter.global', 'via=elsewhere.ca');
     final result = parseUri(sourceUri);
     expect(result.type, LinkType.roomId);
     expect(result.target, '!room:acter.global');
@@ -165,14 +168,14 @@ void newSpecLinksTests(UriMaker makeUri) {
   });
   test('userId', () async {
     final result =
-        parseUri(makeUri('u/alice:acter.global?action=chat'));
+        parseUri(makeUri('u/alice:acter.global', 'action=chat'));
     expect(result.type, LinkType.userId);
     expect(result.target, '@alice:acter.global');
   });
   test('eventId', () async {
     final result = parseUri(
       makeUri(
-      'roomid/room:acter.global/e/someEvent?via=acter.global&via=example.org',
+      'roomid/room:acter.global/e/someEvent', 'via=acter.global&via=example.org',
       ),
     );
     expect(result.type, LinkType.chatEvent);
@@ -182,18 +185,52 @@ void newSpecLinksTests(UriMaker makeUri) {
   });
 }
 
+UriMaker makeUriMakerForPublicPrefix(String uriPrefix) {
+  Uri makeDomainLink(String path, String? query) {
+    final hash = sha1.convert(utf8.encode('$uriPrefix?$query#$path')).toString();
+    return Uri.parse('$uriPrefix/$hash?$query#$path');
+  }
+  return makeDomainLink;
+}
+
 // --- Actual tests start
 
 void main() {
-  group('Testing matrix:-links', () => newSpecLinksTests((u) => Uri.parse('matrix:$u')));
+  group('Testing matrix:-links', () =>
+    newSpecLinksTests((u, q) => Uri.parse('matrix:$u?$q')),
+  );
 
-  group('Testing fallback acter:-links', () => newSpecLinksTests((u) => Uri.parse('acter:$u')));
+  group('Testing fallback acter:-links', () =>
+    newSpecLinksTests((u, q) => Uri.parse('acter:$u?$q')),
+  );
 
-  group('Testing acter: object-links', () => acterObjectLinksTests((u) => Uri.parse('acter:$u')));
+  group('Testing acter: object-links', () =>
+    acterObjectLinksTests((u, q) => Uri.parse('acter:$u?$q')),
+  );
 
-  group('Testing acter:// invite-links',  () => acterInviteLinkTests((u) => Uri.parse('acter://$u')));
+  group('Testing acter: invite-links',  () =>
+    acterInviteLinkTests((u, q) => Uri.parse('acter:$u?$q')),
+  );
 
-  group('Testing acter: preview data', () => acterObjectPreviewTests((u) => Uri.parse('acter:$u')));
+  group('Testing acter: preview data', () =>
+    acterObjectPreviewTests((u, q) => Uri.parse('acter:$u?$q')),
+  );
+
+  group('Testing fallback https://app.acter.global/:-links', () =>
+   newSpecLinksTests(makeUriMakerForPublicPrefix('https://app.acter.global/p/')),
+  );
+
+  group('Testing https://app.acter.global/ object-links', () =>
+    acterObjectLinksTests(makeUriMakerForPublicPrefix('https://app.acter.global/p/')),
+  );
+
+  group('Testing https://app.acter.global/ invite-links',  () =>
+    acterInviteLinkTests(makeUriMakerForPublicPrefix('https://app.acter.global/p/')),
+  );
+
+  group('Testing https://app.acter.global/ preview data', () =>
+    acterObjectPreviewTests(makeUriMakerForPublicPrefix('https://app.acter.global/p/')),
+  );
 
 
   // legacy matrix.to-links (we are not creating anymore but can still read)
