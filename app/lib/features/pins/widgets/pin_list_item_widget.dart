@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,11 +19,13 @@ final _log = Logger('a3::pins::list_item');
 class PinListItemWidget extends ConsumerWidget {
   final String pinId;
   final bool showSpace;
+  final bool showPinIndication;
   final Function(String)? onTaPinItem;
 
   const PinListItemWidget({
     required this.pinId,
     this.showSpace = false,
+    this.showPinIndication = false,
     this.onTaPinItem,
     super.key,
   });
@@ -64,7 +67,26 @@ class PinListItemWidget extends ConsumerWidget {
           ),
           icon: ActerIcon.iconForPin(pin.display()?.iconStr()),
         ),
-        title: Text(pin.title(), overflow: TextOverflow.ellipsis),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(pin.title(), overflow: TextOverflow.ellipsis),
+            if (showPinIndication)
+              Row(
+                children: [
+                  Icon(Atlas.pin, size: 16),
+                  SizedBox(width: 6),
+                  Text(
+                    L10n.of(context).pin,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                ],
+              ),
+          ],
+        ),
         subtitle: showSpace
             ? SpaceNameWidget(spaceId: pin.roomIdStr(), isShowBrackets: false)
             : null,
