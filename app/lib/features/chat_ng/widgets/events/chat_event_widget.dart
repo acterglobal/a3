@@ -1,4 +1,6 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,6 +26,8 @@ class ChatEventWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final msg =
         message ?? ref.watch(chatRoomMessageProvider((roomId, eventId)));
+    final showAvatar = ref.watch(shouldShowAvatarProvider((roomId, eventId)));
+
     if (msg == null) {
       _log.severe('Msg not found $roomId $eventId');
       return const SizedBox.shrink();
@@ -40,7 +44,7 @@ class ChatEventWidget extends ConsumerWidget {
       return renderVirtual(msg, virtual);
     }
 
-    return renderEvent(msg, inner);
+    return renderEvent(showAvatar: showAvatar, msg: msg, item: inner, ref: ref);
   }
 
   Widget renderVirtual(RoomMessage msg, RoomVirtualItem virtual) {
@@ -48,11 +52,25 @@ class ChatEventWidget extends ConsumerWidget {
     return const SizedBox.shrink();
   }
 
-  Widget renderEvent(RoomMessage msg, RoomEventItem item) {
+  Widget renderEvent({
+    required bool showAvatar,
+    required RoomMessage msg,
+    required RoomEventItem item,
+    required WidgetRef ref,
+  }) {
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider(
+        (
+          roomId: roomId,
+          userId: item.sender(),
+        ),
+      ),
+    );
+    final options = AvatarOptions.DM(avatarInfo, size: 18);
     // TODO: render a regular timeline event
     return Wrap(
       children: [
-        Text(item.sender()),
+        showAvatar ? ActerAvatar(options: options) : const SizedBox(),
         const Text(':'),
         Text(item.msgContent()?.body() ?? 'no body'),
       ],

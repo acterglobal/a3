@@ -49,3 +49,30 @@ final renderableChatMessagesProvider =
     return _supportedTypes.contains(msg.eventItem()?.eventType());
   }).toList();
 });
+
+// Provider to check if we should show avatar by comparing with the next message
+final shouldShowAvatarProvider = Provider.family<bool, RoomMsgId>(
+  (ref, roomMsgId) {
+    final roomId = roomMsgId.$1;
+    final eventId = roomMsgId.$2;
+    final messages = ref.watch(renderableChatMessagesProvider(roomId));
+    final currentIndex = messages.indexOf(eventId);
+
+    // Always show avatar for the first message (last in the list)
+    if (currentIndex == messages.length - 1) return true;
+
+    // Get current and next message
+    final currentMsg = ref.watch(chatRoomMessageProvider(roomMsgId));
+    final nextMsg = ref.watch(
+      chatRoomMessageProvider((roomId, messages[currentIndex + 1])),
+    );
+
+    if (currentMsg == null || nextMsg == null) return true;
+
+    final currentSender = currentMsg.eventItem()?.sender();
+    final nextSender = nextMsg.eventItem()?.sender();
+
+    // Show avatar if next message is from a different sender
+    return currentSender != nextSender;
+  },
+);
