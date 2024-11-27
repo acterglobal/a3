@@ -14,10 +14,12 @@ class TaskListWidget extends ConsumerWidget {
   final ProviderBase<AsyncValue<List<String>>> taskListProvider;
   final String? spaceId;
   final int? limit;
+  final bool showOnlyTaskList;
   final bool initiallyExpanded;
   final bool showCompletedTask;
   final bool showSectionHeader;
   final VoidCallback? onClickSectionHeader;
+  final Function(String)? onSelectTaskListItem;
   final bool shrinkWrap;
   final Widget emptyState;
 
@@ -26,10 +28,12 @@ class TaskListWidget extends ConsumerWidget {
     required this.taskListProvider,
     this.limit,
     this.spaceId,
+    this.showOnlyTaskList = false,
     this.initiallyExpanded = true,
     this.showCompletedTask = false,
     this.showSectionHeader = false,
     this.onClickSectionHeader,
+    this.onSelectTaskListItem,
     this.shrinkWrap = true,
     this.emptyState = const SizedBox.shrink(),
   });
@@ -92,7 +96,11 @@ class TaskListWidget extends ConsumerWidget {
         return TaskListItemCard(
           taskListId: taskList[index],
           showCompletedTask: showCompletedTask,
+          showOnlyTaskList: showOnlyTaskList,
           initiallyExpanded: initiallyExpanded,
+          onTitleTap: () => onSelectTaskListItem != null
+              ? onSelectTaskListItem!(taskList[index])
+              : null,
           showSpace: spaceId == null,
         );
       },

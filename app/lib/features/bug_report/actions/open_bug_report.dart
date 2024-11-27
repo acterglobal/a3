@@ -1,4 +1,4 @@
-import 'package:acter/config/app_shell.dart';
+import 'package:acter/features/main/app_shell.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:dart_date/dart_date.dart';

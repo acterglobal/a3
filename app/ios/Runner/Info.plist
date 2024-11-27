@@ -64,5 +64,7 @@
     <array>
         <string>whatsapp</string>
     </array>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 </dict>
 </plist>

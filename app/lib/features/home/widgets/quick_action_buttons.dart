@@ -1,7 +1,13 @@
+import 'dart:io';
+
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/action_button_widget.dart';
+import 'package:acter/config/env.g.dart';
+import 'package:acter/features/bug_report/actions/open_bug_report.dart';
+import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter/features/tasks/actions/create_task.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -9,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class QuickActionButtons extends ConsumerWidget {
   const QuickActionButtons({super.key});
@@ -28,7 +36,40 @@ class QuickActionButtons extends ConsumerWidget {
                 ? quickActionWhenHasSpaces(context, ref)
                 : quickActionWhenNoSpaces(context, ref),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(PhosphorIconsThin.question),
+                onPressed: () {
+                  ref.read(quickActionVisibilityProvider.notifier).state =
+                      false;
+                  launchUrl(Uri.parse(Env.helpCenterUrl));
+                },
+              ),
+              if (isBugReportingEnabled)
+                ActerInlineTextButton(
+                  onPressed: () {
+                    ref.read(quickActionVisibilityProvider.notifier).state =
+                        false;
+                    openBugReport(context);
+                  },
+                  child: const Text('Bug Report'),
+                ),
+              if (Platform.isAndroid ||
+                  Platform.isIOS) // only accessible on mobile
+                IconButton(
+                  onPressed: () {
+                    ref.read(quickActionVisibilityProvider.notifier).state =
+                        false;
+                    context.pushNamed(Routes.scanQrCode.name);
+                  },
+                  icon: const Icon(PhosphorIconsThin.qrCode),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
         ],
       ),
     );

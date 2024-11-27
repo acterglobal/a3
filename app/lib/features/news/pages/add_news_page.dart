@@ -213,6 +213,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               final notifier = ref.read(newsStateProvider.notifier);
               await notifier.selectPinToShare(buildContext);
             },
+            onShareTaskListSelected: () async {
+              Navigator.pop(context);
+              final notifier = ref.read(newsStateProvider.notifier);
+              await notifier.selectTaskListToShare(buildContext);
+            },
           ),
         );
       },

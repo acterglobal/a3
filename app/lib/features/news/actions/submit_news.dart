@@ -203,6 +203,13 @@ ObjRef getSlideReference(ActerSdk sdk, NewsReferencesModel refModel) {
           null,
         )
         .build(),
+    NewsReferencesType.taskList => sdk.api
+        .newTaskListRefBuilder(
+          refModel.id.expect('Referenced TaskList misses id'),
+          null,
+          null,
+        )
+        .build(),
     NewsReferencesType.link => sdk.api
         .newLinkRefBuilder(
           refModel.title.expect('Referenced link misses title'),
