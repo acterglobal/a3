@@ -63,7 +63,6 @@ class TaskListItemCard extends ConsumerWidget {
 
   Widget expandable(BuildContext context, WidgetRef ref, TaskList taskList) =>
       ExpansionTile(
-        trailing: showOnlyTaskList ? const SizedBox() : null,
         initiallyExpanded: initiallyExpanded,
         leading: ActerIconWidget(
           iconSize: 30,

@@ -101,6 +101,7 @@ class SelectedActionButton extends ConsumerWidget {
               width: 300,
               child: TaskListItemCard(
                 showOnlyTaskList: true,
+                canExpand: false,
                 showTaskListIndication: true,
                 taskListId: taskList.eventIdStr(),
                 onTitleTap: () async {

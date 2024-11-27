@@ -114,6 +114,7 @@ class NewsSlideActions extends ConsumerWidget {
     return TaskListItemCard(
       taskListId: taskListId,
       showOnlyTaskList: true,
+      canExpand: false,
       showTaskListIndication: true,
     );
   }
