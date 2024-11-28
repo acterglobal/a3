@@ -2297,6 +2297,13 @@
   "@addTaskList": {},
   "attachedTo": "Attached To",
   "task": "Task",
+  "shareTo": "Share To",
+  "signal": "Signal",
+  "whatsApp": "WhatsApp",
+  "telegram": "Telegram",
+  "copy": "copy",
+  "copyLink": "Copy Link",
+  "qr": "QR",
   "addComment": "Add Comment",
   "@addComment": {}
 }
