@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class AttachOptions extends StatelessWidget {
   final String data;
+  final String? sectionTitle;
   final bool isShowBoostOption;
   final bool isShowPinOption;
   final bool isShowEventOption;
@@ -16,6 +17,7 @@ class AttachOptions extends StatelessWidget {
   const AttachOptions({
     super.key,
     required this.data,
+    this.sectionTitle,
     this.isShowBoostOption = true,
     this.isShowPinOption = true,
     this.isShowEventOption = true,
@@ -34,7 +36,7 @@ class AttachOptions extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          lang.attachedTo,
+          sectionTitle ?? lang.attachedTo,
           textAlign: TextAlign.start,
           style: Theme.of(context).textTheme.labelLarge,
         ),

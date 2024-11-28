@@ -4,7 +4,9 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ExternalShareOptions extends StatelessWidget {
   final String data;
+  final String? sectionTitle;
   final bool isShowCopyLinkOption;
+  final bool isShowQrOption;
   final bool isShowSignalOption;
   final bool isShowWhatsAppOption;
   final bool isShowTelegramOption;
@@ -13,7 +15,9 @@ class ExternalShareOptions extends StatelessWidget {
   const ExternalShareOptions({
     super.key,
     required this.data,
+    this.sectionTitle,
     this.isShowCopyLinkOption = true,
+    this.isShowQrOption = true,
     this.isShowSignalOption = true,
     this.isShowWhatsAppOption = true,
     this.isShowTelegramOption = true,
@@ -29,7 +33,7 @@ class ExternalShareOptions extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          lang.shareTo,
+          sectionTitle ?? lang.shareTo,
           textAlign: TextAlign.start,
           style: Theme.of(context).textTheme.labelLarge,
         ),
@@ -39,6 +43,13 @@ class ExternalShareOptions extends StatelessWidget {
           child: Row(
             children: [
               if (isShowCopyLinkOption)
+                shareToItemUI(
+                  name: lang.qr,
+                  iconData: PhosphorIcons.qrCode(),
+                  color: Colors.grey.shade600,
+                  onTap: () {},
+                ),
+              if (isShowQrOption)
                 shareToItemUI(
                   name: lang.copyLink,
                   iconData: PhosphorIcons.link(),
