@@ -32,6 +32,7 @@ on:
           - linux
           - windows-exe
           - windows-msix
+          - ios,macos
       custom_title:
         description: 'You want a custom title for the release?'
         required: false
