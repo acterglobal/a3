@@ -5,8 +5,25 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class AttachOptions extends StatelessWidget {
   final String data;
+  final bool isShowBoostOption;
+  final bool isShowPinOption;
+  final bool isShowEventOption;
+  final bool isShowTaskListOption;
+  final bool isShowTaskOption;
+  final bool isShowSpaceOption;
+  final bool isShowChatOption;
 
-  const AttachOptions({super.key, required this.data});
+  const AttachOptions({
+    super.key,
+    required this.data,
+    this.isShowBoostOption = true,
+    this.isShowPinOption = true,
+    this.isShowEventOption = true,
+    this.isShowTaskListOption = true,
+    this.isShowTaskOption = true,
+    this.isShowSpaceOption = true,
+    this.isShowChatOption = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,48 +41,55 @@ class AttachOptions extends StatelessWidget {
         SizedBox(height: 12),
         Wrap(
           children: [
-            attachToItemUI(
-              name: lang.boost,
-              iconData: Atlas.megaphone_thin,
-              color: boastFeatureColor,
-              onTap: () {},
-            ),
-            attachToItemUI(
-              name: lang.pin,
-              iconData: Atlas.pin,
-              color: pinFeatureColor,
-              onTap: () {},
-            ),
-            attachToItemUI(
-              name: lang.event,
-              iconData: Atlas.calendar,
-              color: eventFeatureColor,
-              onTap: () {},
-            ),
-            attachToItemUI(
-              name: lang.taskList,
-              iconData: Atlas.list,
-              color: taskFeatureColor,
-              onTap: () {},
-            ),
-            attachToItemUI(
-              name: lang.tasks,
-              iconData: Atlas.list,
-              color: taskFeatureColor,
-              onTap: () {},
-            ),
-            attachToItemUI(
-              name: lang.space,
-              iconData: Atlas.group_people_arrow_up,
-              color: Colors.grey,
-              onTap: () {},
-            ),
-            attachToItemUI(
-              name: lang.chat,
-              iconData: Atlas.chats,
-              color: Colors.brown,
-              onTap: () {},
-            ),
+            if (isShowBoostOption)
+              attachToItemUI(
+                name: lang.boost,
+                iconData: Atlas.megaphone_thin,
+                color: boastFeatureColor,
+                onTap: () {},
+              ),
+            if (isShowPinOption)
+              attachToItemUI(
+                name: lang.pin,
+                iconData: Atlas.pin,
+                color: pinFeatureColor,
+                onTap: () {},
+              ),
+            if (isShowEventOption)
+              attachToItemUI(
+                name: lang.event,
+                iconData: Atlas.calendar,
+                color: eventFeatureColor,
+                onTap: () {},
+              ),
+            if (isShowTaskListOption)
+              attachToItemUI(
+                name: lang.taskList,
+                iconData: Atlas.list,
+                color: taskFeatureColor,
+                onTap: () {},
+              ),
+            if (isShowTaskOption)
+              attachToItemUI(
+                name: lang.task,
+                iconData: Atlas.list,
+                color: taskFeatureColor,
+                onTap: () {},
+              ),
+            if (isShowSpaceOption)
+              attachToItemUI(
+                name: lang.space,
+                iconData: Atlas.circle_group_people,
+                color: Colors.grey,
+                onTap: () {},
+              ),
+            if (isShowChatOption)
+              attachToItemUI(
+                name: lang.chat,
+                iconData: Atlas.chats,
+                color: Colors.brown,
+                onTap: () {},
+              ),
           ],
         ),
       ],
