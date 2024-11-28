@@ -6,6 +6,12 @@ import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::chat::message_provider');
+const _supportedTypes = [
+  'm.room.member',
+  'm.room.message',
+  'm.room.redaction',
+  'm.room.encrypted',
+];
 
 typedef RoomMsgId = (String roomId, String uniqueId);
 
@@ -22,8 +28,6 @@ final chatRoomMessageProvider =
 });
 
 final showHiddenMessages = StateProvider((ref) => false);
-
-const _supportedTypes = ['m.room.message'];
 
 final animatedListChatMessagesProvider =
     StateProvider.family<GlobalKey<AnimatedListState>, String>(

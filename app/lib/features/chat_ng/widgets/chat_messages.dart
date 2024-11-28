@@ -1,5 +1,5 @@
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
-import 'package:acter/features/chat_ng/widgets/events/chat_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,12 +15,13 @@ class ChatMessages extends ConsumerWidget {
 
     return AnimatedList(
       initialItemCount: messages.length,
-      reverse: true,
       key: animatedListKey,
-      itemBuilder: (_, index, animation) => ChatEventWidget(
-        roomId: roomId,
-        eventId: messages[index],
-        animation: animation,
+      itemBuilder: (_, index, animation) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: ChatEvent(
+          roomId: roomId,
+          eventId: messages[index],
+        ),
       ),
     );
   }
