@@ -1,3 +1,0 @@
-- [Fix] When creating the first Task in a space, you get prompted about activating that feature, too
-- [Fix] Unlinking chats from spaces works again
-- [Improvement] You can now link any chat or space into your space, even if you are not admin of that other space  
