@@ -2295,6 +2295,7 @@
   "@addBoost": {},
   "addTaskList": "Add TaskList",
   "@addTaskList": {},
+  "attachedTo": "Attached To",
   "addComment": "Add Comment",
   "@addComment": {}
 }
