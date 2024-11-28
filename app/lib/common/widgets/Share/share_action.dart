@@ -3,8 +3,13 @@ import 'package:acter/common/widgets/Share/options/attach_options.dart';
 import 'package:acter/common/widgets/Share/options/share_file_options.dart';
 import 'package:acter/common/widgets/Share/options/external_share_options.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-Future<void> openShareDialog({required BuildContext context}) async {
+Future<void> openShareDialog({
+  required BuildContext context,
+  String? data,
+  File? file,
+}) async {
   await showModalBottomSheet(
     showDragHandle: true,
     useSafeArea: true,
@@ -16,10 +21,14 @@ Future<void> openShareDialog({required BuildContext context}) async {
 }
 
 class ShareActionUI extends StatelessWidget {
-  const ShareActionUI({super.key});
+  final String? data;
+  final File? file;
+
+  const ShareActionUI({super.key, this.data, this.file});
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -27,11 +36,15 @@ class ShareActionUI extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            AttachOptions(data: 'hello'),
-            SizedBox(height: 16),
-            ExternalShareOptions(data: 'hello'),
-            SizedBox(height: 16),
-            ShareFileOptions(file: File('path')),
+            if (data == null && file == null)
+              Text(lang.nothingToShare, textAlign: TextAlign.center),
+            if (data != null) ...[
+              AttachOptions(data: data!),
+              SizedBox(height: 16),
+              ExternalShareOptions(data: data!),
+              SizedBox(height: 16),
+            ],
+            if (file != null) ShareFileOptions(file: file!),
           ],
         ),
       ),
