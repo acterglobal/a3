@@ -16,7 +16,10 @@ Future<void> openShareDialog({
     context: context,
     isScrollControlled: true,
     isDismissible: true,
-    builder: (context) => ShareActionUI(),
+    builder: (context) => ShareActionUI(
+      data: data,
+      file: file,
+    ),
   );
 }
 

@@ -441,7 +441,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildShareAction(CalendarEvent calendarEvent) {
     return IconButton(
       icon: PhosphorIcon(PhosphorIcons.shareFat()),
-      onPressed: () => openShareDialog(context: context),
+      onPressed: () => openShareDialog(
+        context: context,
+        data: 'hello',
+        file: File('path'),
+      ),
     );
   }
 
