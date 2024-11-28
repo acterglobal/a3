@@ -11,14 +11,22 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      new_version:
-        description: 'Provide the version for this release'
+      patch_version:
+        description: 'Provide the patch version for this release'
         required: true
-        type: string
-      prev_tag:
-        description: 'The tag to compare the changelog to'
-        required: false
-        type: string
+        default: '1'
+        type: choice
+        options:
+          - '0'
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          - '8'
+          - '9'
       target:
         description: 'Build only Target'
         required: true
@@ -33,6 +41,8 @@ on:
           - windows-exe
           - windows-msix
           - ios,macos
+          - android,linux
+          - none
       custom_title:
         description: 'You want a custom title for the release?'
         required: false
@@ -41,12 +51,16 @@ on:
   schedule:
    - cron: 0 1 * * 4
 
+env:
+  # Due to a typo the last needs to be prefixed with this
+  RELEASE_STUPIDITY_PREFIX: '1'
+
 jobs:
   run_checker:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
-      should_run: ${{ inputs.new_version != null || steps.check-new-commits.outputs.has-new-commits }}
+      should_run: ${{ inputs.patch_version != null || steps.check-new-commits.outputs.has-new-commits }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,30 +69,41 @@ jobs:
         id: check-new-commits
         shell: bash
         run: |
-          if [ `git diff --name-only ${{ inputs.prev_tag || 'release-latest' }} -- app native .changes | wc -l` -ne 0 ]; then
+          if [ `git diff --name-only release-latest -- app native .changes | wc -l` -ne 0 ]; then
             echo "has-new-commits=true"  >> $GITHUB_OUTPUT ;
           else
             echo "has-new-commits=false" >> $GITHUB_OUTPUT ;
           fi
 
   tags:
+    env:
+      PATCH_VERSION: ${{ inputs.patch_version || 0 }}
     runs-on: ubuntu-latest
     needs:
      - run_checker
     if: ${{ needs.run_checker.outputs.should_run != 'false' }}
     # Map a step output to a job output
     outputs:
-      tag: v${{ inputs.new_version || steps.version.outputs.version }}
-      version: ${{ inputs.new_version || steps.version.outputs.version }}
+      tag: v${{ steps.version.outputs.version }}
+      version: ${{ steps.version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
       targets: ${{ inputs.target || 'all' }}
       release_title_prefix: ${{ inputs.custom_title || 'Release'}}
     steps:
       - id: version
-        # the suffix 0 allows us to provide up to 9 more hotfixes on the same day
-        run: echo "version=`date +1.%y.%-m%d0`" >> $GITHUB_OUTPUT
+        run: |
+          VERSION=`date +1.%y.$RELEASE_STUPIDITY_PREFIX%-m%d$PATCH_VERSION`
+          echo "version=$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
       - id: build_num
-        run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
+        run: |
+          BUILD_NUM=`date +%s`
+          echo "build_num=$BUILD_NUM"
+          echo "build_num=$BUILD_NUM" >> $GITHUB_OUTPUT
+      - if: ${{ inputs.target == 'none' }}
+        run: |
+          echo "stopping right here"
+          exit 1
   
   build:
     uses: ./.github/workflows/build-app.yml
