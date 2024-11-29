@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class AttachOptions extends StatelessWidget {
+  final String? sectionTitle;
   final GestureTapCallback? onTapBoost;
   final GestureTapCallback? onTapPin;
   final GestureTapCallback? onTapEvent;
@@ -12,6 +13,7 @@ class AttachOptions extends StatelessWidget {
 
   const AttachOptions({
     super.key,
+    this.sectionTitle,
     this.onTapBoost,
     this.onTapPin,
     this.onTapEvent,
@@ -23,43 +25,64 @@ class AttachOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
 
-    return Wrap(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (onTapBoost != null)
-          attachToItemUI(
-            name: lang.boost,
-            iconData: Atlas.megaphone_thin,
-            color: boastFeatureColor,
-            onTap: onTapBoost,
+        if (sectionTitle != null) ...[
+          Row(
+            children: [
+              Divider(indent: 0),
+              Text(
+                sectionTitle!,
+                textAlign: TextAlign.start,
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+              Expanded(child: Divider(indent: 20)),
+            ],
           ),
-        if (onTapPin != null)
-          attachToItemUI(
-            name: lang.pin,
-            iconData: Atlas.pin,
-            color: pinFeatureColor,
-            onTap: onTapPin,
-          ),
-        if (onTapEvent != null)
-          attachToItemUI(
-            name: lang.event,
-            iconData: Atlas.calendar,
-            color: eventFeatureColor,
-            onTap: onTapEvent,
-          ),
-        if (onTapTaskList != null)
-          attachToItemUI(
-            name: lang.taskList,
-            iconData: Atlas.list,
-            color: taskFeatureColor,
-            onTap: onTapTaskList,
-          ),
-        if (onTapTaskItem != null)
-          attachToItemUI(
-            name: lang.task,
-            iconData: Atlas.list,
-            color: taskFeatureColor,
-            onTap: onTapTaskItem,
-          ),
+          SizedBox(height: 12),
+        ],
+        Wrap(
+          children: [
+            if (onTapBoost != null)
+              attachToItemUI(
+                name: lang.boost,
+                iconData: Atlas.megaphone_thin,
+                color: boastFeatureColor,
+                onTap: onTapBoost,
+              ),
+            if (onTapPin != null)
+              attachToItemUI(
+                name: lang.pin,
+                iconData: Atlas.pin,
+                color: pinFeatureColor,
+                onTap: onTapPin,
+              ),
+            if (onTapEvent != null)
+              attachToItemUI(
+                name: lang.event,
+                iconData: Atlas.calendar,
+                color: eventFeatureColor,
+                onTap: onTapEvent,
+              ),
+            if (onTapTaskList != null)
+              attachToItemUI(
+                name: lang.taskList,
+                iconData: Atlas.list,
+                color: taskFeatureColor,
+                onTap: onTapTaskList,
+              ),
+            if (onTapTaskItem != null)
+              attachToItemUI(
+                name: lang.task,
+                iconData: Atlas.list,
+                color: taskFeatureColor,
+                onTap: onTapTaskItem,
+              ),
+          ],
+        ),
       ],
     );
   }
