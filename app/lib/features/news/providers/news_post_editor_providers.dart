@@ -128,7 +128,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     if (!context.mounted) {
       return;
     }
-    final taskListId = await selectTaskDrawer(
+    final taskListId = await selectTaskListDrawer(
       context: context,
       spaceId: newsPostSpaceId,
     );

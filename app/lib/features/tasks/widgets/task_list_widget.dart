@@ -1,11 +1,13 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/features/tasks/widgets/skeleton/tasks_list_skeleton.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::task-list::widget');
@@ -97,10 +99,18 @@ class TaskListWidget extends ConsumerWidget {
           taskListId: taskList[index],
           showCompletedTask: showCompletedTask,
           showOnlyTaskList: showOnlyTaskList,
+          canExpand: !showOnlyTaskList,
           initiallyExpanded: initiallyExpanded,
-          onTitleTap: () => onSelectTaskListItem != null
-              ? onSelectTaskListItem!(taskList[index])
-              : null,
+          onTitleTap: () {
+            if (onSelectTaskListItem != null) {
+              onSelectTaskListItem!(taskList[index]);
+            } else {
+              context.pushNamed(
+                Routes.taskListDetails.name,
+                pathParameters: {'taskListId': taskList[index]},
+              );
+            }
+          },
           showSpace: spaceId == null,
         );
       },

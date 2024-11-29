@@ -1,5 +1,5 @@
 import 'package:acter/features/deep_linking/types.dart';
-import 'package:acter/features/deep_linking/utils.dart';
+import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
 import 'package:acter/features/users/actions/show_global_user_dialog.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ Future<void> handleDeepLinkUri({
 }) async {
   final lang = L10n.of(context);
   try {
-    final result = parseUri(uri);
+    final result = parseActerUri(uri);
     final _ = switch (result.type) {
       LinkType.userId => context.mounted
           ? await showUserInfoDrawer(context: context, userId: result.target)
