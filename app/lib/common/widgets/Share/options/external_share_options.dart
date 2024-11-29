@@ -3,7 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class ExternalShareOptions extends StatelessWidget {
-  final String data;
+  final String link;
   final String? sectionTitle;
   final bool isShowCopyLinkOption;
   final bool isShowQrOption;
@@ -14,7 +14,7 @@ class ExternalShareOptions extends StatelessWidget {
 
   const ExternalShareOptions({
     super.key,
-    required this.data,
+    required this.link,
     this.sectionTitle,
     this.isShowCopyLinkOption = true,
     this.isShowQrOption = true,
@@ -32,10 +32,16 @@ class ExternalShareOptions extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          sectionTitle ?? lang.shareTo,
-          textAlign: TextAlign.start,
-          style: Theme.of(context).textTheme.labelLarge,
+        Row(
+          children: [
+            Divider(indent: 0),
+            Text(
+              sectionTitle ?? lang.share,
+              textAlign: TextAlign.start,
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            Expanded(child: Divider(indent: 20)),
+          ],
         ),
         SizedBox(height: 12),
         SingleChildScrollView(

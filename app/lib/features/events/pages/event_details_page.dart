@@ -6,7 +6,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/Share/share_action.dart';
+import 'package:acter/common/widgets/Share/share_link_action.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
@@ -199,6 +199,20 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         );
       }
     }
+
+    //Share iCal
+    actions.add(
+      PopupMenuItem(
+        onTap: () => onShareEvent(event),
+        child: Row(
+          children: <Widget>[
+            Icon(Atlas.share),
+            const SizedBox(width: 10),
+            Text(lang.shareIcal),
+          ],
+        ),
+      ),
+    );
 
     //Delete Event Action
     if (canRedact.valueOrNull == true) {
@@ -441,10 +455,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildShareAction(CalendarEvent calendarEvent) {
     return IconButton(
       icon: PhosphorIcon(PhosphorIcons.shareFat()),
-      onPressed: () => openShareDialog(
+      onPressed: () => openShareLinkDialog(
         context: context,
-        data: 'hello',
-        file: File('path'),
+        link: 'hello',
       ),
     );
   }
