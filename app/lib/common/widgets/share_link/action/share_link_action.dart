@@ -1,6 +1,11 @@
 import 'package:acter/common/widgets/share_link/widgets/attach_options.dart';
 import 'package:acter/common/widgets/share_link/widgets/external_share_options.dart';
+import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:share_plus/share_plus.dart';
 
 Future<void> openShareLinkDialog({
   required BuildContext context,
@@ -23,6 +28,7 @@ class ShareActionUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -31,18 +37,26 @@ class ShareActionUI extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             AttachOptions(
-              link: link,
-              isShowPinOption: false,
-              isShowEventOption: false,
-              isShowTaskListOption: false,
-              isShowTaskOption: false,
+              onTapBoost: () {},
             ),
             SizedBox(height: 16),
             ExternalShareOptions(
-              link: link,
-              isShowSignalOption: false,
-              isShowWhatsAppOption: false,
-              isShowTelegramOption: false,
+              onTapQr: () {
+                Navigator.pop(context);
+                showQrCode(context, link, title: Text('Share'));
+              },
+              onTapCopy: () async {
+                Navigator.pop(context);
+                await Clipboard.setData(ClipboardData(text: link));
+                EasyLoading.showToast(
+                  lang.copyToClipboard,
+                  toastPosition: EasyLoadingToastPosition.bottom,
+                );
+              },
+              onTapMore: () async {
+                Navigator.pop(context);
+                await Share.share(link);
+              },
             ),
             SizedBox(height: 16),
           ],

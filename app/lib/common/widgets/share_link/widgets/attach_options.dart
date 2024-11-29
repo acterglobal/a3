@@ -1,72 +1,64 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class AttachOptions extends StatelessWidget {
-  final String link;
-  final bool isShowBoostOption;
-  final bool isShowPinOption;
-  final bool isShowEventOption;
-  final bool isShowTaskListOption;
-  final bool isShowTaskOption;
+  final GestureTapCallback? onTapBoost;
+  final GestureTapCallback? onTapPin;
+  final GestureTapCallback? onTapEvent;
+  final GestureTapCallback? onTapTaskList;
+  final GestureTapCallback? onTapTaskItem;
 
   const AttachOptions({
     super.key,
-    required this.link,
-    this.isShowBoostOption = true,
-    this.isShowPinOption = true,
-    this.isShowEventOption = true,
-    this.isShowTaskListOption = true,
-    this.isShowTaskOption = true,
+    this.onTapBoost,
+    this.onTapPin,
+    this.onTapEvent,
+    this.onTapTaskList,
+    this.onTapTaskItem,
   });
 
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
-    final result = parseActerUri(Uri.parse(link));
-    final type = result.type;
-    final objectType = result.objectPath!.objectType;
-    final objectId = result.target;
-    final roomId = result.roomId;
 
     return Wrap(
       children: [
-        if (isShowBoostOption)
+        if (onTapBoost != null)
           attachToItemUI(
             name: lang.boost,
             iconData: Atlas.megaphone_thin,
             color: boastFeatureColor,
-            onTap: () {},
+            onTap: onTapBoost,
           ),
-        if (isShowPinOption)
+        if (onTapPin != null)
           attachToItemUI(
             name: lang.pin,
             iconData: Atlas.pin,
             color: pinFeatureColor,
-            onTap: () {},
+            onTap: onTapPin,
           ),
-        if (isShowEventOption)
+        if (onTapEvent != null)
           attachToItemUI(
             name: lang.event,
             iconData: Atlas.calendar,
             color: eventFeatureColor,
-            onTap: () {},
+            onTap: onTapEvent,
           ),
-        if (isShowTaskListOption)
+        if (onTapTaskList != null)
           attachToItemUI(
             name: lang.taskList,
             iconData: Atlas.list,
             color: taskFeatureColor,
-            onTap: () {},
+            onTap: onTapTaskList,
           ),
-        if (isShowTaskOption)
+        if (onTapTaskItem != null)
           attachToItemUI(
             name: lang.task,
             iconData: Atlas.list,
             color: taskFeatureColor,
-            onTap: () {},
+            onTap: onTapTaskItem,
           ),
       ],
     );
