@@ -21,7 +21,9 @@ class ShareSpaceObjectWidget extends StatelessWidget {
       icon: PhosphorIcon(PhosphorIcons.shareFat()),
       onPressed: () => openShareSpaceObjectDialog(
         context: context,
-        link: spaceId,
+        spaceId: spaceId,
+        objectType: objectType,
+        objectId: objectId,
       ),
     );
   }

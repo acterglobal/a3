@@ -1,6 +1,7 @@
 import 'package:acter/common/widgets/share/widgets/attach_options.dart';
 import 'package:acter/common/widgets/share/widgets/external_share_options.dart';
 import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
+import 'package:acter/features/deep_linking/types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -9,7 +10,9 @@ import 'package:share_plus/share_plus.dart';
 
 Future<void> openShareSpaceObjectDialog({
   required BuildContext context,
-  required String link,
+  required String spaceId,
+  required ObjectType objectType,
+  required String objectId,
 }) async {
   await showModalBottomSheet(
     showDragHandle: true,
@@ -17,18 +20,30 @@ Future<void> openShareSpaceObjectDialog({
     context: context,
     isScrollControlled: true,
     isDismissible: true,
-    builder: (context) => ShareActionUI(link: link),
+    builder: (context) => ShareSpaceObjectActionUI(
+      spaceId: spaceId,
+      objectType: objectType,
+      objectId: objectId,
+    ),
   );
 }
 
-class ShareActionUI extends StatelessWidget {
-  final String link;
+class ShareSpaceObjectActionUI extends StatelessWidget {
+  final String spaceId;
+  final ObjectType objectType;
+  final String objectId;
 
-  const ShareActionUI({super.key, required this.link});
+  const ShareSpaceObjectActionUI({
+    super.key,
+    required this.spaceId,
+    required this.objectType,
+    required this.objectId,
+  });
 
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
+    final link = '';
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12),
