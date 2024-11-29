@@ -9,7 +9,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/share_link/share_link_widget.dart';
+import 'package:acter/common/widgets/share/share_space_object_widget.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/bookmarks/types.dart';
@@ -98,7 +98,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       pinned: true,
       actions: calendarEvent != null
           ? [
-              ShareLinkWidget(
+              ShareSpaceObjectWidget(
                 link: 'acter:o/$roomId:acter.global/calendarEvent/$calEventId',
               ),
               BookmarkAction(
@@ -204,7 +204,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       }
     }
 
-    //share_link iCal
+    //share iCal
     actions.add(
       PopupMenuItem(
         onTap: () => onShareEvent(event),
@@ -475,7 +475,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         );
       }
     } catch (e, s) {
-      _log.severe('Creating iCal share_link Event failed', e, s);
+      _log.severe('Creating iCal share Event failed', e, s);
       if (!mounted) return;
       EasyLoading.showError(
         lang.shareFailed(e),
