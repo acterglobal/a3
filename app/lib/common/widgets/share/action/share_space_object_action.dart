@@ -42,8 +42,6 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lang = L10n.of(context);
-    final link = '';
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -51,32 +49,41 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            AttachOptions(
-              onTapBoost: () {},
-            ),
+            attachmentOptionsUI(),
             SizedBox(height: 16),
-            ExternalShareOptions(
-              onTapQr: () {
-                Navigator.pop(context);
-                showQrCode(context, link, title: Text('Share'));
-              },
-              onTapCopy: () async {
-                Navigator.pop(context);
-                await Clipboard.setData(ClipboardData(text: link));
-                EasyLoading.showToast(
-                  lang.copyToClipboard,
-                  toastPosition: EasyLoadingToastPosition.bottom,
-                );
-              },
-              onTapMore: () async {
-                Navigator.pop(context);
-                await Share.share(link);
-              },
-            ),
-            SizedBox(height: 16),
+            externalShareOptionsUI(context)
           ],
         ),
       ),
+    );
+  }
+
+  Widget attachmentOptionsUI() {
+    return AttachOptions(
+      onTapBoost: () {},
+    );
+  }
+
+  Widget externalShareOptionsUI(BuildContext context) {
+    final lang = L10n.of(context);
+    final link = '';
+    return ExternalShareOptions(
+      onTapQr: () {
+        Navigator.pop(context);
+        showQrCode(context, link, title: Text('Share'));
+      },
+      onTapCopy: () async {
+        Navigator.pop(context);
+        await Clipboard.setData(ClipboardData(text: link));
+        EasyLoading.showToast(
+          lang.copyToClipboard,
+          toastPosition: EasyLoadingToastPosition.bottom,
+        );
+      },
+      onTapMore: () async {
+        Navigator.pop(context);
+        await Share.share(link);
+      },
     );
   }
 }
