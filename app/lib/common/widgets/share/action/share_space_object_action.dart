@@ -5,11 +5,7 @@ import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
-import 'package:share_plus/share_plus.dart';
 
 Future<void> openShareSpaceObjectDialog({
   required BuildContext context,
@@ -54,7 +50,7 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
           children: [
             attachmentOptionsUI(context),
             SizedBox(height: 16),
-            externalShareOptionsUI(context)
+            externalShareOptionsUI(context),
           ],
         ),
       ),
@@ -81,24 +77,16 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
   }
 
   Widget externalShareOptionsUI(BuildContext context) {
-    final lang = L10n.of(context);
-    final link = '';
+    final internalLink =
+        'acter:o/${spaceId.substring(1)}/${objectType.name}/${objectId.substring(1)}';
+
     return ExternalShareOptions(
       onTapQr: () {
         Navigator.pop(context);
-        showQrCode(context, link, title: Text('Share'));
-      },
-      onTapCopy: () async {
-        Navigator.pop(context);
-        await Clipboard.setData(ClipboardData(text: link));
-        EasyLoading.showToast(
-          lang.copyToClipboard,
-          toastPosition: EasyLoadingToastPosition.bottom,
+        showQrCode(
+          context,
+          internalLink,
         );
-      },
-      onTapMore: () async {
-        Navigator.pop(context);
-        await Share.share(link);
       },
     );
   }
