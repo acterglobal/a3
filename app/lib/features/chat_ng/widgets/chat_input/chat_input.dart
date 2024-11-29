@@ -18,19 +18,14 @@ class ChatInput extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final canSend = ref.watch(canSendMessageProvider(roomId)).valueOrNull;
 
-    switch (canSend) {
-      // we're still loading
-      case null:
-        return const ChatEditorLoading();
-      case true:
-        // we have permission, show editor field
-        return ChatEditor(
+    return switch (canSend) {
+      true => ChatEditor(
+          // we have permission, show editor field
           roomId: roomId,
           onTyping: onTyping,
-        );
-      case false:
-        // no permissions to send messages
-        return const ChatEditorNoAccess();
-    }
+        ),
+      false => const ChatEditorNoAccess(), // no permissions to send messages
+      null => const ChatEditorLoading(), // we're still loading
+    };
   }
 }

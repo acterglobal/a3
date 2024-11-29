@@ -1,27 +1,91 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_item.dart';
+import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
-import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+class UserMentionList extends ConsumerWidget {
+  final EditorState editorState;
+  final VoidCallback onDismiss;
+  final String roomId;
+
+  const UserMentionList({
+    super.key,
+    required this.editorState,
+    required this.onDismiss,
+    required this.roomId,
+  });
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => MentionList(
+        roomId: roomId,
+        editorState: editorState,
+        onDismiss: onDismiss,
+        // the actual provider
+        mentionsProvider: userMentionSuggestionsProvider(roomId),
+        avatarBuilder: (matchId, ref) {
+          final avatarInfo = ref.watch(
+            memberAvatarInfoProvider((roomId: roomId, userId: matchId)),
+          );
+          return AvatarOptions.DM(avatarInfo, size: 18);
+        },
+        // the fields
+        headerTitle: L10n.of(context).users,
+        notFoundTitle: L10n.of(context).noUserFoundTitle,
+      );
+}
+
+class RoomMentionList extends StatelessWidget {
+  final EditorState editorState;
+  final VoidCallback onDismiss;
+  final String roomId;
+
+  const RoomMentionList({
+    super.key,
+    required this.editorState,
+    required this.onDismiss,
+    required this.roomId,
+  });
+  @override
+  Widget build(BuildContext context) => MentionList(
+        roomId: roomId,
+        editorState: editorState,
+        onDismiss: onDismiss,
+        // the actual provider
+        mentionsProvider: roomMentionsSuggestionsProvider(roomId),
+        avatarBuilder: (matchId, ref) {
+          final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
+          return AvatarOptions(avatarInfo, size: 28);
+        },
+        // the fields
+        headerTitle: L10n.of(context).chats,
+        notFoundTitle: L10n.of(context).noChatsFound,
+      );
+}
+
 class MentionList extends ConsumerStatefulWidget {
   const MentionList({
     super.key,
-    required this.editorState,
     required this.roomId,
-    required this.mentionType,
+    required this.editorState,
+    required this.mentionsProvider,
+    required this.avatarBuilder,
+    required this.headerTitle,
+    required this.notFoundTitle,
     required this.onDismiss,
   });
 
-  final EditorState editorState;
   final String roomId;
-  final MentionType mentionType;
+  final EditorState editorState;
+  final ProviderBase<Map<String, String>?> mentionsProvider;
+  final AvatarOptions Function(String matchId, WidgetRef ref) avatarBuilder;
+  final String headerTitle;
+  final String notFoundTitle;
   final VoidCallback onDismiss;
 
   @override
@@ -52,9 +116,9 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
 
   @override
   Widget build(BuildContext context) {
+    final mentionsProvider = widget.mentionsProvider;
     // All suggestions list
-    final suggestions = ref
-        .watch(mentionSuggestionsProvider((widget.roomId, widget.mentionType)));
+    final suggestions = ref.watch(mentionsProvider);
     if (suggestions == null) {
       return ErrorWidget(L10n.of(context).loadingFailed);
     }
@@ -77,23 +141,17 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
 
   Widget _buildMenuHeader() => Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Text(
-          widget.mentionType == MentionType.user
-              ? L10n.of(context).users
-              : L10n.of(context).chats,
-        ),
+        child: Text(widget.headerTitle),
       );
 
-  Widget _buildMenuList(Map<String, String> suggestions) {
-    final String notFound = widget.mentionType == MentionType.user
-        ? L10n.of(context).noUserFoundTitle
-        : L10n.of(context).noChatsFound;
-
+  Widget _buildMenuList(Map<String, String?> suggestions) {
+    final String notFoundTitle = widget.notFoundTitle;
+    final options = widget.avatarBuilder;
     return Flexible(
       child: suggestions.isEmpty
           ? Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(notFound),
+              child: Text(notFoundTitle),
             )
           : ListView.builder(
               shrinkWrap: true,
@@ -102,22 +160,11 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
               itemBuilder: (context, index) {
                 final mentionId = suggestions.keys.elementAt(index);
                 final displayName = suggestions.values.elementAt(index);
-                final avatar = widget.mentionType == MentionType.user
-                    ? ref.watch(
-                        memberAvatarInfoProvider(
-                          (roomId: widget.roomId, userId: mentionId),
-                        ),
-                      )
-                    : ref.watch(roomAvatarInfoProvider(mentionId));
-                final options = widget.mentionType == MentionType.user
-                    ? AvatarOptions.DM(avatar, size: 18)
-                    : AvatarOptions(avatar, size: 28);
 
                 return MentionItem(
                   mentionId: mentionId,
-                  mentionType: widget.mentionType,
                   displayName: displayName,
-                  avatarOptions: options,
+                  avatarOptions: options(mentionId, ref),
                   isSelected: index == _selectedIndex,
                   onTap: () => _selectItem(mentionId, displayName),
                 );
@@ -128,7 +175,7 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
 
   KeyEventResult _handleKeyEvent(
     KeyEvent event,
-    Map<String, String> suggestions,
+    Map<String, String?> suggestions,
   ) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
@@ -171,12 +218,12 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
         // Get text before cursor
         final text = node.delta?.toPlainText() ?? '';
         final cursorPosition = selection.end.offset;
+        final mentionTriggers = [userMentionChar, roomMentionChar];
 
         if (_canDeleteLastCharacter()) {
           // Check if we're about to delete an mention symbol
           if (cursorPosition > 0 &&
-              text[cursorPosition - 1] ==
-                  MentionType.toStr(widget.mentionType)) {
+              mentionTriggers.contains(text[cursorPosition - 1])) {
             widget.onDismiss(); // Dismiss menu when is deleted
           }
           widget.editorState.deleteBackward();
@@ -200,7 +247,7 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     }
   }
 
-  void _selectItem(String id, String displayName) {
+  void _selectItem(String id, String? displayName) {
     final selection = widget.editorState.selection;
     if (selection == null) return;
 
@@ -213,8 +260,11 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
 
     // Find the trigger symbol position by searching backwards from cursor
     int atSymbolPosition = -1;
+    final mentionTriggers = [userMentionChar, roomMentionChar];
+    String mentionTypeStr = '';
     for (int i = cursorPosition - 1; i >= 0; i--) {
-      if (text[i] == MentionType.toStr(widget.mentionType)) {
+      if (mentionTriggers.contains(text[i])) {
+        mentionTypeStr = text[i];
         atSymbolPosition = i;
         break;
       }
@@ -224,7 +274,7 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
 
     // Calculate length from trigger to cursor
     final lengthToReplace = cursorPosition - atSymbolPosition;
-    final mentionsKey = MentionType.toStr(widget.mentionType);
+    final mentionType = MentionType.fromStr(mentionTypeStr);
 
     transaction.replaceText(
       node,
@@ -232,8 +282,8 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
       lengthToReplace, // Replace everything including trigger
       ' ',
       attributes: {
-        mentionsKey: MentionAttributes(
-          type: widget.mentionType,
+        mentionTypeStr: MentionAttributes(
+          type: mentionType,
           mentionId: id,
           displayName: displayName,
         ),

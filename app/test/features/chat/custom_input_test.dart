@@ -46,8 +46,8 @@ void main() {
             ProviderScope(
               overrides: [
                 // Same as before
-                canSendMessageProvider
-                    .overrideWith((ref, roomId) => null), // null means loading
+                canSendMessageProvider.overrideWith(
+                    (ref, roomId) => false), // false means loading
                 sdkProvider.overrideWith((ref) => MockActerSdk()),
               ],
               child: const InActerContextTestWrapper(

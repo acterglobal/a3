@@ -12,8 +12,8 @@ List<CharacterShortcutEvent> mentionShortcuts(
       character: userMentionChar,
       handler: (editorState) => _handleMentionTrigger(
         context: context,
+        mentionTrigger: userMentionChar,
         editorState: editorState,
-        type: MentionType.user,
         roomId: roomId,
       ),
       key: userMentionChar,
@@ -22,8 +22,8 @@ List<CharacterShortcutEvent> mentionShortcuts(
       character: roomMentionChar,
       handler: (editorState) => _handleMentionTrigger(
         context: context,
+        mentionTrigger: roomMentionChar,
         editorState: editorState,
-        type: MentionType.room,
         roomId: roomId,
       ),
       key: roomMentionChar,
@@ -33,8 +33,8 @@ List<CharacterShortcutEvent> mentionShortcuts(
 
 Future<bool> _handleMentionTrigger({
   required BuildContext context,
+  required String mentionTrigger,
   required EditorState editorState,
-  required MentionType type,
   required String roomId,
 }) async {
   final selection = editorState.selection;
@@ -45,7 +45,7 @@ Future<bool> _handleMentionTrigger({
   }
   // Insert the trigger character
   await editorState.insertTextAtPosition(
-    MentionType.toStr(type),
+    mentionTrigger,
     position: selection.start,
   );
 
@@ -55,7 +55,7 @@ Future<bool> _handleMentionTrigger({
       context: context,
       editorState: editorState,
       roomId: roomId,
-      mentionType: type,
+      mentionTrigger: mentionTrigger,
     );
 
     menu.show();

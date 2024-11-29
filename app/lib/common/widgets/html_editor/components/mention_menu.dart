@@ -8,13 +8,13 @@ class MentionMenu {
     required this.context,
     required this.editorState,
     required this.roomId,
-    required this.mentionType,
+    required this.mentionTrigger,
   });
 
   final BuildContext context;
   final EditorState editorState;
   final String roomId;
-  final MentionType mentionType;
+  final String mentionTrigger;
 
   OverlayEntry? _menuEntry;
   bool selectionChangedByMenu = false;
@@ -41,6 +41,20 @@ class MentionMenu {
 
     final Size size = renderBox.size;
     final Offset position = renderBox.localToGlobal(Offset.zero);
+    // render based on mention type
+    final Widget listWidget = switch (mentionTrigger) {
+      userMentionChar => UserMentionList(
+          editorState: editorState,
+          onDismiss: dismiss,
+          roomId: roomId,
+        ),
+      roomMentionChar => RoomMentionList(
+          editorState: editorState,
+          onDismiss: dismiss,
+          roomId: roomId,
+        ),
+      _ => const SizedBox.shrink(),
+    };
 
     _menuEntry = OverlayEntry(
       builder: (context) => Positioned(
@@ -60,12 +74,7 @@ class MentionMenu {
                 maxHeight: 200, // Limit maximum height
                 maxWidth: size.width, // Match input width
               ),
-              child: MentionList(
-                editorState: editorState,
-                roomId: roomId,
-                onDismiss: dismiss,
-                mentionType: mentionType,
-              ),
+              child: listWidget,
             ),
           ),
         ),

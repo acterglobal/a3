@@ -4,6 +4,7 @@ import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MentionBlock extends ConsumerWidget {
@@ -26,18 +27,17 @@ class MentionBlock extends ConsumerWidget {
     final String? displayName = mentionAttributes.displayName;
     final String mentionId = mentionAttributes.mentionId;
 
-    final avatarInfo = switch (type) {
-      MentionType.user => ref.watch(
-          memberAvatarInfoProvider(
-            (roomId: userRoomId, userId: mentionId),
-          ),
-        ),
-      MentionType.room => ref.watch(roomAvatarInfoProvider(mentionId)),
-    };
-
     final options = switch (type) {
-      MentionType.user => AvatarOptions.DM(avatarInfo, size: 8),
-      MentionType.room => AvatarOptions(avatarInfo, size: 16),
+      MentionType.user => AvatarOptions.DM(
+          ref.watch(
+            memberAvatarInfoProvider(
+              (roomId: userRoomId, userId: mentionId),
+            ),
+          ),
+          size: 8,
+        ),
+      MentionType.room =>
+        AvatarOptions(ref.watch(roomAvatarInfoProvider(mentionId)), size: 16),
     };
 
     return _mentionContent(
@@ -56,11 +56,8 @@ class MentionBlock extends ConsumerWidget {
     required AvatarOptions avatarOptions,
     String? displayName,
   }) {
-    final desktopPlatforms = [
-      TargetPlatform.linux,
-      TargetPlatform.macOS,
-      TargetPlatform.windows,
-    ];
+    final hasMouseConnected =
+        RendererBinding.instance.mouseTracker.mouseIsConnected;
     final name = displayName ?? mentionId;
     final mentionContentWidget = Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -81,7 +78,7 @@ class MentionBlock extends ConsumerWidget {
     final Widget content = GestureDetector(
       onTap: _handleUserTap,
       behavior: HitTestBehavior.opaque,
-      child: desktopPlatforms.contains(Theme.of(context).platform)
+      child: hasMouseConnected
           ? MouseRegion(
               cursor: SystemMouseCursors.click,
               child: mentionContentWidget,

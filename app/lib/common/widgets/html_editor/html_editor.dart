@@ -207,7 +207,8 @@ class HtmlEditorState extends State<HtmlEditor> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
-    return isDesktop ? desktopEditor() : mobileEditor();
+    final roomId = widget.roomId;
+    return isDesktop ? desktopEditor(roomId) : mobileEditor(roomId);
   }
 
   Widget? generateFooter() {
@@ -252,7 +253,7 @@ class HtmlEditorState extends State<HtmlEditor> {
     return null;
   }
 
-  Widget desktopEditor() {
+  Widget desktopEditor(String? roomId) {
     return FloatingToolbar(
       items: [
         paragraphItem,
@@ -287,8 +288,7 @@ class HtmlEditorState extends State<HtmlEditor> {
           footer: generateFooter(),
           characterShortcutEvents: [
             ...standardCharacterShortcutEvents,
-            if (widget.roomId != null)
-              ...mentionShortcuts(context, widget.roomId!),
+            if (roomId != null) ...mentionShortcuts(context, roomId),
           ],
           commandShortcutEvents: [...standardCommandShortcutEvents],
         ),
@@ -296,7 +296,7 @@ class HtmlEditorState extends State<HtmlEditor> {
     );
   }
 
-  Widget mobileEditor() {
+  Widget mobileEditor(String? roomId) {
     return MobileToolbarV2(
       toolbarItems: [
         textDecorationMobileToolbarItemV2,
@@ -347,8 +347,7 @@ class HtmlEditorState extends State<HtmlEditor> {
                 footer: generateFooter(),
                 characterShortcutEvents: [
                   ...standardCharacterShortcutEvents,
-                  if (widget.roomId != null)
-                    ...mentionShortcuts(context, widget.roomId!),
+                  if (roomId != null) ...mentionShortcuts(context, roomId),
                 ],
               ),
             ),
