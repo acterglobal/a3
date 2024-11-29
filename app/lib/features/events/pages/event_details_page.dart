@@ -16,6 +16,7 @@ import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
+import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -91,15 +92,15 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventAppBar(CalendarEvent? calendarEvent) {
-    final calEventId = widget.calendarId;
-    final roomId = calendarEvent?.roomIdStr();
     return SliverAppBar(
       expandedHeight: 200.0,
       pinned: true,
       actions: calendarEvent != null
           ? [
               ShareSpaceObjectWidget(
-                link: 'acter:o/$roomId:acter.global/calendarEvent/$calEventId',
+                spaceId: calendarEvent.roomIdStr(),
+                objectType: ObjectType.calendarEvent,
+                objectId: widget.calendarId,
               ),
               BookmarkAction(
                 bookmarker: BookmarkType.forEvent(widget.calendarId),

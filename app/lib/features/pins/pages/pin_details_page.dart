@@ -15,6 +15,7 @@ import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
+import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
 import 'package:acter/features/pins/actions/pin_update_actions.dart';
@@ -63,13 +64,14 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
 
   AppBar _buildAppBar() {
     final pinData = ref.watch(pinProvider(widget.pinId)).valueOrNull;
-    final pinId = widget.pinId;
-    final roomId = pinData?.roomIdStr();
     return AppBar(
       actions: [
-        ShareSpaceObjectWidget(
-          link: 'acter:o/$roomId:acter.global/pin/$pinId',
-        ),
+        if (pinData != null)
+          ShareSpaceObjectWidget(
+            spaceId: pinData.roomIdStr(),
+            objectType: ObjectType.pin,
+            objectId: widget.pinId,
+          ),
         BookmarkAction(bookmarker: BookmarkType.forPins(widget.pinId)),
         _buildActionMenu(),
       ],

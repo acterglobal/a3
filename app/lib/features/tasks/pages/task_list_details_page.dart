@@ -13,6 +13,7 @@ import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
+import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/actions/update_tasklist.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
@@ -60,12 +61,13 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     final tasklist = ref.watch(taskListProvider(widget.taskListId)).valueOrNull;
-    final taskListId = widget.taskListId;
-    final roomId = tasklist?.spaceIdStr();
     final List<Widget> actions = [
-      ShareSpaceObjectWidget(
-        link: 'acter:o/$roomId:acter.global/taskList/$taskListId',
-      ),
+      if (tasklist != null)
+        ShareSpaceObjectWidget(
+          spaceId: tasklist.spaceIdStr(),
+          objectType: ObjectType.taskList,
+          objectId: widget.taskListId,
+        ),
       BookmarkAction(bookmarker: BookmarkType.forTaskList(widget.taskListId)),
     ];
     if (tasklist != null) {
