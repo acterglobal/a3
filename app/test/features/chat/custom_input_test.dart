@@ -24,7 +24,7 @@ void main() {
             ProviderScope(
               overrides: [
                 // Same as before
-                canSendProvider.overrideWith((ref, roomId) => false),
+                canSendMessageProvider.overrideWith((ref, roomId) => false),
                 sdkProvider.overrideWith((ref) => MockActerSdk()),
                 alwaysClientProvider.overrideWith((ref) => MockClient()),
               ],
@@ -46,8 +46,9 @@ void main() {
             ProviderScope(
               overrides: [
                 // Same as before
-                canSendProvider
-                    .overrideWith((ref, roomId) => null), // null means loading
+                canSendMessageProvider.overrideWith(
+                  (ref, roomId) => false,
+                ), // false means loading
                 sdkProvider.overrideWith((ref) => MockActerSdk()),
               ],
               child: const InActerContextTestWrapper(
@@ -68,7 +69,7 @@ void main() {
             ProviderScope(
               overrides: [
                 // Same as before
-                canSendProvider.overrideWith((ref, roomId) => true),
+                canSendMessageProvider.overrideWith((ref, roomId) => true),
                 isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
                 sdkProvider.overrideWith((ref) => MockActerSdk()),
                 alwaysClientProvider.overrideWith((ref) => MockClient()),
@@ -91,7 +92,7 @@ void main() {
 
   group('Send button states', () {
     final overrides = [
-      canSendProvider.overrideWith((ref, roomId) => true),
+      canSendMessageProvider.overrideWith((ref, roomId) => true),
       isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
       sdkProvider.overrideWith((ref) => MockActerSdk()),
       alwaysClientProvider.overrideWith((ref) => MockClient()),
@@ -192,7 +193,7 @@ void main() {
       'roomId-2': buildMockDraft(''),
     };
     final overrides = [
-      canSendProvider.overrideWith((ref, roomId) => true),
+      canSendMessageProvider.overrideWith((ref, roomId) => true),
       isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
       sdkProvider.overrideWith((ref) => MockActerSdk()),
       alwaysClientProvider.overrideWith((ref) => MockClient()),
