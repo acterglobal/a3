@@ -91,12 +91,16 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventAppBar(CalendarEvent? calendarEvent) {
+    final calEventId = widget.calendarId;
+    final roomId = calendarEvent?.roomIdStr();
     return SliverAppBar(
       expandedHeight: 200.0,
       pinned: true,
       actions: calendarEvent != null
           ? [
-              ShareLinkWidget(link: 'event_link'),
+              ShareLinkWidget(
+                link: 'acter:o/$roomId:acter.global/calendarEvent/$calEventId',
+              ),
               BookmarkAction(
                 bookmarker: BookmarkType.forEvent(widget.calendarId),
               ),

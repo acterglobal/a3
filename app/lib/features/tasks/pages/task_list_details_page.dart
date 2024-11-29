@@ -60,8 +60,12 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     final tasklist = ref.watch(taskListProvider(widget.taskListId)).valueOrNull;
+    final taskListId = widget.taskListId;
+    final roomId = tasklist?.spaceIdStr();
     final List<Widget> actions = [
-      ShareLinkWidget(link: 'taskList_link'),
+      ShareLinkWidget(
+        link: 'acter:o/$roomId:acter.global/taskList/$taskListId',
+      ),
       BookmarkAction(bookmarker: BookmarkType.forTaskList(widget.taskListId)),
     ];
     if (tasklist != null) {

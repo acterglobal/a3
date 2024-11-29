@@ -62,9 +62,14 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   }
 
   AppBar _buildAppBar() {
+    final pinData = ref.watch(pinProvider(widget.pinId)).valueOrNull;
+    final pinId = widget.pinId;
+    final roomId = pinData?.roomIdStr();
     return AppBar(
       actions: [
-        ShareLinkWidget(link: 'pin_link'),
+        ShareLinkWidget(
+          link: 'acter:o/$roomId:acter.global/pin/$pinId',
+        ),
         BookmarkAction(bookmarker: BookmarkType.forPins(widget.pinId)),
         _buildActionMenu(),
       ],

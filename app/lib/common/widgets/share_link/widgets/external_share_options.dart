@@ -48,14 +48,14 @@ class ExternalShareOptions extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              if (isShowCopyLinkOption)
+              if (isShowQrOption)
                 shareToItemUI(
                   name: lang.qr,
                   iconData: PhosphorIcons.qrCode(),
                   color: Colors.grey.shade600,
                   onTap: () {},
                 ),
-              if (isShowQrOption)
+              if (isShowCopyLinkOption)
                 shareToItemUI(
                   name: lang.copyLink,
                   iconData: PhosphorIcons.link(),
