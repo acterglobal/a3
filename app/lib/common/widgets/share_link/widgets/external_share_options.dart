@@ -1,4 +1,5 @@
 import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
+import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -31,6 +32,12 @@ class ExternalShareOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
+    final result = parseActerUri(Uri.parse(link));
+    final type = result.type;
+    final objectType = result.objectPath!.objectType;
+    final objectId = result.target;
+    final roomId = result.roomId;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
