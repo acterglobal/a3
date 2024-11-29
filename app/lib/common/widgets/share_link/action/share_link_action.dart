@@ -38,7 +38,12 @@ class ShareActionUI extends StatelessWidget {
               isShowTaskOption: false,
             ),
             SizedBox(height: 16),
-            ExternalShareOptions(link: link),
+            ExternalShareOptions(
+              link: link,
+              isShowSignalOption: false,
+              isShowWhatsAppOption: false,
+              isShowTelegramOption: false,
+            ),
             SizedBox(height: 16),
           ],
         ),

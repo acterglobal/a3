@@ -1,6 +1,10 @@
+import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ExternalShareOptions extends StatelessWidget {
   final String link;
@@ -53,14 +57,22 @@ class ExternalShareOptions extends StatelessWidget {
                   name: lang.qr,
                   iconData: PhosphorIcons.qrCode(),
                   color: Colors.grey.shade600,
-                  onTap: () {},
+                  onTap: () => showQrCode(context, link, title: Text('Share')),
                 ),
               if (isShowCopyLinkOption)
                 shareToItemUI(
                   name: lang.copyLink,
                   iconData: PhosphorIcons.link(),
                   color: Colors.blueGrey,
-                  onTap: () {},
+                  onTap: () async {
+                    await Clipboard.setData(
+                      ClipboardData(text: link),
+                    );
+                    EasyLoading.showToast(
+                      lang.copyToClipboard,
+                      toastPosition: EasyLoadingToastPosition.bottom,
+                    );
+                  },
                 ),
               if (isShowSignalOption)
                 shareToItemUI(
@@ -88,7 +100,7 @@ class ExternalShareOptions extends StatelessWidget {
                   name: lang.more,
                   iconData: PhosphorIcons.dotsThree(),
                   color: Colors.grey.shade800,
-                  onTap: () {},
+                  onTap: () async => await Share.share(link),
                 ),
             ],
           ),
