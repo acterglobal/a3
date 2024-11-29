@@ -2295,16 +2295,14 @@
   "@addBoost": {},
   "addTaskList": "Add TaskList",
   "@addTaskList": {},
-  "attachedTo": "Attached To",
   "task": "Task",
-  "shareTo": "Share To",
   "signal": "Signal",
   "whatsApp": "WhatsApp",
   "telegram": "Telegram",
   "copy": "copy",
   "copyLink": "Copy Link",
   "qr": "QR",
-  "nothingToShare": "Nothing to share",
+  "newBoost": "New Boost",
   "addComment": "Add Comment",
   "@addComment": {}
 }

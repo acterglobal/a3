@@ -48,7 +48,7 @@ class AttachOptions extends StatelessWidget {
           children: [
             if (onTapBoost != null)
               attachToItemUI(
-                name: lang.boost,
+                name: lang.newBoost,
                 iconData: Atlas.megaphone_thin,
                 color: boastFeatureColor,
                 onTap: onTapBoost,
