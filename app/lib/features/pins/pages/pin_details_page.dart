@@ -7,6 +7,7 @@ import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/share_link/share_link_widget.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/comments/types.dart';
@@ -63,6 +64,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   AppBar _buildAppBar() {
     return AppBar(
       actions: [
+        ShareLinkWidget(link: 'pin_link'),
         BookmarkAction(bookmarker: BookmarkType.forPins(widget.pinId)),
         _buildActionMenu(),
       ],

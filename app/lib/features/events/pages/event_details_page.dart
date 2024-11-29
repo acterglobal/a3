@@ -6,10 +6,10 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/Share/share_link_action.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/share_link/share_link_widget.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/bookmarks/types.dart';
@@ -96,7 +96,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       pinned: true,
       actions: calendarEvent != null
           ? [
-              _buildShareAction(calendarEvent),
+              ShareLinkWidget(link: 'event_link'),
               BookmarkAction(
                 bookmarker: BookmarkType.forEvent(widget.calendarId),
               ),
@@ -200,7 +200,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       }
     }
 
-    //Share iCal
+    //share_link iCal
     actions.add(
       PopupMenuItem(
         onTap: () => onShareEvent(event),
@@ -452,16 +452,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildShareAction(CalendarEvent calendarEvent) {
-    return IconButton(
-      icon: PhosphorIcon(PhosphorIcons.shareFat()),
-      onPressed: () => openShareLinkDialog(
-        context: context,
-        link: 'hello',
-      ),
-    );
-  }
-
   Future<void> onShareEvent(CalendarEvent event) async {
     final lang = L10n.of(context);
     try {
@@ -481,7 +471,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         );
       }
     } catch (e, s) {
-      _log.severe('Creating iCal Share Event failed', e, s);
+      _log.severe('Creating iCal share_link Event failed', e, s);
       if (!mounted) return;
       EasyLoading.showError(
         lang.shareFailed(e),

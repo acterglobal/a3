@@ -8,6 +8,7 @@ import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/widgets/share_link/share_link_widget.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
@@ -60,6 +61,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     final textTheme = Theme.of(context).textTheme;
     final tasklist = ref.watch(taskListProvider(widget.taskListId)).valueOrNull;
     final List<Widget> actions = [
+      ShareLinkWidget(link: 'taskList_link'),
       BookmarkAction(bookmarker: BookmarkType.forTaskList(widget.taskListId)),
     ];
     if (tasklist != null) {

@@ -1,5 +1,5 @@
-import 'package:acter/common/widgets/Share/options/attach_options.dart';
-import 'package:acter/common/widgets/Share/options/external_share_options.dart';
+import 'package:acter/common/widgets/share_link/widgets/attach_options.dart';
+import 'package:acter/common/widgets/share_link/widgets/external_share_options.dart';
 import 'package:flutter/material.dart';
 
 Future<void> openShareLinkDialog({
