@@ -23,11 +23,6 @@ class AppDelegate: FlutterAppDelegate {
   public override func application(_ application: NSApplication,
                                   continue userActivity: NSUserActivity,
                                   restorationHandler: @escaping ([any NSUserActivityRestoring]) -> Void) -> Bool {
-#if DEBUG
-    print("This app works in debug mode")
-#else
-    print("This app works in release mode")
-#endif
 
     guard let url = AppLinks.shared.getUniversalLink(userActivity) else {
       return false
