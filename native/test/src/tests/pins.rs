@@ -231,3 +231,39 @@ async fn pin_attachments() -> Result<()> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn pin_external_link() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) = random_user_with_template("pin_comments", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.pins().await?.len() != 3 {
+                bail!("not all pins found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let pin = user
+        .pins()
+        .await?
+        .into_iter()
+        .find(|p| !p.is_link())
+        .expect("we’ve created one non-link pin");
+
+    // START actual comment on pin
+
+    let internal_link = pin.internal_link();
+    let external_link = pin.external_link().await?;
+
+    println!("{internal_link} - {external_link}");
+
+    Ok(())
+}
