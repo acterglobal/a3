@@ -20,7 +20,7 @@ Future<void> unlinkChildRoom(
   await space.removeChildRoom(roomId, reason);
   //Fetch selected room data and add given parentSpaceId as parent
   final room = await ref.read(maybeRoomProvider(roomId).future);
-  if (room != null && room.isSpace()) {
+  if (room != null) {
     await room.removeParentRoom(parentId, reason);
   }
   // spaceRelations come from the server and must be manually invalidated

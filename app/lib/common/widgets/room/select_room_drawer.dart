@@ -152,7 +152,6 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
       itemCount: rooms.length,
       itemBuilder: (context, index) => BriefRoomEntry(
         roomId: rooms[index],
-        avatarDisplayMode: widget.avatarDisplayMode,
         keyPrefix: widget.keyPrefix,
         selectedValue: current,
         canCheck: widget.canCheck,

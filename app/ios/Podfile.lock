@@ -1,9 +1,13 @@
 PODS:
   - acter_flutter_sdk (0.0.1):
     - Flutter
-  - app_badge_plus (1.1.6):
+  - app_badge_plus (1.1.5):
+    - Flutter
+  - app_links (0.0.2):
     - Flutter
   - app_settings (5.1.1):
+    - Flutter
+  - camera_avfoundation (0.0.1):
     - Flutter
   - connectivity_plus (0.0.1):
     - Flutter
@@ -51,12 +55,12 @@ PODS:
   - file_picker (0.0.1):
     - DKImagePickerController/PhotoGallery
     - Flutter
-  - Firebase/CoreOnly (11.4.0):
-    - FirebaseCore (= 11.4.0)
-  - firebase_core (3.8.0):
-    - Firebase/CoreOnly (= 11.4.0)
+  - Firebase/CoreOnly (11.2.0):
+    - FirebaseCore (= 11.2.0)
+  - firebase_core (3.6.0):
+    - Firebase/CoreOnly (= 11.2.0)
     - Flutter
-  - FirebaseCore (11.4.0):
+  - FirebaseCore (11.2.0):
     - FirebaseCoreInternal (~> 11.0)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/Logger (~> 8.0)
@@ -109,11 +113,11 @@ PODS:
   - SDWebImage/Core (5.20.0)
   - sensors_plus (0.0.1):
     - Flutter
-  - Sentry/HybridSDK (8.40.1)
-  - sentry_flutter (8.10.1):
+  - Sentry/HybridSDK (8.36.0)
+  - sentry_flutter (8.9.0):
     - Flutter
     - FlutterMacOS
-    - Sentry/HybridSDK (= 8.40.1)
+    - Sentry/HybridSDK (= 8.36.0)
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
@@ -136,7 +140,9 @@ PODS:
 DEPENDENCIES:
   - acter_flutter_sdk (from `.symlinks/plugins/acter_flutter_sdk/ios`)
   - app_badge_plus (from `.symlinks/plugins/app_badge_plus/ios`)
+  - app_links (from `.symlinks/plugins/app_links/ios`)
   - app_settings (from `.symlinks/plugins/app_settings/ios`)
+  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/darwin`)
   - device_calendar (from `.symlinks/plugins/device_calendar/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
@@ -188,8 +194,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/acter_flutter_sdk/ios"
   app_badge_plus:
     :path: ".symlinks/plugins/app_badge_plus/ios"
+  app_links:
+    :path: ".symlinks/plugins/app_links/ios"
   app_settings:
     :path: ".symlinks/plugins/app_settings/ios"
+  camera_avfoundation:
+    :path: ".symlinks/plugins/camera_avfoundation/ios"
   connectivity_plus:
     :path: ".symlinks/plugins/connectivity_plus/darwin"
   device_calendar:
@@ -259,8 +269,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   acter_flutter_sdk: e60481171e46975418babb7d0ec8809eaacaaa03
-  app_badge_plus: 060babf17a97011f0093739f0aa8bc65b2479233
+  app_badge_plus: 4ab1da0bfadc61b82507c3f48e63e559ed3080de
+  app_links: e7a6750a915a9e161c58d91bc610e8cd1d4d0ad0
   app_settings: 017320c6a680cdc94c799949d95b84cb69389ebc
+  camera_avfoundation: dd002b0330f4981e1bbcb46ae9b62829237459a4
   connectivity_plus: 4c41c08fc6d7c91f63bc7aec70ffe3730b04f563
   device_calendar: 9cb33f88a02e19652ec7b8b122ca778f751b1f7b
   device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
@@ -269,9 +281,9 @@ SPEC CHECKSUMS:
   emoji_picker_flutter: fe2e6151c5b548e975d546e6eeb567daf0962a58
   fc_native_video_thumbnail: 927d4dcfd4c7e9f2cc1a20bb52dfee83de3792c2
   file_picker: 09aa5ec1ab24135ccd7a1621c46c84134bfd6655
-  Firebase: cf1b19f21410b029b6786a54e9764a0cacad3c99
-  firebase_core: 9efc3ecf689cdbc90f13f4dc58108c83ea46b266
-  FirebaseCore: e0510f1523bc0eb21653cac00792e1e2bd6f1771
+  Firebase: 98e6bf5278170668a7983e12971a66b2cd57fc8c
+  firebase_core: 2bedc3136ec7c7b8561c6123ed0239387b53f2af
+  FirebaseCore: a282032ae9295c795714ded2ec9c522fc237f8da
   FirebaseCoreInternal: f47dd28ae7782e6a4738aad3106071a8fe0af604
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
@@ -293,11 +305,11 @@ SPEC CHECKSUMS:
   screen_brightness_ios: 715ca807df953bf676d339f11464e438143ee625
   SDWebImage: 73c6079366fea25fa4bb9640d5fb58f0893facd8
   sensors_plus: 7229095999f30740798f0eeef5cd120357a8f4f2
-  Sentry: e9215d7b17f7902692b4f8700e061e4f853e3521
-  sentry_flutter: 927eed60d66951d1b0f1db37fe94ff5cb7c80231
+  Sentry: f8374b5415bc38dfb5645941b3ae31230fbeae57
+  sentry_flutter: 0eb93e5279eb41e2392212afe1ccd2fecb4f8cbe
   share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
-  sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
+  sqflite_darwin: a553b1fd6fe66f53bbb0fe5b4f5bab93f08d7a13
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
   video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3

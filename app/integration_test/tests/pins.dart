@@ -1,5 +1,5 @@
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/widgets/html_editor.dart';
+import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';

@@ -1,6 +1,7 @@
 enum NewsReferencesType {
   calendarEvent,
   pin,
+  taskList,
   link;
 
   static NewsReferencesType? fromStr(String typeStr) {

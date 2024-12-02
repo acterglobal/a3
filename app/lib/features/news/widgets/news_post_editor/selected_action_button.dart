@@ -5,6 +5,9 @@ import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter/features/tasks/widgets/skeleton/tasks_list_skeleton.dart';
+import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -30,6 +33,7 @@ class SelectedActionButton extends ConsumerWidget {
       NewsReferencesType.calendarEvent =>
         calendarActionButton(context, ref, id),
       NewsReferencesType.pin => pinActionButton(context, ref, id),
+      NewsReferencesType.taskList => taskListActionButton(context, ref, id),
       _ => const SizedBox(),
     };
   }
@@ -69,6 +73,7 @@ class SelectedActionButton extends ConsumerWidget {
               width: 300,
               child: PinListItemWidget(
                 pinId: pin.eventIdStr(),
+                showPinIndication: true,
                 onTaPinItem: (pinId) async {
                   final notifier = ref.read(newsStateProvider.notifier);
                   await notifier.selectPinToShare(context);
@@ -84,6 +89,36 @@ class SelectedActionButton extends ConsumerWidget {
             _log.severe('Failed to load cal event', e, s);
             return Center(
               child: Text(L10n.of(context).failedToLoadEvent(e)),
+            );
+          },
+        );
+  }
+
+  Widget taskListActionButton(BuildContext context, WidgetRef ref, String id) {
+    return ref.watch(taskListProvider(id)).when(
+          data: (taskList) {
+            return SizedBox(
+              width: 300,
+              child: TaskListItemCard(
+                showOnlyTaskList: true,
+                canExpand: false,
+                showTaskListIndication: true,
+                taskListId: taskList.eventIdStr(),
+                onTitleTap: () async {
+                  final notifier = ref.read(newsStateProvider.notifier);
+                  await notifier.selectTaskListToShare(context);
+                },
+              ),
+            );
+          },
+          loading: () => const SizedBox(
+            width: 300,
+            child: TasksListSkeleton(),
+          ),
+          error: (e, s) {
+            _log.severe('Failed to load task list', e, s);
+            return Center(
+              child: Text(L10n.of(context).errorLoadingTasks(e)),
             );
           },
         );

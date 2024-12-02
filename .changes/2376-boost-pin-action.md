@@ -1,1 +1,0 @@
-- [New] : Now you can share Pin as action item to Boost slide post.

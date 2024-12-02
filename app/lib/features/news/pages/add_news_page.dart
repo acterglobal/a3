@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
-import 'package:acter/common/widgets/html_editor.dart';
+import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/news/actions/submit_news.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -212,6 +212,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               Navigator.pop(context);
               final notifier = ref.read(newsStateProvider.notifier);
               await notifier.selectPinToShare(buildContext);
+            },
+            onShareTaskListSelected: () async {
+              Navigator.pop(context);
+              final notifier = ref.read(newsStateProvider.notifier);
+              await notifier.selectTaskListToShare(buildContext);
             },
           ),
         );
