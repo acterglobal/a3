@@ -513,6 +513,15 @@ object ActerPin {
     /// the room/space this item belongs to
     fn room_id_str() -> string;
 
+    /// get the internal reference object
+    fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// get the internal acter:-link
+    fn internal_link() -> string;
+
+    /// generate or lookup the external https:-link
+    fn external_link() -> Future<Result<string>>;
+
     /// sender id
     fn sender() -> UserId;
 
@@ -621,6 +630,17 @@ object CalendarEvent {
 
     /// get all location details
     fn locations() -> Vec<EventLocationInfo>;
+
+
+    /// get the internal reference object
+    fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// get the internal acter:-link
+    fn internal_link() -> string;
+
+    /// generate or lookup the external https:-link
+    fn external_link() -> Future<Result<string>>;
+
 }
 
 object CalendarEventUpdateBuilder {
@@ -1828,6 +1848,16 @@ object TaskList {
 
     /// the id of the space this TaskList belongs to
     fn space_id_str() -> string;
+
+    /// get the internal reference object
+    fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// get the internal acter:-link
+    fn internal_link() -> string;
+
+    /// generate or lookup the external https:-link
+    fn external_link() -> Future<Result<string>>;
+
 
     /// get the comments manager
     fn comments() -> Future<Result<CommentsManager>>;
