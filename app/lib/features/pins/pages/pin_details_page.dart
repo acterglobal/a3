@@ -7,14 +7,14 @@ import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/share/share_space_object_widget.dart';
-import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/common/widgets/share/action/share_space_object_action.dart';
 import 'package:acter/features/attachments/types.dart';
-import 'package:acter/features/comments/types.dart';
-import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
-import 'package:acter/features/comments/widgets/comments_section_widget.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
+import 'package:acter/features/comments/types.dart';
+import 'package:acter/features/comments/widgets/comments_section_widget.dart';
+import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
@@ -30,6 +30,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::pin::details_page');
@@ -67,10 +68,14 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
     return AppBar(
       actions: [
         if (pinData != null)
-          ShareSpaceObjectWidget(
-            spaceId: pinData.roomIdStr(),
-            objectType: ObjectType.pin,
-            objectId: widget.pinId,
+          IconButton(
+            icon: PhosphorIcon(PhosphorIcons.shareFat()),
+            onPressed: () => openShareSpaceObjectDialog(
+              context: context,
+              spaceId: pinData.roomIdStr(),
+              objectType: ObjectType.pin,
+              objectId: widget.pinId,
+            ),
           ),
         BookmarkAction(bookmarker: BookmarkType.forPins(widget.pinId)),
         _buildActionMenu(),

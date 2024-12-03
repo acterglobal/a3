@@ -9,17 +9,17 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/share/share_space_object_widget.dart';
-import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/common/widgets/share/action/share_space_object_action.dart';
 import 'package:acter/features/attachments/types.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/deep_linking/types.dart';
-import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/events/widgets/change_date_sheet.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
@@ -97,10 +97,14 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       pinned: true,
       actions: calendarEvent != null
           ? [
-              ShareSpaceObjectWidget(
-                spaceId: calendarEvent.roomIdStr(),
-                objectType: ObjectType.calendarEvent,
-                objectId: widget.calendarId,
+              IconButton(
+                icon: PhosphorIcon(PhosphorIcons.shareFat()),
+                onPressed: () => openShareSpaceObjectDialog(
+                  context: context,
+                  spaceId: calendarEvent.roomIdStr(),
+                  objectType: ObjectType.calendarEvent,
+                  objectId: widget.calendarId,
+                ),
               ),
               BookmarkAction(
                 bookmarker: BookmarkType.forEvent(widget.calendarId),
