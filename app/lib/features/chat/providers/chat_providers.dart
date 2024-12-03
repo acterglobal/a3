@@ -270,3 +270,19 @@ final subChatsListProvider =
 
   return subChatsList;
 });
+
+// useful for disabling send button for short time while message is preparing to be sent
+final allowSendInputProvider = StateProvider.family.autoDispose<bool, String>(
+  (ref, roomId) => ref.watch(
+    chatInputProvider
+        .select((state) => state.sendingState == SendingState.preparing),
+  ),
+);
+
+// whether user has enough permissions to send message in room
+final canSendMessageProvider = FutureProvider.family<bool, String>(
+  (ref, roomId) async {
+    final membership = ref.watch(roomMembershipProvider(roomId));
+    return membership.valueOrNull?.canString('CanSendChatMessages') == true;
+  },
+);

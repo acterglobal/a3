@@ -10,10 +10,12 @@ import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/cross_signing/widgets/cross_signing.dart';
+import 'package:acter/features/deep_linking/actions/handle_deep_link_uri.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
+import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter/features/main/widgets/bottom_navigation_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +61,7 @@ class AppShellState extends ConsumerState<AppShell> {
       () => bottomNavigationTutorials(context: context),
     );
     initShake();
+    _initDeepLinking();
 
     // these want to be sure to execute in order
     await _initNotifications();
@@ -111,6 +114,17 @@ class AppShellState extends ConsumerState<AppShell> {
     if (!pushActive) return;
     _log.info('Attempting to ask for push notifications');
     setupPushNotifications(client);
+  }
+
+  Future<void> _initDeepLinking() async {
+    appLinks.uriLinkStream.listen((Uri uri) async {
+      debugPrint('Received Deep Link URI: $uri');
+      if (mounted) {
+        await handleDeepLinkUri(context: context, ref: ref, uri: uri);
+      } else {
+        debugPrint('Not mounted');
+      }
+    });
   }
 
   @override

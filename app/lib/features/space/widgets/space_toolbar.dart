@@ -100,21 +100,20 @@ class SpaceToolbar extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       title: spaceTitle,
       actions: [
-        showInviteBtn && invited.length <= 100
-            ? OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                ),
-                onPressed: () => context.pushNamed(
-                  Routes.spaceInvite.name,
-                  pathParameters: {'spaceId': spaceId},
-                ),
-                child: Text(lang.invite),
-              )
-            : const SizedBox.shrink(),
+        if (showInviteBtn && invited.length <= 100)
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
+            ),
+            onPressed: () => context.pushNamed(
+              Routes.spaceInvite.name,
+              pathParameters: {'spaceId': spaceId},
+            ),
+            child: Text(lang.invite),
+          ),
         IconButton(
           icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
           onPressed: () async {

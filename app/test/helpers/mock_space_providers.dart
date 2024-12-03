@@ -32,7 +32,7 @@ class RetryMockAsyncSpaceNotifier extends FamilyAsyncNotifier<Space?, String>
   }
 }
 
-class MockSpace extends Fake implements Space {
+class MockSpace extends Mock implements Space {
   final String id;
   final bool bookmarked;
 

@@ -45,6 +45,9 @@ class MockConvo extends Mock implements Convo {
   }
 
   @override
+  String getRoomIdStr() => roomId;
+
+  @override
   Future<bool> saveMsgDraft(
     String plainText,
     String? htmlText,

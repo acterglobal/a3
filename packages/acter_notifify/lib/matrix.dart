@@ -27,8 +27,17 @@ Future<bool> handleMatrixMessage(
   ShouldShowCheck? shouldShowCheck,
 }) async {
   final deviceId = message['device_id'] as String;
-  final roomId = message['room_id'] as String;
-  final eventId = message['event_id'] as String;
+
+  final mayBeRoomId = message['room_id'];
+  final mayBeEventId = message['event_id'];
+
+  if (mayBeEventId == null || mayBeRoomId == null) {
+    _log.warning(
+        'Received unsupported notification without event and/or room Id. Skipping. message: $message');
+    return false;
+  }
+  final roomId = mayBeRoomId as String;
+  final eventId = mayBeEventId as String;
   _log.info('Received msg $roomId: $eventId');
   try {
     final instance = await ActerSdk.instance;

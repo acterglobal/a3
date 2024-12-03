@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
+import 'package:acter/common/widgets/html_editor/services/mention_shortcuts.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
@@ -97,7 +100,7 @@ typedef ExportCallback = Function(String, String?);
 class HtmlEditor extends StatefulWidget {
   static const saveEditKey = Key('html-editor-save');
   static const cancelEditKey = Key('html-editor-cancel');
-
+  final String? roomId;
   final Widget? header;
   final Widget? footer;
   final bool autoFocus;
@@ -105,6 +108,7 @@ class HtmlEditor extends StatefulWidget {
   final bool shrinkWrap;
   final EditorState? editorState;
   final EdgeInsets? editorPadding;
+  final EditorScrollController? scrollController;
   final TextStyleConfiguration? textStyleConfiguration;
   final ExportCallback? onSave;
   final ExportCallback? onChanged;
@@ -112,6 +116,7 @@ class HtmlEditor extends StatefulWidget {
 
   const HtmlEditor({
     super.key,
+    this.roomId,
     this.editorState,
     this.onSave,
     this.onChanged,
@@ -121,6 +126,7 @@ class HtmlEditor extends StatefulWidget {
     this.editable = false,
     this.shrinkWrap = false,
     this.editorPadding = const EdgeInsets.all(10),
+    this.scrollController,
     this.header,
     this.footer,
   });
@@ -186,7 +192,9 @@ class HtmlEditorState extends State<HtmlEditor> {
 
   @override
   void dispose() {
+    editorState.selectionNotifier.dispose();
     editorScrollController.dispose();
+    _changeListener?.cancel();
     super.dispose();
   }
 
@@ -199,7 +207,8 @@ class HtmlEditorState extends State<HtmlEditor> {
   @override
   Widget build(BuildContext context) {
     final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
-    return isDesktop ? desktopEditor() : mobileEditor();
+    final roomId = widget.roomId;
+    return isDesktop ? desktopEditor(roomId) : mobileEditor(roomId);
   }
 
   Widget? generateFooter() {
@@ -244,7 +253,7 @@ class HtmlEditorState extends State<HtmlEditor> {
     return null;
   }
 
-  Widget desktopEditor() {
+  Widget desktopEditor(String? roomId) {
     return FloatingToolbar(
       items: [
         paragraphItem,
@@ -272,16 +281,22 @@ class HtmlEditorState extends State<HtmlEditor> {
           autoFocus: widget.autoFocus,
           header: widget.header,
           // local states
-          editorScrollController: editorScrollController,
+          editorScrollController:
+              widget.scrollController ?? editorScrollController,
           editorState: editorState,
           editorStyle: desktopEditorStyle(),
           footer: generateFooter(),
+          characterShortcutEvents: [
+            ...standardCharacterShortcutEvents,
+            if (roomId != null) ...mentionShortcuts(context, roomId),
+          ],
+          commandShortcutEvents: [...standardCommandShortcutEvents],
         ),
       ),
     );
   }
 
-  Widget mobileEditor() {
+  Widget mobileEditor(String? roomId) {
     return MobileToolbarV2(
       toolbarItems: [
         textDecorationMobileToolbarItemV2,
@@ -293,39 +308,51 @@ class HtmlEditorState extends State<HtmlEditor> {
         linkMobileToolbarItem,
         quoteMobileToolbarItem,
       ],
+      toolbarHeight: 48,
       editorState: editorState,
-      child: MobileFloatingToolbar(
-        editorScrollController: editorScrollController,
-        editorState: editorState,
-        toolbarBuilder: (context, anchor, closeToolbar) {
-          return AdaptiveTextSelectionToolbar.editable(
-            clipboardStatus: ClipboardStatus.pasteable,
-            onCopy: () {
-              copyCommand.execute(editorState);
-              closeToolbar();
-            },
-            onCut: () => cutCommand.execute(editorState),
-            onPaste: () => pasteCommand.execute(editorState),
-            onSelectAll: () => selectAllCommand.execute(editorState),
-            onLiveTextInput: null,
-            onLookUp: null,
-            onSearchWeb: null,
-            onShare: null,
-            anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
-          );
-        },
-        child: AppFlowyEditor(
-          // widget pass through
-          editable: widget.editable,
-          shrinkWrap: widget.shrinkWrap,
-          autoFocus: widget.autoFocus,
-          header: widget.header,
-          // local states
-          editorState: editorState,
-          editorScrollController: editorScrollController,
-          editorStyle: mobileEditorStyle(),
-          footer: generateFooter(),
-        ),
+      child: Column(
+        children: [
+          Expanded(
+            child: MobileFloatingToolbar(
+              editorScrollController: editorScrollController,
+              editorState: editorState,
+              toolbarBuilder: (context, anchor, closeToolbar) {
+                return AdaptiveTextSelectionToolbar.editable(
+                  clipboardStatus: ClipboardStatus.pasteable,
+                  onCopy: () {
+                    copyCommand.execute(editorState);
+                    closeToolbar();
+                  },
+                  onCut: () => cutCommand.execute(editorState),
+                  onPaste: () => pasteCommand.execute(editorState),
+                  onSelectAll: () => selectAllCommand.execute(editorState),
+                  onLiveTextInput: null,
+                  onLookUp: null,
+                  onSearchWeb: null,
+                  onShare: null,
+                  anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
+                );
+              },
+              child: AppFlowyEditor(
+                // widget pass through
+                editable: widget.editable,
+                shrinkWrap: widget.shrinkWrap,
+                autoFocus: widget.autoFocus,
+                header: widget.header,
+                // local states
+                editorState: editorState,
+                editorScrollController:
+                    widget.scrollController ?? editorScrollController,
+                editorStyle: mobileEditorStyle(),
+                footer: generateFooter(),
+                characterShortcutEvents: [
+                  ...standardCharacterShortcutEvents,
+                  if (roomId != null) ...mentionShortcuts(context, roomId),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -342,6 +369,8 @@ class HtmlEditorState extends State<HtmlEditor> {
                 .bodySmall
                 .expect('bodySmall style not available'),
           ),
+      textSpanDecorator:
+          widget.roomId != null ? customizeAttributeDecorator : null,
     );
   }
 
@@ -357,6 +386,50 @@ class HtmlEditorState extends State<HtmlEditor> {
                 .bodySmall
                 .expect('bodySmall style not available'),
           ),
+      mobileDragHandleBallSize: const Size(12, 12),
+      textSpanDecorator:
+          widget.roomId != null ? customizeAttributeDecorator : null,
+    );
+  }
+
+  InlineSpan customizeAttributeDecorator(
+    BuildContext context,
+    Node node,
+    int index,
+    TextInsert text,
+    TextSpan before,
+    TextSpan after,
+  ) {
+    final attributes = text.attributes;
+    if (attributes == null) {
+      return before;
+    }
+    final roomId = widget.roomId;
+    // Inline Mentions
+    final mention = attributes.entries
+        .firstWhere((e) => e.value is MentionAttributes)
+        .value as MentionAttributes?;
+    if (mention != null && roomId != null) {
+      return WidgetSpan(
+        alignment: PlaceholderAlignment.middle,
+        style: after.style,
+        child: MentionBlock(
+          key: ValueKey(mention.mentionId),
+          userRoomId: roomId,
+          node: node,
+          index: index,
+          mentionAttributes: mention,
+        ),
+      );
+    }
+
+    return defaultTextSpanDecoratorForAttribute(
+      context,
+      node,
+      index,
+      text,
+      before,
+      after,
     );
   }
 }

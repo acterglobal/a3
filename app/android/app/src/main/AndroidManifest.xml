@@ -10,7 +10,7 @@
 
     <!-- File Picker Permissions issue on Android 10 https://github.com/miguelpruivo/flutter_file_picker/issues/1461 -->
    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:replace="android:maxSdkVersion" android:maxSdkVersion="32" />
    <application
         android:label="Acter"
         android:name="${applicationName}"
@@ -40,6 +40,26 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
+            <!-- App Link for https://app.acter.global -->
+            <!-- App Link for https://matrix.to/ -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="app.acter.global" android:pathPrefix="/" />
+                <data android:scheme="https" android:host="matrix.to" android:pathPrefix="/" />
+            </intent-filter>
+
+            <!-- Deep Link for matrix and acter-scheme -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="matrix" />
+                <data android:scheme="acter" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

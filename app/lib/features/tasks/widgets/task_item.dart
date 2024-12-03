@@ -66,9 +66,11 @@ class TaskItem extends ConsumerWidget {
       ),
       error: (e, s) {
         _log.severe('Failed to load task', e, s);
-        return ListTile(
-          title: Text(lang.loadingFailed(e)),
-        );
+        // FIXME: don't show broken task list items on main screen;
+        return const SizedBox.shrink();
+        // // return ListTile(
+        // //   title: Text(lang.loadingFailed(e)),
+        // );
       },
       loading: () => ListTile(
         title: Text(lang.loading),

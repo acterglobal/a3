@@ -148,9 +148,15 @@ dependencies:
   phosphor_flutter: ^2.1.0
   device_calendar: ^4.3.3-20240801
   quickalert: ^1.1.0
-  drag_and_drop_lists: ^0.4.1
+  drag_and_drop_lists:
+    git:
+      url: https://github.com/acterglobal/DragAndDropLists
+      ref: master
   permission_handler: ^11.3.1
   hooks_riverpod: ^2.6.1
+  app_links: ^6.3.2
+  pretty_qr_code: ^3.3.0
+  qr_code_dart_scan: ^0.9.3
 
 dev_dependencies:
   flutter_test:
@@ -277,3 +283,5 @@ msix_config:
   icons_background_color: transparent
   architecture: x64
   capabilities: "internetClient,removableStorage"
+  protocol_activation: https, matrix, acter
+  app_uri_handler_hosts: app.global.acter,matrix.to

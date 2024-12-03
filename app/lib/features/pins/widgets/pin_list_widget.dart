@@ -18,6 +18,7 @@ class PinListWidget extends ConsumerWidget {
   final int? limit;
   final bool showSectionHeader;
   final VoidCallback? onClickSectionHeader;
+  final Function(String)? onTaPinItem;
   final bool shrinkWrap;
   final Widget emptyState;
 
@@ -29,6 +30,7 @@ class PinListWidget extends ConsumerWidget {
     this.searchValue,
     this.showSectionHeader = false,
     this.onClickSectionHeader,
+    this.onTaPinItem,
     this.shrinkWrap = true,
     this.emptyState = const SizedBox.shrink(),
   });
@@ -91,6 +93,7 @@ class PinListWidget extends ConsumerWidget {
         return PinListItemWidget(
           pinId: pinList[index].eventIdStr(),
           showSpace: spaceId == null,
+          onTaPinItem: onTaPinItem,
         );
       },
     );

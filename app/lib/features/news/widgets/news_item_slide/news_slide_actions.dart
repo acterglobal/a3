@@ -4,6 +4,10 @@ import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -27,14 +31,92 @@ class NewsSlideActions extends ConsumerWidget {
     if (newsReferencesList.isEmpty) return const SizedBox();
     final referenceDetails = newsReferencesList.first.refDetails();
     final evtType = NewsReferencesType.fromStr(referenceDetails.typeStr());
-    final eventID = referenceDetails.targetIdStr() ?? '';
+    final id = referenceDetails.targetIdStr() ?? '';
     return switch (evtType) {
       NewsReferencesType.calendarEvent =>
-        renderCalendarEventAction(context, ref, eventID),
+        renderCalendarEventAction(context, ref, id),
+      NewsReferencesType.pin => renderPinAction(context, ref, id),
+      NewsReferencesType.taskList => renderTaskListAction(context, ref, id),
       NewsReferencesType.link =>
         renderLinkActionButton(context, ref, referenceDetails),
       _ => renderNotSupportedAction(context)
     };
+  }
+
+  Widget renderPinAction(
+    BuildContext context,
+    WidgetRef ref,
+    String pinId,
+  ) {
+    final lang = L10n.of(context);
+    final pinData = ref.watch(pinProvider(pinId));
+    final pinError = pinData.asError;
+    if (pinError != null) {
+      _log.severe('Error loading pin', pinError.error, pinError.stackTrace);
+      return Card(
+        child: ListTile(
+          leading: const Icon(Icons.pin),
+          title: Text(lang.pinNoLongerAvailable),
+          subtitle: Text(
+            lang.pinDeletedOrFailedToLoad,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+          onTap: () async {
+            await ActerErrorDialog.show(
+              context: context,
+              error: pinError.error,
+              stack: pinError.stackTrace,
+              onRetryTap: () => ref.invalidate(pinProvider(pinId)),
+            );
+          },
+        ),
+      );
+    }
+    return PinListItemWidget(
+      pinId: pinId,
+      showPinIndication: true,
+    );
+  }
+
+  Widget renderTaskListAction(
+    BuildContext context,
+    WidgetRef ref,
+    String taskListId,
+  ) {
+    final lang = L10n.of(context);
+    final taskListData = ref.watch(taskListProvider(taskListId));
+    final taskListError = taskListData.asError;
+    if (taskListError != null) {
+      _log.severe(
+        'Error loading task list',
+        taskListError.error,
+        taskListError.stackTrace,
+      );
+      return Card(
+        child: ListTile(
+          leading: const Icon(Icons.list),
+          title: Text(lang.pinNoLongerAvailable),
+          subtitle: Text(
+            lang.pinDeletedOrFailedToLoad,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+          onTap: () async {
+            await ActerErrorDialog.show(
+              context: context,
+              error: taskListError.error,
+              stack: taskListError.stackTrace,
+              onRetryTap: () => ref.invalidate(pinProvider(taskListId)),
+            );
+          },
+        ),
+      );
+    }
+    return TaskListItemCard(
+      taskListId: taskListId,
+      showOnlyTaskList: true,
+      canExpand: false,
+      showTaskListIndication: true,
+    );
   }
 
   Widget renderCalendarEventAction(
@@ -62,6 +144,8 @@ class NewsSlideActions extends ConsumerWidget {
                 context: context,
                 error: e,
                 stack: s,
+                onRetryTap: () =>
+                    ref.invalidate(calendarEventProvider(eventId)),
               );
             },
           ),

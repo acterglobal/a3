@@ -38,20 +38,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::chat::custom_input');
 
-final _allowEdit = StateProvider.family.autoDispose<bool, String>(
-  (ref, roomId) => ref.watch(
-    chatInputProvider
-        .select((state) => state.sendingState == SendingState.preparing),
-  ),
-);
-
-final canSendProvider = FutureProvider.family<bool?, String>(
-  (ref, roomId) async {
-    final membership = ref.watch(roomMembershipProvider(roomId));
-    return membership.valueOrNull?.canString('CanSendChatMessages');
-  },
-);
-
 class CustomChatInput extends ConsumerWidget {
   static const noAccessKey = Key('custom-chat-no-access');
   static const loadingKey = Key('custom-chat-loading');
@@ -68,7 +54,7 @@ class CustomChatInput extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canSend = ref.watch(canSendProvider(roomId)).valueOrNull;
+    final canSend = ref.watch(canSendMessageProvider(roomId)).valueOrNull;
     if (canSend == null) {
       // we are still loading
       return loadingState(context);
@@ -82,29 +68,25 @@ class CustomChatInput extends ConsumerWidget {
 
     return FrostEffect(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 15),
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
         decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Row(
-            children: [
-              const SizedBox(width: 1),
-              const Icon(
-                Atlas.block_prohibited_thin,
-                size: 14,
-                color: Colors.grey,
+        child: Row(
+          children: [
+            const SizedBox(width: 1),
+            Icon(
+              Atlas.block_prohibited_thin,
+              size: 14,
+              color: Theme.of(context).unselectedWidgetColor,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              key: noAccessKey,
+              L10n.of(context).chatMissingPermissionsToSend,
+              style: TextStyle(
+                color: Theme.of(context).unselectedWidgetColor,
               ),
-              const SizedBox(width: 4),
-              Text(
-                key: noAccessKey,
-                L10n.of(context).chatMissingPermissionsToSend,
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -285,7 +267,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     // delay operation to avoid excessive re-writes
     _debounceTimer = Timer(const Duration(milliseconds: 300), () async {
       // save composing draft
-      await saveDraft(textController.text, widget.roomId, ref);
+      await saveDraft(textController.text, null, widget.roomId, ref);
       _log.info('compose draft saved for room: ${widget.roomId}');
     });
   }
@@ -435,7 +417,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   }
 
   Widget renderSendButton(BuildContext context, String roomId) {
-    final allowEditing = ref.watch(_allowEdit(roomId));
+    final allowEditing = ref.watch(allowSendInputProvider(roomId));
 
     if (allowEditing) {
       return IconButton.filled(
@@ -779,7 +761,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
           (next.selectedMessage != prev?.selectedMessage ||
               prev?.selectedMessageState != next.selectedMessageState)) {
         // controller doesn’t update text so manually save draft state
-        saveDraft(widget.controller.text, widget.roomId, ref);
+        saveDraft(widget.controller.text, null, widget.roomId, ref);
         WidgetsBinding.instance.addPostFrameCallback((_) {
           widget.chatFocus.requestFocus();
         });
@@ -880,7 +862,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         controller: widget.controller,
         focusNode: chatFocus,
         textCapitalization: TextCapitalization.sentences,
-        enabled: ref.watch(_allowEdit(widget.roomId)),
+        enabled: ref.watch(allowSendInputProvider(widget.roomId)),
         onChanged: (String val) {
           // send typing notice
           widget.onTyping.map((cb) => cb(val.isNotEmpty));

@@ -40,9 +40,11 @@ Future<void> saveCategories(
     for (final category in categoryList) {
       bool isValidCategory = CategoryUtils().isValidCategory(category);
       if (!isValidCategory) continue;
+      final title = category.title;
+      if (title == null) continue;
       final newCategoryItem = categoriesManager.newCategoryBuilder();
       //ADD TITLE
-      newCategoryItem.title(category.title);
+      newCategoryItem.title(title);
 
       //ADD COLOR AND ICON
       category.color.map((color) {

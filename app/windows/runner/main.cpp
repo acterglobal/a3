@@ -1,5 +1,6 @@
 #include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
+#include "app_links/app_links_plugin_c_api.h"
 #include <windows.h>
 
 #include "flutter_window.h"
@@ -10,6 +11,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
 
   HWND hwnd = ::FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", L"Acter");
   if (hwnd != NULL) {
+    // Dispatch new link to current window
+    SendAppLink(hwnd);
     ::ShowWindow(hwnd, SW_NORMAL);
     ::SetForegroundWindow(hwnd);
     return EXIT_FAILURE;

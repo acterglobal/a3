@@ -4,8 +4,8 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
+import 'package:acter/features/chat_ng/widgets/chat_input/chat_input.dart';
 import 'package:acter/features/chat_ng/widgets/chat_messages.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:flutter/material.dart';
@@ -109,9 +109,7 @@ class ChatRoomNgPage extends ConsumerWidget {
         body: Column(
           children: [
             appBar(context, ref),
-            Expanded(
-              child: ChatMessages(roomId: roomId),
-            ),
+            Expanded(child: ChatMessages(roomId: roomId)),
             chatInput(context, ref),
           ],
         ),
@@ -125,7 +123,7 @@ class ChatRoomNgPage extends ConsumerWidget {
         (settings) => settings.valueOrNull?.typingNotice() ?? false,
       ),
     );
-    return CustomChatInput(
+    return ChatInput(
       key: Key('chat-input-$roomId'),
       roomId: roomId,
       onTyping: (typing) async {

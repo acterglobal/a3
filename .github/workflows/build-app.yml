@@ -232,7 +232,11 @@ jobs:
 
           app-store-connect fetch-signing-files $BUNDLE_ID \
             --platform IOS \
+            --type IOS_APP_STORE \
             --create
+
+          app-store-connect certificates list --type IOS_DISTRIBUTION --save || \
+            app-store-connect certificates create --type IOS_DISTRIBUTION --save
 
           keychain add-certificates
 

@@ -7,6 +7,7 @@ import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +19,9 @@ final _log = Logger('a3::tasks::widgets::task_list_item_card');
 class TaskListItemCard extends ConsumerWidget {
   final String taskListId;
   final bool showSpace;
+  final bool showTaskListIndication;
   final bool showCompletedTask;
+  final bool showOnlyTaskList;
   final bool initiallyExpanded;
   final bool canExpand;
   final GestureTapCallback? onTitleTap;
@@ -27,7 +30,9 @@ class TaskListItemCard extends ConsumerWidget {
     super.key,
     required this.taskListId,
     this.showSpace = false,
+    this.showTaskListIndication = false,
     this.showCompletedTask = false,
+    this.showOnlyTaskList = false,
     this.initiallyExpanded = true,
     this.canExpand = true,
     this.onTitleTap,
@@ -74,12 +79,14 @@ class TaskListItemCard extends ConsumerWidget {
         childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
         title: title(context, taskList),
         subtitle: subtitle(ref, taskList),
-        children: [
-          TaskItemsListWidget(
-            taskList: taskList,
-            showCompletedTask: showCompletedTask,
-          ),
-        ],
+        children: showOnlyTaskList
+            ? []
+            : [
+                TaskItemsListWidget(
+                  taskList: taskList,
+                  showCompletedTask: showCompletedTask,
+                ),
+              ],
       );
 
   Widget simple(BuildContext context, WidgetRef ref, TaskList taskList) =>
@@ -109,9 +116,28 @@ class TaskListItemCard extends ConsumerWidget {
               pathParameters: {'taskListId': taskListId},
             );
           },
-      child: Text(
-        key: Key('task-list-title-$taskListId'),
-        taskList.name(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            key: Key('task-list-title-$taskListId'),
+            taskList.name(),
+          ),
+          if (showTaskListIndication)
+            Row(
+              children: [
+                Icon(Atlas.list, size: 16),
+                SizedBox(width: 6),
+                Text(
+                  L10n.of(context).taskList,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+              ],
+            ),
+        ],
       ),
     );
   }

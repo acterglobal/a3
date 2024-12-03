@@ -731,6 +731,22 @@ pub fn new_task_list_ref_builder(
     Ok(builder)
 }
 
+pub fn new_pin_ref_builder(
+    target_id: String,
+    room_id: Option<String>,
+    action: Option<String>,
+) -> Result<RefDetailsBuilder> {
+    let target_id = EventId::parse(target_id)?;
+    let mut builder = RefDetailsBuilder::new_pin_ref_builder(target_id);
+    if let Some(room_id) = room_id {
+        builder.room_id(room_id);
+    }
+    if let Some(action) = action {
+        builder.action(action);
+    }
+    Ok(builder)
+}
+
 pub fn new_calendar_event_ref_builder(
     target_id: String,
     room_id: Option<String>,

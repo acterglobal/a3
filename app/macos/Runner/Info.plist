@@ -34,5 +34,12 @@
     <array>
         <string>whatsapp</string>
     </array>
+	<key>CFBundleURLName</key>
+	<string></string>
+	<key>CFBundleURLSchemes</key>
+	<array>
+		<string>matrix</string>
+		<string>acter</string>
+	</array>
 </dict>
 </plist>

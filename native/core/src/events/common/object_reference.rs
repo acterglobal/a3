@@ -73,6 +73,38 @@ impl FromStr for TaskListAction {
     }
 }
 
+#[derive(Eq, PartialEq, Clone, Display, Debug, Deserialize, Serialize, Default)]
+#[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
+pub enum PinAction {
+    #[default]
+    Link,
+    Embed,
+    EmbedSubscribe,
+}
+
+impl PinAction {
+    fn is_default(&self) -> bool {
+        matches!(self, PinAction::Link)
+    }
+}
+
+impl FromStr for PinAction {
+    type Err = crate::Error;
+
+    fn from_str(s: &str) -> Result<Self, crate::Error> {
+        match s {
+            "link" => Ok(PinAction::Link),
+            "embed" => Ok(PinAction::Embed),
+            "embed-subscribe" => Ok(PinAction::EmbedSubscribe),
+            _ => Err(crate::Error::FailedToParse {
+                model_type: "PinAction".to_owned(),
+                msg: format!("{s} is not a valid PinAction"),
+            }),
+        }
+    }
+}
+
 #[derive(Eq, PartialEq, Display, Clone, Debug, Deserialize, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
 #[strum(serialize_all = "kebab-case")]
@@ -134,6 +166,18 @@ pub enum RefDetails {
         #[serde(default, skip_serializing_if = "TaskListAction::is_default")]
         action: TaskListAction,
     },
+    Pin {
+        #[serde(alias = "event_id")]
+        /// the target event id
+        target_id: OwnedEventId,
+
+        /// if this links to an object not part of this room, but a different room
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        room_id: Option<OwnedRoomId>,
+
+        #[serde(default, skip_serializing_if = "PinAction::is_default")]
+        action: PinAction,
+    },
     CalendarEvent {
         #[serde(alias = "event_id")]
         /// the target event id
@@ -162,12 +206,14 @@ impl RefDetails {
             RefDetails::TaskList { .. } => "task-list".to_string(),
             RefDetails::CalendarEvent { .. } => "calendar-event".to_string(),
             RefDetails::Link { .. } => "link".to_string(),
+            RefDetails::Pin { .. } => "pin".to_string(),
         }
     }
 
     pub fn embed_action_str(&self) -> String {
         match self {
             RefDetails::Link { .. } => "link".to_string(),
+            RefDetails::Pin { .. } => "pin".to_string(),
             RefDetails::Task { action, .. } => action.to_string(),
             RefDetails::TaskList { action, .. } => action.to_string(),
             RefDetails::CalendarEvent { action, .. } => action.to_string(),
@@ -179,6 +225,7 @@ impl RefDetails {
             RefDetails::Link { .. } => None,
             RefDetails::Task { target_id, .. }
             | RefDetails::TaskList { target_id, .. }
+            | RefDetails::Pin { target_id, .. }
             | RefDetails::CalendarEvent { target_id, .. } => Some(target_id.to_string()),
         }
     }
@@ -188,6 +235,7 @@ impl RefDetails {
             RefDetails::Link { .. } => None,
             RefDetails::Task { room_id, .. }
             | RefDetails::TaskList { room_id, .. }
+            | RefDetails::Pin { room_id, .. }
             | RefDetails::CalendarEvent { room_id, .. } => room_id.as_ref().map(|p| p.to_string()),
         }
     }
@@ -235,6 +283,15 @@ impl RefDetailsBuilder {
             target_id,
             room_id: None,
             action: TaskListAction::default(),
+        };
+        RefDetailsBuilder { ref_details }
+    }
+
+    pub fn new_pin_ref_builder(target_id: OwnedEventId) -> Self {
+        let ref_details = RefDetails::Pin {
+            target_id,
+            room_id: None,
+            action: PinAction::default(),
         };
         RefDetailsBuilder { ref_details }
     }
