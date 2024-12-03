@@ -111,26 +111,29 @@ class ImageMessageEvent extends ConsumerWidget {
   }
 
   Widget imageUI(BuildContext context, WidgetRef ref, File mediaFile) {
-    return InkWell(
-      onTap: () {
-        showAdaptiveDialog(
-          context: context,
-          barrierDismissible: false,
-          useRootNavigator: false,
-          builder: (context) => ImageDialog(
-            title: content.body(),
-            imageFile: mediaFile,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: InkWell(
+        onTap: () {
+          showAdaptiveDialog(
+            context: context,
+            barrierDismissible: false,
+            useRootNavigator: false,
+            builder: (context) => ImageDialog(
+              title: content.body(),
+              imageFile: mediaFile,
+            ),
+          );
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 300,
+              maxHeight: 300,
+            ),
+            child: imageFileView(context, ref, mediaFile),
           ),
-        );
-      },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: 300,
-            maxHeight: 300,
-          ),
-          child: imageFileView(context, ref, mediaFile),
         ),
       ),
     );

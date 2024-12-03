@@ -6,11 +6,14 @@ import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dar
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
+import 'package:acter/features/chat_ng/widgets/events/member_update_event.dart';
+import 'package:acter/features/chat_ng/widgets/events/state_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show RoomMessage, RoomVirtualItem, RoomEventItem;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -71,6 +74,7 @@ class ChatEvent extends ConsumerWidget {
     );
     final options = AvatarOptions.DM(avatarInfo, size: 14);
     final myId = ref.watch(myUserIdStrProvider);
+    final messageId = msg.uniqueId();
     final isUser = myId == item.sender();
     // TODO: render a regular timeline event
     return Row(
@@ -86,14 +90,14 @@ class ChatEvent extends ConsumerWidget {
               )
             : const SizedBox(width: 40),
         Flexible(
-          child: _buildEventItem(msg, item, isUser, showAvatar),
+          child: _buildEventItem(messageId, item, isUser, showAvatar),
         ),
       ],
     );
   }
 
   Widget _buildEventItem(
-    RoomMessage msg,
+    String messageId,
     RoomEventItem item,
     bool isUser,
     bool showAvatar,
@@ -101,7 +105,7 @@ class ChatEvent extends ConsumerWidget {
     final eventType = item.eventType();
     switch (eventType) {
       case 'm.room.message':
-        return _buildMsgEventItem(roomId, item, msg, isUser, showAvatar);
+        return _buildMsgEventItem(roomId, messageId, item, isUser, showAvatar);
       case 'm.room.redaction':
         return ChatBubble(
           isUser: isUser,
@@ -114,6 +118,29 @@ class ChatEvent extends ConsumerWidget {
           showAvatar: showAvatar,
           child: EncryptedMessageWidget(),
         );
+      case 'm.room.member':
+        return MemberUpdateEvent(isUser: isUser, item: item);
+      case 'm.policy.rule.room':
+      case 'm.policy.rule.server':
+      case 'm.policy.rule.user':
+      case 'm.room.aliases':
+      case 'm.room.avatar':
+      case 'm.room.canonical_alias':
+      case 'm.room.create':
+      case 'm.room.encryption':
+      case 'm.room.guest.access':
+      case 'm.room.history_visibility':
+      case 'm.room.join.rules':
+      case 'm.room.name':
+      case 'm.room.pinned_events':
+      case 'm.room.power_levels':
+      case 'm.room.server_acl':
+      case 'm.room.third_party_invite':
+      case 'm.room.tombstone':
+      case 'm.room.topic':
+      case 'm.space.child':
+      case 'm.space.parent':
+        return StateUpdateEvent(item: item);
       default:
         return _buildUnsupportedMessage(eventType);
     }
@@ -121,14 +148,14 @@ class ChatEvent extends ConsumerWidget {
 
   Widget _buildMsgEventItem(
     String roomId,
+    String messageId,
     RoomEventItem item,
-    RoomMessage msg,
     bool isUser,
     bool showAvatar,
   ) {
     final msgType = item.msgType();
     final content = item.msgContent();
-    final messageId = msg.uniqueId();
+
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
 

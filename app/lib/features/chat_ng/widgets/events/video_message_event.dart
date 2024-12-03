@@ -105,41 +105,44 @@ class VideoMessageEvent extends ConsumerWidget {
   }
 
   Widget videoUI(BuildContext context, File mediaFile, File? thumbFile) {
-    return InkWell(
-      onTap: () {
-        showAdaptiveDialog(
-          context: context,
-          barrierDismissible: false,
-          useRootNavigator: false,
-          builder: (context) => VideoDialog(
-            title: content.body(),
-            videoFile: mediaFile,
-          ),
-        );
-      },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: 300,
-            maxHeight: 300,
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              if (thumbFile != null) videoThumbFileView(context, thumbFile),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.black26,
-                  borderRadius: BorderRadius.circular(30.0),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: InkWell(
+        onTap: () {
+          showAdaptiveDialog(
+            context: context,
+            barrierDismissible: false,
+            useRootNavigator: false,
+            builder: (context) => VideoDialog(
+              title: content.body(),
+              videoFile: mediaFile,
+            ),
+          );
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 300,
+              maxHeight: 300,
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (thumbFile != null) videoThumbFileView(context, thumbFile),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black26,
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  child: Icon(
+                    Icons.play_arrow,
+                    size: 50.0,
+                    semanticLabel: L10n.of(context).play,
+                  ),
                 ),
-                child: Icon(
-                  Icons.play_arrow,
-                  size: 50.0,
-                  semanticLabel: L10n.of(context).play,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
