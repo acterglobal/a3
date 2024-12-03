@@ -165,6 +165,41 @@ impl RefPreview {
     }
 }
 
+#[derive(Eq, PartialEq, Clone, Default, Debug, Deserialize, Serialize)]
+pub struct CalendarEventRefPreview {
+    pub title: Option<String>,
+    pub room_display_name: Option<String>,
+    pub participants: Option<u32>,
+    pub start_at_utc: Option<i64>,
+}
+
+impl CalendarEventRefPreview {
+    pub fn new(
+        title: Option<String>,
+        room_display_name: Option<RoomDisplayName>,
+        participants: Option<u32>,
+        start_at_utc: Option<i64>,
+    ) -> Self {
+        CalendarEventRefPreview {
+            title,
+            participants,
+            start_at_utc,
+            room_display_name: room_display_name.and_then(|r| match r {
+                RoomDisplayName::Named(name)
+                | RoomDisplayName::Aliased(name)
+                | RoomDisplayName::Calculated(name)
+                | RoomDisplayName::EmptyWas(name) => Some(name),
+                _ => None,
+            }),
+        }
+    }
+}
+
+impl CalendarEventRefPreview {
+    fn is_none(&self) -> bool {
+        self.title.is_none() && self.room_display_name.is_none()
+    }
+}
 #[derive(Eq, PartialEq, Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case", tag = "ref")]
 pub enum RefDetails {
@@ -228,8 +263,8 @@ pub enum RefDetails {
         room_id: Option<OwnedRoomId>,
         #[serde(default, skip_serializing_if = "Vec::is_empty")]
         via: Vec<OwnedServerName>,
-        #[serde(default, skip_serializing_if = "RefPreview::is_none")]
-        preview: RefPreview,
+        #[serde(default, skip_serializing_if = "CalendarEventRefPreview::is_none")]
+        preview: CalendarEventRefPreview,
 
         #[serde(default, skip_serializing_if = "CalendarEventAction::is_default")]
         action: CalendarEventAction,

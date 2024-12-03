@@ -6,7 +6,6 @@ use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
-use url;
 
 use crate::utils::random_user_with_template;
 
@@ -259,7 +258,7 @@ async fn pin_external_link() -> Result<()> {
         .find(|p| !p.is_link())
         .expect("we’ve created one non-link pin");
 
-    // START actual comment on pin
+    // generate the external and internal links
 
     let internal_link = pin.internal_link();
     let external_link = pin.external_link().await?;

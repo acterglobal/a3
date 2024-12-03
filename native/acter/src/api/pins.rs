@@ -229,9 +229,9 @@ impl Pin {
                 let via = room.route().await?;
                 let room_display_name = room.cached_display_name();
                 Ok(RefDetails::Pin {
-                    target_id: target_id,
+                    target_id,
                     room_id: Some(room_id),
-                    via: via,
+                    via,
                     preview: RefPreview::new(Some(title), room_display_name),
                     action: Default::default(),
                 })

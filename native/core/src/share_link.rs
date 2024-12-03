@@ -7,15 +7,14 @@ pub mod api {
             api::{request, response, Metadata},
             metadata,
         };
-        use serde::Serialize;
         use serde;
-
+        use serde::Serialize;
 
         #[derive(Serialize, Default, Debug, Clone)]
-        #[serde(rename_all="kebab-case")]
+        #[serde(rename_all = "kebab-case")]
         enum RequestType {
             #[default]
-            Ref
+            Ref,
         }
 
         use crate::events::RefDetails;
@@ -33,13 +32,16 @@ pub mod api {
         pub struct Request {
             #[serde(flatten)]
             inner: RefDetails,
-            #[serde(rename="type")]
+            #[serde(rename = "type")]
             req_type: RequestType,
         }
 
         impl Request {
             pub fn new(inner: RefDetails) -> Self {
-                Request { inner, req_type: Default::default() }
+                Request {
+                    inner,
+                    req_type: Default::default(),
+                }
             }
         }
 
