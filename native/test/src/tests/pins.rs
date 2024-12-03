@@ -6,6 +6,7 @@ use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
+use url;
 
 use crate::utils::random_user_with_template;
 
@@ -263,7 +264,14 @@ async fn pin_external_link() -> Result<()> {
     let internal_link = pin.internal_link();
     let external_link = pin.external_link().await?;
 
-    println!("{internal_link} - {external_link}");
+    let room_id = &pin.room_id().to_string()[1..];
+    let pin_id = &pin.event_id().to_string()[1..];
 
+    let path = format!("o/{room_id}/pin/{pin_id}");
+
+    assert_eq!(internal_link, format!("acter:{path}"));
+
+    let ext_url = url::Url::parse(&external_link)?;
+    assert_eq!(ext_url.fragment().expect("must have fragment"), &path);
     Ok(())
 }

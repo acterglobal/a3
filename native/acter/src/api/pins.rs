@@ -240,8 +240,8 @@ impl Pin {
     }
 
     pub fn internal_link(&self) -> String {
-        let target_id = self.content.event_id();
-        let room_id = self.room.room_id();
+        let target_id = &self.content.event_id().to_string()[1..];
+        let room_id = &self.room.room_id().to_string()[1..];
         format!("acter:o/{room_id}/pin/{target_id}")
     }
 
