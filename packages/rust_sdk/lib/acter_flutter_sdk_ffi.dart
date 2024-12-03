@@ -35423,7 +35423,7 @@ class RefDetails {
     return tmp2;
   }
 
-  /// gives either `link`, `task`, `task-list` or `calendar=event`
+  /// gives either `link`, `task`, `task-list` or `calendar-event`
   String typeStr() {
     var tmp0 = 0;
     tmp0 = _box.borrow();

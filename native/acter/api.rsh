@@ -113,7 +113,7 @@ object RefDetails {
     fn target_id_str() -> Option<string>;
     /// if that is in a different room, specified here
     fn room_id_str() -> Option<string>;
-    /// gives either `link`, `task`, `task-list` or `calendar=event`
+    /// gives either `link`, `task`, `task-list` or `calendar-event`
     fn type_str() -> string;
     /// what type of embed action is requested_inputs
     fn embed_action_str() -> string;
