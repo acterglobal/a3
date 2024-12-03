@@ -4,7 +4,7 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';

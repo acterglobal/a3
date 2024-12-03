@@ -2,7 +2,7 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/files/actions/file_share.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';

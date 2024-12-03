@@ -128,9 +128,9 @@ class ChatEvent extends ConsumerWidget {
       case 'm.room.canonical_alias':
       case 'm.room.create':
       case 'm.room.encryption':
-      case 'm.room.guest.access':
+      case 'm.room.guest_access':
       case 'm.room.history_visibility':
-      case 'm.room.join.rules':
+      case 'm.room.join_rules':
       case 'm.room.name':
       case 'm.room.pinned_events':
       case 'm.room.power_levels':
@@ -193,7 +193,7 @@ class ChatEvent extends ConsumerWidget {
 
   Widget _buildUnsupportedMessage(String? msgtype) {
     return Text(
-      'Unsupported message type: $msgtype',
+      'Unsupported event type: $msgtype',
     );
   }
 }

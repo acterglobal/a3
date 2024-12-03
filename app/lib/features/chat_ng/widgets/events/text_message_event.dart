@@ -1,6 +1,6 @@
 import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_matrix_html/text_parser.dart';

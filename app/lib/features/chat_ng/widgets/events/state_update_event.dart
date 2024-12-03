@@ -16,6 +16,7 @@ class StateUpdateEvent extends StatelessWidget {
       padding: const EdgeInsets.only(
         left: 10,
         bottom: 5,
+        right: 10,
       ),
       child: RichText(
         text: TextSpan(
