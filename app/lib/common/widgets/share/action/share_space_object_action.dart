@@ -65,6 +65,7 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
               attachmentOptionsUI(context),
               SizedBox(height: 16),
               externalShareOptionsUI(context),
+              SizedBox(height: 20),
             ],
             if (fileDetails != null) fileShareOptionsUI(context),
           ],
