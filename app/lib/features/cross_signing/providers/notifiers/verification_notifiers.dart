@@ -20,6 +20,12 @@ class VerificationNotifier extends StateNotifier<VerificationState> {
   late Stream<VerificationEvent>? _listener;
   late StreamSubscription<VerificationEvent>? _poller;
 
+  late Stream<ToDeviceVerificationEvent>? _toDeviceListener;
+  late StreamSubscription<ToDeviceVerificationEvent>? _toDevicePoller;
+
+  late Stream<RoomMsgVerificationEvent>? _roomMsgListener;
+  late StreamSubscription<RoomMsgVerificationEvent>? _roomMsgPoller;
+
   VerificationNotifier({
     required this.ref,
     required this.client,
@@ -39,6 +45,40 @@ class VerificationNotifier extends StateNotifier<VerificationState> {
       },
     );
     ref.onDispose(() => _poller?.cancel());
+
+    _toDeviceListener =
+        client.toDeviceVerificationEventRx(); // keep it resident in memory
+    _toDevicePoller = _toDeviceListener?.listen(
+      (ev) {
+        String txnId = ev.transactionId();
+        String sender = ev.sender();
+        _log.info('to-device verification requested: $txnId: $sender');
+      },
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('stream ended');
+      },
+    );
+    ref.onDispose(() => _toDevicePoller?.cancel());
+
+    _roomMsgListener =
+        client.roomMsgVerificationEventRx(); // keep it resident in memory
+    _roomMsgPoller = _roomMsgListener?.listen(
+      (ev) {
+        String eventId = ev.eventId();
+        String sender = ev.sender();
+        _log.info('room-msg verification requested: $eventId: $sender');
+      },
+      onError: (e, s) {
+        _log.severe('stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('stream ended');
+      },
+    );
+    ref.onDispose(() => _roomMsgPoller?.cancel());
   }
 
   void _handleEvent(VerificationEvent event) {

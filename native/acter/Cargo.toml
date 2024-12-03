@@ -9,7 +9,7 @@ repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [features]
-default = ["dart"]
+default = ["dart", "timeout-based-verification"]
 testing = []
 cbindgen = []
 tracing = ["dep:tracing-subscriber", "dep:tracing-appender", "dep:tracing-log"]
@@ -17,6 +17,8 @@ tracing-console = ["tracing", "dep:console-subscriber", "tokio/tracing"]
 dart = []
 uniffi = ["dep:uniffi", "dep:thiserror"]
 proxyman = ["dep:reqwest", "dep:openssl"]
+event-stream-based-verification = []
+timeout-based-verification = []
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "main" }

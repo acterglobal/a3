@@ -2800,6 +2800,15 @@ object Client {
     /// Get the verification event receiver
     fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
 
+    /// Get the ToDevice verification event receiver
+    fn to_device_verification_event_rx() -> Option<Stream<ToDeviceVerificationEvent>>;
+
+    /// Get the RoomMsg verification event receiver
+    fn room_msg_verification_event_rx() -> Option<Stream<RoomMsgVerificationEvent>>;
+
+    /// Get the current state of verification process
+    fn verification_state() -> OptionString;
+
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
 
@@ -3085,6 +3094,22 @@ object SuperInvitesTokenUpdateBuilder {
 //     ###    ######## ##     ## #### ##       ####  ######  ##     ##    ##    ####  #######  ##    ## 
 
 
+
+object ToDeviceVerificationEvent {
+    /// Get transaction id
+    fn transaction_id() -> string;
+
+    /// Get user id of event sender
+    fn sender() -> string;
+}
+
+object RoomMsgVerificationEvent {
+    /// Get event id
+    fn event_id() -> string;
+
+    /// Get user id of event sender
+    fn sender() -> string;
+}
 
 object VerificationEvent {
     /// Get event type

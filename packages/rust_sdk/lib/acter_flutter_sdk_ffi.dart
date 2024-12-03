@@ -15895,6 +15895,78 @@ class Api {
     return tmp9;
   }
 
+  ToDeviceVerificationEvent? __clientToDeviceVerificationEventRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientToDeviceVerificationEventRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ToDeviceVerificationEvent");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = ToDeviceVerificationEvent._(this, tmp11_1);
+    return tmp9;
+  }
+
+  RoomMsgVerificationEvent? __clientRoomMsgVerificationEventRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientRoomMsgVerificationEventRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_RoomMsgVerificationEvent");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = RoomMsgVerificationEvent._(this, tmp11_1);
+    return tmp9;
+  }
+
   DeviceEvent? __clientDeviceEventRxStreamPoll(
     int boxed,
     int postCobject,
@@ -26863,6 +26935,38 @@ class Api {
           _ClientVerificationEventRxReturn Function(
             int,
           )>();
+  late final _clientToDeviceVerificationEventRxPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientToDeviceVerificationEventRxReturn Function(
+            ffi.IntPtr,
+          )>>("__Client_to_device_verification_event_rx");
+
+  late final _clientToDeviceVerificationEventRx =
+      _clientToDeviceVerificationEventRxPtr.asFunction<
+          _ClientToDeviceVerificationEventRxReturn Function(
+            int,
+          )>();
+  late final _clientRoomMsgVerificationEventRxPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientRoomMsgVerificationEventRxReturn Function(
+            ffi.IntPtr,
+          )>>("__Client_room_msg_verification_event_rx");
+
+  late final _clientRoomMsgVerificationEventRx =
+      _clientRoomMsgVerificationEventRxPtr.asFunction<
+          _ClientRoomMsgVerificationEventRxReturn Function(
+            int,
+          )>();
+  late final _clientVerificationStatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Client_verification_state");
+
+  late final _clientVerificationState = _clientVerificationStatePtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _clientSessionManagerPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -28072,6 +28176,50 @@ class Api {
       _superInvitesTokenUpdateBuilderCreateDmPtr.asFunction<
           void Function(
             int,
+            int,
+          )>();
+  late final _toDeviceVerificationEventTransactionIdPtr = _lookup<
+      ffi.NativeFunction<
+          _ToDeviceVerificationEventTransactionIdReturn Function(
+            ffi.IntPtr,
+          )>>("__ToDeviceVerificationEvent_transaction_id");
+
+  late final _toDeviceVerificationEventTransactionId =
+      _toDeviceVerificationEventTransactionIdPtr.asFunction<
+          _ToDeviceVerificationEventTransactionIdReturn Function(
+            int,
+          )>();
+  late final _toDeviceVerificationEventSenderPtr = _lookup<
+      ffi.NativeFunction<
+          _ToDeviceVerificationEventSenderReturn Function(
+            ffi.IntPtr,
+          )>>("__ToDeviceVerificationEvent_sender");
+
+  late final _toDeviceVerificationEventSender =
+      _toDeviceVerificationEventSenderPtr.asFunction<
+          _ToDeviceVerificationEventSenderReturn Function(
+            int,
+          )>();
+  late final _roomMsgVerificationEventEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMsgVerificationEventEventIdReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomMsgVerificationEvent_event_id");
+
+  late final _roomMsgVerificationEventEventId =
+      _roomMsgVerificationEventEventIdPtr.asFunction<
+          _RoomMsgVerificationEventEventIdReturn Function(
+            int,
+          )>();
+  late final _roomMsgVerificationEventSenderPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMsgVerificationEventSenderReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomMsgVerificationEvent_sender");
+
+  late final _roomMsgVerificationEventSender =
+      _roomMsgVerificationEventSenderPtr.asFunction<
+          _RoomMsgVerificationEventSenderReturn Function(
             int,
           )>();
   late final _verificationEventEventTypePtr = _lookup<
@@ -32946,6 +33094,40 @@ class Api {
   late final _clientVerificationEventRxStreamPoll =
       _clientVerificationEventRxStreamPollPtr.asFunction<
           _ClientVerificationEventRxStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientToDeviceVerificationEventRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientToDeviceVerificationEventRxStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_to_device_verification_event_rx_stream_poll");
+
+  late final _clientToDeviceVerificationEventRxStreamPoll =
+      _clientToDeviceVerificationEventRxStreamPollPtr.asFunction<
+          _ClientToDeviceVerificationEventRxStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientRoomMsgVerificationEventRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientRoomMsgVerificationEventRxStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_room_msg_verification_event_rx_stream_poll");
+
+  late final _clientRoomMsgVerificationEventRxStreamPoll =
+      _clientRoomMsgVerificationEventRxStreamPollPtr.asFunction<
+          _ClientRoomMsgVerificationEventRxStreamPollReturn Function(
             int,
             int,
             int,
@@ -55138,6 +55320,63 @@ class Client {
     return tmp2;
   }
 
+  /// Get the ToDevice verification event receiver
+  Stream<ToDeviceVerificationEvent>? toDeviceVerificationEventRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientToDeviceVerificationEventRx(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(
+        _api, tmp4_0, "__Client_to_device_verification_event_rx_stream_drop");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = _nativeStream(
+        tmp4_1, _api.__clientToDeviceVerificationEventRxStreamPoll);
+    return tmp2;
+  }
+
+  /// Get the RoomMsg verification event receiver
+  Stream<RoomMsgVerificationEvent>? roomMsgVerificationEventRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientRoomMsgVerificationEventRx(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(
+        _api, tmp4_0, "__Client_room_msg_verification_event_rx_stream_drop");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = _nativeStream(
+        tmp4_1, _api.__clientRoomMsgVerificationEventRxStreamPoll);
+    return tmp2;
+  }
+
+  /// Get the current state of verification process
+  OptionString verificationState() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientVerificationState(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_OptionString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = OptionString._(_api, tmp3_1);
+    return tmp2;
+  }
+
   /// Get session manager that returns all/verified/unverified/inactive session list
   SessionManager sessionManager() {
     var tmp0 = 0;
@@ -57615,6 +57854,150 @@ class SuperInvitesTokenUpdateBuilder {
       tmp2,
     );
     return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ToDeviceVerificationEvent {
+  final Api _api;
+  final _Box _box;
+
+  ToDeviceVerificationEvent._(this._api, this._box);
+
+  /// Get transaction id
+  String transactionId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._toDeviceVerificationEventTransactionId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Get user id of event sender
+  String sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._toDeviceVerificationEventSender(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomMsgVerificationEvent {
+  final Api _api;
+  final _Box _box;
+
+  RoomMsgVerificationEvent._(this._api, this._box);
+
+  /// Get event id
+  String eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMsgVerificationEventEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Get user id of event sender
+  String sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMsgVerificationEventSender(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -61352,6 +61735,20 @@ class _ClientVerificationEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _ClientToDeviceVerificationEventRxReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ClientRoomMsgVerificationEventRxReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _ClientDeviceEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -61423,6 +61820,42 @@ class _SuperInviteInfoInviterAvatarUrlStrReturn extends ffi.Struct {
 }
 
 class _SuperInviteTokenTokenReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _ToDeviceVerificationEventTransactionIdReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _ToDeviceVerificationEventSenderReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomMsgVerificationEventEventIdReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomMsgVerificationEventSenderReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
@@ -65870,6 +66303,20 @@ class _ClientInvitationsRxStreamPollReturn extends ffi.Struct {
 }
 
 class _ClientVerificationEventRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ClientToDeviceVerificationEventRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ClientRoomMsgVerificationEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
