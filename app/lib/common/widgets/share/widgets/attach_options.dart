@@ -115,7 +115,7 @@ class AttachOptions extends StatelessWidget {
               child: Icon(iconData),
             ),
             SizedBox(height: 6),
-            Text(name),
+            Text(name, textAlign: TextAlign.center),
           ],
         ),
       ),

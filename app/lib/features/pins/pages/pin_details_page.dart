@@ -72,9 +72,11 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
             icon: PhosphorIcon(PhosphorIcons.shareFat()),
             onPressed: () => openShareSpaceObjectDialog(
               context: context,
-              spaceId: pinData.roomIdStr(),
-              objectType: ObjectType.pin,
-              objectId: widget.pinId,
+              spaceObjectDetails: (
+                spaceId: pinData.roomIdStr(),
+                objectType: ObjectType.pin,
+                objectId: widget.pinId,
+              ),
             ),
           ),
         BookmarkAction(bookmarker: BookmarkType.forPins(widget.pinId)),

@@ -68,9 +68,11 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           icon: PhosphorIcon(PhosphorIcons.shareFat()),
           onPressed: () => openShareSpaceObjectDialog(
             context: context,
-            spaceId: tasklist.spaceIdStr(),
-            objectType: ObjectType.taskList,
-            objectId: widget.taskListId,
+            spaceObjectDetails: (
+              spaceId: tasklist.spaceIdStr(),
+              objectType: ObjectType.taskList,
+              objectId: widget.taskListId,
+            ),
           ),
         ),
       BookmarkAction(bookmarker: BookmarkType.forTaskList(widget.taskListId)),

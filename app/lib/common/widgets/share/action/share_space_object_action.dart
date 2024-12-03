@@ -1,17 +1,33 @@
+import 'dart:io';
+
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/share/widgets/attach_options.dart';
 import 'package:acter/common/widgets/share/widgets/external_share_options.dart';
+import 'package:acter/common/widgets/share/widgets/file_share_options.dart';
 import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
 import 'package:acter/features/deep_linking/types.dart';
+import 'package:acter/features/files/actions/download_file.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:share_plus/share_plus.dart';
+
+typedef SpaceObjectDetails = ({
+  String spaceId,
+  ObjectType objectType,
+  String objectId,
+});
+
+typedef FileDetails = ({
+  File file,
+  String? mimeType,
+});
 
 Future<void> openShareSpaceObjectDialog({
   required BuildContext context,
-  required String spaceId,
-  required ObjectType objectType,
-  required String objectId,
+  SpaceObjectDetails? spaceObjectDetails,
+  FileDetails? fileDetails,
 }) async {
   await showModalBottomSheet(
     showDragHandle: true,
@@ -20,23 +36,20 @@ Future<void> openShareSpaceObjectDialog({
     isScrollControlled: true,
     isDismissible: true,
     builder: (context) => ShareSpaceObjectActionUI(
-      spaceId: spaceId,
-      objectType: objectType,
-      objectId: objectId,
+      spaceObjectDetails: spaceObjectDetails,
+      fileDetails: fileDetails,
     ),
   );
 }
 
 class ShareSpaceObjectActionUI extends StatelessWidget {
-  final String spaceId;
-  final ObjectType objectType;
-  final String objectId;
+  final SpaceObjectDetails? spaceObjectDetails;
+  final FileDetails? fileDetails;
 
   const ShareSpaceObjectActionUI({
     super.key,
-    required this.spaceId,
-    required this.objectType,
-    required this.objectId,
+    this.spaceObjectDetails,
+    this.fileDetails,
   });
 
   @override
@@ -48,9 +61,12 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            attachmentOptionsUI(context),
-            SizedBox(height: 16),
-            externalShareOptionsUI(context),
+            if (spaceObjectDetails != null) ...[
+              attachmentOptionsUI(context),
+              SizedBox(height: 16),
+              externalShareOptionsUI(context),
+            ],
+            if (fileDetails != null) fileShareOptionsUI(context),
           ],
         ),
       ),
@@ -58,6 +74,10 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
   }
 
   Widget attachmentOptionsUI(BuildContext context) {
+    String spaceId = spaceObjectDetails!.spaceId;
+    ObjectType objectType = spaceObjectDetails!.objectType;
+    String objectId = spaceObjectDetails!.objectId;
+
     final newsRefType = getNewsRefTypeFromObjType(objectType);
     return AttachOptions(
       onTapBoost: () {
@@ -66,10 +86,7 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
           Routes.actionAddUpdate.name,
           queryParameters: {'spaceId': spaceId},
           extra: newsRefType != null
-              ? NewsReferencesModel(
-                  type: newsRefType,
-                  id: objectId,
-                )
+              ? NewsReferencesModel(type: newsRefType, id: objectId)
               : null,
         );
       },
@@ -77,6 +94,10 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
   }
 
   Widget externalShareOptionsUI(BuildContext context) {
+    String spaceId = spaceObjectDetails!.spaceId;
+    ObjectType objectType = spaceObjectDetails!.objectType;
+    String objectId = spaceObjectDetails!.objectId;
+
     final internalLink =
         'acter:o/${spaceId.substring(1)}/${objectType.name}/${objectId.substring(1)}';
 
@@ -87,6 +108,43 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
           context,
           internalLink,
         );
+      },
+    );
+  }
+
+  Widget fileShareOptionsUI(BuildContext context) {
+    File file = fileDetails!.file;
+    String? mimeType = fileDetails!.mimeType;
+    return FileShareOptions(
+      onTapOpen: () async {
+        final result = await OpenFilex.open(file.absolute.path);
+        if (result.type == ResultType.done) {
+          // done, close this dialog
+          if (context.mounted) {
+            Navigator.pop(context);
+          }
+        }
+      },
+      onTapSave: !Platform.isAndroid
+          ? () async {
+              if (await downloadFile(context, file)) {
+                // done, close this dialog
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              }
+            }
+          : null,
+      onTapShare: () async {
+        final result = await Share.shareXFiles(
+          [XFile(file.path, mimeType: mimeType)],
+        );
+        if (result.status == ShareResultStatus.success) {
+          // done, close this dialog
+          if (context.mounted) {
+            Navigator.pop(context);
+          }
+        }
       },
     );
   }

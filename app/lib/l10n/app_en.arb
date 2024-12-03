@@ -2302,7 +2302,7 @@
   "copy": "copy",
   "copyLink": "Copy Link",
   "qr": "QR",
-  "newBoost": "New Boost",
+  "newBoost": "New\nBoost",
   "addComment": "Add Comment",
   "@addComment": {}
 }

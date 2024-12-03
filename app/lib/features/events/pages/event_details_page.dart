@@ -25,7 +25,6 @@ import 'package:acter/features/events/widgets/change_date_sheet.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter/features/events/widgets/participants_list.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
-import 'package:acter/features/files/actions/file_share.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
@@ -99,12 +98,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ? [
               IconButton(
                 icon: PhosphorIcon(PhosphorIcons.shareFat()),
-                onPressed: () => openShareSpaceObjectDialog(
-                  context: context,
-                  spaceId: calendarEvent.roomIdStr(),
-                  objectType: ObjectType.calendarEvent,
-                  objectId: widget.calendarId,
-                ),
+                onPressed: () => onShareEvent(context, calendarEvent),
               ),
               BookmarkAction(
                 bookmarker: BookmarkType.forEvent(widget.calendarId),
@@ -208,20 +202,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         );
       }
     }
-
-    //share iCal
-    actions.add(
-      PopupMenuItem(
-        onTap: () => onShareEvent(event),
-        child: Row(
-          children: <Widget>[
-            Icon(Atlas.share),
-            const SizedBox(width: 10),
-            Text(lang.shareIcal),
-          ],
-        ),
-      ),
-    );
 
     //Delete Event Action
     if (canRedact.valueOrNull == true) {
@@ -461,7 +441,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Future<void> onShareEvent(CalendarEvent event) async {
+  Future<void> onShareEvent(BuildContext context, CalendarEvent event) async {
     final lang = L10n.of(context);
     try {
       final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
@@ -470,13 +450,17 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       event.icalForSharing(icalPath);
 
       if (context.mounted) {
-        await openFileShareDialog(
-          // ignore: use_build_context_synchronously
+        openShareSpaceObjectDialog(
           context: context,
-          // ignore: use_build_context_synchronously
-          header: Text(lang.shareIcal),
-          file: File(icalPath),
-          mimeType: 'text/calendar',
+          spaceObjectDetails: (
+            spaceId: event.roomIdStr(),
+            objectType: ObjectType.calendarEvent,
+            objectId: widget.calendarId,
+          ),
+          fileDetails: (
+            file: File(icalPath),
+            mimeType: 'text/calendar',
+          ),
         );
       }
     } catch (e, s) {
