@@ -1522,8 +1522,10 @@ object Attachment {
     fn room_id_str() -> string;
     /// the type of attachment
     fn type_str() -> string;
-    /// if this is a media, hand over the description
-    fn msg_content() -> MsgContent;
+    /// if this is a media, hand over its details
+    fn msg_content() -> Option<MsgContent>;
+    /// if this is a reference, here are the details
+    fn ref_details() -> Option<RefDetails>;
 
     /// if this is a link, this contains the URI/Link/URL
     fn link() -> Option<string>;
@@ -1566,6 +1568,9 @@ object AttachmentsManager {
 
     /// create attachment for given link draft
     fn link_draft(url: string, name: Option<string>) -> Future<Result<AttachmentDraft>>;
+
+    /// create attachment for given ref_details
+    fn reference_draft(details: RefDetails) -> Future<Result<AttachmentDraft>>;
 
     /// inform about the changes to this manager
     fn reload() -> Future<Result<AttachmentsManager>>;

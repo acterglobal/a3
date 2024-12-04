@@ -274,3 +274,62 @@ async fn pin_external_link() -> Result<()> {
     assert_eq!(ext_url.fragment().expect("must have fragment"), &path);
     Ok(())
 }
+
+#[tokio::test]
+async fn pin_self_ref_attachments() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) = random_user_with_template("pin_attachments", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.pins().await?.len() != 3 {
+                bail!("not all pins found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let pin = user
+        .pins()
+        .await?
+        .into_iter()
+        .find(|p| !p.is_link())
+        .expect("we’ve created one non-link pin");
+
+    // START actual attachment on pin
+
+    let attachments_manager = pin.attachments().await?;
+    assert!(!attachments_manager.stats().has_attachments());
+
+    let attachments_listener = attachments_manager.subscribe();
+
+    // ---- let’s make an attachment by referencing the same pin -- cheeky
+    let ref_details = pin.ref_details().await?;
+    let attachment_1_id = attachments_manager
+        .reference_draft(Box::new(ref_details))
+        .await?
+        .send()
+        .await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if attachments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let attachments = attachments_manager.attachments().await?;
+    assert_eq!(attachments.len(), 1);
+    let attachment = attachments.first().unwrap();
+    assert_eq!(attachment.event_id(), attachment_1_id);
+    assert_eq!(attachment.type_str(), "ref");
+
+    Ok(())
+}
