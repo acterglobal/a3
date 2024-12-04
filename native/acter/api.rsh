@@ -74,6 +74,11 @@ fn new_task_ref_builder(target_id: string, room_id: Option<string>, task_list: s
 /// action: link/embed/embed-subscribe
 fn new_task_list_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
 
+/// create a pin ref builder
+/// target_id: event id of target
+/// action: link/embed/embed-subscribe
+fn new_pin_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
+
 /// create a calendar event ref builder
 /// target_id: event id of target
 /// action: link/embed/embed-rsvp

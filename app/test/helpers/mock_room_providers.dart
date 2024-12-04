@@ -3,15 +3,17 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
+class MockRoom with Mock implements Room {}
+
 class MockAsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String>
     with Mock
     implements AsyncMaybeRoomNotifier {
-  final Room? retVal;
+  final Map<String, Room> items;
 
-  MockAsyncMaybeRoomNotifier({this.retVal});
+  MockAsyncMaybeRoomNotifier({this.items = const {}});
 
   @override
-  Future<Room?> build(arg) async => retVal;
+  Future<Room?> build(arg) async => items[arg];
 }
 
 class MockRoomPreview with Mock implements RoomPreview {}

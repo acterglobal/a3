@@ -287,13 +287,17 @@ Future<void> parseUserMentionText(
 }
 
 // save composer draft object handler
-Future<void> saveDraft(String text, String roomId, WidgetRef ref) async {
+Future<void> saveDraft(
+  String text,
+  String? htmlText,
+  String roomId,
+  WidgetRef ref,
+) async {
   // get the convo object to initiate draft
   final chat = await ref.read(chatProvider(roomId).future);
   final messageId = ref.read(chatInputProvider).selectedMessage?.id;
   final mentions = ref.read(chatInputProvider).mentions;
   final userMentions = [];
-  String? htmlText = text;
   if (mentions.isNotEmpty) {
     mentions.forEach((key, value) {
       userMentions.add(value);

@@ -1967,6 +1967,101 @@ class Api {
     return tmp17;
   }
 
+  /// create a pin ref builder
+  /// target_id: event id of target
+  /// action: link/embed/embed-subscribe
+  RefDetailsBuilder newPinRefBuilder(
+    String targetId,
+    String? roomId,
+    String? action,
+  ) {
+    final tmp0 = targetId;
+    final tmp4 = roomId;
+    final tmp10 = action;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp9 = 0;
+    var tmp11 = 0;
+    var tmp13 = 0;
+    var tmp14 = 0;
+    var tmp15 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    if (tmp4 == null) {
+      tmp5 = 0;
+    } else {
+      tmp5 = 1;
+      final tmp6 = tmp4;
+      final tmp6_0 = utf8.encode(tmp6);
+      tmp8 = tmp6_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp7_0 = this.__allocate(tmp8 * 1, 1);
+      final Uint8List tmp7_1 = tmp7_0.asTypedList(tmp8);
+      tmp7_1.setAll(0, tmp6_0);
+      tmp7 = tmp7_0.address;
+      tmp9 = tmp8;
+    }
+    if (tmp10 == null) {
+      tmp11 = 0;
+    } else {
+      tmp11 = 1;
+      final tmp12 = tmp10;
+      final tmp12_0 = utf8.encode(tmp12);
+      tmp14 = tmp12_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp13_0 = this.__allocate(tmp14 * 1, 1);
+      final Uint8List tmp13_1 = tmp13_0.asTypedList(tmp14);
+      tmp13_1.setAll(0, tmp12_0);
+      tmp13 = tmp13_0.address;
+      tmp15 = tmp14;
+    }
+    final tmp16 = _newPinRefBuilder(
+      tmp1,
+      tmp2,
+      tmp3,
+      tmp5,
+      tmp7,
+      tmp8,
+      tmp9,
+      tmp11,
+      tmp13,
+      tmp14,
+      tmp15,
+    );
+    final tmp18 = tmp16.arg0;
+    final tmp19 = tmp16.arg1;
+    final tmp20 = tmp16.arg2;
+    final tmp21 = tmp16.arg3;
+    final tmp22 = tmp16.arg4;
+    if (tmp18 == 0) {
+      debugAllocation("handle error", tmp19, tmp20);
+      final ffi.Pointer<ffi.Uint8> tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+      final tmp18_0 =
+          utf8.decode(tmp19_0.asTypedList(tmp20), allowMalformed: true);
+      if (tmp20 > 0) {
+        final ffi.Pointer<ffi.Void> tmp19_0;
+        tmp19_0 = ffi.Pointer.fromAddress(tmp19);
+        this.__deallocate(tmp19_0, tmp21, 1);
+      }
+      throw tmp18_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp22_0 = ffi.Pointer.fromAddress(tmp22);
+    final tmp22_1 = _Box(this, tmp22_0, "drop_box_RefDetailsBuilder");
+    tmp22_1._finalizer = this._registerFinalizer(tmp22_1);
+    final tmp17 = RefDetailsBuilder._(this, tmp22_1);
+    return tmp17;
+  }
+
   /// create a calendar event ref builder
   /// target_id: event id of target
   /// action: link/embed/embed-rsvp
@@ -16754,6 +16849,36 @@ class Api {
 
   late final _newTaskListRefBuilder = _newTaskListRefBuilderPtr.asFunction<
       _NewTaskListRefBuilderReturn Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _newPinRefBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _NewPinRefBuilderReturn Function(
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.Uint8,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.Uint8,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__new_pin_ref_builder");
+
+  late final _newPinRefBuilder = _newPinRefBuilderPtr.asFunction<
+      _NewPinRefBuilderReturn Function(
         int,
         int,
         int,
@@ -59576,6 +59701,19 @@ class _NewTaskRefBuilderReturn extends ffi.Struct {
 }
 
 class _NewTaskListRefBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _NewPinRefBuilderReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

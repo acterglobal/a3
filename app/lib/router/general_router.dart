@@ -11,15 +11,18 @@ import 'package:acter/features/auth/pages/login_page.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
+import 'package:acter/features/deep_linking/pages/scan_qr_code.dart';
 import 'package:acter/features/intro/pages/intro_page.dart';
 import 'package:acter/features/intro/pages/intro_profile.dart';
+import 'package:acter/features/link_room/types.dart';
+import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/pages/add_news_page.dart';
 import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
-import 'package:acter/features/space/sheets/link_room_sheet.dart';
+import 'package:acter/features/link_room/pages/link_room_page.dart';
 import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -73,6 +76,12 @@ final generalRoutes = [
           .expect('saveUsername route needs username as query param');
       return SaveUsernamePage(username: username);
     },
+  ),
+  GoRoute(
+    parentNavigatorKey: rootNavKey,
+    name: Routes.scanQrCode.name,
+    path: Routes.scanQrCode.route,
+    builder: (context, state) => const ScanQrCode(),
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
@@ -178,7 +187,6 @@ final generalRoutes = [
         },
         child: LinkRoomPage(
           parentSpaceId: spaceId,
-          pageTitle: 'Link as Space-chat',
           childRoomType: ChildRoomType.chat,
         ),
       );
@@ -186,11 +194,11 @@ final generalRoutes = [
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
-    name: Routes.linkSubspace.name,
-    path: Routes.linkSubspace.route,
+    name: Routes.linkSpace.name,
+    path: Routes.linkSpace.route,
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
-          .expect('linkSubspace route needs spaceId as path param');
+          .expect('linkSpace route needs spaceId as path param');
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -204,34 +212,7 @@ final generalRoutes = [
         },
         child: LinkRoomPage(
           parentSpaceId: spaceId,
-          pageTitle: 'Link Sub-Space',
           childRoomType: ChildRoomType.space,
-        ),
-      );
-    },
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
-    name: Routes.linkRecommended.name,
-    path: Routes.linkRecommended.route,
-    pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('linkRecommended route needs spaceId as path param');
-      return SideSheetPage(
-        key: state.pageKey,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return SlideTransition(
-            position: Tween(
-              begin: const Offset(1, 0),
-              end: const Offset(0, 0),
-            ).animate(animation),
-            child: child,
-          );
-        },
-        child: LinkRoomPage(
-          parentSpaceId: spaceId,
-          pageTitle: 'Link Recommended-Space',
-          childRoomType: ChildRoomType.recommendedSpace,
         ),
       );
     },
@@ -243,10 +224,12 @@ final generalRoutes = [
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       final spaceId = state.uri.queryParameters['spaceId'];
+      final newsReferencesModel = state.extra as NewsReferencesModel?;
       return NoTransitionPage(
         key: state.pageKey,
         child: AddNewsPage(
           initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
+          newsReferencesModel: newsReferencesModel,
         ),
       );
     },

@@ -1,6 +1,8 @@
 PODS:
   - acter_flutter_sdk (0.0.1):
     - FlutterMacOS
+  - app_links (1.0.0):
+    - FlutterMacOS
   - connectivity_plus (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -13,13 +15,13 @@ PODS:
     - FlutterMacOS
   - file_selector_macos (0.0.1):
     - FlutterMacOS
-  - Firebase/CoreOnly (11.4.2):
-    - FirebaseCore (= 11.4.2)
-  - firebase_core (3.8.0):
-    - Firebase/CoreOnly (~> 11.4.0)
+  - Firebase/CoreOnly (11.2.0):
+    - FirebaseCore (= 11.2.0)
+  - firebase_core (3.6.0):
+    - Firebase/CoreOnly (~> 11.2.0)
     - FlutterMacOS
-  - FirebaseCore (11.4.2):
-    - FirebaseCoreInternal (< 12.0, >= 11.4.2)
+  - FirebaseCore (11.2.0):
+    - FirebaseCoreInternal (~> 11.0)
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/Logger (~> 8.0)
   - FirebaseCoreInternal (11.5.0):
@@ -52,11 +54,11 @@ PODS:
     - FlutterMacOS
   - screen_retriever (0.0.1):
     - FlutterMacOS
-  - Sentry/HybridSDK (8.40.1)
-  - sentry_flutter (8.10.1):
+  - Sentry/HybridSDK (8.36.0)
+  - sentry_flutter (8.9.0):
     - Flutter
     - FlutterMacOS
-    - Sentry/HybridSDK (= 8.40.1)
+    - Sentry/HybridSDK (= 8.36.0)
   - share_plus (0.0.1):
     - FlutterMacOS
   - shared_preferences_foundation (0.0.1):
@@ -79,6 +81,7 @@ PODS:
 
 DEPENDENCIES:
   - acter_flutter_sdk (from `Flutter/ephemeral/.symlinks/plugins/acter_flutter_sdk/macos`)
+  - app_links (from `Flutter/ephemeral/.symlinks/plugins/app_links/macos`)
   - connectivity_plus (from `Flutter/ephemeral/.symlinks/plugins/connectivity_plus/darwin`)
   - device_info_plus (from `Flutter/ephemeral/.symlinks/plugins/device_info_plus/macos`)
   - emoji_picker_flutter (from `Flutter/ephemeral/.symlinks/plugins/emoji_picker_flutter/macos`)
@@ -116,6 +119,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   acter_flutter_sdk:
     :path: Flutter/ephemeral/.symlinks/plugins/acter_flutter_sdk/macos
+  app_links:
+    :path: Flutter/ephemeral/.symlinks/plugins/app_links/macos
   connectivity_plus:
     :path: Flutter/ephemeral/.symlinks/plugins/connectivity_plus/darwin
   device_info_plus:
@@ -169,31 +174,32 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   acter_flutter_sdk: a2ce9616c3d66cc8f3ca770b6832f320b9a7ea1b
+  app_links: 10e0a0ab602ffaf34d142cd4862f29d34b303b2a
   connectivity_plus: 4c41c08fc6d7c91f63bc7aec70ffe3730b04f563
   device_info_plus: ce1b7762849d3ec103d0e0517299f2db7ad60720
   emoji_picker_flutter: 533634326b1c5de9a181ba14b9758e6dfe967a20
   fc_native_video_thumbnail: 927d4dcfd4c7e9f2cc1a20bb52dfee83de3792c2
   file_selector_macos: cc3858c981fe6889f364731200d6232dac1d812d
-  Firebase: 7fd5466678d964be78fbf536d8a3385da19c4828
-  firebase_core: d95c4a2225d7b6ed46bc31fb2a6f421fc7c8285b
-  FirebaseCore: 6b32c57269bd999aab34354c3923d92a6e5f3f84
+  Firebase: 98e6bf5278170668a7983e12971a66b2cd57fc8c
+  firebase_core: e88f946a4601cb1854178cb07da241bba5a6508e
+  FirebaseCore: a282032ae9295c795714ded2ec9c522fc237f8da
   FirebaseCoreInternal: f47dd28ae7782e6a4738aad3106071a8fe0af604
-  flutter_local_notifications: 4b427ffabf278fc6ea9484c97505e231166927a5
+  flutter_local_notifications: 3805ca215b2fb7f397d78b66db91f6a747af52e4
   flutter_secure_storage_macos: 59459653abe1adb92abbc8ea747d79f8d19866c9
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   media_kit_libs_macos_video: b3e2bbec2eef97c285f2b1baa7963c67c753fb82
   media_kit_native_event_loop: 81fd5b45192b72f8b5b69eaf5b540f45777eb8d5
   media_kit_video: c75b07f14d59706c775778e4dd47dd027de8d1e5
-  package_info_plus: 12f1c5c2cfe8727ca46cbd0b26677728972d9a5b
+  package_info_plus: f5790acc797bf17c3e959e9d6cf162cc68ff7523
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   screen_brightness_macos: 2d6d3af2165592d9a55ffcd95b7550970e41ebda
   screen_retriever: 59634572a57080243dd1bf715e55b6c54f241a38
-  Sentry: e9215d7b17f7902692b4f8700e061e4f853e3521
-  sentry_flutter: 927eed60d66951d1b0f1db37fe94ff5cb7c80231
-  share_plus: 1fa619de8392a4398bfaf176d441853922614e89
+  Sentry: f8374b5415bc38dfb5645941b3ae31230fbeae57
+  sentry_flutter: 0eb93e5279eb41e2392212afe1ccd2fecb4f8cbe
+  share_plus: fd717ef89a2801d3491e737630112b80c310640e
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
-  sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
+  sqflite_darwin: a553b1fd6fe66f53bbb0fe5b4f5bab93f08d7a13
   tray_manager: 9064e219c56d75c476e46b9a21182087930baf90
   url_launcher_macos: c82c93949963e55b228a30115bd219499a6fe404
   video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3

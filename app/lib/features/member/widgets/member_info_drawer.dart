@@ -2,13 +2,14 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
+import 'package:acter/features/deep_linking/widgets/qr_code_button.dart';
 import 'package:acter/features/member/dialogs/show_block_user_dialog.dart';
 import 'package:acter/features/member/dialogs/show_change_power_level_dialog.dart';
 import 'package:acter/features/member/dialogs/show_kick_and_ban_user_dialog.dart';
 import 'package:acter/features/member/dialogs/show_kick_user_dialog.dart';
 import 'package:acter/features/member/dialogs/show_unblock_user_dialog.dart';
 import 'package:acter/features/member/widgets/member_info_skeleton.dart';
-import 'package:acter/features/member/widgets/message_user_button.dart';
+import 'package:acter/features/users/widgets/message_user_button.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -18,6 +19,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::member::member_info_drawer');
@@ -90,7 +92,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
                 child: Text(dispName), // FIXME: make this prettier
               ),
             const SizedBox(height: 20),
-            _buildUserName(context),
+            _buildUserName(context, avatarInfo),
             const SizedBox(height: 20),
             ..._buildMenu(context, ref),
           ],
@@ -112,7 +114,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     }
 
     return [
-      MessageUserButton(member: member),
+      MessageUserButton(userId: memberId, profile: member.getProfile()),
       const SizedBox(height: 30),
       member.isIgnored()
           ? MenuItemWidget(
@@ -282,7 +284,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     );
   }
 
-  Widget _buildUserName(BuildContext context) {
+  Widget _buildUserName(BuildContext context, AvatarInfo memberAvatarInfo) {
     return GestureDetector(
       onTap: () async {
         Navigator.pop(context); // close the drawer
@@ -295,7 +297,25 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
         children: [
           Text(memberId), // FIXME: make this prettier
           const SizedBox(width: 5),
-          const Icon(Icons.copy_outlined),
+          const Icon(PhosphorIconsLight.copy),
+          const SizedBox(width: 5),
+          QrCodeButton(
+            qrCodeData: 'matrix:u/${memberId.substring(1)}?action=chat',
+            qrTitle: ListTile(
+              leading: ActerAvatar(
+                options: AvatarOptions.DM(memberAvatarInfo),
+              ),
+              title: Text(
+                memberAvatarInfo.displayName ?? '',
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              subtitle: Text(
+                memberId,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
         ],
       ),
     );
