@@ -14,6 +14,7 @@ void main() {
       when(() => roomPreview.roomTypeStr()).thenReturn('chat');
       when(() => roomPreview.hasAvatar()).thenReturn(false);
       when(() => roomPreview.name()).thenReturn('Test Chat');
+      when(() => roomPreview.roomIdStr()).thenReturn('test-chat');
       await tester.pumpProviderWidget(
         overrides: [
           roomPreviewProvider.overrideWith((r, a) async => roomPreview),
@@ -31,6 +32,7 @@ void main() {
       when(() => roomPreview.isDirect()).thenReturn(true);
       when(() => roomPreview.hasAvatar()).thenReturn(false);
       when(() => roomPreview.name()).thenReturn('Test Chat');
+      when(() => roomPreview.roomIdStr()).thenReturn('test-chat');
       await tester.pumpProviderWidget(
         overrides: [
           roomPreviewProvider.overrideWith((r, a) async => roomPreview),
@@ -47,6 +49,7 @@ void main() {
       when(() => roomPreview.roomTypeStr()).thenReturn('space');
       when(() => roomPreview.hasAvatar()).thenReturn(false);
       when(() => roomPreview.name()).thenReturn('Test Space');
+      when(() => roomPreview.roomIdStr()).thenReturn('test-space');
       await tester.pumpProviderWidget(
         overrides: [
           roomPreviewProvider.overrideWith((r, a) async => roomPreview),

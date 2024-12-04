@@ -54,6 +54,9 @@ class MockFfiListString extends Fake implements FfiListFfiString {
   MockFfiListString({this.items = const []});
 
   List<String> toDart() => items;
+
+  @override
+  bool get isEmpty => items.isEmpty;
 }
 
 class MockSpaceHierarchyRoomInfo extends Fake
