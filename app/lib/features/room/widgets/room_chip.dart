@@ -39,16 +39,24 @@ class _RoomChipState extends ConsumerState<RoomChip> {
       );
 
   @override
-  Widget build(BuildContext context) => Tooltip(
+  Widget build(BuildContext context) {
+    final foundRoom = ref.watch(maybeRoomProvider(widget.roomId)).valueOrNull;
+    if (foundRoom != null) {
+      return Tooltip(
         message: widget.roomId,
-        child: ref.watch(roomOrPreviewProvider(query)).when(
-              data: (p) => p.room != null
-                  ? buildForRoom(context)
-                  : buildPreview(context),
-              error: (error, stack) => renderError(context, error, stack),
-              loading: () => loading(context),
-            ),
+        child: buildForRoom(context),
       );
+    }
+
+    return Tooltip(
+      message: widget.roomId,
+      child: ref.watch(roomPreviewProvider(query)).when(
+            data: (p) => buildPreview(context),
+            error: (error, stack) => renderError(context, error, stack),
+            loading: () => loading(context),
+          ),
+    );
+  }
 
   Widget loading(BuildContext context) => Skeletonizer(
         child: ActerInlineTextButton.icon(
@@ -84,7 +92,8 @@ class _RoomChipState extends ConsumerState<RoomChip> {
             error: error,
             stack: stack,
             onRetryTap: () {
-              ref.invalidate(roomOrPreviewProvider(query));
+              ref.invalidate(maybeRoomProvider(widget.roomId));
+              ref.invalidate(roomPreviewProvider(query));
               Navigator.pop(context);
             },
             includeBugReportButton: true,

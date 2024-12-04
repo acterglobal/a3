@@ -27,19 +27,6 @@ final roomPreviewProvider =
   return prev;
 });
 
-typedef RoomOrPreview = ({Room? room, RoomPreview? preview});
-
-final roomOrPreviewProvider =
-    FutureProvider.family<RoomOrPreview, RoomPreviewQuery>((ref, arg) async {
-  final room = await ref.watch(maybeRoomProvider(arg.roomIdOrAlias).future);
-  if (room != null) {
-    return (room: room, preview: null);
-  }
-
-  final preview = await ref.watch(roomPreviewProvider(arg).future);
-  return (room: null, preview: preview);
-});
-
 final _roomPreviewAvatarProvider =
     FutureProvider.family<MemoryImage?, RoomPreviewQuery>((ref, q) async {
   final sdk = await ref.watch(sdkProvider.future);

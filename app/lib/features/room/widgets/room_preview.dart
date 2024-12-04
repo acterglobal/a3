@@ -1,4 +1,5 @@
 import 'package:acter/common/extensions/record_helpers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/inline_error_button.dart';
 import 'package:acter/common/toolkit/errors/util.dart';
@@ -32,8 +33,8 @@ class RoomPreviewWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (autoForward) {
-      ref.listen(roomOrPreviewProvider(query), (old, next) async {
-        final room = next.valueOrNull?.room;
+      ref.listen(maybeRoomProvider(roomId), (old, next) async {
+        final room = next.valueOrNull;
         if (room != null && context.mounted) {
           // room found we have been tasked to forward;
           if (room.isSpace()) {
@@ -45,23 +46,13 @@ class RoomPreviewWidget extends ConsumerWidget {
       });
     }
 
-    return ref.watch(roomOrPreviewProvider(query)).when(
-          data: (res) {
-            final room = res.room;
-            final preview = res.preview;
-            if (room != null) {
-              return renderRoom(context, ref, room);
-            } else if (preview != null) {
-              return renderPreview(context, ref, preview);
-            } else {
-              return renderError(
-                context,
-                ref,
-                "Room preview couldn't be loaded",
-                null,
-              );
-            }
-          },
+    final foundRoom = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    if (foundRoom != null) {
+      return renderRoom(context, ref, foundRoom);
+    }
+
+    return ref.watch(roomPreviewProvider(query)).when(
+          data: (preview) => renderPreview(context, ref, preview),
           error: (error, stack) => renderError(context, ref, error, stack),
           loading: () => renderLoading(),
         );
@@ -82,7 +73,7 @@ class RoomPreviewWidget extends ConsumerWidget {
           _ => L10n.of(context).loadingFailed(error)
         },
         onRetryTap: () {
-          ref.invalidate(roomOrPreviewProvider(query));
+          ref.invalidate(maybeRoomProvider(roomId));
           ref.invalidate(roomPreviewProvider(query));
         },
       );
