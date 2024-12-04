@@ -186,9 +186,9 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
         ),
       ),
       builder: (context) => PostAttachmentOptions(
-        onTapAddText: () => NewsUtils.addTextSlide(ref),
-        onTapImage: () async => await NewsUtils.addImageSlide(ref),
-        onTapVideo: () async => await NewsUtils.addVideoSlide(ref),
+        onTapAddText: () => NewsUtils.addTextSlide(ref: ref),
+        onTapImage: () async => await NewsUtils.addImageSlide(ref: ref),
+        onTapVideo: () async => await NewsUtils.addVideoSlide(ref: ref),
       ),
     );
   }

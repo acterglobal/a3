@@ -1333,6 +1333,7 @@
   "@usedTimes": {},
   "userAddedToBlockList": "{user} added to block list. UI might take a bit too update",
   "@userAddedToBlockList": {},
+  "users": "Users",
   "usersfoundDirectory": "Users found in public directory",
   "@usersfoundDirectory": {},
   "username": "Username",
@@ -2295,6 +2296,14 @@
   "@addBoost": {},
   "addTaskList": "Add TaskList",
   "@addTaskList": {},
+  "task": "Task",
+  "signal": "Signal",
+  "whatsApp": "WhatsApp",
+  "telegram": "Telegram",
+  "copy": "copy",
+  "copyLink": "Copy Link",
+  "qr": "QR",
+  "newBoost": "New\nBoost",
   "addComment": "Add Comment",
   "@addComment": {}
 }

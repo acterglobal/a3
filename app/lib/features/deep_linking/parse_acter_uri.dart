@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:acter/features/deep_linking/types.dart';
+import 'package:crypto/crypto.dart';
 
 class UriParseError extends Error {}
 
@@ -15,11 +18,16 @@ class ObjectNotSupported extends UriParseError {
 }
 
 class ParsingFailed extends UriParseError {}
+class IncorrectHashError extends ParsingFailed {}
+class MissingUserError extends ParsingFailed {
+  final UriParseResult result;
+  MissingUserError({required this.result});
+}
 
-UriParseResult parseUri(Uri uri) => switch (uri.scheme) {
+UriParseResult parseActerUri(Uri uri) => switch (uri.scheme) {
       'acter' => _parseActerUri(uri),
       'matrix' => _parseMatrixUri(uri),
-      'https' || 'http' => _parseMatrixHttpsUri(uri),
+      'https' || 'http' => _parseHttpsUri(uri),
       _ => throw SchemeNotSupported(scheme: uri.scheme),
     };
 
@@ -32,14 +40,41 @@ UriParseResult _parseActerUri(Uri uri) {
   };
 }
 
+UriParseResult _parseHttpsUri(Uri uri) {
+  if (uri.host == 'matrix.to') {
+    return _parseMatrixHttpsUri(uri);
+  }
+  final hash = uri.pathSegments.lastOrNull;
+  if (hash == null || hash.isEmpty) {
+    throw IncorrectHashError();
+  }
+
+  final pathWithoutHash = uri.path.substring(0, uri.path.length - hash.length -1);
+  final strippedUri = uri.replace(path: pathWithoutHash);
+  final hashableUri = strippedUri.toString();
+  final calculatedHash = sha1.convert(utf8.encode(hashableUri)).toString();
+  if (calculatedHash != hash) {
+    throw IncorrectHashError();
+  }
+
+  // put the query as the path
+  final extractableUri = strippedUri.replace(path: strippedUri.fragment, fragment: null);
+  final result = _parseActerUri(extractableUri);
+  if (result.preview.userId == null || result.preview.userId?.isEmpty == true) {
+    throw MissingUserError(result: result);
+  }
+  return result;
+}
+
 UriParseResult _parseSuperInvite(Uri uri) {
   final path = uri.pathSegments;
-  if (path.length < 2) {
+  if (path.length < 3) {
     throw ParsingFailed();
   }
-  final superInviteId = path[1];
+  final server = path[1];
+  final superInviteId = path[2];
   final via = uri.queryParametersAll['via'] ?? [];
-  via.add(uri.host);
+  via.add(server);
 
   return UriParseResult(
     type: LinkType.superInvite,
