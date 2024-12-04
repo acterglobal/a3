@@ -52,42 +52,46 @@ class ExternalShareOptions extends StatelessWidget {
               if (onTapQr != null)
                 shareToItemUI(
                   name: lang.qr,
-                  iconData: PhosphorIcons.qrCode(),
+                  iconWidget: Icon(PhosphorIcons.qrCode()),
                   color: Colors.grey.shade600,
                   onTap: onTapQr,
                 ),
               if (onTapCopy != null)
                 shareToItemUI(
                   name: lang.copyLink,
-                  iconData: PhosphorIcons.link(),
+                  iconWidget: Icon(PhosphorIcons.link()),
                   color: Colors.blueGrey,
                   onTap: onTapCopy,
                 ),
               if (onTapSignal != null)
                 shareToItemUI(
                   name: lang.signal,
-                  iconData: PhosphorIcons.chat(),
-                  color: Colors.deepPurpleAccent,
+                  iconWidget: Image.asset(
+                    'assets/icon/signal_logo.png',
+                    height: 25,
+                    width: 25,
+                  ),
+                  color: Colors.blue,
                   onTap: onTapSignal,
                 ),
               if (onTapWhatsApp != null)
                 shareToItemUI(
                   name: lang.whatsApp,
-                  iconData: PhosphorIcons.whatsappLogo(),
+                  iconWidget: Icon(PhosphorIcons.whatsappLogo()),
                   color: Colors.green,
                   onTap: onTapWhatsApp,
                 ),
               if (onTapTelegram != null)
                 shareToItemUI(
                   name: lang.telegram,
-                  iconData: PhosphorIcons.telegramLogo(),
+                  iconWidget: Icon(PhosphorIcons.telegramLogo()),
                   color: Colors.blue,
-                  onTap:onTapTelegram,
+                  onTap: onTapTelegram,
                 ),
               if (onTapMore != null)
                 shareToItemUI(
                   name: lang.more,
-                  iconData: PhosphorIcons.dotsThree(),
+                  iconWidget: Icon(PhosphorIcons.dotsThree()),
                   color: Colors.grey.shade800,
                   onTap: onTapMore,
                 ),
@@ -100,7 +104,7 @@ class ExternalShareOptions extends StatelessWidget {
 
   Widget shareToItemUI({
     required String name,
-    required IconData iconData,
+    required Widget iconWidget,
     required Color color,
     GestureTapCallback? onTap,
   }) {
@@ -123,7 +127,7 @@ class ExternalShareOptions extends StatelessWidget {
                   width: 1.0,
                 ),
               ),
-              child: Icon(iconData),
+              child: iconWidget,
             ),
             SizedBox(height: 6),
             Text(name),

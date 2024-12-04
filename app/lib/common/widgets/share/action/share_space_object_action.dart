@@ -62,22 +62,25 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             if (spaceObjectDetails != null) ...[
-              attachmentOptionsUI(context),
+              attachmentOptionsUI(context, spaceObjectDetails!),
               SizedBox(height: 16),
-              externalShareOptionsUI(context),
+              externalShareOptionsUI(context, spaceObjectDetails!),
               SizedBox(height: 20),
             ],
-            if (fileDetails != null) fileShareOptionsUI(context),
+            if (fileDetails != null) fileShareOptionsUI(context, fileDetails!),
           ],
         ),
       ),
     );
   }
 
-  Widget attachmentOptionsUI(BuildContext context) {
-    String spaceId = spaceObjectDetails!.spaceId;
-    ObjectType objectType = spaceObjectDetails!.objectType;
-    String objectId = spaceObjectDetails!.objectId;
+  Widget attachmentOptionsUI(
+    BuildContext context,
+    SpaceObjectDetails spaceObjectDetails,
+  ) {
+    String spaceId = spaceObjectDetails.spaceId;
+    ObjectType objectType = spaceObjectDetails.objectType;
+    String objectId = spaceObjectDetails.objectId;
 
     final newsRefType = getNewsRefTypeFromObjType(objectType);
     return AttachOptions(
@@ -94,10 +97,13 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
     );
   }
 
-  Widget externalShareOptionsUI(BuildContext context) {
-    String spaceId = spaceObjectDetails!.spaceId;
-    ObjectType objectType = spaceObjectDetails!.objectType;
-    String objectId = spaceObjectDetails!.objectId;
+  Widget externalShareOptionsUI(
+    BuildContext context,
+    SpaceObjectDetails spaceObjectDetails,
+  ) {
+    String spaceId = spaceObjectDetails.spaceId;
+    ObjectType objectType = spaceObjectDetails.objectType;
+    String objectId = spaceObjectDetails.objectId;
 
     final internalLink =
         'acter:o/${spaceId.substring(1)}/${objectType.name}/${objectId.substring(1)}';
@@ -113,9 +119,12 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
     );
   }
 
-  Widget fileShareOptionsUI(BuildContext context) {
-    File file = fileDetails!.file;
-    String? mimeType = fileDetails!.mimeType;
+  Widget fileShareOptionsUI(
+    BuildContext context,
+    FileDetails fileDetails,
+  ) {
+    File file = fileDetails.file;
+    String? mimeType = fileDetails.mimeType;
     return FileShareOptions(
       onTapOpen: () async {
         final result = await OpenFilex.open(file.absolute.path);

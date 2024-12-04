@@ -1,2 +1,2 @@
 - [New] : Now you can directly share space objects (Pin, Event and TaskList) to new Boost from their detail page.
-- [New] : Now space objects can accessible by their own unique QR code.
+- [New] : You can now share any object via its own unique QR code.
