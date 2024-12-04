@@ -1,10 +1,20 @@
+import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/toolkit/errors/inline_error_button.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart' as chat;
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show RoomEventItem;
+import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../helpers/error_helpers.dart';
+import '../../../helpers/mock_chat_providers.dart';
+import '../../../helpers/test_util.dart';
+import '../../chat/messages/image_message_test.dart';
+import '../../comments/mock_data/mock_message_content.dart';
 import '../diff_applier_test.dart';
 
 class MockRoomEventItem extends Mock implements RoomEventItem {
@@ -67,6 +77,31 @@ void main() {
         final RoomMsgId query = ('test-room', 'A1');
         final result = container.read(shouldShowAvatarProvider(query));
         expect(result, false);
+      });
+    });
+
+    group('Image Messages Test', () {
+      testWidgets('shows errors and retries', (tester) async {
+        final content = MockMsgContent(bodyText: 'msgContent.body()');
+        await tester.pumpProviderWidget(
+          overrides: [
+            // Provider first provides a broken path to trigger the error
+            // then null, so it would check for auto-download but not attempt
+            chatProvider.overrideWith(
+              () => MockAsyncConvoNotifier(retVal: RetryMediaConvoMock()),
+            ),
+            chat.autoDownloadMediaProvider.overrideWith((a, b) => false),
+          ],
+          child: ImageMessageEvent(
+            messageId: 'eventId',
+            roomId: '!roomId',
+            content: content,
+          ),
+        );
+        await tester.pumpWithRunAsyncUntil(
+          () => findsOne.matches(find.byType(ActerInlineErrorButton), {}),
+        );
+        await tester.ensureInlineErrorWithRetryWorks();
       });
     });
   });
