@@ -18,7 +18,6 @@ G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 static void my_application_activate(GApplication* application) {
   MyApplication* self = MY_APPLICATION(application);
 
-#ifdef NDEBUG
   GList *list = gtk_application_get_windows(GTK_APPLICATION(application));
   GtkWindow* existing_window = list ? GTK_WINDOW(list->data) : NULL;
 
@@ -26,7 +25,6 @@ static void my_application_activate(GApplication* application) {
       gtk_window_present(existing_window);
       return;
   }
-#endif
   
   GtkWindow* window =  GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
 
