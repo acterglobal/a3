@@ -47,8 +47,8 @@ void main() {
               overrides: [
                 // Same as before
                 canSendMessageProvider.overrideWith(
-                  (ref, roomId) => false,
-                ), // false means loading
+                  (ref, roomId) => null,
+                ), // null means loading
                 sdkProvider.overrideWith((ref) => MockActerSdk()),
               ],
               child: const InActerContextTestWrapper(

@@ -280,9 +280,9 @@ final allowSendInputProvider = StateProvider.family.autoDispose<bool, String>(
 );
 
 // whether user has enough permissions to send message in room
-final canSendMessageProvider = FutureProvider.family<bool, String>(
+final canSendMessageProvider = FutureProvider.family<bool?, String>(
   (ref, roomId) async {
     final membership = ref.watch(roomMembershipProvider(roomId));
-    return membership.valueOrNull?.canString('CanSendChatMessages') == true;
+    return membership.valueOrNull?.canString('CanSendChatMessages');
   },
 );
