@@ -1,0 +1,6 @@
+- [Labs] Chat-NG:
+  - supports new UI message bubbles with initial message types support .i.e. text, image, video.
+  - messages list now also supports initial added state events .i.e. member, redacted, encrypted.
+  - pagination to load more messages upon scrolling.
+  - Initial scroll to new messages on entering room.
+  - Updated test coverage.
