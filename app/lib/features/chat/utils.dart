@@ -5,7 +5,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/deep_linking/actions/handle_deep_link_uri.dart';
-import 'package:acter/features/deep_linking/utils.dart';
+import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
