@@ -4,6 +4,8 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/deep_linking/actions/handle_deep_link_uri.dart';
+import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -373,17 +375,33 @@ Future<void> saveDraft(
   }
 }
 
-Future<void> onMessageLinkTap(Uri uri, BuildContext context) async {
-  final roomId = getRoomIdFromLink(uri);
+Future<void> onMessageLinkTap(
+  Uri uri,
+  WidgetRef ref,
+  BuildContext context,
+) async {
+  try {
+    await handleDeepLinkUri(
+      context: context,
+      ref: ref,
+      uri: uri,
+      throwNoError: true,
+    );
+  } on UriParseError {
+    if (!context.mounted) {
+      return;
+    }
+    final roomId = getRoomIdFromLink(uri);
 
-  ///If link is type of matrix room link
-  if (roomId != null) {
-    goToChat(context, roomId);
-  }
+    ///If link is type of matrix room link
+    if (roomId != null) {
+      goToChat(context, roomId);
+    }
 
-  ///If link is other than matrix room link
-  ///Then open it on browser
-  else {
-    await openLink(uri.toString(), context);
+    ///If link is other than matrix room link
+    ///Then open it on browser
+    else {
+      await openLink(uri.toString(), context);
+    }
   }
 }
