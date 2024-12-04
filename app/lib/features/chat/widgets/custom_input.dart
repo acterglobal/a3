@@ -55,6 +55,7 @@ class CustomChatInput extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final canSend = ref.watch(canSendMessageProvider(roomId)).valueOrNull;
+    final unselectedWidgetColor = Theme.of(context).unselectedWidgetColor;
     if (canSend == null) {
       // we are still loading
       return loadingState(context);
@@ -68,25 +69,29 @@ class CustomChatInput extends ConsumerWidget {
 
     return FrostEffect(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 15),
         decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
-        child: Row(
-          children: [
-            const SizedBox(width: 1),
-            Icon(
-              Atlas.block_prohibited_thin,
-              size: 14,
-              color: Theme.of(context).unselectedWidgetColor,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              key: noAccessKey,
-              L10n.of(context).chatMissingPermissionsToSend,
-              style: TextStyle(
-                color: Theme.of(context).unselectedWidgetColor,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            children: [
+              const SizedBox(width: 1),
+              Icon(
+                Atlas.block_prohibited_thin,
+                size: 14,
+                color: unselectedWidgetColor,
               ),
-            ),
-          ],
+              const SizedBox(width: 4),
+              Text(
+                key: noAccessKey,
+                L10n.of(context).chatMissingPermissionsToSend,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: unselectedWidgetColor),
+              ),
+            ],
+          ),
         ),
       ),
     );
