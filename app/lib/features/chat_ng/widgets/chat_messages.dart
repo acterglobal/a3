@@ -27,8 +27,10 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
     // for first time messages load, should scroll at the latest (bottom)
     ref.listenManual(
         chatStateProvider(widget.roomId)
-            .select((value) => value.messageList.length), (prev, next) {
-      if (prev != next) {
+            .select((value) => value.messageList.length), (_, __) {
+      if (_scrollController.hasClients &&
+          _scrollController.position.pixels >
+              _scrollController.position.maxScrollExtent - 150) {
         WidgetsBinding.instance.addPostFrameCallback((_) => scrollToEnd());
       }
     });
