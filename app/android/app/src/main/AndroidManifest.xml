@@ -83,4 +83,10 @@
             <data android:mimeType="*/*" />
         </intent>
     </queries>
+    <!-- Queries for specific apps -->
+    <queries>
+        <package android:name="com.whatsapp"/>
+        <package android:name="org.telegram.messenger"/>
+        <package android:name="org.thoughtcrime.securesms"/>
+    </queries>
 </manifest>
