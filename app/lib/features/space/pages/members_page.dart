@@ -5,6 +5,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
+import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/member/widgets/member_list_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -48,6 +49,15 @@ class _SpaceMembersPageState extends ConsumerState<SpaceMembersPage> {
     return CustomScrollView(
       slivers: [
         SliverAppBar(
+          centerTitle: false,
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(L10n.of(context).members, textAlign: TextAlign.left),
+              SpaceNameWidget(spaceId: widget.spaceIdOrAlias),
+            ],
+          ),
           actions: [
             showInviteBtn && invited.length <= 100
                 ? OutlinedButton(
