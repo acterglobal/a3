@@ -29,11 +29,14 @@ class ExternalShareOptions extends ConsumerWidget {
     final lang = L10n.of(context);
 
     final isWhatsAppInstalled =
-        ref.watch(isAppInstalledProvider(ExternalApps.whatsApp)).valueOrNull;
+        ref.watch(isAppInstalledProvider(ExternalApps.whatsApp)).valueOrNull ==
+            true;
     final isTelegramInstalled =
-        ref.watch(isAppInstalledProvider(ExternalApps.telegram)).valueOrNull;
+        ref.watch(isAppInstalledProvider(ExternalApps.telegram)).valueOrNull ==
+            true;
     final isSignalInstalled =
-        ref.watch(isAppInstalledProvider(ExternalApps.signal)).valueOrNull;
+        ref.watch(isAppInstalledProvider(ExternalApps.signal)).valueOrNull ==
+            true;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -72,7 +75,7 @@ class ExternalShareOptions extends ConsumerWidget {
                   color: Colors.blueGrey,
                   onTap: onTapCopy,
                 ),
-              if (onTapSignal != null && isSignalInstalled == true)
+              if (onTapSignal != null && isSignalInstalled)
                 shareToItemUI(
                   name: lang.signal,
                   iconWidget: Image.asset(
@@ -83,14 +86,14 @@ class ExternalShareOptions extends ConsumerWidget {
                   color: Colors.blue,
                   onTap: onTapSignal,
                 ),
-              if (onTapWhatsApp != null && isWhatsAppInstalled == true)
+              if (onTapWhatsApp != null && isWhatsAppInstalled)
                 shareToItemUI(
                   name: lang.whatsApp,
                   iconWidget: Icon(PhosphorIcons.whatsappLogo()),
                   color: Colors.green,
                   onTap: onTapWhatsApp,
                 ),
-              if (onTapTelegram != null && isTelegramInstalled == true)
+              if (onTapTelegram != null && isTelegramInstalled)
                 shareToItemUI(
                   name: lang.telegram,
                   iconWidget: Icon(PhosphorIcons.telegramLogo()),
