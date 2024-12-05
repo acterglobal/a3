@@ -26,7 +26,7 @@ class VideoDialog extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           actions: [
-            ShareFileButton(file: videoFile)
+            ShareFileButton(file: videoFile),
           ],
         ),
         body: Container(
