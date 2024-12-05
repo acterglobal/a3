@@ -16,12 +16,10 @@ class SpaceToolbar extends ConsumerWidget {
   static const leaveMenu = Key('space-options-leave');
 
   final String spaceId;
-  final Widget? spaceTitle;
 
   const SpaceToolbar({
     super.key,
     required this.spaceId,
-    this.spaceTitle,
   });
 
   @override
@@ -35,6 +33,8 @@ class SpaceToolbar extends ConsumerWidget {
         ref.watch(spaceInvitedMembersProvider(spaceId)).valueOrNull ?? [];
     final showInviteBtn = membership?.canString('CanInvite') == true;
     final List<PopupMenuEntry> submenu = [];
+
+    final displayName = ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull;
     if (membership?.canString('CanSetName') == true) {
       submenu.add(
         PopupMenuItem(
@@ -98,7 +98,7 @@ class SpaceToolbar extends ConsumerWidget {
 
     return AppBar(
       backgroundColor: Colors.transparent,
-      title: spaceTitle,
+      title: displayName != null ? Text(displayName) : null,
       actions: [
         if (showInviteBtn && invited.length <= 100)
           OutlinedButton(
