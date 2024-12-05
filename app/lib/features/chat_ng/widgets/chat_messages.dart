@@ -1,3 +1,4 @@
+import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,10 @@ class ChatMessages extends ConsumerStatefulWidget {
 
 class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   final ScrollController _scrollController = ScrollController();
-  bool isLoading = false;
+
+  bool get isLoading => ref.watch(
+        chatStateProvider(widget.roomId).select((v) => v.loading.isLoading),
+      );
 
   @override
   void initState() {
@@ -30,13 +34,11 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
     // Check if we're near the top of the list
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent) {
-      setState(() => isLoading = true);
+      if (isLoading) return;
 
       // Get the notifier to load more messages
       final notifier = ref.read(chatStateProvider(widget.roomId).notifier);
       await notifier.loadMore();
-
-      setState(() => isLoading = false);
     }
   }
 

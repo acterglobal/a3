@@ -3,50 +3,101 @@ import 'package:flutter/material.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-// Chat Bubble UI
 class ChatBubble extends StatelessWidget {
-  final int? messageWidth;
-  // inner content
   final Widget child;
-  final bool isUser;
-  final bool showAvatar;
+  final int? messageWidth;
   final bool wasEdited;
+  final bool nextMessageGroup;
+  final BoxDecoration decoration;
+  final CrossAxisAlignment bubbleAlignment;
 
-  const ChatBubble({
+  // default private constructor
+  const ChatBubble._inner({
     super.key,
     required this.child,
+    required this.wasEdited,
+    required this.bubbleAlignment,
+    required this.decoration,
     this.messageWidth,
-    this.isUser = false,
-    this.showAvatar = true,
-    this.wasEdited = false,
+    this.nextMessageGroup = false,
   });
+
+  // factory bubble constructor
+  factory ChatBubble({
+    required Widget child,
+    required BuildContext context,
+    int? messageWidth,
+    bool wasEdited = false,
+    bool nextMessageGroup = false,
+  }) {
+    final theme = Theme.of(context);
+    return ChatBubble._inner(
+      wasEdited: wasEdited,
+      messageWidth: messageWidth,
+      nextMessageGroup: nextMessageGroup,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+          bottomLeft: Radius.circular(nextMessageGroup ? 16 : 4),
+          bottomRight: Radius.circular(16),
+        ),
+      ),
+      bubbleAlignment: CrossAxisAlignment.start,
+      child: child,
+    );
+  }
+
+  // for user's own messages
+  factory ChatBubble.user({
+    Key? key,
+    required BuildContext context,
+    required Widget child,
+    int? messageWidth,
+    bool wasEdited = false,
+    bool nextMessageGroup = false,
+  }) {
+    final theme = Theme.of(context);
+    return ChatBubble._inner(
+      key: key,
+      messageWidth: messageWidth,
+      wasEdited: wasEdited,
+      nextMessageGroup: nextMessageGroup,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+          bottomLeft: Radius.circular(16),
+          bottomRight: Radius.circular(nextMessageGroup ? 16 : 4),
+        ),
+      ),
+      bubbleAlignment: CrossAxisAlignment.end,
+      child: DefaultTextStyle.merge(
+        style: TextStyle(color: theme.colorScheme.onPrimary),
+        child: child,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final chatTheme = Theme.of(context).chatTheme;
     final size = MediaQuery.sizeOf(context);
     final msgWidth = messageWidth.map((w) => w.toDouble());
+
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       child: Column(
-        crossAxisAlignment:
-            isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: bubbleAlignment,
         children: [
           Container(
-            constraints: BoxConstraints(maxWidth: msgWidth ?? size.width),
-            width: msgWidth,
-            decoration: BoxDecoration(
-              color: isUser
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.surface,
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(16),
-                topRight: const Radius.circular(16),
-                bottomLeft: Radius.circular(isUser || !showAvatar ? 16 : 4),
-                bottomRight: Radius.circular(isUser ? 4 : 16),
-              ),
+            constraints: BoxConstraints(
+              maxWidth: msgWidth ?? size.width,
             ),
+            width: msgWidth,
+            decoration: decoration,
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 12,

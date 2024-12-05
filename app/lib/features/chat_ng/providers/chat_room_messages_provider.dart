@@ -15,26 +15,6 @@ const _supportedTypes = [
   'm.room.message',
   'm.room.redaction',
   'm.room.encrypted',
-  'm.policy.rule.room',
-  'm.policy.rule.server',
-  'm.policy.rule.user',
-  'm.room.aliases',
-  'm.room.avatar',
-  'm.room.canonical_alias',
-  'm.room.create',
-  'm.room.encryption',
-  'm.room.guest.access',
-  'm.room.history_visibility',
-  'm.room.join.rules',
-  'm.room.name',
-  'm.room.pinned_events',
-  'm.room.power_levels',
-  'm.room.server_acl',
-  'm.room.third_party_invite',
-  'm.room.tombstone',
-  'm.room.topic',
-  'm.space.child',
-  'm.space.parent',
 ];
 
 typedef RoomMsgId = (String roomId, String uniqueId);
@@ -80,7 +60,7 @@ final renderableChatMessagesProvider =
 });
 
 // Provider to check if we should show avatar by comparing with the next message
-final shouldShowAvatarProvider = Provider.family<bool, RoomMsgId>(
+final isNextMessageGroupProvider = Provider.family<bool, RoomMsgId>(
   (ref, roomMsgId) {
     final roomId = roomMsgId.$1;
     final eventId = roomMsgId.$2;

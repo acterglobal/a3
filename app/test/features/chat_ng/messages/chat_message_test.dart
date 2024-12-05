@@ -63,19 +63,19 @@ void main() {
 
       test('shows avatar for last message in the list', () {
         final RoomMsgId query = ('test-room', 'B1');
-        final result = container.read(shouldShowAvatarProvider(query));
+        final result = container.read(isNextMessageGroupProvider(query));
         expect(result, true);
       });
 
       test('shows avatar when next message is from different user', () {
         final RoomMsgId query = ('test-room', 'A2');
-        final result = container.read(shouldShowAvatarProvider(query));
+        final result = container.read(isNextMessageGroupProvider(query));
         expect(result, true);
       });
 
       test('hides avatar when next message is from same user', () {
         final RoomMsgId query = ('test-room', 'A1');
-        final result = container.read(shouldShowAvatarProvider(query));
+        final result = container.read(isNextMessageGroupProvider(query));
         expect(result, false);
       });
     });

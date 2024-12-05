@@ -9,14 +9,14 @@ class TextMessageEvent extends StatelessWidget {
   final String roomId;
   final MsgContent content;
   final bool isUser;
-  final bool showAvatar;
+  final bool nextMessageGroup;
   final bool wasEdited;
 
   const TextMessageEvent({
     super.key,
     required this.content,
     required this.isUser,
-    required this.showAvatar,
+    required this.nextMessageGroup,
     required this.roomId,
     this.wasEdited = false,
   });
@@ -24,9 +24,33 @@ class TextMessageEvent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final body = content.formattedBody() ?? content.body();
+
+    final Widget inner = Html(
+      shrinkToFit: true,
+      pillBuilder: ({
+        required String identifier,
+        required String url,
+        OnPillTap? onTap,
+      }) =>
+          ActerPillBuilder(
+        identifier: identifier,
+        uri: url,
+        roomId: roomId,
+      ),
+      renderNewlines: true,
+      data: body,
+    );
+    if (isUser) {
+      return ChatBubble.user(
+        context: context,
+        wasEdited: wasEdited,
+        nextMessageGroup: nextMessageGroup,
+        child: inner,
+      );
+    }
     return ChatBubble(
-      isUser: isUser,
-      showAvatar: showAvatar,
+      context: context,
+      nextMessageGroup: nextMessageGroup,
       wasEdited: wasEdited,
       child: Html(
         shrinkToFit: true,
