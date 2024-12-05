@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
+# default name and identity
 set(BINARY_NAME "acter")
 set(APPLICATION_ID "global.acter.app")
 
@@ -24,6 +25,12 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     STRING "Flutter build mode" FORCE)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
     "Debug" "Profile" "Release")
+endif()
+
+# if we are in debug/dev mode, we overwrite the internal name
+# so we can run it parallel to the installed version
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+  set(APPLICATION_ID "global.acter.app.dev")
 endif()
 
 # Compilation settings that should be applied to most targets.

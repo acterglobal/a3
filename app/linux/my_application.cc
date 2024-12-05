@@ -17,6 +17,7 @@ G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 // Implements GApplication::activate.
 static void my_application_activate(GApplication* application) {
   MyApplication* self = MY_APPLICATION(application);
+
   GList *list = gtk_application_get_windows(GTK_APPLICATION(application));
   GtkWindow* existing_window = list ? GTK_WINDOW(list->data) : NULL;
 
