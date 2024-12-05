@@ -9,7 +9,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::chat::widgets::room_message');
+final _log = Logger('a3::chat_ng::widgets::room_message');
 
 class ChatEvent extends ConsumerWidget {
   final String roomId;
@@ -77,7 +77,7 @@ class ChatEvent extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-        (nextMessageGroup && !isUser)
+        (!nextMessageGroup && !isUser)
             ? Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: ActerAvatar(options: options),

@@ -67,8 +67,8 @@ final isNextMessageGroupProvider = Provider.family<bool, RoomMsgId>(
     final messages = ref.watch(renderableChatMessagesProvider(roomId));
     final currentIndex = messages.indexOf(eventId);
 
-    // Always show avatar for the first message (last in the list)
-    if (currentIndex == messages.length - 1) return true;
+    // Always show avatar for the first message (last in the list), so not affecting group state
+    if (currentIndex == messages.length - 1) return false;
 
     // Get current and next message
     final currentMsg = ref.watch(chatRoomMessageProvider(roomMsgId));
@@ -81,8 +81,8 @@ final isNextMessageGroupProvider = Provider.family<bool, RoomMsgId>(
     final currentSender = currentMsg.eventItem()?.sender();
     final nextSender = nextMsg.eventItem()?.sender();
 
-    // Show avatar if next message is from a different sender
-    return currentSender != nextSender;
+    // is next message in group from same sender
+    return currentSender == nextSender;
   },
 );
 
