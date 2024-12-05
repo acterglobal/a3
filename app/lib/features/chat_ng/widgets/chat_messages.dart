@@ -26,9 +26,9 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
     super.initState();
     // for first time messages load, should scroll at the latest (bottom)
     ref.listenManual(
-        chatStateProvider(widget.roomId).select((value) => value.messageList),
-        (prev, next) {
-      if (prev != next && next.length <= 10) {
+        chatStateProvider(widget.roomId)
+            .select((value) => value.messageList.length), (prev, next) {
+      if (prev != next) {
         WidgetsBinding.instance.addPostFrameCallback((_) => scrollToEnd());
       }
     });
@@ -58,8 +58,10 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   void scrollToEnd() {
     if (!mounted || !_scrollController.hasClients) return;
 
-    _scrollController.jumpTo(
+    _scrollController.animateTo(
       _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
     );
   }
 
@@ -69,9 +71,6 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
       chatStateProvider(widget.roomId).select((value) => value.messageList),
     );
 
-    final animatedListKey =
-        ref.watch(animatedListChatMessagesProvider(widget.roomId));
-
     return PageStorage(
       bucket: bucketGlobal,
       child: Column(
@@ -79,7 +78,7 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
           Expanded(
             child: Stack(
               children: [
-                _buildMessagesList(animatedListKey, messages),
+                _buildMessagesList(messages),
                 _buildScrollIndicator(),
               ],
             ),
@@ -90,27 +89,23 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   }
 
   Widget _buildMessagesList(
-    GlobalKey<AnimatedListState> animatedListKey,
     List<String> messages,
   ) =>
       KeyedSubtree(
         key: PageStorageKey('chat_list_${widget.roomId}'),
         child: AnimatedList(
           initialItemCount: messages.length,
-          key: animatedListKey,
+          key: ref.watch(animatedListChatMessagesProvider(widget.roomId)),
           controller: _scrollController,
           reverse: false,
           padding: const EdgeInsets.only(
             top: 40,
           ),
-          itemBuilder: (_, index, animation) => FadeTransition(
-            opacity: animation,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: ChatEvent(
-                roomId: widget.roomId,
-                eventId: messages[index],
-              ),
+          itemBuilder: (_, index, animation) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: ChatEvent(
+              roomId: widget.roomId,
+              eventId: messages[index],
             ),
           ),
         ),
