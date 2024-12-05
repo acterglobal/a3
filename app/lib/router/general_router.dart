@@ -138,7 +138,7 @@ final generalRoutes = [
     path: Routes.createPin.route,
     pageBuilder: (context, state) {
       final spaceId = state.uri.queryParameters['spaceId'];
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: CreatePinPage(
           initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
@@ -225,7 +225,7 @@ final generalRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.uri.queryParameters['spaceId'];
       final newsReferencesModel = state.extra as NewsReferencesModel?;
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: AddNewsPage(
           initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
@@ -276,7 +276,7 @@ final generalRoutes = [
     pageBuilder: (context, state) {
       final roomId = state.uri.queryParameters['roomId']
           .expect('fullScreenAvatar route needs roomId as query param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: FullScreenAvatarPage(roomId: roomId),
       );
