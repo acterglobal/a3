@@ -1,3 +1,5 @@
+import 'package:acter/common/extensions/cached_async_state_provider.dart';
+import 'package:acter/common/extensions/enum_list.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -18,8 +20,15 @@ enum TabEntry {
   actions;
 }
 
-final tabsProvider =
-    FutureProvider.family<List<TabEntry>, String>((ref, spaceId) async {
+final tabsProvider = StateNotifierProvider.family<
+    CachedAsyncStateProvider<List<TabEntry>>,
+    AsyncValue<List<TabEntry>>,
+    String>(
+  (ref, arg) => CachedAsyncStateProvider(_innerTabsProvider(arg), ref),
+);
+
+final _innerTabsProvider =
+    FutureProvider.family<EnumList<TabEntry>, String>((ref, spaceId) async {
   final space = await ref.watch(spaceProvider(spaceId).future);
 
   List<TabEntry> tabs = [];
@@ -85,5 +94,5 @@ final tabsProvider =
   if (canAddPin | canAddEvent | canAddTask | canLinkSpaces) {
     tabs.add(TabEntry.actions);
   }
-  return tabs;
+  return EnumList(entries: tabs);
 });
