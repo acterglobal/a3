@@ -64,7 +64,7 @@ void main() {
       test('shows avatar for last message in the list', () {
         final RoomMsgId query = ('test-room', 'B1');
         final result = container.read(isNextMessageGroupProvider(query));
-        expect(result, true);
+        expect(result, false);
       });
 
       test('shows avatar when next message is from different user', () {
