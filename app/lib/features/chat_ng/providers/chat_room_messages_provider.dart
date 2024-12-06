@@ -10,6 +10,12 @@ import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::chat::message_provider');
+const _supportedTypes = [
+  'm.room.member',
+  'm.room.message',
+  'm.room.redaction',
+  'm.room.encrypted',
+];
 
 typedef RoomMsgId = (String roomId, String uniqueId);
 typedef MentionQuery = (String, MentionType);
@@ -27,8 +33,6 @@ final chatRoomMessageProvider =
 });
 
 final showHiddenMessages = StateProvider((ref) => false);
-
-const _supportedTypes = ['m.room.message'];
 
 final animatedListChatMessagesProvider =
     StateProvider.family<GlobalKey<AnimatedListState>, String>(
@@ -54,6 +58,33 @@ final renderableChatMessagesProvider =
     return _supportedTypes.contains(msg.eventItem()?.eventType());
   }).toList();
 });
+
+// Provider to check if we should show avatar by comparing with the next message
+final isNextMessageGroupProvider = Provider.family<bool, RoomMsgId>(
+  (ref, roomMsgId) {
+    final roomId = roomMsgId.$1;
+    final eventId = roomMsgId.$2;
+    final messages = ref.watch(renderableChatMessagesProvider(roomId));
+    final currentIndex = messages.indexOf(eventId);
+
+    // Always show avatar for the first message (last in the list), so not affecting group state
+    if (currentIndex == messages.length - 1) return false;
+
+    // Get current and next message
+    final currentMsg = ref.watch(chatRoomMessageProvider(roomMsgId));
+    final nextMsg = ref.watch(
+      chatRoomMessageProvider((roomId, messages[currentIndex + 1])),
+    );
+
+    if (currentMsg == null || nextMsg == null) return true;
+
+    final currentSender = currentMsg.eventItem()?.sender();
+    final nextSender = nextMsg.eventItem()?.sender();
+
+    // is next message in group from same sender
+    return currentSender == nextSender;
+  },
+);
 
 /// Provider to fetch user mentions
 final userMentionSuggestionsProvider =
