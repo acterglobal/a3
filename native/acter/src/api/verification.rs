@@ -23,7 +23,7 @@ use matrix_sdk_base::ruma::{
         room::message::{MessageType, OriginalSyncRoomMessageEvent},
         AnyToDeviceEvent, EventContent,
     },
-    OwnedDeviceId, OwnedUserId,
+    OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId,
 };
 use std::{
     collections::HashMap,
@@ -34,7 +34,56 @@ use std::{
 use tokio::sync::Mutex;
 use tracing::{error, info};
 
-use super::{client::Client, common::DeviceRecord, RUNTIME};
+use super::{
+    client::Client,
+    common::{DeviceRecord, OptionString},
+    RUNTIME,
+};
+
+static VERIFICATION_API_DEFAULT_TIMEOUT: i64 = 60; // in seconds
+
+#[derive(Clone, Debug)]
+pub struct ToDeviceVerificationEvent {
+    transaction_id: OwnedTransactionId,
+    sender: OwnedUserId,
+}
+
+impl ToDeviceVerificationEvent {
+    pub(crate) fn new(transaction_id: OwnedTransactionId, sender: OwnedUserId) -> Self {
+        ToDeviceVerificationEvent {
+            transaction_id,
+            sender,
+        }
+    }
+
+    pub fn transaction_id(&self) -> String {
+        self.transaction_id.to_string()
+    }
+
+    pub fn sender(&self) -> String {
+        self.sender.to_string()
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct RoomMsgVerificationEvent {
+    event_id: OwnedEventId,
+    sender: OwnedUserId,
+}
+
+impl RoomMsgVerificationEvent {
+    pub(crate) fn new(event_id: OwnedEventId, sender: OwnedUserId) -> Self {
+        RoomMsgVerificationEvent { event_id, sender }
+    }
+
+    pub fn event_id(&self) -> String {
+        self.event_id.to_string()
+    }
+
+    pub fn sender(&self) -> String {
+        self.sender.to_string()
+    }
+}
 
 #[derive(Clone, Debug)]
 pub struct VerificationEvent {
@@ -351,21 +400,28 @@ async fn request_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "VerificationRequestState::Created".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(
-                    client.deref().clone(),
-                    controller.clone(),
-                    event_type,
-                    flow_id.clone(),
-                    sender.clone(),
-                );
-                let methods = our_methods
-                    .iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<String>>()
-                    .join(",");
-                msg.set_content("our_methods".to_string(), methods);
-                if let Err(e) = controller.event_tx.try_send(msg) {
-                    error!("Dropping flow for {}: {}", flow_id, e);
+                #[cfg(feature = "event-stream-based-verification")]
+                {
+                    let mut msg = VerificationEvent::new(
+                        client.deref().clone(),
+                        controller.clone(),
+                        event_type,
+                        flow_id.clone(),
+                        sender.clone(),
+                    );
+                    let methods = our_methods
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>()
+                        .join(",");
+                    msg.set_content("our_methods".to_string(), methods);
+                    if let Err(e) = controller.event_tx.try_send(msg) {
+                        error!("Dropping flow for {}: {}", flow_id, e);
+                    }
+                }
+                #[cfg(feature = "timeout-based-verification")]
+                {
+                    controller.current_state = Some(event_type);
                 }
             }
             VerificationRequestState::Requested {
@@ -375,25 +431,32 @@ async fn request_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "VerificationRequestState::Requested".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(
-                    client.deref().clone(),
-                    controller.clone(),
-                    event_type,
-                    flow_id.clone(),
-                    sender.clone(),
-                );
-                let methods = their_methods
-                    .iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<String>>()
-                    .join(",");
-                msg.set_content("their_methods".to_string(), methods);
-                msg.set_content(
-                    "other_device_id".to_string(),
-                    other_device_data.device_id().to_string(),
-                );
-                if let Err(e) = controller.event_tx.try_send(msg) {
-                    error!("Dropping flow for {}: {}", flow_id, e);
+                #[cfg(feature = "event-stream-based-verification")]
+                {
+                    let mut msg = VerificationEvent::new(
+                        client.deref().clone(),
+                        controller.clone(),
+                        event_type,
+                        flow_id.clone(),
+                        sender.clone(),
+                    );
+                    let methods = their_methods
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>()
+                        .join(",");
+                    msg.set_content("their_methods".to_string(), methods);
+                    msg.set_content(
+                        "other_device_id".to_string(),
+                        other_device_data.device_id().to_string(),
+                    );
+                    if let Err(e) = controller.event_tx.try_send(msg) {
+                        error!("Dropping flow for {}: {}", flow_id, e);
+                    }
+                }
+                #[cfg(feature = "timeout-based-verification")]
+                {
+                    controller.current_state = Some(event_type);
                 }
             }
             VerificationRequestState::Ready {
@@ -404,31 +467,38 @@ async fn request_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "VerificationRequestState::Ready".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(
-                    client.deref().clone(),
-                    controller.clone(),
-                    event_type,
-                    flow_id.clone(),
-                    sender.clone(),
-                );
-                let methods = their_methods
-                    .iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<String>>()
-                    .join(",");
-                msg.set_content("their_methods".to_string(), methods);
-                let methods = our_methods
-                    .iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<String>>()
-                    .join(",");
-                msg.set_content("our_methods".to_string(), methods);
-                msg.set_content(
-                    "other_device_id".to_string(),
-                    other_device_data.device_id().to_string(),
-                );
-                if let Err(e) = controller.event_tx.try_send(msg) {
-                    error!("Dropping flow for {}: {}", flow_id, e);
+                #[cfg(feature = "event-stream-based-verification")]
+                {
+                    let mut msg = VerificationEvent::new(
+                        client.deref().clone(),
+                        controller.clone(),
+                        event_type,
+                        flow_id.clone(),
+                        sender.clone(),
+                    );
+                    let methods = their_methods
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>()
+                        .join(",");
+                    msg.set_content("their_methods".to_string(), methods);
+                    let methods = our_methods
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>()
+                        .join(",");
+                    msg.set_content("our_methods".to_string(), methods);
+                    msg.set_content(
+                        "other_device_id".to_string(),
+                        other_device_data.device_id().to_string(),
+                    );
+                    if let Err(e) = controller.event_tx.try_send(msg) {
+                        error!("Dropping flow for {}: {}", flow_id, e);
+                    }
+                }
+                #[cfg(feature = "timeout-based-verification")]
+                {
+                    controller.current_state = Some(event_type);
                 }
             }
             VerificationRequestState::Transitioned { verification } => {
@@ -436,6 +506,31 @@ async fn request_verification_handler(
                     let device_id = client.device_id()?;
                     let event_type = "VerificationRequestState::Transitioned".to_string();
                     info!("{} got {}", device_id, event_type);
+                    #[cfg(feature = "event-stream-based-verification")]
+                    {
+                        let msg = VerificationEvent::new(
+                            client.deref().clone(),
+                            controller.clone(),
+                            event_type,
+                            flow_id.clone(),
+                            sender.clone(),
+                        );
+                        if let Err(e) = controller.event_tx.try_send(msg) {
+                            error!("Dropping flow for {}: {}", flow_id, e);
+                        }
+                    }
+                    #[cfg(feature = "timeout-based-verification")]
+                    {
+                        controller.current_state = Some(event_type);
+                    }
+                }
+            }
+            VerificationRequestState::Done => {
+                let device_id = client.device_id()?;
+                let event_type = "VerificationRequestState::Done".to_string();
+                info!("{} got {}", device_id, event_type);
+                #[cfg(feature = "event-stream-based-verification")]
+                {
                     let msg = VerificationEvent::new(
                         client.deref().clone(),
                         controller.clone(),
@@ -447,20 +542,9 @@ async fn request_verification_handler(
                         error!("Dropping flow for {}: {}", flow_id, e);
                     }
                 }
-            }
-            VerificationRequestState::Done => {
-                let device_id = client.device_id()?;
-                let event_type = "VerificationRequestState::Done".to_string();
-                info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(
-                    client.deref().clone(),
-                    controller.clone(),
-                    event_type,
-                    flow_id.clone(),
-                    sender.clone(),
-                );
-                if let Err(e) = controller.event_tx.try_send(msg) {
-                    error!("Dropping flow for {}: {}", flow_id, e);
+                #[cfg(feature = "timeout-based-verification")]
+                {
+                    controller.current_state = Some(event_type);
                 }
                 break;
             }
@@ -468,20 +552,27 @@ async fn request_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "VerificationRequestState::Cancelled".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(
-                    client.deref().clone(),
-                    controller.clone(),
-                    event_type,
-                    flow_id.clone(),
-                    sender.clone(),
-                );
-                msg.set_content(
-                    "cancel_code".to_string(),
-                    cancel_info.cancel_code().to_string(),
-                );
-                msg.set_content("reason".to_string(), cancel_info.reason().to_string());
-                if let Err(e) = controller.event_tx.try_send(msg) {
-                    error!("Dropping flow for {}: {}", flow_id, e);
+                #[cfg(feature = "event-stream-based-verification")]
+                {
+                    let mut msg = VerificationEvent::new(
+                        client.deref().clone(),
+                        controller.clone(),
+                        event_type,
+                        flow_id.clone(),
+                        sender.clone(),
+                    );
+                    msg.set_content(
+                        "cancel_code".to_string(),
+                        cancel_info.cancel_code().to_string(),
+                    );
+                    msg.set_content("reason".to_string(), cancel_info.reason().to_string());
+                    if let Err(e) = controller.event_tx.try_send(msg) {
+                        error!("Dropping flow for {}: {}", flow_id, e);
+                    }
+                }
+                #[cfg(feature = "timeout-based-verification")]
+                {
+                    controller.current_state = Some(event_type);
                 }
                 break;
             }
@@ -504,31 +595,38 @@ async fn sas_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "SasState::KeysExchanged".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(
-                    client.deref().clone(),
-                    controller.clone(),
-                    event_type,
-                    flow_id.clone(),
-                    sender.clone(),
-                );
-                if let Some(auth_string) = emojis {
-                    let sequence = auth_string
-                        .emojis
-                        .iter()
-                        .filter_map(VerificationEmoji::new)
-                        .collect::<Vec<VerificationEmoji>>();
-                    msg.set_emojis(sequence);
-                }
-                let value = match serde_json::to_string(&decimals) {
-                    Ok(e) => e,
-                    Err(e) => {
-                        error!("KeysExchanged: couldn’t convert decimals to string");
-                        return Err(e.into());
+                #[cfg(feature = "event-stream-based-verification")]
+                {
+                    let mut msg = VerificationEvent::new(
+                        client.deref().clone(),
+                        controller.clone(),
+                        event_type,
+                        flow_id.clone(),
+                        sender.clone(),
+                    );
+                    if let Some(auth_string) = emojis {
+                        let sequence = auth_string
+                            .emojis
+                            .iter()
+                            .filter_map(VerificationEmoji::new)
+                            .collect::<Vec<VerificationEmoji>>();
+                        msg.set_emojis(sequence);
                     }
-                };
-                msg.set_content("decimals".to_string(), value);
-                if let Err(e) = controller.event_tx.try_send(msg) {
-                    error!("Dropping flow for {}: {}", flow_id, e);
+                    let value = match serde_json::to_string(&decimals) {
+                        Ok(e) => e,
+                        Err(e) => {
+                            error!("KeysExchanged: couldn’t convert decimals to string");
+                            return Err(e.into());
+                        }
+                    };
+                    msg.set_content("decimals".to_string(), value);
+                    if let Err(e) = controller.event_tx.try_send(msg) {
+                        error!("Dropping flow for {}: {}", flow_id, e);
+                    }
+                }
+                #[cfg(feature = "timeout-based-verification")]
+                {
+                    controller.current_state = Some(event_type);
                 }
             }
             SasState::Done {
@@ -538,25 +636,32 @@ async fn sas_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "SasState::Done".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(
-                    client.deref().clone(),
-                    controller.clone(),
-                    event_type,
-                    flow_id.clone(),
-                    sender.clone(),
-                );
-                let devices = verified_devices
-                    .iter()
-                    .map(|x| x.device_id().to_string())
-                    .collect::<Vec<String>>();
-                msg.set_content("verified_devices".to_string(), devices.join(","));
-                let identifiers = verified_identities
-                    .iter()
-                    .map(|x| x.user_id().to_string())
-                    .collect::<Vec<String>>();
-                msg.set_content("verified_identities".to_string(), identifiers.join(","));
-                if let Err(e) = controller.event_tx.try_send(msg) {
-                    error!("Dropping flow for {}: {}", flow_id, e);
+                #[cfg(feature = "event-stream-based-verification")]
+                {
+                    let mut msg = VerificationEvent::new(
+                        client.deref().clone(),
+                        controller.clone(),
+                        event_type,
+                        flow_id.clone(),
+                        sender.clone(),
+                    );
+                    let devices = verified_devices
+                        .iter()
+                        .map(|x| x.device_id().to_string())
+                        .collect::<Vec<String>>();
+                    msg.set_content("verified_devices".to_string(), devices.join(","));
+                    let identifiers = verified_identities
+                        .iter()
+                        .map(|x| x.user_id().to_string())
+                        .collect::<Vec<String>>();
+                    msg.set_content("verified_identities".to_string(), identifiers.join(","));
+                    if let Err(e) = controller.event_tx.try_send(msg) {
+                        error!("Dropping flow for {}: {}", flow_id, e);
+                    }
+                }
+                #[cfg(feature = "timeout-based-verification")]
+                {
+                    controller.current_state = Some(event_type);
                 }
                 break;
             }
@@ -564,20 +669,27 @@ async fn sas_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "SasState::Cancelled".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(
-                    client.deref().clone(),
-                    controller.clone(),
-                    event_type,
-                    flow_id.clone(),
-                    sender.clone(),
-                );
-                msg.set_content(
-                    "cancel_code".to_string(),
-                    cancel_info.cancel_code().to_string(),
-                );
-                msg.set_content("reason".to_string(), cancel_info.reason().to_string());
-                if let Err(e) = controller.event_tx.try_send(msg) {
-                    error!("Dropping flow for {}: {}", flow_id, e);
+                #[cfg(feature = "event-stream-based-verification")]
+                {
+                    let mut msg = VerificationEvent::new(
+                        client.deref().clone(),
+                        controller.clone(),
+                        event_type,
+                        flow_id.clone(),
+                        sender.clone(),
+                    );
+                    msg.set_content(
+                        "cancel_code".to_string(),
+                        cancel_info.cancel_code().to_string(),
+                    );
+                    msg.set_content("reason".to_string(), cancel_info.reason().to_string());
+                    if let Err(e) = controller.event_tx.try_send(msg) {
+                        error!("Dropping flow for {}: {}", flow_id, e);
+                    }
+                }
+                #[cfg(feature = "timeout-based-verification")]
+                {
+                    controller.current_state = Some(event_type);
                 }
                 break;
             }
@@ -585,89 +697,110 @@ async fn sas_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "SasState::Started".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(
-                    client.deref().clone(),
-                    controller.clone(),
-                    event_type,
-                    flow_id.clone(),
-                    sender.clone(),
-                );
-                let key_agreement_protocols = protocols
-                    .key_agreement_protocols
-                    .iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<String>>();
-                msg.set_content(
-                    "key_agreement_protocols".to_string(),
-                    key_agreement_protocols.join(","),
-                );
-                let hashes = protocols
-                    .hashes
-                    .iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<String>>();
-                msg.set_content("hashes".to_string(), hashes.join(","));
-                let message_authentication_codes = protocols
-                    .message_authentication_codes
-                    .iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<String>>();
-                msg.set_content(
-                    "message_authentication_codes".to_string(),
-                    message_authentication_codes.join(","),
-                );
-                let short_authentication_string = protocols
-                    .short_authentication_string
-                    .iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<String>>();
-                msg.set_content(
-                    "short_authentication_string".to_string(),
-                    short_authentication_string.join(","),
-                );
-                if let Err(e) = controller.event_tx.try_send(msg) {
-                    error!("Dropping flow for {}: {}", flow_id, e);
+                #[cfg(feature = "event-stream-based-verification")]
+                {
+                    let mut msg = VerificationEvent::new(
+                        client.deref().clone(),
+                        controller.clone(),
+                        event_type,
+                        flow_id.clone(),
+                        sender.clone(),
+                    );
+                    let key_agreement_protocols = protocols
+                        .key_agreement_protocols
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>();
+                    msg.set_content(
+                        "key_agreement_protocols".to_string(),
+                        key_agreement_protocols.join(","),
+                    );
+                    let hashes = protocols
+                        .hashes
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>();
+                    msg.set_content("hashes".to_string(), hashes.join(","));
+                    let message_authentication_codes = protocols
+                        .message_authentication_codes
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>();
+                    msg.set_content(
+                        "message_authentication_codes".to_string(),
+                        message_authentication_codes.join(","),
+                    );
+                    let short_authentication_string = protocols
+                        .short_authentication_string
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>();
+                    msg.set_content(
+                        "short_authentication_string".to_string(),
+                        short_authentication_string.join(","),
+                    );
+                    if let Err(e) = controller.event_tx.try_send(msg) {
+                        error!("Dropping flow for {}: {}", flow_id, e);
+                    }
+                }
+                #[cfg(feature = "timeout-based-verification")]
+                {
+                    controller.current_state = Some(event_type);
                 }
             }
             SasState::Accepted { accepted_protocols } => {
                 let device_id = client.device_id()?;
                 let event_type = "SasState::Accepted".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(
-                    client.deref().clone(),
-                    controller.clone(),
-                    event_type,
-                    flow_id.clone(),
-                    sender.clone(),
-                );
-                msg.set_content(
-                    "key_agreement_protocol".to_string(),
-                    accepted_protocols.key_agreement_protocol.to_string(),
-                );
-                msg.set_content("hash".to_string(), accepted_protocols.hash.to_string());
-                let short_auth_string = accepted_protocols
-                    .short_auth_string
-                    .iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<String>>();
-                msg.set_content("short_auth_string".to_string(), short_auth_string.join(","));
-                if let Err(e) = controller.event_tx.try_send(msg) {
-                    error!("Dropping flow for {}: {}", flow_id, e);
+                #[cfg(feature = "event-stream-based-verification")]
+                {
+                    let mut msg = VerificationEvent::new(
+                        client.deref().clone(),
+                        controller.clone(),
+                        event_type,
+                        flow_id.clone(),
+                        sender.clone(),
+                    );
+                    msg.set_content(
+                        "key_agreement_protocol".to_string(),
+                        accepted_protocols.key_agreement_protocol.to_string(),
+                    );
+                    msg.set_content("hash".to_string(), accepted_protocols.hash.to_string());
+                    let short_auth_string = accepted_protocols
+                        .short_auth_string
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>();
+                    msg.set_content("short_auth_string".to_string(), short_auth_string.join(","));
+                    if let Err(e) = controller.event_tx.try_send(msg) {
+                        error!("Dropping flow for {}: {}", flow_id, e);
+                    }
+                }
+                #[cfg(feature = "timeout-based-verification")]
+                {
+                    controller.current_state = Some(event_type);
                 }
             }
             SasState::Confirmed => {
                 let device_id = client.device_id()?;
                 let event_type = "SasState::Confirmed".to_string();
                 info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(
-                    client.deref().clone(),
-                    controller.clone(),
-                    event_type,
-                    flow_id.clone(),
-                    sender.clone(),
-                );
-                if let Err(e) = controller.event_tx.try_send(msg) {
-                    error!("Dropping flow for {}: {}", flow_id, e);
+                #[cfg(feature = "event-stream-based-verification")]
+                {
+                    let msg = VerificationEvent::new(
+                        client.deref().clone(),
+                        controller.clone(),
+                        event_type,
+                        flow_id.clone(),
+                        sender.clone(),
+                    );
+                    if let Err(e) = controller.event_tx.try_send(msg) {
+                        error!("Dropping flow for {}: {}", flow_id, e);
+                    }
+                }
+                #[cfg(feature = "timeout-based-verification")]
+                {
+                    controller.current_state = Some(event_type);
                 }
             }
             SasState::Created { protocols } => {} // FIXME: Is there anything for us to do here?
@@ -678,21 +811,57 @@ async fn sas_verification_handler(
 
 #[derive(Clone, Debug)]
 pub(crate) struct VerificationController {
+    #[cfg(feature = "event-stream-based-verification")]
     event_tx: Sender<VerificationEvent>,
+    #[cfg(feature = "event-stream-based-verification")]
     event_rx: Arc<Mutex<Option<Receiver<VerificationEvent>>>>,
+    #[cfg(feature = "timeout-based-verification")]
+    to_device_event_tx: Sender<ToDeviceVerificationEvent>,
+    #[cfg(feature = "timeout-based-verification")]
+    to_device_event_rx: Arc<Mutex<Option<Receiver<ToDeviceVerificationEvent>>>>,
+    #[cfg(feature = "timeout-based-verification")]
+    room_msg_event_tx: Sender<RoomMsgVerificationEvent>,
+    #[cfg(feature = "timeout-based-verification")]
+    room_msg_event_rx: Arc<Mutex<Option<Receiver<RoomMsgVerificationEvent>>>>,
+    #[cfg(feature = "timeout-based-verification")]
+    current_state: Option<String>,
     sync_key_verification_request_handle: Option<EventHandlerHandle>,
     any_to_device_handle: Option<EventHandlerHandle>,
 }
 
 impl VerificationController {
     pub fn new() -> Self {
+        #[cfg(feature = "event-stream-based-verification")]
         let (tx, rx) = channel::<VerificationEvent>(10); // dropping after more than 10 items queued
+        #[cfg(feature = "timeout-based-verification")]
+        let (device_tx, device_rx) = channel::<ToDeviceVerificationEvent>(10); // dropping after more than 10 items queued
+        #[cfg(feature = "timeout-based-verification")]
+        let (user_tx, user_rx) = channel::<RoomMsgVerificationEvent>(10); // dropping after more than 10 items queued
         VerificationController {
+            #[cfg(feature = "event-stream-based-verification")]
             event_tx: tx,
+            #[cfg(feature = "event-stream-based-verification")]
             event_rx: Arc::new(Mutex::new(Some(rx))),
+            #[cfg(feature = "timeout-based-verification")]
+            to_device_event_tx: device_tx,
+            #[cfg(feature = "timeout-based-verification")]
+            to_device_event_rx: Arc::new(Mutex::new(Some(device_rx))),
+            #[cfg(feature = "timeout-based-verification")]
+            room_msg_event_tx: user_tx,
+            #[cfg(feature = "timeout-based-verification")]
+            room_msg_event_rx: Arc::new(Mutex::new(Some(user_rx))),
+            #[cfg(feature = "timeout-based-verification")]
+            current_state: None,
             sync_key_verification_request_handle: None,
             any_to_device_handle: None,
         }
+    }
+
+    pub fn current_state(&self) -> OptionString {
+        #[cfg(feature = "event-stream-based-verification")]
+        return OptionString::new(None);
+        #[cfg(feature = "timeout-based-verification")]
+        return OptionString::new(self.current_state.clone());
     }
 
     // sync event is intended to verify other user
@@ -707,26 +876,40 @@ impl VerificationController {
                     let device_id = c.device_id().expect("DeviceId needed");
                     let event_type = ev.content.event_type();
                     info!("{} got {}", device_id, event_type);
-                    let mut msg = VerificationEvent::new(
-                        c,
-                        me.clone(),
-                        event_type.to_string(),
-                        ev.event_id.to_string(),
-                        ev.sender,
-                    );
-                    msg.set_content("body".to_string(), content.body.clone());
-                    msg.set_content("from_device".to_string(), content.from_device.to_string());
-                    let methods = content
-                        .methods
-                        .iter()
-                        .map(|x| x.to_string())
-                        .collect::<Vec<String>>();
-                    msg.set_content("methods".to_string(), methods.join(","));
-                    msg.set_content("to".to_string(), content.to.to_string());
-                    // this may be the past event occurred when device was off
-                    // so this event has no timestamp field unlike AnyToDeviceEvent::KeyVerificationRequest
-                    if let Err(e) = me.event_tx.try_send(msg) {
-                        error!("Dropping flow for {}: {}", ev.event_id, e);
+                    #[cfg(feature = "event-stream-based-verification")]
+                    {
+                        let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
+                            event_type.to_string(),
+                            ev.event_id.to_string(),
+                            ev.sender,
+                        );
+                        msg.set_content("body".to_string(), content.body.clone());
+                        msg.set_content("from_device".to_string(), content.from_device.to_string());
+                        let methods = content
+                            .methods
+                            .iter()
+                            .map(|x| x.to_string())
+                            .collect::<Vec<String>>();
+                        msg.set_content("methods".to_string(), methods.join(","));
+                        msg.set_content("to".to_string(), content.to.to_string());
+                        // this may be the past event occurred when device was off
+                        // so this event has no timestamp field unlike AnyToDeviceEvent::KeyVerificationRequest
+                        if let Err(e) = me.event_tx.try_send(msg) {
+                            error!("Dropping flow for {}: {}", ev.event_id, e);
+                        }
+                    }
+                    #[cfg(feature = "timeout-based-verification")]
+                    {
+                        let msg =
+                            RoomMsgVerificationEvent::new(ev.event_id.clone(), ev.sender.clone());
+                        // this may be the past event occurred when device was off
+                        // so this event has no timestamp field unlike AnyToDeviceEvent::KeyVerificationRequest
+                        if let Err(e) = me.room_msg_event_tx.try_send(msg) {
+                            error!("Dropping flow for {}: {}", ev.event_id, e);
+                        }
+                        me.current_state = Some(event_type.to_string());
                     }
                     // from then on, accept_verification_request takes over
                 }
@@ -755,191 +938,254 @@ impl VerificationController {
                         info!("AnyToDeviceEvent::KeyVerificationRequest");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        let mut msg = VerificationEvent::new(
-                            c,
-                            me.clone(),
-                            event_type.to_string(),
-                            evt.content.transaction_id.to_string(),
-                            evt.sender,
-                        );
-                        msg.set_content("from_device".to_string(), evt.content.from_device.to_string());
-                        let methods = evt.content.methods.iter().map(|x| x.to_string()).collect::<Vec<String>>();
-                        msg.set_content("methods".to_string(), methods.join(","));
-                        msg.set_content("timestamp".to_string(), evt.content.timestamp.get().to_string());
-                        if let Err(e) = me.event_tx.try_send(msg) {
-                            error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                        #[cfg(feature = "event-stream-based-verification")]
+                        {
+                            let mut msg = VerificationEvent::new(
+                                c,
+                                me.clone(),
+                                event_type.to_string(),
+                                evt.content.transaction_id.to_string(),
+                                evt.sender,
+                            );
+                            msg.set_content("from_device".to_string(), evt.content.from_device.to_string());
+                            let methods = evt.content.methods.iter().map(|x| x.to_string()).collect::<Vec<String>>();
+                            msg.set_content("methods".to_string(), methods.join(","));
+                            msg.set_content("timestamp".to_string(), evt.content.timestamp.get().to_string());
+                            if let Err(e) = me.event_tx.try_send(msg) {
+                                error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                            }
+                        }
+                        #[cfg(feature = "timeout-based-verification")]
+                        {
+                            let msg = ToDeviceVerificationEvent::new(
+                                evt.content.transaction_id.clone(),
+                                evt.sender.clone(),
+                            );
+                            if let Err(e) = me.to_device_event_tx.try_send(msg) {
+                                error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                            }
+                            me.current_state = Some(event_type.to_string());
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationReady(evt) => {
                         info!("AnyToDeviceEvent::KeyVerificationReady");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        let mut msg = VerificationEvent::new(
-                            c,
-                            me.clone(),
-                            event_type.to_string(),
-                            evt.content.transaction_id.to_string(),
-                            evt.sender,
-                        );
-                        msg.set_content("from_device".to_string(), evt.content.from_device.to_string());
-                        let methods = evt.content.methods.iter().map(|x| x.to_string()).collect::<Vec<String>>();
-                        msg.set_content("methods".to_string(), methods.join(","));
-                        if let Err(e) = me.event_tx.try_send(msg) {
-                            error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                        #[cfg(feature = "event-stream-based-verification")]
+                        {
+                            let mut msg = VerificationEvent::new(
+                                c,
+                                me.clone(),
+                                event_type.to_string(),
+                                evt.content.transaction_id.to_string(),
+                                evt.sender,
+                            );
+                            msg.set_content("from_device".to_string(), evt.content.from_device.to_string());
+                            let methods = evt.content.methods.iter().map(|x| x.to_string()).collect::<Vec<String>>();
+                            msg.set_content("methods".to_string(), methods.join(","));
+                            if let Err(e) = me.event_tx.try_send(msg) {
+                                error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                            }
+                        }
+                        #[cfg(feature = "timeout-based-verification")]
+                        {
+                            me.current_state = Some(event_type.to_string());
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationStart(evt) => {
                         info!("AnyToDeviceEvent::KeyVerificationStart");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        let mut msg = VerificationEvent::new(
-                            c,
-                            me.clone(),
-                            event_type.to_string(),
-                            evt.content.transaction_id.to_string(),
-                            evt.sender,
-                        );
-                        msg.set_content("from_device".to_string(), evt.content.from_device.to_string());
-                        match evt.content.method {
-                            StartMethod::SasV1(content) => {
-                                let key_agreement_protocols = content
-                                    .key_agreement_protocols
-                                    .iter()
-                                    .map(|x| x.to_string())
-                                    .collect::<Vec<String>>();
-                                msg.set_content("key_agreement_protocols".to_string(), key_agreement_protocols.join(","));
-                                let hashes = content
-                                    .hashes
-                                    .iter()
-                                    .map(|x| x.to_string())
-                                    .collect::<Vec<String>>();
-                                msg.set_content("hashes".to_string(), hashes.join(","));
-                                let message_authentication_codes = content
-                                    .message_authentication_codes
-                                    .iter()
-                                    .map(|x| x.to_string())
-                                    .collect::<Vec<String>>();
-                                msg.set_content("message_authentication_codes".to_string(), message_authentication_codes.join(","));
-                                let short_authentication_string = content
-                                    .short_authentication_string
-                                    .iter()
-                                    .map(|x| x.to_string())
-                                    .collect::<Vec<String>>();
-                                msg.set_content("short_authentication_string".to_string(), short_authentication_string.join(","));
+                        #[cfg(feature = "event-stream-based-verification")]
+                        {
+                            let mut msg = VerificationEvent::new(
+                                c,
+                                me.clone(),
+                                event_type.to_string(),
+                                evt.content.transaction_id.to_string(),
+                                evt.sender,
+                            );
+                            msg.set_content("from_device".to_string(), evt.content.from_device.to_string());
+                            match evt.content.method {
+                                StartMethod::SasV1(content) => {
+                                    let key_agreement_protocols = content
+                                        .key_agreement_protocols
+                                        .iter()
+                                        .map(|x| x.to_string())
+                                        .collect::<Vec<String>>();
+                                    msg.set_content("key_agreement_protocols".to_string(), key_agreement_protocols.join(","));
+                                    let hashes = content
+                                        .hashes
+                                        .iter()
+                                        .map(|x| x.to_string())
+                                        .collect::<Vec<String>>();
+                                    msg.set_content("hashes".to_string(), hashes.join(","));
+                                    let message_authentication_codes = content
+                                        .message_authentication_codes
+                                        .iter()
+                                        .map(|x| x.to_string())
+                                        .collect::<Vec<String>>();
+                                    msg.set_content("message_authentication_codes".to_string(), message_authentication_codes.join(","));
+                                    let short_authentication_string = content
+                                        .short_authentication_string
+                                        .iter()
+                                        .map(|x| x.to_string())
+                                        .collect::<Vec<String>>();
+                                    msg.set_content("short_authentication_string".to_string(), short_authentication_string.join(","));
+                                }
+                                StartMethod::ReciprocateV1(content) => {
+                                    let secret = match serde_json::to_string(&content.secret) {
+                                        Ok(e) => e,
+                                        Err(e) => {
+                                            error!("ReciprocateV1: couldn’t convert secret to string");
+                                            return;
+                                        }
+                                    };
+                                    msg.set_content("secret".to_string(), secret);
+                                }
+                                _ => {}
                             }
-                            StartMethod::ReciprocateV1(content) => {
-                                let secret = match serde_json::to_string(&content.secret) {
-                                    Ok(e) => e,
-                                    Err(e) => {
-                                        error!("ReciprocateV1: couldn’t convert secret to string");
-                                        return;
-                                    }
-                                };
-                                msg.set_content("secret".to_string(), secret);
+                            if let Err(e) = me.event_tx.try_send(msg) {
+                                error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
                             }
-                            _ => {}
                         }
-                        if let Err(e) = me.event_tx.try_send(msg) {
-                            error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                        #[cfg(feature = "timeout-based-verification")]
+                        {
+                            me.current_state = Some(event_type.to_string());
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationKey(evt) => {
                         info!("AnyToDeviceEvent::KeyVerificationKey");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        let mut msg = VerificationEvent::new(
-                            c,
-                            me.clone(),
-                            event_type.to_string(),
-                            evt.content.transaction_id.to_string(),
-                            evt.sender,
-                        );
-                        msg.set_content("key".to_string(), evt.content.key.to_string());
-                        if let Err(e) = me.event_tx.try_send(msg) {
-                            error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                        #[cfg(feature = "event-stream-based-verification")]
+                        {
+                            let mut msg = VerificationEvent::new(
+                                c,
+                                me.clone(),
+                                event_type.to_string(),
+                                evt.content.transaction_id.to_string(),
+                                evt.sender,
+                            );
+                            msg.set_content("key".to_string(), evt.content.key.to_string());
+                            if let Err(e) = me.event_tx.try_send(msg) {
+                                error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                            }
+                        }
+                        #[cfg(feature = "timeout-based-verification")]
+                        {
+                            me.current_state = Some(event_type.to_string());
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationAccept(evt) => {
                         info!("AnyToDeviceEvent::KeyVerificationAccept");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        let mut msg = VerificationEvent::new(
-                            c,
-                            me.clone(),
-                            event_type.to_string(),
-                            evt.content.transaction_id.to_string(),
-                            evt.sender,
-                        );
-                        if let AcceptMethod::SasV1(content) = evt.content.method {
-                            msg.set_content("hash".to_string(), content.hash.to_string());
-                            msg.set_content("key_agreement_protocol".to_string(), content.key_agreement_protocol.to_string());
-                            msg.set_content("message_authentication_code".to_string(), content.message_authentication_code.to_string());
-                            let short_authentication_string = content
-                                .short_authentication_string
-                                .iter()
-                                .map(|x| x.as_str().into())
-                                .collect::<Vec<String>>();
-                            msg.set_content("short_authentication_string".to_string(), short_authentication_string.join(","));
-                            msg.set_content("commitment".to_string(), content.commitment.to_string());
+                        #[cfg(feature = "event-stream-based-verification")]
+                        {
+                            let mut msg = VerificationEvent::new(
+                                c,
+                                me.clone(),
+                                event_type.to_string(),
+                                evt.content.transaction_id.to_string(),
+                                evt.sender,
+                            );
+                            if let AcceptMethod::SasV1(content) = evt.content.method {
+                                msg.set_content("hash".to_string(), content.hash.to_string());
+                                msg.set_content("key_agreement_protocol".to_string(), content.key_agreement_protocol.to_string());
+                                msg.set_content("message_authentication_code".to_string(), content.message_authentication_code.to_string());
+                                let short_authentication_string = content
+                                    .short_authentication_string
+                                    .iter()
+                                    .map(|x| x.as_str().into())
+                                    .collect::<Vec<String>>();
+                                msg.set_content("short_authentication_string".to_string(), short_authentication_string.join(","));
+                                msg.set_content("commitment".to_string(), content.commitment.to_string());
+                            }
+                            if let Err(e) = me.event_tx.try_send(msg) {
+                                error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                            }
                         }
-                        if let Err(e) = me.event_tx.try_send(msg) {
-                            error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                        #[cfg(feature = "timeout-based-verification")]
+                        {
+                            me.current_state = Some(event_type.to_string());
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationCancel(evt) => {
                         info!("AnyToDeviceEvent::KeyVerificationCancel");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        let mut msg = VerificationEvent::new(
-                            c,
-                            me.clone(),
-                            event_type.to_string(),
-                            evt.content.transaction_id.to_string(),
-                            evt.sender,
-                        );
-                        msg.set_content("code".to_string(), evt.content.code.to_string());
-                        msg.set_content("reason".to_string(), evt.content.reason);
-                        if let Err(e) = me.event_tx.try_send(msg) {
-                            error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                        #[cfg(feature = "event-stream-based-verification")]
+                        {
+                            let mut msg = VerificationEvent::new(
+                                c,
+                                me.clone(),
+                                event_type.to_string(),
+                                evt.content.transaction_id.to_string(),
+                                evt.sender,
+                            );
+                            msg.set_content("code".to_string(), evt.content.code.to_string());
+                            msg.set_content("reason".to_string(), evt.content.reason);
+                            if let Err(e) = me.event_tx.try_send(msg) {
+                                error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                            }
+                        }
+                        #[cfg(feature = "timeout-based-verification")]
+                        {
+                            me.current_state = Some(event_type.to_string());
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationMac(evt) => {
                         info!("AnyToDeviceEvent::KeyVerificationMac");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        let mut msg = VerificationEvent::new(
-                            c,
-                            me.clone(),
-                            event_type.to_string(),
-                            evt.content.transaction_id.to_string(),
-                            evt.sender,
-                        );
-                        msg.set_content("keys".to_string(), evt.content.keys.to_string());
-                        let mac = match serde_json::to_string(&evt.content.mac) {
-                            Ok(e) => e,
-                            Err(e) => {
-                                error!("KeyVerificationMac: couldn’t convert mac to string");
-                                return;
+                        #[cfg(feature = "event-stream-based-verification")]
+                        {
+                            let mut msg = VerificationEvent::new(
+                                c,
+                                me.clone(),
+                                event_type.to_string(),
+                                evt.content.transaction_id.to_string(),
+                                evt.sender,
+                            );
+                            msg.set_content("keys".to_string(), evt.content.keys.to_string());
+                            let mac = match serde_json::to_string(&evt.content.mac) {
+                                Ok(e) => e,
+                                Err(e) => {
+                                    error!("KeyVerificationMac: couldn’t convert mac to string");
+                                    return;
+                                }
+                            };
+                            msg.set_content("mac".to_string(), mac);
+                            if let Err(e) = me.event_tx.try_send(msg) {
+                                error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
                             }
-                        };
-                        msg.set_content("mac".to_string(), mac);
-                        if let Err(e) = me.event_tx.try_send(msg) {
-                            error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                        }
+                        #[cfg(feature = "timeout-based-verification")]
+                        {
+                            me.current_state = Some(event_type.to_string());
                         }
                     }
                     AnyToDeviceEvent::KeyVerificationDone(evt) => {
                         info!("AnyToDeviceEvent::KeyVerificationDone");
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
-                        let msg = VerificationEvent::new(
-                            c,
-                            me.clone(),
-                            event_type.to_string(),
-                            evt.content.transaction_id.to_string(),
-                            evt.sender,
-                        );
-                        if let Err(e) = me.event_tx.try_send(msg) {
-                            error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                        #[cfg(feature = "event-stream-based-verification")]
+                        {
+                            let msg = VerificationEvent::new(
+                                c,
+                                me.clone(),
+                                event_type.to_string(),
+                                evt.content.transaction_id.to_string(),
+                                evt.sender,
+                            );
+                            if let Err(e) = me.event_tx.try_send(msg) {
+                                error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
+                            }
+                        }
+                        #[cfg(feature = "timeout-based-verification")]
+                        {
+                            me.current_state = Some(event_type.to_string());
                         }
                     }
                     _ => {}
@@ -1078,10 +1324,37 @@ impl SessionManager {
 
 impl Client {
     pub fn verification_event_rx(&self) -> Option<Receiver<VerificationEvent>> {
+        #[cfg(feature = "event-stream-based-verification")]
         match self.verification_controller.event_rx.try_lock() {
             Ok(mut r) => r.take(),
             Err(e) => None,
         }
+        #[cfg(feature = "timeout-based-verification")]
+        None
+    }
+
+    pub fn to_device_verification_event_rx(&self) -> Option<Receiver<ToDeviceVerificationEvent>> {
+        #[cfg(feature = "timeout-based-verification")]
+        match self.verification_controller.to_device_event_rx.try_lock() {
+            Ok(mut r) => r.take(),
+            Err(e) => None,
+        }
+        #[cfg(feature = "event-stream-based-verification")]
+        None
+    }
+
+    pub fn room_msg_verification_event_rx(&self) -> Option<Receiver<RoomMsgVerificationEvent>> {
+        #[cfg(feature = "timeout-based-verification")]
+        match self.verification_controller.room_msg_event_rx.try_lock() {
+            Ok(mut r) => r.take(),
+            Err(e) => None,
+        }
+        #[cfg(feature = "event-stream-based-verification")]
+        None
+    }
+
+    pub fn verification_state(&self) -> OptionString {
+        self.verification_controller.current_state()
     }
 
     pub fn session_manager(&self) -> SessionManager {
