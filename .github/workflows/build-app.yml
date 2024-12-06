@@ -26,6 +26,9 @@ on:
       release_title:
         required: false
         type: string
+      msix_version:
+        required: false
+        type: string
 
       artifacts_prefix:
         required: false
@@ -371,7 +374,7 @@ jobs:
       - name: Build MSIX
         if: matrix.target == 'windows-msix'
         working-directory: app
-        run: dart pub run msix:create --store --build-windows false --version ${{ inputs.version }}.0 -v
+        run: dart pub run msix:create --store --build-windows false --version ${{ inputs.msix_version || inputs.version }}.0 -v
 
       - name: Copy further assets
         if: matrix.target == 'linux'
