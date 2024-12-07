@@ -1,8 +1,7 @@
 use anyhow::{Context, Result};
 use futures::{
-    channel::mpsc::{channel, Receiver, Sender},
     pin_mut,
-    stream::StreamExt,
+    stream::{Stream, StreamExt},
 };
 use matrix_sdk::{executor::JoinHandle, Client as SdkClient};
 use matrix_sdk_base::ruma::{OwnedDeviceId, OwnedUserId};
@@ -10,12 +9,16 @@ use std::{
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
-use tokio::sync::Mutex;
+use tokio::sync::{
+    broadcast::{channel, Receiver, Sender},
+    Mutex,
+};
+use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info};
 
 use super::{client::Client, common::DeviceRecord, RUNTIME};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct DeviceEvent {
     new_devices: Vec<OwnedDeviceId>,
     changed_devices: Vec<OwnedDeviceId>,
@@ -50,7 +53,7 @@ impl DeviceEvent {
 #[derive(Clone, Debug)]
 pub(crate) struct DeviceController {
     event_tx: Sender<DeviceEvent>, // keep it resident in memory
-    event_rx: Arc<Mutex<Option<Receiver<DeviceEvent>>>>,
+    event_rx: Arc<Receiver<DeviceEvent>>,
     listener: Arc<JoinHandle<()>>, // keep it resident in memory
 }
 
@@ -89,7 +92,7 @@ impl DeviceController {
                 }
                 if !new_devices.is_empty() || !changed_devices.is_empty() {
                     let evt = DeviceEvent::new(new_devices, changed_devices);
-                    if let Err(e) = tx.try_send(evt) {
+                    if let Err(e) = tx.send(evt) {
                         error!("Dropping device event: {}", e);
                     }
                 }
@@ -98,18 +101,16 @@ impl DeviceController {
 
         DeviceController {
             event_tx,
-            event_rx: Arc::new(Mutex::new(Some(event_rx))),
+            event_rx: Arc::new(event_rx),
             listener: Arc::new(listener),
         }
     }
 }
 
 impl Client {
-    pub fn device_event_rx(&self) -> Option<Receiver<DeviceEvent>> {
-        match self.device_controller.event_rx.try_lock() {
-            Ok(mut r) => r.take(),
-            Err(e) => None,
-        }
+    pub fn device_event_rx(&self) -> impl Stream<Item = DeviceEvent> {
+        BroadcastStream::new(self.device_controller.event_rx.resubscribe())
+            .map(|o| o.unwrap_or_default())
     }
 
     pub async fn device_records(&self, verified: bool) -> Result<Vec<DeviceRecord>> {

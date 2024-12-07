@@ -2819,7 +2819,7 @@ object Client {
     fn install_sas_event_handler(flow_id: string) -> Future<Result<bool>>;
 
     /// Return the event handler that new device was found or existing device was changed
-    fn device_event_rx() -> Option<Stream<DeviceEvent>>;
+    fn device_event_rx() -> Stream<DeviceEvent>;
 
     /// Return the typing event receiver
     fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;
