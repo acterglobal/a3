@@ -40,9 +40,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1280, 720);
+#ifdef _DEBUG
+  if (!window.CreateAndShow(L"Acter-dev", origin, size)) {
+    return EXIT_FAILURE;
+  }
+#else
   if (!window.CreateAndShow(L"Acter", origin, size)) {
     return EXIT_FAILURE;
   }
+#endif
   window.SetQuitOnClose(true);
 
   ::MSG msg;

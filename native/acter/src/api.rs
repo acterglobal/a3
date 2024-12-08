@@ -29,6 +29,7 @@ mod client;
 mod comments;
 mod common;
 mod convo;
+mod deep_linking;
 mod device;
 mod invitation;
 mod message;

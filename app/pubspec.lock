@@ -108,6 +108,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.1"
+  appcheck:
+    dependency: "direct main"
+    description:
+      name: appcheck
+      sha256: "0fcbe15b6bba67027c6f94bd177b9b319e019b51e0b49e9cd80486448c4a1909"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.2"
   appflowy_editor:
     dependency: "direct main"
     description:

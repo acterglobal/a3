@@ -46,6 +46,7 @@ import 'package:acter/features/tasks/pages/task_list_details_page.dart';
 import 'package:acter/features/tasks/pages/tasks_list_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final homeShellRoutes = [
@@ -54,7 +55,7 @@ final homeShellRoutes = [
     path: Routes.dashboard.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const Dashboard(),
       );
@@ -67,7 +68,7 @@ final homeShellRoutes = [
     path: Routes.settings.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const SettingsPage(isFullPage: true),
       );
@@ -78,7 +79,7 @@ final homeShellRoutes = [
     path: Routes.licenses.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const SettingsLicensesPage(),
       );
@@ -89,7 +90,7 @@ final homeShellRoutes = [
     path: Routes.settingsLabs.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const SettingsLabsPage(),
       );
@@ -100,7 +101,7 @@ final homeShellRoutes = [
     path: Routes.settingsChat.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const ChatSettingsPage(),
       );
@@ -111,7 +112,7 @@ final homeShellRoutes = [
     path: Routes.settingNotifications.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const NotificationsSettingsPage(),
       );
@@ -122,7 +123,7 @@ final homeShellRoutes = [
     path: Routes.settingsSuperInvites.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const SuperInvitesPage(),
       );
@@ -133,7 +134,7 @@ final homeShellRoutes = [
     path: Routes.info.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const SettingsInfoPage(),
       );
@@ -144,7 +145,7 @@ final homeShellRoutes = [
     path: Routes.myProfile.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const MyProfilePage(),
       );
@@ -155,7 +156,7 @@ final homeShellRoutes = [
     path: Routes.settingSessions.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const SessionsPage(),
       );
@@ -166,7 +167,7 @@ final homeShellRoutes = [
     path: Routes.settingBackup.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const BackupPage(),
       );
@@ -177,7 +178,7 @@ final homeShellRoutes = [
     path: Routes.settingLanguage.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const LanguageSelectPage(),
       );
@@ -188,7 +189,7 @@ final homeShellRoutes = [
     path: Routes.emailAddresses.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const EmailAddressesPage(),
       );
@@ -199,7 +200,7 @@ final homeShellRoutes = [
     path: Routes.blockedUsers.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const BlockedUsersPage(),
       );
@@ -210,7 +211,7 @@ final homeShellRoutes = [
     path: Routes.changePassword.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const ChangePasswordPage(),
       );
@@ -223,7 +224,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
           .expect('subSpaces route needs spaceId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: SubSpacesPage(spaceId: spaceId),
       );
@@ -236,7 +237,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
           .expect('subChats route needs spaceId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: SubChatsPage(spaceId: spaceId),
       );
@@ -251,7 +252,7 @@ final homeShellRoutes = [
           .expect('organizeCategories route needs spaceId as path param');
       final categoriesFor = state.pathParameters['categoriesFor']
           .expect('organizeCategories route needs categoriesFor as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: OrganizeCategoriesPage(
           spaceId: spaceId,
@@ -267,7 +268,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
           .expect('spaceMembers route needs spaceId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: SpaceMembersPage(spaceIdOrAlias: spaceId),
       );
@@ -280,7 +281,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
           .expect('spacePins route needs spaceId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: PinsListPage(spaceId: spaceId),
       );
@@ -293,7 +294,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
           .expect('spaceEvents route needs spaceId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: EventListPage(spaceId: spaceId),
       );
@@ -306,7 +307,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
           .expect('spaceTasks route needs spaceId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: TasksListPage(spaceId: spaceId),
       );
@@ -319,7 +320,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
           .expect('spaceUpdates route needs spaceId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: NewsListPage(spaceId: spaceId),
       );
@@ -331,7 +332,7 @@ final homeShellRoutes = [
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       final query = state.uri.queryParameters['query'];
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: SearchPublicDirectory(query: query),
       );
@@ -344,7 +345,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
           .expect('space route needs spaceId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: SpaceDetailsPage(spaceId: spaceId),
       );
@@ -356,7 +357,7 @@ final homeShellRoutes = [
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       final searchQuery = state.uri.queryParameters['searchQuery'];
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: SpaceListPage(searchQuery: searchQuery),
       );
@@ -370,7 +371,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
           .expect('spaceSettings route needs spaceId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: SpaceSettingsMenuIndexPage(spaceId: spaceId),
       );
@@ -383,7 +384,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
           .expect('spaceSettingsApps route needs spaceId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: SpaceAppsSettingsPage(spaceId: spaceId),
       );
@@ -396,7 +397,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
           .expect('spaceSettingsVisibility route needs spaceId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: WithSidebar(
           sidebar: SpaceSettingsMenu(spaceId: spaceId),
@@ -413,7 +414,7 @@ final homeShellRoutes = [
       final spaceId = state.pathParameters['spaceId'].expect(
         'spaceSettingsNotifications route needs spaceId as path param',
       );
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: SpaceNotificationConfigurationPage(spaceId: spaceId),
       );
@@ -425,7 +426,7 @@ final homeShellRoutes = [
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       final searchQuery = state.uri.queryParameters['searchQuery'];
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: TasksListPage(searchQuery: searchQuery),
       );
@@ -440,7 +441,7 @@ final homeShellRoutes = [
           .expect('taskItemDetails route needs taskListId as path param');
       final taskId = state.pathParameters['taskId']
           .expect('taskItemDetails route needs taskId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: TaskItemDetailPage(
           taskListId: taskListId,
@@ -456,7 +457,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final taskListId = state.pathParameters['taskListId']
           .expect('taskListDetails route needs taskListId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: TaskListDetailPage(taskListId: taskListId),
       );
@@ -468,7 +469,7 @@ final homeShellRoutes = [
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       final searchQuery = state.uri.queryParameters['searchQuery'];
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: PinsListPage(searchQuery: searchQuery),
       );
@@ -481,7 +482,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final pinId = state.pathParameters['pinId']
           .expect('pin route needs pinId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: PinDetailsPage(pinId: pinId),
       );
@@ -493,7 +494,7 @@ final homeShellRoutes = [
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       final searchQuery = state.uri.queryParameters['searchQuery'];
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: EventListPage(searchQuery: searchQuery),
       );
@@ -509,7 +510,7 @@ final homeShellRoutes = [
         templateEvent = extra;
       }
       final String? spaceId = state.uri.queryParameters['spaceId'];
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: CreateEventPage(
           initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
@@ -525,7 +526,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final calendarId = state.pathParameters['calendarId']
           .expect('calendarEvent route needs calendarId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: EventDetailPage(calendarId: calendarId),
       );
@@ -537,7 +538,7 @@ final homeShellRoutes = [
     path: Routes.updateList.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const NewsListPage(),
       );
@@ -549,7 +550,7 @@ final homeShellRoutes = [
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       final parentSpaceId = state.uri.queryParameters['parentSpaceId'];
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: CreateSpacePage(initialParentsSpaceId: parentSpaceId),
       );
@@ -562,7 +563,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.pathParameters['spaceId']
           .expect('spaceInvite route needs spaceId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: InvitePage(roomId: spaceId),
       );
@@ -575,7 +576,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final roomId = state.uri.queryParameters['roomId']
           .expect('inviteIndividual route needs roomId as query param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: InviteIndividualUsers(roomId: roomId),
       );
@@ -588,7 +589,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final roomId = state.uri.queryParameters['roomId']
           .expect('inviteSpaceMembers route needs roomId as query param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: InviteSpaceMembers(roomId: roomId),
       );
@@ -603,7 +604,7 @@ final homeShellRoutes = [
           .expect('shareInviteCode route needs inviteCode as query param');
       final roomId = state.uri.queryParameters['roomId']
           .expect('shareInviteCode route needs roomId as query param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: ShareInviteCode(
           inviteCode: inviteCode,
@@ -619,7 +620,7 @@ final homeShellRoutes = [
     pageBuilder: (context, state) {
       final roomId = state.uri.queryParameters['roomId']
           .expect('invitePending route needs roomId as query param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: InvitePending(roomId: roomId),
       );

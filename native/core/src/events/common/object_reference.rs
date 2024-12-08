@@ -1,3 +1,4 @@
+use matrix_sdk::{OwnedServerName, RoomDisplayName};
 use matrix_sdk_base::ruma::{EventId, OwnedEventId, OwnedRoomId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
@@ -137,6 +138,68 @@ impl FromStr for CalendarEventAction {
     }
 }
 
+#[derive(Eq, PartialEq, Clone, Default, Debug, Deserialize, Serialize)]
+pub struct RefPreview {
+    pub title: Option<String>,
+    pub room_display_name: Option<String>,
+}
+
+impl RefPreview {
+    pub fn new(title: Option<String>, room_display_name: Option<RoomDisplayName>) -> Self {
+        RefPreview {
+            title,
+            room_display_name: room_display_name.and_then(|r| match r {
+                RoomDisplayName::Named(name)
+                | RoomDisplayName::Aliased(name)
+                | RoomDisplayName::Calculated(name)
+                | RoomDisplayName::EmptyWas(name) => Some(name),
+                _ => None,
+            }),
+        }
+    }
+}
+
+impl RefPreview {
+    fn is_none(&self) -> bool {
+        self.title.is_none() && self.room_display_name.is_none()
+    }
+}
+
+#[derive(Eq, PartialEq, Clone, Default, Debug, Deserialize, Serialize)]
+pub struct CalendarEventRefPreview {
+    pub title: Option<String>,
+    pub room_display_name: Option<String>,
+    pub participants: Option<u32>,
+    pub start_at_utc: Option<i64>,
+}
+
+impl CalendarEventRefPreview {
+    pub fn new(
+        title: Option<String>,
+        room_display_name: Option<RoomDisplayName>,
+        participants: Option<u32>,
+        start_at_utc: Option<i64>,
+    ) -> Self {
+        CalendarEventRefPreview {
+            title,
+            participants,
+            start_at_utc,
+            room_display_name: room_display_name.and_then(|r| match r {
+                RoomDisplayName::Named(name)
+                | RoomDisplayName::Aliased(name)
+                | RoomDisplayName::Calculated(name)
+                | RoomDisplayName::EmptyWas(name) => Some(name),
+                _ => None,
+            }),
+        }
+    }
+}
+
+impl CalendarEventRefPreview {
+    fn is_none(&self) -> bool {
+        self.title.is_none() && self.room_display_name.is_none()
+    }
+}
 #[derive(Eq, PartialEq, Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case", tag = "ref")]
 pub enum RefDetails {
@@ -148,6 +211,10 @@ pub enum RefDetails {
         /// if this links to an object not part of this room, but a different room
         #[serde(default, skip_serializing_if = "Option::is_none")]
         room_id: Option<OwnedRoomId>,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        via: Vec<OwnedServerName>,
+        #[serde(default, skip_serializing_if = "RefPreview::is_none")]
+        preview: RefPreview,
 
         task_list: OwnedEventId,
 
@@ -162,6 +229,10 @@ pub enum RefDetails {
         /// if this links to an object not part of this room, but a different room
         #[serde(default, skip_serializing_if = "Option::is_none")]
         room_id: Option<OwnedRoomId>,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        via: Vec<OwnedServerName>,
+        #[serde(default, skip_serializing_if = "RefPreview::is_none")]
+        preview: RefPreview,
 
         #[serde(default, skip_serializing_if = "TaskListAction::is_default")]
         action: TaskListAction,
@@ -174,6 +245,10 @@ pub enum RefDetails {
         /// if this links to an object not part of this room, but a different room
         #[serde(default, skip_serializing_if = "Option::is_none")]
         room_id: Option<OwnedRoomId>,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        via: Vec<OwnedServerName>,
+        #[serde(default, skip_serializing_if = "RefPreview::is_none")]
+        preview: RefPreview,
 
         #[serde(default, skip_serializing_if = "PinAction::is_default")]
         action: PinAction,
@@ -186,6 +261,10 @@ pub enum RefDetails {
         /// if this links to an object not part of this room, but a different room
         #[serde(default, skip_serializing_if = "Option::is_none")]
         room_id: Option<OwnedRoomId>,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        via: Vec<OwnedServerName>,
+        #[serde(default, skip_serializing_if = "CalendarEventRefPreview::is_none")]
+        preview: CalendarEventRefPreview,
 
         #[serde(default, skip_serializing_if = "CalendarEventAction::is_default")]
         action: CalendarEventAction,
@@ -274,6 +353,8 @@ impl RefDetailsBuilder {
             room_id: None,
             task_list,
             action: TaskAction::default(),
+            via: Default::default(),
+            preview: Default::default(),
         };
         RefDetailsBuilder { ref_details }
     }
@@ -283,6 +364,8 @@ impl RefDetailsBuilder {
             target_id,
             room_id: None,
             action: TaskListAction::default(),
+            via: Default::default(),
+            preview: Default::default(),
         };
         RefDetailsBuilder { ref_details }
     }
@@ -292,6 +375,8 @@ impl RefDetailsBuilder {
             target_id,
             room_id: None,
             action: PinAction::default(),
+            via: Default::default(),
+            preview: Default::default(),
         };
         RefDetailsBuilder { ref_details }
     }
@@ -301,6 +386,8 @@ impl RefDetailsBuilder {
             target_id,
             room_id: None,
             action: CalendarEventAction::default(),
+            via: Default::default(),
+            preview: Default::default(),
         };
         RefDetailsBuilder { ref_details }
     }
@@ -324,6 +411,8 @@ impl RefDetailsBuilder {
                     room_id,
                     task_list,
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             RefDetails::TaskList {
@@ -334,6 +423,8 @@ impl RefDetailsBuilder {
                     target_id,
                     room_id,
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             RefDetails::CalendarEvent {
@@ -344,6 +435,8 @@ impl RefDetailsBuilder {
                     target_id,
                     room_id,
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             _ => {
@@ -371,6 +464,8 @@ impl RefDetailsBuilder {
                     room_id: Some(room_id),
                     task_list,
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             RefDetails::TaskList {
@@ -381,6 +476,8 @@ impl RefDetailsBuilder {
                     target_id,
                     room_id: Some(room_id),
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             RefDetails::CalendarEvent {
@@ -391,6 +488,8 @@ impl RefDetailsBuilder {
                     target_id,
                     room_id: Some(room_id),
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             _ => {
@@ -416,6 +515,8 @@ impl RefDetailsBuilder {
                     room_id: None,
                     task_list,
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             RefDetails::TaskList {
@@ -425,6 +526,8 @@ impl RefDetailsBuilder {
                     target_id,
                     room_id: None,
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             RefDetails::CalendarEvent {
@@ -434,6 +537,8 @@ impl RefDetailsBuilder {
                     target_id,
                     room_id: None,
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             _ => {
@@ -460,6 +565,8 @@ impl RefDetailsBuilder {
                     room_id,
                     task_list,
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             _ => {
@@ -486,6 +593,8 @@ impl RefDetailsBuilder {
                     room_id,
                     task_list,
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             RefDetails::TaskList {
@@ -496,6 +605,8 @@ impl RefDetailsBuilder {
                     target_id,
                     room_id,
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             RefDetails::CalendarEvent {
@@ -506,6 +617,8 @@ impl RefDetailsBuilder {
                     target_id,
                     room_id,
                     action,
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             _ => {
@@ -531,6 +644,8 @@ impl RefDetailsBuilder {
                     room_id,
                     task_list,
                     action: TaskAction::default(),
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             RefDetails::TaskList {
@@ -540,6 +655,8 @@ impl RefDetailsBuilder {
                     target_id,
                     room_id,
                     action: TaskListAction::default(),
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             RefDetails::CalendarEvent {
@@ -549,6 +666,8 @@ impl RefDetailsBuilder {
                     target_id,
                     room_id,
                     action: CalendarEventAction::default(),
+                    via: Default::default(),
+                    preview: Default::default(),
                 };
             }
             _ => {

@@ -116,7 +116,7 @@ object RefDetails {
     fn target_id_str() -> Option<string>;
     /// if that is in a different room, specified here
     fn room_id_str() -> Option<string>;
-    /// gives either `link`, `task`, `task-list` or `calendar_client`
+    /// gives either `link`, `task`, `task-list` or `calendar-event`
     fn type_str() -> string;
     /// what type of embed action is requested_inputs
     fn embed_action_str() -> string;
@@ -519,6 +519,15 @@ object ActerPin {
     /// the room/space this item belongs to
     fn room_id_str() -> string;
 
+    /// get the internal reference object
+    fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// get the internal acter:-link
+    fn internal_link() -> string;
+
+    /// generate or lookup the external https:-link
+    fn external_link() -> Future<Result<string>>;
+
     /// sender id
     fn sender() -> UserId;
 
@@ -627,6 +636,17 @@ object CalendarEvent {
 
     /// get all location details
     fn locations() -> Vec<EventLocationInfo>;
+
+
+    /// get the internal reference object
+    fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// get the internal acter:-link
+    fn internal_link() -> string;
+
+    /// generate or lookup the external https:-link
+    fn external_link() -> Future<Result<string>>;
+
 }
 
 object CalendarEventUpdateBuilder {
@@ -1508,8 +1528,10 @@ object Attachment {
     fn room_id_str() -> string;
     /// the type of attachment
     fn type_str() -> string;
-    /// if this is a media, hand over the description
-    fn msg_content() -> MsgContent;
+    /// if this is a media, hand over its details
+    fn msg_content() -> Option<MsgContent>;
+    /// if this is a reference, here are the details
+    fn ref_details() -> Option<RefDetails>;
 
     /// if this is a link, this contains the URI/Link/URL
     fn link() -> Option<string>;
@@ -1552,6 +1574,9 @@ object AttachmentsManager {
 
     /// create attachment for given link draft
     fn link_draft(url: string, name: Option<string>) -> Future<Result<AttachmentDraft>>;
+
+    /// create attachment for given ref_details
+    fn reference_draft(details: RefDetails) -> Future<Result<AttachmentDraft>>;
 
     /// inform about the changes to this manager
     fn reload() -> Future<Result<AttachmentsManager>>;
@@ -1834,6 +1859,16 @@ object TaskList {
 
     /// the id of the space this TaskList belongs to
     fn space_id_str() -> string;
+
+    /// get the internal reference object
+    fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// get the internal acter:-link
+    fn internal_link() -> string;
+
+    /// generate or lookup the external https:-link
+    fn external_link() -> Future<Result<string>>;
+
 
     /// get the comments manager
     fn comments() -> Future<Result<CommentsManager>>;

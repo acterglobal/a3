@@ -86,6 +86,7 @@ jobs:
     outputs:
       tag: v${{ steps.version.outputs.version }}
       version: ${{ steps.version.outputs.version }}
+      msix_version: ${{ steps.msix_version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
       targets: ${{ inputs.target || 'all' }}
       release_title_prefix: ${{ inputs.custom_title || 'Release'}}
@@ -93,6 +94,11 @@ jobs:
       - id: version
         run: |
           VERSION=`date +1.%y.$RELEASE_STUPIDITY_PREFIX%-m%d$PATCH_VERSION`
+          echo "version=$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - id: msix_version
+        run: |
+          VERSION=`date +1.%y.%-m%d$PATCH_VERSION`
           echo "version=$VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
       - id: build_num
@@ -112,6 +118,7 @@ jobs:
     with:
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.version }}
+      msix_version: ${{ needs.tags.outputs.msix_version }}
       release_title: "${{ needs.tags.outputs.release_title_prefix }} ${{ needs.tags.outputs.tag }}"
       release_tag: ${{ needs.tags.outputs.tag }}
       targets: ${{ needs.tags.outputs.targets }}

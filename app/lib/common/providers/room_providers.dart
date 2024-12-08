@@ -175,8 +175,14 @@ final roomAvatarInfoProvider =
 final parentAvatarInfosProvider =
     FutureProvider.family<List<AvatarInfo>?, String>((ref, roomId) async {
   final parents = await ref.watch(parentIdsProvider(roomId).future);
+  // Filter out parents where we can't get the room
+  final validParents = parents.where((parent) {
+    final room = ref.watch(maybeRoomProvider(parent)).valueOrNull;
+    return room != null;
+  }).toList();
+
   // watch each one individually
-  return parents.map((e) => ref.watch(roomAvatarInfoProvider(e))).toList();
+  return validParents.map((e) => ref.watch(roomAvatarInfoProvider(e))).toList();
 });
 
 final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose

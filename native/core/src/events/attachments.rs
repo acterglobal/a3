@@ -9,7 +9,7 @@ use matrix_sdk_base::ruma::events::{
 };
 use serde::{Deserialize, Serialize};
 
-use super::{BelongsTo, Update};
+use super::{BelongsTo, RefDetails, Update};
 use crate::Result;
 
 // if you change the order of these enum variables, enum value will change and parsing of old content will fail
@@ -119,6 +119,8 @@ pub enum AttachmentContent {
     Location(LocationMessageEventContent),
     /// A link attachment.
     Link(LinkAttachmentContent),
+    /// An internal reference to something else
+    Reference(RefDetails),
     /// Backwards-compatible fallback support for previous untagged version
     /// only for reading existing events.
     #[serde(untagged)]
@@ -151,6 +153,7 @@ impl AttachmentContent {
                 Some(body.clone())
             }
             AttachmentContent::Link(LinkAttachmentContent { name, .. }) => name.clone(),
+            AttachmentContent::Reference(r) => r.title(),
             AttachmentContent::Fallback(f) => f.name(),
         }
     }
@@ -163,6 +166,7 @@ impl AttachmentContent {
             AttachmentContent::File(_) => "file".to_owned(),
             AttachmentContent::Location(_) => "location".to_owned(),
             AttachmentContent::Link(_) => "link".to_owned(),
+            AttachmentContent::Reference(_) => "ref".to_owned(),
             AttachmentContent::Fallback(f) => f.type_str(),
         }
     }
@@ -204,6 +208,13 @@ impl AttachmentContent {
             AttachmentContent::Location(content) => Some(content.clone()),
             AttachmentContent::Fallback(f) => f.location(),
             _ => None,
+        }
+    }
+    pub fn ref_details(&self) -> Option<RefDetails> {
+        if let AttachmentContent::Reference(r) = self {
+            Some(r.clone())
+        } else {
+            None
         }
     }
 

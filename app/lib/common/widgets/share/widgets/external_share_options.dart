@@ -1,8 +1,10 @@
+import 'package:acter/common/providers/app_install_check_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-class ExternalShareOptions extends StatelessWidget {
+class ExternalShareOptions extends ConsumerWidget {
   final String? sectionTitle;
   final GestureTapCallback? onTapCopy;
   final GestureTapCallback? onTapQr;
@@ -23,8 +25,18 @@ class ExternalShareOptions extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+
+    final isWhatsAppInstalled =
+        ref.watch(isAppInstalledProvider(ExternalApps.whatsApp)).valueOrNull ==
+            true;
+    final isTelegramInstalled =
+        ref.watch(isAppInstalledProvider(ExternalApps.telegram)).valueOrNull ==
+            true;
+    final isSignalInstalled =
+        ref.watch(isAppInstalledProvider(ExternalApps.signal)).valueOrNull ==
+            true;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -63,7 +75,7 @@ class ExternalShareOptions extends StatelessWidget {
                   color: Colors.blueGrey,
                   onTap: onTapCopy,
                 ),
-              if (onTapSignal != null)
+              if (onTapSignal != null && isSignalInstalled)
                 shareToItemUI(
                   name: lang.signal,
                   iconWidget: Image.asset(
@@ -74,14 +86,14 @@ class ExternalShareOptions extends StatelessWidget {
                   color: Colors.blue,
                   onTap: onTapSignal,
                 ),
-              if (onTapWhatsApp != null)
+              if (onTapWhatsApp != null && isWhatsAppInstalled)
                 shareToItemUI(
                   name: lang.whatsApp,
                   iconWidget: Icon(PhosphorIcons.whatsappLogo()),
                   color: Colors.green,
                   onTap: onTapWhatsApp,
                 ),
-              if (onTapTelegram != null)
+              if (onTapTelegram != null && isTelegramInstalled)
                 shareToItemUI(
                   name: lang.telegram,
                   iconWidget: Icon(PhosphorIcons.telegramLogo()),

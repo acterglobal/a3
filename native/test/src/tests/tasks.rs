@@ -340,3 +340,64 @@ async fn task_comment_smoketests() -> Result<()> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn task_list_external_link() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (mut user, room_id) = random_user_with_random_space("tasks_smoketest").await?;
+
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let target_id = room_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
+    })
+    .await?;
+
+    let space = user.space(room_id.to_string()).await?;
+
+    assert_eq!(
+        space.task_lists().await?.len(),
+        0,
+        "Why are there tasks in our fresh space!?!"
+    );
+
+    let task_list_id = {
+        let mut draft = space.task_list_draft()?;
+        draft.name("Starting up".to_owned());
+        draft.send().await?
+    };
+
+    let task_list_key = task_list_id.to_string();
+
+    let wait_for_space = space.clone();
+    let task_list = wait_for(move || {
+        let space = wait_for_space.clone();
+        let task_list_key = task_list_key.clone();
+        async move { Ok(space.task_list(task_list_key).await.ok()) }
+    })
+    .await?
+    .expect("freshly created Task List couldn’t be found");
+
+    // generate the external and internal links
+
+    let internal_link = task_list.internal_link();
+    let external_link = task_list.external_link().await?;
+
+    let room_id = &task_list.room_id().to_string()[1..];
+    let task_list_id = &task_list.event_id().to_string()[1..];
+
+    let path = format!("o/{room_id}/taskList/{task_list_id}");
+
+    assert_eq!(internal_link, format!("acter:{path}"));
+
+    let ext_url = url::Url::parse(&external_link)?;
+    assert_eq!(ext_url.fragment().expect("must have fragment"), &path);
+    Ok(())
+}

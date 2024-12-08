@@ -26,7 +26,6 @@ import 'package:acter/features/link_room/pages/link_room_page.dart';
 import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -138,7 +137,7 @@ final generalRoutes = [
     path: Routes.createPin.route,
     pageBuilder: (context, state) {
       final spaceId = state.uri.queryParameters['spaceId'];
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: CreatePinPage(
           initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
@@ -225,7 +224,7 @@ final generalRoutes = [
     pageBuilder: (context, state) {
       final spaceId = state.uri.queryParameters['spaceId'];
       final newsReferencesModel = state.extra as NewsReferencesModel?;
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: AddNewsPage(
           initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
@@ -276,7 +275,7 @@ final generalRoutes = [
     pageBuilder: (context, state) {
       final roomId = state.uri.queryParameters['roomId']
           .expect('fullScreenAvatar route needs roomId as query param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: FullScreenAvatarPage(roomId: roomId),
       );
