@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/tasks/actions/create_task.dart';
+import 'package:acter/features/tasks/widgets/due_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockingjay/mockingjay.dart';
 
@@ -8,10 +10,16 @@ import '../../helpers/mock_go_router.dart';
 import '../../helpers/mock_tasks_providers.dart';
 import '../../helpers/test_util.dart';
 
+class FakeBottomModal<T> extends Fake implements ModalBottomSheetRoute<T> {}
+
 void main() {
   group('Create Task Widget on TaskList', () {
     late MockGoRouter mockedGoRouter;
     late MockNavigator navigator;
+
+    setUpAll(() {
+      registerFallbackValue(FakeBottomModal<PickedDue>());
+    });
 
     setUp(() {
       mockedGoRouter = MockGoRouter();
@@ -198,6 +206,9 @@ void main() {
           .thenAnswer((_) => true);
       when(() => mockTaskDraft.send())
           .thenAnswer((_) async => MockEventId(id: 'test'));
+
+      when(() => navigator.push<PickedDue>(any()))
+          .thenAnswer((_) async => Future.value(null));
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
         goRouter: mockedGoRouter,
@@ -234,6 +245,9 @@ void main() {
       expect(addDueDateAction, findsOneWidget);
       await tester.tap(addDueDateAction);
       await tester.pump();
+
+      // it was called!
+      verify(() => navigator.push<PickedDue>(any())).called(1);
 
       // now visible
       expect(dueDateField, findsOneWidget);
@@ -271,6 +285,10 @@ void main() {
           .thenAnswer((_) => true);
       when(() => mockTaskDraft.send())
           .thenAnswer((_) async => MockEventId(id: 'test'));
+
+      when(() => navigator.push<PickedDue>(any()))
+          .thenAnswer((_) async => Future.value(null));
+
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
         goRouter: mockedGoRouter,
@@ -309,6 +327,9 @@ void main() {
       await tester.tap(addDueDateAction);
       await tester.pump();
 
+      // it was called!
+      verify(() => navigator.push<PickedDue>(any())).called(1);
+
       // now visible
       expect(dueDateField, findsOneWidget);
       expect(dueTomorrow, findsOneWidget);
@@ -335,6 +356,76 @@ void main() {
           expectedDate.day,
         ),
       );
+      verify(() => mockTaskDraft.send()).called(1);
+    });
+
+    testWidgets('with due date from immediate dialog', (tester) async {
+      final mockTaskList = MockTaskList();
+      final mockTaskDraft = MockTaskDraft();
+      when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
+      when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
+      when(() => mockTaskDraft.dueDate(any(), any(), any()))
+          .thenAnswer((_) => true);
+      when(() => mockTaskDraft.send())
+          .thenAnswer((_) async => MockEventId(id: 'test'));
+
+      final expectedDate = DateTime.now().add(const Duration(days: 1));
+
+      when(() => navigator.push<PickedDue>(any())).thenAnswer(
+        (_) async => Future.value(
+          PickedDue(expectedDate, false), // we directly return a selected date
+        ),
+      );
+      await tester.pumpProviderWidget(
+        navigatorOverride: navigator,
+        goRouter: mockedGoRouter,
+        overrides: [
+          selectedSpaceDetailsProvider.overrideWith((_) => null),
+        ],
+        child: CreateTaskWidget(
+          taskList: mockTaskList,
+        ),
+      );
+      // try to submit without a title
+
+      final submitBtn = find.byKey(CreateTaskWidget.submitBtn);
+      expect(submitBtn, findsOneWidget);
+      await tester.tap(submitBtn);
+
+      // not called
+      verifyNever(() => mockTaskList.taskBuilder());
+
+      // add the title
+      final title = find.byKey(CreateTaskWidget.titleField);
+      expect(title, findsOneWidget);
+      await tester.enterText(title, 'Another Task');
+
+      // add due date
+      final addDueDateAction = find.byKey(CreateTaskWidget.addDueDateAction);
+
+      expect(addDueDateAction, findsOneWidget);
+      await tester.tap(addDueDateAction);
+      await tester.pump();
+
+      // it was called!
+      verify(() => navigator.push<PickedDue>(any())).called(1);
+
+      // and we are not trying anything else
+
+      expect(submitBtn, findsOneWidget);
+      await tester.ensureVisible(submitBtn);
+      await tester.tap(submitBtn);
+      await tester.pump();
+
+      verify(() => mockTaskList.taskBuilder()).called(1);
+      verify(() => mockTaskDraft.title('Another Task')).called(1);
+      verify(
+        () => mockTaskDraft.dueDate(
+          expectedDate.year,
+          expectedDate.month,
+          expectedDate.day,
+        ),
+      ).called(1);
       verify(() => mockTaskDraft.send()).called(1);
     });
   });
