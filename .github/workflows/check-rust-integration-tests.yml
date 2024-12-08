@@ -62,7 +62,7 @@ jobs:
                   generate_registration_token: true
                   share_link_generator:
                     url_prefix: "http://localhost:8099/"
-                    target_path: "/data/share_links/"
+                    target_path: "."
 
       - uses: rui314/setup-mold@v1
         name: "Setup mold linker"
