@@ -9,7 +9,7 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
   final String roomId;
   final String joinRule;
   final String roomName;
-  final String? viaServerName;
+  final List<String>? viaServerName;
 
   const RoomHierarchyJoinButton({
     super.key,
