@@ -44,7 +44,7 @@ jobs:
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
-          customModules: synapse_super_invites
+          customModules: git+https://github.com/acterglobal/synapse-super-invites/@ben-share-link-generator
           customConfig: |
             email:
               smtp_host: localhost
