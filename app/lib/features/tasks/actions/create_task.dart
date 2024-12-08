@@ -338,6 +338,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
           key: CreateTaskWidget.addDueDateAction,
           onPressed: () => setState(() {
             showDueDate = true;
+            selectDueDate();
           }),
           child: Text(lang.dueDate),
         ),
