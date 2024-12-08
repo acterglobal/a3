@@ -342,6 +342,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         onEndReachedThreshold: 0.75,
         onBackgroundTap: ref.read(chatInputProvider.notifier).unsetActions,
         typingIndicatorOptions: TypingIndicatorOptions(
+          animationSpeed: const Duration(seconds: 1),
           typingMode: TypingIndicatorMode.name,
           typingUsers: typingUsers,
         ),

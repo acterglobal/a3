@@ -9,21 +9,22 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/features/attachments/widgets/attachment_section.dart';
+import 'package:acter/common/widgets/share/action/share_space_object_action.dart';
 import 'package:acter/features/attachments/types.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
-import 'package:acter/features/events/providers/event_type_provider.dart';
+import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/events/widgets/change_date_sheet.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter/features/events/widgets/participants_list.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
-import 'package:acter/features/files/actions/file_share.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
@@ -95,7 +96,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       pinned: true,
       actions: calendarEvent != null
           ? [
-              _buildShareAction(calendarEvent),
+              IconButton(
+                icon: PhosphorIcon(PhosphorIcons.shareFat()),
+                onPressed: () => onShareEvent(context, calendarEvent),
+              ),
               BookmarkAction(
                 bookmarker: BookmarkType.forEvent(widget.calendarId),
               ),
@@ -437,14 +441,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildShareAction(CalendarEvent calendarEvent) {
-    return IconButton(
-      icon: PhosphorIcon(PhosphorIcons.shareFat()),
-      onPressed: () => onShareEvent(calendarEvent),
-    );
-  }
-
-  Future<void> onShareEvent(CalendarEvent event) async {
+  Future<void> onShareEvent(BuildContext context, CalendarEvent event) async {
     final lang = L10n.of(context);
     try {
       final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
@@ -453,17 +450,21 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       event.icalForSharing(icalPath);
 
       if (context.mounted) {
-        await openFileShareDialog(
-          // ignore: use_build_context_synchronously
+        openShareSpaceObjectDialog(
           context: context,
-          // ignore: use_build_context_synchronously
-          header: Text(lang.shareIcal),
-          file: File(icalPath),
-          mimeType: 'text/calendar',
+          spaceObjectDetails: (
+            spaceId: event.roomIdStr(),
+            objectType: ObjectType.calendarEvent,
+            objectId: widget.calendarId,
+          ),
+          fileDetails: (
+            file: File(icalPath),
+            mimeType: 'text/calendar',
+          ),
         );
       }
     } catch (e, s) {
-      _log.severe('Creating iCal Share Event failed', e, s);
+      _log.severe('Creating iCal share Event failed', e, s);
       if (!mounted) return;
       EasyLoading.showError(
         lang.shareFailed(e),

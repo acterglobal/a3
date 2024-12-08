@@ -1,3 +1,4 @@
+import 'package:acter/features/deep_linking/actions/forward_to_object.dart';
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
@@ -11,6 +12,7 @@ Future<void> handleDeepLinkUri({
   required BuildContext context,
   required WidgetRef ref,
   required Uri uri,
+  bool throwNoError = false,
 }) async {
   final lang = L10n.of(context);
   try {
@@ -26,12 +28,17 @@ Future<void> handleDeepLinkUri({
               result.target,
             )
           : null,
+      LinkType.spaceObject =>
+        context.mounted ? await forwardToObject(context, ref, result) : null,
       _ => EasyLoading.showError(
           lang.deepLinkNotSupported(result.type),
           duration: const Duration(seconds: 3),
         ),
     };
   } on UriParseError catch (e) {
+    if (throwNoError) {
+      rethrow;
+    }
     EasyLoading.showError(
       lang.deepLinkNotSupported(e),
       duration: const Duration(seconds: 3),

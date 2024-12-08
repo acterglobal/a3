@@ -39,7 +39,7 @@ final chatShellRoutes = [
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       mainProviderContainer.read(selectedChatIdProvider.notifier).select(null);
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(),
       );
@@ -58,7 +58,7 @@ final chatShellRoutes = [
       mainProviderContainer
           .read(selectedChatIdProvider.notifier)
           .select(roomId);
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(
           centerChild: isChatNg
@@ -82,7 +82,7 @@ final chatShellRoutes = [
       mainProviderContainer
           .read(selectedChatIdProvider.notifier)
           .select(roomId);
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(
           centerChild: RoomPage(roomId: roomId),
@@ -101,7 +101,7 @@ final chatShellRoutes = [
       mainProviderContainer
           .read(selectedChatIdProvider.notifier)
           .select(roomId);
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(
           centerChild: RoomPage(roomId: roomId),
@@ -120,7 +120,7 @@ final chatShellRoutes = [
     pageBuilder: (context, state) {
       final roomId = state.pathParameters['roomId']
           .expect('chatInvite route needs roomId as path param');
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: _chatLayoutBuilder(
           centerChild: RoomPage(roomId: roomId),

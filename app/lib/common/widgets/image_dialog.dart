@@ -21,7 +21,6 @@ class ImageDialog extends ConsumerWidget {
       insetPadding: EdgeInsets.zero,
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
           title: Text(
             title,
             style: Theme.of(context).textTheme.titleSmall,
@@ -30,10 +29,6 @@ class ImageDialog extends ConsumerWidget {
           ),
           actions: [
             ShareFileButton(file: imageFile),
-            IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.close),
-            ),
           ],
         ),
         body: Center(

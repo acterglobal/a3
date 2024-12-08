@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/news/model/news_post_color_data.dart';
+import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -51,18 +52,25 @@ class NewsUtils {
   }
 
   //Add text slide
-  static void addTextSlide(WidgetRef ref) {
+  static void addTextSlide({
+    required WidgetRef ref,
+    NewsReferencesModel? newsReferencesModel,
+  }) {
     final clr = getRandomElement(newsPostColors);
     NewsSlideItem textSlide = NewsSlideItem(
       type: NewsSlideType.text,
       text: '',
       backgroundColor: clr,
+      newsReferencesModel: newsReferencesModel,
     );
     ref.read(newsStateProvider.notifier).addSlide(textSlide);
   }
 
   //Add image slide
-  static Future<void> addImageSlide(WidgetRef ref) async {
+  static Future<void> addImageSlide({
+    required WidgetRef ref,
+    NewsReferencesModel? newsReferencesModel,
+  }) async {
     final clr = getRandomElement(newsPostColors);
     XFile? imageFile = await imagePicker.pickImage(
       source: ImageSource.gallery,
@@ -72,13 +80,17 @@ class NewsUtils {
         type: NewsSlideType.image,
         mediaFile: imageFile,
         backgroundColor: clr,
+        newsReferencesModel: newsReferencesModel,
       );
       ref.read(newsStateProvider.notifier).addSlide(slide);
     }
   }
 
   //Add video slide
-  static Future<void> addVideoSlide(WidgetRef ref) async {
+  static Future<void> addVideoSlide({
+    required WidgetRef ref,
+    NewsReferencesModel? newsReferencesModel,
+  }) async {
     final clr = getRandomElement(newsPostColors);
     XFile? videoFile = await imagePicker.pickVideo(
       source: ImageSource.gallery,
@@ -88,6 +100,7 @@ class NewsUtils {
         type: NewsSlideType.video,
         mediaFile: videoFile,
         backgroundColor: clr,
+        newsReferencesModel: newsReferencesModel,
       );
       ref.read(newsStateProvider.notifier).addSlide(slide);
     }

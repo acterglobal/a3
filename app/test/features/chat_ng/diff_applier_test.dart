@@ -5,6 +5,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'messages/chat_message_test.dart';
+
 class MockedRoomMessageDiff extends Mock implements RoomMessageDiff {
   final String act;
   final int? idx;
@@ -44,11 +46,15 @@ class MockFfiListRoomMessage extends Mock implements FfiListRoomMessage {
 
 class MockRoomMessage extends Mock implements RoomMessage {
   final String id;
+  final MockRoomEventItem? mockEventItem;
 
-  MockRoomMessage({required this.id});
+  MockRoomMessage({required this.id, this.mockEventItem});
 
   @override
   String uniqueId() => id;
+
+  @override
+  MockRoomEventItem? eventItem() => mockEventItem;
 }
 
 class MockAnimatedListState extends Mock implements AnimatedListState {
@@ -671,7 +677,8 @@ void main() {
         expect(newState.messages.keys, ['b', 'd', 'e', 'f', 'g', 'h']);
 
         final verifier1 = verify(
-            () => mockAnimatedState.insertAllItems(captureAny(), captureAny()),);
+          () => mockAnimatedState.insertAllItems(captureAny(), captureAny()),
+        );
         verifier1.called(1);
         expect(verifier1.captured, [4, 2]);
 
@@ -691,7 +698,8 @@ void main() {
         expect(secondState.messages.keys, ['b', 'd', 'e', 'f', 'a']);
 
         final verifier2 = verify(
-            () => mockAnimatedState.insertAllItems(captureAny(), captureAny()),);
+          () => mockAnimatedState.insertAllItems(captureAny(), captureAny()),
+        );
         verifier2.called(1);
         expect(verifier2.captured, [4, 1]);
       });

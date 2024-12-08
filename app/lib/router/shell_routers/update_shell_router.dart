@@ -1,6 +1,7 @@
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/news/pages/news_list_page.dart';
 import 'package:acter/router/router.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final updateShellRoutes = [
@@ -9,7 +10,7 @@ final updateShellRoutes = [
     path: Routes.updates.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      return MaterialPage(
         key: state.pageKey,
         child: const NewsListPage(newsViewMode: NewsViewMode.fullView),
       );

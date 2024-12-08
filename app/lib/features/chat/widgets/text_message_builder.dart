@@ -140,7 +140,7 @@ class _TextWidget extends ConsumerWidget {
                   maxLines: isReply ? 3 : null,
                 )
               : Html(
-                  onLinkTap: (url) => onMessageLinkTap(url, context),
+                  onLinkTap: (url) => onMessageLinkTap(url, ref, context),
                   backgroundColor: Colors.transparent,
                   data: message.text,
                   renderNewlines: true,

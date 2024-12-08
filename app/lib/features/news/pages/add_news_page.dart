@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/news/actions/submit_news.dart';
 import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
@@ -24,10 +25,12 @@ const addNewsKey = Key('add-news');
 
 class AddNewsPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
+  final NewsReferencesModel? newsReferencesModel;
 
   const AddNewsPage({
     super.key = addNewsKey,
     this.initialSelectedSpace,
+    this.newsReferencesModel,
   });
 
   @override
@@ -289,19 +292,30 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           const SizedBox(height: 40),
           OutlinedButton(
             key: NewsUpdateKeys.addTextSlide,
-            onPressed: () => NewsUtils.addTextSlide(ref),
+            onPressed: () {
+              NewsUtils.addTextSlide(
+                ref: ref,
+                newsReferencesModel: widget.newsReferencesModel,
+              );
+            },
             child: Text(lang.addTextSlide),
           ),
           const SizedBox(height: 20),
           OutlinedButton(
             key: NewsUpdateKeys.addImageSlide,
-            onPressed: () async => await NewsUtils.addImageSlide(ref),
+            onPressed: () async => await NewsUtils.addImageSlide(
+              ref: ref,
+              newsReferencesModel: widget.newsReferencesModel,
+            ),
             child: Text(lang.addImageSlide),
           ),
           const SizedBox(height: 20),
           OutlinedButton(
             key: NewsUpdateKeys.addVideoSlide,
-            onPressed: () async => await NewsUtils.addVideoSlide(ref),
+            onPressed: () async => await NewsUtils.addVideoSlide(
+              ref: ref,
+              newsReferencesModel: widget.newsReferencesModel,
+            ),
             child: Text(lang.addVideoSlide),
           ),
         ],
