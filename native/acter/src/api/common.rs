@@ -251,9 +251,10 @@ impl From<&EmoteMessageEventContent> for MsgContent {
     }
 }
 
-impl From<&AttachmentContent> for MsgContent {
-    fn from(value: &AttachmentContent) -> Self {
-        match value {
+impl TryFrom<&AttachmentContent> for MsgContent {
+    type Error = ();
+    fn try_from(value: &AttachmentContent) -> Result<Self, Self::Error> {
+        Ok(match value {
             AttachmentContent::Image(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
                 MsgContent::Image {
@@ -300,7 +301,8 @@ impl From<&AttachmentContent> for MsgContent {
                 name: content.name.clone(),
                 link: content.link.clone(),
             },
-        }
+            AttachmentContent::Reference(_) => return Err(()),
+        })
     }
 }
 

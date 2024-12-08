@@ -1,5 +1,6 @@
 FROM ghcr.io/matrix-org/synapse:latest
-RUN pip install synapse_super_invites==0.8.2
+RUN apt-get update && apt-get install git -y
+RUN pip install git+https://github.com/acterglobal/synapse-super-invites/@ben-share-link-generator
 ADD ci-start.sh /ci-start.sh
 RUN chmod 770 /ci-start.sh
 ENTRYPOINT /ci-start.sh

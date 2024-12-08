@@ -518,7 +518,7 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
     assert_eq!(attachment.event_id(), attachment_id);
     assert_eq!(attachment.type_str(), "image");
 
-    let msg_content = attachment.msg_content();
+    let msg_content = attachment.msg_content().unwrap();
     assert!(
         msg_content.thumbnail_source().is_some(),
         "we sent thumbnail, but thumbnail source not available",
@@ -612,7 +612,7 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
     assert_eq!(attachment.event_id(), attachment_id);
     assert_eq!(attachment.type_str(), "video");
 
-    let msg_content = attachment.msg_content();
+    let msg_content = attachment.msg_content().unwrap();
     assert!(
         msg_content.thumbnail_source().is_some(),
         "we sent thumbnail, but thumbnail source not available",

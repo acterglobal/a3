@@ -3217,6 +3217,115 @@ class Api {
     return tmp7;
   }
 
+  RefDetails? __acterPinRefDetailsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _acterPinRefDetailsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_RefDetails");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = RefDetails._(this, tmp13_1);
+    return tmp7;
+  }
+
+  String? __acterPinExternalLinkFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _acterPinExternalLinkFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
   ActerPin? __acterPinRefreshFuturePoll(
     int boxed,
     int postCobject,
@@ -3773,6 +3882,115 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentsManager");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = AttachmentsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  RefDetails? __calendarEventRefDetailsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _calendarEventRefDetailsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_RefDetails");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = RefDetails._(this, tmp13_1);
+    return tmp7;
+  }
+
+  String? __calendarEventExternalLinkFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _calendarEventExternalLinkFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
     return tmp7;
   }
 
@@ -7879,6 +8097,53 @@ class Api {
     return tmp7;
   }
 
+  AttachmentDraft? __attachmentsManagerReferenceDraftFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _attachmentsManagerReferenceDraftFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentDraft");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = AttachmentDraft._(this, tmp13_1);
+    return tmp7;
+  }
+
   AttachmentsManager? __attachmentsManagerReloadFuturePoll(
     int boxed,
     int postCobject,
@@ -8529,6 +8794,115 @@ class Api {
       throw tmp9_0;
     }
     final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  RefDetails? __taskListRefDetailsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskListRefDetailsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_RefDetails");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = RefDetails._(this, tmp13_1);
+    return tmp7;
+  }
+
+  String? __taskListExternalLinkFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskListExternalLinkFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
     return tmp7;
   }
 
@@ -18137,6 +18511,36 @@ class Api {
       _ActerPinRoomIdStrReturn Function(
         int,
       )>();
+  late final _acterPinRefDetailsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__ActerPin_ref_details");
+
+  late final _acterPinRefDetails = _acterPinRefDetailsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _acterPinInternalLinkPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinInternalLinkReturn Function(
+            ffi.IntPtr,
+          )>>("__ActerPin_internal_link");
+
+  late final _acterPinInternalLink = _acterPinInternalLinkPtr.asFunction<
+      _ActerPinInternalLinkReturn Function(
+        int,
+      )>();
+  late final _acterPinExternalLinkPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__ActerPin_external_link");
+
+  late final _acterPinExternalLink = _acterPinExternalLinkPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _acterPinSenderPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -18610,6 +19014,38 @@ class Api {
       int Function(
         int,
       )>();
+  late final _calendarEventRefDetailsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__CalendarEvent_ref_details");
+
+  late final _calendarEventRefDetails = _calendarEventRefDetailsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _calendarEventInternalLinkPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventInternalLinkReturn Function(
+            ffi.IntPtr,
+          )>>("__CalendarEvent_internal_link");
+
+  late final _calendarEventInternalLink =
+      _calendarEventInternalLinkPtr.asFunction<
+          _CalendarEventInternalLinkReturn Function(
+            int,
+          )>();
+  late final _calendarEventExternalLinkPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__CalendarEvent_external_link");
+
+  late final _calendarEventExternalLink =
+      _calendarEventExternalLinkPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _calendarEventUpdateBuilderTitlePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -21770,12 +22206,22 @@ class Api {
       )>();
   late final _attachmentMsgContentPtr = _lookup<
       ffi.NativeFunction<
-          ffi.IntPtr Function(
+          _AttachmentMsgContentReturn Function(
             ffi.IntPtr,
           )>>("__Attachment_msg_content");
 
   late final _attachmentMsgContent = _attachmentMsgContentPtr.asFunction<
-      int Function(
+      _AttachmentMsgContentReturn Function(
+        int,
+      )>();
+  late final _attachmentRefDetailsPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentRefDetailsReturn Function(
+            ffi.IntPtr,
+          )>>("__Attachment_ref_details");
+
+  late final _attachmentRefDetails = _attachmentRefDetailsPtr.asFunction<
+      _AttachmentRefDetailsReturn Function(
         int,
       )>();
   late final _attachmentLinkPtr = _lookup<
@@ -21920,6 +22366,19 @@ class Api {
             int,
             int,
             int,
+            int,
+            int,
+          )>();
+  late final _attachmentsManagerReferenceDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+          )>>("__AttachmentsManager_reference_draft");
+
+  late final _attachmentsManagerReferenceDraft =
+      _attachmentsManagerReferenceDraftPtr.asFunction<
+          int Function(
             int,
             int,
           )>();
@@ -23157,6 +23616,36 @@ class Api {
 
   late final _taskListSpaceIdStr = _taskListSpaceIdStrPtr.asFunction<
       _TaskListSpaceIdStrReturn Function(
+        int,
+      )>();
+  late final _taskListRefDetailsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__TaskList_ref_details");
+
+  late final _taskListRefDetails = _taskListRefDetailsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _taskListInternalLinkPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListInternalLinkReturn Function(
+            ffi.IntPtr,
+          )>>("__TaskList_internal_link");
+
+  late final _taskListInternalLink = _taskListInternalLinkPtr.asFunction<
+      _TaskListInternalLinkReturn Function(
+        int,
+      )>();
+  late final _taskListExternalLinkPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__TaskList_external_link");
+
+  late final _taskListExternalLink = _taskListExternalLinkPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _taskListCommentsPtr = _lookup<
@@ -28897,6 +29386,36 @@ class Api {
         int,
         int,
       )>();
+  late final _acterPinRefDetailsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinRefDetailsFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__ActerPin_ref_details_future_poll");
+
+  late final _acterPinRefDetailsFuturePoll =
+      _acterPinRefDetailsFuturePollPtr.asFunction<
+          _ActerPinRefDetailsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _acterPinExternalLinkFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinExternalLinkFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__ActerPin_external_link_future_poll");
+
+  late final _acterPinExternalLinkFuturePoll =
+      _acterPinExternalLinkFuturePollPtr.asFunction<
+          _ActerPinExternalLinkFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _acterPinRefreshFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ActerPinRefreshFuturePollReturn Function(
@@ -29073,6 +29592,36 @@ class Api {
   late final _calendarEventAttachmentsFuturePoll =
       _calendarEventAttachmentsFuturePollPtr.asFunction<
           _CalendarEventAttachmentsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _calendarEventRefDetailsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventRefDetailsFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__CalendarEvent_ref_details_future_poll");
+
+  late final _calendarEventRefDetailsFuturePoll =
+      _calendarEventRefDetailsFuturePollPtr.asFunction<
+          _CalendarEventRefDetailsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _calendarEventExternalLinkFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _CalendarEventExternalLinkFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__CalendarEvent_external_link_future_poll");
+
+  late final _calendarEventExternalLinkFuturePoll =
+      _calendarEventExternalLinkFuturePollPtr.asFunction<
+          _CalendarEventExternalLinkFuturePollReturn Function(
             int,
             int,
             int,
@@ -30384,6 +30933,21 @@ class Api {
             int,
             int,
           )>();
+  late final _attachmentsManagerReferenceDraftFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AttachmentsManagerReferenceDraftFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__AttachmentsManager_reference_draft_future_poll");
+
+  late final _attachmentsManagerReferenceDraftFuturePoll =
+      _attachmentsManagerReferenceDraftFuturePollPtr.asFunction<
+          _AttachmentsManagerReferenceDraftFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _attachmentsManagerReloadFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _AttachmentsManagerReloadFuturePollReturn Function(
@@ -30584,6 +31148,36 @@ class Api {
   late final _taskListCanRedactFuturePoll =
       _taskListCanRedactFuturePollPtr.asFunction<
           _TaskListCanRedactFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _taskListRefDetailsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListRefDetailsFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__TaskList_ref_details_future_poll");
+
+  late final _taskListRefDetailsFuturePoll =
+      _taskListRefDetailsFuturePollPtr.asFunction<
+          _TaskListRefDetailsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _taskListExternalLinkFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListExternalLinkFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__TaskList_external_link_future_poll");
+
+  late final _taskListExternalLinkFuturePoll =
+      _taskListExternalLinkFuturePollPtr.asFunction<
+          _TaskListExternalLinkFuturePollReturn Function(
             int,
             int,
             int,
@@ -34914,7 +35508,7 @@ class RefDetails {
     return tmp2;
   }
 
-  /// gives either `link`, `task`, `task-list` or `calendar_client`
+  /// gives either `link`, `task`, `task-list` or `calendar-event`
   String typeStr() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -37642,6 +38236,66 @@ class ActerPin {
     return tmp2;
   }
 
+  /// get the internal reference object
+  Future<RefDetails> refDetails() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinRefDetails(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__ActerPin_ref_details_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__acterPinRefDetailsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the internal acter:-link
+  String internalLink() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinInternalLink(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// generate or lookup the external https:-link
+  Future<String> externalLink() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinExternalLink(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__ActerPin_external_link_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__acterPinExternalLinkFuturePoll);
+    return tmp2;
+  }
+
   /// sender id
   UserId sender() {
     var tmp0 = 0;
@@ -38415,6 +39069,70 @@ class CalendarEvent {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp4 = FfiListEventLocationInfo._(_api, tmp3_1);
     final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// get the internal reference object
+  Future<RefDetails> refDetails() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventRefDetails(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__CalendarEvent_ref_details_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__calendarEventRefDetailsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the internal acter:-link
+  String internalLink() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventInternalLink(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// generate or lookup the external https:-link
+  Future<String> externalLink() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._calendarEventExternalLink(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__CalendarEvent_external_link_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__calendarEventExternalLinkFuturePoll);
     return tmp2;
   }
 
@@ -45235,18 +45953,41 @@ class Attachment {
     return tmp2;
   }
 
-  /// if this is a media, hand over the description
-  MsgContent msgContent() {
+  /// if this is a media, hand over its details
+  MsgContent? msgContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._attachmentMsgContent(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MsgContent");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = MsgContent._(_api, tmp3_1);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MsgContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is a reference, here are the details
+  RefDetails? refDetails() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._attachmentRefDetails(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RefDetails");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RefDetails._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -45548,6 +46289,29 @@ class AttachmentsManager {
     final tmp12 =
         _nativeFuture(tmp13_1, _api.__attachmentsManagerLinkDraftFuturePoll);
     return tmp12;
+  }
+
+  /// create attachment for given ref_details
+  Future<AttachmentDraft> referenceDraft(
+    RefDetails details,
+  ) {
+    final tmp1 = details;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._attachmentsManagerReferenceDraft(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__AttachmentsManager_reference_draft_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+        tmp5_1, _api.__attachmentsManagerReferenceDraftFuturePoll);
+    return tmp4;
   }
 
   /// inform about the changes to this manager
@@ -47670,6 +48434,66 @@ class TaskList {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// get the internal reference object
+  Future<RefDetails> refDetails() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListRefDetails(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TaskList_ref_details_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskListRefDetailsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the internal acter:-link
+  String internalLink() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListInternalLink(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// generate or lookup the external https:-link
+  Future<String> externalLink() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListExternalLink(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TaskList_external_link_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskListExternalLinkFuturePoll);
     return tmp2;
   }
 
@@ -59567,6 +60391,15 @@ class _ActerPinRoomIdStrReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _ActerPinInternalLinkReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
 class _ActerPinUpdateBuilderReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -59629,6 +60462,15 @@ class _CalendarEventIcalForSharingReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint8()
   external int arg4;
+}
+
+class _CalendarEventInternalLinkReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
 }
 
 class _CalendarEventUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
@@ -60382,6 +61224,20 @@ class _AttachmentTypeStrReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _AttachmentMsgContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _AttachmentRefDetailsReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _AttachmentLinkReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -60664,6 +61520,15 @@ class _TaskListUpdateBuilderReturn extends ffi.Struct {
 }
 
 class _TaskListSpaceIdStrReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _TaskListInternalLinkReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
@@ -61939,6 +62804,40 @@ class _PinDraftSendFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ActerPinRefDetailsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ActerPinExternalLinkFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+  @ffi.UintPtr()
+  external int arg6;
+  @ffi.UintPtr()
+  external int arg7;
+}
+
 class _ActerPinRefreshFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -62117,6 +63016,40 @@ class _CalendarEventAttachmentsFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.IntPtr()
   external int arg5;
+}
+
+class _CalendarEventRefDetailsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _CalendarEventExternalLinkFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+  @ffi.UintPtr()
+  external int arg6;
+  @ffi.UintPtr()
+  external int arg7;
 }
 
 class _CalendarEventUpdateBuilderSendFuturePollReturn extends ffi.Struct {
@@ -63447,6 +64380,21 @@ class _AttachmentsManagerLinkDraftFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _AttachmentsManagerReferenceDraftFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
 class _AttachmentsManagerReloadFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -63655,6 +64603,40 @@ class _TaskListCanRedactFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Uint8()
   external int arg5;
+}
+
+class _TaskListRefDetailsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _TaskListExternalLinkFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+  @ffi.UintPtr()
+  external int arg6;
+  @ffi.UintPtr()
+  external int arg7;
 }
 
 class _TaskListCommentsFuturePollReturn extends ffi.Struct {
