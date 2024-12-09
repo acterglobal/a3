@@ -52,10 +52,12 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let mut bob_rx = bob.verification_event_rx();
 
     // according to alice bob is not verfied:
-    assert!(!alice.verified_device(bob_device_id.to_string()).await?);
+    let bob_was_verified = alice.verified_device(bob_device_id.to_string()).await?;
+    assert!(!bob_was_verified);
 
     // according to bob alice is not verfied:
-    assert!(!bob.verified_device(alice_device_id.to_string()).await?);
+    let alice_was_verified = bob.verified_device(alice_device_id.to_string()).await?;
+    assert!(!alice_was_verified);
 
     // ----------------------------------------------------------------------------
     // On Alice’s device:
