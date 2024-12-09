@@ -2188,6 +2188,8 @@
   "@myUpcomingEvents": {},
   "live": "Live",
   "@live": {},
+  "forbidden": "Forbidden",
+  "accessDeniedToRoom": "Access to {roomId} denied",
   "changeDate": "Change Date",
   "@changeDate": {},
   "deepLinkNotSupported": "Link {link} not supported",

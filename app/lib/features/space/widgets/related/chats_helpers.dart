@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
@@ -77,7 +78,7 @@ Widget renderRemoteChats(
               joinRule: roomInfo.joinRuleStr().toLowerCase(),
               roomId: roomId,
               roomName: roomInfo.name() ?? roomId,
-              viaServerName: roomInfo.viaServerName(),
+              viaServerName: roomInfo.viaServerNames().toDart(),
               forward: (roomId) {
                 goToChat(context, roomId);
                 // make sure the UI refreshes when the user comes back here
