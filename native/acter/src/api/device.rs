@@ -9,10 +9,7 @@ use std::{
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
-use tokio::sync::{
-    broadcast::{channel, Receiver, Sender},
-    Mutex,
-};
+use tokio::sync::broadcast::{channel, Receiver, Sender};
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info};
 

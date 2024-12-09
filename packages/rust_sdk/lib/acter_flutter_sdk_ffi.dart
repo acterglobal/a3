@@ -26979,13 +26979,13 @@ class Api {
       )>();
   late final _clientVerificationEventRxPtr = _lookup<
       ffi.NativeFunction<
-          _ClientVerificationEventRxReturn Function(
+          ffi.IntPtr Function(
             ffi.IntPtr,
           )>>("__Client_verification_event_rx");
 
   late final _clientVerificationEventRx =
       _clientVerificationEventRxPtr.asFunction<
-          _ClientVerificationEventRxReturn Function(
+          int Function(
             int,
           )>();
   late final _clientSessionManagerPtr = _lookup<
@@ -28261,16 +28261,19 @@ class Api {
       ffi.NativeFunction<
           ffi.IntPtr Function(
             ffi.IntPtr,
+            ffi.IntPtr,
           )>>("__VerificationEvent_get_emojis");
 
   late final _verificationEventGetEmojis =
       _verificationEventGetEmojisPtr.asFunction<
           int Function(
             int,
+            int,
           )>();
   late final _verificationEventAcceptVerificationRequestPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
+            ffi.IntPtr,
             ffi.IntPtr,
           )>>("__VerificationEvent_accept_verification_request");
 
@@ -28278,10 +28281,12 @@ class Api {
       _verificationEventAcceptVerificationRequestPtr.asFunction<
           int Function(
             int,
+            int,
           )>();
   late final _verificationEventCancelVerificationRequestPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
+            ffi.IntPtr,
             ffi.IntPtr,
           )>>("__VerificationEvent_cancel_verification_request");
 
@@ -28289,10 +28294,12 @@ class Api {
       _verificationEventCancelVerificationRequestPtr.asFunction<
           int Function(
             int,
+            int,
           )>();
   late final _verificationEventAcceptVerificationRequestWithMethodPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
+            ffi.IntPtr,
             ffi.IntPtr,
             ffi.IntPtr,
             ffi.UintPtr,
@@ -28306,10 +28313,12 @@ class Api {
             int,
             int,
             int,
+            int,
           )>();
   late final _verificationEventStartSasVerificationPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
+            ffi.IntPtr,
             ffi.IntPtr,
           )>>("__VerificationEvent_start_sas_verification");
 
@@ -28317,10 +28326,12 @@ class Api {
       _verificationEventStartSasVerificationPtr.asFunction<
           int Function(
             int,
+            int,
           )>();
   late final _verificationEventAcceptSasVerificationPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
+            ffi.IntPtr,
             ffi.IntPtr,
           )>>("__VerificationEvent_accept_sas_verification");
 
@@ -28328,10 +28339,12 @@ class Api {
       _verificationEventAcceptSasVerificationPtr.asFunction<
           int Function(
             int,
+            int,
           )>();
   late final _verificationEventCancelSasVerificationPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
+            ffi.IntPtr,
             ffi.IntPtr,
           )>>("__VerificationEvent_cancel_sas_verification");
 
@@ -28339,10 +28352,12 @@ class Api {
       _verificationEventCancelSasVerificationPtr.asFunction<
           int Function(
             int,
+            int,
           )>();
   late final _verificationEventConfirmSasVerificationPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
+            ffi.IntPtr,
             ffi.IntPtr,
           )>>("__VerificationEvent_confirm_sas_verification");
 
@@ -28350,16 +28365,19 @@ class Api {
       _verificationEventConfirmSasVerificationPtr.asFunction<
           int Function(
             int,
+            int,
           )>();
   late final _verificationEventMismatchSasVerificationPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
+            ffi.IntPtr,
             ffi.IntPtr,
           )>>("__VerificationEvent_mismatch_sas_verification");
 
   late final _verificationEventMismatchSasVerification =
       _verificationEventMismatchSasVerificationPtr.asFunction<
           int Function(
+            int,
             int,
           )>();
   late final _verificationEmojiSymbolPtr = _lookup<
@@ -55243,23 +55261,19 @@ class Client {
   }
 
   /// Get the verification event receiver
-  Stream<VerificationEvent>? verificationEventRx() {
+  Stream<VerificationEvent> verificationEventRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientVerificationEventRx(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 =
-        _Box(_api, tmp4_0, "__Client_verification_event_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Client_verification_event_rx_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
-        _nativeStream(tmp4_1, _api.__clientVerificationEventRxStreamPoll);
+        _nativeStream(tmp3_1, _api.__clientVerificationEventRxStreamPoll);
     return tmp2;
   }
 
@@ -57908,174 +57922,227 @@ class VerificationEvent {
   }
 
   /// Get emoji array
-  Future<FfiListVerificationEmoji> getEmojis() {
+  Future<FfiListVerificationEmoji> getEmojis(
+    Client client,
+  ) {
+    final tmp1 = client;
     var tmp0 = 0;
+    var tmp2 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventGetEmojis(
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._verificationEventGetEmojis(
       tmp0,
+      tmp2,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__VerificationEvent_get_emojis_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__verificationEventGetEmojisFuturePoll);
-    return tmp2;
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__VerificationEvent_get_emojis_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__verificationEventGetEmojisFuturePoll);
+    return tmp4;
   }
 
   /// Bob accepts the verification request from Alice
-  Future<bool> acceptVerificationRequest() {
+  Future<bool> acceptVerificationRequest(
+    Client client,
+  ) {
+    final tmp1 = client;
     var tmp0 = 0;
+    var tmp2 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventAcceptVerificationRequest(
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._verificationEventAcceptVerificationRequest(
       tmp0,
+      tmp2,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0,
         "__VerificationEvent_accept_verification_request_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationEventAcceptVerificationRequestFuturePoll);
-    return tmp2;
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+        tmp5_1, _api.__verificationEventAcceptVerificationRequestFuturePoll);
+    return tmp4;
   }
 
   /// Bob cancels the verification request from Alice
   /// alternative of terminate_verification
-  Future<bool> cancelVerificationRequest() {
+  Future<bool> cancelVerificationRequest(
+    Client client,
+  ) {
+    final tmp1 = client;
     var tmp0 = 0;
+    var tmp2 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventCancelVerificationRequest(
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._verificationEventCancelVerificationRequest(
       tmp0,
+      tmp2,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0,
         "__VerificationEvent_cancel_verification_request_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationEventCancelVerificationRequestFuturePoll);
-    return tmp2;
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+        tmp5_1, _api.__verificationEventCancelVerificationRequestFuturePoll);
+    return tmp4;
   }
 
   /// Bob accepts the verification request from Alice with specified method
   Future<bool> acceptVerificationRequestWithMethod(
+    Client client,
     String method,
   ) {
-    final tmp1 = method;
+    final tmp1 = client;
+    final tmp3 = method;
     var tmp0 = 0;
     var tmp2 = 0;
-    var tmp3 = 0;
     var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
     tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
+    tmp2 = tmp1._box.move();
+    final tmp3_0 = utf8.encode(tmp3);
+    tmp5 = tmp3_0.length;
 
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._verificationEventAcceptVerificationRequestWithMethod(
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+    final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+    tmp4_1.setAll(0, tmp3_0);
+    tmp4 = tmp4_0.address;
+    tmp6 = tmp5;
+    final tmp7 = _api._verificationEventAcceptVerificationRequestWithMethod(
       tmp0,
       tmp2,
-      tmp3,
       tmp4,
+      tmp5,
+      tmp6,
     );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0,
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0,
         "__VerificationEvent_accept_verification_request_with_method_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1,
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1,
         _api.__verificationEventAcceptVerificationRequestWithMethodFuturePoll);
-    return tmp6;
+    return tmp8;
   }
 
   /// Alice starts the SAS verification
-  Future<bool> startSasVerification() {
+  Future<bool> startSasVerification(
+    Client client,
+  ) {
+    final tmp1 = client;
     var tmp0 = 0;
+    var tmp2 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventStartSasVerification(
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._verificationEventStartSasVerification(
       tmp0,
+      tmp2,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(
-        _api, tmp3_0, "__VerificationEvent_start_sas_verification_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationEventStartSasVerificationFuturePoll);
-    return tmp2;
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+        _api, tmp5_0, "__VerificationEvent_start_sas_verification_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+        tmp5_1, _api.__verificationEventStartSasVerificationFuturePoll);
+    return tmp4;
   }
 
   /// Bob accepts the SAS verification
-  Future<bool> acceptSasVerification() {
+  Future<bool> acceptSasVerification(
+    Client client,
+  ) {
+    final tmp1 = client;
     var tmp0 = 0;
+    var tmp2 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventAcceptSasVerification(
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._verificationEventAcceptSasVerification(
       tmp0,
+      tmp2,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0,
         "__VerificationEvent_accept_sas_verification_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationEventAcceptSasVerificationFuturePoll);
-    return tmp2;
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+        tmp5_1, _api.__verificationEventAcceptSasVerificationFuturePoll);
+    return tmp4;
   }
 
   /// Bob cancels the SAS verification
-  Future<bool> cancelSasVerification() {
+  Future<bool> cancelSasVerification(
+    Client client,
+  ) {
+    final tmp1 = client;
     var tmp0 = 0;
+    var tmp2 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventCancelSasVerification(
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._verificationEventCancelSasVerification(
       tmp0,
+      tmp2,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0,
         "__VerificationEvent_cancel_sas_verification_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationEventCancelSasVerificationFuturePoll);
-    return tmp2;
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+        tmp5_1, _api.__verificationEventCancelSasVerificationFuturePoll);
+    return tmp4;
   }
 
   /// Alice says to Bob that SAS verification matches and vice versa
-  Future<bool> confirmSasVerification() {
+  Future<bool> confirmSasVerification(
+    Client client,
+  ) {
+    final tmp1 = client;
     var tmp0 = 0;
+    var tmp2 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventConfirmSasVerification(
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._verificationEventConfirmSasVerification(
       tmp0,
+      tmp2,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0,
         "__VerificationEvent_confirm_sas_verification_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationEventConfirmSasVerificationFuturePoll);
-    return tmp2;
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+        tmp5_1, _api.__verificationEventConfirmSasVerificationFuturePoll);
+    return tmp4;
   }
 
   /// Alice says to Bob that SAS verification doesn’t match and vice versa
-  Future<bool> mismatchSasVerification() {
+  Future<bool> mismatchSasVerification(
+    Client client,
+  ) {
+    final tmp1 = client;
     var tmp0 = 0;
+    var tmp2 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventMismatchSasVerification(
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._verificationEventMismatchSasVerification(
       tmp0,
+      tmp2,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0,
         "__VerificationEvent_mismatch_sas_verification_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__verificationEventMismatchSasVerificationFuturePoll);
-    return tmp2;
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+        tmp5_1, _api.__verificationEventMismatchSasVerificationFuturePoll);
+    return tmp4;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -61477,13 +61544,6 @@ class _ClientDmWithUserReturn extends ffi.Struct {
   external int arg3;
   @ffi.IntPtr()
   external int arg4;
-}
-
-class _ClientVerificationEventRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
 }
 
 class _InvitationOriginServerTsReturn extends ffi.Struct {
