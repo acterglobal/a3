@@ -2,7 +2,7 @@ use anyhow::{bail, Result};
 use chrono::Local;
 use lazy_static::lazy_static;
 use log::{log_enabled, Level, LevelFilter, Log, Metadata, Record};
-use matrix_sdk::{Client, ClientBuilder};
+use matrix_sdk::{Client, ClientBuilder, SqliteEventCacheStore};
 use matrix_sdk_base::{event_cache::store::EventCacheStoreError, store::StoreConfig};
 use matrix_sdk_sqlite::{OpenStoreError, SqliteCryptoStore, SqliteStateStore};
 use parse_env_filter::eager::{filters, Filter};
@@ -198,12 +198,10 @@ pub fn rotate_log_file() -> Result<String> {
     match &*FILE_LOGGER.lock().unwrap() {
         Some(dispatch) => {
             for output in dispatch.rotate().iter() {
-                match output {
-                    Some((old_path, new_path)) => {
-                        return Ok(old_path.to_string_lossy().to_string());
-                    }
-                    None => {}
-                }
+                let Some((old_path, new_path)) = output else {
+                    continue;
+                };
+                return Ok(old_path.to_string_lossy().to_string());
             }
         }
         None => {
@@ -319,12 +317,16 @@ async fn make_store_config(
         .crypto_store(SqliteCryptoStore::open(path, passphrase).await?);
 
     let sql_state_store = SqliteStateStore::open(path, passphrase).await?;
+    let event_cache_store = SqliteEventCacheStore::open(path, passphrase).await?;
     let Some(passphrase) = passphrase else {
-        return Ok(config.state_store(sql_state_store));
+        return Ok(config
+            .state_store(sql_state_store)
+            .event_cache_store(event_cache_store));
     };
 
     let event_cache_store = matrix_sdk_store_file_event_cache::wrap_with_file_cache_and_limits(
         &sql_state_store,
+        event_cache_store,
         media_cache_path,
         passphrase,
         #[cfg(target_os = "ios")]

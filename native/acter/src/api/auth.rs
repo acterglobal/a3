@@ -94,7 +94,7 @@ pub async fn make_client_config(
         Ok((builder.homeserver_url(default_homeserver_url), user_id))
     } else {
         // we need to fallback to the testing/default scenario
-        return Ok((builder.server_name(user_id.server_name()), user_id));
+        Ok((builder.server_name(user_id.server_name()), user_id))
     }
 }
 

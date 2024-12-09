@@ -28,7 +28,7 @@ tokio = { version = "1.38.0", features = ["sync"], default-features = false, opt
 
 [dev-dependencies]
 anyhow = "1.0.79"
-matrix-sdk-sqlite = { workspace = true }
+matrix-sdk-sqlite = { workspace = true, features = ['event-cache'] }
 matrix-sdk-test = { workspace = true }
 matrix-sdk = { workspace = true, features = ["rustls-tls"] }
 tempfile = "3.9.0"
