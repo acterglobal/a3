@@ -232,6 +232,7 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                             attachments::AttachmentEventContent::TYPE,
                             attachments::AttachmentUpdateEventContent::TYPE,
                             rsvp::RsvpEventContent::TYPE,
+                            read_receipt::ReadReceiptEventContent::TYPE,
                             reaction::ReactionEventContent::TYPE,
                         ],
                     ))
@@ -456,6 +457,7 @@ impl<'de> serde::Deserialize<'de> for SyncAnyActerEvent {
                     attachments::AttachmentEventContent::TYPE,
                     attachments::AttachmentUpdateEventContent::TYPE,
                     rsvp::RsvpEventContent::TYPE,
+                    read_receipt::ReadReceiptEventContent::TYPE,
                     reaction::ReactionEventContent::TYPE,
                 ],
             )),
