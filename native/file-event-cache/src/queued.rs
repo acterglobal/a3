@@ -1,6 +1,11 @@
 use crate::EventCacheStore;
 use async_trait::async_trait;
-use matrix_sdk::{media::MediaRequestParameters, ruma::MxcUri};
+use matrix_sdk::{
+    linked_chunk::{LinkedChunk, Update},
+    media::MediaRequestParameters,
+    ruma::{MxcUri, RoomId},
+};
+use matrix_sdk_base::event_cache::{store::DEFAULT_CHUNK_CAPACITY, Event, Gap};
 use std::sync::Arc;
 use tokio::sync::Semaphore;
 use tracing::instrument;
@@ -49,6 +54,33 @@ where
             .await
     }
 
+    async fn handle_linked_chunk_updates(
+        &self,
+        room_id: &RoomId,
+        updates: Vec<Update<Event, Gap>>,
+    ) -> Result<(), Self::Error> {
+        let _handle = self
+            .queue
+            .acquire()
+            .await
+            .expect("We never close the semaphore");
+        self.inner
+            .handle_linked_chunk_updates(room_id, updates)
+            .await
+    }
+
+    async fn reload_linked_chunk(
+        &self,
+        room_id: &RoomId,
+    ) -> Result<Option<LinkedChunk<DEFAULT_CHUNK_CAPACITY, Event, Gap>>, Self::Error> {
+        let _handle = self
+            .queue
+            .acquire()
+            .await
+            .expect("We never close the semaphore");
+        self.inner.reload_linked_chunk(room_id).await
+    }
+
     #[instrument(skip_all)]
     async fn add_media_content(
         &self,
@@ -74,6 +106,18 @@ where
             .await
             .expect("We never close the semaphore");
         self.inner.get_media_content(request).await
+    }
+    #[instrument(skip_all)]
+    async fn get_media_content_for_uri(
+        &self,
+        uri: &MxcUri,
+    ) -> Result<Option<Vec<u8>>, Self::Error> {
+        let _handle = self
+            .queue
+            .acquire()
+            .await
+            .expect("We never close the semaphore");
+        self.inner.get_media_content_for_uri(uri).await
     }
 
     #[instrument(skip_all)]
