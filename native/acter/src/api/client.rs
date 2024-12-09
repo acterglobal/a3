@@ -188,6 +188,7 @@ impl Client {
             typing_controller: TypingController::new(),
         };
         cl.load_from_cache().await;
+        cl.setup_handlers();
         Ok(cl)
     }
 
