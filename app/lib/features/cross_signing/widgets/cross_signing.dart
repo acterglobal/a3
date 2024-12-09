@@ -140,13 +140,13 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
       builder: (BuildContext context) => RequestReadyView(
         isVerifier: isVerifier,
         onCancel: (BuildContext context) async {
-          await event.cancelVerificationRequest(
-              widget.client); // occurs request.cancelled
+          // occurs request.cancelled
+          await event.cancelVerificationRequest(widget.client);
         },
         onAccept: (BuildContext context) async {
           // start sas verification from this device
-          await event.startSasVerification(
-              widget.client); // occurs request.transitioned
+          // occurs request.transitioned
+          await event.startSasVerification(widget.client);
         },
       ),
       isDismissible: false,
