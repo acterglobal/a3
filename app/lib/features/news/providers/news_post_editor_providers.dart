@@ -8,8 +8,6 @@ import 'package:acter/features/news/model/news_post_state.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:riverpod/riverpod.dart';
 
 final newsStateProvider =
@@ -55,25 +53,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   }
 
   Future<void> selectEventToShare(BuildContext context) async {
-    final lang = L10n.of(context);
-    final newsPostSpaceId = state.newsPostSpaceId ??
-        await selectSpaceDrawer(
-          context: context,
-          canCheck: 'CanPostNews',
-        );
-    state = state.copyWith(newsPostSpaceId: newsPostSpaceId);
-
-    if (newsPostSpaceId == null) {
-      EasyLoading.showToast(lang.pleaseFirstSelectASpace);
-      return;
-    }
-    if (!context.mounted) {
-      return;
-    }
-    final eventId = await selectEventDrawer(
-      context: context,
-      spaceId: newsPostSpaceId,
-    );
+    final eventId = await selectEventDrawer(context: context);
     final newsSpaceReference = NewsReferencesModel(
       type: NewsReferencesType.calendarEvent,
       id: eventId,
@@ -84,25 +64,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   }
 
   Future<void> selectPinToShare(BuildContext context) async {
-    final lang = L10n.of(context);
-    final newsPostSpaceId = state.newsPostSpaceId ??
-        await selectSpaceDrawer(
-          context: context,
-          canCheck: 'CanPostPin',
-        );
-    state = state.copyWith(newsPostSpaceId: newsPostSpaceId);
-
-    if (newsPostSpaceId == null) {
-      EasyLoading.showToast(lang.pleaseFirstSelectASpace);
-      return;
-    }
-    if (!context.mounted) {
-      return;
-    }
-    final pinId = await selectPinDrawer(
-      context: context,
-      spaceId: newsPostSpaceId,
-    );
+    final pinId = await selectPinDrawer(context: context);
     final newsSpaceReference = NewsReferencesModel(
       type: NewsReferencesType.pin,
       id: pinId,
@@ -113,25 +75,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   }
 
   Future<void> selectTaskListToShare(BuildContext context) async {
-    final lang = L10n.of(context);
-    final newsPostSpaceId = state.newsPostSpaceId ??
-        await selectSpaceDrawer(
-          context: context,
-          canCheck: 'CanPostTask',
-        );
-    state = state.copyWith(newsPostSpaceId: newsPostSpaceId);
-
-    if (newsPostSpaceId == null) {
-      EasyLoading.showToast(lang.pleaseFirstSelectASpace);
-      return;
-    }
-    if (!context.mounted) {
-      return;
-    }
-    final taskListId = await selectTaskListDrawer(
-      context: context,
-      spaceId: newsPostSpaceId,
-    );
+    final taskListId = await selectTaskListDrawer(context: context);
     final newsSpaceReference = NewsReferencesModel(
       type: NewsReferencesType.taskList,
       id: taskListId,
