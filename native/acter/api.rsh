@@ -2838,7 +2838,7 @@ object Client {
     fn logout() -> Future<Result<bool>>;
 
     /// Get the verification event receiver
-    fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
+    fn verification_event_rx() -> Stream<OptionVerificationEvent>;
 
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
@@ -2854,7 +2854,7 @@ object Client {
     fn install_sas_event_handler(flow_id: string) -> Future<Result<bool>>;
 
     /// Return the event handler that new device was found or existing device was changed
-    fn device_event_rx() -> Option<Stream<DeviceEvent>>;
+    fn device_event_rx() -> Stream<DeviceEvent>;
 
     /// Return the typing event receiver
     fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;
@@ -3169,6 +3169,11 @@ object VerificationEvent {
 
     /// Alice says to Bob that SAS verification doesn’t match and vice versa
     fn mismatch_sas_verification() -> Future<Result<bool>>;
+}
+
+object OptionVerificationEvent {
+    /// get data object
+    fn data() -> Option<VerificationEvent>;
 }
 
 object VerificationEmoji {
