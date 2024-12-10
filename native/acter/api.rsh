@@ -2803,7 +2803,7 @@ object Client {
     fn logout() -> Future<Result<bool>>;
 
     /// Get the verification event receiver
-    fn verification_event_rx() -> Stream<VerificationEvent>;
+    fn verification_event_rx() -> Stream<OptionVerificationEvent>;
 
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
@@ -3108,32 +3108,37 @@ object VerificationEvent {
     fn emojis() -> Vec<VerificationEmoji>;
 
     /// Get emoji array
-    fn get_emojis(client: Client) -> Future<Result<Vec<VerificationEmoji>>>;
+    fn get_emojis() -> Future<Result<Vec<VerificationEmoji>>>;
 
     /// Bob accepts the verification request from Alice
-    fn accept_verification_request(client: Client) -> Future<Result<bool>>;
+    fn accept_verification_request() -> Future<Result<bool>>;
 
     /// Bob cancels the verification request from Alice
     /// alternative of terminate_verification
-    fn cancel_verification_request(client: Client) -> Future<Result<bool>>;
+    fn cancel_verification_request() -> Future<Result<bool>>;
 
     /// Bob accepts the verification request from Alice with specified method
-    fn accept_verification_request_with_method(client: Client, method: string) -> Future<Result<bool>>;
+    fn accept_verification_request_with_method(method: string) -> Future<Result<bool>>;
 
     /// Alice starts the SAS verification
-    fn start_sas_verification(client: Client) -> Future<Result<bool>>;
+    fn start_sas_verification() -> Future<Result<bool>>;
 
     /// Bob accepts the SAS verification
-    fn accept_sas_verification(client: Client) -> Future<Result<bool>>;
+    fn accept_sas_verification() -> Future<Result<bool>>;
 
     /// Bob cancels the SAS verification
-    fn cancel_sas_verification(client: Client) -> Future<Result<bool>>;
+    fn cancel_sas_verification() -> Future<Result<bool>>;
 
     /// Alice says to Bob that SAS verification matches and vice versa
-    fn confirm_sas_verification(client: Client) -> Future<Result<bool>>;
+    fn confirm_sas_verification() -> Future<Result<bool>>;
 
     /// Alice says to Bob that SAS verification doesn’t match and vice versa
-    fn mismatch_sas_verification(client: Client) -> Future<Result<bool>>;
+    fn mismatch_sas_verification() -> Future<Result<bool>>;
+}
+
+object OptionVerificationEvent {
+    /// get data object
+    fn data() -> Option<VerificationEvent>;
 }
 
 object VerificationEmoji {

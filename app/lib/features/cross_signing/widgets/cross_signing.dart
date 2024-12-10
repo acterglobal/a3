@@ -21,9 +21,7 @@ final _log = Logger('a3::cross_signing::widget');
 // it just pops up stage dialogs for verification
 @immutable
 class CrossSigning extends ConsumerStatefulWidget {
-  final Client client;
-
-  const CrossSigning({super.key, required this.client});
+  const CrossSigning({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => CrossSigningState();
@@ -114,7 +112,7 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
       builder: (BuildContext context) => RequestCreatedView(
         onCancel: (BuildContext context) async {
           // cancel verification request launched by this device
-          await event.cancelVerificationRequest(widget.client);
+          await event.cancelVerificationRequest();
         },
       ),
       isDismissible: false,
@@ -140,13 +138,11 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
       builder: (BuildContext context) => RequestReadyView(
         isVerifier: isVerifier,
         onCancel: (BuildContext context) async {
-          // occurs request.cancelled
-          await event.cancelVerificationRequest(widget.client);
+          await event.cancelVerificationRequest(); // occurs request.cancelled
         },
         onAccept: (BuildContext context) async {
           // start sas verification from this device
-          // occurs request.transitioned
-          await event.startSasVerification(widget.client);
+          await event.startSasVerification(); // occurs request.transitioned
         },
       ),
       isDismissible: false,
@@ -232,11 +228,11 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
         sender: event.sender(),
         onCancel: (BuildContext context) async {
           // cancel verification request from other device
-          await event.cancelVerificationRequest(widget.client);
+          await event.cancelVerificationRequest();
         },
         onAccept: (BuildContext context) async {
           // accept verification request from other device
-          await event.acceptVerificationRequest(widget.client);
+          await event.acceptVerificationRequest();
         },
       ),
       isDismissible: false,
@@ -256,7 +252,7 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
     if (nav.canPop()) nav.pop();
 
     // accept sas that verifier started
-    event.acceptSasVerification(widget.client);
+    event.acceptSasVerification();
 
     // open sas.started dialog
     showModalBottomSheet(
@@ -264,7 +260,7 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
       builder: (BuildContext context) => SasStartedView(
         isVerifier: isVerifier,
         onCancel: (BuildContext context) async {
-          await event.cancelSasVerification(widget.client);
+          await event.cancelSasVerification();
         },
       ),
       isDismissible: false,
@@ -340,22 +336,22 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
           isVerifier: isVerifier,
           emojis: event.emojis(),
           onCancel: (BuildContext context) async {
-            await event.cancelSasVerification(widget.client);
+            await event.cancelSasVerification();
           },
           onMatch: (BuildContext context) async {
             _log.info('sas.keys_exchanged - match');
-            await event.confirmSasVerification(widget.client);
+            await event.confirmSasVerification();
           },
           onMismatch: (BuildContext context) async {
             _log.info('sas.keys_exchanged - mismatch');
-            await event.mismatchSasVerification(widget.client);
+            await event.mismatchSasVerification();
           },
         ),
         isDismissible: false,
       );
     } else {
       // fetch emojis
-      event.getEmojis(widget.client).then((emojis) {
+      event.getEmojis().then((emojis) {
         if (!context.mounted) return;
         // open sas.keys_exchanged dialog
         showModalBottomSheet(
@@ -366,15 +362,15 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
             isVerifier: isVerifier,
             emojis: emojis,
             onCancel: (BuildContext context) async {
-              await event.cancelSasVerification(widget.client);
+              await event.cancelSasVerification();
             },
             onMatch: (BuildContext context) async {
               _log.info('sas.keys_exchanged - match');
-              await event.confirmSasVerification(widget.client);
+              await event.confirmSasVerification();
             },
             onMismatch: (BuildContext context) async {
               _log.info('sas.keys_exchanged - mismatch');
-              await event.mismatchSasVerification(widget.client);
+              await event.mismatchSasVerification();
             },
           ),
           isDismissible: false,

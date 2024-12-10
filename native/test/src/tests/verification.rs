@@ -1,4 +1,4 @@
-use acter::api::VerificationEvent;
+use acter::api::{OptionVerificationEvent, VerificationEvent};
 use anyhow::Result;
 use futures::{
     pin_mut,
@@ -10,14 +10,16 @@ use tracing::info;
 use crate::utils::random_user;
 
 fn wait_for_verification_event(
-    rx: impl Stream<Item = VerificationEvent>,
+    rx: impl Stream<Item = OptionVerificationEvent>,
     name: &str,
 ) -> VerificationEvent {
     pin_mut!(rx);
     loop {
         if let Some(event) = rx.next().now_or_never().flatten() {
-            if event.event_type() == name {
-                return event;
+            if let Some(data) = event.data() {
+                if data.event_type() == name {
+                    return data;
+                }
             }
         }
     }
@@ -86,10 +88,10 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     // Bob accepts the request, sending a Ready request
     event
-        .accept_verification_request_with_method(Box::new(bob.clone()), "m.sas.v1".to_string())
+        .accept_verification_request_with_method("m.sas.v1".to_string())
         .await?;
     // And also immediately sends a start request
-    let started = event.start_sas_verification(Box::new(bob.clone())).await?;
+    let started = event.start_sas_verification().await?;
     assert!(started, "bob failed to start sas");
 
     // ----------------------------------------------------------------------------
@@ -99,9 +101,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let event = wait_for_verification_event(&mut alice_rx, "m.key.verification.ready");
 
     // Alice immediately sends a start request
-    let started = event
-        .start_sas_verification(Box::new(alice.clone()))
-        .await?;
+    let started = event.start_sas_verification().await?;
     assert!(started, "alice failed to start sas verification");
 
     // Now Alice receives the start event from Bob
@@ -115,7 +115,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let event = wait_for_verification_event(&mut bob_rx, "m.key.verification.start");
 
     // Bob accepts it
-    let accepted = event.accept_sas_verification(Box::new(bob.clone())).await?;
+    let accepted = event.accept_sas_verification().await?;
     assert!(accepted, "bob failed to accept sas verification");
 
     // ----------------------------------------------------------------------------
@@ -125,7 +125,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let event = wait_for_verification_event(&mut alice_rx, "m.key.verification.accept");
 
     // Alice sends a key
-    event.send_verification_key(Box::new(alice.clone())).await?;
+    event.send_verification_key().await?;
 
     // ----------------------------------------------------------------------------
     // On Bob’s device:
@@ -134,13 +134,11 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let bob_event = wait_for_verification_event(&mut bob_rx, "m.key.verification.key");
 
     // Bob gets the verification key from event
-    let emojis_from_alice = bob_event.get_emojis(Box::new(bob.clone())).await?;
+    let emojis_from_alice = bob_event.get_emojis().await?;
     info!("emojis from alice: {:?}", emojis_from_alice);
 
     // Bob sends a key
-    bob_event
-        .send_verification_key(Box::new(bob.clone()))
-        .await?;
+    bob_event.send_verification_key().await?;
 
     // ----------------------------------------------------------------------------
     // On Alice’s device:
@@ -149,22 +147,20 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let alice_event = wait_for_verification_event(&mut alice_rx, "m.key.verification.key");
 
     // Alice gets the verification key from event
-    let emojis_from_bob = alice_event.get_emojis(Box::new(alice.clone())).await?;
+    let emojis_from_bob = alice_event.get_emojis().await?;
     info!("emojis from bob: {:?}", emojis_from_bob);
 
     // ----------------------------------------------------------------------------
     // On Bob’s device:
 
     // Bob first confirms that the emojis match and sends the mac event...
-    bob_event.confirm_sas_verification(Box::new(bob)).await?;
+    bob_event.confirm_sas_verification().await?;
 
     // ----------------------------------------------------------------------------
     // On Alice’s device:
 
     // Alice first confirms that the emojis match and sends the mac event...
-    alice_event
-        .confirm_sas_verification(Box::new(alice))
-        .await?;
+    alice_event.confirm_sas_verification().await?;
 
     // ----------------------------------------------------------------------------
     // On Bob’s device:

@@ -130,8 +130,7 @@ class AppShellState extends ConsumerState<AppShell> {
   @override
   Widget build(BuildContext context) {
     // get platform of context.
-    final client = ref.watch(clientProvider);
-    if (client == null) {
+    if (ref.watch(clientProvider) == null) {
       // at the very startup we might not yet have a client loaded
       // show a loading spinner meanwhile.
       return const Scaffold(
@@ -164,7 +163,7 @@ class AppShellState extends ConsumerState<AppShell> {
             controller: screenshotController,
             child: Column(
               children: [
-                CrossSigning(client: client),
+                CrossSigning(),
                 Expanded(
                   child: buildBody(context),
                 ),

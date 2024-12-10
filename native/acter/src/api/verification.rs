@@ -20,7 +20,7 @@ use matrix_sdk_base::ruma::{
         room::message::{MessageType, OriginalSyncRoomMessageEvent},
         AnyToDeviceEvent, EventContent,
     },
-    OwnedDeviceId, OwnedUserId, UserId,
+    OwnedDeviceId, OwnedUserId,
 };
 use std::{
     collections::HashMap,
@@ -34,11 +34,13 @@ use tracing::{error, info};
 
 use super::{client::Client, common::DeviceRecord, RUNTIME};
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct VerificationEvent {
+    client: SdkClient,
+    controller: VerificationController,
     event_type: String,
     flow_id: String,
-    sender: String,
+    sender: OwnedUserId,
     /// event content
     content: HashMap<String, String>,
     /// emoji array
@@ -46,11 +48,19 @@ pub struct VerificationEvent {
 }
 
 impl VerificationEvent {
-    pub(crate) fn new(event_type: String, flow_id: String, sender: OwnedUserId) -> Self {
+    pub(crate) fn new(
+        client: SdkClient,
+        controller: VerificationController,
+        event_type: String,
+        flow_id: String,
+        sender: OwnedUserId,
+    ) -> Self {
         VerificationEvent {
+            client,
+            controller,
             event_type,
             flow_id,
-            sender: sender.to_string(),
+            sender,
             content: Default::default(),
             emojis: Default::default(),
         }
@@ -86,14 +96,13 @@ impl VerificationEvent {
     }
 
     // when other device triggered verification of this device, it can get emojis from remote server
-    pub async fn get_emojis(&self, client: Box<Client>) -> Result<Vec<VerificationEmoji>> {
-        let sender = UserId::parse(self.sender.clone())?;
+    pub async fn get_emojis(&self) -> Result<Vec<VerificationEmoji>> {
+        let client = self.client.clone();
+        let sender = self.sender.clone();
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
                 let Some(Verification::SasV1(sas)) = client
-                    .core
-                    .client()
                     .encryption()
                     .get_verification(&sender, &flow_id)
                     .await
@@ -111,14 +120,13 @@ impl VerificationEvent {
             .await?
     }
 
-    pub async fn accept_verification_request(&self, client: Box<Client>) -> Result<bool> {
-        let sender = UserId::parse(self.sender.clone())?;
+    pub async fn accept_verification_request(&self) -> Result<bool> {
+        let client = self.client.clone();
+        let sender = self.sender.clone();
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
                 let Some(request) = client
-                    .core
-                    .client()
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
@@ -137,14 +145,13 @@ impl VerificationEvent {
     }
 
     // alternative of terminate_verification
-    pub async fn cancel_verification_request(&self, client: Box<Client>) -> Result<bool> {
-        let sender = UserId::parse(self.sender.clone())?;
+    pub async fn cancel_verification_request(&self) -> Result<bool> {
+        let client = self.client.clone();
+        let sender = self.sender.clone();
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
                 let Some(request) = client
-                    .core
-                    .client()
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
@@ -158,19 +165,14 @@ impl VerificationEvent {
             .await?
     }
 
-    pub async fn accept_verification_request_with_method(
-        &self,
-        client: Box<Client>,
-        method: String,
-    ) -> Result<bool> {
-        let sender = UserId::parse(self.sender.clone())?;
+    pub async fn accept_verification_request_with_method(&self, method: String) -> Result<bool> {
+        let client = self.client.clone();
+        let sender = self.sender.clone();
         let flow_id = self.flow_id.clone();
         let values = vec![VerificationMethod::from(method.as_str())];
         RUNTIME
             .spawn(async move {
                 let Some(request) = client
-                    .core
-                    .client()
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
@@ -188,14 +190,13 @@ impl VerificationEvent {
             .await?
     }
 
-    pub async fn start_sas_verification(&self, client: Box<Client>) -> Result<bool> {
-        let sender = UserId::parse(self.sender.clone())?;
+    pub async fn start_sas_verification(&self) -> Result<bool> {
+        let client = self.client.clone();
+        let sender = self.sender.clone();
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
                 let Some(request) = client
-                    .core
-                    .client()
                     .encryption()
                     .get_verification_request(&sender, &flow_id)
                     .await
@@ -209,14 +210,13 @@ impl VerificationEvent {
             .await?
     }
 
-    pub async fn accept_sas_verification(&self, client: Box<Client>) -> Result<bool> {
-        let sender = UserId::parse(self.sender.clone())?;
+    pub async fn accept_sas_verification(&self) -> Result<bool> {
+        let client = self.client.clone();
+        let sender = self.sender.clone();
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
                 let Some(Verification::SasV1(sas)) = client
-                    .core
-                    .client()
                     .encryption()
                     .get_verification(&sender, &flow_id)
                     .await
@@ -235,14 +235,13 @@ impl VerificationEvent {
             .await?
     }
 
-    pub async fn cancel_sas_verification(&self, client: Box<Client>) -> Result<bool> {
-        let sender = UserId::parse(self.sender.clone())?;
+    pub async fn cancel_sas_verification(&self) -> Result<bool> {
+        let client = self.client.clone();
+        let sender = self.sender.clone();
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
                 let Some(Verification::SasV1(sas)) = client
-                    .core
-                    .client()
                     .encryption()
                     .get_verification(&sender, &flow_id)
                     .await
@@ -257,28 +256,23 @@ impl VerificationEvent {
     }
 
     #[cfg(feature = "testing")]
-    pub async fn send_verification_key(&self, client: Box<Client>) -> Result<bool> {
-        let sender = UserId::parse(self.sender.clone())?;
+    pub async fn send_verification_key(&self) -> Result<bool> {
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
-                client
-                    .core
-                    .client()
-                    .sync_once(SyncSettings::default())
-                    .await?; // send_outgoing_requests is called there
+                client.sync_once(SyncSettings::default()).await?; // send_outgoing_requests is called there
                 Ok(true)
             })
             .await?
     }
 
-    pub async fn confirm_sas_verification(&self, client: Box<Client>) -> Result<bool> {
-        let sender = UserId::parse(self.sender.clone())?;
+    pub async fn confirm_sas_verification(&self) -> Result<bool> {
+        let client = self.client.clone();
+        let sender = self.sender.clone();
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
                 let Some(Verification::SasV1(sas)) = client
-                    .core
-                    .client()
                     .encryption()
                     .get_verification(&sender, &flow_id)
                     .await
@@ -292,14 +286,13 @@ impl VerificationEvent {
             .await?
     }
 
-    pub async fn mismatch_sas_verification(&self, client: Box<Client>) -> Result<bool> {
-        let sender = UserId::parse(self.sender.clone())?;
+    pub async fn mismatch_sas_verification(&self) -> Result<bool> {
+        let client = self.client.clone();
+        let sender = self.sender.clone();
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
                 let Some(Verification::SasV1(sas)) = client
-                    .core
-                    .client()
                     .encryption()
                     .get_verification(&sender, &flow_id)
                     .await
@@ -311,6 +304,21 @@ impl VerificationEvent {
                 Ok(true)
             })
             .await?
+    }
+}
+
+#[derive(Clone)]
+pub struct OptionVerificationEvent {
+    data: Option<VerificationEvent>,
+}
+
+impl OptionVerificationEvent {
+    pub(crate) fn new(data: Option<VerificationEvent>) -> Self {
+        OptionVerificationEvent { data }
+    }
+
+    pub fn data(&self) -> Option<VerificationEvent> {
+        self.data.clone()
     }
 }
 
@@ -352,7 +360,13 @@ async fn request_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "VerificationRequestState::Created".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(event_type, flow_id.clone(), sender.clone());
+                let mut msg = VerificationEvent::new(
+                    client.core.client().clone(),
+                    controller.clone(),
+                    event_type,
+                    flow_id.clone(),
+                    sender.clone(),
+                );
                 let methods = our_methods
                     .iter()
                     .map(|x| x.to_string())
@@ -370,7 +384,13 @@ async fn request_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "VerificationRequestState::Requested".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(event_type, flow_id.clone(), sender.clone());
+                let mut msg = VerificationEvent::new(
+                    client.core.client().clone(),
+                    controller.clone(),
+                    event_type,
+                    flow_id.clone(),
+                    sender.clone(),
+                );
                 let methods = their_methods
                     .iter()
                     .map(|x| x.to_string())
@@ -393,7 +413,13 @@ async fn request_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "VerificationRequestState::Ready".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(event_type, flow_id.clone(), sender.clone());
+                let mut msg = VerificationEvent::new(
+                    client.core.client().clone(),
+                    controller.clone(),
+                    event_type,
+                    flow_id.clone(),
+                    sender.clone(),
+                );
                 let methods = their_methods
                     .iter()
                     .map(|x| x.to_string())
@@ -419,7 +445,13 @@ async fn request_verification_handler(
                     let device_id = client.device_id()?;
                     let event_type = "VerificationRequestState::Transitioned".to_string();
                     info!("{} got {}", device_id, event_type);
-                    let msg = VerificationEvent::new(event_type, flow_id.clone(), sender.clone());
+                    let msg = VerificationEvent::new(
+                        client.core.client().clone(),
+                        controller.clone(),
+                        event_type,
+                        flow_id.clone(),
+                        sender.clone(),
+                    );
                     if let Err(e) = controller.event_tx.send(msg) {
                         error!("Dropping flow for {}: {}", flow_id, e);
                     }
@@ -429,17 +461,29 @@ async fn request_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "VerificationRequestState::Done".to_string();
                 info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(event_type, flow_id.clone(), sender.clone());
+                let msg = VerificationEvent::new(
+                    client.core.client().clone(),
+                    controller.clone(),
+                    event_type,
+                    flow_id.clone(),
+                    sender.clone(),
+                );
                 if let Err(e) = controller.event_tx.send(msg) {
                     error!("Dropping flow for {}: {}", flow_id, e);
                 }
-                break;
+                break; // finish
             }
             VerificationRequestState::Cancelled(cancel_info) => {
                 let device_id = client.device_id()?;
                 let event_type = "VerificationRequestState::Cancelled".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(event_type, flow_id.clone(), sender.clone());
+                let mut msg = VerificationEvent::new(
+                    client.core.client().clone(),
+                    controller.clone(),
+                    event_type,
+                    flow_id.clone(),
+                    sender.clone(),
+                );
                 msg.set_content(
                     "cancel_code".to_string(),
                     cancel_info.cancel_code().to_string(),
@@ -448,7 +492,7 @@ async fn request_verification_handler(
                 if let Err(e) = controller.event_tx.send(msg) {
                     error!("Dropping flow for {}: {}", flow_id, e);
                 }
-                break;
+                break; // finish
             }
         }
     }
@@ -469,7 +513,13 @@ async fn sas_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "SasState::KeysExchanged".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(event_type, flow_id.clone(), sender.clone());
+                let mut msg = VerificationEvent::new(
+                    client.core.client().clone(),
+                    controller.clone(),
+                    event_type,
+                    flow_id.clone(),
+                    sender.clone(),
+                );
                 if let Some(auth_string) = emojis {
                     let sequence = auth_string
                         .emojis
@@ -497,7 +547,13 @@ async fn sas_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "SasState::Done".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(event_type, flow_id.clone(), sender.clone());
+                let mut msg = VerificationEvent::new(
+                    client.core.client().clone(),
+                    controller.clone(),
+                    event_type,
+                    flow_id.clone(),
+                    sender.clone(),
+                );
                 let devices = verified_devices
                     .iter()
                     .map(|x| x.device_id().to_string())
@@ -511,13 +567,19 @@ async fn sas_verification_handler(
                 if let Err(e) = controller.event_tx.send(msg) {
                     error!("Dropping flow for {}: {}", flow_id, e);
                 }
-                break;
+                break; // finish
             }
             SasState::Cancelled(cancel_info) => {
                 let device_id = client.device_id()?;
                 let event_type = "SasState::Cancelled".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(event_type, flow_id.clone(), sender.clone());
+                let mut msg = VerificationEvent::new(
+                    client.core.client().clone(),
+                    controller.clone(),
+                    event_type,
+                    flow_id.clone(),
+                    sender.clone(),
+                );
                 msg.set_content(
                     "cancel_code".to_string(),
                     cancel_info.cancel_code().to_string(),
@@ -526,13 +588,19 @@ async fn sas_verification_handler(
                 if let Err(e) = controller.event_tx.send(msg) {
                     error!("Dropping flow for {}: {}", flow_id, e);
                 }
-                break;
+                break; // finish
             }
             SasState::Started { protocols } => {
                 let device_id = client.device_id()?;
                 let event_type = "SasState::Started".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(event_type, flow_id.clone(), sender.clone());
+                let mut msg = VerificationEvent::new(
+                    client.core.client().clone(),
+                    controller.clone(),
+                    event_type,
+                    flow_id.clone(),
+                    sender.clone(),
+                );
                 let key_agreement_protocols = protocols
                     .key_agreement_protocols
                     .iter()
@@ -574,7 +642,13 @@ async fn sas_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "SasState::Accepted".to_string();
                 info!("{} got {}", device_id, event_type);
-                let mut msg = VerificationEvent::new(event_type, flow_id.clone(), sender.clone());
+                let mut msg = VerificationEvent::new(
+                    client.core.client().clone(),
+                    controller.clone(),
+                    event_type,
+                    flow_id.clone(),
+                    sender.clone(),
+                );
                 msg.set_content(
                     "key_agreement_protocol".to_string(),
                     accepted_protocols.key_agreement_protocol.to_string(),
@@ -594,7 +668,13 @@ async fn sas_verification_handler(
                 let device_id = client.device_id()?;
                 let event_type = "SasState::Confirmed".to_string();
                 info!("{} got {}", device_id, event_type);
-                let msg = VerificationEvent::new(event_type, flow_id.clone(), sender.clone());
+                let msg = VerificationEvent::new(
+                    client.core.client().clone(),
+                    controller.clone(),
+                    event_type,
+                    flow_id.clone(),
+                    sender.clone(),
+                );
                 if let Err(e) = controller.event_tx.send(msg) {
                     error!("Dropping flow for {}: {}", flow_id, e);
                 }
@@ -630,13 +710,15 @@ impl VerificationController {
         let handle = client.add_event_handler(
             |ev: OriginalSyncRoomMessageEvent,
              c: SdkClient,
-             Ctx(mut me): Ctx<VerificationController>| async move {
+             Ctx(me): Ctx<VerificationController>| async move {
                 if let MessageType::VerificationRequest(content) = &ev.content.msgtype {
                     info!("MessageType::VerificationRequest");
                     let device_id = c.device_id().expect("DeviceId needed");
                     let event_type = ev.content.event_type();
                     info!("{} got {}", device_id, event_type);
                     let mut msg = VerificationEvent::new(
+                        c,
+                        me.clone(),
                         event_type.to_string(),
                         ev.event_id.to_string(),
                         ev.sender,
@@ -673,9 +755,7 @@ impl VerificationController {
     pub fn add_to_device_event_handler(&mut self, client: &SdkClient) {
         client.add_event_handler_context(self.clone());
         let handle = client.add_event_handler(
-            |ev: AnyToDeviceEvent,
-             c: SdkClient,
-             Ctx(mut me): Ctx<VerificationController>| async move {
+            |ev: AnyToDeviceEvent, c: SdkClient, Ctx(me): Ctx<VerificationController>| async move {
                 let device_id = c.device_id().expect("DeviceId needed");
                 match ev {
                     AnyToDeviceEvent::KeyVerificationRequest(evt) => {
@@ -683,14 +763,27 @@ impl VerificationController {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
                             event_type.to_string(),
                             evt.content.transaction_id.to_string(),
                             evt.sender,
                         );
-                        msg.set_content("from_device".to_string(), evt.content.from_device.to_string());
-                        let methods = evt.content.methods.iter().map(|x| x.to_string()).collect::<Vec<String>>();
+                        msg.set_content(
+                            "from_device".to_string(),
+                            evt.content.from_device.to_string(),
+                        );
+                        let methods = evt
+                            .content
+                            .methods
+                            .iter()
+                            .map(|x| x.to_string())
+                            .collect::<Vec<String>>();
                         msg.set_content("methods".to_string(), methods.join(","));
-                        msg.set_content("timestamp".to_string(), evt.content.timestamp.get().to_string());
+                        msg.set_content(
+                            "timestamp".to_string(),
+                            evt.content.timestamp.get().to_string(),
+                        );
                         if let Err(e) = me.event_tx.send(msg) {
                             error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
                         }
@@ -700,12 +793,22 @@ impl VerificationController {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
                             event_type.to_string(),
                             evt.content.transaction_id.to_string(),
                             evt.sender,
                         );
-                        msg.set_content("from_device".to_string(), evt.content.from_device.to_string());
-                        let methods = evt.content.methods.iter().map(|x| x.to_string()).collect::<Vec<String>>();
+                        msg.set_content(
+                            "from_device".to_string(),
+                            evt.content.from_device.to_string(),
+                        );
+                        let methods = evt
+                            .content
+                            .methods
+                            .iter()
+                            .map(|x| x.to_string())
+                            .collect::<Vec<String>>();
                         msg.set_content("methods".to_string(), methods.join(","));
                         if let Err(e) = me.event_tx.send(msg) {
                             error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
@@ -716,11 +819,16 @@ impl VerificationController {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
                             event_type.to_string(),
                             evt.content.transaction_id.to_string(),
                             evt.sender,
                         );
-                        msg.set_content("from_device".to_string(), evt.content.from_device.to_string());
+                        msg.set_content(
+                            "from_device".to_string(),
+                            evt.content.from_device.to_string(),
+                        );
                         match evt.content.method {
                             StartMethod::SasV1(content) => {
                                 let key_agreement_protocols = content
@@ -728,7 +836,10 @@ impl VerificationController {
                                     .iter()
                                     .map(|x| x.to_string())
                                     .collect::<Vec<String>>();
-                                msg.set_content("key_agreement_protocols".to_string(), key_agreement_protocols.join(","));
+                                msg.set_content(
+                                    "key_agreement_protocols".to_string(),
+                                    key_agreement_protocols.join(","),
+                                );
                                 let hashes = content
                                     .hashes
                                     .iter()
@@ -740,13 +851,19 @@ impl VerificationController {
                                     .iter()
                                     .map(|x| x.to_string())
                                     .collect::<Vec<String>>();
-                                msg.set_content("message_authentication_codes".to_string(), message_authentication_codes.join(","));
+                                msg.set_content(
+                                    "message_authentication_codes".to_string(),
+                                    message_authentication_codes.join(","),
+                                );
                                 let short_authentication_string = content
                                     .short_authentication_string
                                     .iter()
                                     .map(|x| x.to_string())
                                     .collect::<Vec<String>>();
-                                msg.set_content("short_authentication_string".to_string(), short_authentication_string.join(","));
+                                msg.set_content(
+                                    "short_authentication_string".to_string(),
+                                    short_authentication_string.join(","),
+                                );
                             }
                             StartMethod::ReciprocateV1(content) => {
                                 let secret = match serde_json::to_string(&content.secret) {
@@ -769,6 +886,8 @@ impl VerificationController {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
                             event_type.to_string(),
                             evt.content.transaction_id.to_string(),
                             evt.sender,
@@ -783,21 +902,35 @@ impl VerificationController {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
                             event_type.to_string(),
                             evt.content.transaction_id.to_string(),
                             evt.sender,
                         );
                         if let AcceptMethod::SasV1(content) = evt.content.method {
                             msg.set_content("hash".to_string(), content.hash.to_string());
-                            msg.set_content("key_agreement_protocol".to_string(), content.key_agreement_protocol.to_string());
-                            msg.set_content("message_authentication_code".to_string(), content.message_authentication_code.to_string());
+                            msg.set_content(
+                                "key_agreement_protocol".to_string(),
+                                content.key_agreement_protocol.to_string(),
+                            );
+                            msg.set_content(
+                                "message_authentication_code".to_string(),
+                                content.message_authentication_code.to_string(),
+                            );
                             let short_authentication_string = content
                                 .short_authentication_string
                                 .iter()
                                 .map(|x| x.as_str().into())
                                 .collect::<Vec<String>>();
-                            msg.set_content("short_authentication_string".to_string(), short_authentication_string.join(","));
-                            msg.set_content("commitment".to_string(), content.commitment.to_string());
+                            msg.set_content(
+                                "short_authentication_string".to_string(),
+                                short_authentication_string.join(","),
+                            );
+                            msg.set_content(
+                                "commitment".to_string(),
+                                content.commitment.to_string(),
+                            );
                         }
                         if let Err(e) = me.event_tx.send(msg) {
                             error!("Dropping flow for {}: {}", evt.content.transaction_id, e);
@@ -808,6 +941,8 @@ impl VerificationController {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
                             event_type.to_string(),
                             evt.content.transaction_id.to_string(),
                             evt.sender,
@@ -823,6 +958,8 @@ impl VerificationController {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let mut msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
                             event_type.to_string(),
                             evt.content.transaction_id.to_string(),
                             evt.sender,
@@ -845,6 +982,8 @@ impl VerificationController {
                         let event_type = evt.content.event_type();
                         info!("{} got {}", device_id, event_type);
                         let msg = VerificationEvent::new(
+                            c,
+                            me.clone(),
                             event_type.to_string(),
                             evt.content.transaction_id.to_string(),
                             evt.sender,
@@ -988,9 +1127,9 @@ impl SessionManager {
 }
 
 impl Client {
-    pub fn verification_event_rx(&self) -> impl Stream<Item = VerificationEvent> {
+    pub fn verification_event_rx(&self) -> impl Stream<Item = OptionVerificationEvent> {
         BroadcastStream::new(self.verification_controller.event_rx.resubscribe())
-            .map(|o| o.unwrap_or_default())
+            .map(|o| OptionVerificationEvent::new(o.ok()))
     }
 
     pub fn session_manager(&self) -> SessionManager {
@@ -1001,6 +1140,7 @@ impl Client {
 
     pub async fn request_verification(&self, dev_id: String) -> Result<VerificationEvent> {
         let client = self.core.client().clone();
+        let controller = self.verification_controller.clone();
         let user_id = self.user_id()?;
 
         RUNTIME
@@ -1020,6 +1160,8 @@ impl Client {
                 let flow_id = request.flow_id().to_owned();
                 info!("requested verification - flow_id: {}", flow_id.clone());
                 let msg = VerificationEvent::new(
+                    client,
+                    controller,
                     "VerificationRequestState::Created".to_owned(),
                     flow_id,
                     user_id,
