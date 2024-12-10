@@ -133,10 +133,9 @@ impl Client {
                 .await?;
         }
 
-        return path
-            .to_str()
+        path.to_str()
             .map(|s| s.to_string())
-            .context("Path was generated from strings. Must be string");
+            .context("Path was generated from strings. Must be string")
     }
 
     pub async fn join_room(
