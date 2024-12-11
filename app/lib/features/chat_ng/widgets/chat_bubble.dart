@@ -106,12 +106,15 @@ class ChatBubble extends StatelessWidget {
               child: child,
             ),
           ),
-          Visibility(
-            visible: wasEdited,
-            child: Text(
-              L10n.of(context).edited,
-              style: chatTheme.emptyChatPlaceholderTextStyle
-                  .copyWith(fontSize: 12),
+          Align(
+            alignment: Alignment(0.9, 0.0),
+            child: Visibility(
+              visible: wasEdited,
+              child: Text(
+                L10n.of(context).edited,
+                style: chatTheme.emptyChatPlaceholderTextStyle
+                    .copyWith(fontSize: 12),
+              ),
             ),
           ),
         ],

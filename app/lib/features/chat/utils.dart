@@ -405,3 +405,34 @@ Future<void> onMessageLinkTap(
     }
   }
 }
+
+bool isOnlyEmojis(String text) {
+  final emojisRegExp = RegExp(
+    r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|' +
+        r'[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|' +
+        r'[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|' +
+        r'\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|' +
+        r'\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51])',
+  );
+
+  // find all emojis
+  final emojis = emojisRegExp.allMatches(text);
+
+  // return if none found
+  if (emojis.isEmpty) return false;
+
+  // remove all emojis from the text
+  String remainingText = text;
+  for (final emoji in emojis) {
+    remainingText = remainingText.replaceAll(
+      emoji.input.substring(emoji.start, emoji.end),
+      '',
+    );
+  }
+
+  // remove all whitespace
+  remainingText = remainingText.replaceAll(RegExp(r'\s'), '');
+
+  // return true if nothing else left
+  return remainingText.isEmpty;
+}

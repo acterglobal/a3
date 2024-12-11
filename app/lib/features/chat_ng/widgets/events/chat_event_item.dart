@@ -3,6 +3,7 @@ import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
+import 'package:acter/features/chat_ng/widgets/events/location_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/member_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/state_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
@@ -29,6 +30,7 @@ class ChatEventItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final eventType = item.eventType();
+
     return switch (eventType) {
       // handle message inner types separately
       'm.room.message' => buildMsgEventItem(
@@ -94,20 +96,29 @@ class ChatEventItem extends StatelessWidget {
     String messageId,
     RoomEventItem item,
     bool isUser,
-    bool showAvatar,
+    bool nextMessageGroup,
   ) {
     final msgType = item.msgType();
     final content = item.msgContent();
+    final Map<String, dynamic> metadata = {
+      'isUser': isUser,
+      'nextMessageGroup': nextMessageGroup,
+      'wasEdited': item.wasEdited(),
+      'msgType': msgType,
+    };
 
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
 
     return switch (msgType) {
-      'm.emote' || 'm.text' => TextMessageEvent(
+      'm.emote' ||
+      'm.notice' ||
+      'm.server_notice' ||
+      'm.text' =>
+        TextMessageEvent(
           roomId: roomId,
           content: content,
-          isUser: isUser,
-          nextMessageGroup: showAvatar,
+          metadata: metadata,
         ),
       'm.image' => ImageMessageEvent(
           messageId: messageId,
@@ -124,6 +135,7 @@ class ChatEventItem extends StatelessWidget {
           messageId: messageId,
           content: content,
         ),
+      'm.location' => LocationMessageEvent(content: content),
       _ => _buildUnsupportedMessage(msgType),
     };
   }
