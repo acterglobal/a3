@@ -120,3 +120,45 @@ async fn edit_calendar_event() -> Result<()> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn calendar_event_external_link() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) = random_user_with_template("calendar_links", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.calendar_events().await?.len() != 3 {
+                bail!("not all calendar_events found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let cal_events = user.calendar_events().await?;
+    assert_eq!(cal_events.len(), 3);
+
+    let event = cal_events.first().unwrap();
+
+    // generate the external and internal links
+
+    let internal_link = event.internal_link();
+    let external_link = event.external_link().await?;
+
+    let room_id = &event.room_id().to_string()[1..];
+    let event_id = &event.event_id().to_string()[1..];
+
+    let path = format!("o/{room_id}/calendarEvent/{event_id}");
+
+    assert_eq!(internal_link, format!("acter:{path}"));
+
+    let ext_url = url::Url::parse(&external_link)?;
+    assert_eq!(ext_url.fragment().expect("must have fragment"), &path);
+    Ok(())
+}

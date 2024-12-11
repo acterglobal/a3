@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-        Color, Display,
+        Color, Display, RefDetails, RefPreview,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, TaskStats},
     statics::KEYS,
@@ -371,6 +371,40 @@ impl TaskList {
 
     pub fn space_id_str(&self) -> String {
         self.room.room_id().to_string()
+    }
+
+    pub async fn ref_details(&self) -> Result<RefDetails> {
+        let room = self.room.clone();
+        let target_id = self.content.event_id().to_owned();
+        let room_id = self.room.room_id().to_owned();
+        let title = self.content.name.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let via = room.route().await?;
+                let room_display_name = room.cached_display_name();
+                Ok(RefDetails::TaskList {
+                    target_id,
+                    room_id: Some(room_id),
+                    via,
+                    preview: RefPreview::new(Some(title), room_display_name),
+                    action: Default::default(),
+                })
+            })
+            .await?
+    }
+
+    pub fn internal_link(&self) -> String {
+        let target_id = &self.content.event_id().to_string()[1..];
+        let room_id = &self.room.room_id().to_string()[1..];
+        format!("acter:o/{room_id}/taskList/{target_id}")
+    }
+
+    pub async fn external_link(&self) -> Result<String> {
+        let ref_details = self.ref_details().await?;
+        self.client
+            .generate_external_link_for_ref(ref_details)
+            .await
     }
 }
 

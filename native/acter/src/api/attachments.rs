@@ -1,6 +1,9 @@
 use acter_core::{
-    events::attachments::{
-        AttachmentBuilder, AttachmentContent, FallbackAttachmentContent, LinkAttachmentContent,
+    events::{
+        attachments::{
+            AttachmentBuilder, AttachmentContent, FallbackAttachmentContent, LinkAttachmentContent,
+        },
+        RefDetails,
     },
     models::{self, can_redact, ActerModel, AnyActerModel},
 };
@@ -91,8 +94,16 @@ impl Attachment {
         self.inner.meta.origin_server_ts.get().into()
     }
 
-    pub fn msg_content(&self) -> MsgContent {
-        MsgContent::from(&self.inner.content)
+    pub fn ref_details(&self) -> Option<RefDetails> {
+        if let AttachmentContent::Reference(r) = &self.inner.content {
+            Some(r.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn msg_content(&self) -> Option<MsgContent> {
+        MsgContent::try_from(&self.inner.content).ok()
     }
 
     pub async fn can_redact(&self) -> Result<bool> {
@@ -559,6 +570,21 @@ impl AttachmentsManager {
         let client = self.client.deref().clone();
 
         let content = AttachmentContent::Link(LinkAttachmentContent { link: url, name });
+
+        let mut builder = self.inner.draft_builder();
+        builder.content(content);
+        Ok(AttachmentDraft {
+            client: self.client.clone(),
+            room: self.room.clone(),
+            inner: builder,
+        })
+    }
+
+    pub async fn reference_draft(&self, ref_details: Box<RefDetails>) -> Result<AttachmentDraft> {
+        let room = self.room.clone();
+        let client = self.client.deref().clone();
+
+        let content = AttachmentContent::Reference(*ref_details);
 
         let mut builder = self.inner.draft_builder();
         builder.content(content);
