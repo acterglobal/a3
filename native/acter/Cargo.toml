@@ -79,8 +79,7 @@ tracing-log = { version = "0.2", optional = true }
 console-subscriber = { version = "0.2.0", optional = true }
 
 # not used directly but needed to enable specific features from ruma
-ruma = { workspace = true, features = ["html", "rand", "unstable-msc2448", "unstable-msc2965", "unstable-msc3930", "unstable-msc3245-v1-compat"] }
-ruma-common = { workspace = true, features = ["client", "unstable-unspecified"] }
+ruma = { workspace = true, features = ["html", "rand", "unstable-unspecified", "unstable-msc2448", "unstable-msc2965", "unstable-msc3930", "unstable-msc3245-v1-compat"] }
 
 [dev-dependencies]
 tempfile = "3.9.0"

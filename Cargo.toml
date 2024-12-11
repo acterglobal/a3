@@ -49,6 +49,7 @@ default-features = false
 # version = "0.11.1"
 git = "https://github.com/ruma/ruma"
 rev = "c91499fc464adc865a7c99d0ce0b35982ad96711"
+features = ["unstable-msc2326"]
 
 # - see comment above
 [workspace.dependencies.ruma-common]
@@ -78,3 +79,7 @@ strip = true  # Automatically strip symbols from the binary.
 
 [patch.crates-io]
 const_panic = { git = "https://github.com/jplatte/const_panic", rev = "9024a4cb3eac45c1d2d980f17aaee287b17be498" }
+[patch.'https://github.com/ruma/ruma']
+ruma = { git = "https://github.com/acterglobal/ruma", branch = "ben-msc2326"}
+ruma-events = { git = "https://github.com/acterglobal/ruma", branch = "ben-msc2326"}
+ruma-client-api = { git = "https://github.com/acterglobal/ruma", branch = "ben-msc2326"}

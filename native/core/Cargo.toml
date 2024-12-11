@@ -17,6 +17,7 @@ templates = ["toml", "minijinja", "indexmap", "tokio-retry"]
 client = [] 
 server = []
 unstable-exhaustive-types = []
+ruma_unstable_exhaustive_types = []
 
 [dependencies]
 tokio = { version = "1", features = ["rt", "macros"] }
