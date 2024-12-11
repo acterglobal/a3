@@ -24,7 +24,7 @@ class AsyncCommentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
     _poller = _listener.listen(
       (data) async {
         // reset
-        state = await AsyncValue.guard(() async => await manager.reload());
+        state = AsyncValue.data(await manager.reload());
       },
       onError: (e, s) {
         _log.severe('msg stream errored', e, s);

@@ -15,9 +15,7 @@ class AsyncNotificationSettingNotifier
     final settings = await client.notificationSettings();
     _listener = settings.changesStream(); // stay up to date
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(
-        () async => await client.notificationSettings(),
-      );
+      state = AsyncData(await client.notificationSettings());
     });
     return settings;
   }

@@ -24,7 +24,7 @@ class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
     _listener = client.deviceEventRx();
     _poller = _listener?.listen(
       (data) async {
-        state = await AsyncValue.guard(() async => await _getSessions(manager));
+        state = AsyncData(await _getSessions(manager));
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);

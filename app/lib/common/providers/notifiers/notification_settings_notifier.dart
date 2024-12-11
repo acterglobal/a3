@@ -22,8 +22,8 @@ class AsyncNotificationSettingsNotifier
       (data) async {
         // reset the state of this to trigger the notification
         // cascade
-        state = await AsyncValue.guard(
-          () async => await client.notificationSettings(),
+        state = AsyncValue.data(
+          await client.notificationSettings(),
         );
       },
       onError: (e, s) {

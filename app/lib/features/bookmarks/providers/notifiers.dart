@@ -19,9 +19,7 @@ class BookmarksManagerNotifier extends AsyncNotifier<Bookmarks> {
     _listener = client.subscribeStream('global.acter.bookmarks');
 
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(
-        () async => await _getBookmarkManager(client),
-      );
+      state = AsyncValue.data(await _getBookmarkManager(client));
     });
     return await _getBookmarkManager(client);
   }
