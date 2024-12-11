@@ -1,14 +1,23 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:acter/common/models/types.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
 import 'package:acter/common/widgets/share/widgets/attach_options.dart';
 import 'package:acter/common/widgets/share/widgets/external_share_options.dart';
 import 'package:acter/common/widgets/share/widgets/file_share_options.dart';
+import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
+import 'package:acter/features/attachments/providers/attachment_providers.dart';
+import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/files/actions/download_file.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:share_plus/share_plus.dart';
@@ -42,7 +51,7 @@ Future<void> openShareSpaceObjectDialog({
   );
 }
 
-class ShareSpaceObjectActionUI extends StatelessWidget {
+class ShareSpaceObjectActionUI extends ConsumerWidget {
   final SpaceObjectDetails? spaceObjectDetails;
   final FileDetails? fileDetails;
 
@@ -53,7 +62,7 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -62,7 +71,7 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             if (spaceObjectDetails != null) ...[
-              attachmentOptionsUI(context, spaceObjectDetails!),
+              attachmentOptionsUI(context, ref, spaceObjectDetails!),
               SizedBox(height: 16),
               externalShareOptionsUI(context, spaceObjectDetails!),
               SizedBox(height: 20),
@@ -76,6 +85,7 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
 
   Widget attachmentOptionsUI(
     BuildContext context,
+    WidgetRef ref,
     SpaceObjectDetails spaceObjectDetails,
   ) {
     String spaceId = spaceObjectDetails.spaceId;
@@ -93,6 +103,18 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
               ? NewsReferencesModel(type: newsRefType, id: objectId)
               : null,
         );
+      },
+      onTapPin: () async {
+        Navigator.pop(context);
+      },
+      onTapEvent: () {
+        Navigator.pop(context);
+      },
+      onTapTaskList: () {
+        Navigator.pop(context);
+      },
+      onTapTaskItem: () {
+        Navigator.pop(context);
       },
     );
   }
