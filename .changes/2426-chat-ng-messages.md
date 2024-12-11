@@ -1,0 +1,2 @@
+- [Labs] Chat-NG
+  - now supports `m.emote` and `m.location` event type in messages UI.
