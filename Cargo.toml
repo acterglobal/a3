@@ -51,12 +51,6 @@ git = "https://github.com/ruma/ruma"
 rev = "c91499fc464adc865a7c99d0ce0b35982ad96711"
 features = ["unstable-msc2326"]
 
-# - see comment above
-[workspace.dependencies.ruma-common]
-# version = "0.14.1"
-git = "https://github.com/ruma/ruma"
-rev = "c91499fc464adc865a7c99d0ce0b35982ad96711"
-
 [workspace.dependencies.url]
 version = "2.5.0"
 features = ["serde"]

@@ -54,7 +54,6 @@ dependencies = [
  "pulldown-cmark 0.9.6",
  "reqwest",
  "ruma",
- "ruma-common 0.14.1 (git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711)",
  "sanitize-filename-reader-friendly",
  "scc",
  "serde",
@@ -4448,7 +4447,7 @@ dependencies = [
  "js_int",
  "js_option",
  "ruma-client-api",
- "ruma-common 0.14.1 (git+https://github.com/acterglobal/ruma?branch=ben-msc2326)",
+ "ruma-common",
  "ruma-events",
  "ruma-federation-api",
  "ruma-html",
@@ -4469,7 +4468,7 @@ dependencies = [
  "js_int",
  "js_option",
  "maplit",
- "ruma-common 0.14.1 (git+https://github.com/acterglobal/ruma?branch=ben-msc2326)",
+ "ruma-common",
  "ruma-events",
  "serde",
  "serde_html_form",
@@ -4497,8 +4496,8 @@ dependencies = [
  "percent-encoding",
  "rand",
  "regex",
- "ruma-identifiers-validation 0.10.0 (git+https://github.com/acterglobal/ruma?branch=ben-msc2326)",
- "ruma-macros 0.14.0 (git+https://github.com/acterglobal/ruma?branch=ben-msc2326)",
+ "ruma-identifiers-validation",
+ "ruma-macros",
  "serde",
  "serde_html_form",
  "serde_json",
@@ -4507,32 +4506,6 @@ dependencies = [
  "tracing",
  "url",
  "uuid",
- "web-time",
- "wildmatch",
-]
-
-[[package]]
-name = "ruma-common"
-version = "0.14.1"
-source = "git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711#c91499fc464adc865a7c99d0ce0b35982ad96711"
-dependencies = [
- "as_variant",
- "base64 0.22.1",
- "bytes",
- "form_urlencoded",
- "indexmap 2.7.0",
- "js_int",
- "percent-encoding",
- "regex",
- "ruma-identifiers-validation 0.10.0 (git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711)",
- "ruma-macros 0.14.0 (git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711)",
- "serde",
- "serde_html_form",
- "serde_json",
- "thiserror 2.0.6",
- "time",
- "tracing",
- "url",
  "web-time",
  "wildmatch",
 ]
@@ -4549,10 +4522,10 @@ dependencies = [
  "percent-encoding",
  "pulldown-cmark 0.12.2",
  "regex",
- "ruma-common 0.14.1 (git+https://github.com/acterglobal/ruma?branch=ben-msc2326)",
+ "ruma-common",
  "ruma-html",
- "ruma-identifiers-validation 0.10.0 (git+https://github.com/acterglobal/ruma?branch=ben-msc2326)",
- "ruma-macros 0.14.0 (git+https://github.com/acterglobal/ruma?branch=ben-msc2326)",
+ "ruma-identifiers-validation",
+ "ruma-macros",
  "serde",
  "serde_json",
  "thiserror 2.0.6",
@@ -4570,7 +4543,7 @@ dependencies = [
  "http 1.2.0",
  "js_int",
  "mime",
- "ruma-common 0.14.1 (git+https://github.com/acterglobal/ruma?branch=ben-msc2326)",
+ "ruma-common",
  "ruma-events",
  "serde",
  "serde_json",
@@ -4598,15 +4571,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ruma-identifiers-validation"
-version = "0.10.0"
-source = "git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711#c91499fc464adc865a7c99d0ce0b35982ad96711"
-dependencies = [
- "js_int",
- "thiserror 2.0.6",
-]
-
-[[package]]
 name = "ruma-macros"
 version = "0.14.0"
 source = "git+https://github.com/acterglobal/ruma?branch=ben-msc2326#5f85a7939b17167132925142ded895b397104ca0"
@@ -4615,23 +4579,7 @@ dependencies = [
  "proc-macro-crate",
  "proc-macro2",
  "quote",
- "ruma-identifiers-validation 0.10.0 (git+https://github.com/acterglobal/ruma?branch=ben-msc2326)",
- "serde",
- "syn 2.0.90",
- "toml 0.8.19",
-]
-
-[[package]]
-name = "ruma-macros"
-version = "0.14.0"
-source = "git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711#c91499fc464adc865a7c99d0ce0b35982ad96711"
-dependencies = [
- "cfg-if",
- "once_cell",
- "proc-macro-crate",
- "proc-macro2",
- "quote",
- "ruma-identifiers-validation 0.10.0 (git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711)",
+ "ruma-identifiers-validation",
  "serde",
  "syn 2.0.90",
  "toml 0.8.19",
@@ -4643,7 +4591,7 @@ version = "0.10.0"
 source = "git+https://github.com/acterglobal/ruma?branch=ben-msc2326#5f85a7939b17167132925142ded895b397104ca0"
 dependencies = [
  "js_int",
- "ruma-common 0.14.1 (git+https://github.com/acterglobal/ruma?branch=ben-msc2326)",
+ "ruma-common",
  "ruma-events",
  "serde",
  "serde_json",
