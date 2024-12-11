@@ -40,12 +40,15 @@ class TextMessageEvent extends StatelessWidget {
       final emojiTextStyle = isUser
           ? chatTheme.sentEmojiMessageTextStyle
           : chatTheme.receivedEmojiMessageTextStyle;
-      return Text(
-        content.body(),
-        style: emojiTextStyle.copyWith(
-          fontFamily: emojiFont,
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Text(
+          content.body(),
+          style: emojiTextStyle.copyWith(
+            fontFamily: emojiFont,
+          ),
+          maxLines: null,
         ),
-        maxLines: null,
       );
     }
 

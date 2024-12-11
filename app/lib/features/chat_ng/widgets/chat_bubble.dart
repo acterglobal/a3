@@ -59,6 +59,7 @@ class ChatBubble extends StatelessWidget {
     bool nextMessageGroup = false,
   }) {
     final theme = Theme.of(context);
+
     return ChatBubble._inner(
       key: key,
       messageWidth: messageWidth,
@@ -75,7 +76,8 @@ class ChatBubble extends StatelessWidget {
       ),
       bubbleAlignment: CrossAxisAlignment.end,
       child: DefaultTextStyle.merge(
-        style: TextStyle(color: theme.colorScheme.onPrimary),
+        style: theme.textTheme.bodySmall
+            ?.copyWith(color: theme.colorScheme.onPrimary),
         child: child,
       ),
     );
