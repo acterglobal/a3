@@ -408,6 +408,7 @@ Future<void> onMessageLinkTap(
 
 bool isOnlyEmojis(String text) {
   final emojisRegExp = RegExp(
+    // ignore: prefer_adjacent_string_concatenation
     r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|' +
         r'[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|' +
         r'[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|' +

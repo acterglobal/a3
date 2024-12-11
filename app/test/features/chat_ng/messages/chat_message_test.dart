@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/toolkit/errors/inline_error_button.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart' as chat;
+import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -103,6 +104,47 @@ void main() {
         );
         await tester.ensureInlineErrorWithRetryWorks();
       });
+    });
+  });
+
+  group('emoji only detection unit tests', () {
+    test('single emoji returns true', () {
+      expect(isOnlyEmojis('👋'), isTrue);
+      expect(isOnlyEmojis('🌟'), isTrue);
+      expect(isOnlyEmojis('😀'), isTrue);
+    });
+
+    test('multiple emojis return true', () {
+      expect(isOnlyEmojis('👋 🌟'), isTrue);
+      expect(isOnlyEmojis('😀 😃 😄'), isTrue);
+      expect(isOnlyEmojis('🎉 ✨ 🎈'), isTrue);
+    });
+
+    test('emojis with whitespace return true', () {
+      expect(isOnlyEmojis('   👋   '), isTrue);
+      expect(isOnlyEmojis('👋\n🌟'), isTrue);
+      expect(isOnlyEmojis(' 😀  😃  😄 '), isTrue);
+    });
+
+    test('mixed text and emojis return false', () {
+      expect(isOnlyEmojis('Hello 👋'), isFalse);
+      expect(isOnlyEmojis('Hi! 😀'), isFalse);
+      expect(isOnlyEmojis('Good morning 🌞'), isFalse);
+      expect(isOnlyEmojis('👋 Hello'), isFalse);
+      expect(isOnlyEmojis('Hey there! 👋 🌟'), isFalse);
+    });
+
+    test('text only returns false', () {
+      expect(isOnlyEmojis('Hello'), isFalse);
+      expect(isOnlyEmojis('   '), isFalse);
+      expect(isOnlyEmojis(''), isFalse);
+      expect(isOnlyEmojis('123'), isFalse);
+      expect(isOnlyEmojis('Hello World!'), isFalse);
+    });
+
+    test('special characters return false', () {
+      expect(isOnlyEmojis('!@#%'), isFalse);
+      expect(isOnlyEmojis('&^*`'), isFalse);
     });
   });
 }
