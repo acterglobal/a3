@@ -23,8 +23,6 @@ class QuickActionButtons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hasSpaces = ref.watch(hasSpacesProvider);
-
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -32,9 +30,7 @@ class QuickActionButtons extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Wrap(
-            children: hasSpaces
-                ? quickActionWhenHasSpaces(context, ref)
-                : quickActionWhenNoSpaces(context, ref),
+            children: quickActions(context, ref),
           ),
           const SizedBox(height: 5),
           Row(
@@ -75,7 +71,7 @@ class QuickActionButtons extends ConsumerWidget {
     );
   }
 
-  List<Widget> quickActionWhenHasSpaces(BuildContext context, WidgetRef ref) {
+  List<Widget> quickActions(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final canAddPin =
         ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
@@ -90,6 +86,26 @@ class QuickActionButtons extends ConsumerWidget {
         ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
             false;
     return [
+      ActionButtonWidget(
+        iconData: Atlas.users,
+        title: lang.createSpace,
+        color: Colors.purpleAccent.withAlpha(70),
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        onPressed: () {
+          ref.read(quickActionVisibilityProvider.notifier).state = false;
+          context.pushNamed(Routes.createSpace.name);
+        },
+      ),
+      ActionButtonWidget(
+        iconData: Atlas.chats,
+        title: lang.createChat,
+        color: Colors.green.withAlpha(70),
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        onPressed: () {
+          ref.read(quickActionVisibilityProvider.notifier).state = false;
+          context.pushNamed(Routes.createChat.name);
+        },
+      ),
       if (canAddPin)
         ActionButtonWidget(
           iconData: Atlas.pin,
@@ -134,32 +150,6 @@ class QuickActionButtons extends ConsumerWidget {
             context.pushNamed(Routes.actionAddUpdate.name);
           },
         ),
-    ];
-  }
-
-  List<Widget> quickActionWhenNoSpaces(BuildContext context, WidgetRef ref) {
-    final lang = L10n.of(context);
-    return [
-      ActionButtonWidget(
-        iconData: Atlas.users,
-        title: lang.createSpace,
-        color: Colors.purpleAccent.withAlpha(70),
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        onPressed: () {
-          ref.read(quickActionVisibilityProvider.notifier).state = false;
-          context.pushNamed(Routes.createSpace.name);
-        },
-      ),
-      ActionButtonWidget(
-        iconData: Atlas.chats,
-        title: lang.createChat,
-        color: Colors.green.withAlpha(70),
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        onPressed: () {
-          ref.read(quickActionVisibilityProvider.notifier).state = false;
-          context.pushNamed(Routes.createChat.name);
-        },
-      ),
     ];
   }
 }
