@@ -1,8 +1,11 @@
 /// Get the relations of the given SpaceId.  Throws
 library;
 
+import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:acter/common/extensions/cached_async_state_provider.dart';
+import 'package:acter/common/extensions/comparable_list.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
@@ -285,13 +288,29 @@ final memberAvatarInfoProvider =
   );
 });
 
+final membersIdsProvider = FutureProvider.family<List<String>, String>(
+  (ref, arg) => ref.watch(_cachingMemberIdsProvider(arg)).map(
+        data: (d) => Future.value(d.value.entries),
+        error: (e) => Future.error(e.error),
+        loading: (l) => Completer<ComparableList<String>>().future,
+      ),
+);
+
+final _cachingMemberIdsProvider = StateNotifierProvider.family<
+    CachedAsyncStateProvider<ComparableList<String>>,
+    AsyncValue<ComparableList<String>>,
+    String>(
+  (ref, arg) => CachedAsyncStateProvider(_membersIdsProviderInner(arg), ref),
+);
+
 /// Ids of the members of this Room. Returns empty list if the room isn’t found
-final membersIdsProvider =
-    FutureProvider.family<List<String>, String>((ref, roomIdOrAlias) async {
+final _membersIdsProviderInner =
+    FutureProvider.family<ComparableList<String>, String>(
+        (ref, roomIdOrAlias) async {
   final room = ref.watch(maybeRoomProvider(roomIdOrAlias));
-  if (room == null) return [];
+  if (room == null) return ComparableList([]);
   final members = await room.activeMembersIds();
-  return asDartStringList(members);
+  return ComparableList(asDartStringList(members));
 });
 
 typedef RoomMembersSearchParam = ({String roomId, String searchValue});
