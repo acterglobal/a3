@@ -20,11 +20,17 @@ enum TabEntry {
   actions;
 }
 
+const defaultTabs = [
+  TabEntry.overview,
+  TabEntry.members,
+];
+
 final tabsProvider = StateNotifierProvider.family<
     CachedAsyncStateProvider<List<TabEntry>>,
     AsyncValue<List<TabEntry>>,
     String>(
-  (ref, arg) => CachedAsyncStateProvider(_innerTabsProvider(arg), ref),
+  (ref, arg) =>
+      CachedAsyncStateProvider(_innerTabsProvider(arg), ref, defaultTabs),
 );
 
 final _innerTabsProvider =
