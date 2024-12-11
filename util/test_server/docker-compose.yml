@@ -19,6 +19,15 @@ services:
       - 8448:8448/tcp
       - 8118:8008/tcp
 
+  web:
+    image: nginx
+    restart: on-failure
+    volumes:
+      - ./.config/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./.local/docker-data/share_links/:/app/static/:ro
+    ports:
+      - 8099:8099/tcp
+
   rageshake:
     image: "ghcr.io/matrix-org/rageshake"
     restart: unless-stopped

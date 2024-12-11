@@ -134,7 +134,7 @@ dependencies:
   scrolls_to_top: ^2.1.1
   scrollable_positioned_list: ^0.3.8
   diffutil_dart: ^4.0.1
-  tray_manager: ^0.2.3
+  tray_manager: ^0.3.0
   window_manager:  #^0.4.0
     # path: ../../window_manager
     git:

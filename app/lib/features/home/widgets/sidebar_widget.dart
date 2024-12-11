@@ -204,7 +204,7 @@ class SidebarWidget extends ConsumerWidget {
             indent: 18,
             endIndent: 18,
           ),
-          _quickActionButton(context, ref),
+          quickActions(context, ref),
           if (isBugReportingEnabled) ..._bugReporter(context),
           const SizedBox(height: 12),
         ],
@@ -212,19 +212,41 @@ class SidebarWidget extends ConsumerWidget {
     );
   }
 
-  Widget _quickActionButton(BuildContext context, WidgetRef ref) {
-    final hasSpaces = ref.watch(hasSpacesProvider);
-    return hasSpaces
-        ? quickActionWhenHasSpaces(context, ref)
-        : quickActionWhenNoSpaces(context, ref);
-  }
-
-  PopupMenuButton quickActionWhenHasSpaces(
+  PopupMenuButton quickActions(
     BuildContext context,
     WidgetRef ref,
   ) {
     final lang = L10n.of(context);
     List<PopupMenuEntry> actions = [];
+
+    actions.add(
+      PopupMenuItem(
+        child: ActionButtonWidget(
+          iconData: Atlas.users,
+          color: Colors.purpleAccent.withAlpha(70),
+          title: lang.createSpace,
+          onPressed: () {
+            if (context.canPop()) Navigator.pop(context);
+            context.pushNamed(Routes.createSpace.name);
+          },
+        ),
+      ),
+    );
+
+    actions.add(
+      PopupMenuItem(
+        child: ActionButtonWidget(
+          iconData: Atlas.chats,
+          title: lang.createChat,
+          color: Colors.green.withAlpha(70),
+          onPressed: () {
+            if (context.canPop()) Navigator.pop(context);
+            context.pushNamed(Routes.createChat.name);
+          },
+        ),
+      ),
+    );
+
     final canAddPin =
         ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
             false;
@@ -303,42 +325,6 @@ class SidebarWidget extends ConsumerWidget {
       iconSize: 28,
       color: Theme.of(context).colorScheme.surface,
       itemBuilder: (BuildContext context) => actions,
-    );
-  }
-
-  PopupMenuButton quickActionWhenNoSpaces(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
-    final lang = L10n.of(context);
-    return PopupMenuButton(
-      icon: const Icon(Atlas.plus_circle),
-      iconSize: 28,
-      color: Theme.of(context).colorScheme.surface,
-      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-        PopupMenuItem(
-          child: ActionButtonWidget(
-            iconData: Atlas.users,
-            color: Colors.purpleAccent.withAlpha(70),
-            title: lang.createSpace,
-            onPressed: () {
-              if (context.canPop()) Navigator.pop(context);
-              context.pushNamed(Routes.createSpace.name);
-            },
-          ),
-        ),
-        PopupMenuItem(
-          child: ActionButtonWidget(
-            iconData: Atlas.chats,
-            title: lang.createChat,
-            color: Colors.green.withAlpha(70),
-            onPressed: () {
-              if (context.canPop()) Navigator.pop(context);
-              context.pushNamed(Routes.createChat.name);
-            },
-          ),
-        ),
-      ],
     );
   }
 

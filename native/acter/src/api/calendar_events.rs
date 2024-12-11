@@ -4,7 +4,7 @@ use acter_core::{
             self as calendar_events, CalendarEventBuilder, EventLocation, EventLocationInfo,
         },
         rsvp::RsvpStatus,
-        UtcDateTime,
+        CalendarEventRefPreview, RefDetails, RefPreview, UtcDateTime,
     },
     models::{self, can_redact, ActerModel, AnyActerModel},
     statics::KEYS,
@@ -320,6 +320,47 @@ impl CalendarEvent {
         let ical_data: String = (&iCalendar::from([self.inner.as_ical_event()])).try_into()?;
         std::fs::write(file_name, ical_data)?;
         Ok(true)
+    }
+
+    pub async fn ref_details(&self) -> Result<RefDetails> {
+        let room = self.room.clone();
+        let target_id = self.inner.event_id().to_owned();
+        let room_id = self.room.room_id().to_owned();
+        let title = self.inner.title.clone();
+        let start_at_utc = self.inner.utc_start.timestamp();
+        let participants = self.participants().await?.len() as u32;
+
+        RUNTIME
+            .spawn(async move {
+                let via = room.route().await?;
+                let room_display_name = room.cached_display_name();
+                Ok(RefDetails::CalendarEvent {
+                    target_id,
+                    room_id: Some(room_id),
+                    via,
+                    preview: CalendarEventRefPreview::new(
+                        Some(title),
+                        room_display_name,
+                        Some(participants),
+                        Some(start_at_utc),
+                    ),
+                    action: Default::default(),
+                })
+            })
+            .await?
+    }
+
+    pub fn internal_link(&self) -> String {
+        let target_id = &self.inner.event_id().to_string()[1..];
+        let room_id = &self.room.room_id().to_string()[1..];
+        format!("acter:o/{room_id}/calendarEvent/{target_id}")
+    }
+
+    pub async fn external_link(&self) -> Result<String> {
+        let ref_details = self.ref_details().await?;
+        self.client
+            .generate_external_link_for_ref(ref_details)
+            .await
     }
 }
 

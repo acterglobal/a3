@@ -69,6 +69,9 @@ modules:
     config:
       sql_url: sqlite:///data/super_invites.db
       generate_registration_token: true
+      share_link_generator:
+        url_prefix: "http://localhost:8099/"
+        target_path: "/data/share_links/"
 
 """ >>  /data/homeserver.yaml
 

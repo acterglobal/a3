@@ -44,7 +44,7 @@ jobs:
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
-          customModules: synapse_super_invites
+          customModules: git+https://github.com/acterglobal/synapse-super-invites/@ben-share-link-generator
           customConfig: |
             email:
               smtp_host: localhost
@@ -60,6 +60,9 @@ jobs:
                 config:
                   sql_url: "sqlite://"
                   generate_registration_token: true
+                  share_link_generator:
+                    url_prefix: "http://localhost:8099/"
+                    target_path: "."
 
       - uses: rui314/setup-mold@v1
         name: "Setup mold linker"

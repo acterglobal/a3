@@ -41,7 +41,7 @@ class BottomNavigationWidget extends ConsumerWidget {
                 bottomNavNar(ref),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
-                  height: showQuickActions ? 180 : 0,
+                  height: showQuickActions ? 250 : 0,
                   child: const QuickActionButtons(),
                 ),
               ],
