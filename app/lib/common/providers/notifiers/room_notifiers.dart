@@ -101,7 +101,8 @@ class RoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String> {
         !displayName.isReloading) {
       // we ignore all cases of recomputing happening until they are done
       newDisplayName = displayName.valueOrNull;
-      updateDisplayName = true;
+      updateDisplayName =
+          newDisplayName != state.displayName; // only if it changed
     }
 
     final avatarData = ref.read(roomAvatarProvider(roomId));
@@ -110,7 +111,7 @@ class RoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String> {
         !avatarData.isRefreshing) {
       // we ignore all cases of recomputing happening until they are done
       newAvatar = avatarData.valueOrNull;
-      updateAvatar = true;
+      updateAvatar = state.avatar != newAvatar;
     }
 
     if (updateAvatar || updateDisplayName) {
