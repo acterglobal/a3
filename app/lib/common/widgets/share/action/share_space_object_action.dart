@@ -1,21 +1,13 @@
 import 'dart:io';
-import 'dart:math';
 
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
 import 'package:acter/common/widgets/share/widgets/attach_options.dart';
 import 'package:acter/common/widgets/share/widgets/external_share_options.dart';
 import 'package:acter/common/widgets/share/widgets/file_share_options.dart';
-import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
-import 'package:acter/features/attachments/providers/attachment_providers.dart';
-import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/files/actions/download_file.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
-import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
