@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
@@ -18,8 +17,8 @@ class VerificationNotifier extends StateNotifier<VerificationState> {
   final Ref ref;
   final Client client;
 
-  late Stream<OptionVerificationEvent>? _listener;
-  late StreamSubscription<OptionVerificationEvent>? _poller;
+  late Stream<VerificationEvent>? _listener;
+  late StreamSubscription<VerificationEvent>? _poller;
 
   VerificationNotifier({
     required this.ref,
@@ -31,13 +30,7 @@ class VerificationNotifier extends StateNotifier<VerificationState> {
   void _init() {
     _listener = client.verificationEventRx(); // keep it resident in memory
     _poller = _listener?.listen(
-      (event) {
-        final data = event.data();
-        data.map(
-          (event) => _handleEvent(event),
-          orElse: () => _log.info('invalid verification event'),
-        );
-      },
+      _handleEvent,
       onError: (e, s) {
         _log.severe('stream errored', e, s);
       },

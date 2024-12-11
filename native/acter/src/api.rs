@@ -129,9 +129,7 @@ pub use tasks::{
 };
 pub use typing::TypingEvent;
 pub use utils::parse_markdown;
-pub use verification::{
-    OptionVerificationEvent, SessionManager, VerificationEmoji, VerificationEvent,
-};
+pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
 pub type DeviceId = matrix_sdk_base::ruma::OwnedDeviceId;
 pub type EventId = matrix_sdk_base::ruma::OwnedEventId;

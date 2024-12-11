@@ -24,6 +24,7 @@ use matrix_sdk_base::ruma::{
 };
 use std::{
     collections::HashMap,
+    marker::Unpin,
     ops::Deref,
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
@@ -304,21 +305,6 @@ impl VerificationEvent {
                 Ok(true)
             })
             .await?
-    }
-}
-
-#[derive(Clone)]
-pub struct OptionVerificationEvent {
-    data: Option<VerificationEvent>,
-}
-
-impl OptionVerificationEvent {
-    pub(crate) fn new(data: Option<VerificationEvent>) -> Self {
-        OptionVerificationEvent { data }
-    }
-
-    pub fn data(&self) -> Option<VerificationEvent> {
-        self.data.clone()
     }
 }
 
@@ -1127,9 +1113,11 @@ impl SessionManager {
 }
 
 impl Client {
-    pub fn verification_event_rx(&self) -> impl Stream<Item = OptionVerificationEvent> {
-        BroadcastStream::new(self.verification_controller.event_rx.resubscribe())
-            .map(|o| OptionVerificationEvent::new(o.ok()))
+    // this return value should be able to unpin, because wait_for_verification_event calls pin_mut internally
+    // this return value should be wrapped in Box::pin, to make unpin possible
+    pub fn verification_event_rx(&self) -> impl Stream<Item = VerificationEvent> + Unpin {
+        let mut stream = BroadcastStream::new(self.verification_controller.event_rx.resubscribe());
+        Box::pin(stream.filter_map(|o| async move { o.ok() }))
     }
 
     pub fn session_manager(&self) -> SessionManager {

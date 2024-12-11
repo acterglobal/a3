@@ -15954,7 +15954,7 @@ class Api {
     return tmp9;
   }
 
-  OptionVerificationEvent? __clientVerificationEventRxStreamPoll(
+  VerificationEvent? __clientVerificationEventRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -15984,9 +15984,9 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_OptionVerificationEvent");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_VerificationEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = OptionVerificationEvent._(this, tmp11_1);
+    final tmp9 = VerificationEvent._(this, tmp11_1);
     return tmp9;
   }
 
@@ -28360,17 +28360,6 @@ class Api {
   late final _verificationEventMismatchSasVerification =
       _verificationEventMismatchSasVerificationPtr.asFunction<
           int Function(
-            int,
-          )>();
-  late final _optionVerificationEventDataPtr = _lookup<
-      ffi.NativeFunction<
-          _OptionVerificationEventDataReturn Function(
-            ffi.IntPtr,
-          )>>("__OptionVerificationEvent_data");
-
-  late final _optionVerificationEventData =
-      _optionVerificationEventDataPtr.asFunction<
-          _OptionVerificationEventDataReturn Function(
             int,
           )>();
   late final _verificationEmojiSymbolPtr = _lookup<
@@ -55254,7 +55243,7 @@ class Client {
   }
 
   /// Get the verification event receiver
-  Stream<OptionVerificationEvent> verificationEventRx() {
+  Stream<VerificationEvent> verificationEventRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientVerificationEventRx(
@@ -58082,37 +58071,6 @@ class VerificationEvent {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(
         tmp3_1, _api.__verificationEventMismatchSasVerificationFuturePoll);
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
-class OptionVerificationEvent {
-  final Api _api;
-  final _Box _box;
-
-  OptionVerificationEvent._(this._api, this._box);
-
-  /// get data object
-  VerificationEvent? data() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._optionVerificationEventData(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_VerificationEvent");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = VerificationEvent._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -61625,13 +61583,6 @@ class _VerificationEventGetContentReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-}
-
-class _OptionVerificationEventDataReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
 }
 
 class _VerificationEmojiDescriptionReturn extends ffi.Struct {

@@ -1,4 +1,4 @@
-use acter::api::{OptionVerificationEvent, VerificationEvent};
+use acter::api::VerificationEvent;
 use anyhow::Result;
 use futures::{
     pin_mut,
@@ -10,16 +10,14 @@ use tracing::info;
 use crate::utils::random_user;
 
 fn wait_for_verification_event(
-    rx: impl Stream<Item = OptionVerificationEvent>,
+    rx: impl Stream<Item = VerificationEvent>,
     name: &str,
 ) -> VerificationEvent {
     pin_mut!(rx);
     loop {
         if let Some(event) = rx.next().now_or_never().flatten() {
-            if let Some(data) = event.data() {
-                if data.event_type() == name {
-                    return data;
-                }
+            if event.event_type() == name {
+                return event;
             }
         }
     }

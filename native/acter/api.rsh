@@ -2803,7 +2803,7 @@ object Client {
     fn logout() -> Future<Result<bool>>;
 
     /// Get the verification event receiver
-    fn verification_event_rx() -> Stream<OptionVerificationEvent>;
+    fn verification_event_rx() -> Stream<VerificationEvent>;
 
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
@@ -3134,11 +3134,6 @@ object VerificationEvent {
 
     /// Alice says to Bob that SAS verification doesn’t match and vice versa
     fn mismatch_sas_verification() -> Future<Result<bool>>;
-}
-
-object OptionVerificationEvent {
-    /// get data object
-    fn data() -> Option<VerificationEvent>;
 }
 
 object VerificationEmoji {
