@@ -77,7 +77,7 @@ class _CreateSuperInviteTokenPageConsumerState
     final spaces = List<String>.empty(growable: true);
     final chats = List<String>.empty(growable: true);
     for (final roomId in _roomIds) {
-      final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+      final room = ref.watch(maybeRoomProvider(roomId));
       if (room?.isSpace() == true) {
         spaces.add(roomId);
       } else {

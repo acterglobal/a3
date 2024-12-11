@@ -19,7 +19,7 @@ Future<void> unlinkChildRoom(
   if (!context.mounted) return;
   await space.removeChildRoom(roomId, reason);
   //Fetch selected room data and add given parentSpaceId as parent
-  final room = await ref.read(maybeRoomProvider(roomId).future);
+  final room = ref.read(maybeRoomProvider(roomId));
   if (room != null) {
     await room.removeParentRoom(parentId, reason);
   }

@@ -65,7 +65,7 @@ class _VisibilityAccessibilityPageState
           children: [
             _buildVisibilityUI(hasPermission: false),
             const SizedBox(height: 20),
-            if (ref.watch(roomVisibilityProvider(widget.roomId)).value ==
+            if (ref.watch(roomVisibilityProvider(widget.roomId)) ==
                 RoomVisibility.SpaceVisible)
               _buildSpaceWithAccess(hasPermission: false),
           ],
@@ -76,7 +76,7 @@ class _VisibilityAccessibilityPageState
           children: [
             _buildVisibilityUI(),
             const SizedBox(height: 20),
-            if (ref.watch(roomVisibilityProvider(widget.roomId)).value ==
+            if (ref.watch(roomVisibilityProvider(widget.roomId)) ==
                 RoomVisibility.SpaceVisible)
               _buildSpaceWithAccess(),
           ],
@@ -87,39 +87,26 @@ class _VisibilityAccessibilityPageState
 
   Widget _buildVisibilityUI({bool hasPermission = true}) {
     final spaceId = widget.roomId;
-    final visibilityLoader = ref.watch(roomVisibilityProvider(spaceId));
+    final visibility = ref.watch(roomVisibilityProvider(spaceId));
     final allowedSpaces = ref.watch(joinRulesAllowedRoomsProvider(spaceId));
-    return visibilityLoader.when(
-      data: (visibility) => RoomVisibilityType(
-        selectedVisibilityEnum: visibility,
-        canChange: hasPermission,
-        onVisibilityChange: (value) {
-          if (!hasPermission) {
-            EasyLoading.showToast(L10n.of(context).visibilityNoPermission);
-            return;
-          }
-          if (value == RoomVisibility.SpaceVisible &&
-              allowedSpaces.valueOrNull?.isEmpty == true) {
-            selectSpace(spaceId);
-          } else {
-            updateSpaceVisibility(
-              value ?? RoomVisibility.Private,
-              spaceIds: (allowedSpaces.valueOrNull ?? []),
-            );
-          }
-        },
-      ),
-      error: (e, s) {
-        _log.severe('Failed to load room visibility', e, s);
-        return const RoomVisibilityType(
-          selectedVisibilityEnum: RoomVisibility.Private,
-        );
+    return RoomVisibilityType(
+      selectedVisibilityEnum: visibility,
+      canChange: hasPermission,
+      onVisibilityChange: (value) {
+        if (!hasPermission) {
+          EasyLoading.showToast(L10n.of(context).visibilityNoPermission);
+          return;
+        }
+        if (value == RoomVisibility.SpaceVisible &&
+            allowedSpaces.valueOrNull?.isEmpty == true) {
+          selectSpace(spaceId);
+        } else {
+          updateSpaceVisibility(
+            value ?? RoomVisibility.Private,
+            spaceIds: (allowedSpaces.valueOrNull ?? []),
+          );
+        }
       },
-      loading: () => const Skeletonizer(
-        child: RoomVisibilityType(
-          selectedVisibilityEnum: RoomVisibility.Private,
-        ),
-      ),
     );
   }
 
@@ -281,7 +268,7 @@ class _VisibilityAccessibilityPageState
       );
       final sdk = await ref.read(sdkProvider.future);
       final update = sdk.api.newJoinRuleBuilder();
-      final room = await ref.read(maybeRoomProvider(widget.roomId).future);
+      final room = ref.read(maybeRoomProvider(widget.roomId));
       if (room == null) {
         // should never actually happen in practice.
         throw 'Room not found';

@@ -9,7 +9,7 @@ final _log = Logger('a3::space::suggested_provider');
 // Whether or not to prompt the user about the suggested rooms.
 final shouldShowSuggestedProvider =
     FutureProvider.family<bool, String>((ref, spaceId) async {
-  final room = await ref.watch(maybeRoomProvider(spaceId).future);
+  final room = ref.watch(maybeRoomProvider(spaceId));
   if (room == null) {
     return false;
   }

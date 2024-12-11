@@ -179,7 +179,7 @@ class _InviteSpaceMembersConsumerState
 
     EasyLoading.show(status: lang.invitingSpaceMembersLoading);
     try {
-      final room = ref.read(maybeRoomProvider(widget.roomId)).valueOrNull;
+      final room = ref.read(maybeRoomProvider(widget.roomId));
       if (room == null) {
         _log.severe('Room failed to be found');
         if (!mounted) {

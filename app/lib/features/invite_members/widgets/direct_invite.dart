@@ -20,7 +20,7 @@ class DirectInvite extends ConsumerWidget {
     final invited =
         ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
     final joined = ref.watch(membersIdsProvider(roomId)).valueOrNull ?? [];
-    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    final room = ref.watch(maybeRoomProvider(roomId));
 
     return Card(
       child: ListTile(

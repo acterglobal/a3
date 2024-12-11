@@ -38,7 +38,7 @@ Future<void> uploadAvatar(
   String roomId,
 ) async {
   final lang = L10n.of(context);
-  final room = await ref.read(maybeRoomProvider(roomId).future);
+  final room = ref.read(maybeRoomProvider(roomId));
   if (room == null || !context.mounted) return;
   FilePickerResult? result = await pickAvatar(context: context);
   if (result == null || result.files.isEmpty) return;
