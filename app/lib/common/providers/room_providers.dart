@@ -4,6 +4,7 @@ library;
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:acter/common/extensions/async_value.dart';
 import 'package:acter/common/extensions/cached_async_state_provider.dart';
 import 'package:acter/common/extensions/comparable_list.dart';
 import 'package:acter/common/extensions/options.dart';
@@ -289,11 +290,9 @@ final memberAvatarInfoProvider =
 });
 
 final membersIdsProvider = FutureProvider.family<List<String>, String>(
-  (ref, arg) => ref.watch(_cachingMemberIdsProvider(arg)).map(
-        data: (d) => Future.value(d.value.entries),
-        error: (e) => Future.error(e.error),
-        loading: (l) => Completer<ComparableList<String>>().future,
-      ),
+  (ref, arg) => ref
+      .watch(_cachingMemberIdsProvider(arg))
+      .asFuture<List<String>, ComparableList<String>>((d) => d.entries),
 );
 
 final _cachingMemberIdsProvider = StateNotifierProvider.family<
