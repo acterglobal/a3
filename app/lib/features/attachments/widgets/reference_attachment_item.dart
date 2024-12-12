@@ -35,14 +35,9 @@ class ReferenceAttachmentItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final lang = L10n.of(context);
-    final containerColor = Theme.of(context).colorScheme.surface;
-    final eventId = attachment.attachmentIdStr();
-    final roomId = attachment.roomIdStr();
-
     return Container(
       decoration: BoxDecoration(
-        color: containerColor,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Theme.of(context).unselectedWidgetColor),
       ),
@@ -51,38 +46,7 @@ class ReferenceAttachmentItem extends ConsumerWidget {
         leading: refAttachmentIcons(ref),
         title: refAttachmentTitle(ref),
         subtitle: refAttachmentSubTitle(),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (canEdit)
-              PopupMenuButton<String>(
-                key: const Key('attachment-item-menu-options'),
-                icon: const Icon(Icons.more_vert),
-                itemBuilder: (context) => [
-                  PopupMenuItem<String>(
-                    key: const Key('attachment-delete'),
-                    onTap: () {
-                      openRedactContentDialog(
-                        context,
-                        eventId: eventId,
-                        roomId: roomId,
-                        title: lang.deleteAttachment,
-                        description:
-                            lang.areYouSureYouWantToRemoveAttachmentFromPin,
-                        isSpace: true,
-                      );
-                    },
-                    child: Text(
-                      lang.delete,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-          ],
-        ),
+        trailing: actionMenu(context),
       ),
     );
   }
@@ -205,5 +169,43 @@ class ReferenceAttachmentItem extends ConsumerWidget {
       default:
         return;
     }
+  }
+
+  Widget actionMenu(BuildContext context) {
+    final lang = L10n.of(context);
+    final eventId = attachment.attachmentIdStr();
+    final roomId = attachment.roomIdStr();
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (canEdit)
+          PopupMenuButton<String>(
+            key: const Key('attachment-item-menu-options'),
+            icon: const Icon(Icons.more_vert),
+            itemBuilder: (context) => [
+              PopupMenuItem<String>(
+                key: const Key('attachment-delete'),
+                onTap: () {
+                  openRedactContentDialog(
+                    context,
+                    eventId: eventId,
+                    roomId: roomId,
+                    title: lang.deleteAttachment,
+                    description:
+                        lang.areYouSureYouWantToRemoveAttachmentFromPin,
+                    isSpace: true,
+                  );
+                },
+                child: Text(
+                  lang.delete,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+              ),
+            ],
+          ),
+      ],
+    );
   }
 }
