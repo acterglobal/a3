@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use strum::Display;
 
-use super::Position;
+use super::{Position, UtcDateTime};
 
 #[derive(Eq, PartialEq, Clone, Display, Debug, Deserialize, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
@@ -170,7 +170,7 @@ pub struct CalendarEventRefPreview {
     pub title: Option<String>,
     pub room_display_name: Option<String>,
     pub participants: Option<u32>,
-    pub start_at_utc: Option<i64>,
+    pub start_at_utc: Option<UtcDateTime>,
 }
 
 impl CalendarEventRefPreview {
@@ -178,7 +178,7 @@ impl CalendarEventRefPreview {
         title: Option<String>,
         room_display_name: Option<RoomDisplayName>,
         participants: Option<u32>,
-        start_at_utc: Option<i64>,
+        start_at_utc: Option<UtcDateTime>,
     ) -> Self {
         CalendarEventRefPreview {
             title,
@@ -329,13 +329,41 @@ impl RefDetails {
     pub fn title(&self) -> Option<String> {
         match self {
             RefDetails::Link { title, .. } => Some(title.clone()),
-            _ => None,
+            RefDetails::CalendarEvent { preview, .. } => preview.title.clone(),
+            RefDetails::Pin { preview, .. }
+            | RefDetails::Task { preview, .. }
+            | RefDetails::TaskList { preview, .. } => preview.title.clone(),
+            // _ => None,
         }
     }
 
     pub fn uri(&self) -> Option<String> {
         match self {
             RefDetails::Link { uri, .. } => Some(uri.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn room_display_name(&self) -> Option<String> {
+        match self {
+            RefDetails::CalendarEvent { preview, .. } => preview.room_display_name.clone(),
+            RefDetails::Pin { preview, .. }
+            | RefDetails::Task { preview, .. }
+            | RefDetails::TaskList { preview, .. } => preview.room_display_name.clone(),
+            _ => None,
+        }
+    }
+
+    pub fn participants(&self) -> Option<u32> {
+        match self {
+            RefDetails::CalendarEvent { preview, .. } => preview.participants.clone(),
+            _ => None,
+        }
+    }
+
+    pub fn utc_start(&self) -> Option<UtcDateTime> {
+        match self {
+            RefDetails::CalendarEvent { preview, .. } => preview.start_at_utc.clone(),
             _ => None,
         }
     }

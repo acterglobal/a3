@@ -17343,6 +17343,37 @@ class Api {
       _RefDetailsTitleReturn Function(
         int,
       )>();
+  late final _refDetailsRoomDisplayNamePtr = _lookup<
+      ffi.NativeFunction<
+          _RefDetailsRoomDisplayNameReturn Function(
+            ffi.IntPtr,
+          )>>("__RefDetails_room_display_name");
+
+  late final _refDetailsRoomDisplayName =
+      _refDetailsRoomDisplayNamePtr.asFunction<
+          _RefDetailsRoomDisplayNameReturn Function(
+            int,
+          )>();
+  late final _refDetailsParticipantsPtr = _lookup<
+      ffi.NativeFunction<
+          _RefDetailsParticipantsReturn Function(
+            ffi.IntPtr,
+          )>>("__RefDetails_participants");
+
+  late final _refDetailsParticipants = _refDetailsParticipantsPtr.asFunction<
+      _RefDetailsParticipantsReturn Function(
+        int,
+      )>();
+  late final _refDetailsUtcStartPtr = _lookup<
+      ffi.NativeFunction<
+          _RefDetailsUtcStartReturn Function(
+            ffi.IntPtr,
+          )>>("__RefDetails_utc_start");
+
+  late final _refDetailsUtcStart = _refDetailsUtcStartPtr.asFunction<
+      _RefDetailsUtcStartReturn Function(
+        int,
+      )>();
   late final _refDetailsUriPtr = _lookup<
       ffi.NativeFunction<
           _RefDetailsUriReturn Function(
@@ -35602,7 +35633,7 @@ class RefDetails {
     return tmp2;
   }
 
-  /// if ref is `link`, its display title
+  /// the display title of the reference
   String? title() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -35633,6 +35664,75 @@ class RefDetails {
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// the room display name from the preview data
+  String? roomDisplayName() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._refDetailsRoomDisplayName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the participants count if this is a calendar event
+  int? participants() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._refDetailsParticipants(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// When the event starts according to the calender preview data
+  UtcDateTime? utcStart() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._refDetailsUtcStart(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = UtcDateTime._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -60009,6 +60109,31 @@ class _RefDetailsTitleReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+}
+
+class _RefDetailsRoomDisplayNameReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RefDetailsParticipantsReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _RefDetailsUtcStartReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
 }
 
 class _RefDetailsUriReturn extends ffi.Struct {
