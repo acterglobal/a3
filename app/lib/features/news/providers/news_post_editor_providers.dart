@@ -3,13 +3,10 @@ import 'package:acter/common/widgets/event/event_selector_drawer.dart';
 import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/common/widgets/task/taskList_selector_drawer.dart';
-import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/news/model/news_post_color_data.dart';
 import 'package:acter/features/news/model/news_post_state.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
-import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -52,47 +49,35 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
 
   Future<void> selectEventToShare(BuildContext context) async {
     final eventId = await selectEventDrawer(context: context);
-    if (eventId != null) {
-      final event = calendarEventProvider(eventId);
-      final newsSpaceReference = NewsReferencesModel(
-        type: NewsReferencesType.calendarEvent,
-        id: eventId,
-        title: event.name,
-      );
-      NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-      selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
-      state = state.copyWith(currentNewsSlide: selectedNewsSlide);
-    }
+    final newsSpaceReference = NewsReferencesModel(
+      type: NewsReferencesType.calendarEvent,
+      id: eventId,
+    );
+    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
+    selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
+    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
 
   Future<void> selectPinToShare(BuildContext context) async {
     final pinId = await selectPinDrawer(context: context);
-    if (pinId != null) {
-      final pin = pinProvider(pinId);
-      final newsSpaceReference = NewsReferencesModel(
-        type: NewsReferencesType.pin,
-        id: pinId,
-        title: pin.name,
-      );
-      NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-      selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
-      state = state.copyWith(currentNewsSlide: selectedNewsSlide);
-    }
+    final newsSpaceReference = NewsReferencesModel(
+      type: NewsReferencesType.pin,
+      id: pinId,
+    );
+    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
+    selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
+    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
 
   Future<void> selectTaskListToShare(BuildContext context) async {
     final taskListId = await selectTaskListDrawer(context: context);
-    if (taskListId != null) {
-      final taskList = taskListProvider(taskListId);
-      final newsSpaceReference = NewsReferencesModel(
-        type: NewsReferencesType.taskList,
-        id: taskListId,
-        title: taskList.name,
-      );
-      NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-      selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
-      state = state.copyWith(currentNewsSlide: selectedNewsSlide);
-    }
+    final newsSpaceReference = NewsReferencesModel(
+      type: NewsReferencesType.taskList,
+      id: taskListId,
+    );
+    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
+    selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
+    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
 
   void changeTextSlideValue(String body, String? html) {
