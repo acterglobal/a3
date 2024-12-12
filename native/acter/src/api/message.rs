@@ -1,7 +1,8 @@
+use anyhow::bail;
 use chrono::{DateTime, Utc};
 use derive_builder::Builder;
 use indexmap::IndexMap;
-use matrix_sdk::room::Room;
+use matrix_sdk::{room::Room, send_queue::SendHandle};
 use matrix_sdk_base::ruma::{
     events::{receipt::Receipt, room::message::MessageType},
     OwnedEventId, OwnedTransactionId, OwnedUserId,
@@ -15,17 +16,22 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::info;
 
-use super::common::{MsgContent, ReactionRecord};
+use super::{
+    common::{MsgContent, ReactionRecord},
+    RUNTIME,
+};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EventSendState {
     state: String,
     error: Option<String>,
     event_id: Option<OwnedEventId>,
+    #[serde(default, skip)]
+    send_handle: Option<SendHandle>,
 }
 
 impl EventSendState {
-    fn new(inner: &SdkEventSendState) -> Self {
+    fn new(inner: &SdkEventSendState, send_handle: Option<SendHandle>) -> Self {
         let (state, error, event_id) = match inner {
             SdkEventSendState::NotSentYet => ("NotSentYet".to_string(), None, None),
             SdkEventSendState::SendingFailed {
@@ -45,6 +51,7 @@ impl EventSendState {
             state,
             error,
             event_id,
+            send_handle,
         }
     }
 
@@ -58,6 +65,16 @@ impl EventSendState {
 
     pub fn event_id(&self) -> Option<OwnedEventId> {
         self.event_id.clone()
+    }
+
+    pub async fn abort(&self) -> anyhow::Result<bool> {
+        let Some(handle) = self.send_handle.clone() else {
+            bail!("No send handle found");
+        };
+
+        RUNTIME
+            .spawn(async move { Ok(handle.abort().await?) })
+            .await?
     }
 }
 
@@ -97,7 +114,11 @@ impl RoomEventItem {
         me.event_id(event.event_id().map(ToOwned::to_owned))
             .txn_id(event.transaction_id().map(ToOwned::to_owned))
             .sender(event.sender().to_owned())
-            .send_state(event.send_state().map(EventSendState::new))
+            .send_state(
+                event
+                    .send_state()
+                    .map(|s| EventSendState::new(s, event.local_echo_send_handle())),
+            )
             .origin_server_ts(event.timestamp().get().into())
             .read_receipts(
                 event
