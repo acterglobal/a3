@@ -1,4 +1,5 @@
 import 'package:acter/common/actions/redact_content.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
@@ -9,8 +10,10 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Attachment, RefDetails;
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 // Attachment item UI for References
@@ -44,6 +47,7 @@ class ReferenceAttachmentItem extends ConsumerWidget {
         border: Border.all(color: Theme.of(context).unselectedWidgetColor),
       ),
       child: ListTile(
+        onTap: () => onTapRefAttachment(context, ref),
         leading: refAttachmentIcons(ref),
         title: refAttachmentTitle(ref),
         subtitle: refAttachmentSubTitle(),
@@ -145,6 +149,60 @@ class ReferenceAttachmentItem extends ConsumerWidget {
         );
       default:
         return defaultIcon;
+    }
+  }
+
+  void onTapRefAttachment(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    final lang = L10n.of(context);
+    final refObjectType = refDetails.typeStr();
+    final refObjectId = refDetails.targetIdStr();
+
+    if (refObjectId == null) return;
+    switch (refObjectType) {
+      case 'pin':
+        final pin = ref.read(pinProvider(refObjectId)).valueOrNull;
+        if (pin != null) {
+          context.pushNamed(
+            Routes.pin.name,
+            pathParameters: {'pinId': refObjectId},
+          );
+        } else {
+          EasyLoading.showError(
+            lang.noAccess,
+            duration: const Duration(seconds: 3),
+          );
+        }
+      case 'calendar-event':
+        final event = ref.watch(calendarEventProvider(refObjectId)).valueOrNull;
+        if (event != null) {
+          context.pushNamed(
+            Routes.calendarEvent.name,
+            pathParameters: {'calendarId': refObjectId},
+          );
+        } else {
+          EasyLoading.showError(
+            lang.noAccess,
+            duration: const Duration(seconds: 3),
+          );
+        }
+      case 'task-list':
+        final taskList = ref.watch(taskListProvider(refObjectId)).valueOrNull;
+        if (taskList != null) {
+          context.pushNamed(
+            Routes.taskListDetails.name,
+            pathParameters: {'taskListId': refObjectId},
+          );
+        } else {
+          EasyLoading.showError(
+            lang.noAccess,
+            duration: const Duration(seconds: 3),
+          );
+        }
+      default:
+        return;
     }
   }
 }

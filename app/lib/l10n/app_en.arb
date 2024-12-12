@@ -2305,5 +2305,6 @@
   "qr": "QR",
   "newBoost": "New\nBoost",
   "addComment": "Add Comment",
+  "noAccess": "No access",
   "@addComment": {}
 }
