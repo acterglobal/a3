@@ -1,5 +1,6 @@
 import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
+import 'package:acter/features/chat_ng/models/message_metadata.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
@@ -16,19 +17,20 @@ class ChatEventItem extends StatelessWidget {
   final String messageId;
   final RoomEventItem item;
   final bool isUser;
-  final bool nextMessageGroup;
+  final bool isNextMessageInGroup;
   const ChatEventItem({
     super.key,
     required this.roomId,
     required this.messageId,
     required this.item,
     required this.isUser,
-    required this.nextMessageGroup,
+    required this.isNextMessageInGroup,
   });
 
   @override
   Widget build(BuildContext context) {
     final eventType = item.eventType();
+
     return switch (eventType) {
       // handle message inner types separately
       'm.room.message' => buildMsgEventItem(
@@ -36,28 +38,28 @@ class ChatEventItem extends StatelessWidget {
           messageId,
           item,
           isUser,
-          nextMessageGroup,
+          isNextMessageInGroup,
         ),
       'm.room.redaction' => isUser
           ? ChatBubble.user(
               context: context,
-              nextMessageGroup: nextMessageGroup,
+              isNextMessageInGroup: isNextMessageInGroup,
               child: RedactedMessageWidget(),
             )
           : ChatBubble(
               context: context,
-              nextMessageGroup: nextMessageGroup,
+              isNextMessageInGroup: isNextMessageInGroup,
               child: RedactedMessageWidget(),
             ),
       'm.room.encrypted' => isUser
           ? ChatBubble.user(
               context: context,
-              nextMessageGroup: nextMessageGroup,
+              isNextMessageInGroup: isNextMessageInGroup,
               child: EncryptedMessageWidget(),
             )
           : ChatBubble(
               context: context,
-              nextMessageGroup: nextMessageGroup,
+              isNextMessageInGroup: isNextMessageInGroup,
               child: EncryptedMessageWidget(),
             ),
       'm.room.member' => MemberUpdateEvent(
@@ -94,20 +96,29 @@ class ChatEventItem extends StatelessWidget {
     String messageId,
     RoomEventItem item,
     bool isUser,
-    bool showAvatar,
+    bool nextMessageGroup,
   ) {
     final msgType = item.msgType();
     final content = item.msgContent();
+    final metadata = MessageMetadata(
+      isUser: isUser,
+      isNextMessageInGroup: nextMessageGroup,
+      wasEdited: item.wasEdited(),
+      msgType: item.msgType(),
+    );
 
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
 
     return switch (msgType) {
-      'm.emote' || 'm.text' => TextMessageEvent(
+      'm.emote' ||
+      'm.notice' ||
+      'm.server_notice' ||
+      'm.text' =>
+        TextMessageEvent(
           roomId: roomId,
           content: content,
-          isUser: isUser,
-          nextMessageGroup: showAvatar,
+          metadata: metadata,
         ),
       'm.image' => ImageMessageEvent(
           messageId: messageId,
