@@ -248,7 +248,12 @@ final membershipStatusStr =
   return member.membershipStatusStr();
 });
 
-final memberDisplayNameProvider =
+final memberDisplayNameProvider = StateNotifierProvider.family<
+    CachedAsyncStateProvider<String?>, AsyncValue<String?>, MemberInfo>(
+  (ref, arg) => CachedAsyncStateProvider(_memberDisplayNameProvider(arg), ref),
+);
+
+final _memberDisplayNameProvider =
     FutureProvider.autoDispose.family<String?, MemberInfo>((ref, query) async {
   try {
     final profile = ref.watch(_memberProfileProvider(query)).valueOrNull;
@@ -258,8 +263,15 @@ final memberDisplayNameProvider =
   }
 });
 
+final _memberAvatarProvider = StateNotifierProvider.family<
+    CachedAsyncStateProvider<MemoryImage?>,
+    AsyncValue<MemoryImage?>,
+    MemberInfo>(
+  (ref, arg) => CachedAsyncStateProvider(_memberAvatarProviderInner(arg), ref),
+);
+
 /// Caching the MemoryImage of each room
-final _memberAvatarProvider = FutureProvider.autoDispose
+final _memberAvatarProviderInner = FutureProvider.autoDispose
     .family<MemoryImage?, MemberInfo>((ref, query) async {
   final sdk = await ref.watch(sdkProvider.future);
 
