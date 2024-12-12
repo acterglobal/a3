@@ -1,13 +1,18 @@
 import 'dart:io';
 
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/share/action/attach_ref_details.dart';
 import 'package:acter/common/widgets/share/widgets/attach_options.dart';
 import 'package:acter/common/widgets/share/widgets/external_share_options.dart';
 import 'package:acter/common/widgets/share/widgets/file_share_options.dart';
 import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
 import 'package:acter/features/deep_linking/types.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/files/actions/download_file.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -97,16 +102,49 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
         );
       },
       onTapPin: () async {
-        Navigator.pop(context);
+        final refDetails = await getRefDetails(
+          ref: ref,
+          objectDetails: spaceObjectDetails,
+        );
+        if (refDetails != null && context.mounted) {
+          await attachPinRefDetail(
+            context: context,
+            ref: ref,
+            refDetails: refDetails,
+          );
+          if (!context.mounted) return;
+          Navigator.pop(context);
+        }
       },
-      onTapEvent: () {
-        Navigator.pop(context);
+      onTapEvent: () async {
+        final refDetails = await getRefDetails(
+          ref: ref,
+          objectDetails: spaceObjectDetails,
+        );
+        if (refDetails != null && context.mounted) {
+          await attachEventRefDetail(
+            context: context,
+            ref: ref,
+            refDetails: refDetails,
+          );
+          if (!context.mounted) return;
+          Navigator.pop(context);
+        }
       },
-      onTapTaskList: () {
-        Navigator.pop(context);
-      },
-      onTapTaskItem: () {
-        Navigator.pop(context);
+      onTapTaskList: () async {
+        final refDetails = await getRefDetails(
+          ref: ref,
+          objectDetails: spaceObjectDetails,
+        );
+        if (refDetails != null && context.mounted) {
+          await attachTaskListRefDetail(
+            context: context,
+            ref: ref,
+            refDetails: refDetails,
+          );
+          if (!context.mounted) return;
+          Navigator.pop(context);
+        }
       },
     );
   }
@@ -180,5 +218,26 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
       ObjectType.taskList => NewsReferencesType.taskList,
       _ => null,
     };
+  }
+
+  Future<RefDetails?> getRefDetails({
+    required WidgetRef ref,
+    required SpaceObjectDetails objectDetails,
+  }) async {
+    final objectId = objectDetails.objectId;
+    switch (objectDetails.objectType) {
+      case ObjectType.pin:
+        final sourcePin = await ref.watch(pinProvider(objectId).future);
+        return await sourcePin.refDetails();
+      case ObjectType.calendarEvent:
+        final sourcePin =
+            await ref.watch(calendarEventProvider(objectId).future);
+        return await sourcePin.refDetails();
+      case ObjectType.taskList:
+        final sourcePin = await ref.watch(taskListProvider(objectId).future);
+        return await sourcePin.refDetails();
+      default:
+        return null;
+    }
   }
 }
