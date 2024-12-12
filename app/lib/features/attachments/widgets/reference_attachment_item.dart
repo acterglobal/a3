@@ -88,7 +88,7 @@ class ReferenceAttachmentItem extends ConsumerWidget {
   }
 
   Widget refAttachmentTitle(WidgetRef ref) {
-    final defaultTitle = Text(refDetails.toString());
+    final defaultTitle = Text(refDetails.title().toString());
     final refObjectType = refDetails.typeStr();
     final refObjectId = refDetails.targetIdStr();
 
@@ -159,6 +159,7 @@ class ReferenceAttachmentItem extends ConsumerWidget {
     final lang = L10n.of(context);
     final refObjectType = refDetails.typeStr();
     final refObjectId = refDetails.targetIdStr();
+    final roomName = refDetails.roomDisplayName().toString();
 
     if (refObjectId == null) return;
     switch (refObjectType) {
@@ -171,7 +172,7 @@ class ReferenceAttachmentItem extends ConsumerWidget {
           );
         } else {
           EasyLoading.showError(
-            lang.noAccess,
+            lang.noObjectAccess(refObjectType, roomName),
             duration: const Duration(seconds: 3),
           );
         }
@@ -184,7 +185,7 @@ class ReferenceAttachmentItem extends ConsumerWidget {
           );
         } else {
           EasyLoading.showError(
-            lang.noAccess,
+            lang.noObjectAccess(refObjectType, roomName),
             duration: const Duration(seconds: 3),
           );
         }
@@ -197,7 +198,7 @@ class ReferenceAttachmentItem extends ConsumerWidget {
           );
         } else {
           EasyLoading.showError(
-            lang.noAccess,
+            lang.noObjectAccess(refObjectType, roomName),
             duration: const Duration(seconds: 3),
           );
         }
