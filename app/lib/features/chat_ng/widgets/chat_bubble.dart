@@ -7,7 +7,7 @@ class ChatBubble extends StatelessWidget {
   final Widget child;
   final int? messageWidth;
   final bool wasEdited;
-  final bool nextMessageGroup;
+  final bool isNextMessageInGroup;
   final BoxDecoration decoration;
   final CrossAxisAlignment bubbleAlignment;
 
@@ -19,7 +19,7 @@ class ChatBubble extends StatelessWidget {
     required this.bubbleAlignment,
     required this.decoration,
     this.messageWidth,
-    this.nextMessageGroup = false,
+    this.isNextMessageInGroup = false,
   });
 
   // factory bubble constructor
@@ -28,19 +28,19 @@ class ChatBubble extends StatelessWidget {
     required BuildContext context,
     int? messageWidth,
     bool wasEdited = false,
-    bool nextMessageGroup = false,
+    bool isNextMessageInGroup = false,
   }) {
     final theme = Theme.of(context);
     return ChatBubble._inner(
       wasEdited: wasEdited,
       messageWidth: messageWidth,
-      nextMessageGroup: nextMessageGroup,
+      isNextMessageInGroup: isNextMessageInGroup,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
-          bottomLeft: Radius.circular(nextMessageGroup ? 16 : 4),
+          bottomLeft: Radius.circular(isNextMessageInGroup ? 16 : 4),
           bottomRight: Radius.circular(16),
         ),
       ),
@@ -56,7 +56,7 @@ class ChatBubble extends StatelessWidget {
     required Widget child,
     int? messageWidth,
     bool wasEdited = false,
-    bool nextMessageGroup = false,
+    bool isNextMessageInGroup = false,
   }) {
     final theme = Theme.of(context);
 
@@ -64,14 +64,14 @@ class ChatBubble extends StatelessWidget {
       key: key,
       messageWidth: messageWidth,
       wasEdited: wasEdited,
-      nextMessageGroup: nextMessageGroup,
+      isNextMessageInGroup: isNextMessageInGroup,
       decoration: BoxDecoration(
         color: theme.colorScheme.primary,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
           bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(nextMessageGroup ? 16 : 4),
+          bottomRight: Radius.circular(isNextMessageInGroup ? 16 : 4),
         ),
       ),
       bubbleAlignment: CrossAxisAlignment.end,
@@ -108,17 +108,15 @@ class ChatBubble extends StatelessWidget {
               child: child,
             ),
           ),
-          Align(
-            alignment: Alignment(0.9, 0.0),
-            child: Visibility(
-              visible: wasEdited,
+          if (wasEdited)
+            Align(
+              alignment: Alignment(0.9, 0.0),
               child: Text(
                 L10n.of(context).edited,
                 style: chatTheme.emptyChatPlaceholderTextStyle
                     .copyWith(fontSize: 12),
               ),
             ),
-          ),
         ],
       ),
     );

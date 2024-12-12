@@ -56,7 +56,7 @@ class ChatEvent extends ConsumerWidget {
     required RoomEventItem item,
     required WidgetRef ref,
   }) {
-    final nextMessageGroup =
+    final isNextMessageInGroup =
         ref.watch(isNextMessageGroupProvider((roomId, eventId)));
     final avatarInfo = ref.watch(
       memberAvatarInfoProvider(
@@ -77,7 +77,7 @@ class ChatEvent extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-        (!nextMessageGroup && !isUser)
+        (!isNextMessageInGroup && !isUser)
             ? Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: ActerAvatar(options: options),
@@ -89,7 +89,7 @@ class ChatEvent extends ConsumerWidget {
             messageId: messageId,
             item: item,
             isUser: isUser,
-            nextMessageGroup: nextMessageGroup,
+            isNextMessageInGroup: isNextMessageInGroup,
           ),
         ),
       ],

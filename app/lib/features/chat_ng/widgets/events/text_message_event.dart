@@ -2,6 +2,7 @@ import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
+import 'package:acter/features/chat_ng/models/message_metadata.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import 'package:flutter_matrix_html/text_parser.dart';
 class TextMessageEvent extends StatelessWidget {
   final String roomId;
   final MsgContent content;
-  final Map<String, dynamic> metadata;
+  final MessageMetadata metadata;
 
   const TextMessageEvent({
     super.key,
@@ -27,11 +28,11 @@ class TextMessageEvent extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final body = content.formattedBody() ?? content.body();
 
-    String? msgType = metadata['msgType'];
-    bool isUser = metadata['isUser'];
+    String? msgType = metadata.msgType;
+    bool isUser = metadata.isUser;
     bool isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
-    bool nextMessageGroup = metadata['nextMessageGroup'];
-    bool wasEdited = metadata['wasEdited'];
+    bool isNextMessageInGroup = metadata.isNextMessageInGroup;
+    bool wasEdited = metadata.wasEdited;
 
     // whether text only contains emojis
     final enlargeEmoji = isOnlyEmojis(content.body());
@@ -72,13 +73,13 @@ class TextMessageEvent extends StatelessWidget {
       return ChatBubble.user(
         context: context,
         wasEdited: wasEdited,
-        nextMessageGroup: nextMessageGroup,
+        isNextMessageInGroup: isNextMessageInGroup,
         child: inner,
       );
     }
     return ChatBubble(
       context: context,
-      nextMessageGroup: nextMessageGroup,
+      isNextMessageInGroup: isNextMessageInGroup,
       wasEdited: wasEdited,
       child: Html(
         shrinkToFit: true,

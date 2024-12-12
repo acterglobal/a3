@@ -1,9 +1,9 @@
 import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
+import 'package:acter/features/chat_ng/models/message_metadata.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
-import 'package:acter/features/chat_ng/widgets/events/location_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/member_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/state_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
@@ -17,14 +17,14 @@ class ChatEventItem extends StatelessWidget {
   final String messageId;
   final RoomEventItem item;
   final bool isUser;
-  final bool nextMessageGroup;
+  final bool isNextMessageInGroup;
   const ChatEventItem({
     super.key,
     required this.roomId,
     required this.messageId,
     required this.item,
     required this.isUser,
-    required this.nextMessageGroup,
+    required this.isNextMessageInGroup,
   });
 
   @override
@@ -38,28 +38,28 @@ class ChatEventItem extends StatelessWidget {
           messageId,
           item,
           isUser,
-          nextMessageGroup,
+          isNextMessageInGroup,
         ),
       'm.room.redaction' => isUser
           ? ChatBubble.user(
               context: context,
-              nextMessageGroup: nextMessageGroup,
+              isNextMessageInGroup: isNextMessageInGroup,
               child: RedactedMessageWidget(),
             )
           : ChatBubble(
               context: context,
-              nextMessageGroup: nextMessageGroup,
+              isNextMessageInGroup: isNextMessageInGroup,
               child: RedactedMessageWidget(),
             ),
       'm.room.encrypted' => isUser
           ? ChatBubble.user(
               context: context,
-              nextMessageGroup: nextMessageGroup,
+              isNextMessageInGroup: isNextMessageInGroup,
               child: EncryptedMessageWidget(),
             )
           : ChatBubble(
               context: context,
-              nextMessageGroup: nextMessageGroup,
+              isNextMessageInGroup: isNextMessageInGroup,
               child: EncryptedMessageWidget(),
             ),
       'm.room.member' => MemberUpdateEvent(
@@ -100,12 +100,12 @@ class ChatEventItem extends StatelessWidget {
   ) {
     final msgType = item.msgType();
     final content = item.msgContent();
-    final Map<String, dynamic> metadata = {
-      'isUser': isUser,
-      'nextMessageGroup': nextMessageGroup,
-      'wasEdited': item.wasEdited(),
-      'msgType': msgType,
-    };
+    final metadata = MessageMetadata(
+      isUser: isUser,
+      isNextMessageInGroup: nextMessageGroup,
+      wasEdited: item.wasEdited(),
+      msgType: item.msgType(),
+    );
 
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
@@ -135,7 +135,6 @@ class ChatEventItem extends StatelessWidget {
           messageId: messageId,
           content: content,
         ),
-      'm.location' => LocationMessageEvent(content: content),
       _ => _buildUnsupportedMessage(msgType),
     };
   }
