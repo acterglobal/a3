@@ -107,7 +107,7 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
           objectDetails: spaceObjectDetails,
         );
         if (refDetails != null && context.mounted) {
-          await attachPinRefDetail(
+          await attachRefDetailToPin(
             context: context,
             ref: ref,
             refDetails: refDetails,
@@ -122,7 +122,7 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
           objectDetails: spaceObjectDetails,
         );
         if (refDetails != null && context.mounted) {
-          await attachEventRefDetail(
+          await attachRefDetailToEvent(
             context: context,
             ref: ref,
             refDetails: refDetails,
@@ -137,7 +137,7 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
           objectDetails: spaceObjectDetails,
         );
         if (refDetails != null && context.mounted) {
-          await attachTaskListRefDetail(
+          await attachRefDetailToTaskList(
             context: context,
             ref: ref,
             refDetails: refDetails,

@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-Future<void> attachPinRefDetail({
+Future<void> attachRefDetailToPin({
   required BuildContext context,
   required WidgetRef ref,
   required RefDetails refDetails,
@@ -39,7 +39,7 @@ Future<void> attachPinRefDetail({
   }
 }
 
-Future<void> attachEventRefDetail({
+Future<void> attachRefDetailToEvent({
   required BuildContext context,
   required WidgetRef ref,
   required RefDetails refDetails,
@@ -67,7 +67,7 @@ Future<void> attachEventRefDetail({
   }
 }
 
-Future<void> attachTaskListRefDetail({
+Future<void> attachRefDetailToTaskList({
   required BuildContext context,
   required WidgetRef ref,
   required RefDetails refDetails,
