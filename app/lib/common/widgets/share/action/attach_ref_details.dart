@@ -1,4 +1,5 @@
 // if generic attachment, send via manager
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/event/event_selector_drawer.dart';
 import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
 import 'package:acter/common/widgets/task/taskList_selector_drawer.dart';
@@ -9,6 +10,7 @@ import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 Future<void> attachPinRefDetail({
   required BuildContext context,
@@ -22,11 +24,17 @@ Future<void> attachPinRefDetail({
 
     //Upload ref attachment
     if (!context.mounted) return;
-    addRefDetailAttachment(
+    await addRefDetailAttachment(
       context: context,
       ref: ref,
       manager: attachmentManager,
       refDetails: refDetails,
+    );
+
+    if (!context.mounted) return;
+    context.pushNamed(
+      Routes.pin.name,
+      pathParameters: {'pinId': targetPinId},
     );
   }
 }
@@ -50,6 +58,12 @@ Future<void> attachEventRefDetail({
       manager: attachmentManager,
       refDetails: refDetails,
     );
+
+    if (!context.mounted) return;
+    context.pushNamed(
+      Routes.calendarEvent.name,
+      pathParameters: {'calendarId': targetEventId},
+    );
   }
 }
 
@@ -71,6 +85,12 @@ Future<void> attachTaskListRefDetail({
       ref: ref,
       manager: attachmentManager,
       refDetails: refDetails,
+    );
+
+    if (!context.mounted) return;
+    context.pushNamed(
+      Routes.taskListDetails.name,
+      pathParameters: {'taskListId': targetTaskListId},
     );
   }
 }
