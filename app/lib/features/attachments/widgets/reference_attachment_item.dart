@@ -1,4 +1,11 @@
 import 'package:acter/common/actions/redact_content.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Attachment, RefDetails;
 import 'package:flutter/material.dart';
@@ -37,8 +44,9 @@ class ReferenceAttachmentItem extends ConsumerWidget {
         border: Border.all(color: Theme.of(context).unselectedWidgetColor),
       ),
       child: ListTile(
-        leading: PhosphorIcon(PhosphorIconsThin.tagChevron),
-        title: title(context),
+        leading: refAttachmentIcons(ref),
+        title: refAttachmentTitle(ref),
+        subtitle: refAttachmentSubTitle(),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -75,25 +83,68 @@ class ReferenceAttachmentItem extends ConsumerWidget {
     );
   }
 
-  Widget title(BuildContext context) {
-    final title = refDetails.title();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title ?? refDetails.toString(),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        Row(
-          children: [
-            Text(
-              refDetails.typeStr(),
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-          ],
-        ),
-      ],
-    );
+  Widget refAttachmentTitle(WidgetRef ref) {
+    final defaultTitle = Text(refDetails.toString());
+    final refObjectType = refDetails.typeStr();
+    final refObjectId = refDetails.targetIdStr();
+
+    if (refObjectId == null) return defaultTitle;
+    switch (refObjectType) {
+      case 'pin':
+        final pin = ref.watch(pinProvider(refObjectId)).valueOrNull;
+        return pin == null ? defaultTitle : Text(pin.title().toString());
+      case 'calendar-event':
+        final event = ref.watch(calendarEventProvider(refObjectId)).valueOrNull;
+        return event == null ? defaultTitle : Text(event.title().toString());
+      case 'task-list':
+        final taskList = ref.watch(taskListProvider(refObjectId)).valueOrNull;
+        return taskList == null
+            ? defaultTitle
+            : Text(taskList.name().toString());
+      default:
+        return defaultTitle;
+    }
+  }
+
+  Widget refAttachmentSubTitle() {
+    return Text(refDetails.typeStr().toString());
+  }
+
+  Widget refAttachmentIcons(WidgetRef ref) {
+    final defaultIcon = PhosphorIcon(PhosphorIconsThin.tagChevron, size: 30);
+    final refObjectType = refDetails.typeStr();
+    final refObjectId = refDetails.targetIdStr();
+
+    if (refObjectId == null) return defaultIcon;
+    switch (refObjectType) {
+      case 'pin':
+        final pin = ref.watch(pinProvider(refObjectId)).valueOrNull;
+        return ActerIconWidget(
+          iconSize: 30,
+          color: convertColor(
+            pin?.display()?.color(),
+            iconPickerColors[0],
+          ),
+          icon: ActerIcon.iconForPin(
+            pin?.display()?.iconStr(),
+          ),
+        );
+      case 'calendar-event':
+        return PhosphorIcon(PhosphorIconsThin.calendar, size: 30);
+      case 'task-list':
+        final taskList = ref.watch(taskListProvider(refObjectId)).valueOrNull;
+        return ActerIconWidget(
+          iconSize: 30,
+          color: convertColor(
+            taskList?.display()?.color(),
+            iconPickerColors[0],
+          ),
+          icon: ActerIcon.iconForPin(
+            taskList?.display()?.iconStr(),
+          ),
+        );
+      default:
+        return defaultIcon;
+    }
   }
 }
