@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/features/chat_ng/widgets/reply_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -6,8 +7,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class ChatBubble extends StatelessWidget {
   final Widget child;
   final int? messageWidth;
-  final bool wasEdited;
-  final bool nextMessageGroup;
+  final Map<String, dynamic> metadata;
   final BoxDecoration decoration;
   final CrossAxisAlignment bubbleAlignment;
 
@@ -15,26 +15,24 @@ class ChatBubble extends StatelessWidget {
   const ChatBubble._inner({
     super.key,
     required this.child,
-    required this.wasEdited,
+    required this.metadata,
     required this.bubbleAlignment,
     required this.decoration,
     this.messageWidth,
-    this.nextMessageGroup = false,
   });
 
   // factory bubble constructor
   factory ChatBubble({
     required Widget child,
     required BuildContext context,
+    required Map<String, dynamic> metadata,
     int? messageWidth,
-    bool wasEdited = false,
-    bool nextMessageGroup = false,
   }) {
     final theme = Theme.of(context);
+    bool nextMessageGroup = metadata['nextMessageGroup'];
     return ChatBubble._inner(
-      wasEdited: wasEdited,
+      metadata: metadata,
       messageWidth: messageWidth,
-      nextMessageGroup: nextMessageGroup,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.only(
@@ -55,16 +53,15 @@ class ChatBubble extends StatelessWidget {
     required BuildContext context,
     required Widget child,
     int? messageWidth,
-    bool wasEdited = false,
-    bool nextMessageGroup = false,
+    required Map<String, dynamic> metadata,
   }) {
     final theme = Theme.of(context);
+    bool nextMessageGroup = metadata['nextMessageGroup'];
 
     return ChatBubble._inner(
       key: key,
       messageWidth: messageWidth,
-      wasEdited: wasEdited,
-      nextMessageGroup: nextMessageGroup,
+      metadata: metadata,
       decoration: BoxDecoration(
         color: theme.colorScheme.primary,
         borderRadius: BorderRadius.only(
@@ -88,6 +85,10 @@ class ChatBubble extends StatelessWidget {
     final chatTheme = Theme.of(context).chatTheme;
     final size = MediaQuery.sizeOf(context);
     final msgWidth = messageWidth.map((w) => w.toDouble());
+    // whether message is edited
+    bool wasEdited = metadata['wasEdited'];
+    // whether message is reply and has original event
+    String? repliedTo = metadata['repliedTo'];
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -105,7 +106,16 @@ class ChatBubble extends StatelessWidget {
                 horizontal: 12,
                 vertical: 8,
               ),
-              child: child,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (repliedTo != null) ...[
+                    ReplyPreview(metadata: metadata),
+                    const SizedBox(height: 10),
+                  ],
+                  child,
+                ],
+              ),
             ),
           ),
           Align(

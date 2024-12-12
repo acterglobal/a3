@@ -30,36 +30,45 @@ class ChatEventItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final eventType = item.eventType();
+    final metadata = {
+      'roomId': roomId,
+      'messageId': messageId,
+      'isUser': isUser,
+      'isReply': false,
+      'nextMessageGroup': nextMessageGroup,
+      'wasEdited': item.wasEdited(),
+      'repliedTo': item.inReplyTo(),
+    };
 
     return switch (eventType) {
       // handle message inner types separately
       'm.room.message' => buildMsgEventItem(
+          context,
           roomId,
           messageId,
           item,
-          isUser,
-          nextMessageGroup,
+          metadata,
         ),
       'm.room.redaction' => isUser
           ? ChatBubble.user(
               context: context,
-              nextMessageGroup: nextMessageGroup,
+              metadata: metadata,
               child: RedactedMessageWidget(),
             )
           : ChatBubble(
               context: context,
-              nextMessageGroup: nextMessageGroup,
+              metadata: metadata,
               child: RedactedMessageWidget(),
             ),
       'm.room.encrypted' => isUser
           ? ChatBubble.user(
               context: context,
-              nextMessageGroup: nextMessageGroup,
+              metadata: metadata,
               child: EncryptedMessageWidget(),
             )
           : ChatBubble(
               context: context,
-              nextMessageGroup: nextMessageGroup,
+              metadata: metadata,
               child: EncryptedMessageWidget(),
             ),
       'm.room.member' => MemberUpdateEvent(
@@ -92,34 +101,39 @@ class ChatEventItem extends StatelessWidget {
   }
 
   Widget buildMsgEventItem(
+    BuildContext context,
     String roomId,
     String messageId,
     RoomEventItem item,
-    bool isUser,
-    bool nextMessageGroup,
+    Map<String, dynamic> metadata,
   ) {
     final msgType = item.msgType();
     final content = item.msgContent();
-    final Map<String, dynamic> metadata = {
-      'isUser': isUser,
-      'nextMessageGroup': nextMessageGroup,
-      'wasEdited': item.wasEdited(),
-      'msgType': msgType,
-    };
+    final bool isUser = metadata['isUser'];
 
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
 
     return switch (msgType) {
-      'm.emote' ||
-      'm.notice' ||
-      'm.server_notice' ||
-      'm.text' =>
-        TextMessageEvent(
-          roomId: roomId,
-          content: content,
-          metadata: metadata,
-        ),
+      'm.emote' || 'm.notice' || 'm.server_notice' || 'm.text' => isUser
+          ? ChatBubble.user(
+              context: context,
+              metadata: metadata,
+              child: TextMessageEvent(
+                roomId: roomId,
+                content: content,
+                metadata: metadata,
+              ),
+            )
+          : ChatBubble(
+              context: context,
+              metadata: metadata,
+              child: TextMessageEvent(
+                roomId: roomId,
+                content: content,
+                metadata: metadata,
+              ),
+            ),
       'm.image' => ImageMessageEvent(
           messageId: messageId,
           roomId: roomId,

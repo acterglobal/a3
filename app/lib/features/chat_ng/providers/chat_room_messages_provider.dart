@@ -3,7 +3,9 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
+import 'package:acter/features/chat_ng/models/reply_message_state.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_room_messages_notifier.dart';
+import 'package:acter/features/chat_ng/providers/notifiers/reply_messages_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
@@ -17,6 +19,7 @@ const _supportedTypes = [
   'm.room.encrypted',
 ];
 
+typedef ReplyMsgInfo = ({String originalId, String messageId, String roomId});
 typedef RoomMsgId = (String roomId, String uniqueId);
 typedef MentionQuery = (String, MentionType);
 
@@ -129,4 +132,35 @@ final mentionSuggestionsProvider =
     MentionType.user => ref.watch(userMentionSuggestionsProvider(roomId)),
     MentionType.room => ref.watch(roomMentionsSuggestionsProvider(roomId)),
   };
+});
+
+// final replyToMsgProvider =
+//     FutureProvider.family<ReplyMsgState, ReplyMsgInfo>((ref, info) async {
+//   final roomId = info.roomId;
+//   final eventId = info.originalId;
+//   final messageId = info.messageId;
+//   final convo = await ref.watch(chatProvider(roomId).future);
+//   if (convo == null) {
+//     _log.severe('Room $roomId not found');
+//     return ReplyMsgError(eventId, messageId, null, null);
+//   }
+//   final timeline = convo.timelineStream();
+//   RoomMessage roomMsg;
+
+//   try {
+//     roomMsg = await timeline.getMessage(eventId);
+//   } catch (e, s) {
+//     _log.severe(
+//       'Failing to load reference $messageId (from $eventId)',
+//       e,
+//       s,
+//     );
+//     return ReplyMsgError(eventId, messageId, e, s);
+//   }
+//   return ReplyMsgData(roomMsg);
+// });
+
+final replyToMsgProvider = AsyncNotifierProvider.autoDispose
+    .family<ReplyMessageNotifier, ReplyMsgState, ReplyMsgInfo>(() {
+  return ReplyMessageNotifier();
 });

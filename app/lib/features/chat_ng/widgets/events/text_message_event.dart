@@ -2,7 +2,6 @@ import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
-import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
@@ -29,9 +28,8 @@ class TextMessageEvent extends StatelessWidget {
 
     String? msgType = metadata['msgType'];
     bool isUser = metadata['isUser'];
+    bool isReply = metadata['isReply'];
     bool isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
-    bool nextMessageGroup = metadata['nextMessageGroup'];
-    bool wasEdited = metadata['wasEdited'];
 
     // whether text only contains emojis
     final enlargeEmoji = isOnlyEmojis(content.body());
@@ -47,12 +45,12 @@ class TextMessageEvent extends StatelessWidget {
           style: emojiTextStyle.copyWith(
             fontFamily: emojiFont,
           ),
-          maxLines: null,
+          maxLines: isReply ? 3 : null,
         ),
       );
     }
 
-    final Widget inner = Html(
+    return Html(
       shrinkToFit: true,
       pillBuilder: ({
         required String identifier,
@@ -65,39 +63,12 @@ class TextMessageEvent extends StatelessWidget {
         roomId: roomId,
       ),
       renderNewlines: true,
-      data: body,
-    );
-
-    if (isUser) {
-      return ChatBubble.user(
-        context: context,
-        wasEdited: wasEdited,
-        nextMessageGroup: nextMessageGroup,
-        child: inner,
-      );
-    }
-    return ChatBubble(
-      context: context,
-      nextMessageGroup: nextMessageGroup,
-      wasEdited: wasEdited,
-      child: Html(
-        shrinkToFit: true,
-        pillBuilder: ({
-          required String identifier,
-          required String url,
-          OnPillTap? onTap,
-        }) =>
-            ActerPillBuilder(
-          identifier: identifier,
-          uri: url,
-          roomId: roomId,
-        ),
-        renderNewlines: true,
-        defaultTextStyle: textTheme.bodySmall?.copyWith(
-          color: isNotice ? colorScheme.onSurface.withOpacity(0.5) : null,
-        ),
-        data: body,
+      maxLines: isReply ? 2 : null,
+      defaultTextStyle: textTheme.bodySmall?.copyWith(
+        color: isNotice ? colorScheme.onSurface.withOpacity(0.5) : null,
+        overflow: isReply ? TextOverflow.ellipsis : null,
       ),
+      data: body,
     );
   }
 }
