@@ -16,13 +16,17 @@ Future<String?> selectSpaceDrawer({
     enableDrag: true,
     context: context,
     isDismissible: true,
-    builder: (context) => SelectRoomDrawer(
-      key: key,
-      canCheck: canCheck,
-      currentSpaceId: currentSpaceId,
-      title: title ?? Text(L10n.of(context).selectSpace),
-      keyPrefix: 'select-space',
-      roomType: RoomType.space,
+    isScrollControlled: true,
+    builder: (context) => Container(
+      constraints: BoxConstraints(maxHeight: 700),
+      child: SelectRoomDrawer(
+        key: key,
+        canCheck: canCheck,
+        currentSpaceId: currentSpaceId,
+        title: title ?? Text(L10n.of(context).selectSpace),
+        keyPrefix: 'select-space',
+        roomType: RoomType.space,
+      ),
     ),
   );
   if (selected == null) {
