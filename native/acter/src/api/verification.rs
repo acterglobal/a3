@@ -1113,7 +1113,7 @@ impl SessionManager {
 }
 
 impl Client {
-    // this return value should be able to unpin, because wait_for_verification_event calls pin_mut internally
+    // this return value should be unpinned when wait_for_verification_event ends, because it calls pin_mut
     // this return value should be wrapped in Box::pin, to make unpin possible
     pub fn verification_event_rx(&self) -> impl Stream<Item = VerificationEvent> + Unpin {
         let mut stream = BroadcastStream::new(self.verification_controller.event_rx.resubscribe());
