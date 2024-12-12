@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/share/action/attach_ref_details.dart';
+import 'package:acter/features/attachments/actions/attach_ref_details.dart';
 import 'package:acter/common/widgets/share/widgets/attach_options.dart';
 import 'package:acter/common/widgets/share/widgets/external_share_options.dart';
 import 'package:acter/common/widgets/share/widgets/file_share_options.dart';
