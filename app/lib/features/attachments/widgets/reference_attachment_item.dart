@@ -87,28 +87,30 @@ class ReferenceAttachmentItem extends ConsumerWidget {
     switch (refObjectType) {
       case 'pin':
         final pin = ref.watch(pinProvider(refObjectId)).valueOrNull;
+        if (pin == null) return defaultIcon;
         return ActerIconWidget(
           iconSize: 30,
           color: convertColor(
-            pin?.display()?.color(),
+            pin.display()?.color(),
             iconPickerColors[0],
           ),
           icon: ActerIcon.iconForPin(
-            pin?.display()?.iconStr(),
+            pin.display()?.iconStr(),
           ),
         );
       case 'calendar-event':
         return PhosphorIcon(PhosphorIconsThin.calendar, size: 30);
       case 'task-list':
         final taskList = ref.watch(taskListProvider(refObjectId)).valueOrNull;
+        if (taskList == null) return defaultIcon;
         return ActerIconWidget(
           iconSize: 30,
           color: convertColor(
-            taskList?.display()?.color(),
+            taskList.display()?.color(),
             iconPickerColors[0],
           ),
           icon: ActerIcon.iconForPin(
-            taskList?.display()?.iconStr(),
+            taskList.display()?.iconStr(),
           ),
         );
       default:
