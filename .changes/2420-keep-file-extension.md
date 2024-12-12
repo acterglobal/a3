@@ -1,1 +1,0 @@
-- Fix: when downloading as file, keep the extension even if the user removed it to ensure they can open the resulting file.

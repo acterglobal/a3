@@ -1,2 +1,0 @@
-- [Enhancement] : Create Space and Create Chat now always visible irrespective of space counts
-- [Fixes] : Keyboard over-lapping issue while space selection in add boast is now fixed 
