@@ -230,12 +230,12 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
         final sourcePin = await ref.watch(pinProvider(objectId).future);
         return await sourcePin.refDetails();
       case ObjectType.calendarEvent:
-        final sourcePin =
+        final sourceEvent =
             await ref.watch(calendarEventProvider(objectId).future);
-        return await sourcePin.refDetails();
+        return await sourceEvent.refDetails();
       case ObjectType.taskList:
-        final sourcePin = await ref.watch(taskListProvider(objectId).future);
-        return await sourcePin.refDetails();
+        final sourceTaskList = await ref.watch(taskListProvider(objectId).future);
+        return await sourceTaskList.refDetails();
       default:
         return null;
     }

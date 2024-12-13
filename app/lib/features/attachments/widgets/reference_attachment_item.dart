@@ -44,15 +44,15 @@ class ReferenceAttachmentItem extends ConsumerWidget {
       child: ListTile(
         onTap: () => onTapRefAttachment(context, ref),
         leading: refAttachmentIcons(ref),
-        title: refAttachmentTitle(ref),
+        title: refAttachmentTitle(context, ref),
         subtitle: refAttachmentSubTitle(),
         trailing: actionMenu(context),
       ),
     );
   }
 
-  Widget refAttachmentTitle(WidgetRef ref) {
-    final defaultTitle = Text(refDetails.title().toString());
+  Widget refAttachmentTitle(BuildContext context, WidgetRef ref) {
+    final defaultTitle = Text(refDetails.title() ?? L10n.of(context).unknown);
     final refObjectType = refDetails.typeStr();
     final refObjectId = refDetails.targetIdStr();
 
