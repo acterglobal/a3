@@ -106,6 +106,8 @@ impl DeviceController {
 }
 
 impl Client {
+    // this return value should be Unpin, because next() of this stream is called in interactive_verification_started_from_request
+    // this return value should be wrapped in Box::pin, to make unpin possible
     pub fn device_event_rx(&self) -> impl Stream<Item = DeviceEvent> + Unpin {
         let mut stream = BroadcastStream::new(self.device_controller.event_rx.resubscribe());
         Box::pin(stream.filter_map(|o| async move { o.ok() }))
