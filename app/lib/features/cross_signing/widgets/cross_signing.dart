@@ -19,6 +19,7 @@ final _log = Logger('a3::cross_signing::widget');
 
 // this widget has no elements
 // it just pops up stage dialogs for verification
+@immutable
 class CrossSigning extends ConsumerStatefulWidget {
   const CrossSigning({super.key});
 

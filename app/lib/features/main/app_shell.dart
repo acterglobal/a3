@@ -163,7 +163,7 @@ class AppShellState extends ConsumerState<AppShell> {
             controller: screenshotController,
             child: Column(
               children: [
-                const CrossSigning(),
+                CrossSigning(),
                 Expanded(
                   child: buildBody(context),
                 ),

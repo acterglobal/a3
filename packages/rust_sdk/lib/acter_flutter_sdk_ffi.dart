@@ -27553,13 +27553,13 @@ class Api {
       )>();
   late final _clientVerificationEventRxPtr = _lookup<
       ffi.NativeFunction<
-          _ClientVerificationEventRxReturn Function(
+          ffi.IntPtr Function(
             ffi.IntPtr,
           )>>("__Client_verification_event_rx");
 
   late final _clientVerificationEventRx =
       _clientVerificationEventRxPtr.asFunction<
-          _ClientVerificationEventRxReturn Function(
+          int Function(
             int,
           )>();
   late final _clientSessionManagerPtr = _lookup<
@@ -27625,12 +27625,12 @@ class Api {
           )>();
   late final _clientDeviceEventRxPtr = _lookup<
       ffi.NativeFunction<
-          _ClientDeviceEventRxReturn Function(
+          ffi.IntPtr Function(
             ffi.IntPtr,
           )>>("__Client_device_event_rx");
 
   late final _clientDeviceEventRx = _clientDeviceEventRxPtr.asFunction<
-      _ClientDeviceEventRxReturn Function(
+      int Function(
         int,
       )>();
   late final _clientSubscribeToTypingEventStreamPtr = _lookup<
@@ -56250,23 +56250,19 @@ class Client {
   }
 
   /// Get the verification event receiver
-  Stream<VerificationEvent>? verificationEventRx() {
+  Stream<VerificationEvent> verificationEventRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientVerificationEventRx(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 =
-        _Box(_api, tmp4_0, "__Client_verification_event_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Client_verification_event_rx_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
-        _nativeStream(tmp4_1, _api.__clientVerificationEventRxStreamPoll);
+        _nativeStream(tmp3_1, _api.__clientVerificationEventRxStreamPoll);
     return tmp2;
   }
 
@@ -56389,21 +56385,17 @@ class Client {
   }
 
   /// Return the event handler that new device was found or existing device was changed
-  Stream<DeviceEvent>? deviceEventRx() {
+  Stream<DeviceEvent> deviceEventRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientDeviceEventRx(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "__Client_device_event_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(tmp4_1, _api.__clientDeviceEventRxStreamPoll);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_device_event_rx_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__clientDeviceEventRxStreamPoll);
     return tmp2;
   }
 
@@ -62554,20 +62546,6 @@ class _ClientDmWithUserReturn extends ffi.Struct {
   external int arg3;
   @ffi.IntPtr()
   external int arg4;
-}
-
-class _ClientVerificationEventRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-}
-
-class _ClientDeviceEventRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
 }
 
 class _InvitationOriginServerTsReturn extends ffi.Struct {
