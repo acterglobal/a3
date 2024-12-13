@@ -43,6 +43,7 @@ mod rsvp;
 mod search;
 mod settings;
 mod spaces;
+mod stories;
 mod stream;
 mod super_invites;
 mod tasks;
@@ -60,9 +61,9 @@ pub use uniffi_api::*;
 pub use account::{Account, ExternalId, ThreePidEmailTokenResponse};
 pub use acter_core::{
     events::{
-        calendar::EventLocationInfo, news::NewsContent, Category, CategoryBuilder, Colorize,
-        ColorizeBuilder, Display, DisplayBuilder, ObjRef, ObjRefBuilder, RefDetails,
-        RefDetailsBuilder, UtcDateTime,
+        calendar::EventLocationInfo, news::NewsContent, stories::StoryContent, Category,
+        CategoryBuilder, Colorize, ColorizeBuilder, Display, DisplayBuilder, ObjRef, ObjRefBuilder,
+        RefDetails, RefDetailsBuilder, UtcDateTime,
     },
     models::{ActerModel, Tag, TextMessageContent},
 };
@@ -121,6 +122,7 @@ pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
     RelationTargetType, Space, SpaceDiff,
 };
+pub use stories::{Story, StoryDraft, StorySlide, StorySlideDraft, StoryUpdateBuilder};
 pub use stream::{MsgDraft, RoomMessageDiff, TimelineStream};
 pub use super_invites::{
     SuperInviteInfo, SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder,

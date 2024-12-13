@@ -15,6 +15,7 @@ mod redact;
 mod reply;
 mod rsvp;
 mod spaces;
+mod stories;
 mod super_invites;
 mod sync;
 mod tasks;

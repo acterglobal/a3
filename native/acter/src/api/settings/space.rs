@@ -1,7 +1,7 @@
 pub use acter_core::events::settings::{
     ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleOnOffSetting,
     SimpleOnOffSettingBuilder, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
-    TasksSettings,
+    StoriesSettings, TasksSettings,
 };
 use acter_core::events::{
     attachments::AttachmentEventContent,
@@ -11,6 +11,7 @@ use acter_core::events::{
     pins::PinEventContent,
     rsvp::RsvpEventContent,
     settings::ActerAppSettingsContentBuilder,
+    stories::StoryEventContent,
     tasks::{TaskEventContent, TaskListEventContent},
 };
 use anyhow::{bail, Context, Result};
@@ -40,6 +41,9 @@ impl ActerAppSettingsBuilder {
     pub fn news(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.news(value.map(|i| *i));
     }
+    pub fn stories(&mut self, value: Option<Box<StoriesSettings>>) {
+        self.inner.stories(value.map(|i| *i));
+    }
     pub fn pins(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.pins(value.map(|i| *i));
     }
@@ -64,6 +68,12 @@ impl RoomPowerLevels {
     }
     pub fn news_key(&self) -> String {
         <NewsEntryEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn stories(&self) -> Option<i64> {
+        self.get_for_key(<StoryEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn stories_key(&self) -> String {
+        <StoryEventContent as StaticEventContent>::TYPE.into()
     }
     pub fn events(&self) -> Option<i64> {
         self.get_for_key(<CalendarEventEventContent as StaticEventContent>::TYPE.into())

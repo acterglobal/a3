@@ -49,6 +49,7 @@ impl SimpleOnOffSetting {
 }
 
 pub type TasksSettings = SimpleOnOffSetting;
+pub type StoriesSettings = SimpleOnOffSetting;
 pub type NewsSettings = SimpleSettingWithTurnOff;
 pub type PinsSettings = SimpleSettingWithTurnOff;
 pub type EventsSettings = SimpleSettingWithTurnOff;
@@ -67,6 +68,7 @@ pub struct ActerAppSettingsContent {
     pins: Option<PinsSettings>,
     events: Option<EventsSettings>,
     tasks: Option<TasksSettings>,
+    stories: Option<StoriesSettings>,
 }
 
 impl ActerAppSettingsContent {
@@ -82,6 +84,9 @@ impl ActerAppSettingsContent {
     pub fn tasks(&self) -> TasksSettings {
         self.tasks.clone().unwrap_or_default()
     }
+    pub fn stories(&self) -> StoriesSettings {
+        self.stories.clone().unwrap_or_default()
+    }
 
     pub fn off() -> ActerAppSettingsContent {
         ActerAppSettingsContent {
@@ -89,6 +94,7 @@ impl ActerAppSettingsContent {
             pins: PinsSettings::off(),
             events: EventsSettings::off(),
             tasks: TasksSettings::off(),
+            stories: StoriesSettings::off(),
         }
     }
 
@@ -98,6 +104,7 @@ impl ActerAppSettingsContent {
             .pins(self.pins.clone())
             .events(self.events.clone())
             .tasks(self.tasks.clone())
+            .stories(self.stories.clone())
             .to_owned()
     }
 }
