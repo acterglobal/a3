@@ -53,8 +53,8 @@ class _DesktopSupportState extends State<DesktopSupport>
       final preferences = await sharedPrefs();
       await preferences.setDouble('windowX', pos.dx);
       await preferences.setDouble('windowY', pos.dy);
-      await preferences.setDouble('windowWidth', size.height);
-      await preferences.setDouble('windowHeight', size.width);
+      await preferences.setDouble('windowHeight', size.height);
+      await preferences.setDouble('windowWidth', size.width);
 
       _log.info(
         'stored window size to ${size.width}x${size.height} at (${pos.dx} | ${pos.dy})',
