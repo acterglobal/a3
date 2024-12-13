@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:screen_retriever/screen_retriever.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -114,7 +115,7 @@ class _DesktopSupportState extends State<DesktopSupport>
       await trayManager.setToolTip(appName);
     }
 
-    // Make sure to call once.
+    // Restore previous Window position and size
     final preferences = await sharedPrefs();
     final windowX = preferences.getDouble('windowX');
     final windowY = preferences.getDouble('windowY');
@@ -123,18 +124,41 @@ class _DesktopSupportState extends State<DesktopSupport>
     _log.warning(
       'resetting window size to ${windowWidth}x$windowHeight at ($windowX | $windowY)"',
     );
+    final displaySize = (await screenRetriever.getPrimaryDisplay()).size;
+    // occupy at least 20% of screen size, even if the user made us smaller last time
+    // so we do show up somewhere recognizable...
+    final minWidth = displaySize.width / 5;
+    final minHeight = displaySize.height / 5;
     if (windowHeight != null && windowWidth != null) {
-      windowManager.setSize(Size(windowHeight, windowWidth));
+      final newSize = Size(
+        max(
+          min(max(0, displaySize.width), windowWidth),
+          minWidth, // minimum a quarter of the screen
+        ),
+        max(
+          min(max(0, displaySize.height), windowHeight),
+          minHeight, // minimum a quarter of the screen
+        ),
+      );
+      windowManager.setSize(newSize);
     }
     if (windowX != null && windowY != null) {
-      windowManager.setPosition(Offset(windowX, windowY));
+      // ensure we are always on the visible part of the screen with at at least
+      // minHeight & minWidth showing
+      final offset = Offset(
+        min(max(0, displaySize.width - minWidth), windowX),
+        min(max(0, displaySize.height - minHeight), windowY),
+      );
+      windowManager.setPosition(offset);
+    } else {
+      windowManager.setPosition(Offset(minWidth, minHeight));
     }
   }
 
   @override
-  void onWindowResize() => saveCoords();
+  void onWindowResize() => saveCoords(); // keep the size for later restoring
   @override
-  void onWindowMove() => saveCoords();
+  void onWindowMove() => saveCoords(); // keep the size for later restoring
 
   @override
   void dispose() {
