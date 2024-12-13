@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/router/router.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -10,6 +14,7 @@ import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 final _log = Logger('a3::config::desktop');
+const appName = kDebugMode ? 'Acter-dev' : 'Acter';
 
 class DesktopSupport extends StatefulWidget {
   final Widget child;
@@ -25,6 +30,7 @@ class DesktopSupport extends StatefulWidget {
 
 class _DesktopSupportState extends State<DesktopSupport>
     with WindowListener, TrayListener {
+  Timer? _saveCoordinatesFtr;
   @override
   void initState() {
     super.initState();
@@ -33,12 +39,33 @@ class _DesktopSupportState extends State<DesktopSupport>
     _initDesktop();
   }
 
+  @override
+  void onWindowFocus() {
+    setState(() {});
+  }
+
+  void saveCoords() {
+    _saveCoordinatesFtr?.cancel();
+    _saveCoordinatesFtr = Timer(Duration(seconds: 1), () async {
+      final size = await windowManager.getSize();
+      final pos = await windowManager.getPosition();
+      final preferences = await sharedPrefs();
+      await preferences.setDouble('windowX', pos.dx);
+      await preferences.setDouble('windowY', pos.dy);
+      await preferences.setDouble('windowWidth', size.width);
+      await preferences.setDouble('windowHeight', size.height);
+
+      print(
+          "stored window size to ${size.width}x${size.height} at (${pos.dx} | ${pos.dy})");
+    });
+  }
+
   Future<void> _initDesktop() async {
     // Must add this line.
     await windowManager.ensureInitialized();
 
     WindowOptions windowOptions = const WindowOptions(
-      title: 'Acter',
+      title: appName,
       titleBarStyle: TitleBarStyle.normal,
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
@@ -83,9 +110,29 @@ class _DesktopSupportState extends State<DesktopSupport>
     }
     if (!Platform.isLinux) {
       // not supported on linux;
-      await trayManager.setToolTip('Acter');
+      await trayManager.setToolTip(appName);
+    }
+
+    // Make sure to call once.
+    final preferences = await sharedPrefs();
+    final windowX = preferences.getDouble('windowX');
+    final windowY = preferences.getDouble('windowY');
+    final windowWidth = preferences.getDouble('windowWidth');
+    final windowHeight = preferences.getDouble('windowHeight');
+    print(
+        "resetting window size to ${windowWidth}x${windowHeight} at ($windowX | $windowY)");
+    if (windowHeight != null && windowWidth != null) {
+      windowManager.setSize(Size(windowHeight, windowWidth));
+    }
+    if (windowX != null && windowY != null) {
+      windowManager.setPosition(Offset(windowX, windowY));
     }
   }
+
+  @override
+  void onWindowResize() => saveCoords();
+  @override
+  void onWindowMove() => saveCoords();
 
   @override
   void dispose() {
