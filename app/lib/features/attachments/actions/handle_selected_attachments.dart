@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show AttachmentDraft, AttachmentsManager;
+    show AttachmentDraft, AttachmentsManager, RefDetails;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -77,6 +77,37 @@ Future<void> handleAttachmentSelected({
       final attachmentDraft = await manager.linkDraft(link, title);
       drafts.add(attachmentDraft);
     }
+    for (final draft in drafts) {
+      final res = await draft.send();
+      _log.info('attachment sent: $res');
+    }
+    EasyLoading.dismiss();
+  } catch (e, s) {
+    _log.severe('Failed to create attachments', e, s);
+    if (!context.mounted) {
+      EasyLoading.dismiss();
+      return;
+    }
+    EasyLoading.showError(
+      lang.errorSendingAttachment(e),
+      duration: const Duration(seconds: 3),
+    );
+  }
+}
+
+// if generic attachment, send via manager
+Future<void> addRefDetailAttachment({
+  required BuildContext context,
+  required WidgetRef ref,
+  required AttachmentsManager manager,
+  required RefDetails refDetails,
+}) async {
+  final lang = L10n.of(context);
+  EasyLoading.show(status: lang.sendingAttachment);
+  try {
+    List<AttachmentDraft> drafts = [];
+    final attachmentDraft = await manager.referenceDraft(refDetails);
+    drafts.add(attachmentDraft);
     for (final draft in drafts) {
       final res = await draft.send();
       _log.info('attachment sent: $res');

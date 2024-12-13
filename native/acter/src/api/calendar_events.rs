@@ -327,7 +327,7 @@ impl CalendarEvent {
         let target_id = self.inner.event_id().to_owned();
         let room_id = self.room.room_id().to_owned();
         let title = self.inner.title.clone();
-        let start_at_utc = self.inner.utc_start.timestamp();
+        let start_at_utc = self.inner.utc_start;
         let participants = self.participants().await?.len() as u32;
 
         RUNTIME
