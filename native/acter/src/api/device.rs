@@ -6,6 +6,7 @@ use futures::{
 use matrix_sdk::{executor::JoinHandle, Client as SdkClient};
 use matrix_sdk_base::ruma::{OwnedDeviceId, OwnedUserId};
 use std::{
+    marker::Unpin,
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
@@ -105,9 +106,9 @@ impl DeviceController {
 }
 
 impl Client {
-    pub fn device_event_rx(&self) -> impl Stream<Item = DeviceEvent> {
-        BroadcastStream::new(self.device_controller.event_rx.resubscribe())
-            .map(|o| o.unwrap_or_default())
+    pub fn device_event_rx(&self) -> impl Stream<Item = DeviceEvent> + Unpin {
+        let mut stream = BroadcastStream::new(self.device_controller.event_rx.resubscribe());
+        Box::pin(stream.filter_map(|o| async move { o.ok() }))
     }
 
     pub async fn device_records(&self, verified: bool) -> Result<Vec<DeviceRecord>> {
