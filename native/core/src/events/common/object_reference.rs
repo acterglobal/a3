@@ -356,14 +356,14 @@ impl RefDetails {
 
     pub fn participants(&self) -> Option<u32> {
         match self {
-            RefDetails::CalendarEvent { preview, .. } => preview.participants.clone(),
+            RefDetails::CalendarEvent { preview, .. } => preview.participants,
             _ => None,
         }
     }
 
     pub fn utc_start(&self) -> Option<UtcDateTime> {
         match self {
-            RefDetails::CalendarEvent { preview, .. } => preview.start_at_utc.clone(),
+            RefDetails::CalendarEvent { preview, .. } => preview.start_at_utc,
             _ => None,
         }
     }
