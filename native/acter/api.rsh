@@ -894,6 +894,9 @@ object EventSendState {
 
     /// gives event id for Sent only
     fn event_id() -> Option<EventId>;
+
+    // allows you to cancel a local echo
+    fn abort() -> Future<Result<bool>>;
 }
 
 /// A room Message metadata and content
