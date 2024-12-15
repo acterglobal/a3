@@ -2337,5 +2337,7 @@
   "users": "Nutzer",
   "@users": {},
   "roomLinkedButNotUpgraded": "Hinzugefügt. Du hast allerdings nicht die Rechte die Zugangsregel anzupassen, daher kann es sein, dass andere Spacemitglieder nicht beitreten können.",
-  "@roomLinkedButNotUpgraded": {}
+  "@roomLinkedButNotUpgraded": {},
+  "noObjectAccess": "Du bist nicht teil von {spaceName}, daher hast du keinen Zugriff auf {objectType}",
+  "@noObjectAccess": {}
 }
