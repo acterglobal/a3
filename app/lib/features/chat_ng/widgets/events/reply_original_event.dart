@@ -2,9 +2,9 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
+import 'package:acter/features/chat_ng/models/message_metadata.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
-import 'package:acter/features/chat_ng/widgets/events/location_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -125,7 +125,12 @@ class OriginalEventItem extends ConsumerWidget {
   ) {
     final msgType = item.msgType();
     final content = item.msgContent();
-    final metadata = {'isUser': isUser, 'isReply': true};
+    final metadata = MessageMetadata(
+      roomId: roomId,
+      messageId: messageId,
+      isUser: isUser,
+      isReply: true,
+    );
 
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
@@ -151,7 +156,6 @@ class OriginalEventItem extends ConsumerWidget {
           messageId: messageId,
           content: content,
         ),
-      'm.location' => LocationMessageEvent(content: content),
       _ => _buildUnsupportedMessage(msgType),
     };
   }

@@ -1,16 +1,21 @@
 use acter::api::VerificationEvent;
 use anyhow::Result;
-use futures::{channel::mpsc::Receiver, stream::StreamExt};
+use futures::{
+    pin_mut,
+    stream::{Stream, StreamExt},
+    FutureExt,
+};
 use tracing::info;
 
 use crate::utils::random_user;
 
 fn wait_for_verification_event(
-    rx: &mut Receiver<VerificationEvent>,
+    rx: impl Stream<Item = VerificationEvent>,
     name: &str,
 ) -> VerificationEvent {
+    pin_mut!(rx);
     loop {
-        if let Ok(Some(event)) = rx.try_next() {
+        if let Some(event) = rx.next().now_or_never().flatten() {
             if event.event_type() == name {
                 return event;
             }
@@ -35,29 +40,31 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // we have two devices logged in
 
     // sync both up to ensure they’ve seen the other device
-    let mut alice_device_rx = alice.device_event_rx().unwrap();
+    let mut alice_device_rx = alice.device_event_rx();
     let syncer = alice.start_sync();
     let mut first_synced = syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let’s wait for it to have synced
-    let mut alice_rx = alice.verification_event_rx().unwrap();
+    let mut alice_rx = alice.verification_event_rx();
 
     let syncer = bob.start_sync();
     let mut first_synced = syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let’s wait for it to have synced
-    let mut bob_rx = bob.verification_event_rx().unwrap();
+    let mut bob_rx = bob.verification_event_rx();
 
     // according to alice bob is not verfied:
-    assert!(!alice.verified_device(bob_device_id.to_string()).await?);
+    let bob_was_verified = alice.verified_device(bob_device_id.to_string()).await?;
+    assert!(!bob_was_verified);
 
     // according to bob alice is not verfied:
-    assert!(!bob.verified_device(alice_device_id.to_string()).await?);
+    let alice_was_verified = bob.verified_device(alice_device_id.to_string()).await?;
+    assert!(!alice_was_verified);
 
     // ----------------------------------------------------------------------------
     // On Alice’s device:
 
     // Alice gets notified that new device (Bob) was logged in
     loop {
-        if let Ok(Some(_event)) = alice_device_rx.try_next() {
+        if let Some(_event) = alice_device_rx.next().await {
             if let Ok(_devices) = alice.device_records(false).await {
                 // Alice sends a verification request with her desired methods to Bob
                 alice

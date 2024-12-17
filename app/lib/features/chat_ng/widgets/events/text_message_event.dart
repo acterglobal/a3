@@ -2,6 +2,7 @@ import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
+import 'package:acter/features/chat_ng/models/message_metadata.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
@@ -10,7 +11,7 @@ import 'package:flutter_matrix_html/text_parser.dart';
 class TextMessageEvent extends StatelessWidget {
   final String roomId;
   final MsgContent content;
-  final Map<String, dynamic> metadata;
+  final MessageMetadata metadata;
 
   const TextMessageEvent({
     super.key,
@@ -26,9 +27,9 @@ class TextMessageEvent extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final body = content.formattedBody() ?? content.body();
 
-    String? msgType = metadata['msgType'];
-    bool isUser = metadata['isUser'];
-    bool isReply = metadata['isReply'];
+    String? msgType = metadata.msgType;
+    bool isReply = metadata.isReply;
+    bool isUser = metadata.isUser;
     bool isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
 
     // whether text only contains emojis

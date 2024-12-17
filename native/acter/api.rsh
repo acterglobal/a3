@@ -119,8 +119,14 @@ object RefDetails {
     fn embed_action_str() -> string;
     /// if this is a `task` type, what `task-list-id` does it belong to
     fn task_list_id_str() -> Option<string>;
-    /// if ref is `link`, its display title
+    /// the display title of the reference
     fn title() -> Option<string>;
+    /// the room display name from the preview data
+    fn room_display_name() -> Option<string>;
+    /// the participants count if this is a calendar event
+    fn participants() -> Option<u64>;
+    /// When the event starts according to the calender preview data
+    fn utc_start() -> Option<UtcDateTime>;
     /// if ref is `link`, its uri
     fn uri() -> Option<string>;
 }
@@ -894,6 +900,9 @@ object EventSendState {
 
     /// gives event id for Sent only
     fn event_id() -> Option<EventId>;
+
+    // allows you to cancel a local echo
+    fn abort() -> Future<Result<bool>>;
 }
 
 /// A room Message metadata and content
@@ -2838,7 +2847,7 @@ object Client {
     fn logout() -> Future<Result<bool>>;
 
     /// Get the verification event receiver
-    fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
+    fn verification_event_rx() -> Stream<VerificationEvent>;
 
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
@@ -2854,7 +2863,7 @@ object Client {
     fn install_sas_event_handler(flow_id: string) -> Future<Result<bool>>;
 
     /// Return the event handler that new device was found or existing device was changed
-    fn device_event_rx() -> Option<Stream<DeviceEvent>>;
+    fn device_event_rx() -> Stream<DeviceEvent>;
 
     /// Return the typing event receiver
     fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;

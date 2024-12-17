@@ -1,9 +1,9 @@
 import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
+import 'package:acter/features/chat_ng/models/message_metadata.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
-import 'package:acter/features/chat_ng/widgets/events/location_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/member_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/state_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
@@ -17,28 +17,25 @@ class ChatEventItem extends StatelessWidget {
   final String messageId;
   final RoomEventItem item;
   final bool isUser;
-  final bool nextMessageGroup;
+  final bool isNextMessageInGroup;
   const ChatEventItem({
     super.key,
     required this.roomId,
     required this.messageId,
     required this.item,
     required this.isUser,
-    required this.nextMessageGroup,
+    required this.isNextMessageInGroup,
   });
 
   @override
   Widget build(BuildContext context) {
     final eventType = item.eventType();
-    final metadata = {
-      'roomId': roomId,
-      'messageId': messageId,
-      'isUser': isUser,
-      'isReply': false,
-      'nextMessageGroup': nextMessageGroup,
-      'wasEdited': item.wasEdited(),
-      'repliedTo': item.inReplyTo(),
-    };
+    final metadata = MessageMetadata(
+      roomId: roomId,
+      messageId: messageId,
+      isUser: isUser,
+      isNextMessageInGroup: isNextMessageInGroup,
+    );
 
     return switch (eventType) {
       // handle message inner types separately
@@ -105,11 +102,13 @@ class ChatEventItem extends StatelessWidget {
     String roomId,
     String messageId,
     RoomEventItem item,
-    Map<String, dynamic> metadata,
+    MessageMetadata metadata,
   ) {
     final msgType = item.msgType();
+    final wasEdited = item.wasEdited();
     final content = item.msgContent();
-    final bool isUser = metadata['isUser'];
+    final msgMetadata =
+        metadata.copyWith(wasEdited: wasEdited, msgType: msgType);
 
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
@@ -122,7 +121,7 @@ class ChatEventItem extends StatelessWidget {
               child: TextMessageEvent(
                 roomId: roomId,
                 content: content,
-                metadata: metadata,
+                metadata: msgMetadata,
               ),
             )
           : ChatBubble(
@@ -131,7 +130,7 @@ class ChatEventItem extends StatelessWidget {
               child: TextMessageEvent(
                 roomId: roomId,
                 content: content,
-                metadata: metadata,
+                metadata: msgMetadata,
               ),
             ),
       'm.image' => ImageMessageEvent(
@@ -149,7 +148,6 @@ class ChatEventItem extends StatelessWidget {
           messageId: messageId,
           content: content,
         ),
-      'm.location' => LocationMessageEvent(content: content),
       _ => _buildUnsupportedMessage(msgType),
     };
   }

@@ -1,12 +1,14 @@
+import 'package:acter/features/chat_ng/models/message_metadata.dart';
 import 'package:acter/features/chat_ng/models/reply_message_state.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/reply_original_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter/common/extensions/options.dart';
 
 // Reply State UI widget
 class ReplyPreview extends ConsumerWidget {
-  final Map<String, dynamic> metadata;
+  final MessageMetadata metadata;
   const ReplyPreview({
     super.key,
     required this.metadata,
@@ -14,9 +16,10 @@ class ReplyPreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final String roomId = metadata['roomId'];
-    final String messageId = metadata['messageId'];
-    final String originalId = metadata['repliedTo'];
+    final String roomId = metadata.roomId;
+    final String messageId = metadata.messageId;
+    final String originalId =
+        metadata.repliedTo.expect('should always contain replied id');
     final ReplyMsgInfo replyInfo =
         (roomId: roomId, messageId: messageId, originalId: originalId);
 
@@ -67,7 +70,7 @@ class ReplyPreview extends ConsumerWidget {
 
   Widget replyBuilder(BuildContext context, Widget child) {
     final colorScheme = Theme.of(context).colorScheme;
-    final bool isUser = metadata['isUser'];
+    final bool isUser = metadata.isUser;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
