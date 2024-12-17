@@ -3,6 +3,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter/features/chat_ng/models/message_metadata.dart';
+import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
@@ -51,7 +52,7 @@ class TextMessageEvent extends StatelessWidget {
       );
     }
 
-    return Html(
+    final Widget contentWidget = Html(
       shrinkToFit: true,
       pillBuilder: ({
         required String identifier,
@@ -71,5 +72,18 @@ class TextMessageEvent extends StatelessWidget {
       ),
       data: body,
     );
+    if (isReply) {
+      // no bubble wrap
+      return contentWidget;
+    }
+
+    return isUser
+        ? ChatBubble.user(
+            context: context, metadata: metadata, child: contentWidget)
+        : ChatBubble(
+            context: context,
+            metadata: metadata,
+            child: contentWidget,
+          );
   }
 }

@@ -107,32 +107,26 @@ class ChatEventItem extends StatelessWidget {
     final msgType = item.msgType();
     final wasEdited = item.wasEdited();
     final content = item.msgContent();
-    final msgMetadata =
-        metadata.copyWith(wasEdited: wasEdited, msgType: msgType);
+    final repliedTo = item.inReplyTo();
+    final msgMetadata = metadata.copyWith(
+      wasEdited: wasEdited,
+      repliedTo: repliedTo,
+      msgType: msgType,
+    );
 
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
 
     return switch (msgType) {
-      'm.emote' || 'm.notice' || 'm.server_notice' || 'm.text' => isUser
-          ? ChatBubble.user(
-              context: context,
-              metadata: metadata,
-              child: TextMessageEvent(
-                roomId: roomId,
-                content: content,
-                metadata: msgMetadata,
-              ),
-            )
-          : ChatBubble(
-              context: context,
-              metadata: metadata,
-              child: TextMessageEvent(
-                roomId: roomId,
-                content: content,
-                metadata: msgMetadata,
-              ),
-            ),
+      'm.emote' ||
+      'm.notice' ||
+      'm.server_notice' ||
+      'm.text' =>
+        TextMessageEvent(
+          roomId: roomId,
+          content: content,
+          metadata: msgMetadata,
+        ),
       'm.image' => ImageMessageEvent(
           messageId: messageId,
           roomId: roomId,

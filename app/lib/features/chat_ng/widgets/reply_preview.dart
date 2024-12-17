@@ -46,25 +46,12 @@ class ReplyPreview extends ConsumerWidget {
     ReplyMsgInfo replyInfo,
   ) {
     final originalId = replyInfo.originalId;
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            'Failed to load original message id: $originalId',
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: Theme.of(context).colorScheme.error),
-          ),
-        ),
-        // retry loading the message if failed
-        IconButton(
-          icon: Icon(Icons.refresh, size: 16),
-          onPressed: () {
-            ref.read(replyToMsgProvider(replyInfo).notifier).retryLoad();
-          },
-        ),
-      ],
+    return Text(
+      'Failed to load original message id: $originalId',
+      style: Theme.of(context)
+          .textTheme
+          .bodySmall
+          ?.copyWith(color: Theme.of(context).colorScheme.error),
     );
   }
 
