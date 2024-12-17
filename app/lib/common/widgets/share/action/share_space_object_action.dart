@@ -86,19 +86,17 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
     SpaceObjectDetails spaceObjectDetails,
   ) {
     String spaceId = spaceObjectDetails.spaceId;
-    ObjectType objectType = spaceObjectDetails.objectType;
-    String objectId = spaceObjectDetails.objectId;
-
-    final newsRefType = getNewsRefTypeFromObjType(objectType);
+    final refDetails = getRefDetails(
+      ref: ref,
+      objectDetails: spaceObjectDetails,
+    );
     return AttachOptions(
       onTapBoost: () {
         Navigator.pop(context);
         context.pushNamed(
           Routes.actionAddUpdate.name,
           queryParameters: {'spaceId': spaceId},
-          extra: newsRefType != null
-              ? NewsReferencesModel(type: newsRefType, id: objectId)
-              : null,
+          extra: refDetails,
         );
       },
       onTapPin: () async {
@@ -234,7 +232,8 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
             await ref.watch(calendarEventProvider(objectId).future);
         return await sourceEvent.refDetails();
       case ObjectType.taskList:
-        final sourceTaskList = await ref.watch(taskListProvider(objectId).future);
+        final sourceTaskList =
+            await ref.watch(taskListProvider(objectId).future);
         return await sourceTaskList.refDetails();
       default:
         return null;
