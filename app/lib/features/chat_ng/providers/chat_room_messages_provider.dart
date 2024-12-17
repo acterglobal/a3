@@ -134,32 +134,6 @@ final mentionSuggestionsProvider =
   };
 });
 
-// final replyToMsgProvider =
-//     FutureProvider.family<ReplyMsgState, ReplyMsgInfo>((ref, info) async {
-//   final roomId = info.roomId;
-//   final eventId = info.originalId;
-//   final messageId = info.messageId;
-//   final convo = await ref.watch(chatProvider(roomId).future);
-//   if (convo == null) {
-//     _log.severe('Room $roomId not found');
-//     return ReplyMsgError(eventId, messageId, null, null);
-//   }
-//   final timeline = convo.timelineStream();
-//   RoomMessage roomMsg;
-
-//   try {
-//     roomMsg = await timeline.getMessage(eventId);
-//   } catch (e, s) {
-//     _log.severe(
-//       'Failing to load reference $messageId (from $eventId)',
-//       e,
-//       s,
-//     );
-//     return ReplyMsgError(eventId, messageId, e, s);
-//   }
-//   return ReplyMsgData(roomMsg);
-// });
-
 final replyToMsgProvider = AsyncNotifierProvider.autoDispose
     .family<ReplyMessageNotifier, ReplyMsgState, ReplyMsgInfo>(() {
   return ReplyMessageNotifier();
