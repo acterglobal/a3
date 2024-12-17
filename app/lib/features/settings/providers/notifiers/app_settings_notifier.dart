@@ -24,7 +24,7 @@ class UserAppSettingsNotifier
     _poller = _listener.listen(
       (data) async {
         // refresh on update
-        state = await AsyncValue.guard(() async => await _getSettings(account));
+        state = AsyncData(await _getSettings(account));
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);

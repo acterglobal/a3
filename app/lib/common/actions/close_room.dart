@@ -128,7 +128,7 @@ class _CloseRoomConfirmationState
     EasyLoading.show(status: lang.closingRoom);
     try {
       final myUserId = ref.read(myUserIdStrProvider);
-      final room = await ref.read(maybeRoomProvider(widget.roomId).future);
+      final room = ref.read(maybeRoomProvider(widget.roomId));
       final myMembership =
           await ref.read(roomMembershipProvider(widget.roomId).future);
       if (room == null || myMembership == null) throw RoomNotFound();

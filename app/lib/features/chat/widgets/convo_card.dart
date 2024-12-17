@@ -189,7 +189,7 @@ class ConvoCard extends ConsumerWidget {
 
   Future<void> onUnmute(BuildContext context, WidgetRef ref) async {
     final lang = L10n.of(context);
-    final room = await ref.read(maybeRoomProvider(roomId).future);
+    final room = ref.read(maybeRoomProvider(roomId));
     if (room == null) {
       _log.severe('Room not found: $roomId');
       if (!context.mounted) return;

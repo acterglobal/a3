@@ -10,7 +10,7 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::common::room_notifiers');
 
-class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
+class MaybeRoomNotifier extends FamilyNotifier<Room?, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
@@ -24,13 +24,13 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
   }
 
   @override
-  Future<Room?> build(String arg) async {
+  Room? build(String arg) {
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream(arg); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
         _log.info('seen update for room $arg');
-        state = await AsyncValue.guard(() async => await _getRoom(client));
+        state = await _getRoom(client);
       },
       onError: (e, s) {
         _log.severe('room stream errored', e, s);
@@ -40,7 +40,9 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await _getRoom(client);
+    // initial call
+    _getRoom(client).then((value) => state = value);
+    return null;
   }
 }
 
@@ -54,7 +56,7 @@ class RoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String> {
 
     final fallback = AvatarInfo(uniqueId: roomId);
 
-    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    final room = ref.watch(maybeRoomProvider(roomId));
     if (room == null) {
       return fallback;
     }
@@ -84,7 +86,7 @@ class RoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String> {
   }
 
   void _maybeUpdate(String roomId) {
-    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    final room = ref.watch(maybeRoomProvider(roomId));
     if (room == null) {
       // we do nothing, keep the old stuff as-is
       return;
@@ -101,7 +103,8 @@ class RoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String> {
         !displayName.isReloading) {
       // we ignore all cases of recomputing happening until they are done
       newDisplayName = displayName.valueOrNull;
-      updateDisplayName = true;
+      updateDisplayName =
+          newDisplayName != state.displayName; // only if it changed
     }
 
     final avatarData = ref.read(roomAvatarProvider(roomId));
@@ -110,7 +113,7 @@ class RoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String> {
         !avatarData.isRefreshing) {
       // we ignore all cases of recomputing happening until they are done
       newAvatar = avatarData.valueOrNull;
-      updateAvatar = true;
+      updateAvatar = state.avatar != newAvatar;
     }
 
     if (updateAvatar || updateDisplayName) {

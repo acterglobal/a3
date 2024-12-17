@@ -22,9 +22,7 @@ class AsyncParticipantsNotifier
     _listener =
         client.subscribeStream('$calEvtId::rsvp'); // keep it resident in memory
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(
-        () async => await _getParticipants(client, calEvtId),
-      );
+      state = AsyncData(await _getParticipants(client, calEvtId));
     });
     return await _getParticipants(client, calEvtId);
   }

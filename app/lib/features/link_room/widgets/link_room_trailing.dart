@@ -127,7 +127,7 @@ class LinkRoomTrailing extends ConsumerWidget {
 //Link child room
   Future<void> onTapLinkChildRoom(BuildContext context, WidgetRef ref) async {
     final lang = L10n.of(context);
-    final room = await ref.read(maybeRoomProvider(roomId).future);
+    final room = ref.read(maybeRoomProvider(roomId));
     if (room == null) {
       EasyLoading.showError(lang.roomNotFound);
       return;

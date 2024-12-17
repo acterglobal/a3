@@ -26,7 +26,7 @@ class AsyncReadReceiptsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
     _poller = _listener.listen(
       (data) async {
         // reset
-        state = await AsyncValue.guard(() async => await manager.reload());
+        state = AsyncData(await manager.reload());
       },
       onError: (e, s) {
         _log.severe('read receipt reload stream errored', e, s);

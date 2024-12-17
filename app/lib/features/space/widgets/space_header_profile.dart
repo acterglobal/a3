@@ -27,54 +27,16 @@ class SpaceHeaderProfile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaceAvatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
-    final parentBadges =
-        ref.watch(parentAvatarInfosProvider(spaceId)).valueOrNull;
-    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
-
     return Padding(
       padding: const EdgeInsets.only(left: 10),
       child: Row(
         children: <Widget>[
-          ActerAvatar(
-            options: AvatarOptions(
-              AvatarInfo(
-                uniqueId: spaceId,
-                displayName: spaceAvatarInfo.displayName,
-                avatar: spaceAvatarInfo.avatar,
-                onAvatarTap: () => openAvatar(context, ref, spaceId),
-              ),
-              parentBadges: parentBadges,
-              size: 100,
-              badgesSize: 30,
-              onTapParentBadges: () => showParentSpaceList(context, spaceId),
-            ),
-          ),
+          Consumer(builder: spaceAvatarBuilder),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SelectionArea(
-                  child: GestureDetector(
-                    onTap: () {
-                      if (membership?.canString('CanSetName') == true) {
-                        showEditSpaceNameBottomSheet(
-                          context: context,
-                          ref: ref,
-                          spaceId: spaceId,
-                        );
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        spaceAvatarInfo.displayName ?? spaceId,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ),
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 6, left: 10),
                   child: SpaceInfo(spaceId: spaceId),
@@ -84,6 +46,60 @@ class SpaceHeaderProfile extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget spaceTitleBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
+    final displayName = ref.watch(roomDisplayNameProvider(spaceId)).valueOrNull;
+
+    return SelectionArea(
+      child: GestureDetector(
+        onTap: () {
+          if (membership?.canString('CanSetName') == true) {
+            showEditSpaceNameBottomSheet(
+              context: context,
+              ref: ref,
+              spaceId: spaceId,
+            );
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Text(
+            displayName ?? spaceId,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget spaceAvatarBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+  ) {
+    final spaceAvatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
+    final parentBadges =
+        ref.watch(parentAvatarInfosProvider(spaceId)).valueOrNull;
+    return ActerAvatar(
+      options: AvatarOptions(
+        AvatarInfo(
+          uniqueId: spaceId,
+          displayName: spaceAvatarInfo.displayName,
+          avatar: spaceAvatarInfo.avatar,
+          onAvatarTap: () => openAvatar(context, ref, spaceId),
+        ),
+        parentBadges: parentBadges,
+        size: 100,
+        badgesSize: 30,
+        onTapParentBadges: () => showParentSpaceList(context, spaceId),
       ),
     );
   }

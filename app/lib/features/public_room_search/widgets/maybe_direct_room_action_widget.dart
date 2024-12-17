@@ -69,7 +69,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
   ) {
     final lang = L10n.of(context);
     final roomWatch = ref.watch(maybeRoomProvider(roomId));
-    if (roomWatch.valueOrNull == null) {
+    if (roomWatch == null) {
       return Card(
         child: ListTile(
           onTap: () => onSelectedMatch(
@@ -95,8 +95,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
         ),
       );
     }
-    final room =
-        roomWatch.value.expect('could not get room from id without domain');
+    final room = roomWatch.expect('could not get room from id without domain');
 
     if (room.isJoined()) {
       return room.isSpace()

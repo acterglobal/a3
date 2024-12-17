@@ -52,7 +52,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     if (!context.mounted) return;
     EasyLoading.show(status: lang.updatingPowerLevelOf(userId));
     try {
-      final room = await ref.read(maybeRoomProvider(roomId).future);
+      final room = ref.read(maybeRoomProvider(roomId));
       await room?.updatePowerLevel(userId, newPowerLevel);
       if (!context.mounted) {
         EasyLoading.dismiss();

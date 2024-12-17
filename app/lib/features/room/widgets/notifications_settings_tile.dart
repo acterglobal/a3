@@ -129,7 +129,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.changingNotificationMode);
     try {
-      final room = await ref.read(maybeRoomProvider(roomId).future);
+      final room = ref.read(maybeRoomProvider(roomId));
       if (room == null) {
         _log.severe('Room not found');
         if (!context.mounted) {
