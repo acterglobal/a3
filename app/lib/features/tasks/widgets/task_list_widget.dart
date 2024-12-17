@@ -62,7 +62,7 @@ class TaskListWidget extends ConsumerWidget {
       background: const TasksListSkeleton(),
       error: error,
       stack: stack,
-      textBuilder: L10n.of(context).loadingFailed,
+      textBuilder: (error, code) => L10n.of(context).loadingFailed(error),
       onRetryTap: () {
         ref.invalidate(taskListProvider);
       },
