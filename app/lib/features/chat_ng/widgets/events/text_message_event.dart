@@ -79,7 +79,10 @@ class TextMessageEvent extends StatelessWidget {
 
     return isUser
         ? ChatBubble.user(
-            context: context, metadata: metadata, child: contentWidget)
+            context: context,
+            metadata: metadata,
+            child: contentWidget,
+          )
         : ChatBubble(
             context: context,
             metadata: metadata,
