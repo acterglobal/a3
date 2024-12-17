@@ -85,19 +85,21 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
     WidgetRef ref,
     SpaceObjectDetails spaceObjectDetails,
   ) {
-    String spaceId = spaceObjectDetails.spaceId;
-    final refDetails = getRefDetails(
-      ref: ref,
-      objectDetails: spaceObjectDetails,
-    );
     return AttachOptions(
-      onTapBoost: () {
-        Navigator.pop(context);
+      onTapBoost: () async {
+        String spaceId = spaceObjectDetails.spaceId;
+        final refDetails = await getRefDetails(
+          ref: ref,
+          objectDetails: spaceObjectDetails,
+        );
+        if (!context.mounted) return;
         context.pushNamed(
           Routes.actionAddUpdate.name,
           queryParameters: {'spaceId': spaceId},
           extra: refDetails,
         );
+        if (!context.mounted) return;
+        Navigator.pop(context);
       },
       onTapPin: () async {
         final refDetails = await getRefDetails(
