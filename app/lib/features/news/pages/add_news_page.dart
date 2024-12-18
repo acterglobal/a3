@@ -6,13 +6,13 @@ import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/news/actions/submit_news.dart';
 import 'package:acter/features/news/model/keys.dart';
-import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
 import 'package:acter/features/news/widgets/news_post_editor/selected_action_button.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -25,12 +25,12 @@ const addNewsKey = Key('add-news');
 
 class AddNewsPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
-  final NewsReferencesModel? newsReferencesModel;
+  final RefDetails? refDetails;
 
   const AddNewsPage({
     super.key = addNewsKey,
     this.initialSelectedSpace,
-    this.newsReferencesModel,
+    this.refDetails,
   });
 
   @override
@@ -250,7 +250,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           bottom: 10,
           left: 10,
           child: SelectedActionButton(
-            newsReferences: selectedNewsPost?.newsReferencesModel,
+            refDetails: selectedNewsPost?.refDetails,
           ),
         ),
       ],
@@ -295,7 +295,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             onPressed: () {
               NewsUtils.addTextSlide(
                 ref: ref,
-                newsReferencesModel: widget.newsReferencesModel,
+                refDetails: widget.refDetails,
               );
             },
             child: Text(lang.addTextSlide),
@@ -305,7 +305,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             key: NewsUpdateKeys.addImageSlide,
             onPressed: () async => await NewsUtils.addImageSlide(
               ref: ref,
-              newsReferencesModel: widget.newsReferencesModel,
+              refDetails: widget.refDetails,
             ),
             child: Text(lang.addImageSlide),
           ),
@@ -314,7 +314,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             key: NewsUpdateKeys.addVideoSlide,
             onPressed: () async => await NewsUtils.addVideoSlide(
               ref: ref,
-              newsReferencesModel: widget.newsReferencesModel,
+              refDetails: widget.refDetails,
             ),
             child: Text(lang.addVideoSlide),
           ),

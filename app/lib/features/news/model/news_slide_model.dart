@@ -1,4 +1,4 @@
-import 'package:acter/features/news/model/news_references_model.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,7 +15,7 @@ class NewsSlideItem {
   Color? backgroundColor;
   Color? foregroundColor;
   XFile? mediaFile;
-  NewsReferencesModel? newsReferencesModel;
+  RefDetails? refDetails;
 
   NewsSlideItem({
     required this.type,
@@ -24,6 +24,6 @@ class NewsSlideItem {
     this.backgroundColor,
     this.foregroundColor,
     this.mediaFile,
-    this.newsReferencesModel,
+    this.refDetails,
   });
 }
