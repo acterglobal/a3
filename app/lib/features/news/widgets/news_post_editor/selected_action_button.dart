@@ -44,7 +44,7 @@ class SelectedActionButton extends ConsumerWidget {
             return SizedBox(
               width: 300,
               child: EventItem(
-                event: calendarEvent,
+                eventId: calendarEvent.eventId().toString(),
                 isShowRsvp: false,
                 onTapEventItem: (event) async {
                   final notifier = ref.read(newsStateProvider.notifier);

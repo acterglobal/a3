@@ -2,24 +2,27 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/blinking_text.dart';
+import 'package:acter/common/widgets/reference_details_item.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show CalendarEvent, RsvpStatusTag;
+    show CalendarEvent, RefDetails, RsvpStatusTag;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::cal_event::event_item');
 
 class EventItem extends ConsumerWidget {
   static const eventItemClick = Key('event_item_click');
 
-  final CalendarEvent event;
+  final String eventId;
+  final RefDetails? refDetails;
   final EdgeInsetsGeometry? margin;
   final Function(String)? onTapEventItem;
   final bool isShowRsvp;
@@ -27,7 +30,8 @@ class EventItem extends ConsumerWidget {
 
   const EventItem({
     super.key,
-    required this.event,
+    required this.eventId,
+    this.refDetails,
     this.margin,
     this.onTapEventItem,
     this.isShowRsvp = true,
@@ -36,6 +40,21 @@ class EventItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final event = ref.watch(calendarEventProvider(eventId)).valueOrNull;
+    if (event != null) {
+      return _buildEventItemUI(context, ref, event);
+    } else if (refDetails != null) {
+      return ReferenceDetailsItem(refDetails: refDetails!);
+    } else {
+      return const Skeletonizer(child: SizedBox(height: 100, width: 100));
+    }
+  }
+
+  Widget _buildEventItemUI(
+    BuildContext context,
+    WidgetRef ref,
+    CalendarEvent event,
+  ) {
     final eventType = ref.watch(eventTypeProvider(event));
     return InkWell(
       key: eventItemClick,
@@ -66,8 +85,8 @@ class EventItem extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildEventTitle(context),
-                      Consumer(builder: _buildEventSubtitle),
+                      _buildEventTitle(context, event.title()),
+                      _buildEventSubtitle(context, ref, event),
                       const SizedBox(height: 4),
                     ],
                   ),
@@ -76,7 +95,7 @@ class EventItem extends ConsumerWidget {
                 if (eventType == EventFilters.ongoing)
                   _buildHappeningIndication(context),
                 const SizedBox(width: 10),
-                if (isShowRsvp) _buildRsvpStatus(context, ref),
+                if (isShowRsvp) _buildRsvpStatus(context, ref,event),
                 const SizedBox(width: 10),
               ],
             ),
@@ -86,9 +105,9 @@ class EventItem extends ConsumerWidget {
     );
   }
 
-  Widget _buildEventTitle(BuildContext context) {
+  Widget _buildEventTitle(BuildContext context, String title) {
     return Text(
-      event.title(),
+      title,
       style: Theme.of(context).textTheme.bodyMedium,
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
@@ -98,7 +117,7 @@ class EventItem extends ConsumerWidget {
   Widget _buildEventSubtitle(
     BuildContext context,
     WidgetRef ref,
-    Widget? child,
+    CalendarEvent event,
   ) {
     String eventSpaceName =
         ref.watch(roomDisplayNameProvider(event.roomIdStr())).valueOrNull ??
@@ -112,7 +131,11 @@ class EventItem extends ConsumerWidget {
     );
   }
 
-  Widget _buildRsvpStatus(BuildContext context, WidgetRef ref) {
+  Widget _buildRsvpStatus(
+    BuildContext context,
+    WidgetRef ref,
+    CalendarEvent event,
+  ) {
     final lang = L10n.of(context);
     final eventId = event.eventId().toString();
     final rsvpLoader = ref.watch(myRsvpStatusProvider(eventId));

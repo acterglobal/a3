@@ -47,7 +47,7 @@ void main() {
         roomDisplayNameProvider.overrideWith((a, b) => 'test'),
       ],
       child: EventItem(
-        event: mockEvent,
+        eventId: mockEvent.eventId().toString(),
         isShowRsvp: isShowRsvp,
         isShowSpaceName: isShowSpaceName,
         onTapEventItem: onTapEventItem,

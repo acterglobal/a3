@@ -105,7 +105,7 @@ class EventListWidget extends ConsumerWidget {
       physics: shrinkWrap ? const NeverScrollableScrollPhysics() : null,
       itemBuilder: (context, index) {
         return EventItem(
-          event: eventList[index],
+          eventId: eventList[index].eventId().toString(),
           isShowSpaceName: isShowSpaceName,
           onTapEventItem: onTapEventItem,
         );

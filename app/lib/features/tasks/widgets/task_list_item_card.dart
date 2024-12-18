@@ -2,6 +2,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
+import 'package:acter/common/widgets/reference_details_item.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
@@ -12,12 +13,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger('a3::tasks::widgets::task_list_item_card');
+import 'package:skeletonizer/skeletonizer.dart';
 
 class TaskListItemCard extends ConsumerWidget {
   final String taskListId;
+  final RefDetails? refDetails;
   final bool showSpace;
   final bool showTaskListIndication;
   final bool showCompletedTask;
@@ -29,6 +29,7 @@ class TaskListItemCard extends ConsumerWidget {
   const TaskListItemCard({
     super.key,
     required this.taskListId,
+    this.refDetails,
     this.showSpace = false,
     this.showTaskListIndication = false,
     this.showCompletedTask = false,
@@ -40,25 +41,19 @@ class TaskListItemCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final lang = L10n.of(context);
-    final tasklistLoader = ref.watch(taskListProvider(taskListId));
-    return tasklistLoader.when(
-      data: (taskList) => Card(
+    final taskList = ref.watch(taskListProvider(taskListId)).valueOrNull;
+    if (taskList != null) {
+      return Card(
         key: Key('task-list-card-$taskListId'),
         child: canExpand
             ? expandable(context, ref, taskList)
             : simple(context, ref, taskList),
-      ),
-      error: (e, s) {
-        _log.severe('Failed to load tasklist', e, s);
-        return Card(
-          child: Text(lang.errorLoadingTasks(e)),
-        );
-      },
-      loading: () => Card(
-        child: Text(lang.loading),
-      ),
-    );
+      );
+    } else if (refDetails != null) {
+      return ReferenceDetailsItem(refDetails: refDetails!);
+    } else {
+      return const Skeletonizer(child: SizedBox(height: 100, width: 100));
+    }
   }
 
   Widget expandable(BuildContext context, WidgetRef ref, TaskList taskList) =>
