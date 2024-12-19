@@ -36,7 +36,8 @@ use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-    typing::TypingController, verification::VerificationController,
+    session_verification::SessionVerificationController, typing::TypingController,
+    verification::VerificationController,
 };
 
 mod sync;
@@ -67,6 +68,7 @@ pub struct Client {
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) invitation_controller: InvitationController,
     pub(crate) verification_controller: VerificationController,
+    pub(crate) session_verification_controller: SessionVerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
     pub spaces: Arc<RwLock<ObservableVector<Space>>>,
@@ -154,6 +156,7 @@ impl Client {
 
         self.join_room_typed(parsed, server_names).await
     }
+
     pub async fn join_room_typed(
         &self,
         room_id_or_alias: OwnedRoomOrAliasId,
@@ -183,6 +186,7 @@ impl Client {
             convos: Default::default(),
             invitation_controller: InvitationController::new(core.clone()),
             verification_controller: VerificationController::new(),
+            session_verification_controller: SessionVerificationController::new(),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
         };
@@ -451,6 +455,8 @@ impl Client {
             .remove_to_device_event_handler(&client);
         self.verification_controller
             .remove_sync_event_handler(&client);
+        self.session_verification_controller
+            .remove_event_handlers(&client);
         self.typing_controller.remove_event_handler(&client);
 
         RUNTIME

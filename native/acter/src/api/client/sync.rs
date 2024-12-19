@@ -452,6 +452,8 @@ impl Client {
         // in fact, when user opens app, he sees old verification popup sometimes
         // in order to avoid this issue, comment out sync event
         self.verification_controller.add_sync_event_handler(&client);
+        self.session_verification_controller
+            .add_event_handlers(&client);
 
         let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
