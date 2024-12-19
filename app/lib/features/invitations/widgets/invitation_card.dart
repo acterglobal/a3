@@ -1,6 +1,8 @@
-import 'package:acter/common/providers/room_providers.dart';
+import 'dart:typed_data';
+
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/features/activities/providers/invitations_providers.dart';
+import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -27,18 +29,37 @@ class InvitationCard extends ConsumerStatefulWidget {
 
 class _InvitationCardState extends ConsumerState<InvitationCard> {
   String? roomTitle;
+  late AvatarInfo avatarInfo;
 
   @override
   void initState() {
     super.initState();
-    _fetchTitle();
+    setState(() {
+      avatarInfo = AvatarInfo(uniqueId: widget.invitation.roomIdStr());
+    });
+    _fetchDetails();
   }
 
-  void _fetchTitle() async {
-    final title = await widget.invitation.room().displayName();
+  void _fetchDetails() async {
+    final room = widget.invitation.room();
+    final title = await room.displayName();
     setState(() {
       roomTitle = title.text();
+      avatarInfo = AvatarInfo(
+        uniqueId: widget.invitation.roomIdStr(),
+        displayName: roomTitle,
+      );
     });
+    final avatarData = (await room.avatar(null)).data();
+    if (avatarData != null) {
+      setState(() {
+        avatarInfo = AvatarInfo(
+          uniqueId: widget.invitation.roomIdStr(),
+          displayName: roomTitle,
+          avatar: MemoryImage(Uint8List.fromList(avatarData.asTypedList())),
+        );
+      });
+    }
   }
 
   @override
@@ -60,7 +81,7 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 // Reject Invitation Button
-                OutlinedButton(
+                ActerInlineTextButton(
                   onPressed: () => _onTapDeclineInvite(context),
                   child: Text(lang.decline),
                 ),
@@ -92,15 +113,14 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
 
   ListTile renderSpaceTile(BuildContext context) {
     final roomId = widget.invitation.roomIdStr();
-    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions(
-          roomAvatarInfo,
+          avatarInfo,
           size: 48,
         ),
       ),
-      title: Text(roomAvatarInfo.displayName ?? roomId),
+      title: Text(avatarInfo.displayName ?? roomId),
       subtitle: Wrap(
         children: [
           Text(L10n.of(context).invitationToSpace),
@@ -112,11 +132,10 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
 
   ListTile renderGroupChatTile(BuildContext context) {
     final roomId = widget.invitation.roomIdStr();
-    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions(
-          roomAvatarInfo,
+          avatarInfo,
           size: 48,
         ),
       ),
