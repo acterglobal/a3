@@ -11,11 +11,31 @@ class HasInvitesTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      leading: const Icon(PhosphorIconsRegular.envelopeSimple),
-      onTap: () => context.pushNamed(Routes.myOpenInvitations.name),
-      title: Text(L10n.of(context).pendingInvitesCount(count)),
-      trailing: const Icon(PhosphorIconsRegular.caretRight),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
+        ),
+        child: ListTile(
+          leading: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondary,
+              borderRadius: const BorderRadius.all(Radius.circular(100)),
+            ),
+            child: Icon(
+              PhosphorIconsRegular.envelopeSimple,
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
+          ),
+          onTap: () => context.pushNamed(Routes.myOpenInvitations.name),
+          title: Text(L10n.of(context).pendingInvitesCount(count)),
+          trailing: const Icon(PhosphorIconsRegular.caretRight),
+        ),
+      ),
     );
   }
 }

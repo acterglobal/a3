@@ -9,10 +9,13 @@ import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/features_nav_widget.dart';
+import 'package:acter/features/home/widgets/important_activities_section.dart';
 import 'package:acter/features/home/widgets/in_dashboard.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_tasks.dart';
+import 'package:acter/features/invitations/providers/invitations_providers.dart';
+import 'package:acter/features/invitations/widgets/has_invites_tile.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -112,10 +115,11 @@ class Dashboard extends ConsumerWidget {
     final hasSpaces = ref.watch(hasSpacesProvider);
     return SingleChildScrollView(
       child: hasSpaces
-          ? const Column(
+          ? Column(
               children: [
                 FeaturesNavWidget(),
-                SizedBox(height: 12),
+                ImportantActivitiesSection(),
+                const SizedBox(height: 12),
                 MyEventsSection(eventFilters: EventFilters.ongoing),
                 MyTasksSection(limit: 5),
                 MyEventsSection(
