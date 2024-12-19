@@ -427,7 +427,7 @@ impl AcceptSasResult {
             .await?
     }
 
-    pub async fn confirm(&self, timeout_in_secs: u64) -> Result<bool> {
+    pub async fn approve(&self, timeout_in_secs: u64) -> Result<bool> {
         let client = self.client.clone();
         let flow_id = self.flow_id.clone();
         let sender = self.sender.clone();
@@ -472,7 +472,7 @@ impl AcceptSasResult {
             .await?
     }
 
-    pub async fn mismatch(&self, timeout_in_secs: u64) -> Result<bool> {
+    pub async fn decline(&self, timeout_in_secs: u64) -> Result<bool> {
         let client = self.client.clone();
         let flow_id = self.flow_id.clone();
         let sender = self.sender.clone();
