@@ -7,7 +7,7 @@ import 'package:riverpod/riverpod.dart';
 final hasActivitiesProvider = StateProvider((ref) {
   final invitations = ref.watch(invitationListProvider);
   if (invitations.isNotEmpty) {
-    return UrgencyBadge.important;
+    return UrgencyBadge.urgent;
   }
   final syncStatus = ref.watch(syncStateProvider);
   if (syncStatus.errorMsg != null) {
