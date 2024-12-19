@@ -19,8 +19,7 @@ const _supportedTypes = [
   'm.room.encrypted',
 ];
 
-typedef ReplyMsgInfo = ({String originalId, String messageId, String roomId});
-typedef RoomMsgId = (String roomId, String uniqueId);
+typedef RoomMsgId = ({String roomId, String uniqueId});
 typedef MentionQuery = (String, MentionType);
 
 final chatStateProvider = StateNotifierProvider.family<ChatRoomMessagesNotifier,
@@ -30,9 +29,8 @@ final chatStateProvider = StateNotifierProvider.family<ChatRoomMessagesNotifier,
 
 final chatRoomMessageProvider =
     StateProvider.family<RoomMessage?, RoomMsgId>((ref, roomMsgId) {
-  final (roomId, uniqueMsgId) = roomMsgId;
-  final chatRoomState = ref.watch(chatStateProvider(roomId));
-  return chatRoomState.message(uniqueMsgId);
+  final chatRoomState = ref.watch(chatStateProvider(roomMsgId.roomId));
+  return chatRoomState.message(roomMsgId.uniqueId);
 });
 
 final showHiddenMessages = StateProvider((ref) => false);
@@ -53,7 +51,8 @@ final renderableChatMessagesProvider =
   // do apply some filters
 
   return msgList.where((id) {
-    final msg = ref.watch(chatRoomMessageProvider((roomId, id)));
+    final msg =
+        ref.watch(chatRoomMessageProvider((roomId: roomId, uniqueId: id)));
     if (msg == null) {
       _log.severe('Room Msg $roomId $id not found');
       return false;
@@ -65,8 +64,8 @@ final renderableChatMessagesProvider =
 // Provider to check if we should show avatar by comparing with the next message
 final isNextMessageGroupProvider = Provider.family<bool, RoomMsgId>(
   (ref, roomMsgId) {
-    final roomId = roomMsgId.$1;
-    final eventId = roomMsgId.$2;
+    final roomId = roomMsgId.roomId;
+    final eventId = roomMsgId.uniqueId;
     final messages = ref.watch(renderableChatMessagesProvider(roomId));
     final currentIndex = messages.indexOf(eventId);
 
@@ -76,7 +75,9 @@ final isNextMessageGroupProvider = Provider.family<bool, RoomMsgId>(
     // Get current and next message
     final currentMsg = ref.watch(chatRoomMessageProvider(roomMsgId));
     final nextMsg = ref.watch(
-      chatRoomMessageProvider((roomId, messages[currentIndex + 1])),
+      chatRoomMessageProvider(
+        (roomId: roomId, uniqueId: messages[currentIndex + 1]),
+      ),
     );
 
     if (currentMsg == null || nextMsg == null) return true;
@@ -135,6 +136,6 @@ final mentionSuggestionsProvider =
 });
 
 final replyToMsgProvider = AsyncNotifierProvider.autoDispose
-    .family<ReplyMessageNotifier, ReplyMsgState, ReplyMsgInfo>(() {
+    .family<ReplyMessageNotifier, ReplyMsgState, RoomMsgId>(() {
   return ReplyMessageNotifier();
 });

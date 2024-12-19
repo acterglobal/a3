@@ -10,12 +10,11 @@ class ReplyMsgLoading extends ReplyMsgState {
 }
 
 class ReplyMsgError extends ReplyMsgState {
-  final String originalId;
   final String msgId;
   final Object? error;
   final StackTrace? stackTrace;
 
-  const ReplyMsgError(this.originalId, this.msgId, this.error, this.stackTrace);
+  const ReplyMsgError(this.msgId, this.error, this.stackTrace);
 }
 
 class ReplyMsgData extends ReplyMsgState {

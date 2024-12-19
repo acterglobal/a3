@@ -2,7 +2,6 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
-import 'package:acter/features/chat_ng/models/message_metadata.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
@@ -125,21 +124,14 @@ class OriginalEventItem extends ConsumerWidget {
   ) {
     final msgType = item.msgType();
     final content = item.msgContent();
-    final metadata = MessageMetadata(
-      roomId: roomId,
-      messageId: messageId,
-      isUser: isUser,
-      isReply: true,
-    );
 
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
 
     return switch (msgType) {
-      'm.emote' || 'm.text' => TextMessageEvent(
+      'm.emote' || 'm.text' => TextMessageEvent.reply(
           roomId: roomId,
           content: content,
-          metadata: metadata,
         ),
       'm.image' => ImageMessageEvent(
           messageId: messageId,

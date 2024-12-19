@@ -1,34 +1,39 @@
-import 'package:acter/features/chat_ng/models/message_metadata.dart';
 import 'package:acter/features/chat_ng/models/reply_message_state.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/reply_original_event.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/extensions/options.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 // Reply State UI widget
-class ReplyPreview extends ConsumerWidget {
-  final MessageMetadata metadata;
-  const ReplyPreview({
+class RepliedToPreview extends ConsumerWidget {
+  final String roomId;
+  final String originalId;
+  final bool isUser;
+  const RepliedToPreview({
     super.key,
-    required this.metadata,
+    required this.roomId,
+    required this.originalId,
+    this.isUser = false,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final String roomId = metadata.roomId;
-    final String messageId = metadata.messageId;
-    final String originalId =
-        metadata.repliedTo.expect('should always contain replied id');
-    final ReplyMsgInfo replyInfo =
-        (roomId: roomId, messageId: messageId, originalId: originalId);
+    final RoomMsgId replyInfo = (roomId: roomId, uniqueId: originalId);
 
     final roomMsgState = ref.watch(replyToMsgProvider(replyInfo)).valueOrNull;
+    final avatarInfo = AvatarInfo(uniqueId: '#');
 
     return switch (roomMsgState) {
       ReplyMsgLoading() => replyBuilder(
           context,
-          Center(child: CircularProgressIndicator()),
+          Skeletonizer(
+            child: ListTile(
+              leading: ActerAvatar(options: AvatarOptions.DM(avatarInfo)),
+              isThreeLine: true,
+            ),
+          ),
         ),
       ReplyMsgError() => replyBuilder(
           context,
@@ -43,9 +48,9 @@ class ReplyPreview extends ConsumerWidget {
   Widget replyErrorUI(
     BuildContext context,
     WidgetRef ref,
-    ReplyMsgInfo replyInfo,
+    RoomMsgId replyInfo,
   ) {
-    final originalId = replyInfo.originalId;
+    final originalId = replyInfo.uniqueId;
     return Text(
       'Failed to load original message id: $originalId',
       style: Theme.of(context)
@@ -57,7 +62,6 @@ class ReplyPreview extends ConsumerWidget {
 
   Widget replyBuilder(BuildContext context, Widget child) {
     final colorScheme = Theme.of(context).colorScheme;
-    final bool isUser = metadata.isUser;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
