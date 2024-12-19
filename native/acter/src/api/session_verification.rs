@@ -3,7 +3,8 @@ use futures::stream::{Stream, StreamExt};
 use matrix_sdk::{
     encryption::{
         verification::{
-            Emoji, SasState, SasVerification, Verification, VerificationRequest, VerificationRequestState,
+            Emoji, SasState, SasVerification, Verification, VerificationRequest,
+            VerificationRequestState,
         },
         Encryption,
     },
@@ -223,10 +224,7 @@ impl VerificationRequestResult {
                 else {
                     bail!("Unknown session verification request")
                 };
-                info!(
-                    "Starting SAS verification from {}",
-                    request.other_user_id()
-                );
+                info!("Starting SAS verification from {}", request.other_user_id());
 
                 // confirm that verification request state is ready
                 let timeout_in_secs = timeout_in_secs.try_into()?;

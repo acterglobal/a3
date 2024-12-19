@@ -455,7 +455,8 @@ impl Client {
             .remove_to_device_event_handler(&client);
         self.verification_controller
             .remove_sync_event_handler(&client);
-        self.session_verification_controller.remove_event_handlers(&client);
+        self.session_verification_controller
+            .remove_event_handlers(&client);
         self.typing_controller.remove_event_handler(&client);
 
         RUNTIME
