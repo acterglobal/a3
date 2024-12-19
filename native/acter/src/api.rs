@@ -40,6 +40,7 @@ mod reactions;
 mod room;
 mod rsvp;
 mod search;
+mod session_verification;
 mod settings;
 mod spaces;
 mod stream;
@@ -110,6 +111,7 @@ pub use room::{
 };
 pub use rsvp::{Rsvp, RsvpDraft, RsvpManager, RsvpStatus};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
+pub use session_verification::{AcceptSasResult, StartSasResult, VerificationRequestEvent, VerificationRequestResult};
 pub use settings::{
     ActerAppSettings, ActerAppSettingsBuilder, ActerUserAppSettings, ActerUserAppSettingsBuilder,
     EventsSettings, NewsSettings, PinsSettings, RoomPowerLevels, SimpleOnOffSetting,
