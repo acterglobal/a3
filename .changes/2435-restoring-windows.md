@@ -1,1 +1,0 @@
-- Restore windows size and position to last known one on app start on supported platforms
