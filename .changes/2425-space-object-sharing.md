@@ -1,1 +1,0 @@
-- [New] : Sharing space object capabilities is now expanded. You can now share space objects with any other space objects in just one click.

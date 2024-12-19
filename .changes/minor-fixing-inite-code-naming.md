@@ -1,1 +1,0 @@
-- Fix: Show the user instead of the room in the invite code sharing text
