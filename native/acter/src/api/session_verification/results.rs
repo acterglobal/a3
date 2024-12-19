@@ -1,210 +1,27 @@
 use anyhow::{bail, Result};
-use futures::stream::{Stream, StreamExt};
 use matrix_sdk::{
-    encryption::{
-        verification::{
-            Emoji, SasState, SasVerification, Verification, VerificationRequest,
-            VerificationRequestState,
-        },
-        Encryption,
-    },
-    event_handler::{Ctx, EventHandlerHandle},
-    ruma::{
-        events::{
-            key::verification::{request::ToDeviceKeyVerificationRequestEvent, VerificationMethod},
-            room::message::{MessageType, OriginalSyncRoomMessageEvent},
-        },
-        OwnedUserId,
-    },
+    encryption::verification::{Emoji, SasState, Verification, VerificationRequestState},
+    ruma::OwnedUserId,
     Client as SdkClient,
 };
-use std::{
-    marker::Unpin,
-    sync::{Arc, RwLock},
-};
-use tokio::sync::broadcast::{channel, Receiver, Sender};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
-use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info};
 
-use super::{Client, RUNTIME};
+use super::super::RUNTIME;
 
 #[derive(Clone, Debug)]
-pub(crate) struct SessionVerificationController {
-    to_device_verification_request_handle: Option<EventHandlerHandle>,
-    room_msg_verification_request_handle: Option<EventHandlerHandle>,
-    request_event_tx: Sender<VerificationRequestEvent>,
-    request_event_rx: Arc<Receiver<VerificationRequestEvent>>,
-    verification_request: Arc<RwLock<Option<VerificationRequest>>>,
-    sas_verification: Arc<RwLock<Option<SasVerification>>>,
-}
-
-impl SessionVerificationController {
-    pub fn new() -> Self {
-        let (tx, rx) = channel::<VerificationRequestEvent>(10); // dropping after more than 10 items queued
-        SessionVerificationController {
-            to_device_verification_request_handle: None,
-            room_msg_verification_request_handle: None,
-            request_event_tx: tx,
-            request_event_rx: Arc::new(rx),
-            verification_request: Arc::new(RwLock::new(None)),
-            sas_verification: Arc::new(RwLock::new(None)),
-        }
-    }
-
-    pub fn add_event_handlers(&mut self, client: &SdkClient) {
-        client.add_event_handler_context(self.clone());
-
-        // to_device event is intended to verify other device
-        let handle = client.add_event_handler(
-            |ev: ToDeviceKeyVerificationRequestEvent,
-             c: SdkClient,
-             Ctx(me): Ctx<SessionVerificationController>| async move {
-                let req_evt = VerificationRequestEvent::new(
-                    c.clone(),
-                    ev.content.transaction_id.to_string(),
-                    ev.sender.clone(),
-                );
-                if let Err(e) = me.request_event_tx.send(req_evt) {
-                    error!("Dropping flow for {}: {}", ev.content.transaction_id, e);
-                } else {
-                    let Some(request) = c
-                        .encryption()
-                        .get_verification_request(&ev.sender, &ev.content.transaction_id)
-                        .await
-                    else {
-                        error!("Request object wasn't created");
-                        return;
-                    };
-                    // tokio::spawn(request_verification_handler(c, request));
-                }
-            },
-        );
-        self.to_device_verification_request_handle = Some(handle);
-
-        // sync event is intended to verify other user
-        let handle = client.add_event_handler(
-            |ev: OriginalSyncRoomMessageEvent,
-             c: SdkClient,
-             Ctx(me): Ctx<SessionVerificationController>| async move {
-                if let MessageType::VerificationRequest(content) = &ev.content.msgtype {
-                    let req_evt = VerificationRequestEvent::new(
-                        c.clone(),
-                        ev.event_id.to_string(),
-                        ev.sender.clone(),
-                    );
-                    if let Err(e) = me.request_event_tx.send(req_evt) {
-                        error!("Dropping flow for {}: {}", ev.event_id, e);
-                    } else {
-                        let Some(request) = c
-                            .encryption()
-                            .get_verification_request(&ev.sender, &ev.event_id)
-                            .await
-                        else {
-                            error!("Request object wasn't created");
-                            return;
-                        };
-                        // tokio::spawn(request_verification_handler(c, request));
-                    }
-                }
-            },
-        );
-        self.room_msg_verification_request_handle = Some(handle);
-    }
-
-    pub fn remove_event_handlers(&mut self, client: &SdkClient) {
-        if let Some(handle) = self.to_device_verification_request_handle.clone() {
-            client.remove_event_handler(handle);
-            self.to_device_verification_request_handle = None;
-        }
-        if let Some(handle) = self.room_msg_verification_request_handle.clone() {
-            client.remove_event_handler(handle);
-            self.room_msg_verification_request_handle = None;
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct VerificationRequestEvent {
+pub struct AcceptRequestResult {
     client: SdkClient,
     flow_id: String,
     sender: OwnedUserId,
 }
 
-impl VerificationRequestEvent {
+impl AcceptRequestResult {
     pub(crate) fn new(client: SdkClient, flow_id: String, sender: OwnedUserId) -> Self {
-        VerificationRequestEvent {
-            client,
-            flow_id,
-            sender,
-        }
-    }
-
-    pub async fn accept(&self) -> Result<VerificationRequestResult> {
-        let client = self.client.clone();
-        let flow_id = self.flow_id.clone();
-        let sender = self.sender.clone();
-        RUNTIME
-            .spawn(async move {
-                let Some(request) = client
-                    .encryption()
-                    .get_verification_request(&sender, &flow_id)
-                    .await
-                else {
-                    bail!("Unknown session verification request")
-                };
-                info!(
-                    "Accepting verification request from {}",
-                    request.other_user_id()
-                );
-                let methods = vec![VerificationMethod::SasV1];
-                if let Err(e) = request.accept_with_methods(methods).await {
-                    bail!("Can't accept verification request");
-                }
-                Ok(VerificationRequestResult::new(client, flow_id, sender))
-            })
-            .await?
-    }
-
-    pub async fn cancel(&self) -> Result<bool> {
-        let client = self.client.clone();
-        let flow_id = self.flow_id.clone();
-        let sender = self.sender.clone();
-        RUNTIME
-            .spawn(async move {
-                let Some(request) = client
-                    .encryption()
-                    .get_verification_request(&sender, &flow_id)
-                    .await
-                else {
-                    bail!("Unknown session verification request")
-                };
-                info!(
-                    "Cancelling verification request from {}",
-                    request.other_user_id()
-                );
-                if let Err(e) = request.cancel().await {
-                    bail!("Can't cancel verification request");
-                }
-                Ok(true)
-            })
-            .await?
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct VerificationRequestResult {
-    client: SdkClient,
-    flow_id: String,
-    sender: OwnedUserId,
-}
-
-impl VerificationRequestResult {
-    pub(crate) fn new(client: SdkClient, flow_id: String, sender: OwnedUserId) -> Self {
-        VerificationRequestResult {
+        AcceptRequestResult {
             client,
             flow_id,
             sender,
@@ -541,25 +358,5 @@ impl AcceptSasResult {
                 Ok(true)
             })
             .await?
-    }
-}
-
-async fn request_verification_handler(client: SdkClient, request: VerificationRequest) {
-    let mut stream = request.changes();
-
-    while let Some(state) = stream.next().await {
-        match state {
-            VerificationRequestState::Created { .. }
-            | VerificationRequestState::Requested { .. }
-            | VerificationRequestState::Ready { .. } => (),
-            VerificationRequestState::Transitioned { verification } => {
-                // We only support SAS verification.
-                if let Verification::SasV1(s) = verification {
-                    // tokio::spawn(sas_verification_handler(client, s));
-                    break;
-                }
-            }
-            VerificationRequestState::Done | VerificationRequestState::Cancelled(_) => break,
-        }
     }
 }
