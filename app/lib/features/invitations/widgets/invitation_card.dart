@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';

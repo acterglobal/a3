@@ -14,8 +14,6 @@ import 'package:acter/features/home/widgets/in_dashboard.dart';
 import 'package:acter/features/home/widgets/my_events.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_tasks.dart';
-import 'package:acter/features/invitations/providers/invitations_providers.dart';
-import 'package:acter/features/invitations/widgets/has_invites_tile.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
