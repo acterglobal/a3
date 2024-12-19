@@ -3170,6 +3170,421 @@ class Api {
     return tmp7;
   }
 
+  FfiBufferUint8? __storySlideSourceBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _storySlideSourceBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  bool? __storyCanRedactFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _storyCanRedactFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  ReactionManager? __storyReactionsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _storyReactionsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ReactionManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ReactionManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  ReadReceiptsManager? __storyReadReceiptsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _storyReadReceiptsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ReadReceiptsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ReadReceiptsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  CommentsManager? __storyCommentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _storyCommentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_CommentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = CommentsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __storyDraftAddSlideFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _storyDraftAddSlideFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  EventId? __storyDraftSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _storyDraftSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __storyUpdateBuilderAddSlideFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _storyUpdateBuilderAddSlideFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  EventId? __storyUpdateBuilderSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _storyUpdateBuilderSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __pinDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -10204,6 +10619,54 @@ class Api {
     return tmp7;
   }
 
+  FfiListStory? __spaceLatestStoriesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceLatestStoriesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListStory");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListStory._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   FfiListCalendarEvent? __spaceCalendarEventsFuturePoll(
     int boxed,
     int postCobject,
@@ -13448,6 +13911,101 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListNewsEntry");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp14 = FfiListNewsEntry._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  Story? __clientWaitForStoryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientWaitForStoryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Story");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Story._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiListStory? __clientLatestStoriesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientLatestStoriesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListStory");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListStory._(this, tmp13_1);
     final tmp7 = tmp14;
     return tmp7;
   }
@@ -18356,6 +18914,334 @@ class Api {
           int Function(
             int,
           )>();
+  late final _storySlideTypeStrPtr = _lookup<
+      ffi.NativeFunction<
+          _StorySlideTypeStrReturn Function(
+            ffi.IntPtr,
+          )>>("__StorySlide_type_str");
+
+  late final _storySlideTypeStr = _storySlideTypeStrPtr.asFunction<
+      _StorySlideTypeStrReturn Function(
+        int,
+      )>();
+  late final _storySlideUniqueIdPtr = _lookup<
+      ffi.NativeFunction<
+          _StorySlideUniqueIdReturn Function(
+            ffi.IntPtr,
+          )>>("__StorySlide_unique_id");
+
+  late final _storySlideUniqueId = _storySlideUniqueIdPtr.asFunction<
+      _StorySlideUniqueIdReturn Function(
+        int,
+      )>();
+  late final _storySlideReferencesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__StorySlide_references");
+
+  late final _storySlideReferences = _storySlideReferencesPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storySlideColorsPtr = _lookup<
+      ffi.NativeFunction<
+          _StorySlideColorsReturn Function(
+            ffi.IntPtr,
+          )>>("__StorySlide_colors");
+
+  late final _storySlideColors = _storySlideColorsPtr.asFunction<
+      _StorySlideColorsReturn Function(
+        int,
+      )>();
+  late final _storySlideMsgContentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__StorySlide_msg_content");
+
+  late final _storySlideMsgContent = _storySlideMsgContentPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storySlideSourceBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+            ffi.IntPtr,
+          )>>("__StorySlide_source_binary");
+
+  late final _storySlideSourceBinary = _storySlideSourceBinaryPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+      )>();
+  late final _storySlideDraftAddReferencePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+          )>>("__StorySlideDraft_add_reference");
+
+  late final _storySlideDraftAddReference =
+      _storySlideDraftAddReferencePtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _storySlideDraftColorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+          )>>("__StorySlideDraft_color");
+
+  late final _storySlideDraftColor = _storySlideDraftColorPtr.asFunction<
+      void Function(
+        int,
+        int,
+      )>();
+  late final _storySlideDraftUnsetReferencesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+          )>>("__StorySlideDraft_unset_references");
+
+  late final _storySlideDraftUnsetReferences =
+      _storySlideDraftUnsetReferencesPtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _storySlidesCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__Story_slides_count");
+
+  late final _storySlidesCount = _storySlidesCountPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storyGetSlidePtr = _lookup<
+      ffi.NativeFunction<
+          _StoryGetSlideReturn Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+          )>>("__Story_get_slide");
+
+  late final _storyGetSlide = _storyGetSlidePtr.asFunction<
+      _StoryGetSlideReturn Function(
+        int,
+        int,
+      )>();
+  late final _storySlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Story_slides");
+
+  late final _storySlides = _storySlidesPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storyRoomIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Story_room_id");
+
+  late final _storyRoomId = _storyRoomIdPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storySenderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Story_sender");
+
+  late final _storySender = _storySenderPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storyEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Story_event_id");
+
+  late final _storyEventId = _storyEventIdPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storyOriginServerTsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+            ffi.IntPtr,
+          )>>("__Story_origin_server_ts");
+
+  late final _storyOriginServerTs = _storyOriginServerTsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storyCanRedactPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Story_can_redact");
+
+  late final _storyCanRedact = _storyCanRedactPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storyReactionsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Story_reactions");
+
+  late final _storyReactions = _storyReactionsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storyReadReceiptsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Story_read_receipts");
+
+  late final _storyReadReceipts = _storyReadReceiptsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storyCommentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Story_comments");
+
+  late final _storyComments = _storyCommentsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storyDraftAddSlidePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+          )>>("__StoryDraft_add_slide");
+
+  late final _storyDraftAddSlide = _storyDraftAddSlidePtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
+  late final _storyDraftSwapSlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+            ffi.Uint8,
+          )>>("__StoryDraft_swap_slides");
+
+  late final _storyDraftSwapSlides = _storyDraftSwapSlidesPtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+      )>();
+  late final _storyDraftSlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__StoryDraft_slides");
+
+  late final _storyDraftSlides = _storyDraftSlidesPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storyDraftUnsetSlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+          )>>("__StoryDraft_unset_slides");
+
+  late final _storyDraftUnsetSlides = _storyDraftUnsetSlidesPtr.asFunction<
+      void Function(
+        int,
+      )>();
+  late final _storyDraftSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__StoryDraft_send");
+
+  late final _storyDraftSend = _storyDraftSendPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storyUpdateBuilderAddSlidePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+          )>>("__StoryUpdateBuilder_add_slide");
+
+  late final _storyUpdateBuilderAddSlide =
+      _storyUpdateBuilderAddSlidePtr.asFunction<
+          int Function(
+            int,
+            int,
+          )>();
+  late final _storyUpdateBuilderUnsetSlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+          )>>("__StoryUpdateBuilder_unset_slides");
+
+  late final _storyUpdateBuilderUnsetSlides =
+      _storyUpdateBuilderUnsetSlidesPtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _storyUpdateBuilderUnsetSlidesUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+          )>>("__StoryUpdateBuilder_unset_slides_update");
+
+  late final _storyUpdateBuilderUnsetSlidesUpdate =
+      _storyUpdateBuilderUnsetSlidesUpdatePtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _storyUpdateBuilderSwapSlidesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+            ffi.Uint8,
+          )>>("__StoryUpdateBuilder_swap_slides");
+
+  late final _storyUpdateBuilderSwapSlides =
+      _storyUpdateBuilderSwapSlidesPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _storyUpdateBuilderSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__StoryUpdateBuilder_send");
+
+  late final _storyUpdateBuilderSend = _storyUpdateBuilderSendPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _pinDraftTitlePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -21253,6 +22139,17 @@ class Api {
 
   late final _msgDraftIntoNewsSlideDraft =
       _msgDraftIntoNewsSlideDraftPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _msgDraftIntoStorySlideDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__MsgDraft_into_story_slide_draft");
+
+  late final _msgDraftIntoStorySlideDraft =
+      _msgDraftIntoStorySlideDraftPtr.asFunction<
           int Function(
             int,
           )>();
@@ -25520,6 +26417,18 @@ class Api {
         int,
         int,
       )>();
+  late final _spaceLatestStoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__Space_latest_stories");
+
+  late final _spaceLatestStories = _spaceLatestStoriesPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
   late final _spaceCalendarEventsPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -25548,6 +26457,16 @@ class Api {
 
   late final _spaceNewsDraft = _spaceNewsDraftPtr.asFunction<
       _SpaceNewsDraftReturn Function(
+        int,
+      )>();
+  late final _spaceStoryDraftPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceStoryDraftReturn Function(
+            ffi.IntPtr,
+          )>>("__Space_story_draft");
+
+  late final _spaceStoryDraft = _spaceStoryDraftPtr.asFunction<
+      _SpaceStoryDraftReturn Function(
         int,
       )>();
   late final _spacePinsPtr = _lookup<
@@ -27762,6 +28681,38 @@ class Api {
         int,
         int,
       )>();
+  late final _clientWaitForStoryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.Uint8,
+            ffi.Uint8,
+          )>>("__Client_wait_for_story");
+
+  late final _clientWaitForStory = _clientWaitForStoryPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+        int,
+        int,
+      )>();
+  late final _clientLatestStoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__Client_latest_stories");
+
+  late final _clientLatestStories = _clientLatestStoriesPtr.asFunction<
+      int Function(
+        int,
+        int,
+      )>();
   late final _clientWaitForPinPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -29453,6 +30404,140 @@ class Api {
   late final _newsEntryUpdateBuilderSendFuturePoll =
       _newsEntryUpdateBuilderSendFuturePollPtr.asFunction<
           _NewsEntryUpdateBuilderSendFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _storySlideSourceBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _StorySlideSourceBinaryFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__StorySlide_source_binary_future_poll");
+
+  late final _storySlideSourceBinaryFuturePoll =
+      _storySlideSourceBinaryFuturePollPtr.asFunction<
+          _StorySlideSourceBinaryFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _storyCanRedactFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _StoryCanRedactFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Story_can_redact_future_poll");
+
+  late final _storyCanRedactFuturePoll =
+      _storyCanRedactFuturePollPtr.asFunction<
+          _StoryCanRedactFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _storyReactionsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _StoryReactionsFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Story_reactions_future_poll");
+
+  late final _storyReactionsFuturePoll =
+      _storyReactionsFuturePollPtr.asFunction<
+          _StoryReactionsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _storyReadReceiptsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _StoryReadReceiptsFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Story_read_receipts_future_poll");
+
+  late final _storyReadReceiptsFuturePoll =
+      _storyReadReceiptsFuturePollPtr.asFunction<
+          _StoryReadReceiptsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _storyCommentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _StoryCommentsFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Story_comments_future_poll");
+
+  late final _storyCommentsFuturePoll = _storyCommentsFuturePollPtr.asFunction<
+      _StoryCommentsFuturePollReturn Function(
+        int,
+        int,
+        int,
+      )>();
+  late final _storyDraftAddSlideFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _StoryDraftAddSlideFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__StoryDraft_add_slide_future_poll");
+
+  late final _storyDraftAddSlideFuturePoll =
+      _storyDraftAddSlideFuturePollPtr.asFunction<
+          _StoryDraftAddSlideFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _storyDraftSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _StoryDraftSendFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__StoryDraft_send_future_poll");
+
+  late final _storyDraftSendFuturePoll =
+      _storyDraftSendFuturePollPtr.asFunction<
+          _StoryDraftSendFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _storyUpdateBuilderAddSlideFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _StoryUpdateBuilderAddSlideFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__StoryUpdateBuilder_add_slide_future_poll");
+
+  late final _storyUpdateBuilderAddSlideFuturePoll =
+      _storyUpdateBuilderAddSlideFuturePollPtr.asFunction<
+          _StoryUpdateBuilderAddSlideFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _storyUpdateBuilderSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _StoryUpdateBuilderSendFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__StoryUpdateBuilder_send_future_poll");
+
+  late final _storyUpdateBuilderSendFuturePoll =
+      _storyUpdateBuilderSendFuturePollPtr.asFunction<
+          _StoryUpdateBuilderSendFuturePollReturn Function(
             int,
             int,
             int,
@@ -31684,6 +32769,21 @@ class Api {
             int,
             int,
           )>();
+  late final _spaceLatestStoriesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SpaceLatestStoriesFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Space_latest_stories_future_poll");
+
+  late final _spaceLatestStoriesFuturePoll =
+      _spaceLatestStoriesFuturePollPtr.asFunction<
+          _SpaceLatestStoriesFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _spaceCalendarEventsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _SpaceCalendarEventsFuturePollReturn Function(
@@ -32715,6 +33815,36 @@ class Api {
   late final _clientLatestNewsEntriesFuturePoll =
       _clientLatestNewsEntriesFuturePollPtr.asFunction<
           _ClientLatestNewsEntriesFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _clientWaitForStoryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientWaitForStoryFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Client_wait_for_story_future_poll");
+
+  late final _clientWaitForStoryFuturePoll =
+      _clientWaitForStoryFuturePollPtr.asFunction<
+          _ClientWaitForStoryFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _clientLatestStoriesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientLatestStoriesFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Client_latest_stories_future_poll");
+
+  late final _clientLatestStoriesFuturePoll =
+      _clientLatestStoriesFuturePollPtr.asFunction<
+          _ClientLatestStoriesFuturePollReturn Function(
             int,
             int,
             int,
@@ -35108,6 +36238,153 @@ class Api {
 
   late final _ffiListSpaceRelationInsert =
       _ffiListSpaceRelationInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListStory createFfiListStory() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListStoryCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListStory");
+    return FfiListStory._(this, list_box);
+  }
+
+  late final _ffiListStoryCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListStoryCreate");
+
+  late final _ffiListStoryCreate =
+      _ffiListStoryCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListStoryLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListStoryLen");
+
+  late final _ffiListStoryLen =
+      _ffiListStoryLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListStoryElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListStoryElementAt");
+
+  late final _ffiListStoryElementAt =
+      _ffiListStoryElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListStoryRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListStoryRemove");
+
+  late final _ffiListStoryRemove =
+      _ffiListStoryRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListStoryAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListStoryAdd");
+
+  late final _ffiListStoryAdd =
+      _ffiListStoryAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListStoryInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListStoryInsert");
+
+  late final _ffiListStoryInsert =
+      _ffiListStoryInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListStorySlide createFfiListStorySlide() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListStorySlideCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListStorySlide");
+    return FfiListStorySlide._(this, list_box);
+  }
+
+  late final _ffiListStorySlideCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListStorySlideCreate");
+
+  late final _ffiListStorySlideCreate =
+      _ffiListStorySlideCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListStorySlideLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListStorySlideLen");
+
+  late final _ffiListStorySlideLen =
+      _ffiListStorySlideLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListStorySlideElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListStorySlideElementAt");
+
+  late final _ffiListStorySlideElementAt =
+      _ffiListStorySlideElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListStorySlideRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListStorySlideRemove");
+
+  late final _ffiListStorySlideRemove =
+      _ffiListStorySlideRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListStorySlideAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListStorySlideAdd");
+
+  late final _ffiListStorySlideAdd =
+      _ffiListStorySlideAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListStorySlideInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListStorySlideInsert");
+
+  late final _ffiListStorySlideInsert =
+      _ffiListStorySlideInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListStorySlideDraft createFfiListStorySlideDraft() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListStorySlideDraftCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListStorySlideDraft");
+    return FfiListStorySlideDraft._(this, list_box);
+  }
+
+  late final _ffiListStorySlideDraftCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListStorySlideDraftCreate");
+
+  late final _ffiListStorySlideDraftCreate =
+      _ffiListStorySlideDraftCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListStorySlideDraftLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListStorySlideDraftLen");
+
+  late final _ffiListStorySlideDraftLen =
+      _ffiListStorySlideDraftLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListStorySlideDraftElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListStorySlideDraftElementAt");
+
+  late final _ffiListStorySlideDraftElementAt =
+      _ffiListStorySlideDraftElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListStorySlideDraftRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListStorySlideDraftRemove");
+
+  late final _ffiListStorySlideDraftRemove =
+      _ffiListStorySlideDraftRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListStorySlideDraftAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListStorySlideDraftAdd");
+
+  late final _ffiListStorySlideDraftAdd =
+      _ffiListStorySlideDraftAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListStorySlideDraftInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListStorySlideDraftInsert");
+
+  late final _ffiListStorySlideDraftInsert = _ffiListStorySlideDraftInsertPtr
+      .asFunction<void Function(int, int, int)>();
   FfiListSuperInviteToken createFfiListSuperInviteToken() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListSuperInviteTokenCreate());
@@ -37946,6 +39223,582 @@ class NewsEntryUpdateBuilder {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
         _nativeFuture(tmp3_1, _api.__newsEntryUpdateBuilderSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// A single Slide of a Story
+class StorySlide {
+  final Api _api;
+  final _Box _box;
+
+  StorySlide._(this._api, this._box);
+
+  /// the content of this slide
+  String typeStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storySlideTypeStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the unique, predictable ID for this slide
+  String uniqueId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storySlideUniqueId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the references linked in this slide
+  FfiListObjRef references() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storySlideReferences(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListObjRef");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListObjRef._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// The color setting
+  Colorize? colors() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storySlideColors(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Colorize");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = Colorize._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is a media, hand over the description
+  MsgContent msgContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storySlideMsgContent(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MsgContent");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = MsgContent._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// if this is a media, hand over the data
+  /// if thumb size is given, media thumbnail is returned
+  /// if thumb size is not given, media file is returned
+  Future<FfiBufferUint8> sourceBinary(
+    ThumbnailSize? thumbSize,
+  ) {
+    final tmp1 = thumbSize;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    final tmp5 = _api._storySlideSourceBinary(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__StorySlide_source_binary_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__storySlideSourceBinaryFuturePoll);
+    return tmp6;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class StorySlideDraft {
+  final Api _api;
+  final _Box _box;
+
+  StorySlideDraft._(this._api, this._box);
+
+  /// add reference for this slide draft
+  void addReference(
+    ObjRef reference,
+  ) {
+    final tmp1 = reference;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._storySlideDraftAddReference(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set the color according to the colorize builder
+  void color(
+    ColorizeBuilder color,
+  ) {
+    final tmp1 = color;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._storySlideDraftColor(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// unset references for this slide draft
+  void unsetReferences() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._storySlideDraftUnsetReferences(
+      tmp0,
+    );
+    return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// A news entry
+class Story {
+  final Api _api;
+  final _Box _box;
+
+  Story._(this._api, this._box);
+
+  /// the slides count in this news item
+  int slidesCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storySlidesCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// The slides belonging to this news item
+  StorySlide? getSlide(
+    int pos,
+  ) {
+    final tmp1 = pos;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._storyGetSlide(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3.arg0;
+    final tmp6 = tmp3.arg1;
+    if (tmp5 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+    final tmp6_1 = _Box(_api, tmp6_0, "drop_box_StorySlide");
+    tmp6_1._finalizer = _api._registerFinalizer(tmp6_1);
+    final tmp4 = StorySlide._(_api, tmp6_1);
+    return tmp4;
+  }
+
+  /// get all slides of this news item
+  FfiListStorySlide slides() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storySlides(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListStorySlide");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListStorySlide._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// get room id
+  RoomId roomId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyRoomId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RoomId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = RoomId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// get sender id
+  UserId sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storySender(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// get event id
+  EventId eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_EventId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = EventId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// get timestamp of this event
+  int originServerTs() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyOriginServerTs(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// whether or not this user can redact this item
+  Future<bool> canRedact() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyCanRedact(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Story_can_redact_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__storyCanRedactFuturePoll);
+    return tmp2;
+  }
+
+  /// get the reaction manager
+  Future<ReactionManager> reactions() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyReactions(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Story_reactions_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__storyReactionsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the read receipt manager
+  Future<ReadReceiptsManager> readReceipts() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyReadReceipts(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Story_read_receipts_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__storyReadReceiptsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the comment manager
+  Future<CommentsManager> comments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyComments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Story_comments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__storyCommentsFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class StoryDraft {
+  final Api _api;
+  final _Box _box;
+
+  StoryDraft._(this._api, this._box);
+
+  /// create news slide draft
+  Future<bool> addSlide(
+    StorySlideDraft baseDraft,
+  ) {
+    final tmp1 = baseDraft;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._storyDraftAddSlide(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "__StoryDraft_add_slide_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__storyDraftAddSlideFuturePoll);
+    return tmp4;
+  }
+
+  /// change position of slides draft of this news entry
+  void swapSlides(
+    int from,
+    int to,
+  ) {
+    final tmp1 = from;
+    final tmp3 = to;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    tmp4 = tmp3;
+    _api._storyDraftSwapSlides(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    return;
+  }
+
+  /// get a copy of the news slide set for this news entry draft
+  FfiListStorySlideDraft slides() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyDraftSlides(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListStorySlideDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListStorySlideDraft._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// clear slides
+  void unsetSlides() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._storyDraftUnsetSlides(
+      tmp0,
+    );
+    return;
+  }
+
+  /// create this news entry
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyDraftSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__StoryDraft_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__storyDraftSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class StoryUpdateBuilder {
+  final Api _api;
+  final _Box _box;
+
+  StoryUpdateBuilder._(this._api, this._box);
+
+  /// set the slides for this news entry
+  Future<bool> addSlide(
+    StorySlideDraft draft,
+  ) {
+    final tmp1 = draft;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._storyUpdateBuilderAddSlide(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__StoryUpdateBuilder_add_slide_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__storyUpdateBuilderAddSlideFuturePoll);
+    return tmp4;
+  }
+
+  /// reset slides for this news entry
+  void unsetSlides() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._storyUpdateBuilderUnsetSlides(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetSlidesUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._storyUpdateBuilderUnsetSlidesUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set position of slides for this news entry
+  void swapSlides(
+    int from,
+    int to,
+  ) {
+    final tmp1 = from;
+    final tmp3 = to;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    tmp4 = tmp3;
+    _api._storyUpdateBuilderSwapSlides(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    return;
+  }
+
+  /// update this news entry
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyUpdateBuilderSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__StoryUpdateBuilder_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__storyUpdateBuilderSendFuturePoll);
     return tmp2;
   }
 
@@ -44014,6 +45867,21 @@ class MsgDraft {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsSlideDraft");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = NewsSlideDraft._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// convert this into a StorySlideDraft;
+  StorySlideDraft intoStorySlideDraft() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._msgDraftIntoStorySlideDraft(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_StorySlideDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = StorySlideDraft._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -51905,6 +53773,27 @@ class Space {
     return tmp4;
   }
 
+  /// get latest stories
+  Future<FfiListStory> latestStories(
+    int count,
+  ) {
+    final tmp1 = count;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._spaceLatestStories(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "__Space_latest_stories_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__spaceLatestStoriesFuturePoll);
+    return tmp4;
+  }
+
   /// get all calendar events
   Future<FfiListCalendarEvent> calendarEvents() {
     var tmp0 = 0;
@@ -51920,7 +53809,7 @@ class Space {
     return tmp2;
   }
 
-  /// create calendart event draft
+  /// create calendar event draft
   CalendarEventDraft calendarEventDraft() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -51979,6 +53868,37 @@ class Space {
     final tmp7_1 = _Box(_api, tmp7_0, "drop_box_NewsEntryDraft");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp2 = NewsEntryDraft._(_api, tmp7_1);
+    return tmp2;
+  }
+
+  /// create story draft
+  StoryDraft storyDraft() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceStoryDraft(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 =
+          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_StoryDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = StoryDraft._(_api, tmp7_1);
     return tmp2;
   }
 
@@ -56667,6 +58587,72 @@ class Client {
     return tmp4;
   }
 
+  /// Fetch the Story or use its event_id to wait for it to come down the wire
+  Future<Story> waitForStory(
+    String key,
+    int? timeout,
+  ) {
+    final tmp1 = key;
+    final tmp5 = timeout;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7;
+    }
+    final tmp9 = _api._clientWaitForStory(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__Client_wait_for_story_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__clientWaitForStoryFuturePoll);
+    return tmp10;
+  }
+
+  /// Get the Stories for the client
+  Future<FfiListStory> latestStories(
+    int count,
+  ) {
+    final tmp1 = count;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._clientLatestStories(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "__Client_latest_stories_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__clientLatestStoriesFuturePoll);
+    return tmp4;
+  }
+
   /// Fetch the ActerPin or use its event_id to wait for it to come down the wire
   Future<ActerPin> waitForPin(
     String key,
@@ -60528,6 +62514,38 @@ class _NewsEntryGetSlideReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _StorySlideTypeStrReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _StorySlideUniqueIdReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _StorySlideColorsReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _StoryGetSlideReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _ActerPinTitleReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
@@ -62117,6 +64135,19 @@ class _SpaceNewsDraftReturn extends ffi.Struct {
   external int arg4;
 }
 
+class _SpaceStoryDraftReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
 class _SpacePinDraftReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -62961,6 +64992,141 @@ class _NewsEntryUpdateBuilderAddSlideFuturePollReturn extends ffi.Struct {
 }
 
 class _NewsEntryUpdateBuilderSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _StorySlideSourceBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _StoryCanRedactFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _StoryReactionsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _StoryReadReceiptsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _StoryCommentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _StoryDraftAddSlideFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _StoryDraftSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _StoryUpdateBuilderAddSlideFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _StoryUpdateBuilderSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -65241,6 +67407,21 @@ class _SpaceLatestNewsEntriesFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _SpaceLatestStoriesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
 class _SpaceCalendarEventsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -66282,6 +68463,36 @@ class _ClientWaitForNewsFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientLatestNewsEntriesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ClientWaitForStoryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ClientLatestStoriesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -68743,6 +70954,186 @@ class FfiListSpaceRelation extends Iterable<SpaceRelation>
   /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, SpaceRelation element) {
     _api._ffiListSpaceRelationInsert(
+        _box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListStory extends Iterable<Story> implements CustomIterable<Story> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListStory._(this._api, this._box);
+
+  @override
+  Iterator<Story> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListStoryLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  Story elementAt(int index) {
+    final address = _api._ffiListStoryElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return Story._(_api, reference);
+  }
+
+  Story operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  Story remove(int index) {
+    final address = _api._ffiListStoryRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Story");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return Story._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(Story element) {
+    _api._ffiListStoryAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, Story element) {
+    _api._ffiListStoryInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListStorySlide extends Iterable<StorySlide>
+    implements CustomIterable<StorySlide> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListStorySlide._(this._api, this._box);
+
+  @override
+  Iterator<StorySlide> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListStorySlideLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  StorySlide elementAt(int index) {
+    final address = _api._ffiListStorySlideElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return StorySlide._(_api, reference);
+  }
+
+  StorySlide operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  StorySlide remove(int index) {
+    final address = _api._ffiListStorySlideRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_StorySlide");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return StorySlide._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(StorySlide element) {
+    _api._ffiListStorySlideAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, StorySlide element) {
+    _api._ffiListStorySlideInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListStorySlideDraft extends Iterable<StorySlideDraft>
+    implements CustomIterable<StorySlideDraft> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListStorySlideDraft._(this._api, this._box);
+
+  @override
+  Iterator<StorySlideDraft> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListStorySlideDraftLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  StorySlideDraft elementAt(int index) {
+    final address = _api._ffiListStorySlideDraftElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return StorySlideDraft._(_api, reference);
+  }
+
+  StorySlideDraft operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  StorySlideDraft remove(int index) {
+    final address = _api._ffiListStorySlideDraftRemove(_box.borrow(), index);
+    final reference = _Box(
+        _api, ffi.Pointer.fromAddress(address), "drop_box_StorySlideDraft");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return StorySlideDraft._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(StorySlideDraft element) {
+    _api._ffiListStorySlideDraftAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, StorySlideDraft element) {
+    _api._ffiListStorySlideDraftInsert(
         _box.borrow(), index, element._box.borrow());
     element._box.move();
   }

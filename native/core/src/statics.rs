@@ -16,6 +16,7 @@ pub mod KEYS {
     }
     pub static CALENDAR: &str = "calendar";
     pub static NEWS: &str = "news";
+    pub static STORIES: &str = "stories";
     pub static PINS: &str = "pins";
 }
 

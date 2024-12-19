@@ -459,6 +459,118 @@ object NewsEntryUpdateBuilder {
 }
 
 
+
+//   ######  ########  #######  ########  #### ########  ######  
+//  ##    ##    ##    ##     ## ##     ##  ##  ##       ##    ## 
+//  ##          ##    ##     ## ##     ##  ##  ##       ##       
+//   ######     ##    ##     ## ########   ##  ######    ######  
+//        ##    ##    ##     ## ##   ##    ##  ##             ## 
+//  ##    ##    ##    ##     ## ##    ##   ##  ##       ##    ## 
+//   ######     ##     #######  ##     ## #### ########  ######  
+
+
+
+/// A single Slide of a Story
+object StorySlide {
+    /// the content of this slide
+    fn type_str() -> string;
+
+    /// the unique, predictable ID for this slide
+    fn unique_id() -> string;
+
+    /// the references linked in this slide
+    fn references() -> Vec<ObjRef>;
+
+    /// The color setting
+    fn colors() -> Option<Colorize>;
+
+    /// if this is a media, hand over the description
+    fn msg_content() -> MsgContent;
+    /// if this is a media, hand over the data
+    /// if thumb size is given, media thumbnail is returned
+    /// if thumb size is not given, media file is returned
+    fn source_binary(thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
+}
+
+object StorySlideDraft {
+    /// add reference for this slide draft
+    fn add_reference(reference: ObjRef);
+
+    /// set the color according to the colorize builder
+    fn color(color: ColorizeBuilder);
+
+    /// unset references for this slide draft
+    fn unset_references();
+}
+
+/// A news entry
+object Story {
+    /// the slides count in this news item
+    fn slides_count() -> u8;
+    /// The slides belonging to this news item
+    fn get_slide(pos: u8) -> Option<StorySlide>;
+    /// get all slides of this news item
+    fn slides() -> Vec<StorySlide>;
+
+    /// get room id
+    fn room_id() -> RoomId;
+
+    /// get sender id
+    fn sender() -> UserId;
+
+    /// get event id
+    fn event_id() -> EventId;
+
+    /// get timestamp of this event
+    fn origin_server_ts() -> u64;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
+
+    /// get the reaction manager
+    fn reactions() -> Future<Result<ReactionManager>>;
+
+    /// get the read receipt manager
+    fn read_receipts() -> Future<Result<ReadReceiptsManager>>;
+
+    /// get the comment manager
+    fn comments() -> Future<Result<CommentsManager>>;
+}
+
+object StoryDraft {
+    /// create news slide draft
+    fn add_slide(base_draft: StorySlideDraft) -> Future<Result<bool>>;
+
+    /// change position of slides draft of this news entry
+    fn swap_slides(from: u8, to:u8);
+
+    /// get a copy of the news slide set for this news entry draft
+    fn slides() -> Vec<StorySlideDraft>;
+
+    /// clear slides
+    fn unset_slides();
+
+    /// create this news entry
+    fn send() -> Future<Result<EventId>>;
+}
+
+object StoryUpdateBuilder {
+    /// set the slides for this news entry
+    fn add_slide(draft: StorySlideDraft) -> Future<Result<bool>>;
+
+    /// reset slides for this news entry
+    fn unset_slides();
+    fn unset_slides_update();
+
+    /// set position of slides for this news entry
+    fn swap_slides(from: u8, to: u8);
+
+    /// update this news entry
+    fn send() -> Future<Result<EventId>>;
+}
+
+
+
 //  ########  #### ##    ##  ######  
 //  ##     ##  ##  ###   ## ##    ## 
 //  ##     ##  ##  ####  ## ##       
@@ -1241,6 +1353,9 @@ object MsgDraft {
 
     /// convert this into a NewsSlideDraft;
     fn into_news_slide_draft() -> NewsSlideDraft;
+
+    /// convert this into a StorySlideDraft;
+    fn into_story_slide_draft() -> StorySlideDraft;
 }
 
 /// Timeline with Room Events
@@ -2268,14 +2383,20 @@ object Space {
     /// get latest news
     fn latest_news_entries(count: u32) -> Future<Result<Vec<NewsEntry>>>;
 
+    /// get latest stories
+    fn latest_stories(count: u32) -> Future<Result<Vec<Story>>>;
+
     /// get all calendar events
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
 
-    /// create calendart event draft
+    /// create calendar event draft
     fn calendar_event_draft() -> Result<CalendarEventDraft>;
 
     /// create news draft
     fn news_draft() -> Result<NewsEntryDraft>;
+
+    /// create story draft
+    fn story_draft() -> Result<StoryDraft>;
 
     /// the pins of this Space
     fn pins() -> Future<Result<Vec<ActerPin>>>;
@@ -2888,6 +3009,12 @@ object Client {
 
     /// Get the latest News for the client
     fn latest_news_entries(count: u32) -> Future<Result<Vec<NewsEntry>>>;
+
+    /// Fetch the Story or use its event_id to wait for it to come down the wire
+    fn wait_for_story(key: string, timeout: Option<u8>) -> Future<Result<Story>>;
+
+    /// Get the Stories for the client
+    fn latest_stories(count: u32) -> Future<Result<Vec<Story>>>;
 
     /// Fetch the ActerPin or use its event_id to wait for it to come down the wire
     fn wait_for_pin(key: string, timeout: Option<u8>) -> Future<Result<ActerPin>>;

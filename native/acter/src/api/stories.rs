@@ -1,6 +1,6 @@
 use acter_core::{
     events::{
-        news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
+        stories::{self, StoryBuilder, StoryContent, StorySlideBuilder},
         Colorize, ColorizeBuilder, ObjRef, RefDetails, RefPreview,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, ReactionManager},
@@ -33,42 +33,40 @@ use super::{
 };
 
 impl Client {
-    pub async fn wait_for_news(&self, key: String, timeout: Option<u8>) -> Result<NewsEntry> {
+    pub async fn wait_for_story(&self, key: String, timeout: Option<u8>) -> Result<Story> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::NewsEntry(content) = me.wait_for(key.clone(), timeout).await?
-                else {
+                let AnyActerModel::Story(content) = me.wait_for(key.clone(), timeout).await? else {
                     bail!("{key} is not a news");
                 };
                 let room = me.room_by_id_typed(content.room_id())?;
-                NewsEntry::new(me.clone(), room, content).await
+                Story::new(me.clone(), room, content).await
             })
             .await?
     }
-
-    pub async fn latest_news_entries(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
-        let mut news = Vec::new();
+    pub async fn latest_stories(&self, mut count: u32) -> Result<Vec<Story>> {
+        let mut stories = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let mut all_news = me
+                let mut all_stories = me
                     .store()
-                    .get_list(KEYS::NEWS)
+                    .get_list(KEYS::STORIES)
                     .await?
                     .filter_map(|any| {
-                        if let AnyActerModel::NewsEntry(t) = any {
+                        if let AnyActerModel::Story(t) = any {
                             Some(t)
                         } else {
                             None
                         }
                     })
-                    .collect::<Vec<models::NewsEntry>>();
-                all_news.sort_by(|a, b| b.meta.origin_server_ts.cmp(&a.meta.origin_server_ts));
+                    .collect::<Vec<models::Story>>();
+                all_stories.sort_by(|a, b| b.meta.origin_server_ts.cmp(&a.meta.origin_server_ts));
 
                 let client = me.core.client();
-                for content in all_news {
+                for content in all_stories {
                     if count == 0 {
                         break; // we filled what we wanted
                     }
@@ -85,68 +83,68 @@ impl Client {
                             }
                         }
                     };
-                    let news_entry = NewsEntry::new(me.clone(), room, content).await?;
-                    news.push(news_entry);
+                    let story = Story::new(me.clone(), room, content).await?;
+                    stories.push(story);
                     count -= 1;
                 }
-                Ok(news)
+                Ok(stories)
             })
             .await?
     }
 }
 
 impl Space {
-    pub async fn latest_news_entries(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
-        let mut news = Vec::new();
+    pub async fn latest_stories(&self, mut count: u32) -> Result<Vec<Story>> {
+        let mut entries = Vec::new();
         let room_id = self.room_id().to_owned();
         let client = self.client.clone();
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let mut all_news = client
+                let mut all_entries = client
                     .store()
-                    .get_list(&format!("{room_id}::{}", KEYS::NEWS))
+                    .get_list(&format!("{room_id}::{}", KEYS::STORIES))
                     .await?
                     .filter_map(|any| {
-                        if let AnyActerModel::NewsEntry(t) = any {
+                        if let AnyActerModel::Story(t) = any {
                             Some(t)
                         } else {
                             None
                         }
                     })
-                    .collect::<Vec<models::NewsEntry>>();
-                all_news.reverse();
+                    .collect::<Vec<models::Story>>();
+                all_entries.reverse();
 
-                for content in all_news {
+                for content in all_entries {
                     if count == 0 {
                         break; // we filled what we wanted
                     }
-                    news.push(NewsEntry::new(client.clone(), room.clone(), content).await?);
+                    entries.push(Story::new(client.clone(), room.clone(), content).await?);
                     count -= 1;
                 }
 
-                Ok(news)
+                Ok(entries)
             })
             .await?
     }
 }
 
 #[derive(Clone, Debug)]
-pub struct NewsSlide {
+pub struct StorySlide {
     client: Client,
     room: Room,
     unique_id: String,
-    inner: news::NewsSlide,
+    inner: stories::StorySlide,
 }
 
-impl Deref for NewsSlide {
-    type Target = news::NewsSlide;
+impl Deref for StorySlide {
+    type Target = stories::StorySlide;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-impl NewsSlide {
+impl StorySlide {
     pub fn type_str(&self) -> String {
         self.inner.content().type_str()
     }
@@ -161,30 +159,12 @@ impl NewsSlide {
 
     pub fn msg_content(&self) -> MsgContent {
         match &self.inner.content {
-            NewsContent::Image(content)
-            | NewsContent::Fallback(FallbackNewsContent::Image(content)) => {
-                MsgContent::from(content)
-            }
-            NewsContent::File(content)
-            | NewsContent::Fallback(FallbackNewsContent::File(content)) => {
-                MsgContent::from(content)
-            }
-            NewsContent::Location(content)
-            | NewsContent::Fallback(FallbackNewsContent::Location(content)) => {
-                MsgContent::from(content)
-            }
-            NewsContent::Audio(content)
-            | NewsContent::Fallback(FallbackNewsContent::Audio(content)) => {
-                MsgContent::from(content)
-            }
-            NewsContent::Video(content)
-            | NewsContent::Fallback(FallbackNewsContent::Video(content)) => {
-                MsgContent::from(content)
-            }
-            NewsContent::Text(content)
-            | NewsContent::Fallback(FallbackNewsContent::Text(content)) => {
-                MsgContent::from(content)
-            }
+            StoryContent::Image(content) => MsgContent::from(content),
+            StoryContent::File(content) => MsgContent::from(content),
+            StoryContent::Location(content) => MsgContent::from(content),
+            StoryContent::Audio(content) => MsgContent::from(content),
+            StoryContent::Video(content) => MsgContent::from(content),
+            StoryContent::Text(content) => MsgContent::from(content),
         }
     }
 
@@ -194,14 +174,12 @@ impl NewsSlide {
     ) -> Result<FfiBuffer<u8>> {
         // any variable in self can’t be called directly in spawn
         match &self.inner.content {
-            NewsContent::Text(content)
-            | NewsContent::Fallback(FallbackNewsContent::Text(content)) => {
+            StoryContent::Text(content) => {
                 let buf = Vec::<u8>::new();
                 Ok(FfiBuffer::new(buf))
             }
 
-            NewsContent::Image(content)
-            | NewsContent::Fallback(FallbackNewsContent::Image(content)) => match thumb_size {
+            StoryContent::Image(content) => match thumb_size {
                 Some(thumb_size) => {
                     let source = content
                         .info
@@ -217,8 +195,7 @@ impl NewsSlide {
                 }
             },
 
-            NewsContent::Audio(content)
-            | NewsContent::Fallback(FallbackNewsContent::Audio(content)) => {
+            StoryContent::Audio(content) => {
                 if thumb_size.is_some() {
                     warn!("DeveloperError: audio has not thumbnail");
                 }
@@ -227,8 +204,7 @@ impl NewsSlide {
                     .await
             }
 
-            NewsContent::Video(content)
-            | NewsContent::Fallback(FallbackNewsContent::Video(content)) => match thumb_size {
+            StoryContent::Video(content) => match thumb_size {
                 Some(thumb_size) => {
                     let source = content
                         .info
@@ -244,8 +220,7 @@ impl NewsSlide {
                 }
             },
 
-            NewsContent::File(content)
-            | NewsContent::Fallback(FallbackNewsContent::File(content)) => match thumb_size {
+            StoryContent::File(content) => match thumb_size {
                 Some(thumb_size) => {
                     let source = content
                         .info
@@ -260,8 +235,7 @@ impl NewsSlide {
                         .await
                 }
             },
-            NewsContent::Location(content)
-            | NewsContent::Fallback(FallbackNewsContent::Location(content)) => {
+            StoryContent::Location(content) => {
                 if thumb_size.is_none() {
                     warn!("DeveloperError: location has not file");
                 }
@@ -281,15 +255,15 @@ impl NewsSlide {
 }
 
 #[derive(Clone)]
-pub struct NewsSlideDraft {
+pub struct StorySlideDraft {
     content: MsgDraft,
     references: Vec<ObjRef>,
     colorize_builder: ColorizeBuilder,
 }
 
-impl NewsSlideDraft {
+impl StorySlideDraft {
     fn new(content: MsgDraft) -> Self {
-        NewsSlideDraft {
+        StorySlideDraft {
             content,
             references: vec![],
             colorize_builder: ColorizeBuilder::default(),
@@ -300,22 +274,22 @@ impl NewsSlideDraft {
         self.colorize_builder = *colors;
     }
 
-    async fn build(self, client: &Client, room: &Room) -> Result<news::NewsSlide> {
+    async fn build(self, client: &Client, room: &Room) -> Result<stories::StorySlide> {
         let msg = self.content.into_room_msg(room).await?;
         let content = match msg.msgtype {
-            MessageType::Text(msg) => NewsContent::Text(msg),
-            MessageType::Image(content) => NewsContent::Image(content),
-            MessageType::Audio(content) => NewsContent::Audio(content),
-            MessageType::Video(content) => NewsContent::Video(content),
-            MessageType::File(content) => NewsContent::File(content),
-            MessageType::Location(content) => NewsContent::Location(content),
+            MessageType::Text(msg) => StoryContent::Text(msg),
+            MessageType::Image(content) => StoryContent::Image(content),
+            MessageType::Audio(content) => StoryContent::Audio(content),
+            MessageType::Video(content) => StoryContent::Video(content),
+            MessageType::File(content) => StoryContent::File(content),
+            MessageType::Location(content) => StoryContent::Location(content),
             _ => bail!(
                 "Message type {0} not supported for news entry",
                 msg.msgtype.msgtype()
             ),
         };
 
-        Ok(NewsSlideBuilder::default()
+        Ok(StorySlideBuilder::default()
             .content(content)
             .references(self.references)
             .colors(self.colorize_builder.build())
@@ -334,23 +308,23 @@ impl NewsSlideDraft {
 }
 
 #[derive(Clone, Debug)]
-pub struct NewsEntry {
+pub struct Story {
     client: Client,
     room: Room,
-    content: models::NewsEntry,
+    content: models::Story,
 }
 
-impl Deref for NewsEntry {
-    type Target = models::NewsEntry;
+impl Deref for Story {
+    type Target = models::Story;
     fn deref(&self) -> &Self::Target {
         &self.content
     }
 }
 
 /// Custom functions
-impl NewsEntry {
-    pub async fn new(client: Client, room: Room, content: models::NewsEntry) -> Result<Self> {
-        Ok(NewsEntry {
+impl Story {
+    pub async fn new(client: Client, room: Room, content: models::Story) -> Result<Self> {
+        Ok(Story {
             client,
             room,
             content,
@@ -361,12 +335,12 @@ impl NewsEntry {
         self.content.slides().len() as u8
     }
 
-    pub fn get_slide(&self, pos: u8) -> Option<NewsSlide> {
+    pub fn get_slide(&self, pos: u8) -> Option<StorySlide> {
         let unique_id = format!("{}-${pos}", self.content.event_id());
         self.content
             .slides()
             .get(pos as usize)
-            .map(|inner| NewsSlide {
+            .map(|inner| StorySlide {
                 inner: inner.clone(),
                 client: self.client.clone(),
                 room: self.room.clone(),
@@ -374,14 +348,14 @@ impl NewsEntry {
             })
     }
 
-    pub fn slides(&self) -> Vec<NewsSlide> {
+    pub fn slides(&self) -> Vec<StorySlide> {
         let event_id = self.content.event_id();
         self.content
             .slides()
             .iter()
             .enumerate()
             .map(|(pos, slide)| {
-                (NewsSlide {
+                (StorySlide {
                     inner: slide.clone(),
                     client: self.client.clone(),
                     room: self.room.clone(),
@@ -391,17 +365,17 @@ impl NewsEntry {
             .collect()
     }
 
-    pub async fn refresh(&self) -> Result<NewsEntry> {
+    pub async fn refresh(&self) -> Result<Story> {
         let key = self.content.event_id().to_string();
         let client = self.client.clone();
         let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::NewsEntry(content) = client.store().get(&key).await? else {
+                let AnyActerModel::Story(content) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a news")
                 };
-                NewsEntry::new(client, room, content).await
+                Story::new(client, room, content).await
             })
             .await?
     }
@@ -437,11 +411,11 @@ impl NewsEntry {
         matches!(self.room.state(), RoomState::Joined)
     }
 
-    pub fn update_builder(&self) -> Result<NewsEntryUpdateBuilder> {
+    pub fn update_builder(&self) -> Result<StoryUpdateBuilder> {
         if !self.is_joined() {
             bail!("Can only update news in joined rooms");
         }
-        Ok(NewsEntryUpdateBuilder {
+        Ok(StoryUpdateBuilder {
             client: self.client.clone(),
             room: self.room.clone(),
             content: self.content.updater(),
@@ -515,20 +489,20 @@ impl NewsEntry {
 }
 
 #[derive(Clone)]
-pub struct NewsEntryDraft {
+pub struct StoryDraft {
     client: Client,
     room: Room,
-    content: NewsEntryBuilder,
-    slides: Vec<NewsSlideDraft>,
+    content: StoryBuilder,
+    slides: Vec<StorySlideDraft>,
 }
 
-impl NewsEntryDraft {
-    pub async fn add_slide(&mut self, draft: Box<NewsSlideDraft>) -> Result<bool> {
+impl StoryDraft {
+    pub async fn add_slide(&mut self, draft: Box<StorySlideDraft>) -> Result<bool> {
         self.slides.push(*draft);
         Ok(true)
     }
 
-    pub fn slides(&self) -> Vec<NewsSlideDraft> {
+    pub fn slides(&self) -> Vec<StorySlideDraft> {
         self.slides.clone()
     }
 
@@ -579,15 +553,15 @@ impl NewsEntryDraft {
 }
 
 #[derive(Clone)]
-pub struct NewsEntryUpdateBuilder {
+pub struct StoryUpdateBuilder {
     client: Client,
     room: Room,
-    content: news::NewsEntryUpdateBuilder,
+    content: stories::StoryUpdateBuilder,
 }
 
-impl NewsEntryUpdateBuilder {
+impl StoryUpdateBuilder {
     #[allow(clippy::ptr_arg)]
-    pub async fn add_slide(&mut self, draft: Box<NewsSlideDraft>) -> Result<bool> {
+    pub async fn add_slide(&mut self, draft: Box<StorySlideDraft>) -> Result<bool> {
         let client = self.client.clone();
         let room = self.room.clone();
         let mut slides = vec![];
@@ -647,11 +621,11 @@ impl NewsEntryUpdateBuilder {
 }
 
 impl Space {
-    pub fn news_draft(&self) -> Result<NewsEntryDraft> {
+    pub fn story_draft(&self) -> Result<StoryDraft> {
         if !self.is_joined() {
             bail!("Unable to create news for spaces we are not part on");
         }
-        Ok(NewsEntryDraft {
+        Ok(StoryDraft {
             client: self.client.clone(),
             room: self.inner.room.clone(),
             content: Default::default(),
@@ -660,13 +634,13 @@ impl Space {
     }
 }
 
-impl From<MsgDraft> for NewsSlideDraft {
+impl From<MsgDraft> for StorySlideDraft {
     fn from(value: MsgDraft) -> Self {
-        NewsSlideDraft::new(value)
+        StorySlideDraft::new(value)
     }
 }
 impl MsgDraft {
-    pub fn into_news_slide_draft(&self) -> NewsSlideDraft {
+    pub fn into_story_slide_draft(&self) -> StorySlideDraft {
         self.clone().into()
     }
 }
