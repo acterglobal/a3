@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
-import 'package:acter/common/widgets/frost_effect.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -154,18 +154,23 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
   // chat editor UI
   Widget renderEditorUI(bool emojiPickerVisible) {
-    return FrostEffect(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(15.0),
+          topRight: Radius.circular(15.0),
         ),
-        child: Row(
-          children: [
-            leadingBtn(emojiPickerVisible),
-            editorField(),
-            trailingBtn(),
-          ],
+        border: BorderDirectional(
+          top: BorderSide(color: greyColor),
         ),
+      ),
+      child: Row(
+        children: [
+          leadingBtn(emojiPickerVisible),
+          editorField(),
+          trailingBtn(),
+        ],
       ),
     );
   }
@@ -191,14 +196,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 100),
           height: widgetSize.height * _cHeight,
-          margin: const EdgeInsets.symmetric(
-            vertical: 12,
-            horizontal: 8,
-          ),
-          decoration: BoxDecoration(
-            color: Theme.of(context).unselectedWidgetColor.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(12),
-          ),
+          margin: const EdgeInsets.only(top: 16),
           child: SingleChildScrollView(
             child: IntrinsicHeight(
               // keyboard shortcuts (desktop)
@@ -233,14 +231,12 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
           footer: null,
           // if provided, will activate mentions
           roomId: widget.roomId,
+          autoFocus: false,
           editable: true,
           shrinkWrap: true,
           editorState: textEditorState,
           scrollController: scrollController,
-          editorPadding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 5,
-          ),
+          editorPadding: const EdgeInsets.symmetric(horizontal: 10),
           onChanged: (body, html) {
             if (html != null) {
               widget.onTyping?.map((cb) => cb(html.isNotEmpty));

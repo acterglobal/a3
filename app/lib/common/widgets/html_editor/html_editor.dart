@@ -101,6 +101,7 @@ class HtmlEditor extends StatefulWidget {
   static const saveEditKey = Key('html-editor-save');
   static const cancelEditKey = Key('html-editor-cancel');
   final String? roomId;
+  final String? hintText;
   final Widget? header;
   final Widget? footer;
   final bool autoFocus;
@@ -118,6 +119,7 @@ class HtmlEditor extends StatefulWidget {
     super.key,
     this.roomId,
     this.editorState,
+    this.hintText = '',
     this.onSave,
     this.onChanged,
     this.onCancel,
@@ -298,6 +300,15 @@ class HtmlEditorState extends State<HtmlEditor> {
 
   Widget mobileEditor(String? roomId) {
     return MobileToolbarV2(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      iconColor: Theme.of(context).colorScheme.onSurface,
+      primaryColor: Theme.of(context).colorScheme.primary,
+      onPrimaryColor: Theme.of(context).colorScheme.onPrimary,
+      borderRadius: 0.0,
+      buttonBorderWidth: 0.0,
+      buttonSelectedBorderWidth: 0.0,
+      buttonSpacing: 4.0,
+      itemOutlineColor: Theme.of(context).colorScheme.surface,
       toolbarItems: [
         textDecorationMobileToolbarItemV2,
         buildTextAndBackgroundColorMobileToolbarItem(
@@ -308,7 +319,7 @@ class HtmlEditorState extends State<HtmlEditor> {
         linkMobileToolbarItem,
         quoteMobileToolbarItem,
       ],
-      toolbarHeight: 48,
+      toolbarHeight: 50,
       editorState: editorState,
       child: Column(
         children: [
@@ -345,6 +356,7 @@ class HtmlEditorState extends State<HtmlEditor> {
                     widget.scrollController ?? editorScrollController,
                 editorStyle: mobileEditorStyle(),
                 footer: generateFooter(),
+                blockComponentBuilders: standardBlockComponentBuilderMap,
                 characterShortcutEvents: [
                   ...standardCharacterShortcutEvents,
                   if (roomId != null) ...mentionShortcuts(context, roomId),
@@ -404,11 +416,28 @@ class HtmlEditorState extends State<HtmlEditor> {
     if (attributes == null) {
       return before;
     }
+
     final roomId = widget.roomId;
     // Inline Mentions
-    final mention = attributes.entries
-        .firstWhere((e) => e.value is MentionAttributes)
-        .value as MentionAttributes?;
+    MentionAttributes? mention;
+    try {
+      final mentionEntry = attributes.entries
+          .where((e) => e.value is MentionAttributes)
+          .firstOrNull;
+      mention = mentionEntry?.value as MentionAttributes?;
+    } catch (e) {
+      // If any error occurs while processing mention attributes,
+      // fallback to default decoration
+      return defaultTextSpanDecoratorForAttribute(
+        context,
+        node,
+        index,
+        text,
+        before,
+        after,
+      );
+    }
+
     if (mention != null && roomId != null) {
       return WidgetSpan(
         alignment: PlaceholderAlignment.middle,
