@@ -24,6 +24,7 @@ class TaskListItemCard extends ConsumerWidget {
   final bool showOnlyTaskList;
   final bool initiallyExpanded;
   final bool canExpand;
+  final EdgeInsetsGeometry? cardMargin;
   final GestureTapCallback? onTitleTap;
 
   const TaskListItemCard({
@@ -36,6 +37,7 @@ class TaskListItemCard extends ConsumerWidget {
     this.showOnlyTaskList = false,
     this.initiallyExpanded = true,
     this.canExpand = true,
+    this.cardMargin,
     this.onTitleTap,
   });
 
@@ -44,6 +46,7 @@ class TaskListItemCard extends ConsumerWidget {
     final taskList = ref.watch(taskListProvider(taskListId)).valueOrNull;
     if (taskList != null) {
       return Card(
+        margin: cardMargin,
         key: Key('task-list-card-$taskListId'),
         child: canExpand
             ? expandable(context, ref, taskList)

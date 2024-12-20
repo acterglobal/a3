@@ -19,8 +19,9 @@ class ReferenceDetailsItem extends StatelessWidget {
     final refType = refDetails.typeStr();
     final roomName = refDetails.roomDisplayName().toString();
     return Card(
+      margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       child: ListTile(
-        leading: Icon(getIconByType(refType), size: 30),
+        leading: Icon(getIconByType(refType), size: 25),
         title: Text(refTitle),
         subtitle: Text(refType),
         onTap: () => EasyLoading.showError(

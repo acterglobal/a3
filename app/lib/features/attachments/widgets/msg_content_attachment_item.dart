@@ -20,23 +20,23 @@ import 'package:path/path.dart' as p;
 // Attachment item UI
 class MsgContentAttachmentItem extends ConsumerWidget {
   final Attachment attachment;
-  final MsgContent msgContent;
   final bool canEdit;
-
-  // whether item can be viewed on gesture
-  final bool? openView;
 
   const MsgContentAttachmentItem({
     super.key,
     required this.attachment,
-    required this.msgContent,
     this.canEdit = false,
-    this.openView,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+
+    final defaultWidget = SizedBox.shrink();
+
+    final msgContent = attachment.msgContent();
+    if (msgContent == null) return defaultWidget;
+
     final containerColor = Theme.of(context).colorScheme.surface;
     final attachmentType = AttachmentType.values.byName(attachment.typeStr());
     final eventId = attachment.attachmentIdStr();
@@ -44,6 +44,7 @@ class MsgContentAttachmentItem extends ConsumerWidget {
     final mediaState = ref.watch(attachmentMediaStateProvider(attachment));
 
     return Container(
+      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: containerColor,
         borderRadius: BorderRadius.circular(8),
@@ -56,8 +57,9 @@ class MsgContentAttachmentItem extends ConsumerWidget {
           context,
           attachmentType,
           mediaState.mediaFile,
+          msgContent,
         ),
-        title: title(context, attachmentType),
+        title: title(context, attachmentType, msgContent),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -110,7 +112,11 @@ class MsgContentAttachmentItem extends ConsumerWidget {
     );
   }
 
-  Widget title(BuildContext context, AttachmentType attachmentType) {
+  Widget title(
+    BuildContext context,
+    AttachmentType attachmentType,
+    MsgContent msgContent,
+  ) {
     final fileName = msgContent.body();
     final title = attachment.name() ?? fileName;
     final fileExtension = p.extension(fileName);
@@ -165,6 +171,7 @@ class MsgContentAttachmentItem extends ConsumerWidget {
     BuildContext context,
     AttachmentType attachmentType,
     File? mediaFile,
+    MsgContent msgContent,
   ) async {
     // Open attachment link
     if (attachmentType == AttachmentType.link) {

@@ -19,6 +19,7 @@ class PinListItemWidget extends ConsumerWidget {
   final RefDetails? refDetails;
   final bool showSpace;
   final bool showPinIndication;
+  final EdgeInsetsGeometry? cardMargin;
   final Function(String)? onTaPinItem;
 
   const PinListItemWidget({
@@ -26,6 +27,7 @@ class PinListItemWidget extends ConsumerWidget {
     this.refDetails,
     this.showSpace = false,
     this.showPinIndication = false,
+    this.cardMargin,
     this.onTaPinItem,
     super.key,
   });
@@ -44,6 +46,7 @@ class PinListItemWidget extends ConsumerWidget {
 
   Widget buildPinItemUI(BuildContext context, ActerPin pin) {
     return Card(
+      margin: cardMargin,
       child: ListTile(
         onTap: () {
           final pinId = pin.eventIdStr();

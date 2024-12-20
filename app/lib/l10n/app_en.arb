@@ -2305,6 +2305,7 @@
   "qr": "QR",
   "newBoost": "New\nBoost",
   "addComment": "Add Comment",
+  "references": "References",
   "noObjectAccess": "You are not part of {spaceName} so you can't access this {objectType}",
   "@addComment": {}
 }
