@@ -1029,6 +1029,7 @@
   "@roomNotFound": {},
   "rsvp": "RSVP",
   "@rsvp": {},
+  "repliedToMsgFailed": "Failed to load original message id: {id}",
   "sasGotIt": "Got it",
   "@sasGotIt": {},
   "sasIncomingReqNotifContent": "{sender} wants to verify your session",

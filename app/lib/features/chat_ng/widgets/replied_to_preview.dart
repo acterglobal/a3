@@ -5,6 +5,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 // Reply State UI widget
 class RepliedToPreview extends ConsumerWidget {
@@ -59,7 +60,7 @@ class RepliedToPreview extends ConsumerWidget {
   ) {
     final originalId = replyInfo.uniqueId;
     return Text(
-      'Failed to load original message id: $originalId',
+      L10n.of(context).repliedToMsgFailed(originalId),
       style: Theme.of(context)
           .textTheme
           .bodySmall
