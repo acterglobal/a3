@@ -1,25 +1,89 @@
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
-import 'package:acter/features/chat_ng/models/message_metadata.dart';
-import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_matrix_html/text_parser.dart';
 
+enum TextMessageType {
+  regular,
+  reply,
+  emoji,
+  notice,
+}
+
 class TextMessageEvent extends StatelessWidget {
   final String roomId;
   final MsgContent content;
-  final MessageMetadata metadata;
+  final TextMessageType _type;
+  final bool _isUser; // Only needed for emoji messages to determine style
 
-  const TextMessageEvent({
+  const TextMessageEvent.inner({
     super.key,
     required this.content,
     required this.roomId,
-    required this.metadata,
-  });
+    required TextMessageType type,
+    bool isUser = false,
+  })  : _type = type,
+        _isUser = isUser;
+
+  factory TextMessageEvent.emoji({
+    Key? key,
+    required MsgContent content,
+    required String roomId,
+    required bool isUser,
+  }) {
+    return TextMessageEvent.inner(
+      key: key,
+      content: content,
+      roomId: roomId,
+      type: TextMessageType.emoji,
+      isUser: isUser,
+    );
+  }
+
+  // Factory constructor for reply messages
+  factory TextMessageEvent.reply({
+    Key? key,
+    required MsgContent content,
+    required String roomId,
+  }) {
+    return TextMessageEvent.inner(
+      key: key,
+      content: content,
+      roomId: roomId,
+      type: TextMessageType.reply,
+    );
+  }
+
+  // Factory constructor for notice messages
+  factory TextMessageEvent.notice({
+    Key? key,
+    required MsgContent content,
+    required String roomId,
+  }) {
+    return TextMessageEvent.inner(
+      key: key,
+      content: content,
+      roomId: roomId,
+      type: TextMessageType.notice,
+    );
+  }
+
+  // Default factory constructor
+  factory TextMessageEvent({
+    Key? key,
+    required MsgContent content,
+    required String roomId,
+  }) {
+    return TextMessageEvent.inner(
+      key: key,
+      content: content,
+      roomId: roomId,
+      type: TextMessageType.regular,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,17 +92,9 @@ class TextMessageEvent extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final body = content.formattedBody() ?? content.body();
 
-    String? msgType = metadata.msgType;
-    bool isUser = metadata.isUser;
-    bool isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
-    bool isNextMessageInGroup = metadata.isNextMessageInGroup;
-    bool wasEdited = metadata.wasEdited;
-
-    // whether text only contains emojis
-    final enlargeEmoji = isOnlyEmojis(content.body());
-
-    if (enlargeEmoji) {
-      final emojiTextStyle = isUser
+    // Handle emoji messages
+    if (_type == TextMessageType.emoji) {
+      final emojiTextStyle = _isUser
           ? chatTheme.sentEmojiMessageTextStyle
           : chatTheme.receivedEmojiMessageTextStyle;
       return Padding(
@@ -48,12 +104,12 @@ class TextMessageEvent extends StatelessWidget {
           style: emojiTextStyle.copyWith(
             fontFamily: emojiFont,
           ),
-          maxLines: null,
+          maxLines: _type == TextMessageType.reply ? 3 : null,
         ),
       );
     }
 
-    final Widget inner = Html(
+    return Html(
       shrinkToFit: true,
       pillBuilder: ({
         required String identifier,
@@ -66,39 +122,14 @@ class TextMessageEvent extends StatelessWidget {
         roomId: roomId,
       ),
       renderNewlines: true,
-      data: body,
-    );
-
-    if (isUser) {
-      return ChatBubble.user(
-        context: context,
-        wasEdited: wasEdited,
-        isNextMessageInGroup: isNextMessageInGroup,
-        child: inner,
-      );
-    }
-    return ChatBubble(
-      context: context,
-      isNextMessageInGroup: isNextMessageInGroup,
-      wasEdited: wasEdited,
-      child: Html(
-        shrinkToFit: true,
-        pillBuilder: ({
-          required String identifier,
-          required String url,
-          OnPillTap? onTap,
-        }) =>
-            ActerPillBuilder(
-          identifier: identifier,
-          uri: url,
-          roomId: roomId,
-        ),
-        renderNewlines: true,
-        defaultTextStyle: textTheme.bodySmall?.copyWith(
-          color: isNotice ? colorScheme.onSurface.withOpacity(0.5) : null,
-        ),
-        data: body,
+      maxLines: _type == TextMessageType.reply ? 2 : null,
+      defaultTextStyle: textTheme.bodySmall?.copyWith(
+        color: _type == TextMessageType.notice
+            ? colorScheme.onSurface.withOpacity(0.5)
+            : null,
+        overflow: _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
       ),
+      data: body,
     );
   }
 }
