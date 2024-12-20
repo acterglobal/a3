@@ -3,7 +3,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
-import 'package:acter/features/chat_ng/models/reply_message_state.dart';
+import 'package:acter/features/chat_ng/models/replied_to_msg_state.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_room_messages_notifier.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/reply_messages_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -135,7 +135,7 @@ final mentionSuggestionsProvider =
   };
 });
 
-final replyToMsgProvider = AsyncNotifierProvider.autoDispose
-    .family<ReplyMessageNotifier, ReplyMsgState, RoomMsgId>(() {
-  return ReplyMessageNotifier();
+final repliedToMsgProvider = AsyncNotifierProvider.autoDispose
+    .family<RepliedToMessageNotifier, RepliedToMsgState, RoomMsgId>(() {
+  return RepliedToMessageNotifier();
 });

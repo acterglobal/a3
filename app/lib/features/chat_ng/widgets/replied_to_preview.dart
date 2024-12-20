@@ -1,6 +1,6 @@
-import 'package:acter/features/chat_ng/models/reply_message_state.dart';
+import 'package:acter/features/chat_ng/models/replied_to_msg_state.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
-import 'package:acter/features/chat_ng/widgets/events/reply_original_event.dart';
+import 'package:acter/features/chat_ng/widgets/events/replied_to_event.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,25 +22,32 @@ class RepliedToPreview extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final RoomMsgId replyInfo = (roomId: roomId, uniqueId: originalId);
 
-    final roomMsgState = ref.watch(replyToMsgProvider(replyInfo)).valueOrNull;
-    final avatarInfo = AvatarInfo(uniqueId: '#');
+    final roomMsgState = ref.watch(repliedToMsgProvider(replyInfo)).valueOrNull;
 
     return switch (roomMsgState) {
-      ReplyMsgLoading() => replyBuilder(
+      RepliedToMsgLoading() => replyBuilder(
           context,
           Skeletonizer(
             child: ListTile(
-              leading: ActerAvatar(options: AvatarOptions.DM(avatarInfo)),
+              leading: ActerAvatar(
+                options: AvatarOptions.DM(AvatarInfo(uniqueId: '#')),
+              ),
               isThreeLine: true,
             ),
           ),
         ),
-      ReplyMsgError() => replyBuilder(
+      RepliedToMsgError() => replyBuilder(
           context,
           replyErrorUI(context, ref, replyInfo),
         ),
-      ReplyMsgData(message: final msg) =>
-        replyBuilder(context, ReplyOriginalEvent(roomId: roomId, msg: msg)),
+      RepliedToMsgData(repliedToItem: final repliedToItem) => replyBuilder(
+          context,
+          RepliedToEvent(
+            roomId: roomId,
+            messageId: originalId,
+            replyEventItem: repliedToItem,
+          ),
+        ),
       _ => const SizedBox.shrink(),
     };
   }

@@ -9,7 +9,7 @@ import 'package:acter/features/chat_ng/widgets/events/state_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/features/chat_ng/widgets/reply_preview.dart';
+import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show RoomEventItem;
 import 'package:flutter/material.dart';

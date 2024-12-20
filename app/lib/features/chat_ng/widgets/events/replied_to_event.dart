@@ -8,29 +8,23 @@ import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem, RoomMessage;
+    show RoomEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:acter/common/extensions/options.dart';
-
-class ReplyOriginalEvent extends StatelessWidget {
+class RepliedToEvent extends StatelessWidget {
   final String roomId;
-  final RoomMessage msg;
-  const ReplyOriginalEvent({
+  final String messageId;
+  final RoomEventItem replyEventItem;
+  const RepliedToEvent({
     super.key,
     required this.roomId,
-    required this.msg,
+    required this.messageId,
+    required this.replyEventItem,
   });
 
   @override
   Widget build(BuildContext context) {
-    // reply is allowed for only EventItem not VirtualItem
-    // user should be able to get original event as RoomMessage
-    RoomEventItem replyEventItem =
-        msg.eventItem().expect('room msg should have event item');
-    final messageId = msg.uniqueId();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
