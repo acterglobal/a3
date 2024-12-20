@@ -1,0 +1,2 @@
+- [New] : Boost Actions : Now you can share space objects as boost action of any space in which you are part of. There is not selected space restriction anymore.
+- [Enhancement] : Attachment List on space object details screen got event better by having separate reference attachments list from general attachment list.
