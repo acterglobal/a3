@@ -54,7 +54,6 @@ dependencies = [
  "pulldown-cmark 0.9.6",
  "reqwest",
  "ruma",
- "ruma-common",
  "sanitize-filename-reader-friendly",
  "scc",
  "serde",
@@ -4442,7 +4441,7 @@ dependencies = [
 [[package]]
 name = "ruma"
 version = "0.11.1"
-source = "git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711#c91499fc464adc865a7c99d0ce0b35982ad96711"
+source = "git+https://github.com/acterglobal/ruma?branch=ben-msc2326#5f85a7939b17167132925142ded895b397104ca0"
 dependencies = [
  "assign",
  "js_int",
@@ -4452,13 +4451,14 @@ dependencies = [
  "ruma-events",
  "ruma-federation-api",
  "ruma-html",
+ "ruma-push-gateway-api",
  "web-time",
 ]
 
 [[package]]
 name = "ruma-client-api"
 version = "0.19.0"
-source = "git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711#c91499fc464adc865a7c99d0ce0b35982ad96711"
+source = "git+https://github.com/acterglobal/ruma?branch=ben-msc2326#5f85a7939b17167132925142ded895b397104ca0"
 dependencies = [
  "as_variant",
  "assign",
@@ -4481,7 +4481,7 @@ dependencies = [
 [[package]]
 name = "ruma-common"
 version = "0.14.1"
-source = "git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711#c91499fc464adc865a7c99d0ce0b35982ad96711"
+source = "git+https://github.com/acterglobal/ruma?branch=ben-msc2326#5f85a7939b17167132925142ded895b397104ca0"
 dependencies = [
  "as_variant",
  "base64 0.22.1",
@@ -4513,7 +4513,7 @@ dependencies = [
 [[package]]
 name = "ruma-events"
 version = "0.29.1"
-source = "git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711#c91499fc464adc865a7c99d0ce0b35982ad96711"
+source = "git+https://github.com/acterglobal/ruma?branch=ben-msc2326#5f85a7939b17167132925142ded895b397104ca0"
 dependencies = [
  "as_variant",
  "indexmap 2.7.0",
@@ -4538,7 +4538,7 @@ dependencies = [
 [[package]]
 name = "ruma-federation-api"
 version = "0.10.0"
-source = "git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711#c91499fc464adc865a7c99d0ce0b35982ad96711"
+source = "git+https://github.com/acterglobal/ruma?branch=ben-msc2326#5f85a7939b17167132925142ded895b397104ca0"
 dependencies = [
  "http 1.2.0",
  "js_int",
@@ -4552,7 +4552,7 @@ dependencies = [
 [[package]]
 name = "ruma-html"
 version = "0.3.0"
-source = "git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711#c91499fc464adc865a7c99d0ce0b35982ad96711"
+source = "git+https://github.com/acterglobal/ruma?branch=ben-msc2326#5f85a7939b17167132925142ded895b397104ca0"
 dependencies = [
  "as_variant",
  "html5ever",
@@ -4564,7 +4564,7 @@ dependencies = [
 [[package]]
 name = "ruma-identifiers-validation"
 version = "0.10.0"
-source = "git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711#c91499fc464adc865a7c99d0ce0b35982ad96711"
+source = "git+https://github.com/acterglobal/ruma?branch=ben-msc2326#5f85a7939b17167132925142ded895b397104ca0"
 dependencies = [
  "js_int",
  "thiserror 2.0.6",
@@ -4573,10 +4573,9 @@ dependencies = [
 [[package]]
 name = "ruma-macros"
 version = "0.14.0"
-source = "git+https://github.com/ruma/ruma?rev=c91499fc464adc865a7c99d0ce0b35982ad96711#c91499fc464adc865a7c99d0ce0b35982ad96711"
+source = "git+https://github.com/acterglobal/ruma?branch=ben-msc2326#5f85a7939b17167132925142ded895b397104ca0"
 dependencies = [
  "cfg-if",
- "once_cell",
  "proc-macro-crate",
  "proc-macro2",
  "quote",
@@ -4584,6 +4583,18 @@ dependencies = [
  "serde",
  "syn 2.0.90",
  "toml 0.8.19",
+]
+
+[[package]]
+name = "ruma-push-gateway-api"
+version = "0.10.0"
+source = "git+https://github.com/acterglobal/ruma?branch=ben-msc2326#5f85a7939b17167132925142ded895b397104ca0"
+dependencies = [
+ "js_int",
+ "ruma-common",
+ "ruma-events",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
