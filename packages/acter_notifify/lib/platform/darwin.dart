@@ -18,11 +18,12 @@ Future<DarwinNotificationDetails?> genDarwinDetails(
     _log.info('attachment at $filePath');
     attachments.add(DarwinNotificationAttachment(filePath));
   }
-  final badgeCount = await notificationsCount();
+  // final badgeCount = await notificationsCount();
 
   return DarwinNotificationDetails(
     threadIdentifier: notification.threadId(),
-    badgeNumber: badgeCount + 1,
+    categoryIdentifier: 'message',
+    badgeNumber: 1, //badgeCount + 1,
     attachments: attachments,
   );
 }
