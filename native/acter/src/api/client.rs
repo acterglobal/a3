@@ -11,16 +11,13 @@ use futures::{
     future::join_all,
     stream::{Stream, StreamExt},
 };
-use matrix_sdk::{
-    media::{MediaRequestParameters, UniqueKey},
-    room::Room as SdkRoom,
-    Client as SdkClient,
-};
+use matrix_sdk::{room::Room as SdkRoom, Client as SdkClient};
 use matrix_sdk_base::{
+    media::{MediaRequestParameters, UniqueKey},
     ruma::{
-        device_id, events::room::MediaSource, IdParseError, OwnedDeviceId, OwnedMxcUri,
-        OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId,
-        RoomAliasId, RoomId, RoomOrAliasId, UserId,
+        device_id, events::room::MediaSource, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId,
+        OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId,
+        RoomOrAliasId, UserId,
     },
     RoomStateFilter,
 };
