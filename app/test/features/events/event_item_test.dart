@@ -35,7 +35,8 @@ void main() {
     Function(String)? onTapEventItem,
     EventFilters eventFilter = EventFilters.upcoming,
   }) async {
-    final mockedNotifier = MockAsyncCalendarEventNotifier();
+    final mockedNotifier = MockAsyncCalendarEventNotifier(shouldFail: false);
+
     await tester.pumpProviderWidget(
       overrides: [
         utcNowProvider.overrideWith((ref) => mockUtcNowNotifier),
@@ -53,6 +54,8 @@ void main() {
         onTapEventItem: onTapEventItem,
       ),
     );
+    // Wait for the async provider to load
+    await tester.pump();
   }
 
   testWidgets('displays event title', (tester) async {
