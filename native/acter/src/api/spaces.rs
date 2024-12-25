@@ -5,45 +5,24 @@ pub use acter_core::spaces::{
     SpaceRelations as CoreSpaceRelations,
 };
 use acter_core::{
-    error::Error,
-    events::{
-        attachments::{SyncAttachmentEvent, SyncAttachmentUpdateEvent},
-        calendar::{SyncCalendarEventEvent, SyncCalendarEventUpdateEvent},
-        comments::{SyncCommentEvent, SyncCommentUpdateEvent},
-        news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
-        pins::{SyncPinEvent, SyncPinUpdateEvent},
-        read_receipt::SyncReadReceiptEvent,
-        rsvp::SyncRsvpEvent,
-        tasks::{
-            SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskSelfAssignEvent,
-            SyncTaskSelfUnassignEvent, SyncTaskUpdateEvent,
-        },
-        AnyActerEvent,
-    },
-    executor::Executor,
-    models::{AnyActerModel, EventMeta},
-    statics::default_acter_space_states,
-    store::Store,
-    templates::Engine,
+    error::Error, events::AnyActerEvent, models::AnyActerModel,
+    statics::default_acter_space_states, store::Store, templates::Engine,
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{
+use matrix_sdk::room::{Messages, MessagesOptions};
+use matrix_sdk_base::{
     deserialized_responses::SyncOrStrippedState,
-    event_handler::{Ctx, EventHandlerHandle},
-    room::{Messages, MessagesOptions, Room as SdkRoom},
-};
-use matrix_sdk_base::ruma::{
-    api::client::state::send_state_event,
-    assign,
-    events::{
-        reaction::SyncReactionEvent,
-        room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
-        space::child::SpaceChildEventContent,
-        AnyStateEventContent, MessageLikeEvent, MessageLikeEventType, StateEventType,
+    ruma::{
+        api::client::state::send_state_event,
+        assign,
+        events::{
+            space::child::SpaceChildEventContent, AnyStateEventContent, MessageLikeEventType,
+            StateEventType,
+        },
+        serde::Raw,
+        OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId, RoomOrAliasId, ServerName,
     },
-    serde::Raw,
-    OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId, RoomOrAliasId, ServerName,
 };
 use matrix_sdk_ui::timeline::RoomExt;
 use serde::{Deserialize, Serialize};
