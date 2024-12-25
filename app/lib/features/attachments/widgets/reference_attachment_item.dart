@@ -27,31 +27,27 @@ class ReferenceAttachmentItem extends ConsumerWidget {
     final refObjectType = refDetails.typeStr();
     if (refObjectId == null) return defaultWidget;
 
-    switch (refObjectType) {
-      case 'pin':
-        return PinListItemWidget(
+    return switch (refObjectType) {
+      'pin' => PinListItemWidget(
           pinId: refObjectId,
           refDetails: refDetails,
           showPinIndication: true,
           cardMargin: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-        );
-      case 'calendar-event':
-        return EventItem(
+        ),
+      'calendar-event' => EventItem(
           eventId: refObjectId,
           refDetails: refDetails,
           margin: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-        );
-      case 'task-list':
-        return TaskListItemCard(
+        ),
+      'task-list' => TaskListItemCard(
           taskListId: refObjectId,
           refDetails: refDetails,
           showOnlyTaskList: true,
           canExpand: false,
           showTaskListIndication: true,
           cardMargin: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-        );
-      default:
-        return defaultWidget;
-    }
+        ),
+      _ => defaultWidget,
+    };
   }
 }

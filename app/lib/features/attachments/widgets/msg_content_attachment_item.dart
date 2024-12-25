@@ -32,10 +32,8 @@ class MsgContentAttachmentItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
 
-    final defaultWidget = SizedBox.shrink();
-
     final msgContent = attachment.msgContent();
-    if (msgContent == null) return defaultWidget;
+    if (msgContent == null) return SizedBox.shrink();
 
     final containerColor = Theme.of(context).colorScheme.surface;
     final attachmentType = AttachmentType.values.byName(attachment.typeStr());
