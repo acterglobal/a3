@@ -39,8 +39,9 @@ final chatShellRoutes = [
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       mainProviderContainer.read(selectedChatIdProvider.notifier).select(null);
-      return MaterialPage(
-        key: state.pageKey,
+      return defaultPageBuilder(
+        context: context,
+        state: state,
         child: _chatLayoutBuilder(),
       );
     },
@@ -58,8 +59,9 @@ final chatShellRoutes = [
       mainProviderContainer
           .read(selectedChatIdProvider.notifier)
           .select(roomId);
-      return MaterialPage(
-        key: state.pageKey,
+      return defaultPageBuilder(
+        context: context,
+        state: state,
         child: _chatLayoutBuilder(
           centerChild: isChatNg
               ? ChatRoomNgPage(
@@ -82,8 +84,9 @@ final chatShellRoutes = [
       mainProviderContainer
           .read(selectedChatIdProvider.notifier)
           .select(roomId);
-      return MaterialPage(
-        key: state.pageKey,
+      return defaultPageBuilder(
+        context: context,
+        state: state,
         child: _chatLayoutBuilder(
           centerChild: RoomPage(roomId: roomId),
           expandedChild: RoomProfilePage(roomId: roomId),
@@ -101,8 +104,9 @@ final chatShellRoutes = [
       mainProviderContainer
           .read(selectedChatIdProvider.notifier)
           .select(roomId);
-      return MaterialPage(
-        key: state.pageKey,
+      return defaultPageBuilder(
+        context: context,
+        state: state,
         child: _chatLayoutBuilder(
           centerChild: RoomPage(roomId: roomId),
           expandedChild: VisibilityAccessibilityPage(
@@ -120,8 +124,9 @@ final chatShellRoutes = [
     pageBuilder: (context, state) {
       final roomId = state.pathParameters['roomId']
           .expect('chatInvite route needs roomId as path param');
-      return MaterialPage(
-        key: state.pageKey,
+      return defaultPageBuilder(
+        context: context,
+        state: state,
         child: _chatLayoutBuilder(
           centerChild: RoomPage(roomId: roomId),
           expandedChild: InvitePage(roomId: roomId),

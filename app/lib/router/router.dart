@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/pages/not_found.dart';
 import 'package:acter/common/utils/constants.dart';
@@ -11,7 +12,6 @@ import 'package:acter/router/shell_routers/home_shell_router.dart';
 import 'package:acter/router/shell_routers/search_shell_router.dart';
 import 'package:acter/router/shell_routers/update_shell_router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -117,6 +117,21 @@ Future<String?> forwardRedirect(
     );
   }
 }
+
+Page defaultPageBuilder({
+  required BuildContext context,
+  required GoRouterState state,
+  required Widget child,
+}) =>
+    context.isLargeScreen
+        ? NoTransitionPage(
+            key: state.pageKey,
+            child: child,
+          )
+        : MaterialPage(
+            key: state.pageKey,
+            child: child,
+          );
 
 final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
