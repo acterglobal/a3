@@ -1,7 +1,6 @@
 use acter_core::events::CategoriesStateEventContent;
 use anyhow::{bail, Result};
-use matrix_sdk::deserialized_responses::{RawSyncOrStrippedState, SyncOrStrippedState};
-use matrix_sdk_base::ruma::events::{EventContent, FullStateEventContent, SyncStateEvent};
+use matrix_sdk_base::{deserialized_responses::RawSyncOrStrippedState, ruma::events::EventContent};
 use tracing::warn;
 
 use crate::{Categories, CategoriesBuilder, RUNTIME};
