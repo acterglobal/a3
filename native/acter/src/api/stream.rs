@@ -1,27 +1,23 @@
 use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{
-    room::{edit::EditedContent, Receipts},
+use matrix_sdk::room::{edit::EditedContent, Receipts};
+use matrix_sdk_base::{
+    ruma::{
+        api::client::receipt::create_receipt,
+        assign,
+        events::{
+            receipt::ReceiptThread,
+            room::{
+                message::{AudioInfo, FileInfo, ForwardThread, VideoInfo},
+                ImageInfo,
+            },
+            MessageLikeEventType,
+        },
+        EventId, OwnedEventId, OwnedTransactionId,
+    },
     RoomState,
 };
-use matrix_sdk_base::ruma::{
-    api::client::receipt::create_receipt,
-    assign,
-    events::{
-        receipt::ReceiptThread,
-        relation::Annotation,
-        room::{
-            message::{
-                AudioInfo, FileInfo, ForwardThread, LocationInfo, RoomMessageEvent, VideoInfo,
-            },
-            ImageInfo,
-        },
-        MessageLikeEventType,
-    },
-    EventId, OwnedEventId, OwnedTransactionId,
-};
 use matrix_sdk_ui::timeline::{Timeline, TimelineEventItemId};
-use ruma::TransactionId;
 use std::{ops::Deref, sync::Arc};
 use tracing::info;
 

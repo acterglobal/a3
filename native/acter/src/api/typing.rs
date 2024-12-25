@@ -3,12 +3,12 @@ use matrix_sdk::{
     room::Room,
     Client as SdkClient,
 };
-use matrix_sdk_base::ruma::{events::typing::SyncTypingEvent, OwnedRoomId, OwnedUserId};
+use matrix_sdk_base::ruma::{events::typing::SyncTypingEvent, OwnedUserId};
 use scc::hash_map::{Entry, HashMap};
 use std::sync::Arc;
 use tokio::sync::broadcast::{channel, Receiver, Sender};
 use tokio_stream::{wrappers::BroadcastStream, Stream, StreamExt};
-use tracing::{error, info, trace};
+use tracing::{error, trace};
 
 use super::client::Client;
 
