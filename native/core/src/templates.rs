@@ -5,8 +5,7 @@ use futures::{
     Stream,
 };
 use indexmap::IndexMap;
-use matrix_sdk::RoomState;
-use matrix_sdk_base::ruma::RoomId;
+use matrix_sdk_base::{ruma::RoomId, RoomState};
 pub use minijinja::value::Value;
 use minijinja::Environment;
 use serde::Deserialize;

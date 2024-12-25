@@ -1,8 +1,8 @@
 use matrix_sdk::Client;
 use matrix_sdk_base::ruma::{OwnedRoomId, OwnedUserId, UserId};
 use scc::hash_map::{Entry, HashMap};
-use std::collections::HashSet as StdHashSet;
-use std::sync::{Arc, Mutex as StdMutex};
+use std::collections::HashSet;
+use std::sync::{Arc, Mutex};
 use tracing::{debug, error, info, instrument, trace, warn};
 
 use crate::{
@@ -16,7 +16,7 @@ pub struct Store {
     user_id: OwnedUserId,
     models: Arc<HashMap<String, AnyActerModel>>,
     indizes: Arc<HashMap<String, Vec<String>>>,
-    dirty: Arc<StdMutex<StdHashSet<String>>>, // our key mutex;
+    dirty: Arc<Mutex<HashSet<String>>>, // our key mutex;
 }
 
 static ALL_MODELS_KEY: &str = "ACTER::ALL";
@@ -345,7 +345,7 @@ impl Store {
             }
 
             let model_keys: Vec<String> = {
-                let mut model_keys: StdHashSet<String> = StdHashSet::new();
+                let mut model_keys: HashSet<String> = HashSet::new();
                 // deduplicate the model_keys;
                 self.models.scan(|k, _v| {
                     model_keys.insert(k.clone());

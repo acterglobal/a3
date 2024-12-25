@@ -14,13 +14,11 @@ pub mod tasks;
 pub mod three_pid;
 
 pub use common::*;
-use matrix_sdk::{
-    event_handler::{HandlerKind, SyncEvent},
-    ruma::{events::AnyTimelineEvent, OwnedRoomId, RoomId},
-};
+use matrix_sdk::event_handler::{HandlerKind, SyncEvent};
 use matrix_sdk_base::ruma::{
-    events::{reaction, EventTypeDeHelper, StaticEventContent},
+    events::{reaction, AnyTimelineEvent, EventTypeDeHelper, StaticEventContent},
     exports::{serde::de::Error as SerdeDeError, serde_json as smart_serde_json},
+    OwnedRoomId, RoomId,
 };
 
 #[derive(Clone, Debug)]
