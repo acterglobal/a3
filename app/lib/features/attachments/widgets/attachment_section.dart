@@ -7,7 +7,7 @@ import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/msg_content_attachment_item.dart';
 import 'package:acter/features/attachments/widgets/reference_attachment_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Attachment, AttachmentsManager;
+    show AttachmentsManager;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,18 +80,50 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final attachmentsLoader = ref.watch(attachmentsProvider(attachmentManager));
-    return attachmentsLoader.when(
-      data: (attachmentList) {
-        return Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              referenceAttachmentsUI(context, attachmentList),
-              generalAttachmentsUI(context, ref, attachmentList),
-            ],
-          ),
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          referenceAttachmentsUI(context, ref),
+          msgContentAttachmentsUI(context, ref),
+        ],
+      ),
+    );
+  }
+
+  Widget referenceAttachmentsUI(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    final referenceAttachmentsLoader =
+        ref.watch(referenceAttachmentsProvider(attachmentManager));
+    bool canEdit = attachmentManager.canEditAttachments();
+
+    return referenceAttachmentsLoader.when(
+      data: (refAttachmentList) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              L10n.of(context).references,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 10),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: refAttachmentList.length,
+              padding: EdgeInsets.zero,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return ReferenceAttachmentItem(
+                  attachment: refAttachmentList[index],
+                  canEdit: canEdit,
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+          ],
         );
       },
       error: (e, s) {
@@ -108,81 +140,50 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
     );
   }
 
-  Widget referenceAttachmentsUI(
-    BuildContext context,
-    List<Attachment> attachmentList,
-  ) {
-    final refAttachmentList =
-        attachmentList.where((item) => item.refDetails() != null).toList();
-    if (refAttachmentList.isEmpty) return SizedBox.shrink();
-    bool canEdit = attachmentManager.canEditAttachments();
-
-    //REFERENCE ATTACHMENTS : LIST
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          L10n.of(context).references,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const SizedBox(height: 10),
-        ListView.builder(
-          shrinkWrap: true,
-          itemCount: refAttachmentList.length,
-          padding: EdgeInsets.zero,
-          physics: NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            return ReferenceAttachmentItem(
-              attachment: refAttachmentList[index],
-              canEdit: canEdit,
-            );
-          },
-        ),
-        const SizedBox(height: 20),
-      ],
-    );
-  }
-
-  Widget generalAttachmentsUI(
+  Widget msgContentAttachmentsUI(
     BuildContext context,
     WidgetRef ref,
-    List<Attachment> attachmentList,
   ) {
-    final generalAttachmentList =
-        attachmentList.where((item) => item.msgContent() != null).toList();
+    final msgContentAttachmentsLoader =
+        ref.watch(msgContentAttachmentsProvider(attachmentManager));
     bool canEdit = attachmentManager.canEditAttachments();
-
-    List<Widget> generalAttachmentWidgets = [];
-
-    //GENERAL ATTACHMENTS : HEADER
-    generalAttachmentWidgets.add(generalAttachmentHeader(context, ref));
-
-    if (generalAttachmentList.isNotEmpty) {
-      //GENERAL ATTACHMENTS : LIST
-      generalAttachmentWidgets.add(
-        ListView.builder(
-          shrinkWrap: true,
-          itemCount: generalAttachmentList.length,
-          padding: EdgeInsets.zero,
-          physics: NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            return MsgContentAttachmentItem(
-              attachment: generalAttachmentList[index],
-              canEdit: canEdit,
-            );
-          },
+    return msgContentAttachmentsLoader.when(
+      data: (msgContentAttachmentList) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            generalAttachmentHeader(context, ref),
+            if (msgContentAttachmentList.isNotEmpty)
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: msgContentAttachmentList.length,
+                padding: EdgeInsets.zero,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return MsgContentAttachmentItem(
+                    attachment: msgContentAttachmentList[index],
+                    canEdit: canEdit,
+                  );
+                },
+              ),
+            if (msgContentAttachmentList.isEmpty) ...[
+              const SizedBox(height: 10),
+              Text(L10n.of(context).attachmentEmptyStateTitle),
+            ],
+          ],
+        );
+      },
+      error: (e, s) {
+        _log.severe('Failed to load attachments', e, s);
+        return Text(L10n.of(context).errorLoadingAttachments(e));
+      },
+      loading: () => const Skeletonizer(
+        child: Wrap(
+          spacing: 5.0,
+          runSpacing: 10.0,
+          children: [],
         ),
-      );
-    } else {
-      //GENERAL ATTACHMENTS : EMPTY STATE
-      generalAttachmentWidgets.add(const SizedBox(height: 10));
-      generalAttachmentWidgets
-          .add(Text(L10n.of(context).attachmentEmptyStateTitle));
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: generalAttachmentWidgets,
+      ),
     );
   }
 

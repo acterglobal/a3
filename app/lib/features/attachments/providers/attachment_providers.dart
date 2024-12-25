@@ -16,6 +16,24 @@ final attachmentsProvider = FutureProvider.family
   return (await manager.attachments()).toList();
 });
 
+/// Provider for getting reference attachments
+final referenceAttachmentsProvider = FutureProvider.family
+    .autoDispose<List<Attachment>, AttachmentsManager>((ref, manager) async {
+  final attachmentList = await ref.watch(attachmentsProvider(manager).future);
+  final refAttachmentList =
+      attachmentList.where((item) => item.refDetails() != null).toList();
+  return refAttachmentList;
+});
+
+/// Provider for getting msgContent attachments
+final msgContentAttachmentsProvider = FutureProvider.family
+    .autoDispose<List<Attachment>, AttachmentsManager>((ref, manager) async {
+  final attachmentList = await ref.watch(attachmentsProvider(manager).future);
+  final msgContentAttachmentList =
+      attachmentList.where((item) => item.msgContent() != null).toList();
+  return msgContentAttachmentList;
+});
+
 final attachmentMediaStateProvider = StateNotifierProvider.family
     .autoDispose<AttachmentMediaNotifier, AttachmentMediaState, Attachment>(
   (ref, attachment) =>
