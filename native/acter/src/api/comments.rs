@@ -4,10 +4,13 @@ use acter_core::{
 };
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{room::Room, RoomState};
-use matrix_sdk_base::ruma::{
-    events::{room::message::TextMessageEventContent, MessageLikeEventType},
-    OwnedEventId, OwnedUserId,
+use matrix_sdk::room::Room;
+use matrix_sdk_base::{
+    ruma::{
+        events::{room::message::TextMessageEventContent, MessageLikeEventType},
+        OwnedEventId, OwnedUserId,
+    },
+    RoomState,
 };
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
