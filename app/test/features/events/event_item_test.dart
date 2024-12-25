@@ -79,7 +79,7 @@ void main() {
     );
 
     await tester.tap(find.byKey(EventItem.eventItemClick));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     verify(() => mockOnTapEventItem.call('1234')).called(1);
   });
@@ -108,7 +108,7 @@ void main() {
     await createWidgetUnderTest(tester: tester);
 
     // Act: Trigger a frame
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // Assert: Check if the Yes icon is displayed
     expect(find.byIcon(Icons.check_circle), findsOneWidget);
@@ -122,7 +122,7 @@ void main() {
     await createWidgetUnderTest(tester: tester);
 
     // Act: Trigger a frame
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // Assert: Check if the No icon is displayed
     expect(find.byIcon(Icons.cancel), findsOneWidget);
@@ -136,7 +136,7 @@ void main() {
     await createWidgetUnderTest(tester: tester);
 
     // Act: Trigger a frame
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // Assert: Check if the Maybe icon is displayed
     expect(find.byIcon(Icons.question_mark_rounded), findsOneWidget);
@@ -148,7 +148,7 @@ void main() {
     await createWidgetUnderTest(tester: tester, isShowRsvp: false);
 
     // Act: Trigger a frame
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // Assert: Check that no RSVP status icon is displayed
     expect(find.byIcon(Icons.check_circle), findsNothing);
