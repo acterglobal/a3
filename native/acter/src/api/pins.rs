@@ -1,17 +1,20 @@
 use acter_core::{
     events::{
         pins::{self, PinBuilder},
-        Display, Icon, RefDetails, RefPreview,
+        Display, RefDetails, RefPreview,
     },
     models::{self, can_redact, ActerModel, AnyActerModel},
     statics::KEYS,
 };
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{room::Room, RoomState};
-use matrix_sdk_base::ruma::{
-    events::{room::message::TextMessageEventContent, MessageLikeEventType},
-    OwnedEventId, OwnedRoomId, OwnedUserId,
+use matrix_sdk::room::Room;
+use matrix_sdk_base::{
+    ruma::{
+        events::{room::message::TextMessageEventContent, MessageLikeEventType},
+        OwnedEventId, OwnedRoomId, OwnedUserId,
+    },
+    RoomState,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},

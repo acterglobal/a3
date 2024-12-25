@@ -3,8 +3,8 @@ use futures::{
     pin_mut,
     stream::{Stream, StreamExt},
 };
-use matrix_sdk::{executor::JoinHandle, Client as SdkClient};
-use matrix_sdk_base::ruma::{OwnedDeviceId, OwnedUserId};
+use matrix_sdk::Client as SdkClient;
+use matrix_sdk_base::{executor::JoinHandle, ruma::OwnedDeviceId};
 use std::{
     marker::Unpin,
     sync::Arc,

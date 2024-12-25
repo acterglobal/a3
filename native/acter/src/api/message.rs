@@ -11,7 +11,6 @@ use matrix_sdk_ui::timeline::{
     EventSendState as SdkEventSendState, EventTimelineItem, MembershipChange, TimelineEventItemId,
     TimelineItem, TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
-use ruma::TransactionId;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::info;
