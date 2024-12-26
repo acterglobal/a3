@@ -125,7 +125,7 @@ dependencies = [
  "thiserror 1.0.69",
  "tokio",
  "tokio-retry",
- "toml 0.5.11",
+ "toml 0.8.19",
  "tracing",
  "url",
  "uuid",
@@ -5601,7 +5601,6 @@ version = "0.5.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f4f7f0dd8d50a853a531c426359045b1998f04219d88799810762cd4ad314234"
 dependencies = [
- "indexmap 1.9.3",
  "serde",
 ]
 
@@ -5611,6 +5610,7 @@ version = "0.8.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a1ed1f98e3fdc28d6d910e6737ae6ab1a93bf1985935a1193e68f93eeb68d24e"
 dependencies = [
+ "indexmap 2.7.0",
  "serde",
  "serde_spanned",
  "toml_datetime",

@@ -43,7 +43,7 @@ async-stream = "*"
 indexmap = { version = "2", optional = true }
 minijinja = { version = "2.2.0", optional = true, features = ["builtins"] }
 tokio-retry = { workspace = true, optional = true }
-toml = { version = "*", optional = true, features = ["preserve_order"] }
+toml = { version = "0.8.8", optional = true, features = ["preserve_order"] }
 
 [dependencies.matrix-sdk]
 workspace = true
