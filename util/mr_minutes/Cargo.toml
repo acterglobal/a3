@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 git2 = "0.18.1"
-clap = { version = "4.3.15", features = ["derive"] }
+clap = { version = "*", features = ["derive"] }
 anyhow = "*"
 log = "*"
 env_logger = { workspace = true }
