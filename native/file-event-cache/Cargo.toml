@@ -16,7 +16,7 @@ default = ["queued"]
 
 [dependencies]
 async-trait = "0.1.60"
-base64ct = { workspace = true, features = ["alloc"] }
+base64ct = { version = "*", features = ["alloc"] }
 matrix-sdk = { workspace = true }
 matrix-sdk-base = { workspace = true }
 matrix-sdk-store-encryption = { workspace = true }
