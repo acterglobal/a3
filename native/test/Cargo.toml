@@ -24,7 +24,7 @@ mailhog-rs = "0.2.0"
 regex = "1"
 serde_json = "*"
 tempfile = "3.9.0"
-url = "2.5.4"
+url = "*"
 tokio = { version = "*", features = ["macros", "rt-multi-thread"] }
 tokio-retry = { workspace = true }
 tracing = { version = "*", features = ["log"] }
