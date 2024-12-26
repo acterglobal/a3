@@ -22,7 +22,7 @@ futures = "*"
 mail-parser = "0.9.3"
 mailhog-rs = "0.2.0"
 regex = "1"
-serde_json = "1"
+serde_json = "*"
 tempfile = "3.9.0"
 url = "2.5.4"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
