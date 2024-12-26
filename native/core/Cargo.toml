@@ -34,7 +34,7 @@ serde = "*"
 serde_json = "*"
 serde_repr = "0.1"
 strum = { workspace = true }
-thiserror = "1.0"
+thiserror = "*"
 tracing = { version = "*", features = ["log"] }
 url = { workspace = true }
 

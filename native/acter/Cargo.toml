@@ -66,7 +66,7 @@ pulldown-cmark = { version = "*", default-features = false }
 
 # for uniffi support
 uniffi = { version = "0.26.1", features = ["cli"], optional = true }
-thiserror = { version = "1.0.56", optional = true }
+thiserror = { version = "*", optional = true }
 
 # for proxyman support
 # enable support for system native TLS certificates
