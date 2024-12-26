@@ -75,7 +75,7 @@ reqwest = { optional = true, version = "*", default-features = false, features =
 # for tracing support
 tracing-subscriber = { version = "*", optional = true, default-features = false, features = ["fmt", "std", "env-filter"] }
 tracing-appender = { version = "0.2", optional = true }
-tracing-log = { version = "0.2", optional = true }
+tracing-log = { version = "*", optional = true }
 console-subscriber = { version = "0.2.0", optional = true }
 
 # not used directly but needed to enable specific features from ruma
