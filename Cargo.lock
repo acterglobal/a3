@@ -87,7 +87,7 @@ dependencies = [
  "anyhow",
  "clap 4.5.23",
  "dialoguer",
- "env_logger 0.11.5",
+ "env_logger",
  "futures",
  "matrix-sdk",
  "matrix-sdk-base",
@@ -108,7 +108,7 @@ dependencies = [
  "derive-getters",
  "derive_builder",
  "enum_dispatch",
- "env_logger 0.11.5",
+ "env_logger",
  "futures",
  "icalendar",
  "indexmap 2.7.0",
@@ -138,7 +138,7 @@ dependencies = [
  "acter",
  "acter-core",
  "anyhow",
- "env_logger 0.11.5",
+ "env_logger",
  "futures",
  "mail-parser",
  "mailhog-rs",
@@ -165,7 +165,7 @@ dependencies = [
  "clap 4.5.23",
  "crossterm",
  "dialoguer",
- "env_logger 0.10.2",
+ "env_logger",
  "futures",
  "matrix-sdk-base",
  "mime",
@@ -1608,19 +1608,6 @@ dependencies = [
 
 [[package]]
 name = "env_logger"
-version = "0.10.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4cd405aab171cb85d6735e5c8d9db038c17d3ca007a4d2c25f337935c3d90580"
-dependencies = [
- "humantime",
- "is-terminal",
- "log",
- "regex",
- "termcolor",
-]
-
-[[package]]
-name = "env_logger"
 version = "0.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e13fa619b91fb2381732789fc5de83b45675e882f66623b7d8cb4f643017018d"
@@ -2220,12 +2207,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d231dfb89cfffdbc30e7fc41579ed6066ad03abda9e567ccafae602b97ec5024"
 
 [[package]]
-name = "hermit-abi"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fbf6a919d6cf397374f7dfeeea91d974c7c0a7221d0d0f4f20d859d329e53fcc"
-
-[[package]]
 name = "hex"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2781,17 +2762,6 @@ name = "ipnet"
 version = "2.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ddc24109865250148c2e0f3d25d4f0f479571723792d3802153c60922a4fb708"
-
-[[package]]
-name = "is-terminal"
-version = "0.4.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "261f68e344040fbd0edea105bef17c66edf46f984ddb1115b775ce31be948f4b"
-dependencies = [
- "hermit-abi 0.4.0",
- "libc",
- "windows-sys 0.52.0",
-]
 
 [[package]]
 name = "is_terminal_polyfill"
@@ -3556,7 +3526,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap 4.5.23",
- "env_logger 0.10.2",
+ "env_logger",
  "git2",
  "log",
 ]
