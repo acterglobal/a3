@@ -54,8 +54,8 @@ serde = { version = "*", features = ["derive"] }
 serde_json = "*"
 strum = { workspace = true }
 tokio = { version = "*", features = ["rt-multi-thread"] }
-tokio-stream = "0.1.14"
 tokio-retry = "0.3.0"
+tokio-stream = "*"
 tracing = { version = "0.1.40", default-features = false, features = ["log"] }
 url = { workspace = true }
 urlencoding = "2.1.3"
