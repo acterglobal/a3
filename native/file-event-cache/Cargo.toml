@@ -20,7 +20,7 @@ base64ct = { version = "*", features = ["alloc"] }
 matrix-sdk = { workspace = true }
 matrix-sdk-base = { workspace = true }
 matrix-sdk-store-encryption = { workspace = true }
-rmp-serde = "1.1.2"
+rmp-serde = "*"
 serde = "*"
 serde_json = "*"
 tokio = { version = "*", features = ["sync"], default-features = false, optional = true }
