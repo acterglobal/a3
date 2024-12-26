@@ -14,18 +14,18 @@ features = ["testing"]
 path = "../core"
 
 [dependencies]
-matrix-sdk-base = { workspace = true }
-matrix-sdk = { workspace = true }
 anyhow = "*"
 env_logger = { workspace = true }
 futures = "*"
 mail-parser = "0.9.3"
 mailhog-rs = "0.2.0"
-regex = "1"
+matrix-sdk = { workspace = true }
+matrix-sdk-base = { workspace = true }
+regex = "*"
 serde_json = "*"
 tempfile = "*"
-url = "*"
 tokio = { version = "*", features = ["macros", "rt-multi-thread"] }
 tokio-retry = { workspace = true }
 tracing = { version = "*", features = ["log"] }
+url = "*"
 uuid = "*"
