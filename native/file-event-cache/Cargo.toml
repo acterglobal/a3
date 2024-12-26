@@ -27,7 +27,7 @@ tracing = "0.1.40"
 tokio = { version = "1.38.0", features = ["sync"], default-features = false, optional = true }
 
 [dev-dependencies]
-anyhow = "1.0.79"
+anyhow = "*"
 matrix-sdk-sqlite = { workspace = true, features = ['event-cache'] }
 matrix-sdk-test = { workspace = true }
 matrix-sdk = { workspace = true, features = ["rustls-tls"] }
