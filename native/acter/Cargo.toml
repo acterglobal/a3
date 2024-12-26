@@ -38,8 +38,8 @@ ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "main
 futures = "*"
 futures-signals = "0.3.33"
 icalendar = { workspace = true }
+indexmap = { version = "2", features = ["serde"] }
 infer = "0.15.0"
-indexmap = { version = "2.2.5", features = ["serde"]}
 lazy_static = "1.4"
 log = "0.4"
 log-panics = "2.1.0"
