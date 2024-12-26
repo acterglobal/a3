@@ -31,6 +31,6 @@ anyhow = "*"
 matrix-sdk-sqlite = { workspace = true, features = ['event-cache'] }
 matrix-sdk-test = { workspace = true }
 matrix-sdk = { workspace = true, features = ["rustls-tls"] }
-tempfile = "3.9.0"
+tempfile = "*"
 tokio = "*"
 uuid = { version = "*", features = ["v4"] }
