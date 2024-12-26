@@ -12,7 +12,7 @@ license-file = "../../LICENSE.txt"
 anyhow = "*"
 app_dirs2 = "2.5.5"
 clap = { version = "*", features = ["derive", "cargo", "env", "unicode", "wrap_help"] }
-crossterm = "0.25"
+crossterm = "*"
 dialoguer = { workspace = true }
 env_logger = { workspace = true }
 futures = "*"
