@@ -39,7 +39,7 @@ tracing = { version = "0.1.40", features = ["log"] }
 url = { workspace = true }
 
 # templates
-async-stream = "0.3.5"
+async-stream = "*"
 indexmap = { version = "2.1.0", optional = true }
 minijinja = { version = "2.2.0", optional = true, features = ["builtins"] }
 tokio-retry = { version = "0.3.0", optional = true }

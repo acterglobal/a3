@@ -26,7 +26,7 @@ uniffi = { version = "0.26.1", features = [ "build" ] }
 
 [dependencies]
 anyhow = "*"
-async-stream = "0.3.5"
+async-stream = "*"
 base64ct = { workspace = true, features = ["alloc"] }
 chrono = "0.4"
 derive-getters = { workspace = true }
