@@ -58,7 +58,7 @@ tokio-retry = { workspace = true }
 tokio-stream = "*"
 tracing = { version = "*", default-features = false, features = ["log"] }
 url = { workspace = true }
-urlencoding = "2.1.3"
+urlencoding = "*"
 uuid = { version = "1.6.1", features = ["v4"] }
 
 # for markdown support.
