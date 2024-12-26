@@ -3,7 +3,7 @@ use eyeball_im::VectorDiff;
 // copied from ruma, which - unfortunately, doesn’t expose this helper
 // https://github.com/ruma/ruma/blob/fec7d23cfd44266cc396f5abc08ea821dc138d6d/crates/ruma-common/src/events/room/message.rs#L937
 pub fn parse_markdown(text: String) -> Option<String> {
-    use pulldown_cmark::{Event, Options, Parser, Tag};
+    use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd};
 
     const OPTIONS: Options = Options::ENABLE_TABLES.union(Options::ENABLE_STRIKETHROUGH);
 
@@ -28,7 +28,7 @@ pub fn parse_markdown(text: String) -> Option<String> {
         } else {
             false
         };
-        let is_paragraph_end = matches!(event, Event::End(Tag::Paragraph));
+        let is_paragraph_end = matches!(event, Event::End(TagEnd::Paragraph));
 
         !is_text && !is_break && !is_first_paragraph_start && !is_paragraph_end
     });
