@@ -11,7 +11,7 @@ license-file = "../../LICENSE.txt"
 [dependencies]
 anyhow = "*"
 clap = { version = "*", features = ["derive", "cargo", "env", "unicode", "wrap_help"] }
-dialoguer = "0.11.0"
+dialoguer = { workspace = true }
 futures = "*"
 env_logger = { workspace = true }
 matrix-sdk = { workspace = true }

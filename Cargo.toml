@@ -68,6 +68,7 @@ icalendar = "0.16.1"
 scc = "2"
 env_logger = "0.11.5"
 tokio-retry = "0.3.0"
+dialoguer = "0.11.0"
 
 [profile.release]
 panic = "unwind"
