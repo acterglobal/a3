@@ -15,7 +15,7 @@ queued = ["dep:tokio"]
 default = ["queued"]
 
 [dependencies]
-async-trait = "0.1.60"
+async-trait = "*"
 base64ct = { version = "*", features = ["alloc"] }
 matrix-sdk = { workspace = true }
 matrix-sdk-base = { workspace = true }
