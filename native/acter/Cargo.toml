@@ -62,7 +62,7 @@ urlencoding = "*"
 uuid = { version = "*", features = ["v4"] }
 
 # for markdown support.
-pulldown-cmark = { version = "0.9.3", default-features = false }
+pulldown-cmark = { version = "*", default-features = false }
 
 # for uniffi support
 uniffi = { version = "0.26.1", features = ["cli"], optional = true }
