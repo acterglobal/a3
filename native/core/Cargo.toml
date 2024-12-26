@@ -19,7 +19,7 @@ server = []
 unstable-exhaustive-types = []
 
 [dependencies]
-tokio = { version = "1", features = ["rt", "macros"] }
+tokio = { version = "*", features = ["rt", "macros"] }
 async-recursion = "1"
 chrono = { version = "*", default-features = false, features = ["serde", "clock"] }
 chrono-tz = { version = "0.9", default-features = false, features = ["serde"] }

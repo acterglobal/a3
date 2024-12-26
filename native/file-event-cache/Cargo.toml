@@ -23,7 +23,7 @@ matrix-sdk-store-encryption = { workspace = true }
 rmp-serde = "1.1.2"
 serde = "*"
 serde_json = "*"
-tokio = { version = "1.38.0", features = ["sync"], default-features = false, optional = true }
+tokio = { version = "*", features = ["sync"], default-features = false, optional = true }
 tracing = "0.1.40"
 
 [dev-dependencies]
@@ -32,5 +32,5 @@ matrix-sdk-sqlite = { workspace = true, features = ['event-cache'] }
 matrix-sdk-test = { workspace = true }
 matrix-sdk = { workspace = true, features = ["rustls-tls"] }
 tempfile = "3.9.0"
-tokio = "1.35.1"
+tokio = "*"
 uuid = { version = "1.6.1", features = ["v4"] }

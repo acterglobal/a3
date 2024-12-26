@@ -17,7 +17,7 @@ dialoguer = "0.11.0"
 env_logger = { workspace = true }
 futures = "*"
 mime = "*"
-tokio = { version = "1", features = ["full", "time"] }
+tokio = { version = "*", features = ["full", "time"] }
 tracing = { version = "0.1.40", features = ["log"] }
 tui = "0.19.0"
 tui-logger = "0.9.6"
