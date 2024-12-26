@@ -45,7 +45,7 @@ log = "*"
 log-panics = "2.1.0"
 mime = "*"
 mime2ext = "*"
-mime_guess = "2.0.4"
+mime_guess = "*"
 parse-env-filter = "0.1.0"
 
 sanitize-filename-reader-friendly = "2.2.1"

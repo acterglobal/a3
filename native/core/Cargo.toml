@@ -28,7 +28,7 @@ derive-getters = { workspace = true }
 derive_builder = { workspace = true }
 enum_dispatch = "0.3.12"
 futures = "*"
-mime_guess = "2.0.4"
+mime_guess = "*"
 icalendar = { workspace = true }
 serde = "1"
 serde_json = "1"
