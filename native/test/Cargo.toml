@@ -26,6 +26,6 @@ serde_json = "*"
 tempfile = "3.9.0"
 url = "2.5.4"
 tokio = { version = "*", features = ["macros", "rt-multi-thread"] }
-tokio-retry = "0.3.0"
+tokio-retry = { workspace = true }
 tracing = { version = "0.1.40", features = ["log"] }
 uuid = "1.6.1"
