@@ -28,4 +28,4 @@ url = "*"
 tokio = { version = "*", features = ["macros", "rt-multi-thread"] }
 tokio-retry = { workspace = true }
 tracing = { version = "*", features = ["log"] }
-uuid = "1.6.1"
+uuid = "*"

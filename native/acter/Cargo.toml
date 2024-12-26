@@ -59,7 +59,7 @@ tokio-stream = "*"
 tracing = { version = "*", default-features = false, features = ["log"] }
 url = { workspace = true }
 urlencoding = "*"
-uuid = { version = "1.6.1", features = ["v4"] }
+uuid = { version = "*", features = ["v4"] }
 
 # for markdown support.
 pulldown-cmark = { version = "0.9.3", default-features = false }
