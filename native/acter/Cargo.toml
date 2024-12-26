@@ -28,7 +28,7 @@ uniffi = { version = "0.26.1", features = [ "build" ] }
 anyhow = "*"
 async-stream = "*"
 base64ct = { version = "*", features = ["alloc"] }
-chrono = "0.4"
+chrono = "*"
 derive-getters = { workspace = true }
 derive_builder = { workspace = true }
 eyeball-im = "0.5.0"

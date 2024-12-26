@@ -21,7 +21,7 @@ unstable-exhaustive-types = []
 [dependencies]
 tokio = { version = "1", features = ["rt", "macros"] }
 async-recursion = "1"
-chrono = { version = "0.4", default-features = false, features = ["serde", "clock"] }
+chrono = { version = "*", default-features = false, features = ["serde", "clock"] }
 chrono-tz = { version = "0.9", default-features = false, features = ["serde"] }
 scc = { workspace = true }
 derive-getters = { workspace = true }
