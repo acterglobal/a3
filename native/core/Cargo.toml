@@ -32,7 +32,7 @@ mime_guess = "*"
 icalendar = { workspace = true }
 serde = "*"
 serde_json = "*"
-serde_repr = "0.1"
+serde_repr = "*"
 strum = { workspace = true }
 thiserror = "*"
 tracing = { version = "*", features = ["log"] }
