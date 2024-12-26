@@ -27,7 +27,7 @@ scc = { workspace = true }
 derive-getters = { workspace = true }
 derive_builder = { workspace = true }
 enum_dispatch = "0.3.12"
-futures = "0.3.30"
+futures = "*"
 mime_guess = "2.0.4"
 icalendar = { workspace = true }
 serde = "1"

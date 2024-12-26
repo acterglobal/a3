@@ -35,7 +35,7 @@ eyeball-im = "*"
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
 ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "main" }
 # ffi-gen-macro = { path = "../../../ffi-gen/macro" }
-futures = "0.3.30"
+futures = "*"
 futures-signals = "0.3.33"
 icalendar = { workspace = true }
 infer = "0.15.0"
