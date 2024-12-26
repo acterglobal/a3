@@ -56,7 +56,7 @@ strum = { workspace = true }
 tokio = { version = "*", features = ["rt-multi-thread"] }
 tokio-retry = { workspace = true }
 tokio-stream = "*"
-tracing = { version = "0.1.40", default-features = false, features = ["log"] }
+tracing = { version = "*", default-features = false, features = ["log"] }
 url = { workspace = true }
 urlencoding = "2.1.3"
 uuid = { version = "1.6.1", features = ["v4"] }

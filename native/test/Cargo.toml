@@ -27,5 +27,5 @@ tempfile = "3.9.0"
 url = "2.5.4"
 tokio = { version = "*", features = ["macros", "rt-multi-thread"] }
 tokio-retry = { workspace = true }
-tracing = { version = "0.1.40", features = ["log"] }
+tracing = { version = "*", features = ["log"] }
 uuid = "1.6.1"

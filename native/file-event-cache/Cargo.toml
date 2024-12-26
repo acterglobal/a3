@@ -24,7 +24,7 @@ rmp-serde = "1.1.2"
 serde = "*"
 serde_json = "*"
 tokio = { version = "*", features = ["sync"], default-features = false, optional = true }
-tracing = "0.1.40"
+tracing = "*"
 
 [dev-dependencies]
 anyhow = "*"

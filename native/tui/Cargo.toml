@@ -18,7 +18,7 @@ env_logger = { workspace = true }
 futures = "*"
 mime = "*"
 tokio = { version = "*", features = ["full", "time"] }
-tracing = { version = "0.1.40", features = ["log"] }
+tracing = { version = "*", features = ["log"] }
 tui = "0.19.0"
 tui-logger = "0.9.6"
 matrix-sdk-base = { workspace = true }

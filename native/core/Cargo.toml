@@ -35,7 +35,7 @@ serde_json = "*"
 serde_repr = "0.1"
 strum = { workspace = true }
 thiserror = "1.0"
-tracing = { version = "0.1.40", features = ["log"] }
+tracing = { version = "*", features = ["log"] }
 url = { workspace = true }
 
 # templates
@@ -61,7 +61,7 @@ default-features = false
 [dev-dependencies]
 anyhow = "*"
 env_logger = { workspace = true }
-tracing = { version = "0.1.40", default-features = false, features = ["log"] }
+tracing = { version = "*", default-features = false, features = ["log"] }
 uuid = { version = "1.6.1", features = ["v4"] }
 
 [dev-dependencies.matrix-sdk]
