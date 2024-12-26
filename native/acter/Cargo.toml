@@ -41,7 +41,7 @@ icalendar = { workspace = true }
 indexmap = { version = "2", features = ["serde"] }
 infer = "0.15.0"
 lazy_static = "*"
-log = "0.4"
+log = "*"
 log-panics = "2.1.0"
 mime = "0.3.17"
 mime2ext = "0.1.52"
