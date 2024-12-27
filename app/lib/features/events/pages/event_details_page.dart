@@ -282,9 +282,15 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             const SizedBox(height: 40),
           ] else
             const EventDetailsSkeleton(),
-          AttachmentSectionWidget(
-            manager: calendarEvent?.asAttachmentsManagerProvider(),
-          ),
+          if (calendarEvent != null)
+            AttachmentSectionWidget(
+              manager: calendarEvent.asAttachmentsManagerProvider(),
+              spaceObjectDetails: (
+                spaceId: calendarEvent.roomIdStr(),
+                objectType: ObjectType.calendarEvent,
+                objectId: widget.calendarId,
+              ),
+            ),
           const SizedBox(height: 40),
           CommentsSectionWidget(
             managerProvider: calendarEvent?.asCommentsManagerProvider(),

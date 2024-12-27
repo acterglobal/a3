@@ -1,5 +1,6 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/widgets/share/action/share_space_object_action.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
@@ -22,9 +23,11 @@ class AttachmentSectionWidget extends ConsumerWidget {
   static const addAttachmentBtnKey = Key('attachments-add-btn');
   static const confirmRedactKey = Key('attachments-confirm-redact');
   final AttachmentsManagerProvider? manager;
+  final SpaceObjectDetails spaceObjectDetails;
 
   const AttachmentSectionWidget({
     super.key,
+    required this.spaceObjectDetails,
     this.manager,
   });
 
@@ -38,6 +41,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
         ref.watch(attachmentsManagerProvider(managerProvider));
     return managerLoader.when(
       data: (manager) => FoundAttachmentSectionWidget(
+        spaceObjectDetails: spaceObjectDetails,
         attachmentManager: manager,
         key: attachmentsKey,
       ),
@@ -72,10 +76,12 @@ class AttachmentSectionWidget extends ConsumerWidget {
 /// Attachment Section Widget, only exposed for integration testing.
 class FoundAttachmentSectionWidget extends ConsumerWidget {
   final AttachmentsManager attachmentManager;
+  final SpaceObjectDetails spaceObjectDetails;
 
   const FoundAttachmentSectionWidget({
     super.key,
     required this.attachmentManager,
+    required this.spaceObjectDetails,
   });
 
   @override
