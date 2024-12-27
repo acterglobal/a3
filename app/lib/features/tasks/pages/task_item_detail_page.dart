@@ -18,7 +18,6 @@ import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
-import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
@@ -200,11 +199,6 @@ class TaskItemDetailPage extends ConsumerWidget {
             if (task != null)
               AttachmentSectionWidget(
                 manager: task.asAttachmentsManagerProvider(),
-                spaceObjectDetails: (
-                  spaceId: task.roomIdStr(),
-                  objectType: ObjectType.task,
-                  objectId: taskId,
-                ),
               ),
             const SizedBox(height: 20),
             CommentsSectionWidget(

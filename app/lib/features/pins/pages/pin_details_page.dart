@@ -110,11 +110,6 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           if (pin != null)
             AttachmentSectionWidget(
               manager: pin.asAttachmentsManagerProvider(),
-              spaceObjectDetails: (
-                spaceId: pin.roomIdStr(),
-                objectType: ObjectType.pin,
-                objectId: widget.pinId,
-              ),
             ),
           FakeLinkAttachmentItem(pinId: widget.pinId),
           const SizedBox(height: 20),

@@ -285,11 +285,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           if (calendarEvent != null)
             AttachmentSectionWidget(
               manager: calendarEvent.asAttachmentsManagerProvider(),
-              spaceObjectDetails: (
-                spaceId: calendarEvent.roomIdStr(),
-                objectType: ObjectType.calendarEvent,
-                objectId: widget.calendarId,
-              ),
             ),
           const SizedBox(height: 40),
           CommentsSectionWidget(

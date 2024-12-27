@@ -186,11 +186,6 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             if (taskListData != null)
               AttachmentSectionWidget(
                 manager: taskListData.asAttachmentsManagerProvider(),
-                spaceObjectDetails: (
-                  spaceId: taskListData.spaceIdStr(),
-                  objectType: ObjectType.taskList,
-                  objectId: widget.taskListId,
-                ),
               ),
             const SizedBox(height: 20),
             CommentsSectionWidget(

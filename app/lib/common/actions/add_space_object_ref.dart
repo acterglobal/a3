@@ -1,6 +1,5 @@
 import 'package:acter/common/widgets/event/event_selector_drawer.dart';
 import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
-import 'package:acter/common/widgets/share/action/share_space_object_action.dart';
 import 'package:acter/common/widgets/share/widgets/attach_options.dart';
 import 'package:acter/common/widgets/task/taskList_selector_drawer.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
@@ -13,7 +12,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> addSpaceObjectRefDialog({
   required BuildContext context,
-  required SpaceObjectDetails spaceObjectDetails,
   required AttachmentsManager attachmentManager,
 }) async {
   await showModalBottomSheet(
@@ -23,21 +21,15 @@ Future<void> addSpaceObjectRefDialog({
     isScrollControlled: true,
     isDismissible: true,
     builder: (context) => AddSpaceObjectRef(
-      spaceObjectDetails: spaceObjectDetails,
       attachmentManager: attachmentManager,
     ),
   );
 }
 
 class AddSpaceObjectRef extends ConsumerWidget {
-  final SpaceObjectDetails spaceObjectDetails;
   final AttachmentsManager attachmentManager;
 
-  const AddSpaceObjectRef({
-    super.key,
-    required this.spaceObjectDetails,
-    required this.attachmentManager,
-  });
+  const AddSpaceObjectRef({super.key, required this.attachmentManager});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
