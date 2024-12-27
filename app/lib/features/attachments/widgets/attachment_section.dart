@@ -1,6 +1,5 @@
 import 'package:acter/common/actions/add_space_object_ref.dart';
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/widgets/share/action/share_space_object_action.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
@@ -119,6 +118,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
               onTapAdd: () => addSpaceObjectRefDialog(
                 context: context,
                 spaceObjectDetails: spaceObjectDetails,
+                attachmentManager: attachmentManager,
               ),
             ),
             const SizedBox(height: 10),
