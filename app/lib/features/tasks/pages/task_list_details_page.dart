@@ -183,10 +183,9 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             ] else
               _loadingSkeleton(),
             const SizedBox(height: 20),
-            if (taskListData != null)
-              AttachmentSectionWidget(
-                manager: taskListData.asAttachmentsManagerProvider(),
-              ),
+            AttachmentSectionWidget(
+              manager: taskListData?.asAttachmentsManagerProvider(),
+            ),
             const SizedBox(height: 20),
             CommentsSectionWidget(
               managerProvider: taskListData?.asCommentsManagerProvider(),

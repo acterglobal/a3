@@ -196,10 +196,9 @@ class TaskItemDetailPage extends ConsumerWidget {
               const SizedBox(height: 40),
             ] else
               const TaskItemDetailPageSkeleton(),
-            if (task != null)
-              AttachmentSectionWidget(
-                manager: task.asAttachmentsManagerProvider(),
-              ),
+            AttachmentSectionWidget(
+              manager: task?.asAttachmentsManagerProvider(),
+            ),
             const SizedBox(height: 20),
             CommentsSectionWidget(
               managerProvider: task?.asCommentsManagerProvider(),

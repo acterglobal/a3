@@ -107,10 +107,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           const SizedBox(height: 20),
           pin == null ? _loadingPinHeaderUI() : _buildPinHeaderUI(pin),
           const SizedBox(height: 20),
-          if (pin != null)
-            AttachmentSectionWidget(
-              manager: pin.asAttachmentsManagerProvider(),
-            ),
+          AttachmentSectionWidget(manager: pin?.asAttachmentsManagerProvider()),
           FakeLinkAttachmentItem(pinId: widget.pinId),
           const SizedBox(height: 20),
           CommentsSectionWidget(
