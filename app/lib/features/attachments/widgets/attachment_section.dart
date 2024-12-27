@@ -121,7 +121,6 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
                 attachmentManager: attachmentManager,
               ),
             ),
-            const SizedBox(height: 10),
             ListView.builder(
               shrinkWrap: true,
               itemCount: refAttachmentList.length,
@@ -134,6 +133,8 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
                 );
               },
             ),
+            if (refAttachmentList.isEmpty)
+              Text(L10n.of(context).referencesEmptyStateTitle),
             const SizedBox(height: 20),
           ],
         );
@@ -194,23 +195,20 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
                 },
               ),
             ),
-            if (msgContentAttachmentList.isNotEmpty)
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: msgContentAttachmentList.length,
-                padding: EdgeInsets.zero,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return MsgContentAttachmentItem(
-                    attachment: msgContentAttachmentList[index],
-                    canEdit: canEdit,
-                  );
-                },
-              ),
-            if (msgContentAttachmentList.isEmpty) ...[
-              const SizedBox(height: 10),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: msgContentAttachmentList.length,
+              padding: EdgeInsets.zero,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return MsgContentAttachmentItem(
+                  attachment: msgContentAttachmentList[index],
+                  canEdit: canEdit,
+                );
+              },
+            ),
+            if (msgContentAttachmentList.isEmpty)
               Text(L10n.of(context).attachmentEmptyStateTitle),
-            ],
           ],
         );
       },

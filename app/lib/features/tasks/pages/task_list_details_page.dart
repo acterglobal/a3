@@ -162,7 +162,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   Widget _buildTaskListInner(TaskList? taskListData) {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
