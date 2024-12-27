@@ -1,3 +1,4 @@
+import 'package:acter/common/actions/add_space_object_ref.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/widgets/share/action/share_space_object_action.dart';
@@ -102,6 +103,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
+    final lang = L10n.of(context);
     final referenceAttachmentsLoader =
         ref.watch(referenceAttachmentsProvider(attachmentManager));
     bool canEdit = attachmentManager.canEditAttachments();
@@ -111,9 +113,13 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              L10n.of(context).references,
-              style: Theme.of(context).textTheme.titleSmall,
+            attachmentHeader(
+              context: context,
+              title: lang.references,
+              onTapAdd: () => addSpaceObjectRefDialog(
+                context: context,
+                spaceObjectDetails: spaceObjectDetails,
+              ),
             ),
             const SizedBox(height: 10),
             ListView.builder(
@@ -150,15 +156,44 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
+    final lang = L10n.of(context);
     final msgContentAttachmentsLoader =
         ref.watch(msgContentAttachmentsProvider(attachmentManager));
     bool canEdit = attachmentManager.canEditAttachments();
+
     return msgContentAttachmentsLoader.when(
       data: (msgContentAttachmentList) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            generalAttachmentHeader(context, ref),
+            attachmentHeader(
+              context: context,
+              title: lang.attachments,
+              onTapAdd: () => selectAttachment(
+                context: context,
+                onLinkSelected: (title, link) {
+                  Navigator.pop(context);
+                  return handleAttachmentSelected(
+                    context: context,
+                    ref: ref,
+                    manager: attachmentManager,
+                    title: title,
+                    link: link,
+                    attachmentType: AttachmentType.link,
+                    attachments: [],
+                  );
+                },
+                onSelected: (files, selectedType) {
+                  return handleAttachmentSelected(
+                    context: context,
+                    ref: ref,
+                    manager: attachmentManager,
+                    attachments: files,
+                    attachmentType: selectedType,
+                  );
+                },
+              ),
+            ),
             if (msgContentAttachmentList.isNotEmpty)
               ListView.builder(
                 shrinkWrap: true,
@@ -193,40 +228,20 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
     );
   }
 
-  Widget generalAttachmentHeader(BuildContext context, WidgetRef ref) {
-    final lang = L10n.of(context);
-    final attachmentTitleTextStyle = Theme.of(context).textTheme.titleSmall;
+  Widget attachmentHeader({
+    required BuildContext context,
+    required String title,
+    required VoidCallback? onTapAdd,
+  }) {
     return Row(
       children: [
-        Text(lang.attachments, style: attachmentTitleTextStyle),
-        const Spacer(),
-        ActerInlineTextButton(
-          onPressed: () => selectAttachment(
-            context: context,
-            onLinkSelected: (title, link) {
-              Navigator.pop(context);
-              return handleAttachmentSelected(
-                context: context,
-                ref: ref,
-                manager: attachmentManager,
-                title: title,
-                link: link,
-                attachmentType: AttachmentType.link,
-                attachments: [],
-              );
-            },
-            onSelected: (files, selectedType) {
-              return handleAttachmentSelected(
-                context: context,
-                ref: ref,
-                manager: attachmentManager,
-                attachments: files,
-                attachmentType: selectedType,
-              );
-            },
+        Expanded(
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall,
           ),
-          child: Text(lang.add),
         ),
+        IconButton(onPressed: onTapAdd, icon: Icon(Icons.add)),
       ],
     );
   }
