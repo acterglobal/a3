@@ -2341,5 +2341,11 @@
   "noObjectAccess": "Du bist nicht teil von {spaceName}, daher hast du keinen Zugriff auf {objectType}",
   "@noObjectAccess": {},
   "repliedToMsgFailed": "Laden der original Nachricht fehlgeschlagen: {id}",
-  "@repliedToMsgFailed": {}
+  "@repliedToMsgFailed": {},
+  "removeReferenceConfirmation": "Bist du sicher, dass du diese Referenz entfernen möchtest?",
+  "@removeReferenceConfirmation": {},
+  "references": "Referenzen",
+  "@references": {},
+  "removeReference": "Referenz entfernen",
+  "@removeReference": {}
 }
