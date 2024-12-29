@@ -1929,6 +1929,8 @@
   "@spaceOverviewTutorialTitle": {},
   "spaceOverviewTutorialDescription": "A space is the starting point for your organizing. Create & navigate through pins (resources), tasks and events. Add chats or subspaces.",
   "@spaceOverviewTutorialDescription": {},
+  "subscribedToParent": "Disable Notifications on main object to configure notification here",
+  "@subscribedToParent": {},
   "commentEmptyStateTitle": "No comments found.",
   "@commentEmptyStateTitle": {},
   "commentEmptyStateAction": "Leave the first comment",
