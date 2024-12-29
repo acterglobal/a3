@@ -12,7 +12,7 @@ use matrix_sdk::{
     notification_settings::{
         IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings,
     },
-    Client as SdkClient,
+    Client as SdkClient, NotificationSettingsError,
 };
 use matrix_sdk_base::{
     notification_settings::RoomNotificationMode,
@@ -117,29 +117,45 @@ impl NotificationSettings {
             .spawn(async move {
                 if sub_type.is_some() {
                     // check for the full key:
-                    if inner
+                    match inner
                         .is_push_rule_enabled(
                             RuleKind::Override,
                             make_notification_key(&object_id, sub_type.as_ref()),
                         )
-                        .await?
+                        .await
                     {
-                        return Ok("subscribed".to_owned());
+                        Ok(enabled) => {
+                            if enabled {
+                                return Ok("subscribed".to_owned());
+                            }
+                        }
+                        Err(NotificationSettingsError::RuleNotFound(_)) => {
+                            // ignore; we consider this a regular false
+                        }
+                        Err(e) => return Err(e.into()), // other error
                     }
                 }
                 // check for the parent key as fallback
-                if inner
+                match inner
                     .is_push_rule_enabled(
                         RuleKind::Override,
                         make_notification_key(&object_id, None),
                     )
-                    .await?
+                    .await
                 {
-                    if sub_type.is_some() {
-                        return Ok("parent".to_owned());
-                    } else {
-                        return Ok("subscribed".to_owned());
+                    Ok(enabled) => {
+                        if enabled {
+                            if sub_type.is_some() {
+                                return Ok("parent".to_owned());
+                            } else {
+                                return Ok("subscribed".to_owned());
+                            }
+                        }
                     }
+                    Err(NotificationSettingsError::RuleNotFound(_)) => {
+                        // ignore; we consider this a regular false
+                    }
+                    Err(e) => return Err(e.into()), // other error
                 }
                 Ok("none".to_owned())
             })
@@ -155,36 +171,30 @@ impl NotificationSettings {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let rules = client.account().push_rules().await?.override_;
                 let notif_key = make_notification_key(&object_id, sub_type.as_ref());
-                let mut found = false;
-                for rule in rules {
-                    if rule.rule_id == notif_key {
-                        if rule.enabled {
-                            return Ok(true);
-                        }
-                        found = true;
-                        break;
+
+                match inner
+                    .set_push_rule_enabled(RuleKind::Override, notif_key, true)
+                    .await
+                {
+                    Err(NotificationSettingsError::RuleNotFound(_)) => {
+                        // not found, we have to create it the first time:
+                        let new_push_rule = make_push_rule(&object_id, sub_type.as_ref());
+
+                        let resp = client
+                            .send(
+                                set_pushrule::v3::Request::new(NewPushRule::Override(
+                                    new_push_rule,
+                                )),
+                                None,
+                            )
+                            .await?;
+
+                        Ok(true)
                     }
+                    Ok(_) => Ok(true),
+                    Err(e) => Err(e.into()), // other error, bubble up
                 }
-
-                if found {
-                    inner
-                        .set_push_rule_enabled(RuleKind::Override, notif_key, true)
-                        .await?;
-                    return Ok(true);
-                }
-                // not found, we have to create it the first time:
-                let new_push_rule = make_push_rule(&object_id, sub_type.as_ref());
-
-                let resp = client
-                    .send(
-                        set_pushrule::v3::Request::new(NewPushRule::Override(new_push_rule)),
-                        None,
-                    )
-                    .await?;
-
-                Ok(true)
             })
             .await?
     }
