@@ -77,15 +77,15 @@ class CommentsSectionWidget extends ConsumerWidget {
   Widget commentTitleUI(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              L10n.of(context).comments,
-              style: Theme.of(context).textTheme.titleMedium,
-              textAlign: centerTitle ? TextAlign.center : TextAlign.start,
-            ),
-          ),
+      child: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: centerTitle,
+        backgroundColor: Colors.transparent,
+        title: Text(
+          L10n.of(context).comments,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        actions: [
           ObjectNotificationStatus(
             objectId: objectId,
             subType: SubscriptionSubType.comments,

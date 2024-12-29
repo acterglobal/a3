@@ -35,7 +35,10 @@ class ObjectNotificationStatus extends ConsumerWidget {
               subType: subType,
             );
           },
-          icon: Icon(PhosphorIconsThin.bell),
+          icon: Icon(
+            PhosphorIconsThin.bell,
+            color: Theme.of(context).primaryColor,
+          ),
         ),
       SubscriptionStatus.parent => IconButton(
           onPressed: () {
@@ -54,7 +57,10 @@ class ObjectNotificationStatus extends ConsumerWidget {
               subType: subType,
             );
           },
-          icon: Icon(PhosphorIconsThin.bellSlash),
+          icon: Icon(
+            PhosphorIconsThin.bellSlash,
+            color: Theme.of(context).disabledColor,
+          ),
         ),
     };
   }
