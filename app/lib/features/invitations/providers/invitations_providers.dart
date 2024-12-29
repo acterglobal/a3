@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:acter/features/activities/providers/notifiers/invitation_list_notifier.dart';
+import 'package:acter/features/invitations/providers/notifiers/invitation_list_notifier.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';

@@ -2013,6 +2013,8 @@
   "@generateInviteCode": {},
   "pendingInvites": "Pending Invites",
   "@pendingInvites": {},
+  "pendingInvitesCount": "You have {count} pending Invites",
+  "@pendingInvitesCount": {},
   "noPendingInvitesTitle": "No pending Invites found",
   "@noPendingInvitesTitle": {},
   "noUserFoundTitle": "No users found",
