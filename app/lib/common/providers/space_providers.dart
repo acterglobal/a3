@@ -232,7 +232,7 @@ final spaceRelationsOverviewProvider =
     final roomId = related.roomId().toString();
     if (related.suggested()) suggested.add(roomId);
 
-    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    final room = ref.watch(maybeRoomProvider(roomId));
     if (room == null || !room.isJoined()) {
       // we don’t know this room or are not in it
       hasMore = true;

@@ -1,8 +1,12 @@
 /// Get the relations of the given SpaceId.  Throws
 library;
 
+import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:acter/common/extensions/async_value.dart';
+import 'package:acter/common/extensions/cached_async_state_provider.dart';
+import 'package:acter/common/extensions/comparable_list.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
@@ -39,14 +43,14 @@ class RoomNotFound extends Error {}
 /// Attempts to map a roomId to the room, but could come back empty (null) rather than throw.
 /// keeps up to date with underlying client even if the room wasn’t found initially,
 final maybeRoomProvider =
-    AsyncNotifierProvider.family<AsyncMaybeRoomNotifier, Room?, String>(
-  () => AsyncMaybeRoomNotifier(),
+    NotifierProvider.family<MaybeRoomNotifier, Room?, String>(
+  () => MaybeRoomNotifier(),
 );
 
 /// gives current visibility state of space, return empty if no space is found
-final roomVisibilityProvider = FutureProvider.family
-    .autoDispose<RoomVisibility?, String>((ref, roomId) async {
-  final room = await ref.watch(maybeRoomProvider(roomId).future);
+final roomVisibilityProvider =
+    Provider.family.autoDispose<RoomVisibility?, String>((ref, roomId) {
+  final room = ref.watch(maybeRoomProvider(roomId));
   if (room == null) return null;
   final joinRule = room.joinRuleStr();
   final visibility = switch (joinRule) {
@@ -67,7 +71,7 @@ final roomVisibilityProvider = FutureProvider.family
 /// if a room was found.
 final roomInvitedMembersProvider = FutureProvider.autoDispose
     .family<List<Member>, String>((ref, roomIdOrAlias) async {
-  final room = await ref.watch(maybeRoomProvider(roomIdOrAlias).future);
+  final room = ref.watch(maybeRoomProvider(roomIdOrAlias));
   if (room == null || !room.isJoined()) return [];
   final members = await room.invitedMembers();
   return members.toList();
@@ -121,7 +125,7 @@ final roomSearchedChatsProvider =
 /// Stays up to date with underlying client data if a room was found.
 final spaceRelationsProvider =
     FutureProvider.family<SpaceRelations?, String>((ref, roomId) async {
-  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  final room = ref.watch(maybeRoomProvider(roomId));
   if (room == null) return null;
   return await room.spaceRelations();
 });
@@ -147,7 +151,7 @@ final parentIdsProvider =
 /// Caching the name of each Room
 final roomDisplayNameProvider =
     FutureProvider.family<String?, String>((ref, roomId) async {
-  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  final room = ref.watch(maybeRoomProvider(roomId));
   if (room == null) return null;
   return (await room.displayName()).text();
 });
@@ -157,7 +161,7 @@ final roomAvatarProvider =
     FutureProvider.family<MemoryImage?, String>((ref, roomId) async {
   final sdk = await ref.watch(sdkProvider.future);
   final thumbsize = sdk.api.newThumbSize(48, 48);
-  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  final room = ref.watch(maybeRoomProvider(roomId));
   if (room == null || !room.hasAvatar()) return null;
   final avatar = await room.avatar(thumbsize);
   return avatar
@@ -177,7 +181,7 @@ final parentAvatarInfosProvider =
   final parents = await ref.watch(parentIdsProvider(roomId).future);
   // Filter out parents where we can't get the room
   final validParents = parents.where((parent) {
-    final room = ref.watch(maybeRoomProvider(parent)).valueOrNull;
+    final room = ref.watch(maybeRoomProvider(parent));
     return room != null;
   }).toList();
 
@@ -187,7 +191,7 @@ final parentAvatarInfosProvider =
 
 final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
     .family<List<String>, String>((ref, roomId) async {
-  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  final room = ref.watch(maybeRoomProvider(roomId));
   if (room == null) return [];
   return asDartStringList(room.restrictedRoomIdsStr());
 });
@@ -196,7 +200,7 @@ final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
 /// will not throw if the client doesn’t kow the room
 final roomMembershipProvider = FutureProvider.family<Member?, String>(
   (ref, roomId) async {
-    final room = await ref.watch(maybeRoomProvider(roomId).future);
+    final room = ref.watch(maybeRoomProvider(roomId));
     if (room == null || !room.isJoined()) return null;
     return await room.getMyMembership();
   },
@@ -205,7 +209,7 @@ final roomMembershipProvider = FutureProvider.family<Member?, String>(
 /// Get the locally configured RoomNotificationsStatus for this room
 final roomNotificationStatusProvider =
     FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
-  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  final room = ref.watch(maybeRoomProvider(roomId));
   if (room == null) return null;
   return await room.notificationMode();
 });
@@ -213,7 +217,7 @@ final roomNotificationStatusProvider =
 /// Get the default RoomNotificationsStatus for this room type
 final roomDefaultNotificationStatusProvider =
     FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
-  final room = await ref.watch(maybeRoomProvider(roomId).future);
+  final room = ref.watch(maybeRoomProvider(roomId));
   if (room == null) return null;
   return await room.defaultNotificationMode();
 });
@@ -227,7 +231,7 @@ final roomIsMutedProvider =
 
 final memberProvider =
     FutureProvider.autoDispose.family<Member, MemberInfo>((ref, query) async {
-  final room = await ref.watch(maybeRoomProvider(query.roomId).future);
+  final room = ref.watch(maybeRoomProvider(query.roomId));
   if (room == null) throw RoomNotFound;
   return await room.getMember(query.userId);
 });
@@ -285,13 +289,27 @@ final memberAvatarInfoProvider =
   );
 });
 
+final membersIdsProvider = FutureProvider.family<List<String>, String>(
+  (ref, arg) => ref
+      .watch(_cachingMemberIdsProvider(arg))
+      .asFuture<List<String>, ComparableList<String>>((d) => d.entries),
+);
+
+final _cachingMemberIdsProvider = StateNotifierProvider.family<
+    CachedAsyncStateProvider<ComparableList<String>>,
+    AsyncValue<ComparableList<String>>,
+    String>(
+  (ref, arg) => CachedAsyncStateProvider(_membersIdsProviderInner(arg), ref),
+);
+
 /// Ids of the members of this Room. Returns empty list if the room isn’t found
-final membersIdsProvider =
-    FutureProvider.family<List<String>, String>((ref, roomIdOrAlias) async {
-  final room = await ref.watch(maybeRoomProvider(roomIdOrAlias).future);
-  if (room == null) return [];
+final _membersIdsProviderInner =
+    FutureProvider.family<ComparableList<String>, String>(
+        (ref, roomIdOrAlias) async {
+  final room = ref.watch(maybeRoomProvider(roomIdOrAlias));
+  if (room == null) return ComparableList([]);
   final members = await room.activeMembersIds();
-  return asDartStringList(members);
+  return ComparableList(asDartStringList(members));
 });
 
 typedef RoomMembersSearchParam = ({String roomId, String searchValue});
@@ -300,7 +318,7 @@ typedef RoomMembersSearchParam = ({String roomId, String searchValue});
 /// Returns empty list if the room isn’t found
 final membersIdWithSearchProvider = FutureProvider.family
     .autoDispose<List<String>, RoomMembersSearchParam>((ref, param) async {
-  final room = await ref.watch(maybeRoomProvider(param.roomId).future);
+  final room = ref.watch(maybeRoomProvider(param.roomId));
   if (room == null) return [];
   final members = await room.activeMembersIds();
   final List<String> membersIdList = asDartStringList(members);

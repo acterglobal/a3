@@ -25,9 +25,7 @@ class AsyncPinNotifier
     _listener = client.subscribeStream(pinId); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
-        state = await AsyncValue.guard(
-          () async => await _getPin(client, pinId),
-        );
+        state = AsyncData(await _getPin(client, pinId));
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);
@@ -62,9 +60,7 @@ class AsyncPinListNotifier
 
     _poller = _listener.listen(
       (data) async {
-        state = await AsyncValue.guard(
-          () async => await _getPinList(client, spaceId),
-        );
+        state = AsyncData(await _getPinList(client, spaceId));
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);

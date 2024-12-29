@@ -149,10 +149,8 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
 
           // we allow this to be refreshed by over-pulling
           onRefresh: () async {
-            await Future.wait([
-              ref.refresh(spaceProvider(widget.spaceId).future),
-              ref.refresh(maybeRoomProvider(widget.spaceId).future),
-            ]);
+            ref.refresh(maybeRoomProvider(widget.spaceId));
+            return await ref.refresh(spaceProvider(widget.spaceId).future);
           },
         );
       },
@@ -175,9 +173,6 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   }
 
   Widget spaceHeaderUI(Widget menuBarWidget) {
-    final displayName =
-        ref.watch(roomDisplayNameProvider(widget.spaceId)).valueOrNull;
-
     return Column(
       children: [
         //Header Content UI
@@ -197,7 +192,6 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
                 duration: const Duration(seconds: 1),
                 child: SpaceToolbar(
                   spaceId: widget.spaceId,
-                  spaceTitle: Text(displayName ?? ''),
                 ),
               ),
             ],
@@ -206,23 +200,6 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         //Append menu bar widget
         menuBarWidget,
       ],
-    );
-  }
-
-  Widget spaceAvatar() {
-    final avatarData =
-        ref.watch(roomAvatarProvider(widget.spaceId)).valueOrNull;
-    if (avatarData == null) {
-      return Container(
-        height: 200,
-        color: Colors.red,
-      );
-    }
-    return Image.memory(
-      avatarData.bytes,
-      height: 300,
-      width: MediaQuery.of(context).size.width,
-      fit: BoxFit.cover,
     );
   }
 

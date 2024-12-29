@@ -121,7 +121,7 @@ class UserBuilder extends ConsumerWidget {
   Widget? _renderTrailing(BuildContext context, WidgetRef ref) {
     if (!includeUserJoinState) return null;
     return roomId.map((rId) {
-      final room = ref.watch(maybeRoomProvider(rId)).valueOrNull;
+      final room = ref.watch(maybeRoomProvider(rId));
       return room.map(
             (r) => UserStateButton(
               userId: userId,

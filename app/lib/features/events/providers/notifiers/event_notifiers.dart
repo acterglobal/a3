@@ -38,9 +38,7 @@ class EventListNotifier
     }
 
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(
-        () async => await _getEventList(client, spaceId),
-      );
+      state = AsyncValue.data(await _getEventList(client, spaceId));
     });
     return await _getEventList(client, spaceId);
   }
@@ -60,9 +58,7 @@ class AsyncCalendarEventNotifier
     final client = ref.watch(alwaysClientProvider);
     _listener = client.subscribeStream(calEvtId); // keep it resident in memory
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(
-        () async => await _getCalEvent(client, calEvtId),
-      );
+      state = AsyncData(await _getCalEvent(client, calEvtId));
     });
     return await _getCalEvent(client, calEvtId);
   }
