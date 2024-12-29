@@ -109,6 +109,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
             attachmentHeader(
               context: context,
               title: lang.references,
+              canEdit: canEdit,
               onTapAdd: () => addSpaceObjectRefDialog(
                 context: context,
                 attachmentManager: attachmentManager,
@@ -163,6 +164,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
             attachmentHeader(
               context: context,
               title: lang.attachments,
+              canEdit: canEdit,
               onTapAdd: () => selectAttachment(
                 context: context,
                 onLinkSelected: (title, link) {
@@ -223,6 +225,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
     required BuildContext context,
     required String title,
     required VoidCallback? onTapAdd,
+    required bool canEdit,
   }) {
     return Row(
       children: [
@@ -232,7 +235,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
             style: Theme.of(context).textTheme.titleSmall,
           ),
         ),
-        IconButton(onPressed: onTapAdd, icon: Icon(Icons.add)),
+        if (canEdit) IconButton(onPressed: onTapAdd, icon: Icon(Icons.add)),
       ],
     );
   }
