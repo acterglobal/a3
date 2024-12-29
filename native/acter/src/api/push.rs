@@ -246,7 +246,7 @@ impl NotificationItem {
 
         if let NotificationEvent::Invite(invite) = inner.event {
             return Ok(builder
-                .target_url("/activities/".to_string())
+                .target_url("/activities/invites".to_string())
                 // FIXME: we still need support for specific activities linking
                 // .target_url(format!("/activities/{:}", room_id))
                 .room_invite(room_id.to_string())
