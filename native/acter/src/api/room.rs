@@ -18,35 +18,37 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::Stream;
 use matrix_sdk::{
-    deserialized_responses::SyncOrStrippedState,
-    media::{MediaFormat, MediaRequestParameters},
     notification_settings::{IsEncrypted, IsOneToOne},
     room::{Room as SdkRoom, RoomMember},
-    RoomDisplayName, RoomMemberships, RoomState,
 };
-use matrix_sdk_base::ruma::{
-    api::client::{
-        room::report_content,
-        space::{get_hierarchy, SpaceHierarchyRoomsChunk},
-    },
-    assign,
-    events::{
-        room::{
-            avatar::ImageInfo as AvatarImageInfo,
-            join_rules::{
-                AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
-            },
-            message::{MessageType, RoomMessageEvent},
-            MediaSource,
+use matrix_sdk_base::{
+    deserialized_responses::SyncOrStrippedState,
+    media::{MediaFormat, MediaRequestParameters},
+    ruma::{
+        api::client::{
+            room::report_content,
+            space::{get_hierarchy, SpaceHierarchyRoomsChunk},
         },
-        space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
-        MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
+        assign,
+        events::{
+            room::{
+                avatar::ImageInfo as AvatarImageInfo,
+                join_rules::{
+                    AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
+                },
+                message::{MessageType, RoomMessageEvent},
+                MediaSource,
+            },
+            space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
+            MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
+        },
+        room::RoomType,
+        serde::Raw,
+        space::SpaceRoomJoinRule,
+        EventId, IdParseError, Int, OwnedEventId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
+        OwnedTransactionId, OwnedUserId, RoomId, ServerName, UserId,
     },
-    room::RoomType,
-    serde::Raw,
-    space::SpaceRoomJoinRule,
-    EventId, IdParseError, Int, OwnedEventId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
-    OwnedTransactionId, OwnedUserId, RoomId, ServerName, UserId,
+    RoomDisplayName, RoomMemberships, RoomState,
 };
 use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
 use tokio::fs;

@@ -1,6 +1,5 @@
 use crate::{Client, RUNTIME};
-use acter_core::events::RefDetails;
-use acter_core::share_link::api;
+use acter_core::{events::RefDetails, share_link::api};
 use anyhow::Result;
 
 impl Client {

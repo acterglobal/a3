@@ -1,11 +1,11 @@
 use crate::EventCacheStore;
 use async_trait::async_trait;
-use matrix_sdk::{
+use matrix_sdk_base::{
+    event_cache::{store::DEFAULT_CHUNK_CAPACITY, Event, Gap},
     linked_chunk::{LinkedChunk, Update},
     media::MediaRequestParameters,
     ruma::{MxcUri, RoomId},
 };
-use matrix_sdk_base::event_cache::{store::DEFAULT_CHUNK_CAPACITY, Event, Gap};
 use std::sync::Arc;
 use tokio::sync::Semaphore;
 use tracing::instrument;

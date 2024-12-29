@@ -7,8 +7,11 @@ use acter_core::{
 use anyhow::{bail, Result};
 use core::time::Duration;
 use futures::stream::StreamExt;
-use matrix_sdk::{room::Room, RoomState};
-use matrix_sdk_base::ruma::{events::MessageLikeEventType, OwnedEventId, OwnedUserId};
+use matrix_sdk::room::Room;
+use matrix_sdk_base::{
+    ruma::{events::MessageLikeEventType, OwnedEventId, OwnedUserId},
+    RoomState,
+};
 use std::{ops::Deref, str::FromStr};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};

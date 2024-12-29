@@ -8,13 +8,15 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{room::Room, RoomState};
-use matrix_sdk_base::ruma::{
-    events::{room::message::MessageType, MessageLikeEventType},
-    OwnedEventId, OwnedRoomId, OwnedUserId,
+use matrix_sdk::room::Room;
+use matrix_sdk_base::{
+    ruma::{
+        events::{room::message::MessageType, MessageLikeEventType},
+        OwnedEventId, OwnedRoomId, OwnedUserId,
+    },
+    RoomState,
 };
 use std::{
-    any::Any,
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
 };

@@ -15,13 +15,17 @@ use acter_core::events::{
     tasks::{TaskEventContent, TaskListEventContent},
 };
 use anyhow::{bail, Context, Result};
-use matrix_sdk::deserialized_responses::SyncOrStrippedState;
-use matrix_sdk_base::ruma::{
-    events::{
-        room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
-        StateEventType, StaticEventContent, SyncStateEvent, TimelineEventType,
+use matrix_sdk_base::{
+    deserialized_responses::SyncOrStrippedState,
+    ruma::{
+        events::{
+            room::power_levels::{
+                RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent,
+            },
+            StateEventType, StaticEventContent, SyncStateEvent, TimelineEventType,
+        },
+        Int,
     },
-    Int,
 };
 use std::{collections::btree_map, ops::Deref};
 
