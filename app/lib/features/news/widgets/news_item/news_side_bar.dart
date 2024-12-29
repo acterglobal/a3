@@ -89,6 +89,7 @@ class NewsSideBar extends ConsumerWidget {
                   shrinkWrap: false,
                   centerTitle: true,
                   useCompactEmptyState: false,
+                  objectId: news.eventId().toString(),
                 ),
               );
             },

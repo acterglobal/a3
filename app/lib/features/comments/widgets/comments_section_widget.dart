@@ -5,6 +5,7 @@ import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/add_comment_widget.dart';
 import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
 import 'package:acter/features/comments/widgets/comment_list_widget.dart';
+import 'package:acter/features/notifications/widgets/object_notification_status.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -18,9 +19,11 @@ class CommentsSectionWidget extends ConsumerWidget {
   final bool shrinkWrap;
   final bool centerTitle;
   final bool useCompactEmptyState;
+  final String objectId;
 
   const CommentsSectionWidget({
     super.key,
+    required this.objectId,
     this.shrinkWrap = true,
     this.centerTitle = false,
     this.useCompactEmptyState = true,
@@ -73,10 +76,17 @@ class CommentsSectionWidget extends ConsumerWidget {
   Widget commentTitleUI(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Text(
-        L10n.of(context).comments,
-        style: Theme.of(context).textTheme.titleMedium,
-        textAlign: centerTitle ? TextAlign.center : TextAlign.start,
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              L10n.of(context).comments,
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: centerTitle ? TextAlign.center : TextAlign.start,
+            ),
+          ),
+          ObjectNotificationStatus(objectId: objectId),
+        ],
       ),
     );
   }

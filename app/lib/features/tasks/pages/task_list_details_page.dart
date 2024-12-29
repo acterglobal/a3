@@ -189,6 +189,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             const SizedBox(height: 20),
             CommentsSectionWidget(
               managerProvider: taskListData?.asCommentsManagerProvider(),
+              objectId: widget.taskListId,
             ),
             const SizedBox(height: 20),
           ],

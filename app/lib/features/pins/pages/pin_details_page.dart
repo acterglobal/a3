@@ -112,6 +112,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
           const SizedBox(height: 20),
           CommentsSectionWidget(
             managerProvider: pin?.asCommentsManagerProvider(),
+            objectId: widget.pinId,
           ),
         ],
       ),

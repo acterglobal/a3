@@ -3129,6 +3129,12 @@ object NotificationSettings {
     /// app settings
     fn global_content_setting(app_key: string) -> Future<Result<bool>>;
     fn set_global_content_setting(app_key: string, enabled: bool) -> Future<Result<bool>>;
+
+    /// specific object based subscriptions
+    /// one of 'subscribed', 'parent' or 'none'
+    fn object_push_subscription_status_str(object_id: string, sub_type: Option<string>) -> Future<Result<string>>;
+    fn subscribe_object_push(object_id: string, sub_type: Option<string>) -> Future<Result<bool>>;
+    fn unsubscribe_object_push(object_id: string, sub_type: Option<string>) -> Future<Result<bool>>;
 }
 
 

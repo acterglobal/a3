@@ -8,8 +8,11 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::StreamExt;
-use matrix_sdk::notification_settings::{
-    IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings,
+use matrix_sdk::{
+    notification_settings::{
+        IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings,
+    },
+    Client as SdkClient,
 };
 use matrix_sdk_base::{
     notification_settings::RoomNotificationMode,
@@ -34,7 +37,12 @@ use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup, RawNotificationEvent,
 };
-use std::{ops::Deref, sync::Arc};
+use ruma::{
+    api::client::push::PushRule,
+    events::policy::rule,
+    push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
+};
+use std::{ops::Deref, os::unix::process::parent_id, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use urlencoding::encode;
 
@@ -432,7 +440,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let inner = client.notification_settings().await;
-                Ok(NotificationSettings::new(inner))
+                Ok(NotificationSettings::new(client, inner))
             })
             .await?
     }
@@ -577,19 +585,147 @@ impl Client {
     }
 }
 
+fn make_notification_key(parent_id: &str, sub_type: Option<&String>) -> String {
+    if let Some(sub) = sub_type {
+        format!("acter::rel::{parent_id}::{sub}")
+    } else {
+        format!("acter::rel::{parent_id}")
+    }
+}
+
+fn make_push_rule(parent_id: &str, sub_type: Option<&String>) -> NewConditionalPushRule {
+    let push_key = make_notification_key(parent_id, sub_type);
+    let mut conditions = vec![PushCondition::EventPropertyIs {
+        key: "content.m\\.relates_to".to_owned(),
+        value: parent_id.to_owned().into(),
+    }];
+    if let Some(event_type) = sub_type {
+        conditions.push(PushCondition::EventPropertyIs {
+            key: "type".to_owned(),
+            value: event_type.to_owned().into(),
+        })
+    }
+    NewConditionalPushRule::new(push_key, conditions, vec![Action::Notify])
+}
+
 #[derive(Debug, Clone)]
 pub struct NotificationSettings {
+    client: SdkClient,
     inner: Arc<SdkNotificationSettings>,
 }
 impl NotificationSettings {
-    pub fn new(inner: SdkNotificationSettings) -> Self {
+    pub fn new(client: SdkClient, inner: SdkNotificationSettings) -> Self {
         NotificationSettings {
+            client,
             inner: Arc::new(inner),
         }
     }
 
     pub fn changes_stream(&self) -> impl Stream<Item = bool> {
         BroadcastStream::new(self.inner.subscribe_to_changes()).map(|_| true)
+    }
+
+    pub async fn object_push_subscription_status_str(
+        &self,
+        object_id: String,
+        sub_type: Option<String>,
+    ) -> Result<String> {
+        let inner = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                if sub_type.is_some() {
+                    // check for the full key:
+                    if inner
+                        .is_push_rule_enabled(
+                            RuleKind::Override,
+                            make_notification_key(&object_id, sub_type.as_ref()),
+                        )
+                        .await?
+                    {
+                        return Ok("subscribed".to_owned());
+                    }
+                }
+                // check for the parent key as fallback
+                if inner
+                    .is_push_rule_enabled(
+                        RuleKind::Override,
+                        make_notification_key(&object_id, None),
+                    )
+                    .await?
+                {
+                    if sub_type.is_some() {
+                        return Ok("parent".to_owned());
+                    } else {
+                        return Ok("subscribed".to_owned());
+                    }
+                }
+                Ok("none".to_owned())
+            })
+            .await?
+    }
+
+    pub async fn subscribe_object_push(
+        &self,
+        object_id: String,
+        sub_type: Option<String>,
+    ) -> Result<bool> {
+        let inner = self.inner.clone();
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let rules = client.account().push_rules().await?.override_;
+                let notif_key = make_notification_key(&object_id, sub_type.as_ref());
+                let mut found = false;
+                for rule in rules {
+                    if rule.rule_id == notif_key {
+                        if rule.enabled {
+                            return Ok(true);
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+
+                if found {
+                    inner
+                        .set_push_rule_enabled(RuleKind::Override, notif_key, true)
+                        .await?;
+                    return Ok(true);
+                }
+                // not found, we have to create it the first time:
+                let new_push_rule = make_push_rule(&object_id, sub_type.as_ref());
+
+                let resp = client
+                    .send(
+                        set_pushrule::v3::Request::new(NewPushRule::Override(new_push_rule)),
+                        None,
+                    )
+                    .await?;
+
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn unsubscribe_object_push(
+        &self,
+        object_id: String,
+        sub_type: Option<String>,
+    ) -> Result<bool> {
+        let inner = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                // check for the full key:
+                inner
+                    .set_push_rule_enabled(
+                        RuleKind::Override,
+                        make_notification_key(&object_id, sub_type.as_ref()),
+                        false,
+                    )
+                    .await?;
+                Ok(true)
+            })
+            .await?
     }
 
     pub async fn default_notification_mode(
