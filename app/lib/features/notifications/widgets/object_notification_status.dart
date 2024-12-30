@@ -11,9 +11,11 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class ObjectNotificationStatus extends ConsumerWidget {
   final String objectId;
   final SubscriptionSubType? subType;
+  final bool includeText;
   const ObjectNotificationStatus({
     required this.objectId,
     this.subType,
+    this.includeText = false,
     super.key,
   });
 
@@ -26,7 +28,7 @@ class ObjectNotificationStatus extends ConsumerWidget {
           ),
         )
         .valueOrNull;
-    return switch (watched) {
+    final iconBtn = switch (watched) {
       SubscriptionStatus.subscribed => IconButton(
           onPressed: () {
             unsubscribeObjectPush(
@@ -55,7 +57,7 @@ class ObjectNotificationStatus extends ConsumerWidget {
         ),
       SubscriptionStatus.parentSubscribed => IconButton(
           onPressed: () {
-            EasyLoading.showToast(L10n.of(context).subscribedToParent);
+            EasyLoading.showToast(L10n.of(context).subscribedToParentMsg);
           },
           icon: Icon(
             PhosphorIconsFill.bellRinging,
@@ -76,5 +78,21 @@ class ObjectNotificationStatus extends ConsumerWidget {
           ),
         ),
     };
+    if (!includeText) {
+      return iconBtn;
+    }
+
+    return TextButton.icon(
+      icon: iconBtn.icon,
+      onPressed: iconBtn.onPressed,
+      label: Text(
+        switch (watched) {
+          SubscriptionStatus.subscribed => L10n.of(context).unsubscribeAction,
+          SubscriptionStatus.parentSubscribed =>
+            L10n.of(context).parentSubscribedAction,
+          _ => L10n.of(context).subscribeAction,
+        },
+      ),
+    );
   }
 }

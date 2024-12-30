@@ -123,13 +123,16 @@ class NewsSideBar extends ConsumerWidget {
           InkWell(
             key: NewsUpdateKeys.newsSidebarActionBottomSheet,
             onTap: () => showModalBottomSheet(
+              showDragHandle: true,
+              useSafeArea: true,
               context: context,
-              builder: (context) => DefaultBottomSheet(
-                content: ActionBox(
-                  news: news,
-                  userId: userId,
-                  roomId: roomId,
-                ),
+              isScrollControlled: true,
+              isDismissible: true,
+              constraints: BoxConstraints(maxHeight: 300),
+              builder: (context) => ActionBox(
+                news: news,
+                userId: userId,
+                roomId: roomId,
               ),
             ),
             child: _SideBarItem(
@@ -202,57 +205,89 @@ class ActionBox extends ConsumerWidget {
     final eventId = news.eventId().toString();
     final canRedact = ref.watch(canRedactProvider(news));
     final isAuthor = senderId == userId;
-    List<Widget> actions = [
-      Text(lang.actions),
-      const Divider(),
-    ];
 
-    if (canRedact.valueOrNull == true) {
-      actions.add(
-        TextButton.icon(
-          key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
-          onPressed: () => openRedactContentDialog(
-            context,
-            title: lang.removeThisPost,
-            eventId: eventId,
-            onSuccess: () async {
-              if (!await Navigator.maybePop(context)) {
-                if (context.mounted) {
-                  // fallback to go to home
-                  Navigator.pushReplacementNamed(context, Routes.main.name);
-                }
-              }
-            },
-            roomId: roomId,
-            isSpace: true,
-            removeBtnKey: NewsUpdateKeys.removeButton,
-          ),
-          icon: const Icon(Atlas.trash_thin),
-          label: Text(lang.remove),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        title: Text(
+          lang.actions,
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
-      );
-    } else if (!isAuthor) {
-      actions.add(
-        TextButton.icon(
-          key: NewsUpdateKeys.newsSidebarActionReportBtn,
-          onPressed: () => openReportContentDialog(
-            context,
-            title: lang.reportThisPost,
-            eventId: eventId,
-            description: lang.reportPostContent,
-            senderId: senderId,
-            roomId: roomId,
-            isSpace: true,
+        automaticallyImplyLeading: false,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (canRedact.valueOrNull == true)
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 8.0,
+                    horizontal: 5,
+                  ),
+                  child: TextButton.icon(
+                    key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
+                    onPressed: () => openRedactContentDialog(
+                      context,
+                      title: lang.removeThisPost,
+                      eventId: eventId,
+                      onSuccess: () async {
+                        if (!await Navigator.maybePop(context)) {
+                          if (context.mounted) {
+                            // fallback to go to home
+                            Navigator.pushReplacementNamed(
+                                context, Routes.main.name);
+                          }
+                        }
+                      },
+                      roomId: roomId,
+                      isSpace: true,
+                      removeBtnKey: NewsUpdateKeys.removeButton,
+                    ),
+                    icon: const Icon(Atlas.trash_thin),
+                    label: Text(lang.remove),
+                  ),
+                )
+              else if (!isAuthor)
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 8.0,
+                    horizontal: 5,
+                  ),
+                  child: TextButton.icon(
+                    key: NewsUpdateKeys.newsSidebarActionReportBtn,
+                    onPressed: () => openReportContentDialog(
+                      context,
+                      title: lang.reportThisPost,
+                      eventId: eventId,
+                      description: lang.reportPostContent,
+                      senderId: senderId,
+                      roomId: roomId,
+                      isSpace: true,
+                    ),
+                    icon: const Icon(Atlas.exclamation_chat_thin),
+                    label: Text(lang.reportThis),
+                  ),
+                ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 5,
+                ),
+                child: ObjectNotificationStatus(
+                  objectId: eventId,
+                  includeText: true,
+                ),
+              ),
+            ],
           ),
-          icon: const Icon(Atlas.exclamation_chat_thin),
-          label: Text(lang.reportThis),
         ),
-      );
-    }
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: actions,
+      ),
     );
   }
 }
