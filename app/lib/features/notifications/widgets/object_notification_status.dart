@@ -21,7 +21,7 @@ class ObjectNotificationStatus extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final watched = ref
         .watch(
-          isPushNotificationSubscribedProvider(
+          pushNotificationSubscribedStatusProvider(
             (objectId: objectId, subType: subType),
           ),
         )
@@ -58,7 +58,7 @@ class ObjectNotificationStatus extends ConsumerWidget {
             EasyLoading.showToast(L10n.of(context).subscribedToParent);
           },
           icon: Icon(
-            PhosphorIconsThin.bell,
+            PhosphorIconsFill.bellRinging,
             color: Theme.of(context).disabledColor,
           ),
         ),

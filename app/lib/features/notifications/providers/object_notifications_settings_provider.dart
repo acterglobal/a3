@@ -6,7 +6,7 @@ import 'package:riverpod/riverpod.dart';
 
 typedef PushSettingsQuery = ({String objectId, SubscriptionSubType? subType});
 
-final isPushNotificationSubscribedProvider =
+final pushNotificationSubscribedStatusProvider =
     FutureProvider.family<SubscriptionStatus, PushSettingsQuery>(
         (ref, query) async {
   final settings = await ref.watch(notificationSettingsProvider.future);
@@ -22,12 +22,3 @@ final isPushNotificationSubscribedProvider =
     _ => SubscriptionStatus.none,
   };
 });
-
-final objectIsPushNotificationSubscribedProvider =
-    FutureProvider.family<SubscriptionStatus, String>(
-  (ref, objectId) => ref.watch(
-    isPushNotificationSubscribedProvider(
-      (objectId: objectId, subType: null),
-    ).future,
-  ),
-);

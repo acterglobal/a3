@@ -22,7 +22,7 @@ Future<bool> subscribeObjectPush({
       subType.map((q) => q.asType()),
     );
     ref.invalidate(
-      isPushNotificationSubscribedProvider(
+      pushNotificationSubscribedStatusProvider(
         (objectId: objectId, subType: subType),
       ),
     );

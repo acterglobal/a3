@@ -5,6 +5,7 @@ import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -163,7 +164,9 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
     }
   }
   try {
-    await draft.send();
+    final eventId = await draft.send();
+    // we want to stay informed about this via push notifications
+    await autosubscribe(ref: ref, objectId: eventId.toString(), lang: lang);
   } catch (e, s) {
     _log.severe('Failed to send news', e, s);
     EasyLoading.showError(
