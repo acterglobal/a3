@@ -2213,6 +2213,7 @@
   "@addLink": {},
   "attachmentEmptyStateTitle": "No attachments found.",
   "@attachmentEmptyStateTitle": {},
+  "referencesEmptyStateTitle": "No references found.",
   "text": "text",
   "@text": {},
   "audio": "Audio",

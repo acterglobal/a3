@@ -69,9 +69,9 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           onPressed: () => openShareSpaceObjectDialog(
             context: context,
             spaceObjectDetails: (
-              spaceId: tasklist.spaceIdStr(),
-              objectType: ObjectType.taskList,
-              objectId: widget.taskListId,
+            spaceId: tasklist.spaceIdStr(),
+            objectType: ObjectType.taskList,
+            objectId: widget.taskListId,
             ),
           ),
         ),
@@ -161,38 +161,45 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   Widget _buildTaskListInner(TaskList? taskListData) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (taskListData != null) ...[
-              const SizedBox(height: 10),
-              _taskListHeader(taskListData),
-              const SizedBox(height: 20),
-              _widgetDescription(taskListData),
-              const SizedBox(height: 30),
-              _widgetTasksListHeader(),
-              ValueListenableBuilder(
-                valueListenable: showCompletedTask,
-                builder: (context, value, child) => TaskItemsListWidget(
-                  taskList: taskListData,
-                  showCompletedTask: value,
-                ),
-              ),
-            ] else
-              _loadingSkeleton(),
-            const SizedBox(height: 20),
-            AttachmentSectionWidget(
-              manager: taskListData?.asAttachmentsManagerProvider(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (taskListData != null)
+            taskListDataUI(taskListData)
+          else
+            _loadingSkeleton(),
+          AttachmentSectionWidget(
+            manager: taskListData?.asAttachmentsManagerProvider(),
+          ),
+          const SizedBox(height: 20),
+          CommentsSectionWidget(
+            managerProvider: taskListData?.asCommentsManagerProvider(),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget taskListDataUI(TaskList taskListData) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          const SizedBox(height: 14),
+          _taskListHeader(taskListData),
+          const SizedBox(height: 8),
+          _widgetDescription(taskListData),
+          const SizedBox(height: 8),
+          _widgetTasksListHeader(),
+          ValueListenableBuilder(
+            valueListenable: showCompletedTask,
+            builder: (context, value, child) => TaskItemsListWidget(
+              taskList: taskListData,
+              showCompletedTask: value,
             ),
-            const SizedBox(height: 20),
-            CommentsSectionWidget(
-              managerProvider: taskListData?.asCommentsManagerProvider(),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -200,11 +207,12 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   Widget _taskListHeader(TaskList tasklist) {
     final textTheme = Theme.of(context).textTheme;
     final canPost = ref
-            .watch(roomMembershipProvider(tasklist.spaceIdStr()))
-            .valueOrNull
-            ?.canString('CanPostTaskList') ==
+        .watch(roomMembershipProvider(tasklist.spaceIdStr()))
+        .valueOrNull
+        ?.canString('CanPostTaskList') ==
         true;
     return ListTile(
+      contentPadding: EdgeInsets.zero,
       leading: ActerIconWidget(
         iconSize: 40,
         color: convertColor(
@@ -216,14 +224,14 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         ),
         onIconSelection: canPost
             ? (color, acterIcon) {
-                updateTaskListIcon(
-                  context,
-                  ref,
-                  tasklist,
-                  color,
-                  acterIcon,
-                );
-              }
+          updateTaskListIcon(
+            context,
+            ref,
+            tasklist,
+            color,
+            acterIcon,
+          );
+        }
             : null,
       ),
       title: SelectionArea(
@@ -258,13 +266,13 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         },
         child: formattedBody != null
             ? RenderHtml(
-                text: formattedBody,
-                defaultTextStyle: textTheme.labelLarge,
-              )
+          text: formattedBody,
+          defaultTextStyle: textTheme.labelLarge,
+        )
             : Text(
-                description.body(),
-                style: textTheme.labelLarge,
-              ),
+          description.body(),
+          style: textTheme.labelLarge,
+        ),
       ),
     );
   }
@@ -281,10 +289,10 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   Future<void> _saveDescription(
-    TaskList taskListData,
-    String htmlBodyDescription,
-    String plainDescription,
-  ) async {
+      TaskList taskListData,
+      String htmlBodyDescription,
+      String plainDescription,
+      ) async {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.updatingDescription);
     try {
@@ -352,54 +360,54 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   Widget _loadingSkeleton() => SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Skeletonizer.zone(
-            child: Column(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Skeletonizer.zone(
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(height: 10),
-                Row(
+                const Bone.icon(size: 40),
+                const SizedBox(width: 10),
+                Column(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Bone.icon(size: 40),
-                    const SizedBox(width: 10),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Task List Title',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        SpaceChip.loadingCompact(),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                const Text('Task description'),
-                const SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      L10n.of(context).tasks,
-                      style: Theme.of(context).textTheme.titleSmall,
+                      'Task List Title',
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    const Bone.iconButton(
-                      size: 18,
-                    ),
+                    SpaceChip.loadingCompact(),
                   ],
                 ),
-                TaskItemsListWidget.loading(),
-                const SizedBox(height: 20),
-                AttachmentSectionWidget.loading(),
-                const SizedBox(height: 20),
-                CommentsSectionWidget.loading(),
-                const SizedBox(height: 20),
               ],
             ),
-          ),
+            const SizedBox(height: 20),
+            const Text('Task description'),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  L10n.of(context).tasks,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                const Bone.iconButton(
+                  size: 18,
+                ),
+              ],
+            ),
+            TaskItemsListWidget.loading(),
+            const SizedBox(height: 20),
+            AttachmentSectionWidget.loading(),
+            const SizedBox(height: 20),
+            CommentsSectionWidget.loading(),
+            const SizedBox(height: 20),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }
