@@ -179,12 +179,10 @@ impl NotificationSettings {
                             } else {
                                 return Ok(SubscriptionStatus::ParentUnsubscribed);
                             }
+                        } else if enabled {
+                            return Ok(SubscriptionStatus::Subscribed);
                         } else {
-                            if enabled {
-                                return Ok(SubscriptionStatus::Subscribed);
-                            } else {
-                                return Ok(SubscriptionStatus::Unsubscribed);
-                            }
+                            return Ok(SubscriptionStatus::Unsubscribed);
                         }
                     }
                     Err(NotificationSettingsError::RuleNotFound(_)) => {

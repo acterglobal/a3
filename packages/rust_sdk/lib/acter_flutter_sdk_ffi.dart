@@ -27000,6 +27000,17 @@ class Api {
           _ActerUserAppSettingsTypingNoticeReturn Function(
             int,
           )>();
+  late final _acterUserAppSettingsAutoSubscribeOnActivityPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__ActerUserAppSettings_auto_subscribe_on_activity");
+
+  late final _acterUserAppSettingsAutoSubscribeOnActivity =
+      _acterUserAppSettingsAutoSubscribeOnActivityPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _acterUserAppSettingsUpdateBuilderPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -27037,6 +27048,19 @@ class Api {
 
   late final _acterUserAppSettingsBuilderTypingNotice =
       _acterUserAppSettingsBuilderTypingNoticePtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _acterUserAppSettingsBuilderAutoSubscribeOnActivityPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+          )>>("__ActerUserAppSettingsBuilder_auto_subscribe_on_activity");
+
+  late final _acterUserAppSettingsBuilderAutoSubscribeOnActivity =
+      _acterUserAppSettingsBuilderAutoSubscribeOnActivityPtr.asFunction<
           void Function(
             int,
             int,
@@ -54973,6 +54997,19 @@ class ActerUserAppSettings {
     return tmp2;
   }
 
+  /// whether to automatically subscribe to push notifications
+  /// once interacted
+  bool autoSubscribeOnActivity() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterUserAppSettingsAutoSubscribeOnActivity(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
   /// update the builder with the current settings
   /// if you intend to change anything
   ActerUserAppSettingsBuilder updateBuilder() {
@@ -55038,6 +55075,23 @@ class ActerUserAppSettingsBuilder {
     tmp0 = _box.borrow();
     tmp2 = tmp1 ? 1 : 0;
     _api._acterUserAppSettingsBuilderTypingNotice(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set whether to automatically subscribe to push notifications
+  /// once interacted
+  void autoSubscribeOnActivity(
+    bool value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._acterUserAppSettingsBuilderAutoSubscribeOnActivity(
       tmp0,
       tmp2,
     );

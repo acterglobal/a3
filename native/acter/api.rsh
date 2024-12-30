@@ -2539,6 +2539,10 @@ object ActerUserAppSettings {
     /// whether to allow sending typing notice of users
     fn typing_notice() -> Option<bool>;
 
+    /// whether to automatically subscribe to push notifications
+    /// once interacted
+    fn auto_subscribe_on_activity() -> bool;
+
     /// update the builder with the current settings
 
     /// if you intend to change anything
@@ -2551,6 +2555,10 @@ object ActerUserAppSettingsBuilder {
 
     /// whether to allow sending typing notice of users
     fn typing_notice(value: bool);
+
+    /// set whether to automatically subscribe to push notifications
+    /// once interacted
+    fn auto_subscribe_on_activity(value: bool);
 
     /// submit this updated version
     fn send() -> Future<Result<bool>>;

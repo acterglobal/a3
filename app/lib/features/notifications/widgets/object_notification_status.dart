@@ -31,6 +31,7 @@ class ObjectNotificationStatus extends ConsumerWidget {
           onPressed: () {
             unsubscribeObjectPush(
               ref: ref,
+              lang: L10n.of(context),
               objectId: objectId,
               subType: subType,
             );
@@ -41,8 +42,9 @@ class ObjectNotificationStatus extends ConsumerWidget {
         ),
       SubscriptionStatus.unsubscribed => IconButton(
           onPressed: () {
-            unsubscribeObjectPush(
+            subscribeObjectPush(
               ref: ref,
+              lang: L10n.of(context),
               objectId: objectId,
               subType: subType,
             );
@@ -64,6 +66,7 @@ class ObjectNotificationStatus extends ConsumerWidget {
           onPressed: () {
             subscribeObjectPush(
               ref: ref,
+              lang: L10n.of(context),
               objectId: objectId,
               subType: subType,
             );

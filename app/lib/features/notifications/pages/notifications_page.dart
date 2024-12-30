@@ -5,13 +5,16 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
+import 'package:acter/features/notifications/actions/update_autosubscribe.dart';
 import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/notifications_mode_provider.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/app_notifications_settings_tile.dart';
-import 'package:acter/features/settings/widgets/labs_notifications_settings_tile.dart';
+import 'package:acter/features/notifications/widgets/labs_notifications_settings_tile.dart';
 import 'package:acter/features/settings/widgets/settings_section_with_title_actions.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/util.dart';
@@ -84,6 +87,8 @@ class NotificationsSettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final subscribeIsOn =
+        ref.watch(isActiveProvider(LabsFeature.autoSubscribe));
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
@@ -105,6 +110,29 @@ class NotificationsSettingsPage extends ConsumerWidget {
                 ),
               ],
             ),
+            if (subscribeIsOn)
+              SettingsSection(
+                title: Text(lang.autoSubscribeSettingsTitle),
+                tiles: [
+                  SettingsTile.switchTile(
+                    title: Text(lang.boosts),
+                    // description: Text(lang.autoSubscribeFeatureDesc),
+                    initialValue: ref
+                            .watch(
+                              autoSubscribeProvider,
+                            )
+                            .value ==
+                        true,
+                    onToggle: (newVal) async {
+                      await updateAutoSubscribe(
+                        ref,
+                        lang,
+                        newVal,
+                      );
+                    },
+                  ),
+                ],
+              ),
             SettingsSection(
               title: Text(lang.defaultModes),
               tiles: [
