@@ -35,7 +35,8 @@ void main() {
     Function(String)? onTapEventItem,
     EventFilters eventFilter = EventFilters.upcoming,
   }) async {
-    final mockedNotifier = MockAsyncCalendarEventNotifier();
+    final mockedNotifier = MockAsyncCalendarEventNotifier(shouldFail: false);
+
     await tester.pumpProviderWidget(
       overrides: [
         utcNowProvider.overrideWith((ref) => mockUtcNowNotifier),
@@ -47,12 +48,14 @@ void main() {
         roomDisplayNameProvider.overrideWith((a, b) => 'test'),
       ],
       child: EventItem(
-        event: mockEvent,
+        eventId: mockEvent.eventId().toString(),
         isShowRsvp: isShowRsvp,
         isShowSpaceName: isShowSpaceName,
         onTapEventItem: onTapEventItem,
       ),
     );
+    // Wait for the async provider to load
+    await tester.pump();
   }
 
   testWidgets('displays event title', (tester) async {
@@ -76,7 +79,7 @@ void main() {
     );
 
     await tester.tap(find.byKey(EventItem.eventItemClick));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     verify(() => mockOnTapEventItem.call('1234')).called(1);
   });
@@ -105,7 +108,7 @@ void main() {
     await createWidgetUnderTest(tester: tester);
 
     // Act: Trigger a frame
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // Assert: Check if the Yes icon is displayed
     expect(find.byIcon(Icons.check_circle), findsOneWidget);
@@ -119,7 +122,7 @@ void main() {
     await createWidgetUnderTest(tester: tester);
 
     // Act: Trigger a frame
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // Assert: Check if the No icon is displayed
     expect(find.byIcon(Icons.cancel), findsOneWidget);
@@ -133,7 +136,7 @@ void main() {
     await createWidgetUnderTest(tester: tester);
 
     // Act: Trigger a frame
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // Assert: Check if the Maybe icon is displayed
     expect(find.byIcon(Icons.question_mark_rounded), findsOneWidget);
@@ -145,7 +148,7 @@ void main() {
     await createWidgetUnderTest(tester: tester, isShowRsvp: false);
 
     // Act: Trigger a frame
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // Assert: Check that no RSVP status icon is displayed
     expect(find.byIcon(Icons.check_circle), findsNothing);

@@ -7,6 +7,7 @@ mod pins;
 mod reactions;
 mod read_receipts;
 mod rsvp;
+mod stories;
 mod tag;
 mod tasks;
 #[cfg(test)]
@@ -24,10 +25,8 @@ use matrix_sdk_base::ruma::{
     events::{
         reaction::ReactionEventContent,
         room::redaction::{OriginalRoomRedactionEvent, RoomRedactionEventContent},
-        AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent, StaticEventContent,
-        UnsignedRoomRedactionEvent,
+        MessageLikeEvent, StaticEventContent, UnsignedRoomRedactionEvent,
     },
-    serde::Raw,
     EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId, UserId,
 };
 pub use news::{NewsEntry, NewsEntryUpdate};
@@ -36,18 +35,18 @@ pub use reactions::{Reaction, ReactionManager, ReactionStats};
 pub use read_receipts::{ReadReceipt, ReadReceiptStats, ReadReceiptsManager};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use serde::{Deserialize, Serialize};
+pub use stories::{Story, StoryUpdate};
 pub use tag::Tag;
 pub use tasks::{
     Task, TaskList, TaskListUpdate, TaskSelfAssign, TaskSelfUnassign, TaskStats, TaskUpdate,
 };
-use tracing::{info, trace, warn};
+use tracing::{error, info, trace, warn};
 
 #[cfg(test)]
 pub use test::{TestModel, TestModelBuilder, TestModelBuilderError};
 
 pub use crate::store::Store;
 use crate::{
-    error::Error,
     events::{
         attachments::{AttachmentEventContent, AttachmentUpdateEventContent},
         calendar::{CalendarEventEventContent, CalendarEventUpdateEventContent},
@@ -56,12 +55,14 @@ use crate::{
         pins::{PinEventContent, PinUpdateEventContent},
         read_receipt::ReadReceiptEventContent,
         rsvp::RsvpEventContent,
+        stories::{StoryEventContent, StoryUpdateEventContent},
         tasks::{
             TaskEventContent, TaskListEventContent, TaskListUpdateEventContent,
             TaskSelfAssignEventContent, TaskSelfUnassignEventContent, TaskUpdateEventContent,
         },
         AnyActerEvent,
     },
+    executor::Executor,
 };
 
 #[derive(Debug, Eq, PartialEq)]
@@ -342,6 +343,10 @@ pub enum AnyActerModel {
     NewsEntry(NewsEntry),
     NewsEntryUpdate(NewsEntryUpdate),
 
+    // -- News
+    Story(Story),
+    StoryUpdate(StoryUpdate),
+
     // -- more generics
     Comment(Comment),
     CommentUpdate(CommentUpdate),
@@ -372,6 +377,8 @@ impl AnyActerModel {
             AnyActerModel::PinUpdate(_) => PinUpdateEventContent::TYPE,
             AnyActerModel::NewsEntry(_) => NewsEntryEventContent::TYPE,
             AnyActerModel::NewsEntryUpdate(_) => NewsEntryUpdateEventContent::TYPE,
+            AnyActerModel::Story(_) => StoryEventContent::TYPE,
+            AnyActerModel::StoryUpdate(_) => StoryUpdateEventContent::TYPE,
             AnyActerModel::Comment(_) => CommentEventContent::TYPE,
             AnyActerModel::CommentUpdate(_) => CommentUpdateEventContent::TYPE,
             AnyActerModel::Attachment(_) => AttachmentEventContent::TYPE,
@@ -384,16 +391,58 @@ impl AnyActerModel {
             AnyActerModel::TestModel(_) => "test_model",
         }
     }
+
+    pub async fn execute(executor: &Executor, event: AnyActerEvent) {
+        let room_id = event.room_id().to_owned();
+        match AnyActerModel::try_from(event) {
+            Ok(model) => {
+                trace!(?room_id, ?model, "handling timeline event");
+                if let Err(e) = executor.handle(model).await {
+                    error!("Failure handling event: {:}", e);
+                }
+            }
+            Err(ParseError::ModelRedacted {
+                model_type,
+                meta,
+                reason,
+            }) => {
+                trace!(?meta.room_id, model_type, ?meta.event_id, "redacted event");
+                if let Err(e) = executor.redact(model_type, meta, reason).await {
+                    error!("Failure redacting {:}", e);
+                }
+            }
+            Err(ParseError::UnsupportedEvent(AnyActerEvent::RegularTimelineEvent(_))) => {
+                // save to hard ignore
+                trace!(?room_id, "ignoring timeline event");
+            }
+            Err(ParseError::UnsupportedEvent(inner)) => {
+                // sae to hard ignore
+                error!(?room_id, ?inner, "seems like the dev failed to add parsing");
+            }
+        };
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+pub enum ParseError {
+    #[error("Model {meta:?} ({model_type}): {reason:?}")]
+    ModelRedacted {
+        model_type: String,
+        meta: EventMeta,
+        reason: UnsignedRoomRedactionEvent,
+    },
+    #[error("Not supported Acter Event")]
+    UnsupportedEvent(AnyActerEvent),
 }
 
 impl TryFrom<AnyActerEvent> for AnyActerModel {
-    type Error = Error;
+    type Error = ParseError;
     fn try_from(value: AnyActerEvent) -> Result<Self, Self::Error> {
         match value {
             // Originals
             AnyActerEvent::CalendarEvent(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::CalendarEvent(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: CalendarEventEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -407,7 +456,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::CalendarEventUpdate(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::CalendarEventUpdate(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: CalendarEventUpdateEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -421,7 +470,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::Pin(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Pin(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: PinEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -435,7 +484,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::PinUpdate(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::PinUpdate(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: PinUpdateEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -449,7 +498,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::NewsEntry(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::NewsEntry(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: NewsEntryEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -463,8 +512,37 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::NewsEntryUpdate(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::NewsEntryUpdate(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: NewsEntryUpdateEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                        redacted: None,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+
+            AnyActerEvent::Story(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::Story(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
+                    model_type: StoryEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                        redacted: None,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::StoryUpdate(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::StoryUpdate(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
+                    model_type: StoryUpdateEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
                         event_id: r.event_id,
@@ -477,7 +555,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::TaskList(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskList(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: TaskListEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -491,7 +569,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::TaskListUpdate(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskListUpdate(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: TaskListUpdateEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -505,7 +583,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::Task(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Task(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: TaskEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -519,7 +597,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::TaskUpdate(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskUpdate(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: TaskUpdateEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -533,7 +611,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::TaskSelfAssign(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskSelfAssign(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: TaskSelfAssignEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -547,7 +625,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::TaskSelfUnassign(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::TaskSelfUnassign(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: TaskSelfUnassignEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -561,7 +639,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::Comment(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Comment(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: CommentEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -575,7 +653,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::CommentUpdate(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::CommentUpdate(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: CommentUpdateEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -589,7 +667,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::Attachment(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Attachment(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: AttachmentEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -603,7 +681,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::AttachmentUpdate(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::AttachmentUpdate(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: AttachmentUpdateEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -617,7 +695,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
             },
             AnyActerEvent::Rsvp(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Rsvp(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: RsvpEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -632,7 +710,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
 
             AnyActerEvent::Reaction(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::Reaction(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: ReactionEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -647,7 +725,7 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
 
             AnyActerEvent::ReadReceipt(e) => match e {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::ReadReceipt(m.into())),
-                MessageLikeEvent::Redacted(r) => Err(Error::ModelRedacted {
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: ReadReceiptEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
@@ -660,50 +738,8 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 }),
             },
             // should not really happen
-            AnyActerEvent::RegularTimelineEvent(_) => Err(Error::UnknownEvent),
+            AnyActerEvent::RegularTimelineEvent(_) => Err(Self::Error::UnsupportedEvent(value)),
         }
-    }
-}
-
-impl TryFrom<&Raw<AnyTimelineEvent>> for AnyActerModel {
-    type Error = Error;
-    fn try_from(raw: &Raw<AnyTimelineEvent>) -> Result<Self, Self::Error> {
-        let Ok(Some(model_type)) = raw.get_field::<String>("type") else {
-            return Err(Error::UnknownModel(None));
-        };
-
-        if !model_type.starts_with("global.acter") || model_type == "global.acter.app_settings" {
-            return Err(Error::UnknownModel(Some(model_type)));
-        }
-
-        Self::try_from(raw.deserialize_as::<AnyActerEvent>().map_err(|error| {
-            trace!(?error, ?raw, "parsing acter event failed");
-            Error::FailedToParse {
-                model_type,
-                msg: error.to_string(),
-            }
-        })?)
-    }
-}
-
-impl TryFrom<&Raw<AnySyncTimelineEvent>> for AnyActerModel {
-    type Error = Error;
-    fn try_from(raw: &Raw<AnySyncTimelineEvent>) -> Result<Self, Self::Error> {
-        let Ok(Some(model_type)) = raw.get_field::<String>("type") else {
-            return Err(Error::UnknownModel(None));
-        };
-
-        if !model_type.starts_with("global.acter") || model_type == "global.acter.app_settings" {
-            return Err(Error::UnknownModel(Some(model_type)));
-        }
-
-        Self::try_from(raw.deserialize_as::<AnyActerEvent>().map_err(|error| {
-            trace!(?error, ?raw, "parsing acter event failed");
-            Error::FailedToParse {
-                model_type,
-                msg: error.to_string(),
-            }
-        })?)
     }
 }
 
@@ -711,6 +747,7 @@ impl TryFrom<&Raw<AnySyncTimelineEvent>> for AnyActerModel {
 mod tests {
     use super::*;
     use crate::Result;
+
     use matrix_sdk_base::ruma::owned_event_id;
     #[test]
     fn ensure_minimal_tasklist_parses() -> Result<()> {
@@ -720,9 +757,8 @@ mod tests {
             "unsigned":{"age":11523850},
             "event_id":"$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c",
             "user_id":"@odo:ds9.acter.global","age":11523850}"#;
-        let event = serde_json::from_str::<Raw<AnyTimelineEvent>>(json_raw)?;
-        let _acter_ev = AnyActerModel::try_from(&event)?;
-        // assert!(matches!(event, AnyCreation::TaskList(_)));
+        let event = serde_json::from_str::<AnyActerEvent>(json_raw)?;
+        AnyActerModel::try_from(event).unwrap();
         Ok(())
     }
     #[test]
@@ -733,8 +769,8 @@ mod tests {
             "unsigned":{"age":11523850},
             "event_id":"$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c",
             "user_id":"@odo:ds9.acter.global","age":11523850}"#;
-        let event = serde_json::from_str::<Raw<AnyTimelineEvent>>(json_raw)?;
-        let _acter_ev = AnyActerModel::try_from(&event)?;
+        let event = serde_json::from_str::<AnyActerEvent>(json_raw)?;
+        AnyActerModel::try_from(event).unwrap();
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())
     }
@@ -790,14 +826,14 @@ mod tests {
               "age": 56316493
             }
           }"#;
-        let event = serde_json::from_str::<Raw<AnyTimelineEvent>>(json_raw)?;
-        let acter_ev_result = AnyActerModel::try_from(&event);
+        let event = serde_json::from_str::<AnyActerEvent>(json_raw)?;
+        let acter_ev_result = AnyActerModel::try_from(event.clone());
         let model_type = "global.acter.dev.news".to_owned();
         let event_id = owned_event_id!("$2_k7NsG2GOGfyeNOvV55OovysVl7WGKgGEY2hv6VosY");
         assert!(
             matches!(
                 acter_ev_result,
-                Err(Error::ModelRedacted {
+                Err(ParseError::ModelRedacted {
                     ref model_type,
                     meta: EventMeta { ref event_id, .. },
                     ..
@@ -860,14 +896,14 @@ mod tests {
               "age": 56316493
             }
           }"#;
-        let event = serde_json::from_str::<Raw<AnyTimelineEvent>>(json_raw)?;
-        let acter_ev_result = AnyActerModel::try_from(&event);
+        let event = serde_json::from_str::<AnyActerEvent>(json_raw)?;
+        let acter_ev_result = AnyActerModel::try_from(event);
         let model_type = "global.acter.dev.pin".to_owned();
         let event_id = owned_event_id!("$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c");
         assert!(
             matches!(
                 acter_ev_result,
-                Err(Error::ModelRedacted {
+                Err(ParseError::ModelRedacted {
                     ref model_type,
                     meta: EventMeta { ref event_id, .. },
                     ..

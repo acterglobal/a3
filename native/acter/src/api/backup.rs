@@ -1,7 +1,6 @@
 use anyhow::Result;
 use futures::{Stream, StreamExt};
 use matrix_sdk::encryption::{recovery::RecoveryState, Encryption};
-use tracing::warn;
 
 use crate::{Client, RUNTIME};
 

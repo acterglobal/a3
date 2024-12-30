@@ -11,16 +11,13 @@ use futures::{
     future::join_all,
     stream::{Stream, StreamExt},
 };
-use matrix_sdk::{
-    media::{MediaRequestParameters, UniqueKey},
-    room::Room as SdkRoom,
-    Client as SdkClient,
-};
+use matrix_sdk::{room::Room as SdkRoom, Client as SdkClient};
 use matrix_sdk_base::{
+    media::{MediaRequestParameters, UniqueKey},
     ruma::{
-        device_id, events::room::MediaSource, IdParseError, OwnedDeviceId, OwnedMxcUri,
-        OwnedRoomAliasId, OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId,
-        RoomAliasId, RoomId, RoomOrAliasId, UserId,
+        device_id, events::room::MediaSource, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId,
+        OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId,
+        RoomOrAliasId, UserId,
     },
     RoomStateFilter,
 };
@@ -134,10 +131,9 @@ impl Client {
                 .await?;
         }
 
-        return path
-            .to_str()
+        path.to_str()
             .map(|s| s.to_string())
-            .context("Path was generated from strings. Must be string");
+            .context("Path was generated from strings. Must be string")
     }
 
     pub async fn join_room(
@@ -187,6 +183,7 @@ impl Client {
             typing_controller: TypingController::new(),
         };
         cl.load_from_cache().await;
+        cl.setup_handlers();
         Ok(cl)
     }
 

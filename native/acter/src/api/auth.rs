@@ -4,20 +4,23 @@ use lazy_static::lazy_static;
 use matrix_sdk::{
     matrix_auth::{MatrixSession, MatrixSessionTokens},
     reqwest::{ClientBuilder as ReqClientBuilder, StatusCode},
-    Client as SdkClient, ClientBuilder as SdkClientBuilder, SessionMeta,
+    Client as SdkClient, ClientBuilder as SdkClientBuilder,
 };
-use matrix_sdk_base::ruma::{
-    api::client::{
-        account::{
-            register, request_password_change_token_via_email, request_registration_token_via_email,
+use matrix_sdk_base::{
+    ruma::{
+        api::client::{
+            account::{
+                register, request_password_change_token_via_email,
+                request_registration_token_via_email,
+            },
+            uiaa::{AuthData, Dummy, RegistrationToken},
         },
-        uiaa::{AuthData, Dummy, Password, RegistrationToken},
+        assign, uint, ClientSecret, OwnedClientSecret, OwnedUserId, UserId,
     },
-    assign, uint, ClientSecret, OwnedClientSecret, OwnedUserId, UserId,
+    SessionMeta,
 };
-use serde::Deserialize;
-use std::{ops::Deref, sync::RwLock};
-use tracing::{error, info};
+use std::sync::RwLock;
+use tracing::info;
 use url::Url;
 use uuid::Uuid;
 
@@ -94,7 +97,7 @@ pub async fn make_client_config(
         Ok((builder.homeserver_url(default_homeserver_url), user_id))
     } else {
         // we need to fallback to the testing/default scenario
-        return Ok((builder.server_name(user_id.server_name()), user_id));
+        Ok((builder.server_name(user_id.server_name()), user_id))
     }
 }
 

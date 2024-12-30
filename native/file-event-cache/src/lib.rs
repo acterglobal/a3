@@ -1,19 +1,19 @@
 use async_trait::async_trait;
 use base64ct::{Base64UrlUnpadded, Encoding};
 use core::fmt::Debug;
-use matrix_sdk::media::{MediaRequestParameters, UniqueKey};
 use matrix_sdk_base::{
-    event_cache::store::{EventCacheStore, EventCacheStoreError},
-    ruma::MxcUri,
+    event_cache::{
+        store::{EventCacheStore, EventCacheStoreError, DEFAULT_CHUNK_CAPACITY},
+        Event, Gap,
+    },
+    linked_chunk::{LinkedChunk, Update},
+    media::{MediaRequestParameters, UniqueKey},
+    ruma::{MxcUri, RoomId},
     StateStore,
 };
 use matrix_sdk_store_encryption::StoreCipher;
 use serde::{Deserialize, Serialize};
-use std::{
-    fs,
-    path::PathBuf,
-    time::{Duration, Instant},
-};
+use std::{fs, path::PathBuf, time::Duration};
 use tracing::instrument;
 
 #[cfg(feature = "queued")]
@@ -22,12 +22,13 @@ mod queued;
 #[cfg(feature = "queued")]
 pub use queued::QueuedEventCacheStore;
 
-pub struct FileEventCacheStore {
+pub struct FileEventCacheStore<T> {
     cache_dir: PathBuf,
     store_cipher: StoreCipher,
+    inner: T,
 }
 
-impl Debug for FileEventCacheStore {
+impl<T> Debug for FileEventCacheStore<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("FileEventCacheStore")
             .field("cache_dir", &self.cache_dir)
@@ -35,11 +36,16 @@ impl Debug for FileEventCacheStore {
     }
 }
 
-impl FileEventCacheStore {
-    pub fn with_store_cipher(cache_dir: PathBuf, store_cipher: StoreCipher) -> FileEventCacheStore {
+impl<T> FileEventCacheStore<T> {
+    pub fn with_store_cipher(
+        cache_dir: PathBuf,
+        store_cipher: StoreCipher,
+        inner: T,
+    ) -> FileEventCacheStore<T> {
         FileEventCacheStore {
             cache_dir,
             store_cipher,
+            inner,
         }
     }
 
@@ -70,7 +76,10 @@ struct LeaveLockInfo {
 }
 
 #[async_trait]
-impl EventCacheStore for FileEventCacheStore {
+impl<T> EventCacheStore for FileEventCacheStore<T>
+where
+    T: EventCacheStore,
+{
     type Error = EventCacheStoreError;
 
     async fn try_take_leased_lock(
@@ -79,40 +88,31 @@ impl EventCacheStore for FileEventCacheStore {
         key: &str,
         holder: &str,
     ) -> Result<bool, Self::Error> {
-        let now = Instant::now();
-        let base_filename = self.encode_key(format!("leave-lock-{key}"));
-        let full_name = self.cache_dir.join(base_filename.clone());
-        if fs::exists(&full_name).map_err(EventCacheStoreError::backend)? {
-            if let Some(current_lock) = fs::read(&full_name)
-                .ok()
-                .map(|data| self.decode_value(&data))
-                .transpose()?
-                .map(|v| serde_json::from_slice::<LeaveLockInfo>(&v))
-                .transpose()
-                .map_err(EventCacheStoreError::backend)?
-            {
-                if current_lock.expiration > now.elapsed() && current_lock.holder.as_str() != holder
-                {
-                    // there is an active lock and it has another holder, we have to decline.
-                    return Ok(false);
-                }
-            }
-        }
-        let expiration = now + Duration::from_millis(lease_duration_ms.into());
+        self.inner
+            .try_take_leased_lock(lease_duration_ms, key, holder)
+            .await
+            .map_err(|e| e.into())
+    }
 
-        // not yet or we want to update the field, so let's do that
-        let new_lease = LeaveLockInfo {
-            expiration: expiration.elapsed(),
-            holder: holder.to_owned(),
-        };
-        fs::write(
-            full_name,
-            self.encode_value(
-                serde_json::to_vec(&new_lease).map_err(EventCacheStoreError::backend)?,
-            )?,
-        )
-        .map_err(EventCacheStoreError::backend)?;
-        Ok(true)
+    async fn handle_linked_chunk_updates(
+        &self,
+        room_id: &RoomId,
+        updates: Vec<Update<Event, Gap>>,
+    ) -> Result<(), Self::Error> {
+        self.inner
+            .handle_linked_chunk_updates(room_id, updates)
+            .await
+            .map_err(|e| e.into())
+    }
+
+    async fn reload_linked_chunk(
+        &self,
+        room_id: &RoomId,
+    ) -> Result<Option<LinkedChunk<DEFAULT_CHUNK_CAPACITY, Event, Gap>>, Self::Error> {
+        self.inner
+            .reload_linked_chunk(room_id)
+            .await
+            .map_err(|e| e.into())
     }
 
     #[instrument(skip_all)]
@@ -136,6 +136,17 @@ impl EventCacheStore for FileEventCacheStore {
         request: &MediaRequestParameters,
     ) -> Result<Option<Vec<u8>>, Self::Error> {
         let base_filename = self.encode_key(request.source.unique_key());
+        fs::read(self.cache_dir.join(base_filename))
+            .ok()
+            .map(|data| self.decode_value(&data))
+            .transpose()
+    }
+
+    async fn get_media_content_for_uri(
+        &self,
+        uri: &MxcUri,
+    ) -> Result<Option<Vec<u8>>, Self::Error> {
+        let base_filename = self.encode_key(uri);
         fs::read(self.cache_dir.join(base_filename))
             .ok()
             .map(|data| self.decode_value(&data))
@@ -176,37 +187,44 @@ impl EventCacheStore for FileEventCacheStore {
 }
 
 #[cfg(feature = "queued")]
-pub async fn wrap_with_file_cache_and_limits<T>(
-    state_store: &T,
+pub async fn wrap_with_file_cache_and_limits<T, S>(
+    state_store: &S,
+    event_cache_store: T,
     cache_path: PathBuf,
     passphrase: &str,
     queue_size: usize,
-) -> Result<QueuedEventCacheStore<FileEventCacheStore>, EventCacheStoreError>
+) -> Result<QueuedEventCacheStore<FileEventCacheStore<T>>, EventCacheStoreError>
 where
-    T: StateStore + Sync + Send,
+    S: StateStore + Sync + Send,
+    T: EventCacheStore + Sync + Send,
 {
-    let cached = wrap_with_file_cache_inner(state_store, cache_path, passphrase).await?;
+    let cached =
+        wrap_with_file_cache_inner(state_store, event_cache_store, cache_path, passphrase).await?;
     Ok(QueuedEventCacheStore::new(cached, queue_size))
 }
 
-pub async fn wrap_with_file_cache<T>(
-    state_store: &T,
+pub async fn wrap_with_file_cache<T, S>(
+    state_store: &S,
+    event_cache_store: T,
     cache_path: PathBuf,
     passphrase: &str,
-) -> Result<FileEventCacheStore, EventCacheStoreError>
+) -> Result<FileEventCacheStore<T>, EventCacheStoreError>
 where
-    T: StateStore + Sync + Send,
+    S: StateStore + Sync + Send,
+    T: EventCacheStore + Sync + Send,
 {
-    wrap_with_file_cache_inner(state_store, cache_path, passphrase).await
+    wrap_with_file_cache_inner(state_store, event_cache_store, cache_path, passphrase).await
 }
 
-async fn wrap_with_file_cache_inner<T>(
-    state_store: &T,
+async fn wrap_with_file_cache_inner<T, S>(
+    state_store: &S,
+    event_cache_store: T,
     cache_path: PathBuf,
     passphrase: &str,
-) -> Result<FileEventCacheStore, EventCacheStoreError>
+) -> Result<FileEventCacheStore<T>, EventCacheStoreError>
 where
-    T: StateStore + Sync + Send,
+    S: StateStore + Sync + Send,
+    T: EventCacheStore + Sync + Send,
 {
     let cipher = if let Some(enc_key) = state_store
         .get_custom_value(b"ext_media_key")
@@ -227,7 +245,11 @@ where
     fs::create_dir_all(cache_path.as_path())
         .map_err(|e| EventCacheStoreError::Backend(Box::new(e)))?;
 
-    Ok(FileEventCacheStore::with_store_cipher(cache_path, cipher))
+    Ok(FileEventCacheStore::with_store_cipher(
+        cache_path,
+        cipher,
+        event_cache_store,
+    ))
 }
 
 #[cfg(test)]
@@ -238,7 +260,7 @@ mod tests {
         media::MediaFormat,
         ruma::{events::room::MediaSource, OwnedMxcUri},
     };
-    use matrix_sdk_sqlite::SqliteStateStore;
+    use matrix_sdk_sqlite::{SqliteEventCacheStore, SqliteStateStore};
     use matrix_sdk_test::async_test;
     use uuid::Uuid;
 
@@ -253,7 +275,8 @@ mod tests {
     async fn test_it_works() -> Result<()> {
         let cache_dir = tempfile::tempdir()?;
         let cipher = StoreCipher::new()?;
-        let fmc = FileEventCacheStore::with_store_cipher(cache_dir.into_path(), cipher);
+        let cache = SqliteEventCacheStore::open(cache_dir.path(), None).await?;
+        let fmc = FileEventCacheStore::with_store_cipher(cache_dir.into_path(), cipher, cache);
         let some_content = "this is some content";
         fmc.add_media_content(&fake_mr("my_id"), some_content.into())
             .await?;
@@ -275,8 +298,12 @@ mod tests {
             // first media cache
             let cipher = StoreCipher::new()?;
             let export = cipher.export(passphrase)?;
-            let fmc =
-                FileEventCacheStore::with_store_cipher(cache_dir.path().to_path_buf(), cipher);
+            let cache = SqliteEventCacheStore::open(cache_dir.path(), Some(passphrase)).await?;
+            let fmc = FileEventCacheStore::with_store_cipher(
+                cache_dir.path().to_path_buf(),
+                cipher,
+                cache,
+            );
             fmc.add_media_content(&fake_mr(my_item_id), some_content.into())
                 .await?;
             assert_eq!(
@@ -288,7 +315,9 @@ mod tests {
 
         // second media cache
         let cipher = StoreCipher::import(passphrase, &enc_key)?;
-        let fmc = FileEventCacheStore::with_store_cipher(cache_dir.path().to_path_buf(), cipher);
+        let cache = SqliteEventCacheStore::open(cache_dir.path(), Some(passphrase)).await?;
+        let fmc =
+            FileEventCacheStore::with_store_cipher(cache_dir.path().to_path_buf(), cipher, cache);
         assert_eq!(
             fmc.get_media_content(&fake_mr(my_item_id)).await?,
             Some(some_content.into())
@@ -307,8 +336,10 @@ mod tests {
         {
             // as a block means we are closing things up
             let db = SqliteStateStore::open(db_path.path(), Some(&passphrase)).await?;
+            let cache = SqliteEventCacheStore::open(cache_dir.path(), Some(&passphrase)).await?;
             let outer =
-                wrap_with_file_cache(&db, cache_dir.path().to_path_buf(), &passphrase).await?;
+                wrap_with_file_cache(&db, cache, cache_dir.path().to_path_buf(), &passphrase)
+                    .await?;
             // first media cache
             outer
                 .add_media_content(&fake_mr(my_item_id), some_content.into())
@@ -321,7 +352,10 @@ mod tests {
 
         // second media cache
         let db = SqliteStateStore::open(db_path, Some(&passphrase)).await?;
-        let outer = wrap_with_file_cache(&db, cache_dir.path().to_path_buf(), &passphrase).await?;
+
+        let cache = SqliteEventCacheStore::open(cache_dir.path(), Some(&passphrase)).await?;
+        let outer =
+            wrap_with_file_cache(&db, cache, cache_dir.path().to_path_buf(), &passphrase).await?;
         // first media cache
         outer
             .add_media_content(&fake_mr(my_item_id), some_content.into())

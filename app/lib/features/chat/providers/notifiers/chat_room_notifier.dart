@@ -988,25 +988,3 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 }
-
-bool isOnlyEmojis(String text) {
-  final emojisRegExp = RegExp(
-    r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])',
-  );
-  // find all emojis
-  final emojis = emojisRegExp.allMatches(text);
-
-  // return if none found
-  if (emojis.isEmpty) return false;
-
-  // remove all emojis from the this
-  for (final emoji in emojis) {
-    text = text.replaceAll(emoji.input.substring(emoji.start, emoji.end), '');
-  }
-
-  // remove all whitespace (optional)
-  text = text.replaceAll('', '');
-
-  // return true if nothing else left
-  return text.isEmpty;
-}

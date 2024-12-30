@@ -39,8 +39,10 @@ class ShareInviteCode extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
-    final displayName =
+    final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? '';
+    final String userName = ref.watch(accountDisplayNameProvider).valueOrNull ??
+        ref.watch(myUserIdStrProvider);
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -51,15 +53,15 @@ class ShareInviteCode extends ConsumerWidget {
             _buildMessageContent(
               context,
               ref,
-              displayName,
-              displayName,
+              roomName,
+              userName,
             ),
             const SizedBox(height: 30),
             _buildShareIntents(
               context,
               ref,
-              displayName,
-              displayName,
+              roomName,
+              userName,
             ),
             const SizedBox(height: 10),
             _buildDoneButton(context),
@@ -73,11 +75,11 @@ class ShareInviteCode extends ConsumerWidget {
   Widget _buildMessageContent(
     BuildContext context,
     WidgetRef ref,
-    String displayName,
     String roomName,
+    String userName,
   ) {
     final lang = L10n.of(context);
-    final content = lang.shareInviteContent(inviteCode, roomName, displayName);
+    final content = lang.shareInviteContent(inviteCode, roomName, userName);
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -107,11 +109,11 @@ class ShareInviteCode extends ConsumerWidget {
   Widget _buildShareIntents(
     BuildContext context,
     WidgetRef ref,
-    String displayName,
     String roomName,
+    String userName,
   ) {
     final lang = L10n.of(context);
-    final content = lang.shareInviteContent(inviteCode, roomName, displayName);
+    final content = lang.shareInviteContent(inviteCode, roomName, userName);
     return Wrap(
       direction: Axis.horizontal,
       alignment: WrapAlignment.center,
@@ -121,12 +123,11 @@ class ShareInviteCode extends ConsumerWidget {
           context: context,
           iconData: PhosphorIconsThin.qrCode,
           onTap: () async {
-            final userName = await ref.read(accountDisplayNameProvider.future);
             final userId = ref.read(myUserIdStrProvider);
             if (context.mounted) {
               showQrCode(
                 context,
-                'acter:i/acter.global/$inviteCode?roomDisplayName=$displayName&userId=$userId&userDisplayName=$userName',
+                'acter:i/acter.global/$inviteCode?roomDisplayName=$roomName&userId=$userId&userDisplayName=$userName',
                 title: Text(lang.shareInviteWithCode(inviteCode)),
               );
             }

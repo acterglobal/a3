@@ -1,31 +1,28 @@
 use acter_core::events::{
     attachments::{AttachmentContent, FallbackAttachmentContent},
     rsvp::RsvpStatus,
-    ColorizeBuilder, Display, DisplayBuilder, ObjRefBuilder, Position, RefDetails,
-    RefDetailsBuilder,
+    ColorizeBuilder, DisplayBuilder, ObjRefBuilder, Position, RefDetails, RefDetailsBuilder,
 };
 use anyhow::{Context, Result};
 use core::time::Duration;
-use matrix_sdk::{
+use matrix_sdk::{HttpError, RumaApiError};
+use matrix_sdk_base::{
     media::{MediaFormat, MediaThumbnailSettings},
-    ComposerDraft, ComposerDraftType, HttpError, RumaApiError,
-};
-use matrix_sdk_base::ruma::{
-    api::{
-        client::{error::ErrorBody, media::get_content_thumbnail},
-        error::FromHttpResponseError,
-    },
-    events::room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
-            FileMessageEventContent, ImageMessageEventContent, LocationInfo,
-            LocationMessageEventContent, TextMessageEventContent, UnstableAudioDetailsContentBlock,
-            VideoInfo, VideoMessageEventContent,
+    ruma::{
+        api::{client::error::ErrorBody, error::FromHttpResponseError},
+        events::room::{
+            message::{
+                AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
+                FileMessageEventContent, ImageMessageEventContent, LocationInfo,
+                LocationMessageEventContent, TextMessageEventContent,
+                UnstableAudioDetailsContentBlock, VideoInfo, VideoMessageEventContent,
+            },
+            ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
         },
-        ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
+        EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedEventId, OwnedMxcUri, OwnedUserId,
+        UInt,
     },
-    EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedEventId, OwnedMxcUri, OwnedUserId,
-    UInt,
+    ComposerDraft, ComposerDraftType,
 };
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;

@@ -1,19 +1,18 @@
 import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class VideoMessageEvent extends ConsumerWidget {
   final String roomId;
   final String messageId;
-  final String? eventId;
   final MsgContent content;
 
   const VideoMessageEvent({
@@ -21,13 +20,11 @@ class VideoMessageEvent extends ConsumerWidget {
     required this.roomId,
     required this.messageId,
     required this.content,
-    this.eventId,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ChatMessageInfo messageInfo =
-        (messageId: eventId ?? messageId, roomId: roomId);
+    final ChatMessageInfo messageInfo = (messageId: messageId, roomId: roomId);
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     if (mediaState.mediaChatLoadingState.isLoading ||
         mediaState.isDownloading) {
@@ -58,7 +55,7 @@ class VideoMessageEvent extends ConsumerWidget {
       onTap: () async {
         final notifier = ref.read(
           mediaChatStateProvider(
-            (messageId: eventId ?? messageId, roomId: roomId),
+            (messageId: messageId, roomId: roomId),
           ).notifier,
         );
         await notifier.downloadMedia();

@@ -1,14 +1,20 @@
 import 'dart:io';
 
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/attachments/actions/attach_ref_details.dart';
 import 'package:acter/common/widgets/share/widgets/attach_options.dart';
 import 'package:acter/common/widgets/share/widgets/external_share_options.dart';
 import 'package:acter/common/widgets/share/widgets/file_share_options.dart';
 import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
 import 'package:acter/features/deep_linking/types.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/files/actions/download_file.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:share_plus/share_plus.dart';
@@ -42,7 +48,7 @@ Future<void> openShareSpaceObjectDialog({
   );
 }
 
-class ShareSpaceObjectActionUI extends StatelessWidget {
+class ShareSpaceObjectActionUI extends ConsumerWidget {
   final SpaceObjectDetails? spaceObjectDetails;
   final FileDetails? fileDetails;
 
@@ -53,7 +59,7 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -62,7 +68,7 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             if (spaceObjectDetails != null) ...[
-              attachmentOptionsUI(context, spaceObjectDetails!),
+              attachmentOptionsUI(context, ref, spaceObjectDetails!),
               SizedBox(height: 16),
               externalShareOptionsUI(context, spaceObjectDetails!),
               SizedBox(height: 20),
@@ -76,23 +82,69 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
 
   Widget attachmentOptionsUI(
     BuildContext context,
+    WidgetRef ref,
     SpaceObjectDetails spaceObjectDetails,
   ) {
-    String spaceId = spaceObjectDetails.spaceId;
-    ObjectType objectType = spaceObjectDetails.objectType;
-    String objectId = spaceObjectDetails.objectId;
-
-    final newsRefType = getNewsRefTypeFromObjType(objectType);
     return AttachOptions(
-      onTapBoost: () {
-        Navigator.pop(context);
+      onTapBoost: () async {
+        String spaceId = spaceObjectDetails.spaceId;
+        final refDetails = await getRefDetails(
+          ref: ref,
+          objectDetails: spaceObjectDetails,
+        );
+        if (!context.mounted) return;
         context.pushNamed(
           Routes.actionAddUpdate.name,
           queryParameters: {'spaceId': spaceId},
-          extra: newsRefType != null
-              ? NewsReferencesModel(type: newsRefType, id: objectId)
-              : null,
+          extra: refDetails,
         );
+        if (!context.mounted) return;
+        Navigator.pop(context);
+      },
+      onTapPin: () async {
+        final refDetails = await getRefDetails(
+          ref: ref,
+          objectDetails: spaceObjectDetails,
+        );
+        if (refDetails != null && context.mounted) {
+          await attachRefDetailToPin(
+            context: context,
+            ref: ref,
+            refDetails: refDetails,
+          );
+          if (!context.mounted) return;
+          Navigator.pop(context);
+        }
+      },
+      onTapEvent: () async {
+        final refDetails = await getRefDetails(
+          ref: ref,
+          objectDetails: spaceObjectDetails,
+        );
+        if (refDetails != null && context.mounted) {
+          await attachRefDetailToEvent(
+            context: context,
+            ref: ref,
+            refDetails: refDetails,
+          );
+          if (!context.mounted) return;
+          Navigator.pop(context);
+        }
+      },
+      onTapTaskList: () async {
+        final refDetails = await getRefDetails(
+          ref: ref,
+          objectDetails: spaceObjectDetails,
+        );
+        if (refDetails != null && context.mounted) {
+          await attachRefDetailToTaskList(
+            context: context,
+            ref: ref,
+            refDetails: refDetails,
+          );
+          if (!context.mounted) return;
+          Navigator.pop(context);
+        }
       },
     );
   }
@@ -166,5 +218,27 @@ class ShareSpaceObjectActionUI extends StatelessWidget {
       ObjectType.taskList => NewsReferencesType.taskList,
       _ => null,
     };
+  }
+
+  Future<RefDetails?> getRefDetails({
+    required WidgetRef ref,
+    required SpaceObjectDetails objectDetails,
+  }) async {
+    final objectId = objectDetails.objectId;
+    switch (objectDetails.objectType) {
+      case ObjectType.pin:
+        final sourcePin = await ref.watch(pinProvider(objectId).future);
+        return await sourcePin.refDetails();
+      case ObjectType.calendarEvent:
+        final sourceEvent =
+            await ref.watch(calendarEventProvider(objectId).future);
+        return await sourceEvent.refDetails();
+      case ObjectType.taskList:
+        final sourceTaskList =
+            await ref.watch(taskListProvider(objectId).future);
+        return await sourceTaskList.refDetails();
+      default:
+        return null;
+    }
   }
 }

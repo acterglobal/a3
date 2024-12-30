@@ -32,7 +32,7 @@ Future<void> removeNotificationsForRoom(String roomId) async {
 }
 
 Future<void> updateBadgeCount(int newCount) async {
-  if (Platform.isLinux) return; // not supported
+  if (Platform.isLinux || Platform.isMacOS) return; // not supported
   if (await AppBadgePlus.isSupported()) {
     await AppBadgePlus.updateBadge(0);
     // await AppBadgePlus.updateBadge(newCount);

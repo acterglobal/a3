@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-        Color, Display, RefDetails, RefPreview,
+        Display, RefDetails, RefPreview,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, TaskStats},
     statics::KEYS,
@@ -9,10 +9,13 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use futures::stream::StreamExt;
-use matrix_sdk::{room::Room, RoomState};
-use matrix_sdk_base::ruma::{
-    events::{room::message::TextMessageEventContent, MessageLikeEventType},
-    EventId, OwnedEventId, OwnedRoomId, OwnedUserId,
+use matrix_sdk::room::Room;
+use matrix_sdk_base::{
+    ruma::{
+        events::{room::message::TextMessageEventContent, MessageLikeEventType},
+        EventId, OwnedEventId, OwnedRoomId, OwnedUserId,
+    },
+    RoomState,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},

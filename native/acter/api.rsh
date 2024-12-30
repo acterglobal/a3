@@ -122,8 +122,14 @@ object RefDetails {
     fn embed_action_str() -> string;
     /// if this is a `task` type, what `task-list-id` does it belong to
     fn task_list_id_str() -> Option<string>;
-    /// if ref is `link`, its display title
+    /// the display title of the reference
     fn title() -> Option<string>;
+    /// the room display name from the preview data
+    fn room_display_name() -> Option<string>;
+    /// the participants count if this is a calendar event
+    fn participants() -> Option<u64>;
+    /// When the event starts according to the calender preview data
+    fn utc_start() -> Option<UtcDateTime>;
     /// if ref is `link`, its uri
     fn uri() -> Option<string>;
 }
@@ -457,6 +463,118 @@ object NewsEntryUpdateBuilder {
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
 }
+
+
+
+//   ######  ########  #######  ########  #### ########  ######  
+//  ##    ##    ##    ##     ## ##     ##  ##  ##       ##    ## 
+//  ##          ##    ##     ## ##     ##  ##  ##       ##       
+//   ######     ##    ##     ## ########   ##  ######    ######  
+//        ##    ##    ##     ## ##   ##    ##  ##             ## 
+//  ##    ##    ##    ##     ## ##    ##   ##  ##       ##    ## 
+//   ######     ##     #######  ##     ## #### ########  ######  
+
+
+
+/// A single Slide of a Story
+object StorySlide {
+    /// the content of this slide
+    fn type_str() -> string;
+
+    /// the unique, predictable ID for this slide
+    fn unique_id() -> string;
+
+    /// the references linked in this slide
+    fn references() -> Vec<ObjRef>;
+
+    /// The color setting
+    fn colors() -> Option<Colorize>;
+
+    /// if this is a media, hand over the description
+    fn msg_content() -> MsgContent;
+    /// if this is a media, hand over the data
+    /// if thumb size is given, media thumbnail is returned
+    /// if thumb size is not given, media file is returned
+    fn source_binary(thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
+}
+
+object StorySlideDraft {
+    /// add reference for this slide draft
+    fn add_reference(reference: ObjRef);
+
+    /// set the color according to the colorize builder
+    fn color(color: ColorizeBuilder);
+
+    /// unset references for this slide draft
+    fn unset_references();
+}
+
+/// A news entry
+object Story {
+    /// the slides count in this news item
+    fn slides_count() -> u8;
+    /// The slides belonging to this news item
+    fn get_slide(pos: u8) -> Option<StorySlide>;
+    /// get all slides of this news item
+    fn slides() -> Vec<StorySlide>;
+
+    /// get room id
+    fn room_id() -> RoomId;
+
+    /// get sender id
+    fn sender() -> UserId;
+
+    /// get event id
+    fn event_id() -> EventId;
+
+    /// get timestamp of this event
+    fn origin_server_ts() -> u64;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
+
+    /// get the reaction manager
+    fn reactions() -> Future<Result<ReactionManager>>;
+
+    /// get the read receipt manager
+    fn read_receipts() -> Future<Result<ReadReceiptsManager>>;
+
+    /// get the comment manager
+    fn comments() -> Future<Result<CommentsManager>>;
+}
+
+object StoryDraft {
+    /// create news slide draft
+    fn add_slide(base_draft: StorySlideDraft) -> Future<Result<bool>>;
+
+    /// change position of slides draft of this news entry
+    fn swap_slides(from: u8, to:u8);
+
+    /// get a copy of the news slide set for this news entry draft
+    fn slides() -> Vec<StorySlideDraft>;
+
+    /// clear slides
+    fn unset_slides();
+
+    /// create this news entry
+    fn send() -> Future<Result<EventId>>;
+}
+
+object StoryUpdateBuilder {
+    /// set the slides for this news entry
+    fn add_slide(draft: StorySlideDraft) -> Future<Result<bool>>;
+
+    /// reset slides for this news entry
+    fn unset_slides();
+    fn unset_slides_update();
+
+    /// set position of slides for this news entry
+    fn swap_slides(from: u8, to: u8);
+
+    /// update this news entry
+    fn send() -> Future<Result<EventId>>;
+}
+
 
 
 //  ########  #### ##    ##  ######  
@@ -900,6 +1018,9 @@ object EventSendState {
 
     /// gives event id for Sent only
     fn event_id() -> Option<EventId>;
+
+    // allows you to cancel a local echo
+    fn abort() -> Future<Result<bool>>;
 }
 
 /// A room Message metadata and content
@@ -1238,6 +1359,9 @@ object MsgDraft {
 
     /// convert this into a NewsSlideDraft;
     fn into_news_slide_draft() -> NewsSlideDraft;
+
+    /// convert this into a StorySlideDraft;
+    fn into_story_slide_draft() -> StorySlideDraft;
 }
 
 /// Timeline with Room Events
@@ -2292,14 +2416,20 @@ object Space {
     /// get latest news
     fn latest_news_entries(count: u32) -> Future<Result<Vec<NewsEntry>>>;
 
+    /// get latest stories
+    fn latest_stories(count: u32) -> Future<Result<Vec<Story>>>;
+
     /// get all calendar events
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
 
-    /// create calendart event draft
+    /// create calendar event draft
     fn calendar_event_draft() -> Result<CalendarEventDraft>;
 
     /// create news draft
     fn news_draft() -> Result<NewsEntryDraft>;
+
+    /// create story draft
+    fn story_draft() -> Result<StoryDraft>;
 
     /// the pins of this Space
     fn pins() -> Future<Result<Vec<ActerPin>>>;
@@ -2870,7 +3000,7 @@ object Client {
     fn logout() -> Future<Result<bool>>;
 
     /// Get the verification event receiver
-    fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
+    fn verification_event_rx() -> Stream<VerificationEvent>;
 
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
@@ -2886,7 +3016,7 @@ object Client {
     fn install_sas_event_handler(flow_id: string) -> Future<Result<bool>>;
 
     /// Return the event handler that new device was found or existing device was changed
-    fn device_event_rx() -> Option<Stream<DeviceEvent>>;
+    fn device_event_rx() -> Stream<DeviceEvent>;
 
     /// Return the typing event receiver
     fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;
@@ -2911,6 +3041,12 @@ object Client {
 
     /// Get the latest News for the client
     fn latest_news_entries(count: u32) -> Future<Result<Vec<NewsEntry>>>;
+
+    /// Fetch the Story or use its event_id to wait for it to come down the wire
+    fn wait_for_story(key: string, timeout: Option<u8>) -> Future<Result<Story>>;
+
+    /// Get the Stories for the client
+    fn latest_stories(count: u32) -> Future<Result<Vec<Story>>>;
 
     /// Fetch the ActerPin or use its event_id to wait for it to come down the wire
     fn wait_for_pin(key: string, timeout: Option<u8>) -> Future<Result<ActerPin>>;

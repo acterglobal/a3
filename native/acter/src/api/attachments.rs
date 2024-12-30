@@ -9,16 +9,13 @@ use acter_core::{
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{
+use matrix_sdk::room::Room;
+use matrix_sdk_base::{
     media::{MediaFormat, MediaRequestParameters},
-    room::Room,
+    ruma::{events::MessageLikeEventType, EventId, OwnedEventId, OwnedTransactionId, OwnedUserId},
     RoomState,
 };
-use matrix_sdk_base::ruma::{
-    events::{room::message::RoomMessageEvent, MessageLikeEventType},
-    EventId, OwnedEventId, OwnedTransactionId, OwnedUserId,
-};
-use std::{fs::exists, io::Write, ops::Deref, path::PathBuf, str::FromStr};
+use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::Stream;
 use tracing::warn;

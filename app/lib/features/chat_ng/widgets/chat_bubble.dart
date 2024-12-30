@@ -6,45 +6,46 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class ChatBubble extends StatelessWidget {
   final Widget child;
   final int? messageWidth;
-  final bool wasEdited;
-  final bool nextMessageGroup;
   final BoxDecoration decoration;
   final CrossAxisAlignment bubbleAlignment;
+  final bool isEdited;
+  final Widget? repliedToBuilder;
 
   // default private constructor
   const ChatBubble._inner({
     super.key,
     required this.child,
-    required this.wasEdited,
     required this.bubbleAlignment,
     required this.decoration,
+    this.isEdited = false,
     this.messageWidth,
-    this.nextMessageGroup = false,
+    this.repliedToBuilder,
   });
 
   // factory bubble constructor
   factory ChatBubble({
     required Widget child,
     required BuildContext context,
+    bool isNextMessageInGroup = false,
+    bool isEdited = false,
+    Widget? repliedToBuilder,
     int? messageWidth,
-    bool wasEdited = false,
-    bool nextMessageGroup = false,
   }) {
     final theme = Theme.of(context);
     return ChatBubble._inner(
-      wasEdited: wasEdited,
       messageWidth: messageWidth,
-      nextMessageGroup: nextMessageGroup,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
-          bottomLeft: Radius.circular(nextMessageGroup ? 16 : 4),
+          bottomLeft: Radius.circular(isNextMessageInGroup ? 16 : 4),
           bottomRight: Radius.circular(16),
         ),
       ),
       bubbleAlignment: CrossAxisAlignment.start,
+      isEdited: isEdited,
+      repliedToBuilder: repliedToBuilder,
       child: child,
     );
   }
@@ -54,28 +55,29 @@ class ChatBubble extends StatelessWidget {
     Key? key,
     required BuildContext context,
     required Widget child,
+    bool isNextMessageInGroup = false,
+    bool isEdited = false,
     int? messageWidth,
-    bool wasEdited = false,
-    bool nextMessageGroup = false,
+    Widget? repliedToBuilder,
   }) {
     final theme = Theme.of(context);
     return ChatBubble._inner(
       key: key,
       messageWidth: messageWidth,
-      wasEdited: wasEdited,
-      nextMessageGroup: nextMessageGroup,
       decoration: BoxDecoration(
         color: theme.colorScheme.primary,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
           bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(nextMessageGroup ? 16 : 4),
+          bottomRight: Radius.circular(isNextMessageInGroup ? 16 : 4),
         ),
       ),
       bubbleAlignment: CrossAxisAlignment.end,
+      repliedToBuilder: repliedToBuilder,
       child: DefaultTextStyle.merge(
-        style: TextStyle(color: theme.colorScheme.onPrimary),
+        style: theme.textTheme.bodySmall
+            ?.copyWith(color: theme.colorScheme.onPrimary),
         child: child,
       ),
     );
@@ -103,17 +105,27 @@ class ChatBubble extends StatelessWidget {
                 horizontal: 12,
                 vertical: 8,
               ),
-              child: child,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (repliedToBuilder != null) ...[
+                    repliedToBuilder.expect('widget cannot be null'),
+                    const SizedBox(height: 10),
+                  ],
+                  child,
+                ],
+              ),
             ),
           ),
-          Visibility(
-            visible: wasEdited,
-            child: Text(
-              L10n.of(context).edited,
-              style: chatTheme.emptyChatPlaceholderTextStyle
-                  .copyWith(fontSize: 12),
+          if (isEdited)
+            Align(
+              alignment: Alignment(0.9, 0.0),
+              child: Text(
+                L10n.of(context).edited,
+                style: chatTheme.emptyChatPlaceholderTextStyle
+                    .copyWith(fontSize: 12),
+              ),
             ),
-          ),
         ],
       ),
     );

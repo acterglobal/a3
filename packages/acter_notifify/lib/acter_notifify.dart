@@ -22,7 +22,7 @@ typedef HandleMessageTap = FutureOr<bool> Function(Map<String?, Object?> data);
 /// we should continue or not bother the user. Just a user based switch
 typedef IsEnabledCheck = FutureOr<bool> Function();
 
-/// Given the target url of the notifiction, should this notification be shown
+/// Given the target url of the notification, should this notification be shown
 /// or just be ignored. Useful to avoid showing push notification if the user
 /// is on that same screen
 typedef ShouldShowCheck = FutureOr<bool> Function(String url);
@@ -68,7 +68,18 @@ Future<String?> initializeNotifify({
   if (usePush && pushServer.isNotEmpty) {
     await initializePush(
       handleMessageTap: handleMessageTap,
-      shouldShowCheck: shouldShowCheck,
+      shouldShowCheck: (a) async {
+        /// FIXME: to ensure we see failures after, this is being ignored for now
+        try {
+          if (shouldShowCheck != null) {
+            final res = await shouldShowCheck(a);
+            _log.info('Should show $a: $res');
+          }
+        } catch (e, s) {
+          _log.severe('Checking whether $a should be shown failed', e, s);
+        }
+        return true;
+      },
       isEnabledCheck: isEnabledCheck,
       currentClientsGen: currentClientsGen,
       appIdPrefix: appIdPrefix,

@@ -1,4 +1,6 @@
-use acter_core::spaces::is_acter_space;
+use acter_core::{
+    events::SyncAnyActerEvent, executor::Executor, models::AnyActerModel, spaces::is_acter_space,
+};
 use anyhow::Result;
 use core::time::Duration;
 use eyeball_im::ObservableVector;
@@ -8,22 +10,22 @@ use futures::{
     stream::{Stream, StreamExt},
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
-use matrix_sdk::{
-    config::SyncSettings, event_handler::EventHandlerHandle, room::Room as SdkRoom, RoomState,
-    RumaApiError,
-};
-use matrix_sdk_base::ruma::events::AnySyncEphemeralRoomEvent;
-use matrix_sdk_base::ruma::{
-    api::client::{
-        error::{ErrorBody, ErrorKind},
-        Error,
+use matrix_sdk::{config::SyncSettings, event_handler::Ctx, room::Room as SdkRoom, RumaApiError};
+use matrix_sdk_base::{
+    ruma::{
+        api::client::{
+            error::{ErrorBody, ErrorKind},
+            Error,
+        },
+        events::room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
+        OwnedRoomId,
     },
-    OwnedRoomId,
+    RoomState,
 };
 use std::{
-    collections::{btree_map::Entry, BTreeMap, HashMap},
+    collections::BTreeMap,
     io::Write,
-    ops::{Deref, Index},
+    ops::Deref,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -32,14 +34,14 @@ use std::{
 use tokio::{
     sync::{
         broadcast::{channel, Receiver},
-        Mutex, RwLockWriteGuard,
+        RwLockWriteGuard,
     },
     task::JoinHandle,
 };
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::{api::spaces::HistoryState, Convo, Room, Space, RUNTIME};
+use crate::{Convo, Room, Space, RUNTIME};
 
 use super::Client;
 
@@ -98,8 +100,6 @@ impl HistoryLoadState {
     }
 }
 
-type RoomHandlers = Arc<Mutex<HashMap<OwnedRoomId, Vec<EventHandlerHandle>>>>;
-
 #[derive(Clone)]
 pub enum SyncError {
     Unauthorized { soft_logout: bool },
@@ -148,7 +148,6 @@ pub struct SyncState {
     first_synced_rx: Arc<Receiver<bool>>,
     sync_error: Arc<Receiver<SyncError>>,
     history_loading: Mutable<HistoryLoadState>,
-    room_handles: RoomHandlers,
 }
 
 impl SyncState {
@@ -159,7 +158,6 @@ impl SyncState {
             history_loading: Default::default(),
             first_sync_task: Default::default(),
             handle: Default::default(),
-            room_handles: Default::default(),
         }
     }
 
@@ -220,12 +218,41 @@ impl Drop for SyncState {
 
 // internal API
 impl Client {
+    pub(crate) fn setup_handlers(&self) {
+        // setup the space handlers
+        let executor = self.executor().clone();
+
+        self.add_event_handler_context(executor);
+        // generic redaction management
+        self.add_event_handler(
+            |ev: SyncRoomRedactionEvent, room: SdkRoom, Ctx(executor): Ctx<Executor>| async move {
+                let room_id = room.room_id();
+
+                if let RoomRedactionEvent::Original(t) = ev.into_full_event(room_id.to_owned()) {
+                    trace!(?room_id, "received redaction");
+                    if let Err(error) = executor.live_redact(t).await {
+                        error!(?room_id, ?error, "redaction failed");
+                    }
+                } else {
+                    warn!(?room_id, "redaction redaction isn’t supported yet");
+                }
+            },
+        );
+
+        // Any
+        self.add_event_handler(
+            |ev: SyncAnyActerEvent, room: SdkRoom, Ctx(executor): Ctx<Executor>| async move {
+                let room_id = room.room_id().to_owned();
+                let acter_event = ev.into_full_any_acter_event(room_id);
+                AnyActerModel::execute(&executor, acter_event).await;
+            },
+        );
+    }
     fn refresh_history_on_start(
         &self,
         sync_keys: Vec<OwnedRoomId>,
         first_sync_task: Mutable<Option<JoinHandle<Result<()>>>>,
         history: Mutable<HistoryLoadState>,
-        room_handles: RoomHandlers,
     ) {
         let me = self.clone();
         let first_sync_task_inner = first_sync_task.clone();
@@ -264,14 +291,6 @@ impl Client {
                     return;
                 }
 
-                let space_handles = space.setup_handles().await;
-                {
-                    let mut handles = room_handles.lock().await;
-                    if let Some(h) = handles.insert(room_id.to_owned(), space_handles) {
-                        warn!(?room_id, "handles overwritten. Might cause issues?!?");
-                    }
-                }
-
                 if let Err(err) = space.refresh_history().await {
                     error!(?err, ?room_id, "Loading space history failed");
                 };
@@ -288,7 +307,6 @@ impl Client {
     async fn refresh_history_on_way(
         &self,
         history: Mutable<HistoryLoadState>,
-        room_handles: RoomHandlers,
         new_spaces: Vec<SdkRoom>,
     ) -> Result<()> {
         trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
@@ -299,7 +317,6 @@ impl Client {
                 .map(|room| Space::new(self.clone(), Room::new(self.core.clone(), room)))
                 .map(|mut space| {
                     let history = history.clone();
-                    let room_handles = room_handles.clone();
                     async move {
                         let room_id = space.room_id().to_owned();
                         {
@@ -307,16 +324,6 @@ impl Client {
                             if !history.start_loading(room_id.clone()) {
                                 trace!(?room_id, "Already loading room.");
                                 return;
-                            }
-                        }
-
-                        let space_handles = space.setup_handles().await;
-                        {
-                            let mut handles = room_handles.lock().await;
-                            if let Some(h) =
-                                handles.insert(space.room_id().to_owned(), space_handles)
-                            {
-                                warn!(?room_id, "handles overwritten. Might cause issues?!?");
                             }
                         }
 
@@ -456,7 +463,6 @@ impl Client {
         let sync_state = SyncState::new(first_synced_rx, sync_error_rx);
         let history_loading = sync_state.history_loading.clone();
         let first_sync_task = sync_state.first_sync_task.clone();
-        let room_handles = sync_state.room_handles.clone();
 
         let handle = RUNTIME.spawn(async move {
             info!("spawning sync callback");
@@ -521,7 +527,6 @@ impl Client {
                         sync_keys,
                         first_sync_task.clone(),
                         history_loading.clone(),
-                        room_handles.clone(),
                     );
                 } else {
                     // see if we have new spaces to catch up upon
@@ -540,12 +545,8 @@ impl Client {
                     }
 
                     if !new_spaces.is_empty() {
-                        me.refresh_history_on_way(
-                            history_loading.clone(),
-                            room_handles.clone(),
-                            new_spaces,
-                        )
-                        .await;
+                        me.refresh_history_on_way(history_loading.clone(), new_spaces)
+                            .await;
                     }
                 }
 
