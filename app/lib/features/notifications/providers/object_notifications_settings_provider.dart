@@ -16,7 +16,9 @@ final isPushNotificationSubscribedProvider =
   );
   return switch (currentValue) {
     'subscribed' => SubscriptionStatus.subscribed,
-    'parent' => SubscriptionStatus.parent,
+    'unsubscribed' => SubscriptionStatus.unsubscribed,
+    'parentSubscribed' => SubscriptionStatus.parentSubscribed,
+    'parentUnubscribed' => SubscriptionStatus.parentUnsubscribed,
     _ => SubscriptionStatus.none,
   };
 });

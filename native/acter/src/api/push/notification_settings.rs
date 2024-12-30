@@ -43,6 +43,7 @@ use ruma::{
     push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
 };
 use std::{ops::Deref, os::unix::process::parent_id, sync::Arc};
+use strum::{Display, EnumString};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use urlencoding::encode;
 
@@ -90,6 +91,23 @@ fn make_push_rule(parent_id: &str, sub_type: Option<&String>) -> NewConditionalP
     NewConditionalPushRule::new(push_key, conditions, vec![Action::Notify])
 }
 
+/// The status the subscription has
+#[derive(Clone, Debug, Display)]
+#[strum(serialize_all = "camelCase")]
+
+pub enum SubscriptionStatus {
+    /// The user shall receive notifications about the
+    Subscribed,
+    /// The user actively disabled the notifications about this
+    Unsubscribed,
+    /// The user subscribed on the parent, but has nothing specific on the item
+    ParentSubscribed,
+    /// The user unsubscribed on the parent, but has nothing specific on the item
+    ParentUnsubscribed,
+    /// The user hasn't been subscribed to the object or its parent
+    None,
+}
+
 #[derive(Debug, Clone)]
 pub struct NotificationSettings {
     client: SdkClient,
@@ -112,6 +130,15 @@ impl NotificationSettings {
         object_id: String,
         sub_type: Option<String>,
     ) -> Result<String> {
+        self.object_push_subscription_status(object_id, sub_type)
+            .await
+            .map(|s| s.to_string())
+    }
+    pub async fn object_push_subscription_status(
+        &self,
+        object_id: String,
+        sub_type: Option<String>,
+    ) -> Result<SubscriptionStatus> {
         let inner = self.inner.clone();
         RUNTIME
             .spawn(async move {
@@ -126,7 +153,9 @@ impl NotificationSettings {
                     {
                         Ok(enabled) => {
                             if enabled {
-                                return Ok("subscribed".to_owned());
+                                return Ok(SubscriptionStatus::Subscribed);
+                            } else {
+                                return Ok(SubscriptionStatus::Unsubscribed);
                             }
                         }
                         Err(NotificationSettingsError::RuleNotFound(_)) => {
@@ -144,11 +173,17 @@ impl NotificationSettings {
                     .await
                 {
                     Ok(enabled) => {
-                        if enabled {
-                            if sub_type.is_some() {
-                                return Ok("parent".to_owned());
+                        if sub_type.is_some() {
+                            if enabled {
+                                return Ok(SubscriptionStatus::ParentSubscribed);
                             } else {
-                                return Ok("subscribed".to_owned());
+                                return Ok(SubscriptionStatus::ParentUnsubscribed);
+                            }
+                        } else {
+                            if enabled {
+                                return Ok(SubscriptionStatus::Subscribed);
+                            } else {
+                                return Ok(SubscriptionStatus::Unsubscribed);
                             }
                         }
                     }
@@ -157,7 +192,7 @@ impl NotificationSettings {
                     }
                     Err(e) => return Err(e.into()), // other error
                 }
-                Ok("none".to_owned())
+                Ok(SubscriptionStatus::None)
             })
             .await?
     }

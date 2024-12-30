@@ -36,11 +36,22 @@ class ObjectNotificationStatus extends ConsumerWidget {
             );
           },
           icon: Icon(
-            PhosphorIconsThin.bell,
-            color: Theme.of(context).primaryColor,
+            PhosphorIconsFill.bellRinging,
           ),
         ),
-      SubscriptionStatus.parent => IconButton(
+      SubscriptionStatus.unsubscribed => IconButton(
+          onPressed: () {
+            unsubscribeObjectPush(
+              ref: ref,
+              objectId: objectId,
+              subType: subType,
+            );
+          },
+          icon: Icon(
+            PhosphorIconsFill.bellSlash,
+          ),
+        ),
+      SubscriptionStatus.parentSubscribed => IconButton(
           onPressed: () {
             EasyLoading.showToast(L10n.of(context).subscribedToParent);
           },
@@ -58,8 +69,7 @@ class ObjectNotificationStatus extends ConsumerWidget {
             );
           },
           icon: Icon(
-            PhosphorIconsThin.bellSlash,
-            color: Theme.of(context).disabledColor,
+            PhosphorIconsThin.bell,
           ),
         ),
     };

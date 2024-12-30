@@ -1,6 +1,8 @@
 enum SubscriptionStatus {
   subscribed,
-  parent,
+  unsubscribed,
+  parentSubscribed,
+  parentUnsubscribed,
   none,
 }
 
