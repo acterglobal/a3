@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/errors/error_dialog.dart';
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:flutter/material.dart';
 
 /// ErrorPage shows a full-screen error to the user (covering other internal errors)
@@ -14,7 +15,7 @@ class ErrorPage extends StatelessWidget {
 
   final String? title;
   final String? text;
-  final String Function(Object error)? textBuilder;
+  final ErrorTextBuilder? textBuilder;
   final bool includeBugReportButton;
 
   /// Dialog Border Radius

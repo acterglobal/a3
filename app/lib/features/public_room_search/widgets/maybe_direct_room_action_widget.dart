@@ -226,7 +226,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
       ref,
       L10n.of(context).tryingToJoin(roomIdOrAlias),
       roomIdOrAlias,
-      serverNames.first,
+      serverNames,
       (roomId) => context.pushNamed(
         Routes.forward.name,
         pathParameters: {'roomId': roomId},

@@ -64,7 +64,7 @@ class CommentListWidget extends ConsumerWidget {
       background: const CommentListSkeletonWidget(),
       error: error,
       stack: stack,
-      textBuilder: L10n.of(context).loadingFailed,
+      textBuilder: (error, code) => L10n.of(context).loadingFailed(error),
       onRetryTap: () => ref.invalidate(commentsListProvider(manager)),
     );
   }
