@@ -11,6 +11,7 @@ import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/notifications/types.dart';
 import 'package:acter/features/notifications/widgets/object_notification_status.dart';
 import 'package:acter/features/read_receipts/widgets/read_counter.dart';
@@ -35,6 +36,7 @@ class NewsSideBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final objectId = news.eventId().toString();
     final roomId = news.roomId().toString();
     final userId = ref.watch(myUserIdStrProvider);
     final isLikedByMe = ref.watch(likedByMeProvider(news));
@@ -91,9 +93,18 @@ class NewsSideBar extends ConsumerWidget {
                   shrinkWrap: false,
                   centerTitle: true,
                   useCompactEmptyState: false,
+                  postCreateComment: () async {
+                    // when user create a comment, let's autosubscribe to comments
+                    await autosubscribe(
+                      ref: ref,
+                      objectId: objectId,
+                      subType: SubscriptionSubType.comments,
+                      lang: L10n.of(context),
+                    );
+                  },
                   actions: [
                     ObjectNotificationStatus(
-                      objectId: news.eventId().toString(),
+                      objectId: objectId,
                       subType: SubscriptionSubType.comments,
                     ),
                   ],

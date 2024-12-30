@@ -19,6 +19,7 @@ class CommentsSectionWidget extends ConsumerWidget {
   final bool centerTitle;
   final bool useCompactEmptyState;
   final List<Widget>? actions;
+  final PostCreateComment? postCreateComment;
 
   const CommentsSectionWidget({
     super.key,
@@ -26,6 +27,7 @@ class CommentsSectionWidget extends ConsumerWidget {
     this.centerTitle = false,
     this.useCompactEmptyState = true,
     required this.managerProvider,
+    this.postCreateComment,
     this.actions,
   });
 
@@ -67,7 +69,10 @@ class CommentsSectionWidget extends ConsumerWidget {
         const SizedBox(height: 12),
         commentTitleUI(context),
         commentListUI(commentManager),
-        AddCommentWidget(manager: commentManager),
+        AddCommentWidget(
+          manager: commentManager,
+          postCreateComment: postCreateComment,
+        ),
       ],
     );
   }
