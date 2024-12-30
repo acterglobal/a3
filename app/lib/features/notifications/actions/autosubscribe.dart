@@ -52,7 +52,6 @@ Future<bool> autosubscribe({
         ),
     };
   } catch (error, stack) {
-    Sentry.captureException(error, stackTrace: stack);
     _log.severe('autosubscribe to $objectId ($subType) failed', error, stack);
     return false;
   }
