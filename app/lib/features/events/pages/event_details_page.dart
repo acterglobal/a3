@@ -288,7 +288,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           const SizedBox(height: 40),
           CommentsSectionWidget(
             managerProvider: calendarEvent?.asCommentsManagerProvider(),
-            objectId: widget.calendarId,
           ),
           const SizedBox(height: 40),
         ],

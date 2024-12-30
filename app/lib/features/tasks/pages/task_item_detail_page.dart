@@ -202,7 +202,6 @@ class TaskItemDetailPage extends ConsumerWidget {
             const SizedBox(height: 20),
             CommentsSectionWidget(
               managerProvider: task?.asCommentsManagerProvider(),
-              objectId: taskId,
             ),
             const SizedBox(height: 20),
           ],

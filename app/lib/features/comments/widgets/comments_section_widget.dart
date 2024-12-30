@@ -20,15 +20,15 @@ class CommentsSectionWidget extends ConsumerWidget {
   final bool shrinkWrap;
   final bool centerTitle;
   final bool useCompactEmptyState;
-  final String objectId;
+  final List<Widget>? actions;
 
   const CommentsSectionWidget({
     super.key,
-    required this.objectId,
     this.shrinkWrap = true,
     this.centerTitle = false,
     this.useCompactEmptyState = true,
     required this.managerProvider,
+    this.actions,
   });
 
   @override
@@ -85,12 +85,7 @@ class CommentsSectionWidget extends ConsumerWidget {
           L10n.of(context).comments,
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        actions: [
-          ObjectNotificationStatus(
-            objectId: objectId,
-            subType: SubscriptionSubType.comments,
-          ),
-        ],
+        actions: actions,
       ),
     );
   }
