@@ -64,7 +64,7 @@ impl RoomPreview {
         self.inner.is_direct
     }
 
-    pub fn is_world_readable(&self) -> bool {
+    pub fn is_world_readable(&self) -> Option<bool> {
         self.inner.is_world_readable
     }
 

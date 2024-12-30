@@ -25993,13 +25993,13 @@ class Api {
       )>();
   late final _roomPreviewIsWorldReadablePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _RoomPreviewIsWorldReadableReturn Function(
             ffi.IntPtr,
           )>>("__RoomPreview_is_world_readable");
 
   late final _roomPreviewIsWorldReadable =
       _roomPreviewIsWorldReadablePtr.asFunction<
-          int Function(
+          _RoomPreviewIsWorldReadableReturn Function(
             int,
           )>();
   late final _roomPreviewHasAvatarPtr = _lookup<
@@ -53117,14 +53117,18 @@ class RoomPreview {
     return tmp2;
   }
 
-  bool isWorldReadable() {
+  bool? isWorldReadable() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomPreviewIsWorldReadable(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4 > 0;
     return tmp2;
   }
 
@@ -64724,6 +64728,13 @@ class _RoomPreviewStateStrReturn extends ffi.Struct {
 }
 
 class _RoomPreviewIsDirectReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _RoomPreviewIsWorldReadableReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

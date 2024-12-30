@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:acter/common/extensions/record_helpers.dart';
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';

@@ -2,6 +2,8 @@ import 'package:acter/common/extensions/record_helpers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/room/providers/room_preview_provider.dart';
+import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -51,11 +53,11 @@ class _ShowRoomPreview extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       child: roomPreview.when(
         data: (roomPreview) => Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            roomHeader(context, ref, roomPreview),
+            roomHeader(roomPreview),
+            roomInfo(context, roomPreview),
             const SizedBox(height: 20),
             renderActions(context, ref),
           ],
@@ -82,8 +84,40 @@ class _ShowRoomPreview extends ConsumerWidget {
         ),
       );
 
-  Widget roomHeader(BuildContext context, WidgetRef ref, preview) =>
-      Text(preview.name() ?? preview.roomIdStr());
+  Widget roomHeader(RoomPreview preview) => Consumer(
+        builder: (context, ref, child) => ListTile(
+          leading: ActerAvatar(
+            options: AvatarOptions(ref.watch(roomPreviewAvatarInfo(query))),
+          ),
+          title: Text(
+            preview.name() ?? preview.roomIdStr(),
+          ),
+          subtitle: Text(preview.canonicalAliasStr() ?? ''),
+        ),
+      );
+
+  Widget roomInfo(BuildContext context, RoomPreview preview) {
+    final description = preview.topic();
+    if (description == null) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            L10n.of(context).about,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          Text(
+            description,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget renderActions(BuildContext context, WidgetRef ref) {
     return const SizedBox.shrink();
