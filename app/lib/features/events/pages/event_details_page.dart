@@ -16,7 +16,6 @@ import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
-import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
@@ -446,17 +445,18 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     try {
       final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
       final tempDir = await getTemporaryDirectory();
+      final refDetails = await event.refDetails();
+      final internalLink = event.internalLink();
+      final externalLink = await event.externalLink();
       final icalPath = join(tempDir.path, '$filename.ics');
       event.icalForSharing(icalPath);
 
       if (context.mounted) {
         openShareSpaceObjectDialog(
           context: context,
-          spaceObjectDetails: (
-            spaceId: event.roomIdStr(),
-            objectType: ObjectType.calendarEvent,
-            objectId: widget.calendarId,
-          ),
+          refDetails: refDetails,
+          internalLink: internalLink,
+          externalLink: externalLink,
           fileDetails: (
             file: File(icalPath),
             mimeType: 'text/calendar',

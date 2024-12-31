@@ -15,7 +15,6 @@ import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
-import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
 import 'package:acter/features/pins/actions/pin_update_actions.dart';
@@ -58,26 +57,30 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(context),
       body: _buildBodyUI(),
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
     final pinData = ref.watch(pinProvider(widget.pinId)).valueOrNull;
     return AppBar(
       actions: [
         if (pinData != null)
           IconButton(
             icon: PhosphorIcon(PhosphorIcons.shareFat()),
-            onPressed: () => openShareSpaceObjectDialog(
-              context: context,
-              spaceObjectDetails: (
-                spaceId: pinData.roomIdStr(),
-                objectType: ObjectType.pin,
-                objectId: widget.pinId,
-              ),
-            ),
+            onPressed: () async {
+              final refDetails = await pinData.refDetails();
+              final internalLink = pinData.internalLink();
+              final externalLink = await pinData.externalLink();
+              if (!context.mounted) return;
+              await openShareSpaceObjectDialog(
+                context: context,
+                refDetails: refDetails,
+                internalLink: internalLink,
+                externalLink: externalLink,
+              );
+            },
           ),
         BookmarkAction(bookmarker: BookmarkType.forPins(widget.pinId)),
         _buildActionMenu(),
