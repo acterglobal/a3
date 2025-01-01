@@ -5,7 +5,6 @@ import 'package:acter/common/widgets/share/widgets/attach_options.dart';
 import 'package:acter/common/widgets/share/widgets/external_share_options.dart';
 import 'package:acter/common/widgets/share/widgets/file_share_options.dart';
 import 'package:acter/features/attachments/actions/attach_ref_details.dart';
-import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
 import 'package:acter/features/files/actions/download_file.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -128,15 +127,8 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
 
   Widget externalShareOptionsUI(BuildContext context) {
     return ExternalShareOptions(
-      onTapQr: internalLink == null
-          ? null
-          : () {
-              Navigator.pop(context);
-              showQrCode(
-                context,
-                internalLink!,
-              );
-            },
+      qrLink: internalLink,
+      shareLink: externalLink,
     );
   }
 

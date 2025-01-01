@@ -1,43 +1,29 @@
 import 'package:acter/common/providers/app_install_check_provider.dart';
+import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
+import 'package:acter/features/share/actions/mail_to.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ExternalShareOptions extends ConsumerWidget {
   final String? sectionTitle;
-  final GestureTapCallback? onTapCopy;
-  final GestureTapCallback? onTapQr;
-  final GestureTapCallback? onTapSignal;
-  final GestureTapCallback? onTapWhatsApp;
-  final GestureTapCallback? onTapTelegram;
-  final GestureTapCallback? onTapMore;
+  final String? qrLink;
+  final String? shareLink;
 
   const ExternalShareOptions({
     super.key,
     this.sectionTitle,
-    this.onTapCopy,
-    this.onTapQr,
-    this.onTapSignal,
-    this.onTapWhatsApp,
-    this.onTapTelegram,
-    this.onTapMore,
+    this.qrLink,
+    this.shareLink,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final lang = L10n.of(context);
-
-    final isWhatsAppInstalled =
-        ref.watch(isAppInstalledProvider(ExternalApps.whatsApp)).valueOrNull ==
-            true;
-    final isTelegramInstalled =
-        ref.watch(isAppInstalledProvider(ExternalApps.telegram)).valueOrNull ==
-            true;
-    final isSignalInstalled =
-        ref.watch(isAppInstalledProvider(ExternalApps.signal)).valueOrNull ==
-            true;
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -61,54 +47,99 @@ class ExternalShareOptions extends ConsumerWidget {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              if (onTapQr != null)
-                shareToItemUI(
-                  name: lang.qr,
-                  iconWidget: Icon(PhosphorIcons.qrCode()),
-                  color: Colors.grey.shade600,
-                  onTap: onTapQr,
-                ),
-              if (onTapCopy != null)
-                shareToItemUI(
-                  name: lang.copyLink,
-                  iconWidget: Icon(PhosphorIcons.link()),
-                  color: Colors.blueGrey,
-                  onTap: onTapCopy,
-                ),
-              if (onTapSignal != null && isSignalInstalled)
-                shareToItemUI(
-                  name: lang.signal,
-                  iconWidget: Image.asset(
-                    'assets/icon/signal_logo.png',
-                    height: 25,
-                    width: 25,
-                  ),
-                  color: Colors.blue,
-                  onTap: onTapSignal,
-                ),
-              if (onTapWhatsApp != null && isWhatsAppInstalled)
-                shareToItemUI(
-                  name: lang.whatsApp,
-                  iconWidget: Icon(PhosphorIcons.whatsappLogo()),
-                  color: Colors.green,
-                  onTap: onTapWhatsApp,
-                ),
-              if (onTapTelegram != null && isTelegramInstalled)
-                shareToItemUI(
-                  name: lang.telegram,
-                  iconWidget: Icon(PhosphorIcons.telegramLogo()),
-                  color: Colors.blue,
-                  onTap: onTapTelegram,
-                ),
-              if (onTapMore != null)
-                shareToItemUI(
-                  name: lang.more,
-                  iconWidget: Icon(PhosphorIcons.dotsThree()),
-                  color: Colors.grey.shade800,
-                  onTap: onTapMore,
-                ),
+              if (qrLink != null) qrShareOptionsUI(context, qrLink!),
+              if (shareLink != null)
+                shareLinkOptionsUI(context, ref, shareLink!),
             ],
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget qrShareOptionsUI(BuildContext context, String qrLink) {
+    final lang = L10n.of(context);
+    return shareToItemUI(
+      name: lang.qr,
+      iconWidget: Icon(PhosphorIcons.qrCode()),
+      color: Colors.grey.shade600,
+      onTap: () {
+        Navigator.pop(context);
+        showQrCode(
+          context,
+          qrLink,
+        );
+      },
+    );
+  }
+
+  Widget shareLinkOptionsUI(
+    BuildContext context,
+    WidgetRef ref,
+    String shareLink,
+  ) {
+    final lang = L10n.of(context);
+    final isWhatsAppInstalled =
+        ref.watch(isAppInstalledProvider(ExternalApps.whatsApp)).valueOrNull ==
+            true;
+    final isTelegramInstalled =
+        ref.watch(isAppInstalledProvider(ExternalApps.telegram)).valueOrNull ==
+            true;
+    final isSignalInstalled =
+        ref.watch(isAppInstalledProvider(ExternalApps.signal)).valueOrNull ==
+            true;
+    return Row(
+      children: [
+        shareToItemUI(
+          name: lang.copyLink,
+          iconWidget: Icon(PhosphorIcons.link()),
+          color: Colors.blueGrey,
+          onTap: () async {
+            await Clipboard.setData(
+              ClipboardData(text: shareLink),
+            );
+            EasyLoading.showToast(lang.messageCopiedToClipboard);
+          },
+        ),
+        shareToItemUI(
+          name: lang.sendEmail,
+          iconWidget: Icon(Atlas.envelope),
+          color: Colors.redAccent,
+          onTap: () async => await mailTo(
+            toAddress: '',
+            subject: 'body=$shareLink',
+          ),
+        ),
+        if (isSignalInstalled)
+          shareToItemUI(
+            name: lang.signal,
+            iconWidget: Image.asset(
+              'assets/icon/signal_logo.png',
+              height: 25,
+              width: 25,
+            ),
+            color: Colors.blue,
+            onTap: () {},
+          ),
+        if (isWhatsAppInstalled)
+          shareToItemUI(
+            name: lang.whatsApp,
+            iconWidget: Icon(PhosphorIcons.whatsappLogo()),
+            color: Colors.green,
+            onTap: () {},
+          ),
+        if (isTelegramInstalled)
+          shareToItemUI(
+            name: lang.telegram,
+            iconWidget: Icon(PhosphorIcons.telegramLogo()),
+            color: Colors.blue,
+            onTap: () {},
+          ),
+        shareToItemUI(
+          name: lang.more,
+          iconWidget: Icon(PhosphorIcons.dotsThree()),
+          color: Colors.grey.shade800,
+          onTap: () async => await Share.share(shareLink),
         ),
       ],
     );
