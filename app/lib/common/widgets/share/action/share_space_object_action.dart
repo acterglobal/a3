@@ -22,7 +22,7 @@ Future<void> openShareSpaceObjectDialog({
   required BuildContext context,
   RefDetails? refDetails,
   String? internalLink,
-  String? externalLink,
+  Future<String> Function()? shareContentBuilder,
   FileDetails? fileDetails,
 }) async {
   await showModalBottomSheet(
@@ -35,7 +35,7 @@ Future<void> openShareSpaceObjectDialog({
       refDetails: refDetails,
       fileDetails: fileDetails,
       internalLink: internalLink,
-      externalLink: externalLink,
+      shareContentBuilder: shareContentBuilder,
     ),
   );
 }
@@ -44,14 +44,14 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
   final RefDetails? refDetails;
   final FileDetails? fileDetails;
   final String? internalLink;
-  final String? externalLink;
+  final Future<String> Function()? shareContentBuilder;
 
   const ShareSpaceObjectActionUI({
     super.key,
     this.refDetails,
     this.fileDetails,
     this.internalLink,
-    this.externalLink,
+    this.shareContentBuilder,
   });
 
   @override
@@ -128,7 +128,7 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
   Widget externalShareOptionsUI(BuildContext context) {
     return ExternalShareOptions(
       qrContent: internalLink,
-      shareContent: externalLink,
+      shareContentBuilder: shareContentBuilder,
     );
   }
 

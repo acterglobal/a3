@@ -72,13 +72,12 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
             onPressed: () async {
               final refDetails = await pinData.refDetails();
               final internalLink = pinData.internalLink();
-              final externalLink = await pinData.externalLink();
               if (!context.mounted) return;
               await openShareSpaceObjectDialog(
                 context: context,
                 refDetails: refDetails,
                 internalLink: internalLink,
-                externalLink: externalLink,
+                shareContentBuilder: () => pinData.externalLink(),
               );
             },
           ),

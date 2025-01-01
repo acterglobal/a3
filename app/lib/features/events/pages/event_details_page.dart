@@ -447,7 +447,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       final tempDir = await getTemporaryDirectory();
       final refDetails = await event.refDetails();
       final internalLink = event.internalLink();
-      final externalLink = await event.externalLink();
       final icalPath = join(tempDir.path, '$filename.ics');
       event.icalForSharing(icalPath);
 
@@ -456,7 +455,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           context: context,
           refDetails: refDetails,
           internalLink: internalLink,
-          externalLink: externalLink,
+          shareContentBuilder: () => event.externalLink(),
           fileDetails: (
             file: File(icalPath),
             mimeType: 'text/calendar',

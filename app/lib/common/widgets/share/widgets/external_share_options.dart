@@ -14,13 +14,13 @@ import 'package:share_plus/share_plus.dart';
 class ExternalShareOptions extends ConsumerWidget {
   final String? sectionTitle;
   final String? qrContent;
-  final String? shareContent;
+  final Future<String> Function()? shareContentBuilder;
 
   const ExternalShareOptions({
     super.key,
     this.sectionTitle,
     this.qrContent,
-    this.shareContent,
+    this.shareContentBuilder,
   });
 
   @override
@@ -49,8 +49,8 @@ class ExternalShareOptions extends ConsumerWidget {
           child: Row(
             children: [
               if (qrContent != null) qrOptionsUI(context, qrContent!),
-              if (shareContent != null)
-                shareOptionsUI(context, ref, shareContent!),
+              if (shareContentBuilder != null)
+                shareOptionsUI(context, ref, shareContentBuilder!),
             ],
           ),
         ),
@@ -74,7 +74,7 @@ class ExternalShareOptions extends ConsumerWidget {
   Widget shareOptionsUI(
     BuildContext context,
     WidgetRef ref,
-    String shareContent,
+    Future<String> Function() shareContentBuilder,
   ) {
     final lang = L10n.of(context);
     final isWhatsAppInstalled =
@@ -96,9 +96,8 @@ class ExternalShareOptions extends ConsumerWidget {
           iconWidget: Icon(PhosphorIcons.link()),
           color: Colors.blueGrey,
           onTap: () async {
-            await Clipboard.setData(
-              ClipboardData(text: shareContent),
-            );
+            final shareData = await shareContentBuilder();
+            await Clipboard.setData(ClipboardData(text: shareData));
             EasyLoading.showToast(lang.messageCopiedToClipboard);
           },
         ),
@@ -106,10 +105,10 @@ class ExternalShareOptions extends ConsumerWidget {
           name: lang.sendEmail,
           iconWidget: Icon(Atlas.envelope),
           color: Colors.redAccent,
-          onTap: () async => await mailTo(
-            toAddress: '',
-            subject: 'body=$shareContent',
-          ),
+          onTap: () async {
+            final shareData = await shareContentBuilder();
+            await mailTo(toAddress: '', subject: 'body=$shareData');
+          },
         ),
         if (isSignalInstalled)
           shareToItemUI(
@@ -120,38 +119,53 @@ class ExternalShareOptions extends ConsumerWidget {
               width: 25,
             ),
             color: Colors.blue,
-            onTap: () async =>
-                shareToSignal(context: context, text: shareContent),
+            onTap: () async {
+              final shareData = await shareContentBuilder();
+              if (!context.mounted) return;
+              shareToSignal(context: context, text: shareData);
+            },
           ),
         if (isWhatsAppInstalled)
           shareToItemUI(
             name: lang.whatsApp,
             iconWidget: Icon(PhosphorIcons.whatsappLogo()),
             color: Colors.green,
-            onTap: () async =>
-                shareToWhatsApp(context: context, text: shareContent),
+            onTap: () async {
+              final shareData = await shareContentBuilder();
+              if (!context.mounted) return;
+              shareToWhatsApp(context: context, text: shareData);
+            },
           ),
         if (isWhatsAppBusinessInstalled)
           shareToItemUI(
             name: lang.whatsAppBusiness,
             iconWidget: Icon(PhosphorIcons.whatsappLogo()),
             color: Colors.green,
-            onTap: () async =>
-                shareToWhatsApp(context: context, text: shareContent),
+            onTap: () async {
+              final shareData = await shareContentBuilder();
+              if (!context.mounted) return;
+              shareToWhatsApp(context: context, text: shareData);
+            },
           ),
         if (isTelegramInstalled)
           shareToItemUI(
             name: lang.telegram,
             iconWidget: Icon(PhosphorIcons.telegramLogo()),
             color: Colors.blue,
-            onTap: () async =>
-                shareToTelegram(context: context, text: shareContent),
+            onTap: () async {
+              final shareData = await shareContentBuilder();
+              if (!context.mounted) return;
+              shareToTelegram(context: context, text: shareData);
+            },
           ),
         shareToItemUI(
           name: lang.more,
           iconWidget: Icon(PhosphorIcons.dotsThree()),
           color: Colors.grey.shade800,
-          onTap: () async => await Share.share(shareContent),
+          onTap: () async {
+            final shareData = await shareContentBuilder();
+            await Share.share(shareData);
+          },
         ),
       ],
     );

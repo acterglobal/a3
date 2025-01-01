@@ -113,7 +113,7 @@ class ShareInviteCode extends ConsumerWidget {
         lang.shareInviteContent(inviteCode, roomName, userName);
     return ExternalShareOptions(
       qrContent: qrContent,
-      shareContent: shareContent,
+      shareContentBuilder: () async => shareContent,
     );
   }
 

@@ -68,13 +68,12 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           onPressed: () async {
             final refDetails = await tasklist.refDetails();
             final internalLink = tasklist.internalLink();
-            final externalLink = await tasklist.externalLink();
             if (!context.mounted) return;
             await openShareSpaceObjectDialog(
               context: context,
               refDetails: refDetails,
               internalLink: internalLink,
-              externalLink: externalLink,
+              shareContentBuilder: () => tasklist.externalLink(),
             );
           },
         ),
