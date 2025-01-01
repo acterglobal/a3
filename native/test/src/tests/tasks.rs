@@ -387,8 +387,10 @@ async fn task_list_external_link() -> Result<()> {
 
     // generate the external and internal links
 
+    let ref_details = task_list.ref_details().await?;
+
     let internal_link = task_list.internal_link();
-    let external_link = task_list.external_link().await?;
+    let external_link = ref_details.generate_external_link().await?;
 
     let room_id = &task_list.room_id().to_string()[1..];
     let task_list_id = &task_list.event_id().to_string()[1..];

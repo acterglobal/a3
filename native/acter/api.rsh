@@ -60,30 +60,6 @@ fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<C
 /// create a display builder
 fn new_display_builder() -> DisplayBuilder;
 
-/// create a task ref builder
-/// target_id: event id of target
-/// task_list: event id of task list
-/// action: link/embed/embed-subscribe/embed-accept-assignment/embed-mark-done
-fn new_task_ref_builder(target_id: string, room_id: Option<string>, task_list: string, action: Option<string>) -> Result<RefDetailsBuilder>;
-
-/// create a task list ref builder
-/// target_id: event id of target
-/// action: link/embed/embed-subscribe
-fn new_task_list_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
-
-/// create a pin ref builder
-/// target_id: event id of target
-/// action: link/embed/embed-subscribe
-fn new_pin_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
-
-/// create a calendar event ref builder
-/// target_id: event id of target
-/// action: link/embed/embed-rsvp
-fn new_calendar_event_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
-
-/// create a link ref builder
-fn new_link_ref_builder(title: string, uri: string) -> Result<RefDetailsBuilder>;
-
 /// create object reference
 /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
 fn new_obj_ref_builder(position: Option<string>, reference: RefDetails) -> Result<ObjRefBuilder>;
@@ -146,9 +122,6 @@ object ObjRefBuilder {
     fn position(position: string);
     /// empty position of element
     fn unset_position();
-
-    /// change ref details
-    fn reference(reference: RefDetails);
 
     fn build() -> ObjRef;
 }
@@ -637,9 +610,6 @@ object ActerPin {
     /// get the internal acter:-link
     fn internal_link() -> string;
 
-    /// generate or lookup the external https:-link
-    fn external_link() -> Future<Result<string>>;
-
     /// sender id
     fn sender() -> UserId;
 
@@ -755,9 +725,6 @@ object CalendarEvent {
 
     /// get the internal acter:-link
     fn internal_link() -> string;
-
-    /// generate or lookup the external https:-link
-    fn external_link() -> Future<Result<string>>;
 
 }
 
@@ -1983,10 +1950,6 @@ object TaskList {
 
     /// get the internal acter:-link
     fn internal_link() -> string;
-
-    /// generate or lookup the external https:-link
-    fn external_link() -> Future<Result<string>>;
-
 
     /// get the comments manager
     fn comments() -> Future<Result<CommentsManager>>;

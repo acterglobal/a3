@@ -148,8 +148,10 @@ async fn calendar_event_external_link() -> Result<()> {
 
     // generate the external and internal links
 
+    let ref_details = event.ref_details().await?;
+
     let internal_link = event.internal_link();
-    let external_link = event.external_link().await?;
+    let external_link = ref_details.generate_external_link().await?;
 
     let room_id = &event.room_id().to_string()[1..];
     let event_id = &event.event_id().to_string()[1..];

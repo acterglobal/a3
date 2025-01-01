@@ -260,8 +260,10 @@ async fn pin_external_link() -> Result<()> {
 
     // generate the external and internal links
 
+    let ref_details = pin.ref_details().await?;
+
     let internal_link = pin.internal_link();
-    let external_link = pin.external_link().await?;
+    let external_link = ref_details.generate_external_link().await?;
 
     let room_id = &pin.room_id().to_string()[1..];
     let pin_id = &pin.event_id().to_string()[1..];

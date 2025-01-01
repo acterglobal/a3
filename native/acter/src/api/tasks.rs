@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         tasks::{self, Priority, TaskBuilder, TaskListBuilder},
-        Display, RefDetails, RefPreview,
+        Display, RefDetails as CoreRefDetails, RefPreview,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, TaskStats},
     statics::KEYS,
@@ -27,7 +27,7 @@ use tracing::warn;
 
 use crate::MsgContent;
 
-use super::{client::Client, spaces::Space, RUNTIME};
+use super::{client::Client, deep_linking::RefDetails, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn task_list(&self, key: String, timeout: Option<u8>) -> Result<TaskList> {
@@ -378,6 +378,7 @@ impl TaskList {
 
     pub async fn ref_details(&self) -> Result<RefDetails> {
         let room = self.room.clone();
+        let client = self.client.clone();
         let target_id = self.content.event_id().to_owned();
         let room_id = self.room.room_id().to_owned();
         let title = self.content.name.clone();
@@ -386,13 +387,16 @@ impl TaskList {
             .spawn(async move {
                 let via = room.route().await?;
                 let room_display_name = room.cached_display_name();
-                Ok(RefDetails::TaskList {
-                    target_id,
-                    room_id: Some(room_id),
-                    via,
-                    preview: RefPreview::new(Some(title), room_display_name),
-                    action: Default::default(),
-                })
+                Ok(RefDetails::new(
+                    client,
+                    CoreRefDetails::TaskList {
+                        target_id,
+                        room_id: Some(room_id),
+                        via,
+                        preview: RefPreview::new(Some(title), room_display_name),
+                        action: Default::default(),
+                    },
+                ))
             })
             .await?
     }
@@ -401,13 +405,6 @@ impl TaskList {
         let target_id = &self.content.event_id().to_string()[1..];
         let room_id = &self.room.room_id().to_string()[1..];
         format!("acter:o/{room_id}/taskList/{target_id}")
-    }
-
-    pub async fn external_link(&self) -> Result<String> {
-        let ref_details = self.ref_details().await?;
-        self.client
-            .generate_external_link_for_ref(ref_details)
-            .await
     }
 }
 
