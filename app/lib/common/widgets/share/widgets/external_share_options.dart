@@ -88,7 +88,7 @@ class ExternalShareOptions extends ConsumerWidget {
     return Row(
       children: [
         shareToItemUI(
-          name: lang.copyLink,
+          name: lang.copy,
           iconWidget: Icon(PhosphorIcons.link()),
           color: Colors.blueGrey,
           onTap: () async {
