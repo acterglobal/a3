@@ -357,12 +357,6 @@ impl CalendarEvent {
             })
             .await?
     }
-
-    pub fn internal_link(&self) -> String {
-        let target_id = &self.inner.event_id().to_string()[1..];
-        let room_id = &self.room.room_id().to_string()[1..];
-        format!("acter:o/{room_id}/calendarEvent/{target_id}")
-    }
 }
 
 #[derive(Clone)]

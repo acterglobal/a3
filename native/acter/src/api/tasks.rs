@@ -400,12 +400,6 @@ impl TaskList {
             })
             .await?
     }
-
-    pub fn internal_link(&self) -> String {
-        let target_id = &self.content.event_id().to_string()[1..];
-        let room_id = &self.room.room_id().to_string()[1..];
-        format!("acter:o/{room_id}/taskList/{target_id}")
-    }
 }
 
 // custom functions

@@ -106,6 +106,9 @@ object RefDetails {
     /// if ref is `link`, its uri
     fn uri() -> Option<string>;
 
+    /// generating an internal acter:-link
+    fn generate_internal_link(include_preview: bool) -> Result<string>;
+
     /// generating the external link
     fn generate_external_link() -> Future<Result<string>>;
 }
@@ -610,9 +613,6 @@ object ActerPin {
     /// get the internal reference object
     fn ref_details() -> Future<Result<RefDetails>>;
 
-    /// get the internal acter:-link
-    fn internal_link() -> string;
-
     /// sender id
     fn sender() -> UserId;
 
@@ -725,9 +725,6 @@ object CalendarEvent {
 
     /// get the internal reference object
     fn ref_details() -> Future<Result<RefDetails>>;
-
-    /// get the internal acter:-link
-    fn internal_link() -> string;
 
 }
 
@@ -1950,9 +1947,6 @@ object TaskList {
 
     /// get the internal reference object
     fn ref_details() -> Future<Result<RefDetails>>;
-
-    /// get the internal acter:-link
-    fn internal_link() -> string;
 
     /// get the comments manager
     fn comments() -> Future<Result<CommentsManager>>;

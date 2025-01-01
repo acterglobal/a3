@@ -246,12 +246,6 @@ impl Pin {
             .await?
     }
 
-    pub fn internal_link(&self) -> String {
-        let target_id = &self.content.event_id().to_string()[1..];
-        let room_id = &self.room.room_id().to_string()[1..];
-        format!("acter:o/{room_id}/pin/{target_id}")
-    }
-
     pub fn content_formatted(&self) -> Option<String> {
         self.content
             .content

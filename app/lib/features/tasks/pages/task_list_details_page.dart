@@ -67,7 +67,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           icon: PhosphorIcon(PhosphorIcons.shareFat()),
           onPressed: () async {
             final refDetails = await tasklist.refDetails();
-            final internalLink = tasklist.internalLink();
+            final internalLink = refDetails.generateInternalLink(true);
             if (!context.mounted) return;
             await openShareSpaceObjectDialog(
               context: context,

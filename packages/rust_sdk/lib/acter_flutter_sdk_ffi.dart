@@ -17257,6 +17257,19 @@ class Api {
       _RefDetailsUriReturn Function(
         int,
       )>();
+  late final _refDetailsGenerateInternalLinkPtr = _lookup<
+      ffi.NativeFunction<
+          _RefDetailsGenerateInternalLinkReturn Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+          )>>("__RefDetails_generate_internal_link");
+
+  late final _refDetailsGenerateInternalLink =
+      _refDetailsGenerateInternalLinkPtr.asFunction<
+          _RefDetailsGenerateInternalLinkReturn Function(
+            int,
+            int,
+          )>();
   late final _refDetailsGenerateExternalLinkPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -18752,16 +18765,6 @@ class Api {
       int Function(
         int,
       )>();
-  late final _acterPinInternalLinkPtr = _lookup<
-      ffi.NativeFunction<
-          _ActerPinInternalLinkReturn Function(
-            ffi.IntPtr,
-          )>>("__ActerPin_internal_link");
-
-  late final _acterPinInternalLink = _acterPinInternalLinkPtr.asFunction<
-      _ActerPinInternalLinkReturn Function(
-        int,
-      )>();
   late final _acterPinSenderPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -19245,17 +19248,6 @@ class Api {
       int Function(
         int,
       )>();
-  late final _calendarEventInternalLinkPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventInternalLinkReturn Function(
-            ffi.IntPtr,
-          )>>("__CalendarEvent_internal_link");
-
-  late final _calendarEventInternalLink =
-      _calendarEventInternalLinkPtr.asFunction<
-          _CalendarEventInternalLinkReturn Function(
-            int,
-          )>();
   late final _calendarEventUpdateBuilderTitlePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -23857,16 +23849,6 @@ class Api {
 
   late final _taskListRefDetails = _taskListRefDetailsPtr.asFunction<
       int Function(
-        int,
-      )>();
-  late final _taskListInternalLinkPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskListInternalLinkReturn Function(
-            ffi.IntPtr,
-          )>>("__TaskList_internal_link");
-
-  late final _taskListInternalLink = _taskListInternalLinkPtr.asFunction<
-      _TaskListInternalLinkReturn Function(
         int,
       )>();
   late final _taskListCommentsPtr = _lookup<
@@ -36325,6 +36307,58 @@ class RefDetails {
     return tmp2;
   }
 
+  /// generating an internal acter:-link
+  String generateInternalLink(
+    bool includePreview,
+  ) {
+    final tmp1 = includePreview;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._refDetailsGenerateInternalLink(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3.arg0;
+    final tmp6 = tmp3.arg1;
+    final tmp7 = tmp3.arg2;
+    final tmp8 = tmp3.arg3;
+    final tmp9 = tmp3.arg4;
+    final tmp10 = tmp3.arg5;
+    final tmp11 = tmp3.arg6;
+    if (tmp5 == 0) {
+      debugAllocation("handle error", tmp6, tmp7);
+      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+      final tmp5_0 =
+          utf8.decode(tmp6_0.asTypedList(tmp7), allowMalformed: true);
+      if (tmp7 > 0) {
+        final ffi.Pointer<ffi.Void> tmp6_0;
+        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+        _api.__deallocate(tmp6_0, tmp8, 1);
+      }
+      throw tmp5_0;
+    }
+    if (tmp10 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp9_ptr = ffi.Pointer.fromAddress(tmp9);
+    List<int> tmp9_buf = [];
+    final tmp9_precast = tmp9_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp10; i++) {
+      int char = tmp9_precast.elementAt(i).value;
+      tmp9_buf.add(char);
+    }
+    final tmp4 = utf8.decode(tmp9_buf, allowMalformed: true);
+    if (tmp11 > 0) {
+      final ffi.Pointer<ffi.Void> tmp9_0;
+      tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+      _api.__deallocate(tmp9_0, tmp11 * 1, 1);
+    }
+    return tmp4;
+  }
+
   /// generating the external link
   Future<String> generateExternalLink() {
     var tmp0 = 0;
@@ -39483,36 +39517,6 @@ class ActerPin {
     return tmp2;
   }
 
-  /// get the internal acter:-link
-  String internalLink() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._acterPinInternalLink(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
   /// sender id
   UserId sender() {
     var tmp0 = 0;
@@ -40303,36 +40307,6 @@ class CalendarEvent {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
         _nativeFuture(tmp3_1, _api.__calendarEventRefDetailsFuturePoll);
-    return tmp2;
-  }
-
-  /// get the internal acter:-link
-  String internalLink() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._calendarEventInternalLink(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
     return tmp2;
   }
 
@@ -49678,36 +49652,6 @@ class TaskList {
     final tmp3_1 = _Box(_api, tmp3_0, "__TaskList_ref_details_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__taskListRefDetailsFuturePoll);
-    return tmp2;
-  }
-
-  /// get the internal acter:-link
-  String internalLink() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._taskListInternalLink(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
     return tmp2;
   }
 
@@ -61306,6 +61250,23 @@ class _RefDetailsUriReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _RefDetailsGenerateInternalLinkReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+  @ffi.UintPtr()
+  external int arg5;
+  @ffi.UintPtr()
+  external int arg6;
+}
+
 class _ObjRefPositionStrReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -61707,15 +61668,6 @@ class _ActerPinRoomIdStrReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ActerPinInternalLinkReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-}
-
 class _ActerPinUpdateBuilderReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -61778,15 +61730,6 @@ class _CalendarEventIcalForSharingReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint8()
   external int arg4;
-}
-
-class _CalendarEventInternalLinkReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
 }
 
 class _CalendarEventUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
@@ -62836,15 +62779,6 @@ class _TaskListUpdateBuilderReturn extends ffi.Struct {
 }
 
 class _TaskListSpaceIdStrReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-}
-
-class _TaskListInternalLinkReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()

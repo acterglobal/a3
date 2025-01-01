@@ -446,7 +446,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
       final tempDir = await getTemporaryDirectory();
       final refDetails = await event.refDetails();
-      final internalLink = event.internalLink();
+      final internalLink = refDetails.generateInternalLink(true);
       final icalPath = join(tempDir.path, '$filename.ics');
       event.icalForSharing(icalPath);
 

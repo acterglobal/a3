@@ -71,7 +71,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
             icon: PhosphorIcon(PhosphorIcons.shareFat()),
             onPressed: () async {
               final refDetails = await pinData.refDetails();
-              final internalLink = pinData.internalLink();
+              final internalLink = refDetails.generateInternalLink(true);
               if (!context.mounted) return;
               await openShareSpaceObjectDialog(
                 context: context,
