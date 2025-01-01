@@ -105,6 +105,9 @@ object RefDetails {
     fn utc_start() -> Option<UtcDateTime>;
     /// if ref is `link`, its uri
     fn uri() -> Option<string>;
+
+    /// generating the external link
+    fn generate_external_link() -> Future<Result<string>>;
 }
 
 /// An acter internal link to a different object

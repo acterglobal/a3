@@ -455,7 +455,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           context: context,
           refDetails: refDetails,
           internalLink: internalLink,
-          shareContentBuilder: () => event.externalLink(),
+          shareContentBuilder: () => refDetails.generateExternalLink(),
           fileDetails: (
             file: File(icalPath),
             mimeType: 'text/calendar',
