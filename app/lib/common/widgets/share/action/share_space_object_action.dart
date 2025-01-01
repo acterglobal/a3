@@ -127,8 +127,8 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
 
   Widget externalShareOptionsUI(BuildContext context) {
     return ExternalShareOptions(
-      qrLink: internalLink,
-      shareLink: externalLink,
+      qrContent: internalLink,
+      shareContent: externalLink,
     );
   }
 

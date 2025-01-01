@@ -12,14 +12,14 @@ import 'package:share_plus/share_plus.dart';
 
 class ExternalShareOptions extends ConsumerWidget {
   final String? sectionTitle;
-  final String? qrLink;
-  final String? shareLink;
+  final String? qrContent;
+  final String? shareContent;
 
   const ExternalShareOptions({
     super.key,
     this.sectionTitle,
-    this.qrLink,
-    this.shareLink,
+    this.qrContent,
+    this.shareContent,
   });
 
   @override
@@ -47,9 +47,9 @@ class ExternalShareOptions extends ConsumerWidget {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              if (qrLink != null) qrShareOptionsUI(context, qrLink!),
-              if (shareLink != null)
-                shareLinkOptionsUI(context, ref, shareLink!),
+              if (qrContent != null) qrOptionsUI(context, qrContent!),
+              if (shareContent != null)
+                shareOptionsUI(context, ref, shareContent!),
             ],
           ),
         ),
@@ -57,7 +57,7 @@ class ExternalShareOptions extends ConsumerWidget {
     );
   }
 
-  Widget qrShareOptionsUI(BuildContext context, String qrLink) {
+  Widget qrOptionsUI(BuildContext context, String qrContent) {
     final lang = L10n.of(context);
     return shareToItemUI(
       name: lang.qr,
@@ -67,16 +67,16 @@ class ExternalShareOptions extends ConsumerWidget {
         Navigator.pop(context);
         showQrCode(
           context,
-          qrLink,
+          qrContent,
         );
       },
     );
   }
 
-  Widget shareLinkOptionsUI(
+  Widget shareOptionsUI(
     BuildContext context,
     WidgetRef ref,
-    String shareLink,
+    String shareContent,
   ) {
     final lang = L10n.of(context);
     final isWhatsAppInstalled =
@@ -96,7 +96,7 @@ class ExternalShareOptions extends ConsumerWidget {
           color: Colors.blueGrey,
           onTap: () async {
             await Clipboard.setData(
-              ClipboardData(text: shareLink),
+              ClipboardData(text: shareContent),
             );
             EasyLoading.showToast(lang.messageCopiedToClipboard);
           },
@@ -107,7 +107,7 @@ class ExternalShareOptions extends ConsumerWidget {
           color: Colors.redAccent,
           onTap: () async => await mailTo(
             toAddress: '',
-            subject: 'body=$shareLink',
+            subject: 'body=$shareContent',
           ),
         ),
         if (isSignalInstalled)
@@ -139,7 +139,7 @@ class ExternalShareOptions extends ConsumerWidget {
           name: lang.more,
           iconWidget: Icon(PhosphorIcons.dotsThree()),
           color: Colors.grey.shade800,
-          onTap: () async => await Share.share(shareLink),
+          onTap: () async => await Share.share(shareContent),
         ),
       ],
     );
