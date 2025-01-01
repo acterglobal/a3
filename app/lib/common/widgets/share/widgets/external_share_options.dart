@@ -63,13 +63,10 @@ class ExternalShareOptions extends ConsumerWidget {
       name: lang.qr,
       iconWidget: Icon(PhosphorIcons.qrCode()),
       color: Colors.grey.shade600,
-      onTap: () {
-        Navigator.pop(context);
-        showQrCode(
-          context,
-          qrContent,
-        );
-      },
+      onTap: () => showQrCode(
+        context,
+        qrContent,
+      ),
     );
   }
 
