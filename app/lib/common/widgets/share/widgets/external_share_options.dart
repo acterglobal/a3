@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/app_install_check_provider.dart';
+import 'package:acter/common/widgets/share/action/shareTo.dart';
 import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
-import 'package:acter/features/share/actions/mail_to.dart';
+import 'package:acter/common/widgets/share/action/mail_to.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -116,21 +117,24 @@ class ExternalShareOptions extends ConsumerWidget {
               width: 25,
             ),
             color: Colors.blue,
-            onTap: () {},
+            onTap: () async =>
+                shareToSignal(context: context, text: shareContent),
           ),
         if (isWhatsAppInstalled)
           shareToItemUI(
             name: lang.whatsApp,
             iconWidget: Icon(PhosphorIcons.whatsappLogo()),
             color: Colors.green,
-            onTap: () {},
+            onTap: () async =>
+                shareToWhatsApp(context: context, text: shareContent),
           ),
         if (isTelegramInstalled)
           shareToItemUI(
             name: lang.telegram,
             iconWidget: Icon(PhosphorIcons.telegramLogo()),
             color: Colors.blue,
-            onTap: () {},
+            onTap: () async =>
+                shareToTelegram(context: context, text: shareContent),
           ),
         shareToItemUI(
           name: lang.more,
