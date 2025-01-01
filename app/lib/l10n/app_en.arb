@@ -2303,6 +2303,7 @@
   "task": "Task",
   "signal": "Signal",
   "whatsApp": "WhatsApp",
+  "whatsAppBusiness": "WA Business",
   "telegram": "Telegram",
   "copy": "copy",
   "copyLink": "Copy Link",

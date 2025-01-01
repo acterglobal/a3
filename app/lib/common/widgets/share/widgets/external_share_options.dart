@@ -80,6 +80,9 @@ class ExternalShareOptions extends ConsumerWidget {
     final isWhatsAppInstalled =
         ref.watch(isAppInstalledProvider(ExternalApps.whatsApp)).valueOrNull ==
             true;
+    final isWhatsAppBusinessInstalled =
+        ref.watch(isAppInstalledProvider(ExternalApps.whatsBusiness)).valueOrNull ==
+            true;
     final isTelegramInstalled =
         ref.watch(isAppInstalledProvider(ExternalApps.telegram)).valueOrNull ==
             true;
@@ -123,6 +126,14 @@ class ExternalShareOptions extends ConsumerWidget {
         if (isWhatsAppInstalled)
           shareToItemUI(
             name: lang.whatsApp,
+            iconWidget: Icon(PhosphorIcons.whatsappLogo()),
+            color: Colors.green,
+            onTap: () async =>
+                shareToWhatsApp(context: context, text: shareContent),
+          ),
+        if (isWhatsAppBusinessInstalled)
+          shareToItemUI(
+            name: lang.whatsAppBusiness,
             iconWidget: Icon(PhosphorIcons.whatsappLogo()),
             color: Colors.green,
             onTap: () async =>
