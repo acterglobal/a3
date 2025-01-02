@@ -1,7 +1,8 @@
 use acter_core::{
     events::{
         news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
-        Colorize, ColorizeBuilder, RefDetails as CoreRefDetails, RefPreview,
+        Colorize, ColorizeBuilder, ObjRef as CoreObjRef, ObjRefBuilder,
+        RefDetails as CoreRefDetails, RefPreview,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, ReactionManager},
     statics::KEYS,
@@ -290,7 +291,7 @@ impl NewsSlide {
 #[derive(Clone)]
 pub struct NewsSlideDraft {
     content: MsgDraft,
-    references: Vec<ObjRef>,
+    references: Vec<CoreObjRef>,
     colorize_builder: ColorizeBuilder,
 }
 
@@ -324,13 +325,13 @@ impl NewsSlideDraft {
 
         Ok(NewsSlideBuilder::default()
             .content(content)
-            .references(self.references.iter().map(|r| r.deref().clone()).collect())
+            .references(self.references)
             .colors(self.colorize_builder.build())
             .build()?)
     }
 
-    pub fn add_reference(&mut self, reference: Box<ObjRef>) -> &Self {
-        self.references.push(*reference);
+    pub fn add_reference(&mut self, reference: Box<ObjRefBuilder>) -> &Self {
+        self.references.push((*reference).build());
         self
     }
 

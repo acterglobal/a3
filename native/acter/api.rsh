@@ -362,7 +362,7 @@ object NewsSlide {
 
 object NewsSlideDraft {
     /// add reference for this slide draft
-    fn add_reference(reference: ObjRef);
+    fn add_reference(reference: ObjRefBuilder);
 
     /// set the color according to the colorize builder
     fn color(color: ColorizeBuilder);
@@ -473,7 +473,7 @@ object StorySlide {
 
 object StorySlideDraft {
     /// add reference for this slide draft
-    fn add_reference(reference: ObjRef);
+    fn add_reference(reference: ObjRefBuilder);
 
     /// set the color according to the colorize builder
     fn color(color: ColorizeBuilder);
