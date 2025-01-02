@@ -38060,7 +38060,7 @@ class NewsSlideDraft {
 
   /// add reference for this slide draft
   void addReference(
-    ObjRef reference,
+    ObjRefBuilder reference,
   ) {
     final tmp1 = reference;
     var tmp0 = 0;
@@ -38638,7 +38638,7 @@ class StorySlideDraft {
 
   /// add reference for this slide draft
   void addReference(
-    ObjRef reference,
+    ObjRefBuilder reference,
   ) {
     final tmp1 = reference;
     var tmp0 = 0;
