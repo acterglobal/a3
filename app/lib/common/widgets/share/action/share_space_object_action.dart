@@ -23,7 +23,7 @@ Future<void> openShareSpaceObjectDialog({
   RefDetails? refDetails,
   String? internalLink,
   Future<String> Function()? shareContentBuilder,
-  FileDetails? fileDetails,
+  Future<FileDetails> Function()? fileDetailContentBuilder,
 }) async {
   await showModalBottomSheet(
     showDragHandle: true,
@@ -33,25 +33,25 @@ Future<void> openShareSpaceObjectDialog({
     isDismissible: true,
     builder: (context) => ShareSpaceObjectActionUI(
       refDetails: refDetails,
-      fileDetails: fileDetails,
       internalLink: internalLink,
       shareContentBuilder: shareContentBuilder,
+      fileDetailContentBuilder: fileDetailContentBuilder,
     ),
   );
 }
 
 class ShareSpaceObjectActionUI extends ConsumerWidget {
   final RefDetails? refDetails;
-  final FileDetails? fileDetails;
   final String? internalLink;
   final Future<String> Function()? shareContentBuilder;
+  final Future<FileDetails> Function()? fileDetailContentBuilder;
 
   const ShareSpaceObjectActionUI({
     super.key,
     this.refDetails,
-    this.fileDetails,
     this.internalLink,
     this.shareContentBuilder,
+    this.fileDetailContentBuilder,
   });
 
   @override
@@ -69,7 +69,8 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
             ],
             externalShareOptionsUI(context),
             SizedBox(height: 20),
-            if (fileDetails != null) fileShareOptionsUI(context, fileDetails!),
+            if (fileDetailContentBuilder != null)
+              fileShareOptionsUI(context, fileDetailContentBuilder!),
           ],
         ),
       ),
@@ -134,12 +135,12 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
 
   Widget fileShareOptionsUI(
     BuildContext context,
-    FileDetails fileDetails,
+    Future<FileDetails> Function() fileDetailContentBuilder,
   ) {
-    File file = fileDetails.file;
-    String? mimeType = fileDetails.mimeType;
     return FileShareOptions(
       onTapOpen: () async {
+        final fileDetails = await fileDetailContentBuilder();
+        File file = fileDetails.file;
         final result = await OpenFilex.open(file.absolute.path);
         if (result.type == ResultType.done) {
           // done, close this dialog
@@ -150,6 +151,9 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
       },
       onTapSave: !Platform.isAndroid
           ? () async {
+              final fileDetails = await fileDetailContentBuilder();
+              File file = fileDetails.file;
+              if (!context.mounted) return;
               if (await downloadFile(context, file)) {
                 // done, close this dialog
                 if (context.mounted) {
@@ -159,6 +163,9 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
             }
           : null,
       onTapShare: () async {
+        final fileDetails = await fileDetailContentBuilder();
+        File file = fileDetails.file;
+        String? mimeType = fileDetails.mimeType;
         final result = await Share.shareXFiles(
           [XFile(file.path, mimeType: mimeType)],
         );

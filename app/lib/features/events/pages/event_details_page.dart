@@ -443,23 +443,25 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Future<void> onShareEvent(BuildContext context, CalendarEvent event) async {
     final lang = L10n.of(context);
     try {
-      final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
-      final tempDir = await getTemporaryDirectory();
       final refDetails = await event.refDetails();
       final internalLink = refDetails.generateInternalLink(true);
-      final icalPath = join(tempDir.path, '$filename.ics');
-      event.icalForSharing(icalPath);
-
       if (context.mounted) {
         openShareSpaceObjectDialog(
           context: context,
           refDetails: refDetails,
           internalLink: internalLink,
           shareContentBuilder: () => refDetails.generateExternalLink(),
-          fileDetails: (
-            file: File(icalPath),
-            mimeType: 'text/calendar',
-          ),
+          fileDetailContentBuilder: () async {
+            final filename =
+                event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+            final tempDir = await getTemporaryDirectory();
+            final icalPath = join(tempDir.path, '$filename.ics');
+            event.icalForSharing(icalPath);
+            return (
+              file: File(icalPath),
+              mimeType: 'text/calendar',
+            );
+          },
         );
       }
     } catch (e, s) {
