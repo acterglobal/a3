@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logging/logging.dart';
@@ -26,8 +29,17 @@ Future<void> shareToSignal({
   required BuildContext context,
   required String text,
 }) async {
-  final url = 'sgnl://signal.me/send?text=$text';
-  await _shareTo(context: context, url: url);
+  if (Platform.isAndroid) {
+    AndroidIntent intent = AndroidIntent(
+      action: 'android.intent.action.SENDTO',
+      data: 'smsto:',
+      package: 'org.thoughtcrime.securesms',
+      arguments: {'sms_body': text},
+    );
+    await intent.launch();
+  } else {
+    EasyLoading.showToast(L10n.of(context).directShareNotSupported('Signal App'));
+  }
 }
 
 Future<void> _shareTo({
