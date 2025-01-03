@@ -77,7 +77,10 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
                 context: context,
                 refDetails: refDetails,
                 internalLink: internalLink,
-                shareContentBuilder: () => refDetails.generateExternalLink(),
+                shareContentBuilder: () async {
+                  Navigator.pop(context);
+                  return await refDetails.generateExternalLink();
+                },
               );
             },
           ),

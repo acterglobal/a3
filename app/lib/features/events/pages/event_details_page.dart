@@ -449,9 +449,12 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         openShareSpaceObjectDialog(
           context: context,
           refDetails: refDetails,
-          internalLink: internalLink,
-          shareContentBuilder: () => refDetails.generateExternalLink(),
+          internalLink: internalLink, shareContentBuilder: () async {
+          Navigator.pop(context);
+          return await refDetails.generateExternalLink();
+        },
           fileDetailContentBuilder: () async {
+            Navigator.pop(context);
             final filename =
                 event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
             final tempDir = await getTemporaryDirectory();

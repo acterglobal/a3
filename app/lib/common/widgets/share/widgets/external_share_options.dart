@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/providers/app_install_check_provider.dart';
 import 'package:acter/common/widgets/share/action/shareTo.dart';
 import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
@@ -80,9 +82,10 @@ class ExternalShareOptions extends ConsumerWidget {
     final isWhatsAppInstalled =
         ref.watch(isAppInstalledProvider(ExternalApps.whatsApp)).valueOrNull ==
             true;
-    final isWhatsAppBusinessInstalled =
-        ref.watch(isAppInstalledProvider(ExternalApps.whatsBusiness)).valueOrNull ==
-            true;
+    final isWhatsAppBusinessInstalled = ref
+            .watch(isAppInstalledProvider(ExternalApps.whatsBusiness))
+            .valueOrNull ==
+        true;
     final isTelegramInstalled =
         ref.watch(isAppInstalledProvider(ExternalApps.telegram)).valueOrNull ==
             true;
@@ -110,7 +113,7 @@ class ExternalShareOptions extends ConsumerWidget {
             await mailTo(toAddress: '', subject: 'body=$shareData');
           },
         ),
-        if (isSignalInstalled)
+        if (isSignalInstalled && Platform.isAndroid)
           shareToItemUI(
             name: lang.signal,
             iconWidget: Image.asset(

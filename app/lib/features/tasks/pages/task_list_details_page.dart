@@ -73,7 +73,10 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
               context: context,
               refDetails: refDetails,
               internalLink: internalLink,
-              shareContentBuilder: () => refDetails.generateExternalLink(),
+              shareContentBuilder: () async {
+                Navigator.pop(context);
+                return await refDetails.generateExternalLink();
+              },
             );
           },
         ),

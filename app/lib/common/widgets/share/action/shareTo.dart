@@ -37,8 +37,6 @@ Future<void> shareToSignal({
       arguments: {'sms_body': text},
     );
     await intent.launch();
-  } else {
-    EasyLoading.showToast(L10n.of(context).directShareNotSupported('Signal App'));
   }
 }
 
