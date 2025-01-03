@@ -1,12 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/common/providers/notifiers/notification_settings_notifier.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
@@ -91,16 +89,6 @@ final _accountAvatarProvider =
   return avatar
       .data()
       .map((data) => MemoryImage(Uint8List.fromList(data.asTypedList())));
-});
-
-final notificationSettingsProvider = AsyncNotifierProvider<
-    AsyncNotificationSettingsNotifier,
-    NotificationSettings>(() => AsyncNotificationSettingsNotifier());
-
-final appContentNotificationSetting =
-    FutureProvider.family<bool, String>((ref, appKey) async {
-  final settings = await ref.watch(notificationSettingsProvider.future);
-  return await settings.globalContentSetting(appKey);
 });
 
 // Email addresses that registered by user

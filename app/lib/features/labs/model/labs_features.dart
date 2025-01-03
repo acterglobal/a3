@@ -13,11 +13,12 @@ enum LabsFeature {
   chatNG,
 
   // system features
-  deviceCalendarSync,
   encryptionBackup,
+  autoSubscribe, // in labs until we have this ready for all types
 
   // candidates for always on
   comments,
+  deviceCalendarSync,
   mobilePushNotifications,
 
   // -- not a lab anymore but needs to stay for backwards compat

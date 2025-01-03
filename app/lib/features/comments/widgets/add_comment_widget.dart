@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
-import 'package:acter/features/comments/actions/sbumit_comment.dart';
+import 'package:acter/features/comments/actions/submit_comment.dart';
+import 'package:acter/features/comments/types.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -13,10 +14,12 @@ class AddCommentWidget extends ConsumerStatefulWidget {
   static const addCommentButton = Key('add-comment-button');
 
   final CommentsManager manager;
+  final PostCreateComment? postCreateComment;
 
   const AddCommentWidget({
     super.key,
     required this.manager,
+    this.postCreateComment,
   });
 
   @override
@@ -111,6 +114,10 @@ class _AddCommentWidgetState extends ConsumerState<AddCommentWidget> {
     if (success) {
       _commentController.clear();
       showSendButton.value = false;
+      final postCommentFn = widget.postCreateComment;
+      if (postCommentFn != null) {
+        postCommentFn();
+      }
     }
     return success;
   }

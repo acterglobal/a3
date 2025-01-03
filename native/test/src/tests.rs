@@ -3,6 +3,7 @@ mod blurhash;
 mod bookmarks;
 mod calendar;
 mod categories;
+mod comments;
 mod formatted_body;
 mod invitation;
 mod msg_edit;

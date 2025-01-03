@@ -1,4 +1,5 @@
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show NotificationSettings;
 import 'package:riverpod/riverpod.dart';
@@ -22,11 +23,6 @@ class AsyncNotificationSettingNotifier
     return settings;
   }
 }
-
-final notificationSettingsProvider = AsyncNotifierProvider.autoDispose<
-    AsyncNotificationSettingNotifier, NotificationSettings>(
-  () => AsyncNotificationSettingNotifier(),
-);
 
 final currentNotificationModeProvider = FutureProvider.autoDispose
     .family<String, NotificationConfiguration>((ref, config) async {

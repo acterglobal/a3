@@ -109,6 +109,25 @@ class SettingsLabsPage extends ConsumerWidget {
               ],
             ),
             SettingsSection(
+              title: Text(lang.notifications),
+              tiles: [
+                SettingsTile.switchTile(
+                  title: Text(lang.autoSubscribeLabsFeature),
+                  description: Text(lang.autoSubscribeFeatureDesc),
+                  initialValue: ref.watch(
+                    isActiveProvider(LabsFeature.autoSubscribe),
+                  ),
+                  onToggle: (newVal) async {
+                    await updateFeatureState(
+                      ref,
+                      LabsFeature.autoSubscribe,
+                      newVal,
+                    );
+                  },
+                ),
+              ],
+            ),
+            SettingsSection(
               title: Text(lang.apps),
               tiles: [
                 SettingsTile.switchTile(

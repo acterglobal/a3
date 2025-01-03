@@ -20,17 +20,38 @@ pub struct AppChatSettings {
     pub typing_notice: Option<bool>,
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct AppNotificationSettings {
+    pub auto_subscribe_on_activity: bool,
+}
+
+impl AppNotificationSettings {
+    fn is_empty(&self) -> bool {
+        self.auto_subscribe_on_activity
+    }
+}
+impl Default for AppNotificationSettings {
+    fn default() -> Self {
+        Self {
+            auto_subscribe_on_activity: true,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Default)]
 #[ruma_event(type = "global.acter.user_app_settings", kind = GlobalAccountData)]
 pub struct ActerUserAppSettingsContent {
     #[serde(default)]
     pub chat: AppChatSettings,
+    #[serde(default, skip_serializing_if = "AppNotificationSettings::is_empty")]
+    pub notifications: AppNotificationSettings,
 }
 
 impl ActerUserAppSettingsContent {
     pub fn updater(&self) -> ActerUserAppSettingsContentBuilder {
         ActerUserAppSettingsContentBuilder::default()
             .chat(self.chat.clone())
+            .notifications(self.notifications.clone())
             .to_owned()
     }
 }
@@ -44,6 +65,17 @@ impl ActerUserAppSettingsContentBuilder {
             self.chat = Some(AppChatSettings {
                 auto_download: Some(auto_d),
                 typing_notice: Default::default(),
+            });
+        }
+        Ok(self)
+    }
+
+    pub fn auto_subscribe_on_activity(&mut self, value: bool) -> Result<&mut Self, ParseError> {
+        if let Some(notifications) = &mut self.notifications {
+            notifications.auto_subscribe_on_activity = value;
+        } else {
+            self.notifications = Some(AppNotificationSettings {
+                auto_subscribe_on_activity: value,
             });
         }
         Ok(self)
