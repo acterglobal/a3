@@ -62,8 +62,8 @@ pub use account::{Account, ExternalId, ThreePidEmailTokenResponse};
 pub use acter_core::{
     events::{
         calendar::EventLocationInfo, news::NewsContent, stories::StoryContent, Category,
-        CategoryBuilder, Colorize, ColorizeBuilder, Display, DisplayBuilder, ObjRef, ObjRefBuilder,
-        RefDetails, RefDetailsBuilder, UtcDateTime,
+        CategoryBuilder, Colorize, ColorizeBuilder, Display, DisplayBuilder, ObjRefBuilder,
+        RefDetailsBuilder, UtcDateTime,
     },
     models::{ActerModel, Tag, TextMessageContent},
 };
@@ -85,16 +85,16 @@ pub use categories::{Categories, CategoriesBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
-    duration_from_secs, new_calendar_event_ref_builder, new_colorize_builder, new_display_builder,
-    new_link_ref_builder, new_obj_ref_builder, new_pin_ref_builder, new_task_list_ref_builder,
-    new_task_ref_builder, new_thumb_size, ComposeDraft, DeviceRecord, MediaSource, MsgContent,
-    OptionBuffer, OptionComposeDraft, OptionRsvpStatus, OptionString, ReactionRecord,
-    ThumbnailInfo, ThumbnailSize,
+    duration_from_secs, new_colorize_builder, new_display_builder, new_obj_ref_builder,
+    new_thumb_size, ComposeDraft, DeviceRecord, MediaSource, MsgContent, OptionBuffer,
+    OptionComposeDraft, OptionRsvpStatus, OptionString, ReactionRecord, ThumbnailInfo,
+    ThumbnailSize,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,
 };
 pub use core::time::Duration as EfkDuration;
+pub use deep_linking::{ObjRef, RefDetails};
 pub use device::DeviceEvent;
 pub use invitation::Invitation;
 pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
