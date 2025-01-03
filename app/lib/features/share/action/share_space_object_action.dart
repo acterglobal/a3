@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/share/widgets/attach_options.dart';
-import 'package:acter/common/widgets/share/widgets/external_share_options.dart';
-import 'package:acter/common/widgets/share/widgets/file_share_options.dart';
 import 'package:acter/features/attachments/actions/attach_ref_details.dart';
 import 'package:acter/features/files/actions/download_file.dart';
+import 'package:acter/features/share/widgets/attach_options.dart';
+import 'package:acter/features/share/widgets/external_share_options.dart';
+import 'package:acter/features/share/widgets/file_share_options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

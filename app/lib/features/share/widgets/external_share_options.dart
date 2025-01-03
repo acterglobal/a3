@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:acter/common/providers/app_install_check_provider.dart';
-import 'package:acter/common/widgets/share/action/shareTo.dart';
 import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
-import 'package:acter/common/widgets/share/action/mail_to.dart';
+import 'package:acter/features/share/action/mail_to.dart';
+import 'package:acter/features/share/action/shareTo.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

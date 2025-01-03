@@ -1,10 +1,10 @@
 import 'package:acter/common/widgets/event/event_selector_drawer.dart';
 import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
-import 'package:acter/common/widgets/share/widgets/attach_options.dart';
 import 'package:acter/common/widgets/task/taskList_selector_drawer.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/share/widgets/attach_options.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
