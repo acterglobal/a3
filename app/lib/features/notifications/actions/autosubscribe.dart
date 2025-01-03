@@ -6,7 +6,6 @@ import 'package:acter/features/notifications/providers/object_notifications_sett
 import 'package:acter/features/notifications/types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 final _log = Logger('a3::notifications::actions::autosubscribe');

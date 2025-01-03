@@ -241,7 +241,7 @@ class ActionBox extends ConsumerWidget {
                           if (context.mounted) {
                             // fallback to go to home
                             Navigator.pushReplacementNamed(
-                                context, Routes.main.name);
+                                context, Routes.main.name,);
                           }
                         }
                       },
