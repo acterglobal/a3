@@ -15,6 +15,9 @@ import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class PinListItemWidget extends ConsumerWidget {
+
+  static const pinItemClick = Key('pin_item_click');
+
   final String pinId;
   final RefDetails? refDetails;
   final bool showSpace;
@@ -48,6 +51,7 @@ class PinListItemWidget extends ConsumerWidget {
     return Card(
       margin: cardMargin,
       child: ListTile(
+        key: pinItemClick,
         onTap: () {
           final pinId = pin.eventIdStr();
           if (onTaPinItem == null) {
