@@ -94,7 +94,6 @@ fn make_push_rule(parent_id: &str, sub_type: Option<&String>) -> NewConditionalP
 /// The status the subscription has
 #[derive(Clone, Debug, Display)]
 #[strum(serialize_all = "camelCase")]
-
 pub enum SubscriptionStatus {
     /// The user shall receive notifications about the
     Subscribed,

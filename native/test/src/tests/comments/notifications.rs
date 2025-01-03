@@ -76,5 +76,6 @@ async fn comment_on_news() -> Result<()> {
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
         .await?;
+    assert_eq!(notification_item.push_style(), "comment");
     Ok(())
 }

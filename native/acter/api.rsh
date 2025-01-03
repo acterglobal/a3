@@ -2792,7 +2792,7 @@ object NotificationItem {
     fn image_path(tmp_dir: string) -> Future<Result<string>>;
 
     /// if this is an invite, this the room it invites to
-    fn room_invite() -> Option<string>;
+    fn room_invite_str() -> Option<string>;
 }
 
 /// The pusher we sent notifications via to the user
