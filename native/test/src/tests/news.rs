@@ -866,11 +866,18 @@ async fn multi_news_read_receipt_test() -> Result<()> {
 #[tokio::test]
 async fn news_notification() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, room_id) = random_user_with_random_space("news_notifications").await?;
+    let (users, room_id) = random_users_with_random_space("news_notifications", 2).await?;
 
-    user.install_default_acter_push_rules().await?;
-    let sync_state = user.start_sync();
-    sync_state.await_has_synced_history().await?;
+    let mut user = users[0].clone();
+    let mut second = users[1].clone();
+
+    second.install_default_acter_push_rules().await?;
+
+    let sync_state1 = user.start_sync();
+    sync_state1.await_has_synced_history().await?;
+
+    let sync_state2 = second.start_sync();
+    sync_state2.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -893,7 +900,7 @@ async fn news_notification() -> Result<()> {
     let event_id = draft.send().await?;
     tracing::trace!("draft sent event id: {}", event_id);
 
-    let notifications = user
+    let notifications = second
         .get_notification_item(room_id.to_string(), event_id.to_string())
         .await?;
 

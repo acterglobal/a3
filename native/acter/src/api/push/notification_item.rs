@@ -1,7 +1,7 @@
 use acter_core::{
     events::{
         news::{FallbackNewsContent, NewsContent},
-        AnyActerEvent,
+        AnyActerEvent, SyncAnyActerEvent,
     },
     push::default_rules,
 };
@@ -346,7 +346,7 @@ impl NotificationItem {
         // setting defaults;
         let mut builder = builder
             .sender(NotificationSender::fallback(client.clone()))
-            .title("New messsages".to_owned())
+            .title("New messages".to_owned())
             .client(client.clone())
             .thread_id(room_id.to_string())
             .inner(NotificationItemInner::Fallback {
@@ -363,7 +363,7 @@ impl NotificationItem {
         Ok(builder.build()?)
     }
 
-    pub(super) fn from(
+    pub(super) async fn from(
         client: Client,
         inner: SdkNotificationItem,
         room_id: OwnedRoomId,
@@ -374,7 +374,7 @@ impl NotificationItem {
         builder
             .sender(NotificationSender::from(client.clone(), &inner))
             .room(NotificationRoom::from(client.clone(), &inner, &room_id))
-            .client(client)
+            .client(client.clone())
             .thread_id(room_id.to_string())
             .title(inner.room_computed_display_name)
             .noisy(inner.is_noisy)
@@ -392,17 +392,19 @@ impl NotificationItem {
                 .build()?);
         }
 
+        // acter specific items:
         if let RawNotificationEvent::Timeline(raw_tl) = &inner.raw_event {
-            if let Ok(AnyActerEvent::NewsEntry(MessageLikeEvent::Original(e))) =
-                raw_tl.deserialize_as::<AnyActerEvent>()
-            {
-                let first_slide = e.content.slides.first().map(|a| a.content().clone());
-                return Ok(builder
-                    .inner(NotificationItemInner::Boost { first_slide })
-                    .build()?);
+            if let Ok(event) = raw_tl.deserialize_as::<SyncAnyActerEvent>() {
+                return NotificationItem::for_acter_object(
+                    client,
+                    builder,
+                    event.into_full_any_acter_event(room_id),
+                )
+                .await;
             }
-        };
+        }
 
+        // fallback chat message:
         if let NotificationEvent::Timeline(AnySyncTimelineEvent::MessageLike(
             AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(event)),
         )) = inner.event
@@ -418,5 +420,24 @@ impl NotificationItem {
         }
 
         Ok(builder.build()?)
+    }
+
+    async fn for_acter_object(
+        client: Client,
+        mut builder: NotificationItemBuilder,
+        event: AnyActerEvent,
+    ) -> Result<Self> {
+        match event {
+            AnyActerEvent::NewsEntry(MessageLikeEvent::Original(e)) => {
+                let first_slide = e.content.slides.first().map(|a| a.content().clone());
+                Ok(builder
+                    .inner(NotificationItemInner::Boost { first_slide })
+                    .build()?)
+            }
+            _ => {
+                tracing::warn!(?event, "Notification not support");
+                Ok(builder.build()?)
+            }
+        }
     }
 }
