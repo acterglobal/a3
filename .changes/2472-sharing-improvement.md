@@ -1,0 +1,1 @@
+- [Enhancement] : Now you you can share space object to other app also via unique link
