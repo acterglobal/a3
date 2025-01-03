@@ -12,7 +12,7 @@ use matrix_sdk::{
     notification_settings::{
         IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings,
     },
-    Client as SdkClient,
+    Client as SdkClient, Room,
 };
 use matrix_sdk_base::{
     notification_settings::RoomNotificationMode,
@@ -59,6 +59,14 @@ pub struct NotificationSender {
     client: Client,
 }
 impl NotificationSender {
+    fn fallback(client: Client) -> Self {
+        NotificationSender {
+            user_id: "".to_owned(),
+            client,
+            image: None,
+            display_name: None,
+        }
+    }
     fn from(client: Client, notif: &SdkNotificationItem) -> Self {
         NotificationSender {
             user_id: notif.event.sender().to_string(),
@@ -108,6 +116,18 @@ impl NotificationRoom {
                 .room_avatar_url
                 .clone()
                 .map(|u| MediaSource::Plain(OwnedMxcUri::from(u))),
+            client,
+        }
+    }
+    async fn for_room(client: Client, room: &Room) -> Self {
+        NotificationRoom {
+            room_id: room.room_id().to_string(),
+            display_name: room
+                .compute_display_name()
+                .await
+                .map(|e| e.to_string())
+                .unwrap_or("".to_owned()),
+            image: room.avatar_url().clone().map(MediaSource::Plain),
             client,
         }
     }
@@ -253,7 +273,6 @@ impl NotificationItemInner {
 pub struct NotificationItem {
     pub(crate) client: Client,
     pub(crate) title: String,
-    pub(crate) target_url: String,
     pub(crate) sender: NotificationSender,
     pub(crate) room: NotificationRoom,
     #[builder(default)]
@@ -319,6 +338,29 @@ impl NotificationItem {
         self.client
             .source_binary_tmp_path(source, None, tmp_dir, "png")
             .await
+    }
+
+    pub(super) async fn fallback(client: Client, room_id: OwnedRoomId) -> Result<Self> {
+        let mut builder = NotificationItemBuilder::default();
+        let device_id = client.device_id()?;
+        // setting defaults;
+        let mut builder = builder
+            .sender(NotificationSender::fallback(client.clone()))
+            .title("New messsages".to_owned())
+            .client(client.clone())
+            .thread_id(room_id.to_string())
+            .inner(NotificationItemInner::Fallback {
+                device_id,
+                room_id: room_id.clone(),
+            });
+
+        match client.room(room_id.to_string()).await {
+            Ok(room) => {
+                builder = builder.room(NotificationRoom::for_room(client, &room.room).await)
+            }
+            Err(error) => tracing::error!(?error, "Error fetching room for notification"),
+        };
+        Ok(builder.build()?)
     }
 
     pub(super) fn from(

@@ -862,3 +862,42 @@ async fn multi_news_read_receipt_test() -> Result<()> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn news_notification() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (mut user, room_id) = random_user_with_random_space("news_notifications").await?;
+
+    user.install_default_acter_push_rules().await?;
+    let sync_state = user.start_sync();
+    sync_state.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    let main_space = Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        async move {
+            let spaces = client.spaces().await?;
+            if spaces.len() != 1 {
+                bail!("space not found");
+            }
+            Ok(spaces.first().cloned().expect("space found"))
+        }
+    })
+    .await?;
+
+    let mut draft = main_space.news_draft()?;
+    let text_draft = user.text_plain_draft("This is text slide".to_string());
+    draft.add_slide(Box::new(text_draft.into())).await?;
+    let event_id = draft.send().await?;
+    tracing::trace!("draft sent event id: {}", event_id);
+
+    let notifications = user
+        .get_notification_item(room_id.to_string(), event_id.to_string())
+        .await?;
+
+    assert_eq!(notifications.push_style(), "news");
+
+    Ok(())
+}

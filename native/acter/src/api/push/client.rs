@@ -67,11 +67,10 @@ impl Client {
                 )
                 .await?;
 
-                let notif = notif_client
-                    .get_notification(&room_id, &event_id)
-                    .await?
-                    .context("(hidden notification)")?;
-                NotificationItem::from(me, notif, room_id)
+                if let Some(notif) = notif_client.get_notification(&room_id, &event_id).await? {
+                    return NotificationItem::from(me, notif, room_id);
+                }
+                NotificationItem::fallback(me, room_id).await
             })
             .await?
     }
