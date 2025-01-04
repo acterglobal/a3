@@ -3316,6 +3316,36 @@ object VerificationEmoji {
 }
 
 
+object SessionVerificationEmoji {
+    /// symbol representation of emoji unicode
+    fn symbol() -> string;
+
+    /// text description of emoji unicode
+    fn description() -> string;
+}
+
+object SessionVerificationData {
+    fn emojis() -> Option<Vec<SessionVerificationEmoji>>;
+    fn decimals() -> Option<Vec<u16>>;
+}
+
+object VerificationRequestEvent {
+    fn accept() -> Future<Result<VerificationReadyStage>>;
+    fn cancel() -> Future<Result<bool>>;
+}
+
+object VerificationReadyStage {
+    fn start_sas() -> Future<Result<SasPromptStage>>;
+    fn cancel() -> Future<Result<bool>>;
+}
+
+object SasPromptStage {
+    fn get_emojis() -> Future<Result<SessionVerificationData>>;
+    fn approve() -> Future<Result<bool>>;
+    fn decline() -> Future<Result<bool>>;
+}
+
+
 //   ######  ########  ######   ######  ####  #######  ##    ##  ######  
 //  ##    ## ##       ##    ## ##    ##  ##  ##     ## ###   ## ##    ## 
 //  ##       ##       ##       ##        ##  ##     ## ####  ## ##       

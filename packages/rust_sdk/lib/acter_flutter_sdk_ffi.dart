@@ -15961,6 +15961,323 @@ class Api {
     return tmp7;
   }
 
+  VerificationReadyStage? __verificationRequestEventAcceptFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _verificationRequestEventAcceptFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_VerificationReadyStage");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = VerificationReadyStage._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __verificationRequestEventCancelFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _verificationRequestEventCancelFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  SasPromptStage? __verificationReadyStageStartSasFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _verificationReadyStageStartSasFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SasPromptStage");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = SasPromptStage._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __verificationReadyStageCancelFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _verificationReadyStageCancelFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  SessionVerificationData? __sasPromptStageGetEmojisFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _sasPromptStageGetEmojisFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SessionVerificationData");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = SessionVerificationData._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __sasPromptStageApproveFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _sasPromptStageApproveFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __sasPromptStageDeclineFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _sasPromptStageDeclineFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   FfiListDeviceRecord? __sessionManagerAllSessionsFuturePoll(
     int boxed,
     int postCobject,
@@ -29908,6 +30225,124 @@ class Api {
           _VerificationEmojiDescriptionReturn Function(
             int,
           )>();
+  late final _sessionVerificationEmojiSymbolPtr = _lookup<
+      ffi.NativeFunction<
+          _SessionVerificationEmojiSymbolReturn Function(
+            ffi.IntPtr,
+          )>>("__SessionVerificationEmoji_symbol");
+
+  late final _sessionVerificationEmojiSymbol =
+      _sessionVerificationEmojiSymbolPtr.asFunction<
+          _SessionVerificationEmojiSymbolReturn Function(
+            int,
+          )>();
+  late final _sessionVerificationEmojiDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          _SessionVerificationEmojiDescriptionReturn Function(
+            ffi.IntPtr,
+          )>>("__SessionVerificationEmoji_description");
+
+  late final _sessionVerificationEmojiDescription =
+      _sessionVerificationEmojiDescriptionPtr.asFunction<
+          _SessionVerificationEmojiDescriptionReturn Function(
+            int,
+          )>();
+  late final _sessionVerificationDataEmojisPtr = _lookup<
+      ffi.NativeFunction<
+          _SessionVerificationDataEmojisReturn Function(
+            ffi.IntPtr,
+          )>>("__SessionVerificationData_emojis");
+
+  late final _sessionVerificationDataEmojis =
+      _sessionVerificationDataEmojisPtr.asFunction<
+          _SessionVerificationDataEmojisReturn Function(
+            int,
+          )>();
+  late final _sessionVerificationDataDecimalsPtr = _lookup<
+      ffi.NativeFunction<
+          _SessionVerificationDataDecimalsReturn Function(
+            ffi.IntPtr,
+          )>>("__SessionVerificationData_decimals");
+
+  late final _sessionVerificationDataDecimals =
+      _sessionVerificationDataDecimalsPtr.asFunction<
+          _SessionVerificationDataDecimalsReturn Function(
+            int,
+          )>();
+  late final _verificationRequestEventAcceptPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__VerificationRequestEvent_accept");
+
+  late final _verificationRequestEventAccept =
+      _verificationRequestEventAcceptPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _verificationRequestEventCancelPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__VerificationRequestEvent_cancel");
+
+  late final _verificationRequestEventCancel =
+      _verificationRequestEventCancelPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _verificationReadyStageStartSasPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__VerificationReadyStage_start_sas");
+
+  late final _verificationReadyStageStartSas =
+      _verificationReadyStageStartSasPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _verificationReadyStageCancelPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__VerificationReadyStage_cancel");
+
+  late final _verificationReadyStageCancel =
+      _verificationReadyStageCancelPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _sasPromptStageGetEmojisPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__SasPromptStage_get_emojis");
+
+  late final _sasPromptStageGetEmojis = _sasPromptStageGetEmojisPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _sasPromptStageApprovePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__SasPromptStage_approve");
+
+  late final _sasPromptStageApprove = _sasPromptStageApprovePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _sasPromptStageDeclinePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__SasPromptStage_decline");
+
+  late final _sasPromptStageDecline = _sasPromptStageDeclinePtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _sessionManagerAllSessionsPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -34491,6 +34926,111 @@ class Api {
             int,
             int,
           )>();
+  late final _verificationRequestEventAcceptFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _VerificationRequestEventAcceptFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__VerificationRequestEvent_accept_future_poll");
+
+  late final _verificationRequestEventAcceptFuturePoll =
+      _verificationRequestEventAcceptFuturePollPtr.asFunction<
+          _VerificationRequestEventAcceptFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _verificationRequestEventCancelFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _VerificationRequestEventCancelFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__VerificationRequestEvent_cancel_future_poll");
+
+  late final _verificationRequestEventCancelFuturePoll =
+      _verificationRequestEventCancelFuturePollPtr.asFunction<
+          _VerificationRequestEventCancelFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _verificationReadyStageStartSasFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _VerificationReadyStageStartSasFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__VerificationReadyStage_start_sas_future_poll");
+
+  late final _verificationReadyStageStartSasFuturePoll =
+      _verificationReadyStageStartSasFuturePollPtr.asFunction<
+          _VerificationReadyStageStartSasFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _verificationReadyStageCancelFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _VerificationReadyStageCancelFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__VerificationReadyStage_cancel_future_poll");
+
+  late final _verificationReadyStageCancelFuturePoll =
+      _verificationReadyStageCancelFuturePollPtr.asFunction<
+          _VerificationReadyStageCancelFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _sasPromptStageGetEmojisFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SasPromptStageGetEmojisFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__SasPromptStage_get_emojis_future_poll");
+
+  late final _sasPromptStageGetEmojisFuturePoll =
+      _sasPromptStageGetEmojisFuturePollPtr.asFunction<
+          _SasPromptStageGetEmojisFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _sasPromptStageApproveFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SasPromptStageApproveFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__SasPromptStage_approve_future_poll");
+
+  late final _sasPromptStageApproveFuturePoll =
+      _sasPromptStageApproveFuturePollPtr.asFunction<
+          _SasPromptStageApproveFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _sasPromptStageDeclineFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _SasPromptStageDeclineFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__SasPromptStage_decline_future_poll");
+
+  late final _sasPromptStageDeclineFuturePoll =
+      _sasPromptStageDeclineFuturePollPtr.asFunction<
+          _SasPromptStageDeclineFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _sessionManagerAllSessionsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _SessionManagerAllSessionsFuturePollReturn Function(
@@ -36086,6 +36626,60 @@ class Api {
 
   late final _ffiListRsvpInsert =
       _ffiListRsvpInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListSessionVerificationEmoji createFfiListSessionVerificationEmoji() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListSessionVerificationEmojiCreate());
+    final list_box =
+        _Box(this, list_ptr, "drop_box_FfiListSessionVerificationEmoji");
+    return FfiListSessionVerificationEmoji._(this, list_box);
+  }
+
+  late final _ffiListSessionVerificationEmojiCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListSessionVerificationEmojiCreate");
+
+  late final _ffiListSessionVerificationEmojiCreate =
+      _ffiListSessionVerificationEmojiCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListSessionVerificationEmojiLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListSessionVerificationEmojiLen");
+
+  late final _ffiListSessionVerificationEmojiLen =
+      _ffiListSessionVerificationEmojiLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListSessionVerificationEmojiElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListSessionVerificationEmojiElementAt");
+
+  late final _ffiListSessionVerificationEmojiElementAt =
+      _ffiListSessionVerificationEmojiElementAtPtr
+          .asFunction<int Function(int, int)>();
+
+  late final _ffiListSessionVerificationEmojiRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListSessionVerificationEmojiRemove");
+
+  late final _ffiListSessionVerificationEmojiRemove =
+      _ffiListSessionVerificationEmojiRemovePtr
+          .asFunction<int Function(int, int)>();
+
+  late final _ffiListSessionVerificationEmojiAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListSessionVerificationEmojiAdd");
+
+  late final _ffiListSessionVerificationEmojiAdd =
+      _ffiListSessionVerificationEmojiAddPtr
+          .asFunction<void Function(int, int)>();
+
+  late final _ffiListSessionVerificationEmojiInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListSessionVerificationEmojiInsert");
+
+  late final _ffiListSessionVerificationEmojiInsert =
+      _ffiListSessionVerificationEmojiInsertPtr
+          .asFunction<void Function(int, int, int)>();
   FfiListSpace createFfiListSpace() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListSpaceCreate());
@@ -61127,6 +61721,277 @@ class VerificationEmoji {
   }
 }
 
+class SessionVerificationEmoji {
+  final Api _api;
+  final _Box _box;
+
+  SessionVerificationEmoji._(this._api, this._box);
+
+  /// symbol representation of emoji unicode
+  String symbol() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._sessionVerificationEmojiSymbol(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// text description of emoji unicode
+  String description() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._sessionVerificationEmojiDescription(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SessionVerificationData {
+  final Api _api;
+  final _Box _box;
+
+  SessionVerificationData._(this._api, this._box);
+
+  FfiListSessionVerificationEmoji? emojis() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._sessionVerificationDataEmojis(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 =
+        _Box(_api, tmp4_0, "drop_box_FfiListSessionVerificationEmoji");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListSessionVerificationEmoji._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  List<int>? decimals() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._sessionVerificationDataDecimals(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint16> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = tmp4_0.asTypedList(tmp5).toList();
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 2, 2);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class VerificationRequestEvent {
+  final Api _api;
+  final _Box _box;
+
+  VerificationRequestEvent._(this._api, this._box);
+
+  Future<VerificationReadyStage> accept() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._verificationRequestEventAccept(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__VerificationRequestEvent_accept_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__verificationRequestEventAcceptFuturePoll);
+    return tmp2;
+  }
+
+  Future<bool> cancel() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._verificationRequestEventCancel(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__VerificationRequestEvent_cancel_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__verificationRequestEventCancelFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class VerificationReadyStage {
+  final Api _api;
+  final _Box _box;
+
+  VerificationReadyStage._(this._api, this._box);
+
+  Future<SasPromptStage> startSas() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._verificationReadyStageStartSas(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__VerificationReadyStage_start_sas_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__verificationReadyStageStartSasFuturePoll);
+    return tmp2;
+  }
+
+  Future<bool> cancel() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._verificationReadyStageCancel(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__VerificationReadyStage_cancel_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__verificationReadyStageCancelFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SasPromptStage {
+  final Api _api;
+  final _Box _box;
+
+  SasPromptStage._(this._api, this._box);
+
+  Future<SessionVerificationData> getEmojis() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._sasPromptStageGetEmojis(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__SasPromptStage_get_emojis_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__sasPromptStageGetEmojisFuturePoll);
+    return tmp2;
+  }
+
+  Future<bool> approve() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._sasPromptStageApprove(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__SasPromptStage_approve_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__sasPromptStageApproveFuturePoll);
+    return tmp2;
+  }
+
+  Future<bool> decline() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._sasPromptStageDecline(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__SasPromptStage_decline_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__sasPromptStageDeclineFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class SessionManager {
   final Api _api;
   final _Box _box;
@@ -64696,6 +65561,42 @@ class _VerificationEmojiDescriptionReturn extends ffi.Struct {
   external int arg1;
   @ffi.UintPtr()
   external int arg2;
+}
+
+class _SessionVerificationEmojiSymbolReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _SessionVerificationEmojiDescriptionReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _SessionVerificationDataEmojisReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _SessionVerificationDataDecimalsReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
 }
 
 class _DeviceRecordDisplayNameReturn extends ffi.Struct {
@@ -69153,6 +70054,111 @@ class _VerificationEventMismatchSasVerificationFuturePollReturn
   external int arg5;
 }
 
+class _VerificationRequestEventAcceptFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _VerificationRequestEventCancelFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _VerificationReadyStageStartSasFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _VerificationReadyStageCancelFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _SasPromptStageGetEmojisFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SasPromptStageApproveFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _SasPromptStageDeclineFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _SessionManagerAllSessionsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -70771,6 +71777,70 @@ class FfiListRsvp extends Iterable<Rsvp> implements CustomIterable<Rsvp> {
   /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Rsvp element) {
     _api._ffiListRsvpInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListSessionVerificationEmoji extends Iterable<SessionVerificationEmoji>
+    implements CustomIterable<SessionVerificationEmoji> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListSessionVerificationEmoji._(this._api, this._box);
+
+  @override
+  Iterator<SessionVerificationEmoji> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListSessionVerificationEmojiLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  SessionVerificationEmoji elementAt(int index) {
+    final address =
+        _api._ffiListSessionVerificationEmojiElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return SessionVerificationEmoji._(_api, reference);
+  }
+
+  SessionVerificationEmoji operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  SessionVerificationEmoji remove(int index) {
+    final address =
+        _api._ffiListSessionVerificationEmojiRemove(_box.borrow(), index);
+    final reference = _Box(_api, ffi.Pointer.fromAddress(address),
+        "drop_box_SessionVerificationEmoji");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return SessionVerificationEmoji._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(SessionVerificationEmoji element) {
+    _api._ffiListSessionVerificationEmojiAdd(
+        _box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, SessionVerificationEmoji element) {
+    _api._ffiListSessionVerificationEmojiInsert(
+        _box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 
