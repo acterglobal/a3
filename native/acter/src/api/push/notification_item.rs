@@ -223,6 +223,10 @@ impl NotificationItemInner {
         }
     }
 
+    pub fn parent(&self) -> Option<AnyActerModel> {
+        None
+    }
+
     pub fn body(&self) -> Option<MsgContent> {
         match &self {
             NotificationItemInner::ChatMessage { content, .. } => match content {
@@ -318,6 +322,9 @@ impl NotificationItem {
     }
     pub fn body(&self) -> Option<MsgContent> {
         self.inner.body()
+    }
+    pub fn parent(&self) -> Option<AnyActerModel> {
+        self.inner.parent()
     }
     pub fn noisy(&self) -> bool {
         self.noisy.unwrap_or_default()

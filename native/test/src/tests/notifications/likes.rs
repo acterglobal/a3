@@ -41,9 +41,9 @@ url = "https://github.com/acterglobal/a3"
 "#;
 
 #[tokio::test]
-async fn comment_on_news() -> Result<()> {
+async fn likes_on_news() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("cOnboost", 2, TMPL).await?;
+        random_users_with_random_space_under_template("likeOnboost", 2, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -87,17 +87,13 @@ async fn comment_on_news() -> Result<()> {
     })
     .await?;
 
-    let comments = news_entry.comments().await?;
-    let mut draft = comments.comment_draft()?;
-    draft.content_text("this is great".to_owned());
-    let notification_ev = draft.send().await?;
+    let reactions = news_entry.reactions().await?;
+    let notification_ev = reactions.send_like().await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
         .await?;
-    assert_eq!(notification_item.push_style(), "comment");
-    let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "this is great");
+    assert_eq!(notification_item.push_style(), "like");
     let parent = notification_item.parent().expect("parent was found");
 
     assert_eq!(
