@@ -4,7 +4,8 @@ use tokio_retry::{
     Retry,
 };
 
-use acter::{api::SubscriptionStatus, ActerModel};
+use acter::api::SubscriptionStatus;
+use urlencoding::encode;
 
 use crate::utils::random_users_with_random_space_under_template;
 
@@ -96,13 +97,27 @@ async fn comment_on_news() -> Result<()> {
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
         .await?;
     assert_eq!(notification_item.push_style(), "comment");
+    assert_eq!(
+        notification_item
+            .parent_id_str()
+            .expect("parent is in comment"),
+        news_entry.event_id().to_string()
+    );
+
     let content = notification_item.body().expect("found content");
     assert_eq!(content.body(), "this is great");
     let parent = notification_item.parent().expect("parent was found");
-
     assert_eq!(
-        parent.event_id().to_string(),
-        news_entry.event_id().to_string()
+        notification_item.target_url(),
+        format!(
+            "/news?section=comments&commentId={}",
+            encode(notification_ev.as_str())
+        )
     );
+    assert_eq!(parent.object_type_str(), "news".to_owned());
+    assert_eq!(parent.title(), None);
+    assert_eq!(parent.emoji(), "🚀"); // rocket
+    assert_eq!(parent.object_id_str(), news_entry.event_id().to_string());
+
     Ok(())
 }

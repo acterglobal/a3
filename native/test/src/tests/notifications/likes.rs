@@ -4,7 +4,7 @@ use tokio_retry::{
     Retry,
 };
 
-use acter::{api::SubscriptionStatus, ActerModel};
+use acter::api::SubscriptionStatus;
 
 use crate::utils::random_users_with_random_space_under_template;
 
@@ -94,11 +94,13 @@ async fn likes_on_news() -> Result<()> {
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
         .await?;
     assert_eq!(notification_item.push_style(), "like");
-    let parent = notification_item.parent().expect("parent was found");
-
     assert_eq!(
-        parent.event_id().to_string(),
+        notification_item
+            .parent_id_str()
+            .expect("parent is in like"),
         news_entry.event_id().to_string()
     );
+    let parent = notification_item.parent().expect("parent was found");
+
     Ok(())
 }

@@ -3,7 +3,7 @@ use acter_core::{
         news::{FallbackNewsContent, NewsContent},
         AnyActerEvent, SyncAnyActerEvent,
     },
-    models::AnyActerModel,
+    models::{ActerModel, AnyActerModel},
     push::default_rules,
 };
 use anyhow::{bail, Context, Result};
@@ -153,6 +153,79 @@ impl NotificationRoom {
             .await?
     }
 }
+#[derive(Clone, Debug)]
+pub enum NotificationItemParent {
+    News { parent_id: OwnedEventId },
+}
+
+impl NotificationItemParent {
+    pub fn object_type_str(&self) -> String {
+        match self {
+            NotificationItemParent::News { .. } => "news",
+        }
+        .to_owned()
+    }
+    pub fn object_id_str(&self) -> String {
+        match self {
+            NotificationItemParent::News { parent_id } => parent_id.to_string(),
+        }
+    }
+    pub fn title(&self) -> Option<String> {
+        None
+    }
+
+    pub fn target_url(&self) -> String {
+        match self {
+            NotificationItemParent::News { .. } => "/news", //
+        }
+        .to_owned()
+    }
+
+    pub fn emoji(&self) -> String {
+        match self {
+            NotificationItemParent::News { .. } => "🚀", // boost rocket
+        }
+        .to_owned()
+    }
+}
+
+impl TryFrom<&AnyActerModel> for NotificationItemParent {
+    type Error = ();
+
+    fn try_from(value: &AnyActerModel) -> std::result::Result<Self, Self::Error> {
+        match value {
+            AnyActerModel::NewsEntry(e) => Ok(NotificationItemParent::News {
+                parent_id: e.event_id().to_owned(),
+            }),
+            AnyActerModel::RedactedActerModel(_)
+            | AnyActerModel::CalendarEvent(_)
+            | AnyActerModel::CalendarEventUpdate(_)
+            | AnyActerModel::TaskList(_)
+            | AnyActerModel::TaskListUpdate(_)
+            | AnyActerModel::Task(_)
+            | AnyActerModel::TaskUpdate(_)
+            | AnyActerModel::TaskSelfAssign(_)
+            | AnyActerModel::TaskSelfUnassign(_)
+            | AnyActerModel::Pin(_)
+            | AnyActerModel::PinUpdate(_)
+            | AnyActerModel::NewsEntryUpdate(_)
+            | AnyActerModel::Story(_)
+            | AnyActerModel::StoryUpdate(_)
+            | AnyActerModel::Comment(_)
+            | AnyActerModel::CommentUpdate(_)
+            | AnyActerModel::Attachment(_)
+            | AnyActerModel::AttachmentUpdate(_)
+            | AnyActerModel::Rsvp(_)
+            | AnyActerModel::Reaction(_)
+            | AnyActerModel::ReadReceipt(_) => {
+                tracing::trace!("Received Notification on an unsupported parent");
+                Err(())
+            }
+            #[cfg(test)]
+            AnyActerModel::TestModel(test_model) => Err(()),
+        }
+    }
+}
 
 #[derive(Clone, Debug)]
 pub enum NotificationItemInner {
@@ -172,8 +245,10 @@ pub enum NotificationItemInner {
         first_slide: Option<NewsContent>,
     },
     Comment {
-        parent_obj: Option<AnyActerModel>,
+        parent_obj: Option<NotificationItemParent>,
         parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
         content: TextMessageEventContent,
     },
 }
@@ -203,15 +278,31 @@ impl NotificationItemInner {
                 encode(room_id.as_str())
             ),
             NotificationItemInner::Invite { room_id } => "/activities/invites".to_string(),
-            // FIXME: we still need support for specific activities linking
-            // .target_url(format!("/activities/{:}", room_id))
             NotificationItemInner::ChatMessage { room_id, .. } => todo!(),
             NotificationItemInner::Boost { first_slide } => todo!(),
             NotificationItemInner::Comment {
-                parent_obj,
+                parent_obj: Some(parent),
+                event_id,
+                ..
+            } => format!(
+                "{}?section=comments&commentId={}",
+                parent.target_url(),
+                encode(event_id.as_str()),
+            ),
+            // -- fallback when the parent isn't there.
+            NotificationItemInner::Comment {
+                event_id,
+                room_id,
                 parent_id,
-                content,
-            } => todo!(),
+                ..
+            } => {
+                format!(
+                    "/forward?eventId={}&roomId={}&parentId={}",
+                    encode(event_id.as_str()),
+                    encode(room_id.as_str()),
+                    encode(parent_id.as_str())
+                )
+            }
         }
     }
 
@@ -223,8 +314,11 @@ impl NotificationItemInner {
         }
     }
 
-    pub fn parent(&self) -> Option<AnyActerModel> {
-        None
+    pub fn parent(&self) -> Option<NotificationItemParent> {
+        match self {
+            NotificationItemInner::Comment { parent_obj, .. } => parent_obj.clone(),
+            _ => None,
+        }
     }
 
     pub fn body(&self) -> Option<MsgContent> {
@@ -323,8 +417,14 @@ impl NotificationItem {
     pub fn body(&self) -> Option<MsgContent> {
         self.inner.body()
     }
-    pub fn parent(&self) -> Option<AnyActerModel> {
+    pub fn parent(&self) -> Option<NotificationItemParent> {
         self.inner.parent()
+    }
+    pub fn parent_id_str(&self) -> Option<String> {
+        match &self.inner {
+            NotificationItemInner::Comment { parent_id, .. } => Some(parent_id.to_string()),
+            _ => None,
+        }
     }
     pub fn noisy(&self) -> bool {
         self.noisy.unwrap_or_default()
@@ -463,12 +563,15 @@ impl NotificationItem {
                     .map_err(|error| {
                         tracing::error!(?error, "Error loading parent of comment");
                     })
-                    .ok();
+                    .ok()
+                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
                 let content = e.content.content;
                 Ok(builder
                     .inner(NotificationItemInner::Comment {
                         parent_obj,
                         parent_id: e.content.on.event_id,
+                        room_id: e.room_id,
+                        event_id: e.event_id,
                         content,
                     })
                     .build()?)
