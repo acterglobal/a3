@@ -79,7 +79,7 @@ fn make_notification_key(parent_id: &str, sub_type: Option<&String>) -> String {
 fn make_push_rule(parent_id: &str, sub_type: Option<&String>) -> NewConditionalPushRule {
     let push_key = make_notification_key(parent_id, sub_type);
     let mut conditions = vec![PushCondition::EventPropertyIs {
-        key: "content.m\\.relates_to".to_owned(),
+        key: "content.m\\.relates_to.event_id".to_owned(),
         value: parent_id.to_owned().into(),
     }];
     if let Some(event_type) = sub_type {
@@ -92,7 +92,7 @@ fn make_push_rule(parent_id: &str, sub_type: Option<&String>) -> NewConditionalP
 }
 
 /// The status the subscription has
-#[derive(Clone, Debug, Display)]
+#[derive(Clone, Debug, Display, PartialEq, Eq)]
 #[strum(serialize_all = "camelCase")]
 pub enum SubscriptionStatus {
     /// The user shall receive notifications about the

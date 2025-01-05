@@ -103,6 +103,7 @@ pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::UserProfile;
 pub use push::{
     NotificationItem, NotificationRoom, NotificationSender, NotificationSettings, Pusher,
+    SubscriptionStatus,
 };
 pub use reactions::{Reaction, ReactionManager};
 pub use read_receipts::ReadReceiptsManager;

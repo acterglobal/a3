@@ -4,6 +4,8 @@ use tokio_retry::{
     Retry,
 };
 
+use acter::api::SubscriptionStatus;
+
 use crate::utils::random_users_with_random_space_under_template;
 
 const TMPL: &str = r#"
@@ -49,7 +51,7 @@ async fn comment_on_news() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let news_entry = Retry::spawn(retry_strategy, move || {
+    let news_entry = Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         async move {
             let news_entries = client.latest_news_entries(1).await?;
@@ -62,11 +64,28 @@ async fn comment_on_news() -> Result<()> {
     .await?;
 
     // ensure we are expected to see these notifications
-    let _ = first
-        .notification_settings()
-        .await?
-        .object_push_subscription_status_str(news_entry.event_id().to_string(), None)
-        .await?;
+    let notif_settings = first.notification_settings().await?;
+    let obj_id = news_entry.event_id().to_string();
+
+    notif_settings
+        .subscribe_object_push(obj_id.clone(), None)
+        .await
+        .expect("setting notifications subscription works");
+    // ensure this has been locally synced
+    let fetcher_client = notif_settings.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        let obj_id = obj_id.clone();
+        async move {
+            if client.object_push_subscription_status(obj_id, None).await?
+                != SubscriptionStatus::Subscribed
+            {
+                bail!("not yet subscribed");
+            }
+            Ok(())
+        }
+    })
+    .await?;
 
     let comments = news_entry.comments().await?;
     let mut draft = comments.comment_draft()?;
@@ -77,5 +96,7 @@ async fn comment_on_news() -> Result<()> {
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
         .await?;
     assert_eq!(notification_item.push_style(), "comment");
+    let content = notification_item.body().expect("found content");
+    assert_eq!(content.body(), "this is great");
     Ok(())
 }

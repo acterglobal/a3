@@ -3,6 +3,7 @@ use acter_core::{
         news::{FallbackNewsContent, NewsContent},
         AnyActerEvent, SyncAnyActerEvent,
     },
+    models::AnyActerModel,
     push::default_rules,
 };
 use anyhow::{bail, Context, Result};
@@ -39,9 +40,9 @@ use matrix_sdk_ui::notification_client::{
 };
 use ruma::{
     api::client::push::PushRule,
-    events::policy::rule,
+    events::{policy::rule, room::message::TextMessageEventContent},
     push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
-    OwnedDeviceId,
+    OwnedDeviceId, OwnedEventId,
 };
 use std::{ops::Deref, os::unix::process::parent_id, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -170,6 +171,11 @@ pub enum NotificationItemInner {
     Boost {
         first_slide: Option<NewsContent>,
     },
+    Comment {
+        parent_obj: Option<AnyActerModel>,
+        parent_id: OwnedEventId,
+        content: TextMessageEventContent,
+    },
 }
 
 impl NotificationItemInner {
@@ -177,6 +183,7 @@ impl NotificationItemInner {
         match &self {
             NotificationItemInner::Fallback { .. } => "fallback",
             NotificationItemInner::Invite { .. } => "invite",
+            NotificationItemInner::Comment { .. } => "comment",
             NotificationItemInner::ChatMessage { is_dm, .. } => {
                 if *is_dm {
                     "dm"
@@ -200,6 +207,11 @@ impl NotificationItemInner {
             // .target_url(format!("/activities/{:}", room_id))
             NotificationItemInner::ChatMessage { room_id, .. } => todo!(),
             NotificationItemInner::Boost { first_slide } => todo!(),
+            NotificationItemInner::Comment {
+                parent_obj,
+                parent_id,
+                content,
+            } => todo!(),
         }
     }
 
@@ -228,6 +240,7 @@ impl NotificationItemInner {
                 }
                 _ => None,
             },
+            NotificationItemInner::Comment { content, .. } => Some(MsgContent::from(content)),
             NotificationItemInner::Boost {
                 first_slide: Some(first_slide),
             } => match &first_slide {
@@ -432,6 +445,25 @@ impl NotificationItem {
                 let first_slide = e.content.slides.first().map(|a| a.content().clone());
                 Ok(builder
                     .inner(NotificationItemInner::Boost { first_slide })
+                    .build()?)
+            }
+
+            AnyActerEvent::Comment(MessageLikeEvent::Original(e)) => {
+                let parent_obj = client
+                    .store()
+                    .get(e.content.on.event_id.as_str())
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of comment");
+                    })
+                    .ok();
+                let content = e.content.content;
+                Ok(builder
+                    .inner(NotificationItemInner::Comment {
+                        parent_obj,
+                        parent_id: e.content.on.event_id,
+                        content,
+                    })
                     .build()?)
             }
             _ => {
