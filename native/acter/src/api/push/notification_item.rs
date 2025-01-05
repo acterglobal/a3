@@ -155,35 +155,58 @@ impl NotificationRoom {
 }
 #[derive(Clone, Debug)]
 pub enum NotificationItemParent {
-    News { parent_id: OwnedEventId },
+    News {
+        parent_id: OwnedEventId,
+    },
+    Pin {
+        parent_id: OwnedEventId,
+        title: String,
+    },
+    CalendarEvent {
+        parent_id: OwnedEventId,
+        title: String,
+    },
 }
 
 impl NotificationItemParent {
     pub fn object_type_str(&self) -> String {
         match self {
             NotificationItemParent::News { .. } => "news",
+            NotificationItemParent::Pin { parent_id, title } => "pin",
+            NotificationItemParent::CalendarEvent { parent_id, title } => "event",
         }
         .to_owned()
     }
     pub fn object_id_str(&self) -> String {
         match self {
-            NotificationItemParent::News { parent_id } => parent_id.to_string(),
+            NotificationItemParent::News { parent_id }
+            | NotificationItemParent::Pin { parent_id, .. }
+            | NotificationItemParent::CalendarEvent { parent_id, .. } => parent_id.to_string(),
         }
     }
     pub fn title(&self) -> Option<String> {
-        None
+        match self {
+            NotificationItemParent::News { parent_id } => None,
+            NotificationItemParent::Pin { title, .. }
+            | NotificationItemParent::CalendarEvent { title, .. } => Some(title.clone()),
+        }
     }
 
     pub fn target_url(&self) -> String {
         match self {
-            NotificationItemParent::News { .. } => "/news", //
+            NotificationItemParent::News { .. } => "/news".to_owned(),
+            NotificationItemParent::Pin { parent_id, .. } => format!("/pins/{}", parent_id),
+            NotificationItemParent::CalendarEvent { parent_id, .. } => {
+                format!("/events/{}", parent_id)
+            } //
         }
-        .to_owned()
     }
 
     pub fn emoji(&self) -> String {
         match self {
             NotificationItemParent::News { .. } => "🚀", // boost rocket
+            NotificationItemParent::Pin { .. } => "📌",  // pin
+            NotificationItemParent::CalendarEvent { .. } => "🗓️", // calendar
         }
         .to_owned()
     }
@@ -197,8 +220,15 @@ impl TryFrom<&AnyActerModel> for NotificationItemParent {
             AnyActerModel::NewsEntry(e) => Ok(NotificationItemParent::News {
                 parent_id: e.event_id().to_owned(),
             }),
+            AnyActerModel::CalendarEvent(e) => Ok(NotificationItemParent::CalendarEvent {
+                parent_id: e.event_id().to_owned(),
+                title: e.title().clone(),
+            }),
+            AnyActerModel::Pin(e) => Ok(NotificationItemParent::Pin {
+                parent_id: e.event_id().to_owned(),
+                title: e.title().clone(),
+            }),
             AnyActerModel::RedactedActerModel(_)
-            | AnyActerModel::CalendarEvent(_)
             | AnyActerModel::CalendarEventUpdate(_)
             | AnyActerModel::TaskList(_)
             | AnyActerModel::TaskListUpdate(_)
@@ -206,7 +236,6 @@ impl TryFrom<&AnyActerModel> for NotificationItemParent {
             | AnyActerModel::TaskUpdate(_)
             | AnyActerModel::TaskSelfAssign(_)
             | AnyActerModel::TaskSelfUnassign(_)
-            | AnyActerModel::Pin(_)
             | AnyActerModel::PinUpdate(_)
             | AnyActerModel::NewsEntryUpdate(_)
             | AnyActerModel::Story(_)

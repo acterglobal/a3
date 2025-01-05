@@ -34,11 +34,6 @@ type = "pin"
 title = "Acter Website"
 url = "https://acter.global"
 
-[objects.acter-source-pin]
-type = "pin"
-title = "Acter Source Code"
-url = "https://github.com/acterglobal/a3"
-
 "#;
 
 #[tokio::test]
@@ -199,7 +194,7 @@ async fn comment_on_pin() -> Result<()> {
         )
     );
     assert_eq!(parent.object_type_str(), "pin".to_owned());
-    assert_eq!(parent.title(), None);
+    assert_eq!(parent.title().unwrap(), "Acter Website".to_owned());
     assert_eq!(parent.emoji(), "📌"); // pin
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -282,9 +277,9 @@ async fn comment_on_calendar_events() -> Result<()> {
             encode(notification_ev.as_str())
         )
     );
-    assert_eq!(parent.object_type_str(), "pin".to_owned());
-    assert_eq!(parent.title(), None);
-    assert_eq!(parent.emoji(), "📌"); // pin
+    assert_eq!(parent.object_type_str(), "event".to_owned());
+    assert_eq!(parent.title().unwrap(), "Onboarding on Acter".to_owned());
+    assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), obj_id);
 
     Ok(())
