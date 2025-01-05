@@ -22,26 +22,10 @@ slides = [
   { body = "This is the news section. Swipe down for more.", info = { size = 3264047, mimetype = "image/jpeg", thumbnail_info = { w = 400, h = 600, mimetype = "image/jpeg", size = 130511 }, w = 3840, h = 5760, "xyz.amorgan.blurhash" = "TQF=,g?uIo},={X5$c#+V@t2sRjF", thumbnail_url = "mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD" }, msgtype = "m.image", url = "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG" }
 ]
 
-[objects.acter-event-1]
-type = "calendar-event"
-title = "Onboarding on Acter"
-utc_start = "{{ future(add_mins=1).as_rfc3339 }}"
-utc_end = "{{ future(add_mins=60).as_rfc3339 }}"
-
-[objects.acter-website-pin]
-type = "pin"
-title = "Acter Website"
-url = "https://acter.global"
-
-[objects.acter-source-pin]
-type = "pin"
-title = "Acter Source Code"
-url = "https://github.com/acterglobal/a3"
-
 "#;
 
 #[tokio::test]
-async fn likes_on_news() -> Result<()> {
+async fn like_on_news() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
         random_users_with_random_space_under_template("likeOnboost", 2, TMPL).await?;
 
@@ -93,14 +77,19 @@ async fn likes_on_news() -> Result<()> {
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
         .await?;
-    assert_eq!(notification_item.push_style(), "like");
+    assert_eq!(notification_item.push_style(), "reaction");
     assert_eq!(
         notification_item
             .parent_id_str()
             .expect("parent is in like"),
         news_entry.event_id().to_string()
     );
+    assert!(notification_item.body().is_none());
+    assert_eq!(notification_item.reaction_key(), Some("❤️".to_owned()));
     let parent = notification_item.parent().expect("parent was found");
+    assert_eq!(parent.title(), None);
+    assert_eq!(parent.emoji(), "🚀"); // rocket
+    assert_eq!(parent.object_id_str(), news_entry.event_id().to_string());
 
     Ok(())
 }

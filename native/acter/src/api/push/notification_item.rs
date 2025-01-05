@@ -280,6 +280,13 @@ pub enum NotificationItemInner {
         event_id: OwnedEventId,
         content: TextMessageEventContent,
     },
+    Reaction {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+        key: String,
+    },
 }
 
 impl NotificationItemInner {
@@ -288,6 +295,7 @@ impl NotificationItemInner {
             NotificationItemInner::Fallback { .. } => "fallback",
             NotificationItemInner::Invite { .. } => "invite",
             NotificationItemInner::Comment { .. } => "comment",
+            NotificationItemInner::Reaction { .. } => "reaction",
             NotificationItemInner::ChatMessage { is_dm, .. } => {
                 if *is_dm {
                     "dm"
@@ -318,11 +326,26 @@ impl NotificationItemInner {
                 parent.target_url(),
                 encode(event_id.as_str()),
             ),
+            NotificationItemInner::Reaction {
+                parent_obj: Some(parent),
+                event_id,
+                ..
+            } => format!(
+                "{}?section=reactions&reactionId={}",
+                parent.target_url(),
+                encode(event_id.as_str()),
+            ),
             // -- fallback when the parent isn't there.
             NotificationItemInner::Comment {
                 event_id,
                 room_id,
                 parent_id,
+                ..
+            }
+            | NotificationItemInner::Reaction {
+                parent_id,
+                room_id,
+                event_id,
                 ..
             } => {
                 format!(
@@ -345,7 +368,22 @@ impl NotificationItemInner {
 
     pub fn parent(&self) -> Option<NotificationItemParent> {
         match self {
-            NotificationItemInner::Comment { parent_obj, .. } => parent_obj.clone(),
+            NotificationItemInner::Comment { parent_obj, .. }
+            | NotificationItemInner::Reaction { parent_obj, .. } => parent_obj.clone(),
+            _ => None,
+        }
+    }
+    pub fn parent_id_str(&self) -> Option<String> {
+        match self {
+            NotificationItemInner::Comment { parent_id, .. }
+            | NotificationItemInner::Reaction { parent_id, .. } => Some(parent_id.to_string()),
+            _ => None,
+        }
+    }
+
+    pub fn reaction_key(&self) -> Option<String> {
+        match &self {
+            NotificationItemInner::Reaction { key, .. } => Some(key.clone()),
             _ => None,
         }
     }
@@ -424,15 +462,20 @@ pub struct NotificationItem {
     pub(crate) inner: NotificationItemInner,
 }
 
+impl Deref for NotificationItem {
+    type Target = NotificationItemInner;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
 impl NotificationItem {
     pub fn title(&self) -> String {
         self.title.clone()
     }
     pub fn push_style(&self) -> String {
         self.inner.key()
-    }
-    pub fn target_url(&self) -> String {
-        self.inner.target_url()
     }
     pub fn sender(&self) -> NotificationSender {
         self.sender.clone()
@@ -442,18 +485,6 @@ impl NotificationItem {
     }
     pub fn icon_url(&self) -> Option<String> {
         self.icon_url.clone()
-    }
-    pub fn body(&self) -> Option<MsgContent> {
-        self.inner.body()
-    }
-    pub fn parent(&self) -> Option<NotificationItemParent> {
-        self.inner.parent()
-    }
-    pub fn parent_id_str(&self) -> Option<String> {
-        match &self.inner {
-            NotificationItemInner::Comment { parent_id, .. } => Some(parent_id.to_string()),
-            _ => None,
-        }
     }
     pub fn noisy(&self) -> bool {
         self.noisy.unwrap_or_default()
@@ -583,7 +614,6 @@ impl NotificationItem {
                     .inner(NotificationItemInner::Boost { first_slide })
                     .build()?)
             }
-
             AnyActerEvent::Comment(MessageLikeEvent::Original(e)) => {
                 let parent_obj = client
                     .store()
@@ -602,6 +632,27 @@ impl NotificationItem {
                         room_id: e.room_id,
                         event_id: e.event_id,
                         content,
+                    })
+                    .build()?)
+            }
+
+            AnyActerEvent::Reaction(MessageLikeEvent::Original(e)) => {
+                let parent_obj = client
+                    .store()
+                    .get(e.content.relates_to.event_id.as_str())
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of reaction");
+                    })
+                    .ok()
+                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
+                Ok(builder
+                    .inner(NotificationItemInner::Reaction {
+                        parent_obj,
+                        parent_id: e.content.relates_to.event_id,
+                        room_id: e.room_id,
+                        event_id: e.event_id,
+                        key: e.content.relates_to.key,
                     })
                     .build()?)
             }
