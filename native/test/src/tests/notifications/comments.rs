@@ -4,7 +4,7 @@ use tokio_retry::{
     Retry,
 };
 
-use acter::api::SubscriptionStatus;
+use acter::{api::SubscriptionStatus, ActerModel};
 use urlencoding::encode;
 
 use crate::utils::random_users_with_random_space_under_template;
@@ -118,6 +118,174 @@ async fn comment_on_news() -> Result<()> {
     assert_eq!(parent.title(), None);
     assert_eq!(parent.emoji(), "🚀"); // rocket
     assert_eq!(parent.object_id_str(), news_entry.event_id().to_string());
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn comment_on_pin() -> Result<()> {
+    let (users, _sync_states, space_id, _engine) =
+        random_users_with_random_space_under_template("cOnpin", 2, TMPL).await?;
+
+    let first = users.first().expect("exists");
+    let second_user = &users[1];
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let fetcher_client = second_user.clone();
+    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            let entries = client.pins().await?;
+            if entries.is_empty() {
+                bail!("entries not found found");
+            }
+            Ok(entries[0].clone())
+        }
+    })
+    .await?;
+
+    // ensure we are expected to see these notifications
+    let notif_settings = first.notification_settings().await?;
+    let obj_id = obj_entry.event_id().to_string();
+
+    notif_settings
+        .subscribe_object_push(obj_id.clone(), None)
+        .await
+        .expect("setting notifications subscription works");
+    // ensure this has been locally synced
+    let fetcher_client = notif_settings.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        let obj_id = obj_id.clone();
+        async move {
+            if client.object_push_subscription_status(obj_id, None).await?
+                != SubscriptionStatus::Subscribed
+            {
+                bail!("not yet subscribed");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let comments = obj_entry.comments().await?;
+    let mut draft = comments.comment_draft()?;
+    draft.content_text("now we just need to find dory".to_owned());
+    let notification_ev = draft.send().await?;
+
+    let notification_item = first
+        .get_notification_item(space_id.to_string(), notification_ev.to_string())
+        .await?;
+    assert_eq!(notification_item.push_style(), "comment");
+    assert_eq!(
+        notification_item
+            .parent_id_str()
+            .expect("parent is in comment"),
+        obj_entry.event_id().to_string()
+    );
+
+    let obj_id = obj_entry.event_id().to_string();
+
+    let content = notification_item.body().expect("found content");
+    assert_eq!(content.body(), "now we just need to find dory");
+    let parent = notification_item.parent().expect("parent was found");
+    assert_eq!(
+        notification_item.target_url(),
+        format!(
+            "/pins/{}?section=comments&commentId={}",
+            obj_id,
+            encode(notification_ev.as_str())
+        )
+    );
+    assert_eq!(parent.object_type_str(), "pin".to_owned());
+    assert_eq!(parent.title(), None);
+    assert_eq!(parent.emoji(), "📌"); // pin
+    assert_eq!(parent.object_id_str(), obj_id);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn comment_on_calendar_events() -> Result<()> {
+    let (users, _sync_states, space_id, _engine) =
+        random_users_with_random_space_under_template("cOnpin", 2, TMPL).await?;
+
+    let first = users.first().expect("exists");
+    let second_user = &users[1];
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let fetcher_client = second_user.clone();
+    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            let entries = client.calendar_events().await?;
+            if entries.is_empty() {
+                bail!("entries not found found");
+            }
+            Ok(entries[0].clone())
+        }
+    })
+    .await?;
+
+    // ensure we are expected to see these notifications
+    let notif_settings = first.notification_settings().await?;
+    let obj_id = obj_entry.event_id().to_string();
+
+    notif_settings
+        .subscribe_object_push(obj_id.clone(), None)
+        .await
+        .expect("setting notifications subscription works");
+    // ensure this has been locally synced
+    let fetcher_client = notif_settings.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        let obj_id = obj_id.clone();
+        async move {
+            if client.object_push_subscription_status(obj_id, None).await?
+                != SubscriptionStatus::Subscribed
+            {
+                bail!("not yet subscribed");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let comments = obj_entry.comments().await?;
+    let mut draft = comments.comment_draft()?;
+    draft.content_text("looking forward to it".to_owned());
+    let notification_ev = draft.send().await?;
+
+    let notification_item = first
+        .get_notification_item(space_id.to_string(), notification_ev.to_string())
+        .await?;
+    assert_eq!(notification_item.push_style(), "comment");
+    assert_eq!(
+        notification_item
+            .parent_id_str()
+            .expect("parent is in comment"),
+        obj_entry.event_id().to_string()
+    );
+
+    let obj_id = obj_entry.event_id().to_string();
+
+    let content = notification_item.body().expect("found content");
+    assert_eq!(content.body(), "looking forward to it");
+    let parent = notification_item.parent().expect("parent was found");
+    assert_eq!(
+        notification_item.target_url(),
+        format!(
+            "/events/{}?section=comments&commentId={}",
+            obj_id,
+            encode(notification_ev.as_str())
+        )
+    );
+    assert_eq!(parent.object_type_str(), "pin".to_owned());
+    assert_eq!(parent.title(), None);
+    assert_eq!(parent.emoji(), "📌"); // pin
+    assert_eq!(parent.object_id_str(), obj_id);
 
     Ok(())
 }
