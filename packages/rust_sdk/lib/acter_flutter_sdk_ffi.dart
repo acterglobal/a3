@@ -27916,6 +27916,17 @@ class Api {
           _NotificationItemTargetUrlReturn Function(
             int,
           )>();
+  late final _notificationItemReactionKeyPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemReactionKeyReturn Function(
+            ffi.IntPtr,
+          )>>("__NotificationItem_reaction_key");
+
+  late final _notificationItemReactionKey =
+      _notificationItemReactionKeyPtr.asFunction<
+          _NotificationItemReactionKeyReturn Function(
+            int,
+          )>();
   late final _notificationItemBodyPtr = _lookup<
       ffi.NativeFunction<
           _NotificationItemBodyReturn Function(
@@ -57086,6 +57097,39 @@ class NotificationItem {
     return tmp2;
   }
 
+  String? reactionKey() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemReactionKey(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
   MsgContent? body() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -65213,6 +65257,17 @@ class _NotificationItemTargetUrlReturn extends ffi.Struct {
   external int arg1;
   @ffi.UintPtr()
   external int arg2;
+}
+
+class _NotificationItemReactionKeyReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
 }
 
 class _NotificationItemBodyReturn extends ffi.Struct {

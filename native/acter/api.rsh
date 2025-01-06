@@ -2791,6 +2791,7 @@ object NotificationItem {
     fn parent_id_str() -> Option<string>;
     fn room() -> NotificationRoom;
     fn target_url() -> string;
+    fn reaction_key() -> Option<string>;
     fn body() -> Option<MsgContent>;
     fn icon_url() -> Option<string>;
     fn thread_id() -> Option<string>;

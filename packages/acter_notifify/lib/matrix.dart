@@ -83,6 +83,7 @@ Future<bool> handleMatrixMessage(
 (String, String?) genTitleAndBody(NotificationItem notification) =>
     switch (notification.pushStyle()) {
       "comment" => _titleAndBodyForComment(notification),
+      "reaction" => _titleAndBodyForReaction(notification),
       _ => _fallbackTitleAndBody(notification),
     };
 
@@ -111,6 +112,21 @@ String _parentPart(NotificationItemParent parent) {
   final username = sender.displayName() ?? sender.userId();
 
   return (title, "$username: $comment");
+}
+
+(String, String?) _titleAndBodyForReaction(NotificationItem notification) {
+  final parent = notification.parent();
+  final reaction = notification.reactionKey() ?? '❤️';
+  String title = '"$reaction"';
+  if (parent != null) {
+    final parentInfo = _parentPart(parent);
+    title = "$title to $parentInfo";
+  }
+
+  final sender = notification.sender();
+  final username = sender.displayName() ?? sender.userId();
+
+  return (title, username);
 }
 
 Future<void> _showNotification(NotificationItem notification) async {
