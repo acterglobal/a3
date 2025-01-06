@@ -2774,6 +2774,12 @@ object NotificationRoom {
     fn image() -> Future<Result<buffer<u8>>>;
 }
 
+object NotificationItemParent {
+    fn object_type_str() -> string;
+    fn object_id_str() -> string;
+    fn title() -> Option<string>;
+    fn emoji() -> string;
+}
 
 // converting a room_id+event_id into the notification item to show
 // from push context.
@@ -2781,6 +2787,8 @@ object NotificationItem {
     fn push_style() -> string;
     fn title() -> string;
     fn sender() -> NotificationSender;
+    fn parent() -> Option<NotificationItemParent>;
+    fn parent_id_str() -> Option<string>;
     fn room() -> NotificationRoom;
     fn target_url() -> string;
     fn body() -> Option<MsgContent>;

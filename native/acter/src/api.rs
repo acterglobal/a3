@@ -102,8 +102,8 @@ pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, New
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::UserProfile;
 pub use push::{
-    NotificationItem, NotificationRoom, NotificationSender, NotificationSettings, Pusher,
-    SubscriptionStatus,
+    NotificationItem, NotificationItemParent, NotificationRoom, NotificationSender,
+    NotificationSettings, Pusher, SubscriptionStatus,
 };
 pub use reactions::{Reaction, ReactionManager};
 pub use read_receipts::ReadReceiptsManager;
