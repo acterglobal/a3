@@ -2970,6 +2970,9 @@ object Client {
     /// Get the verification event receiver
     fn verification_event_rx() -> Stream<VerificationEvent>;
 
+    /// Get the verification request event receiver
+    fn verification_request_event_rx() -> Stream<VerificationRequestEvent>;
+
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
 

@@ -1,5 +1,5 @@
 use anyhow::{bail, Result};
-use futures::stream::StreamExt;
+use futures::stream::{Stream, StreamExt};
 use matrix_sdk::{
     encryption::{
         identities::UserIdentity,
@@ -7,13 +7,13 @@ use matrix_sdk::{
         Encryption,
     },
     event_handler::{Ctx, EventHandlerHandle},
-    Client,
+    Client as SdkClient,
 };
 use matrix_sdk_base::ruma::{
     events::{key::verification::VerificationMethod, AnyToDeviceEvent},
     UserId,
 };
-use std::sync::Arc;
+use std::{marker::Unpin, sync::Arc};
 use tokio::sync::{
     broadcast::{channel, Receiver, Sender},
     RwLock,
@@ -21,7 +21,7 @@ use tokio::sync::{
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info};
 
-use super::RUNTIME;
+use super::{Client, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct SessionVerificationEmoji {
@@ -262,7 +262,7 @@ impl SessionVerificationController {
     }
 
     // to_device event is intended to verify other device
-    pub(crate) fn add_to_device_event_handler(&mut self, client: &Client) {
+    pub(crate) fn add_to_device_event_handler(&mut self, client: &SdkClient) {
         client.add_event_handler_context(self.clone());
         let handle = client.add_event_handler(
             move |ev: AnyToDeviceEvent, Ctx(me): Ctx<SessionVerificationController>| async move {
@@ -308,7 +308,7 @@ impl SessionVerificationController {
         self.any_to_device_handle = Some(handle);
     }
 
-    pub(crate) fn remove_to_device_event_handler(&mut self, client: &Client) {
+    pub(crate) fn remove_to_device_event_handler(&mut self, client: &SdkClient) {
         if let Some(handle) = self.any_to_device_handle.clone() {
             client.remove_event_handler(handle);
             self.any_to_device_handle = None;
@@ -362,5 +362,17 @@ impl SessionVerificationController {
                 _ => {}
             }
         }
+    }
+}
+
+impl Client {
+    // this return value should be Unpin, because next() of this stream is called in wait_for_verification_request_event
+    // this return value should be wrapped in Box::pin, to make unpin possible
+    pub fn verification_request_event_rx(
+        &self,
+    ) -> impl Stream<Item = VerificationRequestEvent> + Unpin {
+        let mut stream =
+            BroadcastStream::new(self.session_verification_controller.event_rx.resubscribe());
+        Box::pin(stream.filter_map(|o| async move { o.ok() }))
     }
 }

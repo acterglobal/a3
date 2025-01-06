@@ -17283,6 +17283,42 @@ class Api {
     return tmp9;
   }
 
+  VerificationRequestEvent? __clientVerificationRequestEventRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientVerificationRequestEventRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_VerificationRequestEvent");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = VerificationRequestEvent._(this, tmp11_1);
+    return tmp9;
+  }
+
   DeviceEvent? __clientDeviceEventRxStreamPoll(
     int boxed,
     int postCobject,
@@ -28798,6 +28834,17 @@ class Api {
           int Function(
             int,
           )>();
+  late final _clientVerificationRequestEventRxPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Client_verification_request_event_rx");
+
+  late final _clientVerificationRequestEventRx =
+      _clientVerificationRequestEventRxPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _clientSessionManagerPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -35435,6 +35482,23 @@ class Api {
   late final _clientVerificationEventRxStreamPoll =
       _clientVerificationEventRxStreamPollPtr.asFunction<
           _ClientVerificationEventRxStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientVerificationRequestEventRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientVerificationRequestEventRxStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_verification_request_event_rx_stream_poll");
+
+  late final _clientVerificationRequestEventRxStreamPoll =
+      _clientVerificationRequestEventRxStreamPollPtr.asFunction<
+          _ClientVerificationRequestEventRxStreamPollReturn Function(
             int,
             int,
             int,
@@ -58780,6 +58844,23 @@ class Client {
     return tmp2;
   }
 
+  /// Get the verification request event receiver
+  Stream<VerificationRequestEvent> verificationRequestEventRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientVerificationRequestEventRx(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(
+        _api, tmp3_0, "__Client_verification_request_event_rx_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(
+        tmp3_1, _api.__clientVerificationRequestEventRxStreamPoll);
+    return tmp2;
+  }
+
   /// Get session manager that returns all/verified/unverified/inactive session list
   SessionManager sessionManager() {
     var tmp0 = 0;
@@ -70408,6 +70489,13 @@ class _ClientInvitationsRxStreamPollReturn extends ffi.Struct {
 }
 
 class _ClientVerificationEventRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ClientVerificationRequestEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
