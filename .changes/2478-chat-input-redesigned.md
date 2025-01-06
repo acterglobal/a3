@@ -1,0 +1,1 @@
+- [Labs] Chat-NG: now features redesigned chat input
