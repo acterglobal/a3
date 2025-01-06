@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:logging/logging.dart';
 
 // Chat Input Field Widget
@@ -93,7 +94,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     final lineCount = '\n'.allMatches(text).length;
 
     // Calculate new height based on line count
-    // Start with 5% and increase by 4% per line up to 20%
+    // Start with 5% and increase by 4% per line up to 15%
     setState(() {
       _cHeight = (0.05 + (lineCount - 1) * 0.04).clamp(0.05, 0.15);
     });
@@ -139,10 +140,12 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     final isKeyboardVisible = ref.watch(keyboardVisibleProvider).valueOrNull;
     final emojiPickerVisible = ref
         .watch(chatInputProvider.select((value) => value.emojiPickerVisible));
+    final isEncrypted =
+        ref.watch(isRoomEncryptedProvider(widget.roomId)).valueOrNull;
     final viewInsets = MediaQuery.viewInsetsOf(context).bottom;
     return Column(
       children: <Widget>[
-        renderEditorUI(emojiPickerVisible),
+        renderEditorUI(emojiPickerVisible, isEncrypted),
         // Emoji Picker UI
         if (emojiPickerVisible) ChatEmojiPicker(editorState: textEditorState),
         // adjust bottom viewport so toolbar doesn't obscure field when visible
@@ -153,7 +156,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   // chat editor UI
-  Widget renderEditorUI(bool emojiPickerVisible) {
+  Widget renderEditorUI(bool emojiPickerVisible, bool? isEncrypted) {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
@@ -168,7 +171,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       child: Row(
         children: [
           leadingBtn(emojiPickerVisible),
-          editorField(),
+          editorField(isEncrypted),
           trailingBtn(),
         ],
       ),
@@ -189,35 +192,39 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     chatInputNotifier.emojiPickerVisible(!emojiPickerVisible);
   }
 
-  Widget editorField() {
+  Widget editorField(bool? isEncrypted) {
     final widgetSize = MediaQuery.sizeOf(context);
+    final hintText = isEncrypted.map(
+      (v) => v == true
+          ? L10n.of(context).newEncryptedMessage
+          : L10n.of(context).newMessage,
+      orElse: () => L10n.of(context).newMessage,
+    );
     return Expanded(
-      child: IntrinsicHeight(
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 100),
-          height: widgetSize.height * _cHeight,
-          margin: const EdgeInsets.only(top: 16),
-          child: SingleChildScrollView(
-            child: IntrinsicHeight(
-              // keyboard shortcuts (desktop)
-              child: CallbackShortcuts(
-                bindings: <ShortcutActivator, VoidCallback>{
-                  const SingleActivator(LogicalKeyboardKey.enter): () =>
-                      sendMessageAction(
-                        roomId: widget.roomId,
-                        textEditorState: textEditorState,
-                        onTyping: widget.onTyping,
-                        context: context,
-                        ref: ref,
-                        log: _log,
-                      ),
-                  LogicalKeySet(
-                    LogicalKeyboardKey.enter,
-                    LogicalKeyboardKey.shift,
-                  ): () => textEditorState.insertNewLine(),
-                },
-                child: _renderEditor(),
-              ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        height: widgetSize.height * _cHeight,
+        margin: const EdgeInsets.only(top: 16),
+        child: SingleChildScrollView(
+          child: IntrinsicHeight(
+            // keyboard shortcuts (desktop)
+            child: CallbackShortcuts(
+              bindings: <ShortcutActivator, VoidCallback>{
+                const SingleActivator(LogicalKeyboardKey.enter): () =>
+                    sendMessageAction(
+                      roomId: widget.roomId,
+                      textEditorState: textEditorState,
+                      onTyping: widget.onTyping,
+                      context: context,
+                      ref: ref,
+                      log: _log,
+                    ),
+                LogicalKeySet(
+                  LogicalKeyboardKey.enter,
+                  LogicalKeyboardKey.shift,
+                ): () => textEditorState.insertNewLine(),
+              },
+              child: _renderEditor(hintText),
             ),
           ),
         ),
@@ -225,12 +232,13 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     );
   }
 
-  Widget _renderEditor() => Focus(
+  Widget _renderEditor(String? hintText) => Focus(
         focusNode: chatFocus,
         child: HtmlEditor(
           footer: null,
           // if provided, will activate mentions
           roomId: widget.roomId,
+          hintText: hintText,
           autoFocus: false,
           editable: true,
           shrinkWrap: true,

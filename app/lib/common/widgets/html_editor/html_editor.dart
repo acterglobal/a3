@@ -195,7 +195,9 @@ class HtmlEditorState extends State<HtmlEditor> {
   @override
   void dispose() {
     editorState.selectionNotifier.dispose();
-    editorScrollController.dispose();
+    if (widget.scrollController == null) {
+      editorScrollController.dispose();
+    }
     _changeListener?.cancel();
     super.dispose();
   }
@@ -211,6 +213,32 @@ class HtmlEditorState extends State<HtmlEditor> {
     final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
     final roomId = widget.roomId;
     return isDesktop ? desktopEditor(roomId) : mobileEditor(roomId);
+  }
+
+  Map<String, BlockComponentBuilder> _buildBlockComponentBuilders() {
+    final map = {...standardBlockComponentBuilderMap};
+    map[ParagraphBlockKeys.type] = ParagraphBlockComponentBuilder(
+      // only show placeholder at first line
+      showPlaceholder: (editorState, node) {
+        // safety check
+        if (node.path.isEmpty) return false;
+
+        // Check if entire document is empty
+        final doc = editorState.document;
+        final isEmpty = doc.root.children.every(
+          (node) => node.delta?.isEmpty ?? true,
+        );
+
+        // Show placeholder only on first line when document is empty
+        return isEmpty && node.path[0] == 0;
+      },
+      // (node.delta?.isEmpty ?? true),
+      configuration: BlockComponentConfiguration(
+        placeholderText: (node) => widget.hintText ?? ' ',
+      ),
+    );
+
+    return map;
   }
 
   Widget? generateFooter() {
@@ -288,6 +316,7 @@ class HtmlEditorState extends State<HtmlEditor> {
           editorState: editorState,
           editorStyle: desktopEditorStyle(),
           footer: generateFooter(),
+          blockComponentBuilders: _buildBlockComponentBuilders(),
           characterShortcutEvents: [
             ...standardCharacterShortcutEvents,
             if (roomId != null) ...mentionShortcuts(context, roomId),
@@ -356,7 +385,7 @@ class HtmlEditorState extends State<HtmlEditor> {
                     widget.scrollController ?? editorScrollController,
                 editorStyle: mobileEditorStyle(),
                 footer: generateFooter(),
-                blockComponentBuilders: standardBlockComponentBuilderMap,
+                blockComponentBuilders: _buildBlockComponentBuilders(),
                 characterShortcutEvents: [
                   ...standardCharacterShortcutEvents,
                   if (roomId != null) ...mentionShortcuts(context, roomId),
