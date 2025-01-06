@@ -86,15 +86,8 @@ Future<bool> handleMatrixMessage(
       _ => _fallbackTitleAndBody(notification),
     };
 
-(String, String?) _fallbackTitleAndBody(NotificationItem notification) {
-  String? body;
-  String title = notification.title();
-  final msg = notification.body();
-  if (msg != null) {
-    body = msg.body();
-  }
-  return (title, body);
-}
+(String, String?) _fallbackTitleAndBody(NotificationItem notification) =>
+    (notification.title(), notification.body()?.body());
 
 String _parentPart(NotificationItemParent parent) {
   final emoji = parent.emoji();
@@ -113,7 +106,11 @@ String _parentPart(NotificationItemParent parent) {
     title = "$title on $parentInfo";
   }
 
-  return (title, null);
+  final comment = notification.body()?.body();
+  final sender = notification.sender();
+  final username = sender.displayName() ?? sender.userId();
+
+  return (title, "$username: $comment");
 }
 
 Future<void> _showNotification(NotificationItem notification) async {
