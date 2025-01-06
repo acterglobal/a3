@@ -322,6 +322,7 @@ class HtmlEditorState extends State<HtmlEditor> {
             if (roomId != null) ...mentionShortcuts(context, roomId),
           ],
           commandShortcutEvents: [...standardCommandShortcutEvents],
+          disableAutoScroll: true,
         ),
       ),
     );
