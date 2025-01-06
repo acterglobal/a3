@@ -47,35 +47,31 @@ void main() {
           renderableChatMessagesProvider
               .overrideWith((ref, roomId) => ['A1', 'A2', 'B1']),
           chatRoomMessageProvider.overrideWith((ref, roomMsgId) {
-            final uniqueId = roomMsgId.$2;
-            switch (uniqueId) {
-              case 'A1':
-                return userMsgA1;
-              case 'A2':
-                return userMsgA2;
-              case 'B1':
-                return userMsgB1;
-              default:
-                return null;
-            }
+            final uniqueId = roomMsgId.uniqueId;
+            return switch (uniqueId) {
+              'A1' => userMsgA1,
+              'A2' => userMsgA2,
+              'B1' => userMsgB1,
+              _ => null,
+            };
           }),
         ],
       );
 
       test('shows avatar for last message in the list', () {
-        final RoomMsgId query = ('test-room', 'B1');
+        final RoomMsgId query = (roomId: 'test-room', uniqueId: 'B1');
         final result = container.read(isNextMessageGroupProvider(query));
         expect(result, false);
       });
 
       test('shows avatar when next message is from different user', () {
-        final RoomMsgId query = ('test-room', 'A2');
+        final RoomMsgId query = (roomId: 'test-room', uniqueId: 'A2');
         final result = container.read(isNextMessageGroupProvider(query));
         expect(result, false);
       });
 
       test('hides avatar when next message is from same user', () {
-        final RoomMsgId query = ('test-room', 'A1');
+        final RoomMsgId query = (roomId: 'test-room', uniqueId: 'A1');
         final result = container.read(isNextMessageGroupProvider(query));
         expect(result, true);
       });

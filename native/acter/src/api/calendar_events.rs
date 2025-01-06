@@ -4,7 +4,7 @@ use acter_core::{
             self as calendar_events, CalendarEventBuilder, EventLocation, EventLocationInfo,
         },
         rsvp::RsvpStatus,
-        CalendarEventRefPreview, RefDetails, RefPreview, UtcDateTime,
+        CalendarEventRefPreview, RefDetails as CoreRefDetails, UtcDateTime,
     },
     models::{self, can_redact, ActerModel, AnyActerModel},
     statics::KEYS,
@@ -13,11 +13,13 @@ use anyhow::{bail, Result};
 use chrono::DateTime;
 use futures::stream::StreamExt;
 use icalendar::Calendar as iCalendar;
-use matrix_sdk::{room::Room, RoomState};
-use matrix_sdk_base::ruma::{
-    events::{room::message::TextMessageEventContent, MessageLikeEventType},
-    serde::PartialEqAsRefStr,
-    OwnedEventId, OwnedRoomId, OwnedUserId,
+use matrix_sdk::room::Room;
+use matrix_sdk_base::{
+    ruma::{
+        events::{room::message::TextMessageEventContent, MessageLikeEventType},
+        OwnedEventId, OwnedRoomId, OwnedUserId,
+    },
+    RoomState,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -27,7 +29,9 @@ use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
 
-use super::{client::Client, common::OptionRsvpStatus, spaces::Space, RUNTIME};
+use super::{
+    client::Client, common::OptionRsvpStatus, deep_linking::RefDetails, spaces::Space, RUNTIME,
+};
 
 impl Client {
     pub async fn wait_for_calendar_event(
@@ -324,6 +328,7 @@ impl CalendarEvent {
 
     pub async fn ref_details(&self) -> Result<RefDetails> {
         let room = self.room.clone();
+        let client = self.client.clone();
         let target_id = self.inner.event_id().to_owned();
         let room_id = self.room.room_id().to_owned();
         let title = self.inner.title.clone();
@@ -334,33 +339,23 @@ impl CalendarEvent {
             .spawn(async move {
                 let via = room.route().await?;
                 let room_display_name = room.cached_display_name();
-                Ok(RefDetails::CalendarEvent {
-                    target_id,
-                    room_id: Some(room_id),
-                    via,
-                    preview: CalendarEventRefPreview::new(
-                        Some(title),
-                        room_display_name,
-                        Some(participants),
-                        Some(start_at_utc),
-                    ),
-                    action: Default::default(),
-                })
+                Ok(RefDetails::new(
+                    client,
+                    CoreRefDetails::CalendarEvent {
+                        target_id,
+                        room_id: Some(room_id),
+                        via,
+                        preview: CalendarEventRefPreview::new(
+                            Some(title),
+                            room_display_name,
+                            Some(participants),
+                            Some(start_at_utc),
+                        ),
+                        action: Default::default(),
+                    },
+                ))
             })
             .await?
-    }
-
-    pub fn internal_link(&self) -> String {
-        let target_id = &self.inner.event_id().to_string()[1..];
-        let room_id = &self.room.room_id().to_string()[1..];
-        format!("acter:o/{room_id}/calendarEvent/{target_id}")
-    }
-
-    pub async fn external_link(&self) -> Result<String> {
-        let ref_details = self.ref_details().await?;
-        self.client
-            .generate_external_link_for_ref(ref_details)
-            .await
     }
 }
 

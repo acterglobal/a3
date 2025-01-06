@@ -3,6 +3,7 @@ import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/datetime/providers/utc_now_provider.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
+import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/event_list_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
@@ -103,21 +104,16 @@ void main() {
           listProvider: finalListProvider,
         ),
       );
-      // Act
-      await tester.pumpAndSettle(); // Allow the widget to settle
+      // Initial build
+      await tester.pump();
 
-      // Assert
+      // Wait for async operations
+      await tester.pump(const Duration(seconds: 1));
+
       expect(
-        find.text('Fake Event1'),
-        findsOne,
-      );
-      expect(
-        find.text('Fake Event2'),
-        findsOne,
-      );
-      expect(
-        find.text('Fake Event3'),
-        findsOne,
+        find.byType(EventItem),
+        findsNWidgets(3),
+        reason: 'Should find 3 EventItem widgets',
       );
     });
   });

@@ -3,13 +3,14 @@ import 'package:acter/common/widgets/event/event_selector_drawer.dart';
 import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/common/widgets/task/taskList_selector_drawer.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/news/model/news_post_color_data.dart';
 import 'package:acter/features/news/model/news_post_state.dart';
-import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:riverpod/riverpod.dart';
 
 final newsStateProvider =
@@ -33,12 +34,6 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
       context: context,
       canCheck: 'CanPostNews',
     );
-    //Clear object reference if news post id gets changes
-    state.currentNewsSlide?.newsReferencesModel = null;
-    for (final slide in state.newsSlideList) {
-      slide.newsReferencesModel = null;
-    }
-
     state = state.copyWith(newsPostSpaceId: spaceId);
   }
 
@@ -55,89 +50,40 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   }
 
   Future<void> selectEventToShare(BuildContext context) async {
-    final lang = L10n.of(context);
-    final newsPostSpaceId = state.newsPostSpaceId ??
-        await selectSpaceDrawer(
-          context: context,
-          canCheck: 'CanPostNews',
-        );
-    state = state.copyWith(newsPostSpaceId: newsPostSpaceId);
-
-    if (newsPostSpaceId == null) {
-      EasyLoading.showToast(lang.pleaseFirstSelectASpace);
-      return;
+    final eventId = await selectEventDrawer(context: context);
+    RefDetails? refDetails;
+    if (eventId != null) {
+      final selectedEvent =
+          await ref.watch(calendarEventProvider(eventId).future);
+      refDetails = await selectedEvent.refDetails();
     }
-    if (!context.mounted) {
-      return;
-    }
-    final eventId = await selectEventDrawer(
-      context: context,
-      spaceId: newsPostSpaceId,
-    );
-    final newsSpaceReference = NewsReferencesModel(
-      type: NewsReferencesType.calendarEvent,
-      id: eventId,
-    );
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
+    selectedNewsSlide?.refDetails = refDetails;
     state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
 
   Future<void> selectPinToShare(BuildContext context) async {
-    final lang = L10n.of(context);
-    final newsPostSpaceId = state.newsPostSpaceId ??
-        await selectSpaceDrawer(
-          context: context,
-          canCheck: 'CanPostPin',
-        );
-    state = state.copyWith(newsPostSpaceId: newsPostSpaceId);
-
-    if (newsPostSpaceId == null) {
-      EasyLoading.showToast(lang.pleaseFirstSelectASpace);
-      return;
+    final pinId = await selectPinDrawer(context: context);
+    RefDetails? refDetails;
+    if (pinId != null) {
+      final selectedPin = await ref.watch(pinProvider(pinId).future);
+      refDetails = await selectedPin.refDetails();
     }
-    if (!context.mounted) {
-      return;
-    }
-    final pinId = await selectPinDrawer(
-      context: context,
-      spaceId: newsPostSpaceId,
-    );
-    final newsSpaceReference = NewsReferencesModel(
-      type: NewsReferencesType.pin,
-      id: pinId,
-    );
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
+    selectedNewsSlide?.refDetails = refDetails;
     state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
 
   Future<void> selectTaskListToShare(BuildContext context) async {
-    final lang = L10n.of(context);
-    final newsPostSpaceId = state.newsPostSpaceId ??
-        await selectSpaceDrawer(
-          context: context,
-          canCheck: 'CanPostTask',
-        );
-    state = state.copyWith(newsPostSpaceId: newsPostSpaceId);
-
-    if (newsPostSpaceId == null) {
-      EasyLoading.showToast(lang.pleaseFirstSelectASpace);
-      return;
+    final taskListId = await selectTaskListDrawer(context: context);
+    RefDetails? refDetails;
+    if (taskListId != null) {
+      final selectedTaskList =
+          await ref.watch(taskListProvider(taskListId).future);
+      refDetails = await selectedTaskList.refDetails();
     }
-    if (!context.mounted) {
-      return;
-    }
-    final taskListId = await selectTaskListDrawer(
-      context: context,
-      spaceId: newsPostSpaceId,
-    );
-    final newsSpaceReference = NewsReferencesModel(
-      type: NewsReferencesType.taskList,
-      id: taskListId,
-    );
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.newsReferencesModel = newsSpaceReference;
+    selectedNewsSlide?.refDetails = refDetails;
     state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
 

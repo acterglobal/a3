@@ -1,5 +1,7 @@
-use matrix_sdk::{OwnedServerName, RoomDisplayName};
-use matrix_sdk_base::ruma::{EventId, OwnedEventId, OwnedRoomId, RoomId};
+use matrix_sdk_base::{
+    ruma::{EventId, OwnedEventId, OwnedRoomId, OwnedServerName, RoomId},
+    RoomDisplayName,
+};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use strum::Display;

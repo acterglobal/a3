@@ -1,17 +1,14 @@
 use async_trait::async_trait;
 use base64ct::{Base64UrlUnpadded, Encoding};
 use core::fmt::Debug;
-use matrix_sdk::{
-    linked_chunk::{LinkedChunk, Update},
-    media::{MediaRequestParameters, UniqueKey},
-    ruma::{self, RoomId},
-};
 use matrix_sdk_base::{
     event_cache::{
         store::{EventCacheStore, EventCacheStoreError, DEFAULT_CHUNK_CAPACITY},
         Event, Gap,
     },
-    ruma::MxcUri,
+    linked_chunk::{LinkedChunk, Update},
+    media::{MediaRequestParameters, UniqueKey},
+    ruma::{MxcUri, RoomId},
     StateStore,
 };
 use matrix_sdk_store_encryption::StoreCipher;
@@ -147,7 +144,7 @@ where
 
     async fn get_media_content_for_uri(
         &self,
-        uri: &ruma::MxcUri,
+        uri: &MxcUri,
     ) -> Result<Option<Vec<u8>>, Self::Error> {
         let base_filename = self.encode_key(uri);
         fs::read(self.cache_dir.join(base_filename))

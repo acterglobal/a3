@@ -1,1 +1,0 @@
-- Fix "Range Error" when closing rooms with parents

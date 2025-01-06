@@ -23,7 +23,8 @@ class ChatEvent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final msg = ref.watch(chatRoomMessageProvider((roomId, eventId)));
+    final msg =
+        ref.watch(chatRoomMessageProvider((roomId: roomId, uniqueId: eventId)));
 
     if (msg == null) {
       _log.severe('Msg not found $roomId $eventId');
@@ -56,8 +57,8 @@ class ChatEvent extends ConsumerWidget {
     required RoomEventItem item,
     required WidgetRef ref,
   }) {
-    final isNextMessageInGroup =
-        ref.watch(isNextMessageGroupProvider((roomId, eventId)));
+    final isNextMessageInGroup = ref
+        .watch(isNextMessageGroupProvider((roomId: roomId, uniqueId: eventId)));
     final avatarInfo = ref.watch(
       memberAvatarInfoProvider(
         (

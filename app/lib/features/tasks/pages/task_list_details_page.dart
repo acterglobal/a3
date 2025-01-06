@@ -8,15 +8,14 @@ import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/share/action/share_space_object_action.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
-import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/share/action/share_space_object_action.dart';
 import 'package:acter/features/tasks/actions/update_tasklist.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
@@ -53,12 +52,12 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppbar(),
+      appBar: _buildAppbar(context),
       body: _buildBody(),
     );
   }
 
-  AppBar _buildAppbar() {
+  AppBar _buildAppbar(BuildContext context) {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     final tasklist = ref.watch(taskListProvider(widget.taskListId)).valueOrNull;
@@ -66,14 +65,20 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       if (tasklist != null)
         IconButton(
           icon: PhosphorIcon(PhosphorIcons.shareFat()),
-          onPressed: () => openShareSpaceObjectDialog(
-            context: context,
-            spaceObjectDetails: (
-              spaceId: tasklist.spaceIdStr(),
-              objectType: ObjectType.taskList,
-              objectId: widget.taskListId,
-            ),
-          ),
+          onPressed: () async {
+            final refDetails = await tasklist.refDetails();
+            final internalLink = refDetails.generateInternalLink(true);
+            if (!context.mounted) return;
+            await openShareSpaceObjectDialog(
+              context: context,
+              refDetails: refDetails,
+              internalLink: internalLink,
+              shareContentBuilder: () async {
+                Navigator.pop(context);
+                return await refDetails.generateExternalLink();
+              },
+            );
+          },
         ),
       BookmarkAction(bookmarker: BookmarkType.forTaskList(widget.taskListId)),
     ];
@@ -161,38 +166,45 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   Widget _buildTaskListInner(TaskList? taskListData) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (taskListData != null) ...[
-              const SizedBox(height: 10),
-              _taskListHeader(taskListData),
-              const SizedBox(height: 20),
-              _widgetDescription(taskListData),
-              const SizedBox(height: 30),
-              _widgetTasksListHeader(),
-              ValueListenableBuilder(
-                valueListenable: showCompletedTask,
-                builder: (context, value, child) => TaskItemsListWidget(
-                  taskList: taskListData,
-                  showCompletedTask: value,
-                ),
-              ),
-            ] else
-              _loadingSkeleton(),
-            const SizedBox(height: 20),
-            AttachmentSectionWidget(
-              manager: taskListData?.asAttachmentsManagerProvider(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (taskListData != null)
+            taskListDataUI(taskListData)
+          else
+            _loadingSkeleton(),
+          AttachmentSectionWidget(
+            manager: taskListData?.asAttachmentsManagerProvider(),
+          ),
+          const SizedBox(height: 20),
+          CommentsSectionWidget(
+            managerProvider: taskListData?.asCommentsManagerProvider(),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget taskListDataUI(TaskList taskListData) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          const SizedBox(height: 14),
+          _taskListHeader(taskListData),
+          const SizedBox(height: 8),
+          _widgetDescription(taskListData),
+          const SizedBox(height: 8),
+          _widgetTasksListHeader(),
+          ValueListenableBuilder(
+            valueListenable: showCompletedTask,
+            builder: (context, value, child) => TaskItemsListWidget(
+              taskList: taskListData,
+              showCompletedTask: value,
             ),
-            const SizedBox(height: 20),
-            CommentsSectionWidget(
-              managerProvider: taskListData?.asCommentsManagerProvider(),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -205,6 +217,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             ?.canString('CanPostTaskList') ==
         true;
     return ListTile(
+      contentPadding: EdgeInsets.zero,
       leading: ActerIconWidget(
         iconSize: 40,
         color: convertColor(

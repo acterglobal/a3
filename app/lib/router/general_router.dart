@@ -14,15 +14,14 @@ import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/deep_linking/pages/scan_qr_code.dart';
 import 'package:acter/features/intro/pages/intro_page.dart';
 import 'package:acter/features/intro/pages/intro_profile.dart';
+import 'package:acter/features/link_room/pages/link_room_page.dart';
 import 'package:acter/features/link_room/types.dart';
-import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/pages/add_news_page.dart';
 import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
-import 'package:acter/features/link_room/pages/link_room_page.dart';
 import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -223,12 +222,12 @@ final generalRoutes = [
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       final spaceId = state.uri.queryParameters['spaceId'];
-      final newsReferencesModel = state.extra as NewsReferencesModel?;
+      final refDetails = state.extra as RefDetails?;
       return MaterialPage(
         key: state.pageKey,
         child: AddNewsPage(
           initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
-          newsReferencesModel: newsReferencesModel,
+          refDetails: refDetails,
         ),
       );
     },

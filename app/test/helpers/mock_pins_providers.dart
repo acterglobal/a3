@@ -5,6 +5,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 
+class MockAsyncPinNotifier
+    extends AutoDisposeFamilyAsyncNotifier<ActerPin, String>
+    with Mock
+    implements AsyncPinNotifier {
+  bool shouldFail;
+
+  MockAsyncPinNotifier({this.shouldFail = true});
+
+  @override
+  Future<ActerPin> build(String arg) async {
+    if (shouldFail) {
+      // toggle failure so the retry works
+      shouldFail = !shouldFail;
+      throw 'Expected fail: Space not loaded';
+    }
+    return FakeActerPin();
+  }
+}
+
 class SimplyRetuningAsyncPinListNotifier
     extends FamilyAsyncNotifier<List<ActerPin>, String?>
     with Mock

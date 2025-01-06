@@ -1,17 +1,21 @@
 use acter_core::{
     events::{
         news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
-        Colorize, ColorizeBuilder, ObjRef, RefDetails, RefPreview,
+        Colorize, ColorizeBuilder, ObjRef as CoreObjRef, ObjRefBuilder,
+        RefDetails as CoreRefDetails, RefPreview,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, ReactionManager},
     statics::KEYS,
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{room::Room, RoomState};
-use matrix_sdk_base::ruma::{
-    events::{room::message::MessageType, MessageLikeEventType},
-    OwnedEventId, OwnedRoomId, OwnedUserId,
+use matrix_sdk::room::Room;
+use matrix_sdk_base::{
+    ruma::{
+        events::{room::message::MessageType, MessageLikeEventType},
+        OwnedEventId, OwnedRoomId, OwnedUserId,
+    },
+    RoomState,
 };
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -27,6 +31,7 @@ use super::{
     api::FfiBuffer,
     client::Client,
     common::{MsgContent, ThumbnailSize},
+    deep_linking::{ObjRef, RefDetails},
     spaces::Space,
     RUNTIME,
 };
@@ -275,14 +280,18 @@ impl NewsSlide {
     }
 
     pub fn references(&mut self) -> Vec<ObjRef> {
-        self.inner.references().clone()
+        self.inner
+            .references()
+            .iter()
+            .map(|inner| ObjRef::new(self.client.clone(), inner.clone()))
+            .collect()
     }
 }
 
 #[derive(Clone)]
 pub struct NewsSlideDraft {
     content: MsgDraft,
-    references: Vec<ObjRef>,
+    references: Vec<CoreObjRef>,
     colorize_builder: ColorizeBuilder,
 }
 
@@ -321,8 +330,8 @@ impl NewsSlideDraft {
             .build()?)
     }
 
-    pub fn add_reference(&mut self, reference: Box<ObjRef>) -> &Self {
-        self.references.push(*reference);
+    pub fn add_reference(&mut self, reference: Box<ObjRefBuilder>) -> &Self {
+        self.references.push((*reference).build());
         self
     }
 
@@ -481,6 +490,7 @@ impl NewsEntry {
 
     pub async fn ref_details(&self) -> Result<RefDetails> {
         let room = self.room.clone();
+        let client = self.client.clone();
         let target_id = self.content.event_id().to_owned();
         let room_id = self.room.room_id().to_owned();
 
@@ -488,13 +498,16 @@ impl NewsEntry {
             .spawn(async move {
                 let via = room.route().await?;
                 let room_display_name = room.cached_display_name();
-                Ok(RefDetails::TaskList {
-                    target_id,
-                    room_id: Some(room_id),
-                    via,
-                    preview: RefPreview::new(None, room_display_name),
-                    action: Default::default(),
-                })
+                Ok(RefDetails::new(
+                    client,
+                    CoreRefDetails::TaskList {
+                        target_id,
+                        room_id: Some(room_id),
+                        via,
+                        preview: RefPreview::new(None, room_display_name),
+                        action: Default::default(),
+                    },
+                ))
             })
             .await?
     }
@@ -503,13 +516,6 @@ impl NewsEntry {
         let target_id = &self.content.event_id().to_string()[1..];
         let room_id = &self.room.room_id().to_string()[1..];
         format!("acter:o/{room_id}/boost/{target_id}")
-    }
-
-    pub async fn external_link(&self) -> Result<String> {
-        let ref_details = self.ref_details().await?;
-        self.client
-            .generate_external_link_for_ref(ref_details)
-            .await
     }
 }
 

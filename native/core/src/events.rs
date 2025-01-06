@@ -9,17 +9,16 @@ pub mod read_receipt;
 pub mod room;
 pub mod rsvp;
 pub mod settings;
+pub mod stories;
 pub mod tasks;
 pub mod three_pid;
 
 pub use common::*;
-use matrix_sdk::{
-    event_handler::{HandlerKind, SyncEvent},
-    ruma::{events::AnyTimelineEvent, OwnedRoomId, RoomId},
-};
+use matrix_sdk::event_handler::{HandlerKind, SyncEvent};
 use matrix_sdk_base::ruma::{
-    events::{reaction, EventTypeDeHelper, StaticEventContent},
+    events::{reaction, AnyTimelineEvent, EventTypeDeHelper, StaticEventContent},
     exports::{serde::de::Error as SerdeDeError, serde_json as smart_serde_json},
+    OwnedRoomId, RoomId,
 };
 
 #[derive(Clone, Debug)]
@@ -32,6 +31,9 @@ pub enum AnyActerEvent {
 
     NewsEntry(news::NewsEntryEvent),
     NewsEntryUpdate(news::NewsEntryUpdateEvent),
+
+    Story(stories::StoryEvent),
+    StoryUpdate(stories::StoryUpdateEvent),
 
     TaskList(tasks::TaskListEvent),
     TaskListUpdate(tasks::TaskListUpdateEvent),
@@ -66,6 +68,8 @@ impl AnyActerEvent {
             AnyActerEvent::PinUpdate(e) => e.room_id(),
             AnyActerEvent::NewsEntry(e) => e.room_id(),
             AnyActerEvent::NewsEntryUpdate(e) => e.room_id(),
+            AnyActerEvent::Story(e) => e.room_id(),
+            AnyActerEvent::StoryUpdate(e) => e.room_id(),
             AnyActerEvent::TaskList(e) => e.room_id(),
             AnyActerEvent::TaskListUpdate(e) => e.room_id(),
             AnyActerEvent::Task(e) => e.room_id(),
@@ -126,6 +130,16 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                 Ok(Self::NewsEntryUpdate(event))
             }
 
+            stories::StoryEventContent::TYPE => {
+                let event = smart_serde_json::from_str::<stories::StoryEvent>(json.get())
+                    .map_err(D::Error::custom)?;
+                Ok(Self::Story(event))
+            }
+            stories::StoryUpdateEventContent::TYPE => {
+                let event = smart_serde_json::from_str::<stories::StoryUpdateEvent>(json.get())
+                    .map_err(D::Error::custom)?;
+                Ok(Self::StoryUpdate(event))
+            }
             tasks::TaskListEventContent::TYPE => {
                 let event = smart_serde_json::from_str::<tasks::TaskListEvent>(json.get())
                     .map_err(D::Error::custom)?;
@@ -221,6 +235,8 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                             pins::PinUpdateEventContent::TYPE,
                             news::NewsEntryEventContent::TYPE,
                             news::NewsEntryUpdateEventContent::TYPE,
+                            stories::StoryEventContent::TYPE,
+                            stories::StoryUpdateEventContent::TYPE,
                             tasks::TaskListEventContent::TYPE,
                             tasks::TaskListUpdateEventContent::TYPE,
                             tasks::TaskEventContent::TYPE,
@@ -252,6 +268,9 @@ pub enum SyncAnyActerEvent {
 
     NewsEntry(news::SyncNewsEntryEvent),
     NewsEntryUpdate(news::SyncNewsEntryUpdateEvent),
+
+    Story(stories::SyncStoryEvent),
+    StoryUpdate(stories::SyncStoryUpdateEvent),
 
     TaskList(tasks::SyncTaskListEvent),
     TaskListUpdate(tasks::SyncTaskListUpdateEvent),
@@ -285,6 +304,8 @@ impl SyncAnyActerEvent {
             Self::PinUpdate(e) => AnyActerEvent::PinUpdate(e.into_full_event(room_id)),
             Self::NewsEntry(e) => AnyActerEvent::NewsEntry(e.into_full_event(room_id)),
             Self::NewsEntryUpdate(e) => AnyActerEvent::NewsEntryUpdate(e.into_full_event(room_id)),
+            Self::Story(e) => AnyActerEvent::Story(e.into_full_event(room_id)),
+            Self::StoryUpdate(e) => AnyActerEvent::StoryUpdate(e.into_full_event(room_id)),
             Self::TaskList(e) => AnyActerEvent::TaskList(e.into_full_event(room_id)),
             Self::TaskListUpdate(e) => AnyActerEvent::TaskListUpdate(e.into_full_event(room_id)),
             Self::Task(e) => AnyActerEvent::Task(e.into_full_event(room_id)),
@@ -350,6 +371,17 @@ impl<'de> serde::Deserialize<'de> for SyncAnyActerEvent {
                     smart_serde_json::from_str::<news::SyncNewsEntryUpdateEvent>(json.get())
                         .map_err(D::Error::custom)?;
                 Ok(Self::NewsEntryUpdate(event))
+            }
+
+            stories::StoryEventContent::TYPE => {
+                let event = smart_serde_json::from_str::<stories::SyncStoryEvent>(json.get())
+                    .map_err(D::Error::custom)?;
+                Ok(Self::Story(event))
+            }
+            stories::StoryUpdateEventContent::TYPE => {
+                let event = smart_serde_json::from_str::<stories::SyncStoryUpdateEvent>(json.get())
+                    .map_err(D::Error::custom)?;
+                Ok(Self::StoryUpdate(event))
             }
 
             tasks::TaskListEventContent::TYPE => {
@@ -446,6 +478,8 @@ impl<'de> serde::Deserialize<'de> for SyncAnyActerEvent {
                     pins::PinUpdateEventContent::TYPE,
                     news::NewsEntryEventContent::TYPE,
                     news::NewsEntryUpdateEventContent::TYPE,
+                    stories::StoryEventContent::TYPE,
+                    stories::StoryUpdateEventContent::TYPE,
                     tasks::TaskListEventContent::TYPE,
                     tasks::TaskListUpdateEventContent::TYPE,
                     tasks::TaskEventContent::TYPE,

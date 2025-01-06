@@ -54,5 +54,5 @@ extension CustomColorScheme on ColorScheme {
 
   Color get badgeImportant => Colors.yellow;
 
-  Color get badgeUrgent => const Color(0xFF93000A);
+  Color get badgeUrgent => const Color.fromARGB(255, 236, 44, 57);
 }

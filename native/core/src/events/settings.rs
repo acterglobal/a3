@@ -8,7 +8,7 @@ pub use space::{
     ActerAppSettings, ActerAppSettingsContent, ActerAppSettingsContentBuilder,
     ActerAppSettingsContentBuilderError, EventsSettings, NewsSettings, PinsSettings,
     SimpleOnOffSetting, SimpleOnOffSettingBuilder, SimpleSettingWithTurnOff,
-    SimpleSettingWithTurnOffBuilder, TasksSettings,
+    SimpleSettingWithTurnOffBuilder, StoriesSettings, TasksSettings,
 };
 pub use user::{
     ActerUserAppSettingsContent, ActerUserAppSettingsContentBuilder, AppChatSettings, AutoDownload,

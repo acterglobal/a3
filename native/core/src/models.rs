@@ -7,6 +7,7 @@ mod pins;
 mod reactions;
 mod read_receipts;
 mod rsvp;
+mod stories;
 mod tag;
 mod tasks;
 #[cfg(test)]
@@ -34,6 +35,7 @@ pub use reactions::{Reaction, ReactionManager, ReactionStats};
 pub use read_receipts::{ReadReceipt, ReadReceiptStats, ReadReceiptsManager};
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
 use serde::{Deserialize, Serialize};
+pub use stories::{Story, StoryUpdate};
 pub use tag::Tag;
 pub use tasks::{
     Task, TaskList, TaskListUpdate, TaskSelfAssign, TaskSelfUnassign, TaskStats, TaskUpdate,
@@ -53,6 +55,7 @@ use crate::{
         pins::{PinEventContent, PinUpdateEventContent},
         read_receipt::ReadReceiptEventContent,
         rsvp::RsvpEventContent,
+        stories::{StoryEventContent, StoryUpdateEventContent},
         tasks::{
             TaskEventContent, TaskListEventContent, TaskListUpdateEventContent,
             TaskSelfAssignEventContent, TaskSelfUnassignEventContent, TaskUpdateEventContent,
@@ -340,6 +343,10 @@ pub enum AnyActerModel {
     NewsEntry(NewsEntry),
     NewsEntryUpdate(NewsEntryUpdate),
 
+    // -- News
+    Story(Story),
+    StoryUpdate(StoryUpdate),
+
     // -- more generics
     Comment(Comment),
     CommentUpdate(CommentUpdate),
@@ -370,6 +377,8 @@ impl AnyActerModel {
             AnyActerModel::PinUpdate(_) => PinUpdateEventContent::TYPE,
             AnyActerModel::NewsEntry(_) => NewsEntryEventContent::TYPE,
             AnyActerModel::NewsEntryUpdate(_) => NewsEntryUpdateEventContent::TYPE,
+            AnyActerModel::Story(_) => StoryEventContent::TYPE,
+            AnyActerModel::StoryUpdate(_) => StoryUpdateEventContent::TYPE,
             AnyActerModel::Comment(_) => CommentEventContent::TYPE,
             AnyActerModel::CommentUpdate(_) => CommentUpdateEventContent::TYPE,
             AnyActerModel::Attachment(_) => AttachmentEventContent::TYPE,
@@ -505,6 +514,35 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::NewsEntryUpdate(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: NewsEntryUpdateEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                        redacted: None,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+
+            AnyActerEvent::Story(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::Story(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
+                    model_type: StoryEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                        redacted: None,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::StoryUpdate(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::StoryUpdate(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
+                    model_type: StoryUpdateEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
                         event_id: r.event_id,

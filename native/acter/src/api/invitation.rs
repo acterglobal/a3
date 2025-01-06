@@ -4,12 +4,14 @@ use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStr
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::{Room, RoomMember},
-    RoomMemberships, RoomState,
 };
-use matrix_sdk_base::ruma::{
-    api::client::user_directory::search_users,
-    events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
-    OwnedRoomId, OwnedUserId, RoomId,
+use matrix_sdk_base::{
+    ruma::{
+        api::client::user_directory::search_users,
+        events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
+        OwnedRoomId, OwnedUserId, RoomId,
+    },
+    RoomMemberships, RoomState,
 };
 use std::{
     collections::BTreeMap,

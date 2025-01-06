@@ -9,23 +9,26 @@ use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::StreamExt;
 use matrix_sdk::notification_settings::{
-    IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings, RoomNotificationMode,
+    IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings,
 };
-use matrix_sdk_base::ruma::{
-    api::client::{
-        device,
-        push::{
-            get_pushers, get_pushrules_all, set_pusher, set_pushrule, EmailPusherData,
-            Pusher as RumaPusher, PusherIds, PusherInit, PusherKind,
+use matrix_sdk_base::{
+    notification_settings::RoomNotificationMode,
+    ruma::{
+        api::client::{
+            device,
+            push::{
+                get_pushers, get_pushrules_all, set_pusher, set_pushrule, EmailPusherData,
+                Pusher as RumaPusher, PusherIds, PusherInit, PusherKind,
+            },
         },
+        assign,
+        events::{
+            room::{message::MessageType, MediaSource},
+            AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
+        },
+        push::{HttpPusherData, PushFormat, RuleKind, Ruleset},
+        EventId, OwnedMxcUri, OwnedRoomId, RoomId,
     },
-    assign,
-    events::{
-        room::{message::MessageType, MediaSource},
-        AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEvent, SyncMessageLikeEvent,
-    },
-    push::{HttpPusherData, PushFormat, RuleKind, Ruleset},
-    EventId, OwnedMxcUri, OwnedRoomId, RoomId,
 };
 use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
@@ -243,7 +246,7 @@ impl NotificationItem {
 
         if let NotificationEvent::Invite(invite) = inner.event {
             return Ok(builder
-                .target_url("/activities/".to_string())
+                .target_url("/activities/invites".to_string())
                 // FIXME: we still need support for specific activities linking
                 // .target_url(format!("/activities/{:}", room_id))
                 .room_invite(room_id.to_string())

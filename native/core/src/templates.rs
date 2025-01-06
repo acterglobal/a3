@@ -5,8 +5,7 @@ use futures::{
     Stream,
 };
 use indexmap::IndexMap;
-use matrix_sdk::RoomState;
-use matrix_sdk_base::ruma::RoomId;
+use matrix_sdk_base::{ruma::RoomId, RoomState};
 pub use minijinja::value::Value;
 use minijinja::Environment;
 use serde::Deserialize;
@@ -30,6 +29,7 @@ use crate::{
         calendar::CalendarEventEventContent,
         news::NewsEntryEventContent,
         pins::PinEventContent,
+        stories::StoryEventContent,
         tasks::{TaskEventContent, TaskListEventContent},
     },
     spaces::CreateSpaceSettings,
@@ -155,6 +155,10 @@ pub enum ObjectInner {
     NewsEntry {
         #[serde(flatten)]
         fields: NewsEntryEventContent,
+    },
+    Story {
+        #[serde(flatten)]
+        fields: StoryEventContent,
     },
 }
 
@@ -516,6 +520,20 @@ impl Engine {
                         context.insert(
                             key.to_string(),
                             Value::from_object(ObjRef::new(id.to_string(), "news-entry".to_owned())),
+                        );
+                        yield
+                    }
+                    ObjectInner::Story { fields } => {
+                        trace!(?fields, "submitting story");
+                        let id = room
+                            .send(fields)
+                            .await
+                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .event_id;
+                        trace!(?id, "story created");
+                        context.insert(
+                            key.to_string(),
+                            Value::from_object(ObjRef::new(id.to_string(), "story".to_owned())),
                         );
                         yield
                     }

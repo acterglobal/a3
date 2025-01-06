@@ -10,25 +10,22 @@ use futures::{
     stream::{Stream, StreamExt},
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
-use matrix_sdk::{
-    config::SyncSettings,
-    event_handler::{Ctx, EventHandlerHandle},
-    room::Room as SdkRoom,
-    RoomState, RumaApiError,
-};
-use matrix_sdk_base::ruma::events::AnySyncEphemeralRoomEvent;
-use matrix_sdk_base::ruma::{
-    api::client::{
-        error::{ErrorBody, ErrorKind},
-        Error,
+use matrix_sdk::{config::SyncSettings, event_handler::Ctx, room::Room as SdkRoom, RumaApiError};
+use matrix_sdk_base::{
+    ruma::{
+        api::client::{
+            error::{ErrorBody, ErrorKind},
+            Error,
+        },
+        events::room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
+        OwnedRoomId,
     },
-    OwnedRoomId,
+    RoomState,
 };
-use ruma::events::room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent};
 use std::{
-    collections::{btree_map::Entry, BTreeMap, HashMap},
+    collections::BTreeMap,
     io::Write,
-    ops::{Deref, Index},
+    ops::Deref,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -37,14 +34,14 @@ use std::{
 use tokio::{
     sync::{
         broadcast::{channel, Receiver},
-        Mutex, RwLockWriteGuard,
+        RwLockWriteGuard,
     },
     task::JoinHandle,
 };
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::{api::spaces::HistoryState, Convo, Room, Space, RUNTIME};
+use crate::{Convo, Room, Space, RUNTIME};
 
 use super::Client;
 
