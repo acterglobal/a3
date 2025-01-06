@@ -33,7 +33,8 @@ use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-    typing::TypingController, verification::VerificationController,
+    session_verification::SessionVerificationController, typing::TypingController,
+    verification::VerificationController,
 };
 
 mod sync;
@@ -64,6 +65,7 @@ pub struct Client {
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) invitation_controller: InvitationController,
     pub(crate) verification_controller: VerificationController,
+    pub(crate) session_verification_controller: SessionVerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
     pub spaces: Arc<RwLock<ObservableVector<Space>>>,
@@ -173,6 +175,16 @@ impl Client {
 impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
         let core = CoreClient::new(client.clone()).await?;
+        let encryption = client.encryption();
+        let user_id = client
+            .user_id()
+            .context("Failed retrieving current user_id")?;
+        let user_identity = encryption
+            .get_user_identity(user_id)
+            .await?
+            .context("Failed retrieving user identity")?;
+        let session_verification_controller =
+            SessionVerificationController::new(encryption, user_identity);
         let mut cl = Client {
             core: core.clone(),
             state: Arc::new(RwLock::new(state)),
@@ -180,6 +192,7 @@ impl Client {
             convos: Default::default(),
             invitation_controller: InvitationController::new(core.clone()),
             verification_controller: VerificationController::new(),
+            session_verification_controller,
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
         };
@@ -448,6 +461,8 @@ impl Client {
             .remove_to_device_event_handler(&client);
         self.verification_controller
             .remove_sync_event_handler(&client);
+        self.session_verification_controller
+            .remove_to_device_event_handler(&client);
         self.typing_controller.remove_event_handler(&client);
 
         RUNTIME

@@ -1,9 +1,13 @@
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::encryption::{
-    identities::UserIdentity,
-    verification::{SasState, SasVerification, VerificationRequest, VerificationRequestState},
-    Encryption,
+use matrix_sdk::{
+    encryption::{
+        identities::UserIdentity,
+        verification::{SasState, SasVerification, VerificationRequest, VerificationRequestState},
+        Encryption,
+    },
+    event_handler::{Ctx, EventHandlerHandle},
+    Client,
 };
 use matrix_sdk_base::ruma::{
     events::{key::verification::VerificationMethod, AnyToDeviceEvent},
@@ -63,6 +67,33 @@ pub struct VerificationRequestEvent {
 }
 
 impl VerificationRequestEvent {
+    pub async fn acknowledge(&self) -> Result<bool> {
+        let sender_id = UserId::parse(&self.sender_id)?;
+        let flow_id = self.flow_id.clone();
+        let controller = self.controller.clone();
+        RUNTIME
+            .spawn(async move {
+                if let Some(verification_request) = controller
+                    .encryption
+                    .get_verification_request(&sender_id, flow_id)
+                    .await
+                {
+                    *controller.verification_request.write().await =
+                        Some(verification_request.clone());
+                    tokio::spawn(
+                        SessionVerificationController::listen_to_verification_request_changes(
+                            verification_request,
+                            controller.sas_verification.clone(),
+                        ),
+                    );
+                    Ok(true)
+                } else {
+                    Ok(false)
+                }
+            })
+            .await?
+    }
+
     pub async fn accept(&self) -> Result<VerificationReadyStage> {
         let sender_id = self.sender_id.clone();
         let flow_id = self.flow_id.clone();
@@ -213,6 +244,7 @@ pub struct SessionVerificationController {
     event_rx: Arc<Receiver<VerificationRequestEvent>>,
     verification_request: Arc<RwLock<Option<VerificationRequest>>>,
     sas_verification: Arc<RwLock<Option<SasVerification>>>,
+    any_to_device_handle: Option<EventHandlerHandle>,
 }
 
 impl SessionVerificationController {
@@ -225,46 +257,61 @@ impl SessionVerificationController {
             event_rx: Arc::new(rx),
             verification_request: Arc::new(RwLock::new(None)),
             sas_verification: Arc::new(RwLock::new(None)),
+            any_to_device_handle: None,
         }
     }
 
-    pub(crate) async fn process_to_device_message(&self, event: AnyToDeviceEvent) {
-        if let AnyToDeviceEvent::KeyVerificationRequest(event) = event {
-            info!("Received verification request: {:}", event.sender);
+    // to_device event is intended to verify other device
+    pub(crate) fn add_to_device_event_handler(&mut self, client: &Client) {
+        client.add_event_handler_context(self.clone());
+        let handle = client.add_event_handler(
+            move |ev: AnyToDeviceEvent, Ctx(me): Ctx<SessionVerificationController>| async move {
+                if let AnyToDeviceEvent::KeyVerificationRequest(ev) = ev {
+                    info!("Received verification request: {:}", ev.sender);
 
-            let Some(request) = self
-                .encryption
-                .get_verification_request(&event.sender, &event.content.transaction_id)
-                .await
-            else {
-                error!("Failed retrieving verification request");
-                return;
-            };
+                    let Some(request) = me
+                        .encryption
+                        .get_verification_request(&ev.sender, &ev.content.transaction_id)
+                        .await
+                    else {
+                        error!("Failed retrieving verification request");
+                        return;
+                    };
 
-            if !request.is_self_verification() {
-                info!("Received non-self verification request. Ignoring.");
-                return;
-            }
+                    if !request.is_self_verification() {
+                        info!("Received non-self verification request. Ignoring.");
+                        return;
+                    }
 
-            let VerificationRequestState::Requested {
-                other_device_data, ..
-            } = request.state()
-            else {
-                error!("Received key verification event but the request is in the wrong state.");
-                return;
-            };
+                    let VerificationRequestState::Requested {
+                        other_device_data, ..
+                    } = request.state()
+                    else {
+                        error!("Received key verification event but the request is in the wrong state.");
+                        return;
+                    };
 
-            let msg = VerificationRequestEvent {
-                sender_id: request.other_user_id().into(),
-                flow_id: request.flow_id().into(),
-                device_id: other_device_data.device_id().into(),
-                display_name: other_device_data.display_name().map(str::to_string),
-                first_seen_timestamp: other_device_data.first_time_seen_ts().get().into(),
-                controller: self.clone(),
-            };
-            if let Err(e) = self.event_tx.send(msg) {
-                error!("Dropping flow for {}: {}", event.content.transaction_id, e);
-            }
+                    let msg = VerificationRequestEvent {
+                        sender_id: request.other_user_id().into(),
+                        flow_id: request.flow_id().into(),
+                        device_id: other_device_data.device_id().into(),
+                        display_name: other_device_data.display_name().map(str::to_string),
+                        first_seen_timestamp: other_device_data.first_time_seen_ts().get().into(),
+                        controller: me.clone(),
+                    };
+                    if let Err(e) = me.event_tx.send(msg) {
+                        error!("Dropping flow for {}: {}", ev.content.transaction_id, e);
+                    }
+                }
+            },
+        );
+        self.any_to_device_handle = Some(handle);
+    }
+
+    pub(crate) fn remove_to_device_event_handler(&mut self, client: &Client) {
+        if let Some(handle) = self.any_to_device_handle.clone() {
+            client.remove_event_handler(handle);
+            self.any_to_device_handle = None;
         }
     }
 
