@@ -2339,5 +2339,13 @@
   "roomLinkedButNotUpgraded": "Hinzugefügt. Du hast allerdings nicht die Rechte die Zugangsregel anzupassen, daher kann es sein, dass andere Spacemitglieder nicht beitreten können.",
   "@roomLinkedButNotUpgraded": {},
   "noObjectAccess": "Du bist nicht teil von {spaceName}, daher hast du keinen Zugriff auf {objectType}",
-  "@noObjectAccess": {}
+  "@noObjectAccess": {},
+  "repliedToMsgFailed": "Laden der original Nachricht fehlgeschlagen: {id}",
+  "@repliedToMsgFailed": {},
+  "removeReferenceConfirmation": "Bist du sicher, dass du diese Referenz entfernen möchtest?",
+  "@removeReferenceConfirmation": {},
+  "references": "Referenzen",
+  "@references": {},
+  "removeReference": "Referenz entfernen",
+  "@removeReference": {}
 }

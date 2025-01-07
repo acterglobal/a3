@@ -8,15 +8,14 @@ import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/share/action/share_space_object_action.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
-import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/share/action/share_space_object_action.dart';
 import 'package:acter/features/tasks/actions/update_tasklist.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
@@ -53,12 +52,12 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppbar(),
+      appBar: _buildAppbar(context),
       body: _buildBody(),
     );
   }
 
-  AppBar _buildAppbar() {
+  AppBar _buildAppbar(BuildContext context) {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     final tasklist = ref.watch(taskListProvider(widget.taskListId)).valueOrNull;
@@ -66,14 +65,20 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       if (tasklist != null)
         IconButton(
           icon: PhosphorIcon(PhosphorIcons.shareFat()),
-          onPressed: () => openShareSpaceObjectDialog(
-            context: context,
-            spaceObjectDetails: (
-            spaceId: tasklist.spaceIdStr(),
-            objectType: ObjectType.taskList,
-            objectId: widget.taskListId,
-            ),
-          ),
+          onPressed: () async {
+            final refDetails = await tasklist.refDetails();
+            final internalLink = refDetails.generateInternalLink(true);
+            if (!context.mounted) return;
+            await openShareSpaceObjectDialog(
+              context: context,
+              refDetails: refDetails,
+              internalLink: internalLink,
+              shareContentBuilder: () async {
+                Navigator.pop(context);
+                return await refDetails.generateExternalLink();
+              },
+            );
+          },
         ),
       BookmarkAction(bookmarker: BookmarkType.forTaskList(widget.taskListId)),
     ];
@@ -207,9 +212,9 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   Widget _taskListHeader(TaskList tasklist) {
     final textTheme = Theme.of(context).textTheme;
     final canPost = ref
-        .watch(roomMembershipProvider(tasklist.spaceIdStr()))
-        .valueOrNull
-        ?.canString('CanPostTaskList') ==
+            .watch(roomMembershipProvider(tasklist.spaceIdStr()))
+            .valueOrNull
+            ?.canString('CanPostTaskList') ==
         true;
     return ListTile(
       contentPadding: EdgeInsets.zero,
@@ -224,14 +229,14 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         ),
         onIconSelection: canPost
             ? (color, acterIcon) {
-          updateTaskListIcon(
-            context,
-            ref,
-            tasklist,
-            color,
-            acterIcon,
-          );
-        }
+                updateTaskListIcon(
+                  context,
+                  ref,
+                  tasklist,
+                  color,
+                  acterIcon,
+                );
+              }
             : null,
       ),
       title: SelectionArea(
@@ -266,13 +271,13 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         },
         child: formattedBody != null
             ? RenderHtml(
-          text: formattedBody,
-          defaultTextStyle: textTheme.labelLarge,
-        )
+                text: formattedBody,
+                defaultTextStyle: textTheme.labelLarge,
+              )
             : Text(
-          description.body(),
-          style: textTheme.labelLarge,
-        ),
+                description.body(),
+                style: textTheme.labelLarge,
+              ),
       ),
     );
   }
@@ -289,10 +294,10 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   Future<void> _saveDescription(
-      TaskList taskListData,
-      String htmlBodyDescription,
-      String plainDescription,
-      ) async {
+    TaskList taskListData,
+    String htmlBodyDescription,
+    String plainDescription,
+  ) async {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.updatingDescription);
     try {
@@ -360,54 +365,54 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   }
 
   Widget _loadingSkeleton() => SingleChildScrollView(
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Skeletonizer.zone(
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Skeletonizer.zone(
+            child: Column(
               children: [
-                const Bone.icon(size: 40),
-                const SizedBox(width: 10),
-                Column(
+                const SizedBox(height: 10),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Task List Title',
-                      style: Theme.of(context).textTheme.titleMedium,
+                    const Bone.icon(size: 40),
+                    const SizedBox(width: 10),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Task List Title',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        SpaceChip.loadingCompact(),
+                      ],
                     ),
-                    SpaceChip.loadingCompact(),
                   ],
                 ),
+                const SizedBox(height: 20),
+                const Text('Task description'),
+                const SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      L10n.of(context).tasks,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const Bone.iconButton(
+                      size: 18,
+                    ),
+                  ],
+                ),
+                TaskItemsListWidget.loading(),
+                const SizedBox(height: 20),
+                AttachmentSectionWidget.loading(),
+                const SizedBox(height: 20),
+                CommentsSectionWidget.loading(),
+                const SizedBox(height: 20),
               ],
             ),
-            const SizedBox(height: 20),
-            const Text('Task description'),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  L10n.of(context).tasks,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const Bone.iconButton(
-                  size: 18,
-                ),
-              ],
-            ),
-            TaskItemsListWidget.loading(),
-            const SizedBox(height: 20),
-            AttachmentSectionWidget.loading(),
-            const SizedBox(height: 20),
-            CommentsSectionWidget.loading(),
-            const SizedBox(height: 20),
-          ],
+          ),
         ),
-      ),
-    ),
-  );
+      );
 }
