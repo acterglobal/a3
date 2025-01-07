@@ -3,6 +3,20 @@ import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 
+// class to track current menu instance
+class MentionOverlayState {
+  static MentionMenu? currentMenu;
+
+  static void dismiss() {
+    currentMenu?._menuEntry?.remove();
+    currentMenu?._menuEntry = null;
+    currentMenu = null;
+  }
+
+  static bool get isShowing =>
+      currentMenu != null && currentMenu?._menuEntry != null;
+}
+
 class MentionMenu {
   MentionMenu({
     required this.context,
@@ -23,9 +37,11 @@ class MentionMenu {
     editorState.service.keyboardService?.enable();
     editorState.service.scrollService?.enable();
     keepEditorFocusNotifier.decrease();
-
     _menuEntry?.remove();
     _menuEntry = null;
+    if (MentionOverlayState.currentMenu == this) {
+      MentionOverlayState.currentMenu = null;
+    }
   }
 
   void show() {
@@ -33,7 +49,10 @@ class MentionMenu {
   }
 
   void _show() {
-    dismiss();
+    if (MentionOverlayState.isShowing &&
+        MentionOverlayState.currentMenu != this) {
+      MentionOverlayState.dismiss();
+    }
 
     // Get position of editor
     final RenderBox? renderBox = context.findRenderObject() as RenderBox?;

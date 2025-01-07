@@ -43,6 +43,12 @@ Future<bool> _handleMentionTrigger({
   if (!selection.isCollapsed) {
     await editorState.deleteSelection(selection);
   }
+  // Dismiss existing menu if it exists
+  if (MentionOverlayState.isShowing) {
+    MentionOverlayState.dismiss();
+    return true;
+  }
+
   // Insert the trigger character
   await editorState.insertTextAtPosition(
     mentionTrigger,
@@ -57,7 +63,7 @@ Future<bool> _handleMentionTrigger({
       roomId: roomId,
       mentionTrigger: mentionTrigger,
     );
-
+    MentionOverlayState.currentMenu = menu;
     menu.show();
   }
   return true;

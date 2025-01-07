@@ -59,7 +59,7 @@ class RoomMentionList extends StatelessWidget {
         // the actual provider
         mentionsProvider: roomMentionsSuggestionsProvider(roomId),
         avatarBuilder: (matchId, ref) {
-          final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
+          final avatarInfo = ref.watch(roomAvatarInfoProvider(matchId));
           return AvatarOptions(avatarInfo, size: 28);
         },
         // the fields

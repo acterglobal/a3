@@ -115,11 +115,15 @@ final userMentionSuggestionsProvider =
 final roomMentionsSuggestionsProvider =
     StateProvider.family<Map<String, String>?, String>((ref, roomId) {
   final rooms = ref.watch(chatIdsProvider);
-  return rooms.fold<Map<String, String>>({}, (map, roomId) {
-    if (roomId == roomId) return map;
+  return rooms.fold<Map<String, String>>({}, (map, id) {
+    // filter DM's
+    final isDM = ref.watch(isDirectChatProvider(id)).valueOrNull ?? false;
 
-    final displayName = ref.watch(roomDisplayNameProvider(roomId));
-    map[roomId] = displayName.valueOrNull ?? '';
+    if (id != roomId && !isDM) {
+      final displayName = ref.watch(roomDisplayNameProvider(id));
+      map[id] = displayName.valueOrNull ?? '';
+    }
+
     return map;
   });
 });
