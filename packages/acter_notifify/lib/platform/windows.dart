@@ -1,6 +1,7 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/acter_notifify.dart';
 import 'package:acter_notifify/matrix.dart';
+import 'package:acter_notifify/util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:windows_notification/notification_message.dart';
 import 'package:windows_notification/windows_notification.dart';
@@ -31,8 +32,6 @@ Future<void> showWindowsNotification(
   String? filePath;
 
   final (title, body) = genTitleAndBody(notification);
-  // FIXME: currently failing with
-  // Parsing Notification failed: PlatformException(Error 101, Unrecognized attachment file type, UNErrorDomain, null)
   if (notification.hasImage()) {
     final tempDir = await getTemporaryDirectory();
     filePath = await notification.imagePath(tempDir.path);

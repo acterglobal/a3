@@ -1,5 +1,6 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/matrix.dart';
+import 'package:acter_notifify/util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -123,8 +124,5 @@ void main() {
         expect(body, "@id:acter.global");
       });
     });
-  });
-  test('import smoketest', () {
-    // doesn’t do anything
   });
 }

@@ -80,55 +80,6 @@ Future<bool> handleMatrixMessage(
   return false;
 }
 
-(String, String?) genTitleAndBody(NotificationItem notification) =>
-    switch (notification.pushStyle()) {
-      "comment" => _titleAndBodyForComment(notification),
-      "reaction" => _titleAndBodyForReaction(notification),
-      _ => _fallbackTitleAndBody(notification),
-    };
-
-(String, String?) _fallbackTitleAndBody(NotificationItem notification) =>
-    (notification.title(), notification.body()?.body());
-
-String _parentPart(NotificationItemParent parent) {
-  final emoji = parent.emoji();
-  final title = switch (parent.objectTypeStr()) {
-    'news' => "boost",
-    _ => parent.title(),
-  };
-  return "$emoji $title";
-}
-
-(String, String?) _titleAndBodyForComment(NotificationItem notification) {
-  final parent = notification.parent();
-  String title = "💬 Comment";
-  if (parent != null) {
-    final parentInfo = _parentPart(parent);
-    title = "$title on $parentInfo";
-  }
-
-  final comment = notification.body()?.body();
-  final sender = notification.sender();
-  final username = sender.displayName() ?? sender.userId();
-
-  return (title, "$username: $comment");
-}
-
-(String, String?) _titleAndBodyForReaction(NotificationItem notification) {
-  final parent = notification.parent();
-  final reaction = notification.reactionKey() ?? '❤️';
-  String title = '"$reaction"';
-  if (parent != null) {
-    final parentInfo = _parentPart(parent);
-    title = "$title to $parentInfo";
-  }
-
-  final sender = notification.sender();
-  final username = sender.displayName() ?? sender.userId();
-
-  return (title, username);
-}
-
 Future<void> _showNotification(NotificationItem notification) async {
   if (Platform.isAndroid) {
     return await showNotificationOnAndroid(notification);

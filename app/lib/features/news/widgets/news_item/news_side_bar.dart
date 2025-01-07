@@ -4,7 +4,6 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/features/comments/providers/comments_providers.dart';
 import 'package:acter/features/comments/types.dart';
@@ -241,7 +240,9 @@ class ActionBox extends ConsumerWidget {
                           if (context.mounted) {
                             // fallback to go to home
                             Navigator.pushReplacementNamed(
-                                context, Routes.main.name,);
+                              context,
+                              Routes.main.name,
+                            );
                           }
                         }
                       },
