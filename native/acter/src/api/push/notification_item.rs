@@ -315,8 +315,8 @@ impl NotificationItemInner {
                 encode(room_id.as_str())
             ),
             NotificationItemInner::Invite { room_id } => "/activities/invites".to_string(),
-            NotificationItemInner::ChatMessage { room_id, .. } => todo!(),
-            NotificationItemInner::Boost { first_slide } => todo!(),
+            NotificationItemInner::ChatMessage { room_id, .. } => format!("/chat/{room_id}"),
+            NotificationItemInner::Boost { first_slide } => "/updates".to_string(),
             NotificationItemInner::Comment {
                 parent_obj: Some(parent),
                 event_id,
