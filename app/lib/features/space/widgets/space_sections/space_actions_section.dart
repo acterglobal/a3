@@ -33,7 +33,6 @@ class SpaceActionsSection extends ConsumerWidget {
           isShowSeeAllButton: false,
         ),
         actionButtons(context, ref),
-        const SizedBox(height: 300),
       ],
     );
   }
