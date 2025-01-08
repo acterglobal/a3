@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
+import 'package:acter/common/widgets/html_editor/components/mention_menu.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -75,6 +76,13 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     // check if actual document content is empty
     final state = data.document.root.children
         .every((node) => node.delta?.toPlainText().isEmpty ?? true);
+
+    if (state) {
+      if (MentionOverlayState.isShowing) {
+        MentionOverlayState.dismiss();
+      }
+    }
+
     _isInputEmptyNotifier.value = state;
     _debounceTimer?.cancel();
     // delay operation to avoid excessive re-writes
@@ -187,39 +195,37 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   Widget editorField() {
     final widgetSize = MediaQuery.sizeOf(context);
     return Expanded(
-      child: IntrinsicHeight(
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 100),
-          height: widgetSize.height * _cHeight,
-          margin: const EdgeInsets.symmetric(
-            vertical: 12,
-            horizontal: 8,
-          ),
-          decoration: BoxDecoration(
-            color: Theme.of(context).unselectedWidgetColor.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: SingleChildScrollView(
-            child: IntrinsicHeight(
-              // keyboard shortcuts (desktop)
-              child: CallbackShortcuts(
-                bindings: <ShortcutActivator, VoidCallback>{
-                  const SingleActivator(LogicalKeyboardKey.enter): () =>
-                      sendMessageAction(
-                        roomId: widget.roomId,
-                        textEditorState: textEditorState,
-                        onTyping: widget.onTyping,
-                        context: context,
-                        ref: ref,
-                        log: _log,
-                      ),
-                  LogicalKeySet(
-                    LogicalKeyboardKey.enter,
-                    LogicalKeyboardKey.shift,
-                  ): () => textEditorState.insertNewLine(),
-                },
-                child: _renderEditor(),
-              ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        height: widgetSize.height * _cHeight,
+        margin: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: 8,
+        ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).unselectedWidgetColor.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: SingleChildScrollView(
+          child: IntrinsicHeight(
+            // keyboard shortcuts (desktop)
+            child: CallbackShortcuts(
+              bindings: <ShortcutActivator, VoidCallback>{
+                const SingleActivator(LogicalKeyboardKey.enter): () =>
+                    sendMessageAction(
+                      roomId: widget.roomId,
+                      textEditorState: textEditorState,
+                      onTyping: widget.onTyping,
+                      context: context,
+                      ref: ref,
+                      log: _log,
+                    ),
+                LogicalKeySet(
+                  LogicalKeyboardKey.enter,
+                  LogicalKeyboardKey.shift,
+                ): () => textEditorState.insertNewLine(),
+              },
+              child: _renderEditor(),
             ),
           ),
         ),

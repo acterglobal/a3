@@ -75,21 +75,13 @@ class MentionBlock extends ConsumerWidget {
       ),
     );
 
-    final Widget content = GestureDetector(
-      onTap: _handleUserTap,
-      behavior: HitTestBehavior.opaque,
-      child: hasMouseConnected
-          ? MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: mentionContentWidget,
-            )
-          : mentionContentWidget,
-    );
+    final Widget content = hasMouseConnected
+        ? MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: mentionContentWidget,
+          )
+        : mentionContentWidget;
 
     return content;
-  }
-
-  void _handleUserTap() {
-    // Implement user tap action (e.g., show profile, start chat)
   }
 }
