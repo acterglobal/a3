@@ -22,18 +22,22 @@ Future<void> initializePush({
 }) async {
   try {
     // Handle notification launching app from terminated state
-    Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
-      if (data != null) {
-        _log.info('Notification tap launched app from terminated state:\n'
-            'RemoteMessage: $data \n');
-        handleMessageTap(data);
-      }
-    });
 
-    // Handle notification taps
-    Push.instance.onNotificationTap.listen((data) {
-      handleMessageTap(data);
-    });
+    //ON ANDROID: PUSH NOTIFICATION TAP IS MANAGED BY LOCAL PUSH NOTIFICATION TAP EVENT
+    if (!Platform.isAndroid) {
+      Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data) {
+        if (data != null) {
+          _log.info('Notification tap launched app from terminated state:\n'
+              'RemoteMessage: $data \n');
+          handleMessageTap(data);
+        }
+      });
+
+      // Handle notification taps
+      Push.instance.onNotificationTap.listen((data) {
+        handleMessageTap(data);
+      });
+    }
 
     // Handle push notifications
     Push.instance.addOnMessage((message) async {
@@ -68,7 +72,7 @@ Future<void> initializePush({
       // FIXME: how to identify which clients are connected to this?
       _log.info('Just got a new FCM registration token: $token');
       final clients =
-          currentClientsGen == null ? [] : await currentClientsGen();
+      currentClientsGen == null ? [] : await currentClientsGen();
       for (final client in clients) {
         final deviceId = client.deviceId().toString();
         try {
@@ -89,8 +93,7 @@ Future<void> initializePush({
   }
 }
 
-Future<bool> _handlePushMessage(
-  RemoteMessage message, {
+Future<bool> _handlePushMessage(RemoteMessage message, {
   bool background = false,
   ShouldShowCheck? shouldShowCheck,
 }) async {
@@ -102,8 +105,7 @@ Future<bool> _handlePushMessage(
       background: background, shouldShowCheck: shouldShowCheck);
 }
 
-Future<bool?> setupPushNotificationsForDevice(
-  Client client, {
+Future<bool?> setupPushNotificationsForDevice(Client client, {
   required String appName,
   required String appIdPrefix,
   required String pushServerUrl,
