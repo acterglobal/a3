@@ -6,6 +6,20 @@ import 'package:go_router/go_router.dart';
 
 final updateShellRoutes = [
   GoRoute(
+    name: Routes.update.name,
+    path: Routes.update.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return MaterialPage(
+        key: state.pageKey,
+        child: NewsListPage(
+          newsViewMode: NewsViewMode.fullView,
+          // initialEvent: state.pathParams[""]),
+        ),
+      );
+    },
+  ),
+  GoRoute(
     name: Routes.updates.name,
     path: Routes.updates.route,
     redirect: authGuardRedirect,

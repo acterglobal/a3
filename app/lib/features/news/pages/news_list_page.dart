@@ -8,6 +8,7 @@ import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_full_view.dart';
 import 'package:acter/features/news/widgets/news_grid_view.dart';
 import 'package:acter/features/news/widgets/news_skeleton_widget.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,11 +21,13 @@ enum NewsViewMode { gridView, fullView }
 
 class NewsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
+  final String? initialEventId;
   final NewsViewMode newsViewMode;
 
   const NewsListPage({
     super.key,
     this.spaceId,
+    this.initialEventId,
     this.newsViewMode = NewsViewMode.gridView,
   });
 
@@ -35,11 +38,24 @@ class NewsListPage extends ConsumerStatefulWidget {
 class _NewsListPageState extends ConsumerState<NewsListPage> {
   final ValueNotifier<bool> useGridMode = ValueNotifier(true);
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
+  late ProviderSubscription<AsyncValue<List<NewsEntry>>>? listener;
 
   @override
   void initState() {
     super.initState();
     useGridMode.value = widget.newsViewMode == NewsViewMode.gridView;
+    // final targetEventId = widget.initialEventId;
+    // if (targetEventId != null) {
+    //   listener =
+    //       ref.listenManual(newsListProvider(widget.spaceId), (next, prev) {
+    //     final items = next?.valueOrNull;
+    //     if (items == null) {
+    //       return;
+    //     }
+    //     listener?.close();
+    //     listener = null;
+    //   });
+    // }
   }
 
   @override
