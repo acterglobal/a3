@@ -14,6 +14,7 @@ mod reaction;
 mod redact;
 mod reply;
 mod rsvp;
+mod session_verification;
 mod spaces;
 mod stories;
 mod super_invites;

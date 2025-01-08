@@ -27,7 +27,7 @@ use tokio::{
     time,
 };
 use tokio_stream::wrappers::BroadcastStream;
-use tracing::{error, trace};
+use tracing::{error, info, trace};
 
 use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
@@ -178,13 +178,11 @@ impl Client {
         let encryption = client.encryption();
         let user_id = client
             .user_id()
-            .context("Failed retrieving current user_id")?;
-        let user_identity = encryption
-            .get_user_identity(user_id)
-            .await?
-            .context("Failed retrieving user identity")?;
+            .context("Failed retrieving current user_id")?
+            .to_owned();
+        info!("client user id: {}", user_id);
         let session_verification_controller =
-            SessionVerificationController::new(encryption, user_identity);
+            SessionVerificationController::new(encryption, user_id);
         let mut cl = Client {
             core: core.clone(),
             state: Arc::new(RwLock::new(state)),
@@ -440,12 +438,12 @@ impl Client {
         let user_id = self.user_id()?;
         RUNTIME
             .spawn(async move {
-                client
+                let result = client
                     .encryption()
                     .get_device(&user_id, device_id!(dev_id.as_str()))
                     .await?
-                    .context("Unable to find device")
-                    .map(|x| x.is_verified())
+                    .map_or(false, |device| device.is_verified());
+                Ok(result)
             })
             .await?
     }
