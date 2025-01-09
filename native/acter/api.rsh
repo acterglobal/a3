@@ -106,6 +106,9 @@ object RefDetails {
     /// if ref is `link`, its uri
     fn uri() -> Option<string>;
 
+    /// the via-server names for this room
+    fn via_servers() -> Vec<string>;
+
     /// generating an internal acter:-link
     fn generate_internal_link(include_preview: bool) -> Result<string>;
 

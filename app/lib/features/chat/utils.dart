@@ -177,7 +177,7 @@ Future<void> navigateToRoomOrAskToJoin(
 
   /// Ask to join room if not yet joined
   else {
-    showRoomPreview(context: context, ref: ref, roomIdOrAlias: roomId);
+    showRoomPreview(context: context, roomIdOrAlias: roomId);
   }
 }
 

@@ -116,7 +116,7 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
     final roomId = widget.invitation.roomIdStr();
     return ListTile(
       onTap: () {
-        showRoomPreview(context: context, ref: ref, roomIdOrAlias: roomId);
+        showRoomPreview(context: context, roomIdOrAlias: roomId);
       },
       leading: ActerAvatar(
         options: AvatarOptions(
@@ -138,7 +138,7 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
     final roomId = widget.invitation.roomIdStr();
     return ListTile(
       onTap: () {
-        showRoomPreview(context: context, ref: ref, roomIdOrAlias: roomId);
+        showRoomPreview(context: context, roomIdOrAlias: roomId);
       },
       leading: ActerAvatar(
         options: AvatarOptions(
@@ -166,7 +166,7 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
     final roomId = widget.invitation.roomIdStr();
     return ListTile(
       onTap: () {
-        showRoomPreview(context: context, ref: ref, roomIdOrAlias: roomId);
+        showRoomPreview(context: context, roomIdOrAlias: roomId);
       },
       leading: ActerAvatar(
         options: AvatarOptions.DM(

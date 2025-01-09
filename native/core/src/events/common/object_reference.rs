@@ -321,6 +321,16 @@ impl RefDetails {
         }
     }
 
+    pub fn via_servers(&self) -> Vec<String> {
+        match self {
+            RefDetails::Link { .. } => vec![],
+            RefDetails::Task { via, .. }
+            | RefDetails::TaskList { via, .. }
+            | RefDetails::Pin { via, .. }
+            | RefDetails::CalendarEvent { via, .. } => via.iter().map(|s| s.to_string()).collect(),
+        }
+    }
+
     pub fn task_list_id_str(&self) -> Option<String> {
         match self {
             RefDetails::Task { task_list, .. } => Some(task_list.to_string()),

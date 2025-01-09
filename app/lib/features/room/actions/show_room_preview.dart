@@ -11,8 +11,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 Future<void> showRoomPreview({
   required BuildContext context,
-  required WidgetRef ref,
   required String roomIdOrAlias,
+  Widget? headerInfo,
   List<String> serverNames = const [],
 }) async {
   await showModalBottomSheet(
@@ -26,6 +26,7 @@ Future<void> showRoomPreview({
     ),
     builder: (context) => _ShowRoomPreview(
       roomIdOrAlias: roomIdOrAlias,
+      headerInfo: headerInfo,
       serverNames: serverNames,
     ),
   );
@@ -34,9 +35,11 @@ Future<void> showRoomPreview({
 class _ShowRoomPreview extends ConsumerWidget {
   final String roomIdOrAlias;
   final List<String> serverNames;
+  final Widget? headerInfo;
   const _ShowRoomPreview({
     required this.roomIdOrAlias,
     required this.serverNames,
+    this.headerInfo,
   });
 
   RoomPreviewQuery get query => (
@@ -56,6 +59,7 @@ class _ShowRoomPreview extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (headerInfo != null) headerInfo!,
             roomHeader(roomPreview),
             roomInfo(context, roomPreview),
             const SizedBox(height: 20),

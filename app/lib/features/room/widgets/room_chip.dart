@@ -68,7 +68,6 @@ class _RoomChipState extends ConsumerState<RoomChip> {
           onPressed: () async {
             await showRoomPreview(
               context: context,
-              ref: ref,
               roomIdOrAlias: query.roomIdOrAlias,
               serverNames: query.serverNames.items,
             );
@@ -139,7 +138,6 @@ class _RoomChipState extends ConsumerState<RoomChip> {
       onPressed: () async {
         await showRoomPreview(
           context: context,
-          ref: ref,
           roomIdOrAlias: query.roomIdOrAlias,
           serverNames: query.serverNames.items,
         );
