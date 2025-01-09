@@ -48,6 +48,7 @@ async fn news_notification() -> Result<()> {
         .await?;
 
     assert_eq!(notifications.push_style(), "news");
+    assert_eq!(notifications.target_url(), format!("/updates/{event_id}"));
 
     Ok(())
 }

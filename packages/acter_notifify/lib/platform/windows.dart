@@ -1,6 +1,5 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/acter_notifify.dart';
-import 'package:acter_notifify/matrix.dart';
 import 'package:acter_notifify/util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:windows_notification/notification_message.dart';

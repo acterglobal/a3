@@ -194,7 +194,7 @@ impl NotificationItemParent {
 
     pub fn target_url(&self) -> String {
         match self {
-            NotificationItemParent::News { .. } => "/news".to_owned(),
+            NotificationItemParent::News { parent_id } => format!("/updates/{}", parent_id),
             NotificationItemParent::Pin { parent_id, .. } => format!("/pins/{}", parent_id),
             NotificationItemParent::CalendarEvent { parent_id, .. } => {
                 format!("/events/{}", parent_id)
@@ -250,8 +250,7 @@ impl TryFrom<&AnyActerModel> for NotificationItemParent {
                 tracing::trace!("Received Notification on an unsupported parent");
                 Err(())
             }
-            #[cfg(test)]
-            AnyActerModel::TestModel(test_model) => Err(()),
+            AnyActerModel::TestModel(test_model) => todo!(),
         }
     }
 }
@@ -272,6 +271,7 @@ pub enum NotificationItemInner {
     },
     Boost {
         first_slide: Option<NewsContent>,
+        event_id: OwnedEventId,
     },
     Comment {
         parent_obj: Option<NotificationItemParent>,
@@ -316,7 +316,7 @@ impl NotificationItemInner {
             ),
             NotificationItemInner::Invite { room_id } => "/activities/invites".to_string(),
             NotificationItemInner::ChatMessage { room_id, .. } => format!("/chat/{room_id}"),
-            NotificationItemInner::Boost { first_slide } => "/updates".to_string(),
+            NotificationItemInner::Boost { event_id, .. } => format!("/updates/{event_id}"),
             NotificationItemInner::Comment {
                 parent_obj: Some(parent),
                 event_id,
@@ -408,6 +408,7 @@ impl NotificationItemInner {
             NotificationItemInner::Comment { content, .. } => Some(MsgContent::from(content)),
             NotificationItemInner::Boost {
                 first_slide: Some(first_slide),
+                ..
             } => match &first_slide {
                 // everything else we have to fallback to the body-text thing ...
                 NewsContent::Fallback(FallbackNewsContent::Text(msg_content))
@@ -431,15 +432,19 @@ impl NotificationItemInner {
         match &self {
             NotificationItemInner::Boost {
                 first_slide: Some(NewsContent::Fallback(FallbackNewsContent::Image(msg_content))),
+                ..
             }
             | NotificationItemInner::Boost {
                 first_slide: Some(NewsContent::Image(msg_content)),
+                ..
             } => return Some(msg_content.source.clone()),
             NotificationItemInner::Boost {
                 first_slide: Some(NewsContent::Fallback(FallbackNewsContent::Image(msg_content))),
+                ..
             }
             | NotificationItemInner::Boost {
                 first_slide: Some(NewsContent::Image(msg_content)),
+                ..
             } => return Some(msg_content.source.clone()),
             _ => {}
         };
@@ -611,7 +616,10 @@ impl NotificationItem {
             AnyActerEvent::NewsEntry(MessageLikeEvent::Original(e)) => {
                 let first_slide = e.content.slides.first().map(|a| a.content().clone());
                 Ok(builder
-                    .inner(NotificationItemInner::Boost { first_slide })
+                    .inner(NotificationItemInner::Boost {
+                        first_slide,
+                        event_id: e.event_id,
+                    })
                     .build()?)
             }
             AnyActerEvent::Comment(MessageLikeEvent::Original(e)) => {

@@ -69,16 +69,18 @@ async fn comment_on_news() -> Result<()> {
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
     let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    let obj_id = Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
+        let obj_id_1 = obj_id.clone();
         async move {
-            if client.object_push_subscription_status(obj_id, None).await?
+            if client
+                .object_push_subscription_status(obj_id_1.clone(), None)
+                .await?
                 != SubscriptionStatus::Subscribed
             {
                 bail!("not yet subscribed");
             }
-            Ok(())
+            Ok(obj_id_1)
         }
     })
     .await?;
@@ -105,7 +107,8 @@ async fn comment_on_news() -> Result<()> {
     assert_eq!(
         notification_item.target_url(),
         format!(
-            "/news?section=comments&commentId={}",
+            "/updates/{}?section=comments&commentId={}",
+            obj_id,
             encode(notification_ev.as_str())
         )
     );

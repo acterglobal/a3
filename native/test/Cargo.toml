@@ -12,6 +12,7 @@ features = ["testing"]
 
 [dependencies.acter-core]
 path = "../core"
+features = ["testing"]
 
 [dependencies]
 matrix-sdk-base = { workspace = true }
