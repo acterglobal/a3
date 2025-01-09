@@ -11,6 +11,7 @@ import 'package:acter/features/news/widgets/news_skeleton_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -37,6 +38,7 @@ class NewsListPage extends ConsumerStatefulWidget {
 
 class _NewsListPageState extends ConsumerState<NewsListPage> {
   final ValueNotifier<bool> useGridMode = ValueNotifier(true);
+  final ValueNotifier<bool> stillLoadingForSelectedItem = ValueNotifier(false);
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
   late ProviderSubscription<AsyncValue<List<NewsEntry>>>? listener;
 
@@ -44,18 +46,38 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
   void initState() {
     super.initState();
     useGridMode.value = widget.newsViewMode == NewsViewMode.gridView;
-    // final targetEventId = widget.initialEventId;
-    // if (targetEventId != null) {
-    //   listener =
-    //       ref.listenManual(newsListProvider(widget.spaceId), (next, prev) {
-    //     final items = next?.valueOrNull;
-    //     if (items == null) {
-    //       return;
-    //     }
-    //     listener?.close();
-    //     listener = null;
-    //   });
-    // }
+    final targetEventId = widget.initialEventId;
+    if (targetEventId != null) {
+      stillLoadingForSelectedItem.value = true;
+      listener = ref.listenManual(
+        newsListProvider(widget.spaceId),
+        (prev, next) {
+          final items = next.valueOrNull;
+          if (items == null) {
+            return;
+          }
+          int? itemIdx;
+
+          items.firstWhereIndexedOrNull((int idx, NewsEntry e) {
+            if (e.eventId().toString() == targetEventId) {
+              itemIdx = idx;
+              return true;
+            } else {
+              return false;
+            }
+          });
+          if (itemIdx == null) {
+            // not found, still loading
+            return;
+          }
+          stillLoadingForSelectedItem.value = false;
+          currentIndex.value = itemIdx!;
+          listener?.close();
+          listener = null;
+        },
+        fireImmediately: true,
+      );
+    }
   }
 
   @override

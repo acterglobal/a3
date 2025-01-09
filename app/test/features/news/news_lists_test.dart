@@ -73,5 +73,58 @@ void main() {
         findsOneWidget,
       ); // Ensure the empty state widget is displayed
     });
+
+    testWidgets('Shows selected news', (tester) async {
+      final slide = MockNewsSlide();
+      when(() => slide.typeStr()).thenReturn('text');
+      when(() => slide.msgContent())
+          .thenReturn(MockMsgContent(bodyText: 'This is an important news'));
+      final entry1 = MockNewsEntry(slides_: [slide], eventId_: 'firstId');
+
+      final slide2 = MockNewsSlide();
+      when(() => slide2.typeStr()).thenReturn('text');
+      when(() => slide2.msgContent())
+          .thenReturn(MockMsgContent(bodyText: 'This is the second news'));
+      final entry2 = MockNewsEntry(slides_: [slide2], eventId_: 'secondId');
+
+      final slide3 = MockNewsSlide();
+      when(() => slide3.typeStr()).thenReturn('text');
+      when(() => slide3.msgContent())
+          .thenReturn(MockMsgContent(bodyText: 'This is the third news'));
+      final entry3 = MockNewsEntry(slides_: [slide3], eventId_: 'thirdId');
+      await tester.pumpProviderWidget(
+        overrides: [
+          myUserIdStrProvider.overrideWith((a) => 'my user id'),
+          likedByMeProvider.overrideWith((a, b) => false),
+          totalLikesForNewsProvider.overrideWith((a, b) => 0),
+          newsCommentsCountProvider.overrideWith((a, b) => 0),
+          roomDisplayNameProvider.overrideWith((a, b) => 'SpaceName'),
+          briefSpaceItemProvider.overrideWith(
+            (a, b) => SpaceItem(
+              roomId: 'roomId',
+              activeMembers: [],
+              avatarInfo: AvatarInfo(uniqueId: 'id'),
+            ),
+          ),
+          newsListProvider.overrideWith(
+            () => MockAsyncNewsListNotifier(
+              news: [entry1, entry2, entry3],
+            ),
+          ),
+          hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
+        ],
+        child: const NewsListPage(
+          newsViewMode: NewsViewMode.fullView,
+          initialEventId: 'secondId',
+        ),
+      );
+
+      await tester.pump();
+
+      expect(
+        find.text('This is the second news'),
+        findsOneWidget,
+      ); // Ensure the empty state widget is displayed
+    });
   });
 }

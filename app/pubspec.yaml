@@ -148,6 +148,7 @@ dependencies:
   phosphor_flutter: ^2.1.0
   device_calendar: ^4.3.3-20240801
   quickalert: ^1.1.0
+  collection: ^1.18.0
   drag_and_drop_lists:
     git:
       url: https://github.com/acterglobal/DragAndDropLists
