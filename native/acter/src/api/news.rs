@@ -500,12 +500,11 @@ impl NewsEntry {
                 let room_display_name = room.cached_display_name();
                 Ok(RefDetails::new(
                     client,
-                    CoreRefDetails::TaskList {
+                    CoreRefDetails::News {
                         target_id,
                         room_id: Some(room_id),
                         via,
                         preview: RefPreview::new(None, room_display_name),
-                        action: Default::default(),
                     },
                 ))
             })
