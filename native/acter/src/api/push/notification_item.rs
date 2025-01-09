@@ -250,6 +250,7 @@ impl TryFrom<&AnyActerModel> for NotificationItemParent {
                 tracing::trace!("Received Notification on an unsupported parent");
                 Err(())
             }
+            #[cfg(any(test, feature = "testing"))]
             AnyActerModel::TestModel(test_model) => todo!(),
         }
     }
