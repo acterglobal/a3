@@ -212,6 +212,8 @@ object VecStringBuilder {
     fn add(value: string);
 }
 
+fn new_vec_string_builder() -> VecStringBuilder;
+
 object OptionString {
     /// get text
     fn text() -> Option<string>;

@@ -1808,6 +1808,16 @@ class Api {
     return tmp9;
   }
 
+  VecStringBuilder newVecStringBuilder() {
+    final tmp0 = _newVecStringBuilder();
+    final tmp2 = tmp0;
+    final ffi.Pointer<ffi.Void> tmp2_0 = ffi.Pointer.fromAddress(tmp2);
+    final tmp2_1 = _Box(this, tmp2_0, "drop_box_VecStringBuilder");
+    tmp2_1._finalizer = this._registerFinalizer(tmp2_1);
+    final tmp1 = VecStringBuilder._(this, tmp2_1);
+    return tmp1;
+  }
+
   /// Rotate the logging file
   JoinRuleBuilder newJoinRuleBuilder() {
     final tmp0 = _newJoinRuleBuilder();
@@ -17190,6 +17200,12 @@ class Api {
         int,
         int,
       )>();
+  late final _newVecStringBuilderPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__new_vec_string_builder");
+
+  late final _newVecStringBuilder =
+      _newVecStringBuilderPtr.asFunction<int Function()>();
   late final _newJoinRuleBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
           "__new_join_rule_builder");
