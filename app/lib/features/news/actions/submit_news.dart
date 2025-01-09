@@ -42,8 +42,8 @@ Future<NewsSlideDraft> _makeTextSlide(
 
   final refDetails = slidePost.refDetails;
   if (refDetails != null) {
-    final objRef = sdk.api.newObjRefBuilder(null, refDetails).build();
-    textSlideDraft.addReference(objRef);
+    final objRefBuilder = sdk.api.newObjRefBuilder(null, refDetails);
+    textSlideDraft.addReference(objRefBuilder);
   }
 
   return textSlideDraft;
@@ -80,8 +80,8 @@ Future<NewsSlideDraft> _makeImageSlide(
 
   final refDetails = slidePost.refDetails;
   if (refDetails != null) {
-    final objRef = sdk.api.newObjRefBuilder(null, refDetails).build();
-    imageSlideDraft.addReference(objRef);
+    final objRefBuilder = sdk.api.newObjRefBuilder(null, refDetails);
+    imageSlideDraft.addReference(objRefBuilder);
   }
   return imageSlideDraft;
 }
@@ -111,8 +111,8 @@ Future<NewsSlideDraft> _makeVideoSlide(
   );
   final refDetails = slidePost.refDetails;
   if (refDetails != null) {
-    final objRef = sdk.api.newObjRefBuilder(null, refDetails).build();
-    videoSlideDraft.addReference(objRef);
+    final objRefBuilder = sdk.api.newObjRefBuilder(null, refDetails);
+    videoSlideDraft.addReference(objRefBuilder);
   }
   return videoSlideDraft;
 }

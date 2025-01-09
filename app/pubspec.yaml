@@ -159,6 +159,7 @@ dependencies:
   qr_code_dart_scan: ^0.9.3
   appcheck: ^1.5.2
   screen_retriever: ^0.1.9
+  android_intent_plus: ^5.2.1
 
 dev_dependencies:
   flutter_test:

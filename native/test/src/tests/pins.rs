@@ -260,15 +260,17 @@ async fn pin_external_link() -> Result<()> {
 
     // generate the external and internal links
 
-    let internal_link = pin.internal_link();
-    let external_link = pin.external_link().await?;
+    let ref_details = pin.ref_details().await?;
+
+    let internal_link = ref_details.generate_internal_link(false)?;
+    let external_link = ref_details.generate_external_link().await?;
 
     let room_id = &pin.room_id().to_string()[1..];
     let pin_id = &pin.event_id().to_string()[1..];
 
     let path = format!("o/{room_id}/pin/{pin_id}");
 
-    assert_eq!(internal_link, format!("acter:{path}"));
+    assert_eq!(internal_link, format!("acter:{path}?via=localhost"));
 
     let ext_url = url::Url::parse(&external_link)?;
     assert_eq!(ext_url.fragment().expect("must have fragment"), &path);
