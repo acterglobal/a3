@@ -12,6 +12,14 @@ concurrency:
 
 jobs:
   flutter:
+    strategy:
+      matrix:
+       include:
+          - name: App
+            path: ./app
+            include_enven: true
+          - name: Notifify
+            path: packages/acter_notifify
     name: Flutter Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -22,17 +30,18 @@ jobs:
           flutter-version: '3.24'
           channel: 'stable'
       - name: Generate env
-        working-directory: ./app
+        working-directory: ${{ matrix.path }}
+        if: ${{ matrix.include_enven }}
         run: dart run enven
       - name: Run flutter unit tests
-        working-directory: app
+        working-directory: ${{ matrix.path }}
         run: flutter test --coverage
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/codecov-action@v4
         with:
-          working-directory: app
+          working-directory: ${{ matrix.path }}
           directory: coverage
           flags: unittest
           name: flutter-widget-tests
