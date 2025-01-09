@@ -91,7 +91,13 @@ class RoomAvatar extends ConsumerWidget {
     return membersLoader.when(
       data: (members) {
         int count = members.length;
-
+        // handle empty list first, in case.
+        if (count == 0) {
+          return errorAvatar(
+            L10n.of(context)
+                .loadingMembersCountFailed('failed to fetched room: null'),
+          );
+        }
         //Show member avatar
         if (count == 1) {
           return memberAvatar(members[0], ref);
