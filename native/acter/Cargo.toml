@@ -10,7 +10,7 @@ license-file = "../../LICENSE.txt"
 
 [features]
 default = ["dart"]
-testing = []
+testing = ["acter-core/testing"]
 cbindgen = []
 tracing = ["dep:tracing-subscriber", "dep:tracing-appender", "dep:tracing-log"]
 tracing-console = ["tracing", "dep:console-subscriber", "tokio/tracing"]
