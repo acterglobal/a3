@@ -88,7 +88,11 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
         return Scaffold(
           extendBodyBehindAppBar: !value,
           appBar: _buildAppBar(value),
-          body: _buildBody(value),
+          body: ValueListenableBuilder(
+            valueListenable: stillLoadingForSelectedItem,
+            builder: (context, loading, child) =>
+                loading ? const NewsSkeletonWidget() : _buildBody(value),
+          ),
         );
       },
     );
@@ -157,6 +161,8 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
       },
       error: (e, s) => newsErrorUI(context, e, s),
       loading: () => const NewsSkeletonWidget(),
+      skipLoadingOnRefresh: true,
+      skipLoadingOnReload: true,
     );
   }
 
