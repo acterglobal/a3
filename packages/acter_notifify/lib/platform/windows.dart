@@ -1,5 +1,6 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/acter_notifify.dart';
+import 'package:acter_notifify/util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:windows_notification/notification_message.dart';
 import 'package:windows_notification/windows_notification.dart';
@@ -29,15 +30,7 @@ Future<void> showWindowsNotification(
 ) async {
   String? filePath;
 
-  String? body;
-  String title = notification.title();
-  final msg = notification.body();
-  if (msg != null) {
-    body = msg.body();
-  }
-
-  // FIXME: currently failing with
-  // Parsing Notification failed: PlatformException(Error 101, Unrecognized attachment file type, UNErrorDomain, null)
+  final (title, body) = genTitleAndBody(notification);
   if (notification.hasImage()) {
     final tempDir = await getTemporaryDirectory();
     filePath = await notification.imagePath(tempDir.path);
@@ -55,10 +48,6 @@ Future<void> showWindowsNotification(
     // launch: notification.targetUrl(),
     payload: {
       'payload': notification.targetUrl(), // this is the target url
-      // FIXME: would be nice to push through the actual information
-      // as we do for the others
-      // 'room_id' : notification.room().roomId(),
-      // 'device_id': notification.
     },
   );
 

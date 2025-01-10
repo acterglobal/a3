@@ -73,6 +73,7 @@ pub async fn random_users_with_random_space(
     prefix: &str,
     user_count: u8,
 ) -> Result<(Vec<Client>, OwnedRoomId)> {
+    assert!(user_count > 0, "User Counts must be more than 0");
     let (main_user, uuid) = random_user_with_uuid(prefix).await?;
     let mut settings = CreateSpaceSettingsBuilder::default();
     settings.name(format!("it-room-{prefix}-{uuid}"));
@@ -201,4 +202,33 @@ pub async fn random_user_with_template(
         i?
     }
     Ok((user, sync_state, tmpl_engine))
+}
+
+pub async fn random_users_with_random_space_under_template(
+    prefix: &str,
+    user_count: u8,
+    template: &str,
+) -> Result<(Vec<Client>, Vec<SyncState>, OwnedRoomId, Engine)> {
+    let (mut clients, room_id) = random_users_with_random_space(prefix, user_count).await?;
+    let user = clients.first().expect("there are more than one");
+
+    let mut tmpl_engine = user.template_engine(template).await?;
+    let inputs = tmpl_engine.requested_inputs();
+    if inputs.contains_key("space") {
+        tmpl_engine.add_ref("space".to_owned(), "space".to_owned(), room_id.to_string())?;
+    }
+    let exec_stream = tmpl_engine.execute()?;
+    trace!(
+        total = exec_stream.total(),
+        user_id = ?user.user_id()?,
+        "executing template"
+    );
+    pin_mut!(exec_stream);
+    while let Some(i) = exec_stream.next().await {
+        i?
+    }
+
+    let sync_states: Vec<SyncState> = clients.iter_mut().map(|c| c.start_sync()).collect();
+
+    Ok((clients, sync_states, room_id, tmpl_engine))
 }

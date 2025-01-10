@@ -2472,6 +2472,10 @@ object ActerUserAppSettings {
     /// whether to allow sending typing notice of users
     fn typing_notice() -> Option<bool>;
 
+    /// whether to automatically subscribe to push notifications
+    /// once interacted
+    fn auto_subscribe_on_activity() -> bool;
+
     /// update the builder with the current settings
 
     /// if you intend to change anything
@@ -2484,6 +2488,10 @@ object ActerUserAppSettingsBuilder {
 
     /// whether to allow sending typing notice of users
     fn typing_notice(value: bool);
+
+    /// set whether to automatically subscribe to push notifications
+    /// once interacted
+    fn auto_subscribe_on_activity(value: bool);
 
     /// submit this updated version
     fn send() -> Future<Result<bool>>;
@@ -2699,6 +2707,12 @@ object NotificationRoom {
     fn image() -> Future<Result<buffer<u8>>>;
 }
 
+object NotificationItemParent {
+    fn object_type_str() -> string;
+    fn object_id_str() -> string;
+    fn title() -> Option<string>;
+    fn emoji() -> string;
+}
 
 // converting a room_id+event_id into the notification item to show
 // from push context.
@@ -2706,8 +2720,11 @@ object NotificationItem {
     fn push_style() -> string;
     fn title() -> string;
     fn sender() -> NotificationSender;
+    fn parent() -> Option<NotificationItemParent>;
+    fn parent_id_str() -> Option<string>;
     fn room() -> NotificationRoom;
     fn target_url() -> string;
+    fn reaction_key() -> Option<string>;
     fn body() -> Option<MsgContent>;
     fn icon_url() -> Option<string>;
     fn thread_id() -> Option<string>;
@@ -2717,7 +2734,7 @@ object NotificationItem {
     fn image_path(tmp_dir: string) -> Future<Result<string>>;
 
     /// if this is an invite, this the room it invites to
-    fn room_invite() -> Option<string>;
+    fn room_invite_str() -> Option<string>;
 }
 
 /// The pusher we sent notifications via to the user
@@ -3062,6 +3079,12 @@ object NotificationSettings {
     /// app settings
     fn global_content_setting(app_key: string) -> Future<Result<bool>>;
     fn set_global_content_setting(app_key: string, enabled: bool) -> Future<Result<bool>>;
+
+    /// specific object based subscriptions
+    /// one of 'subscribed', 'parent' or 'none'
+    fn object_push_subscription_status_str(object_id: string, sub_type: Option<string>) -> Future<Result<string>>;
+    fn subscribe_object_push(object_id: string, sub_type: Option<string>) -> Future<Result<bool>>;
+    fn unsubscribe_object_push(object_id: string, sub_type: Option<string>) -> Future<Result<bool>>;
 }
 
 
