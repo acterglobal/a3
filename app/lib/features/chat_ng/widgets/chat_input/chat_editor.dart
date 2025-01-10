@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/widgets/html_editor/components/mention_menu.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -76,6 +77,13 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     // check if actual document content is empty
     final state = data.document.root.children
         .every((node) => node.delta?.toPlainText().isEmpty ?? true);
+
+    if (state) {
+      if (MentionOverlayState.isShowing) {
+        MentionOverlayState.dismiss();
+      }
+    }
+
     _isInputEmptyNotifier.value = state;
     _debounceTimer?.cancel();
     // delay operation to avoid excessive re-writes
@@ -205,7 +213,10 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
         height: widgetSize.height * _cHeight,
-        margin: const EdgeInsets.only(top: 16),
+        margin: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: 8,
+        ),
         child: SingleChildScrollView(
           child: IntrinsicHeight(
             // keyboard shortcuts (desktop)

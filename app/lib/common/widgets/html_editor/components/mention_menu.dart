@@ -3,6 +3,20 @@ import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 
+// class to track current menu instance
+class MentionOverlayState {
+  static MentionMenu? currentMenu;
+
+  static void dismiss() {
+    currentMenu?._menuEntry?.remove();
+    currentMenu?._menuEntry = null;
+    currentMenu = null;
+  }
+
+  static bool get isShowing =>
+      currentMenu != null && currentMenu?._menuEntry != null;
+}
+
 class MentionMenu {
   MentionMenu({
     required this.context,
@@ -19,21 +33,14 @@ class MentionMenu {
   OverlayEntry? _menuEntry;
   bool selectionChangedByMenu = false;
 
-  void dismiss() {
-    editorState.service.keyboardService?.enable();
-    editorState.service.scrollService?.enable();
-    keepEditorFocusNotifier.decrease();
-
-    _menuEntry?.remove();
-    _menuEntry = null;
-  }
-
   void show() {
     WidgetsBinding.instance.addPostFrameCallback((_) => _show());
   }
 
   void _show() {
-    dismiss();
+    if (MentionOverlayState.isShowing) {
+      MentionOverlayState.dismiss();
+    }
 
     // Get position of editor
     final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
@@ -45,12 +52,12 @@ class MentionMenu {
     final Widget listWidget = switch (mentionTrigger) {
       userMentionChar => UserMentionList(
           editorState: editorState,
-          onDismiss: dismiss,
+          onDismiss: MentionOverlayState.dismiss,
           roomId: roomId,
         ),
       roomMentionChar => RoomMentionList(
           editorState: editorState,
-          onDismiss: dismiss,
+          onDismiss: MentionOverlayState.dismiss,
           roomId: roomId,
         ),
       _ => const SizedBox.shrink(),
@@ -66,23 +73,17 @@ class MentionMenu {
         child: Material(
           elevation: 8, // Add some elevation for better visibility
           borderRadius: BorderRadius.circular(8),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: dismiss,
-            child: Container(
-              constraints: BoxConstraints(
-                maxHeight: 200, // Limit maximum height
-                maxWidth: size.width, // Match input width
-              ),
-              child: listWidget,
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: 200, // Limit maximum height
+              maxWidth: size.width, // Match input width
             ),
+            child: listWidget,
           ),
         ),
       ),
     );
 
     Overlay.of(context).insert(_menuEntry!);
-    editorState.service.keyboardService?.disable(showCursor: true);
-    editorState.service.scrollService?.disable();
   }
 }

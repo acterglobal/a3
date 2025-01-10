@@ -1,3 +1,4 @@
+import 'package:acter/common/widgets/html_editor/components/mention_menu.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
@@ -75,17 +76,24 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
 
     return PageStorage(
       bucket: bucketGlobal,
-      child: Column(
-        children: [
-          Expanded(
-            child: Stack(
-              children: [
-                _buildMessagesList(messages),
-                _buildScrollIndicator(),
-              ],
+      child: GestureDetector(
+        onTap: () {
+          if (MentionOverlayState.isShowing) {
+            MentionOverlayState.dismiss();
+          }
+        },
+        child: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  _buildMessagesList(messages),
+                  _buildScrollIndicator(),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

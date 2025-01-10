@@ -8,27 +8,19 @@ class MentionItem extends StatelessWidget {
     required this.mentionId,
     required this.displayName,
     required this.avatarOptions,
-    required this.isSelected,
     required this.onTap,
   });
 
   final String mentionId;
   final String? displayName;
   final AvatarOptions avatarOptions;
-  final bool isSelected;
 
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final hasKeyboard =
-        MediaQuery.of(context).navigationMode == NavigationMode.directional;
-
     return Container(
       height: 60,
-      color: (isSelected && hasKeyboard)
-          ? Theme.of(context).colorScheme.primary
-          : null,
       child: ListTile(
         dense: true,
         onTap: onTap,

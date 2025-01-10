@@ -455,6 +455,7 @@ class HtmlEditorState extends State<HtmlEditor> {
     }
 
     if (mention != null && roomId != null) {
+      text.text = mention.displayName ?? mention.mentionId;
       return WidgetSpan(
         alignment: PlaceholderAlignment.middle,
         style: after.style,
