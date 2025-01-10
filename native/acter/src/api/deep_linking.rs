@@ -80,6 +80,7 @@ impl RefDetails {
             CoreRefDetails::Link { title, uri } => false,
             CoreRefDetails::Task { room_id, .. }
             | CoreRefDetails::TaskList { room_id, .. }
+            | CoreRefDetails::News { room_id, .. }
             | CoreRefDetails::Pin { room_id, .. }
             | CoreRefDetails::CalendarEvent { room_id, .. } => room_id.is_some(),
         }
@@ -163,6 +164,31 @@ impl RefDetails {
                 generate_object_link(
                     room_id,
                     &[("pin", target_id)],
+                    via.as_slice(),
+                    params.as_slice(),
+                )
+            }
+            CoreRefDetails::News {
+                target_id,
+                room_id,
+                via,
+                preview,
+            } => {
+                let Some(room_id) = room_id else {
+                    bail!("Object misses room_id")
+                };
+                let params = if include_preview {
+                    vec![
+                        ("roomDisplayName", preview.room_display_name.as_ref()),
+                        ("title", preview.title.as_ref()),
+                    ]
+                } else {
+                    vec![]
+                };
+
+                generate_object_link(
+                    room_id,
+                    &[("boost", target_id)],
                     via.as_slice(),
                     params.as_slice(),
                 )

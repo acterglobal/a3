@@ -25,6 +25,7 @@ enum Routes {
 
   // --- Updates
   updates('/updates'),
+  update('/updates/:updateId([^/]+)'),
   updateList('/updateList'),
   actionAddUpdate('/actions/addUpdate'),
 

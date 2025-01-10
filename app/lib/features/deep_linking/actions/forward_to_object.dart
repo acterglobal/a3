@@ -33,6 +33,10 @@ Future<void> forwardToObject(
         Routes.calendarEvent.name,
         pathParameters: {'calendarId': objectId},
       ),
+    ObjectType.boost => context.pushNamed(
+        Routes.update.name,
+        pathParameters: {'updateId': objectId},
+      ),
     _ => EasyLoading.showError(
         lang.deepLinkNotSupported(target.objectType),
         duration: const Duration(seconds: 3),

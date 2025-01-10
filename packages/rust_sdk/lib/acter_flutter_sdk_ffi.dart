@@ -2592,6 +2592,53 @@ class Api {
     return tmp7;
   }
 
+  RefDetails? __newsEntryRefDetailsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsEntryRefDetailsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_RefDetails");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = RefDetails._(this, tmp13_1);
+    return tmp7;
+  }
+
   bool? __newsEntryDraftAddSlideFuturePoll(
     int boxed,
     int postCobject,
@@ -17555,136 +17602,6 @@ class Api {
           void Function(
             int,
           )>();
-  late final _refDetailsBuilderTargetIdPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__RefDetailsBuilder_target_id");
-
-  late final _refDetailsBuilderTargetId =
-      _refDetailsBuilderTargetIdPtr.asFunction<
-          void Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _refDetailsBuilderRoomIdPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__RefDetailsBuilder_room_id");
-
-  late final _refDetailsBuilderRoomId = _refDetailsBuilderRoomIdPtr.asFunction<
-      void Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _refDetailsBuilderUnsetRoomIdPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-          )>>("__RefDetailsBuilder_unset_room_id");
-
-  late final _refDetailsBuilderUnsetRoomId =
-      _refDetailsBuilderUnsetRoomIdPtr.asFunction<
-          void Function(
-            int,
-          )>();
-  late final _refDetailsBuilderTaskListPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__RefDetailsBuilder_task_list");
-
-  late final _refDetailsBuilderTaskList =
-      _refDetailsBuilderTaskListPtr.asFunction<
-          void Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _refDetailsBuilderActionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__RefDetailsBuilder_action");
-
-  late final _refDetailsBuilderAction = _refDetailsBuilderActionPtr.asFunction<
-      void Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _refDetailsBuilderUnsetActionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-          )>>("__RefDetailsBuilder_unset_action");
-
-  late final _refDetailsBuilderUnsetAction =
-      _refDetailsBuilderUnsetActionPtr.asFunction<
-          void Function(
-            int,
-          )>();
-  late final _refDetailsBuilderTitlePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__RefDetailsBuilder_title");
-
-  late final _refDetailsBuilderTitle = _refDetailsBuilderTitlePtr.asFunction<
-      void Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _refDetailsBuilderUriPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__RefDetailsBuilder_uri");
-
-  late final _refDetailsBuilderUri = _refDetailsBuilderUriPtr.asFunction<
-      void Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
-  late final _refDetailsBuilderBuildPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-          )>>("__RefDetailsBuilder_build");
-
-  late final _refDetailsBuilderBuild = _refDetailsBuilderBuildPtr.asFunction<
-      int Function(
-        int,
-      )>();
   late final _optionStringTextPtr = _lookup<
       ffi.NativeFunction<
           _OptionStringTextReturn Function(
@@ -18225,6 +18142,16 @@ class Api {
           )>>("__NewsEntry_comments");
 
   late final _newsEntryComments = _newsEntryCommentsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _newsEntryRefDetailsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__NewsEntry_ref_details");
+
+  late final _newsEntryRefDetails = _newsEntryRefDetailsPtr.asFunction<
       int Function(
         int,
       )>();
@@ -29909,6 +29836,21 @@ class Api {
             int,
             int,
           )>();
+  late final _newsEntryRefDetailsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryRefDetailsFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__NewsEntry_ref_details_future_poll");
+
+  late final _newsEntryRefDetailsFuturePoll =
+      _newsEntryRefDetailsFuturePollPtr.asFunction<
+          _NewsEntryRefDetailsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _newsEntryDraftAddSlideFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _NewsEntryDraftAddSlideFuturePollReturn Function(
@@ -36994,218 +36936,6 @@ class ColorizeBuilder {
   }
 }
 
-/// A builder for RefDetails
-class RefDetailsBuilder {
-  final Api _api;
-  final _Box _box;
-
-  RefDetailsBuilder._(this._api, this._box);
-
-  /// it is valid for Task/TaskList/CalendarEvent ref
-  /// target_id: event id of target
-  void targetId(
-    String targetId,
-  ) {
-    final tmp1 = targetId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    _api._refDetailsBuilderTargetId(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    return;
-  }
-
-  /// it is valid for Task/TaskList/CalendarEvent ref
-  void roomId(
-    String roomId,
-  ) {
-    final tmp1 = roomId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    _api._refDetailsBuilderRoomId(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    return;
-  }
-
-  /// unset the room id, it is optional field
-  void unsetRoomId() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._refDetailsBuilderUnsetRoomId(
-      tmp0,
-    );
-    return;
-  }
-
-  /// it is valid for Task/TaskList/CalendarEvent ref
-  /// task_list: event id of task list
-  void taskList(
-    String taskList,
-  ) {
-    final tmp1 = taskList;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    _api._refDetailsBuilderTaskList(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    return;
-  }
-
-  /// it is valid for Task/TaskList/CalendarEvent ref
-  /// action is one of TaskAction/TaskListAction/CalendarEventAction
-  void action(
-    String action,
-  ) {
-    final tmp1 = action;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    _api._refDetailsBuilderAction(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    return;
-  }
-
-  /// unset the action, it is optional field
-  void unsetAction() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    _api._refDetailsBuilderUnsetAction(
-      tmp0,
-    );
-    return;
-  }
-
-  /// it is valid for Link ref
-  void title(
-    String title,
-  ) {
-    final tmp1 = title;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    _api._refDetailsBuilderTitle(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    return;
-  }
-
-  /// it is valid for Link ref
-  void uri(
-    String uri,
-  ) {
-    final tmp1 = uri;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    _api._refDetailsBuilderUri(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    return;
-  }
-
-  RefDetails build() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._refDetailsBuilderBuild(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RefDetails");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = RefDetails._(_api, tmp3_1);
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
 class OptionString {
   final Api _api;
   final _Box _box;
@@ -38655,6 +38385,21 @@ class NewsEntry {
     final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_comments_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryCommentsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the internal reference object
+  Future<RefDetails> refDetails() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryRefDetails(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsEntry_ref_details_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsEntryRefDetailsFuturePoll);
     return tmp2;
   }
 
@@ -64844,6 +64589,21 @@ class _NewsEntryReadReceiptsFuturePollReturn extends ffi.Struct {
 }
 
 class _NewsEntryCommentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _NewsEntryRefDetailsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
