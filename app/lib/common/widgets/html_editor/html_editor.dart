@@ -6,8 +6,9 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
 import 'package:acter/common/widgets/html_editor/services/mention_shortcuts.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
@@ -451,10 +452,9 @@ class HtmlEditorState extends State<HtmlEditor> {
     // Inline Mentions
     MentionAttributes? mention;
     try {
-      final mentionEntry = attributes.entries
-          .where((e) => e.value is MentionAttributes)
-          .firstOrNull;
-      mention = mentionEntry?.value as MentionAttributes?;
+      mention = attributes.entries
+          .firstWhereOrNull((e) => e.value is MentionAttributes)
+          ?.value as MentionAttributes?;
     } catch (e) {
       // If any error occurs while processing mention attributes,
       // fallback to default decoration

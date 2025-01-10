@@ -160,6 +160,7 @@ dependencies:
   appcheck: ^1.5.2
   screen_retriever: ^0.1.9
   android_intent_plus: ^5.2.1
+  collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:

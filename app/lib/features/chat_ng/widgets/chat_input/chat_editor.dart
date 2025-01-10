@@ -141,7 +141,8 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     final emojiPickerVisible = ref
         .watch(chatInputProvider.select((value) => value.emojiPickerVisible));
     final isEncrypted =
-        ref.watch(isRoomEncryptedProvider(widget.roomId)).valueOrNull;
+        ref.watch(isRoomEncryptedProvider(widget.roomId)).valueOrNull == true;
+
     final viewInsets = MediaQuery.viewInsetsOf(context).bottom;
     return Column(
       children: <Widget>[
@@ -156,7 +157,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   // chat editor UI
-  Widget renderEditorUI(bool emojiPickerVisible, bool? isEncrypted) {
+  Widget renderEditorUI(bool emojiPickerVisible, bool isEncrypted) {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
@@ -192,7 +193,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     chatInputNotifier.emojiPickerVisible(!emojiPickerVisible);
   }
 
-  Widget editorField(bool? isEncrypted) {
+  Widget editorField(bool isEncrypted) {
     final widgetSize = MediaQuery.sizeOf(context);
     final hintText = isEncrypted.map(
       (v) => v == true
