@@ -43,6 +43,10 @@ impl ActerUserAppSettings {
         self.inner.chat.typing_notice.as_ref().map(|a| *a)
     }
 
+    pub fn auto_subscribe_on_activity(&self) -> bool {
+        self.inner.notifications.auto_subscribe_on_activity
+    }
+
     pub fn update_builder(&self) -> ActerUserAppSettingsBuilder {
         ActerUserAppSettingsBuilder {
             account: self.account.clone(),
@@ -54,6 +58,10 @@ impl ActerUserAppSettings {
 impl ActerUserAppSettingsBuilder {
     pub fn auto_download_chat(&mut self, new_value: String) -> Result<&mut Self> {
         self.inner.auto_download_chat(new_value)?;
+        Ok(self)
+    }
+    pub fn auto_subscribe_on_activity(&mut self, new_value: bool) -> Result<&mut Self> {
+        self.inner.auto_subscribe_on_activity(new_value)?;
         Ok(self)
     }
 

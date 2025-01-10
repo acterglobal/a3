@@ -7,6 +7,7 @@ mod formatted_body;
 mod invitation;
 mod msg_edit;
 mod news;
+mod notifications;
 mod onboarding;
 mod pins;
 mod push;

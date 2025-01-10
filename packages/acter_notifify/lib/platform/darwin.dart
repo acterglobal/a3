@@ -6,7 +6,8 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::notifify::darwin');
 
 Future<DarwinNotificationDetails?> genDarwinDetails(
-    NotificationItem notification) async {
+  NotificationItem notification,
+) async {
   List<DarwinNotificationAttachment> attachments = [];
 
   // FIXME: currently failing with

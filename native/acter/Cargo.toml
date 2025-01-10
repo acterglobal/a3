@@ -10,7 +10,7 @@ license-file = "../../LICENSE.txt"
 
 [features]
 default = ["dart"]
-testing = []
+testing = ["acter-core/testing"]
 cbindgen = []
 tracing = ["dep:tracing-subscriber", "dep:tracing-appender", "dep:tracing-log"]
 tracing-console = ["tracing", "dep:console-subscriber", "tokio/tracing"]
@@ -58,7 +58,7 @@ tokio-stream = "0.1.14"
 tokio-retry = "0.3.0"
 tracing = { version = "0.1.40", default-features = false, features = ["log"] }
 url = { workspace = true }
-urlencoding = "2.1.3"
+urlencoding = { workspace = true }
 uuid = { version = "1.6.1", features = ["v4"] }
 
 # for markdown support.

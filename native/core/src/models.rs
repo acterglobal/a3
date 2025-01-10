@@ -10,7 +10,7 @@ mod rsvp;
 mod stories;
 mod tag;
 mod tasks;
-#[cfg(test)]
+#[cfg(any(test, feature = "testing"))]
 mod test;
 
 use async_recursion::async_recursion;
@@ -42,7 +42,7 @@ pub use tasks::{
 };
 use tracing::{error, info, trace, warn};
 
-#[cfg(test)]
+#[cfg(any(test, feature = "testing"))]
 pub use test::{TestModel, TestModelBuilder, TestModelBuilderError};
 
 pub use crate::store::Store;
@@ -358,7 +358,7 @@ pub enum AnyActerModel {
     Reaction(Reaction),
     ReadReceipt(ReadReceipt),
 
-    #[cfg(test)]
+    #[cfg(any(test, feature = "testing"))]
     TestModel(TestModel),
 }
 
@@ -387,7 +387,7 @@ impl AnyActerModel {
             AnyActerModel::Reaction(_) => ReactionEventContent::TYPE,
             AnyActerModel::ReadReceipt(_) => ReadReceiptEventContent::TYPE,
             AnyActerModel::RedactedActerModel(..) => "unknown_redacted_model",
-            #[cfg(test)]
+            #[cfg(any(test, feature = "testing"))]
             AnyActerModel::TestModel(_) => "test_model",
         }
     }
