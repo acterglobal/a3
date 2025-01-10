@@ -27,11 +27,8 @@ Future<void> sendMessageAction({
   final lang = L10n.of(context);
   String body = textEditorState.intoMarkdown();
   String html = textEditorState.intoHtml();
-
   // attempt extracting mentions from document
   List<String> mentions = [];
-  final textBuilder = StringBuffer();
-
   final nodes = textEditorState.document.root.children;
   for (final node in nodes) {
     if (node.delta != null) {
@@ -42,22 +39,19 @@ Future<void> sendMessageAction({
             ?.value as MentionAttributes?;
 
         if (mentionAttr != null && mentionAttr.type == MentionType.user) {
-          textBuilder.write(
-            '[@${mentionAttr.displayName}](https://matrix.to/#/${mentionAttr.mentionId})',
-          );
-
           mentions.add(mentionAttr.mentionId);
-        } else if (op is TextInsert) {
-          textBuilder.write(op.text);
+
+          final markdownMention =
+              '[@${mentionAttr.displayName}](https://matrix.to/#/${mentionAttr.mentionId})';
+          body = body.replaceAll(
+            MentionType.toStr(mentionAttr.type),
+            markdownMention,
+          );
         }
       }
     }
   }
 
-  // update body with mentions text
-  body = textBuilder.toString();
-  // html = htmlBuilder.toString();
-  print('BODY:$body:HTML:$html');
   ref.read(chatInputProvider.notifier).startSending();
 
   try {

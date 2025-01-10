@@ -190,7 +190,7 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
       node,
       atSymbolPosition, // Start exactly from trigger
       lengthToReplace, // Replace everything including trigger
-      ' ',
+      mentionTypeStr,
       attributes: {
         mentionTypeStr: MentionAttributes(
           type: mentionType,
