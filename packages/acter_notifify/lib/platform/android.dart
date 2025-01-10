@@ -271,6 +271,24 @@ Future<void> _showDM(NotificationItem notification) async {
   );
 }
 
+Future<void> _showObjNotif(NotificationItem notification) async {
+  final (title, body) = genTitleAndBody(notification);
+  await _androidShow(
+    notification,
+    AndroidNotificationDetails(
+      'messages',
+      'Messages',
+      channelDescription: 'Messages sent to you',
+      importance: Importance.high,
+      priority: Priority.max,
+      category: AndroidNotificationCategory.message,
+      groupKey: notification.threadId(),
+    ),
+    title: title,
+    body: body,
+  );
+}
+
 Future<void> _showFallback(NotificationItem notification) async {
   await _androidShow(
     notification,
@@ -294,6 +312,7 @@ Future<void> showNotificationOnAndroid(NotificationItem notification) async {
     'news' => _showNews(notification),
     'chat' => _showChat(notification),
     'dm' => _showDM(notification),
+    'comment' || 'reaction' => _showObjNotif(notification),
     _ => _showFallback(notification),
   });
 }

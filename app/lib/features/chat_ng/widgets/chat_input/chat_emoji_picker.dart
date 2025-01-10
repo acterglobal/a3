@@ -17,7 +17,9 @@ class ChatEmojiPicker extends ConsumerWidget {
       ref.read(chatInputProvider.notifier).emojiPickerVisible(false);
       return;
     }
-    editorState.deleteBackward();
+    if (!editorState.document.isEmpty) {
+      editorState.deleteBackward();
+    }
   }
 
   // select emoji handler for editor state

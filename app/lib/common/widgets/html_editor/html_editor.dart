@@ -6,8 +6,9 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
 import 'package:acter/common/widgets/html_editor/services/mention_shortcuts.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
@@ -101,6 +102,7 @@ class HtmlEditor extends StatefulWidget {
   static const saveEditKey = Key('html-editor-save');
   static const cancelEditKey = Key('html-editor-cancel');
   final String? roomId;
+  final String? hintText;
   final Widget? header;
   final Widget? footer;
   final bool autoFocus;
@@ -118,6 +120,7 @@ class HtmlEditor extends StatefulWidget {
     super.key,
     this.roomId,
     this.editorState,
+    this.hintText = '',
     this.onSave,
     this.onChanged,
     this.onCancel,
@@ -193,7 +196,9 @@ class HtmlEditorState extends State<HtmlEditor> {
   @override
   void dispose() {
     editorState.selectionNotifier.dispose();
-    editorScrollController.dispose();
+    if (widget.scrollController == null) {
+      editorScrollController.dispose();
+    }
     _changeListener?.cancel();
     super.dispose();
   }
@@ -209,6 +214,18 @@ class HtmlEditorState extends State<HtmlEditor> {
     final isDesktop = desktopPlatforms.contains(Theme.of(context).platform);
     final roomId = widget.roomId;
     return isDesktop ? desktopEditor(roomId) : mobileEditor(roomId);
+  }
+
+  Map<String, BlockComponentBuilder> _buildBlockComponentBuilders() {
+    final map = {...standardBlockComponentBuilderMap};
+    map[ParagraphBlockKeys.type] = ParagraphBlockComponentBuilder(
+      showPlaceholder: (editorState, node) => editorState.document.isEmpty,
+      configuration: BlockComponentConfiguration(
+        placeholderText: (node) => widget.hintText ?? ' ',
+      ),
+    );
+
+    return map;
   }
 
   Widget? generateFooter() {
@@ -286,11 +303,13 @@ class HtmlEditorState extends State<HtmlEditor> {
           editorState: editorState,
           editorStyle: desktopEditorStyle(),
           footer: generateFooter(),
+          blockComponentBuilders: _buildBlockComponentBuilders(),
           characterShortcutEvents: [
             ...standardCharacterShortcutEvents,
             if (roomId != null) ...mentionShortcuts(context, roomId),
           ],
           commandShortcutEvents: [...standardCommandShortcutEvents],
+          disableAutoScroll: true,
         ),
       ),
     );
@@ -298,6 +317,15 @@ class HtmlEditorState extends State<HtmlEditor> {
 
   Widget mobileEditor(String? roomId) {
     return MobileToolbarV2(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      iconColor: Theme.of(context).colorScheme.onSurface,
+      primaryColor: Theme.of(context).colorScheme.primary,
+      onPrimaryColor: Theme.of(context).colorScheme.onPrimary,
+      borderRadius: 0.0,
+      buttonBorderWidth: 0.0,
+      buttonSelectedBorderWidth: 0.0,
+      buttonSpacing: 4.0,
+      itemOutlineColor: Theme.of(context).colorScheme.surface,
       toolbarItems: [
         textDecorationMobileToolbarItemV2,
         buildTextAndBackgroundColorMobileToolbarItem(
@@ -308,7 +336,7 @@ class HtmlEditorState extends State<HtmlEditor> {
         linkMobileToolbarItem,
         quoteMobileToolbarItem,
       ],
-      toolbarHeight: 48,
+      toolbarHeight: 50,
       editorState: editorState,
       child: Column(
         children: [
@@ -345,6 +373,7 @@ class HtmlEditorState extends State<HtmlEditor> {
                     widget.scrollController ?? editorScrollController,
                 editorStyle: mobileEditorStyle(),
                 footer: generateFooter(),
+                blockComponentBuilders: _buildBlockComponentBuilders(),
                 characterShortcutEvents: [
                   ...standardCharacterShortcutEvents,
                   if (roomId != null) ...mentionShortcuts(context, roomId),
@@ -404,11 +433,27 @@ class HtmlEditorState extends State<HtmlEditor> {
     if (attributes == null) {
       return before;
     }
+
     final roomId = widget.roomId;
     // Inline Mentions
-    final mention = attributes.entries
-        .firstWhere((e) => e.value is MentionAttributes)
-        .value as MentionAttributes?;
+    MentionAttributes? mention;
+    try {
+      mention = attributes.entries
+          .firstWhereOrNull((e) => e.value is MentionAttributes)
+          ?.value as MentionAttributes?;
+    } catch (e) {
+      // If any error occurs while processing mention attributes,
+      // fallback to default decoration
+      return defaultTextSpanDecoratorForAttribute(
+        context,
+        node,
+        index,
+        text,
+        before,
+        after,
+      );
+    }
+
     if (mention != null && roomId != null) {
       return WidgetSpan(
         alignment: PlaceholderAlignment.middle,

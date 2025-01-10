@@ -18,6 +18,9 @@ client = []
 server = []
 unstable-exhaustive-types = []
 
+# for testing helper
+testing = ['dep:uuid']
+
 [dependencies]
 tokio = { version = "1", features = ["rt", "macros"] }
 async-recursion = "1"
@@ -37,6 +40,7 @@ strum = { workspace = true }
 thiserror = "1.0"
 tracing = { version = "0.1.40", features = ["log"] }
 url = { workspace = true }
+uuid = { version = "1.6.1", features = ["v4"], optional = true }
 
 # templates
 async-stream = "0.3.5"
