@@ -43,20 +43,12 @@ Future<bool> _handleMentionTrigger({
   if (!selection.isCollapsed) {
     await editorState.deleteSelection(selection);
   }
-
-  // Check if the current menu is already showing
-  final isMenuVisible = MentionOverlayState.currentMenu != null;
-
-  // If the same mention trigger is typed twice consecutively, dismiss the menu
-  if (isMenuVisible &&
-      MentionOverlayState.currentMenu?.mentionTrigger == mentionTrigger) {
+  // dismiss menu
+  if (MentionOverlayState.isShowing) {
     MentionOverlayState.dismiss();
     MentionOverlayState.currentMenu = null;
     return true;
   }
-
-  MentionOverlayState.currentMenu = null;
-  MentionOverlayState.dismiss();
 
   // Insert the mention trigger character
   await editorState.insertTextAtPosition(

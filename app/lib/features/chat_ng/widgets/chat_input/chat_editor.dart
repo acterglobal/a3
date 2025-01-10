@@ -217,10 +217,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
           vertical: 12,
           horizontal: 8,
         ),
-        decoration: BoxDecoration(
-          color: Theme.of(context).unselectedWidgetColor.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(12),
-        ),
         child: SingleChildScrollView(
           child: IntrinsicHeight(
             // keyboard shortcuts (desktop)

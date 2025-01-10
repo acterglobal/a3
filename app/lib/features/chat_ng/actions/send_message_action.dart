@@ -1,10 +1,13 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,8 +25,39 @@ Future<void> sendMessageAction({
   required Logger log,
 }) async {
   final lang = L10n.of(context);
-  final body = textEditorState.intoMarkdown();
-  final html = textEditorState.intoHtml();
+  String body = textEditorState.intoMarkdown();
+  String html = textEditorState.intoHtml();
+
+  // attempt extracting mentions from document
+  List<String> mentions = [];
+  final textBuilder = StringBuffer();
+
+  final nodes = textEditorState.document.root.children;
+  for (final node in nodes) {
+    if (node.delta != null) {
+      final operations = node.delta!.toList();
+      for (final op in operations) {
+        final mentionAttr = op.attributes?.entries
+            .firstWhereOrNull((e) => e.value is MentionAttributes)
+            ?.value as MentionAttributes?;
+
+        if (mentionAttr != null && mentionAttr.type == MentionType.user) {
+          textBuilder.write(
+            '[@${mentionAttr.displayName}](https://matrix.to/#/${mentionAttr.mentionId})',
+          );
+
+          mentions.add(mentionAttr.mentionId);
+        } else if (op is TextInsert) {
+          textBuilder.write(op.text);
+        }
+      }
+    }
+  }
+
+  // update body with mentions text
+  body = textBuilder.toString();
+  // html = htmlBuilder.toString();
+  print('BODY:$body:HTML:$html');
   ref.read(chatInputProvider.notifier).startSending();
 
   try {
@@ -35,8 +69,14 @@ Future<void> sendMessageAction({
     late MsgDraft draft;
     if (html.isNotEmpty) {
       draft = client.textHtmlDraft(html, body);
-    } else {
-      draft = client.textMarkdownDraft(body);
+    }
+    draft = client.textMarkdownDraft(body);
+
+    if (mentions.isNotEmpty) {
+      // we have mentions, append it
+      for (final mentionId in mentions) {
+        draft.addMention(mentionId);
+      }
     }
 
     // actually send it out

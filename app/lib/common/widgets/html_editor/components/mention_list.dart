@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_item.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
@@ -94,19 +92,8 @@ class MentionList extends ConsumerStatefulWidget {
 }
 
 class _MentionHandlerState extends ConsumerState<MentionList> {
-  StreamSubscription<(TransactionTime, Transaction)>? _updateListener;
   final _focusNode = FocusNode();
   final _scrollController = ScrollController();
-  String _searchQuery = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _updateListener?.cancel();
-    _updateListener = widget.editorState.transactionStream.listen((data) {
-      _updateSearchQuery(data.$2.document.root.delta?.toPlainText() ?? '');
-    });
-  }
 
   @override
   void dispose() {
@@ -114,11 +101,6 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     _scrollController.dispose();
     _focusNode.dispose();
     super.dispose();
-  }
-
-  // Get the current search query from editor text
-  void _updateSearchQuery(String query) {
-    setState(() => _searchQuery = query.toLowerCase().trim());
   }
 
   @override
@@ -130,24 +112,13 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
       return ErrorWidget(L10n.of(context).loadingFailed);
     }
 
-    final filteredSuggestions = _searchQuery.isEmpty
-        ? suggestions
-        : Map.fromEntries(
-            suggestions.entries.where((entry) {
-              final matchId = entry.key.toLowerCase();
-              final displayName = (entry.value).toLowerCase();
-              return matchId.contains(_searchQuery) ||
-                  displayName.contains(_searchQuery);
-            }),
-          );
-
     final menuWidget = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildMenuHeader(),
         const Divider(height: 1, endIndent: 5, indent: 5),
         const SizedBox(height: 8),
-        _buildMenuList(filteredSuggestions),
+        _buildMenuList(suggestions),
       ],
     );
 
@@ -215,7 +186,6 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     // Calculate length from trigger to cursor
     final lengthToReplace = cursorPosition - atSymbolPosition;
     final mentionType = MentionType.fromStr(mentionTypeStr);
-
     transaction.replaceText(
       node,
       atSymbolPosition, // Start exactly from trigger
