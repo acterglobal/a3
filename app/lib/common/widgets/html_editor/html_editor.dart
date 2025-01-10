@@ -219,21 +219,7 @@ class HtmlEditorState extends State<HtmlEditor> {
   Map<String, BlockComponentBuilder> _buildBlockComponentBuilders() {
     final map = {...standardBlockComponentBuilderMap};
     map[ParagraphBlockKeys.type] = ParagraphBlockComponentBuilder(
-      // only show placeholder at first line
-      showPlaceholder: (editorState, node) {
-        // safety check
-        if (node.path.isEmpty) return false;
-
-        // Check if entire document is empty
-        final doc = editorState.document;
-        final isEmpty = doc.root.children.every(
-          (node) => node.delta?.isEmpty ?? true,
-        );
-
-        // Show placeholder only on first line when document is empty
-        return isEmpty && node.path[0] == 0;
-      },
-      // (node.delta?.isEmpty ?? true),
+      showPlaceholder: (editorState, node) => editorState.document.isEmpty,
       configuration: BlockComponentConfiguration(
         placeholderText: (node) => widget.hintText ?? ' ',
       ),
