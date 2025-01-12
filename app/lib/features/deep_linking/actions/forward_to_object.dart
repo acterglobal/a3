@@ -40,6 +40,7 @@ Future<void> forwardToObject(
         context: context,
         roomId: roomId,
         uriResult: result,
+        ref: ref,
       );
     }
   }

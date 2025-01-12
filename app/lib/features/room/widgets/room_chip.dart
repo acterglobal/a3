@@ -3,7 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/errors/error_dialog.dart';
 import 'package:acter/features/chat/utils.dart';
-import 'package:acter/features/room/actions/show_room_preview.dart';
+import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:acter/features/room/providers/room_preview_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';

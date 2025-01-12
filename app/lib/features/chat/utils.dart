@@ -3,7 +3,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/room/actions/show_room_preview.dart';
+import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:acter/features/deep_linking/actions/handle_deep_link_uri.dart';
 import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:acter/router/utils.dart';

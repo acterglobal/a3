@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/room/providers/room_preview_provider.dart';
-import 'package:acter/features/room/widgets/room_preview.dart';
+import 'package:acter/features/preview/widgets/room_preview.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
