@@ -189,7 +189,13 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           Expanded(
             child: ref.watch(isGuestProvider)
                 ? empty
-                : ChatsList(onSelected: widget.onSelected),
+                : ChatsList(
+                    onSelected: (roomId) {
+                      ref.read(roomListFilterProvider.notifier).clear();
+                      setState(() => _isSearchVisible = false);
+                      widget.onSelected(roomId);
+                    },
+                  ),
           )
         ],
       ),
