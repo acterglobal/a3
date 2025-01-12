@@ -14,6 +14,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 final bucketGlobal = PageStorageBucket();
+
 typedef RoomSelectAction = Function(String);
 
 class RoomsListWidget extends ConsumerStatefulWidget {
@@ -157,41 +158,39 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   Widget build(BuildContext context) {
     return PageStorage(
       bucket: bucketGlobal,
-      child: CustomScrollView(
-        controller: controller,
-        key: const PageStorageKey<String>('convo-list'),
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            automaticallyImplyLeading: false,
-            floating: true,
-            elevation: 0,
-            leading: Padding(
-              padding: const EdgeInsets.all(15),
-              child: roomListTitle(context),
-            ),
-            leadingWidth: double.infinity,
-            actions: renderActions(),
+      child: Column(
+        children: [
+          Column(
+            children: [
+              AppBar(
+                automaticallyImplyLeading: false,
+                elevation: 0,
+                leading: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: roomListTitle(context),
+                ),
+                leadingWidth: double.infinity,
+                actions: renderActions(),
+              ),
+              AnimatedOpacity(
+                opacity: !_isSearchVisible ? 0 : 1,
+                curve: Curves.easeInOut,
+                duration: const Duration(milliseconds: 400),
+                child: _isSearchVisible
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: filterBox(context),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+              searchTerms(context),
+            ],
           ),
-          SliverToBoxAdapter(
-            child: AnimatedOpacity(
-              opacity: !_isSearchVisible ? 0 : 1,
-              curve: Curves.easeInOut,
-              duration: const Duration(milliseconds: 400),
-              child: _isSearchVisible
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: filterBox(context),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: searchTerms(context),
-          ),
-          ref.watch(isGuestProvider)
-              ? empty
-              : ChatsList(onSelected: widget.onSelected),
+          Expanded(
+            child: ref.watch(isGuestProvider)
+                ? empty
+                : ChatsList(onSelected: widget.onSelected),
+          )
         ],
       ),
     );
@@ -256,10 +255,8 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget get empty {
-    return SliverToBoxAdapter(
-      child: Center(
-        child: SvgPicture.asset('assets/images/empty_messages.svg'),
-      ),
+    return Center(
+      child: SvgPicture.asset('assets/images/empty_messages.svg'),
     );
   }
 }
