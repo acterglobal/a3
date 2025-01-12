@@ -218,8 +218,8 @@ class MockTask extends Fake implements Task {
   FfiListFfiString assigneesStr() {
     final mockAssignees = MockFfiListFfiString();
     // Adding dummy FfiString objects
-    mockAssignees.add(MockFfiString("user1"));
-    mockAssignees.add(MockFfiString("user2"));
+    mockAssignees.add(MockFfiString('user1'));
+    mockAssignees.add(MockFfiString('user2'));
     return mockAssignees;
   }
 }
