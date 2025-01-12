@@ -1,14 +1,12 @@
-import 'dart:async';
-
 import 'package:acter/common/extensions/record_helpers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/inline_error_button.dart';
 import 'package:acter/common/toolkit/errors/util.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/preview/types.dart';
 import 'package:acter/features/room/providers/room_preview_provider.dart';
 import 'package:acter/features/room/actions/join_room.dart';
-import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +19,7 @@ class RoomPreviewWidget extends ConsumerWidget {
   final String roomId;
   final bool autoForward;
   final OnForward onForward;
+  final Widget? headerInfo;
   final List<String> viaServers;
 
   const RoomPreviewWidget({
@@ -28,6 +27,7 @@ class RoomPreviewWidget extends ConsumerWidget {
     required this.roomId,
     this.viaServers = const [],
     this.autoForward = true,
+    this.headerInfo,
     required this.onForward,
   });
 
@@ -42,21 +42,36 @@ class RoomPreviewWidget extends ConsumerWidget {
       ref.listen(maybeRoomProvider(roomId), (old, next) async {
         final room = next.valueOrNull;
         if (room != null && room.isJoined()) {
-          await onForward(room);
+          await onForward(context, ref, room);
         }
       });
     }
 
     final foundRoom = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
-    if (foundRoom != null && foundRoom.isJoined()) {
-      return renderRoom(context, ref, foundRoom);
-    }
-
-    return ref.watch(roomPreviewProvider(query)).when(
-          data: (preview) => renderPreview(context, ref, preview),
-          error: (error, stack) => renderError(context, ref, error, stack),
-          loading: () => renderLoading(),
-        );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (headerInfo != null) headerInfo!,
+        if (foundRoom != null && foundRoom.isJoined())
+          RoomCard(
+            roomId: roomId,
+          )
+        else
+          ref.watch(roomPreviewProvider(query)).when(
+                data: (preview) => Column(
+                  children: [
+                    roomHeader(preview),
+                    roomInfo(context, preview),
+                    renderActions(context, ref, preview),
+                  ],
+                ),
+                error: (error, stack) =>
+                    renderError(context, ref, error, stack),
+                loading: () => renderLoading(),
+              ),
+      ],
+    );
   }
 
   Widget renderError(
@@ -78,20 +93,6 @@ class RoomPreviewWidget extends ConsumerWidget {
           ref.invalidate(roomPreviewProvider(query));
         },
       );
-
-  Widget renderPreview(
-    BuildContext context,
-    WidgetRef ref,
-    RoomPreview preview,
-  ) {
-    return Column(
-      children: [
-        roomHeader(preview),
-        roomInfo(context, preview),
-        renderActions(context, ref, preview),
-      ],
-    );
-  }
 
   Widget roomHeader(RoomPreview preview) => Consumer(
         builder: (context, ref, child) => ListTile(
@@ -145,16 +146,13 @@ class RoomPreviewWidget extends ConsumerWidget {
         ),
       );
 
-  Widget renderRoom(BuildContext context, WidgetRef ref, Room room) =>
-      renderLoading();
-
   Widget renderLoading() => const Skeletonizer(
-        child: Column(
-          children: [
-            Bone.circle(size: 50),
-            SizedBox(height: 10),
-            Text(' room name '),
-          ],
+        child: ListTile(
+          leading: Bone.circle(size: 50),
+          title: Text(
+            'preview.name()',
+          ),
+          subtitle: Text('preview.canonicalAliasStr()'),
         ),
       );
 
@@ -163,18 +161,6 @@ class RoomPreviewWidget extends ConsumerWidget {
     WidgetRef ref,
     RoomPreview preview,
   ) {
-    if (preview.stateStr() == 'joined') {
-      // we are already in, but for some reason this was shown
-      // so hand over the action to go there
-      return [
-        ActerPrimaryActionButton(
-          child: preview.isDirect() == true
-              ? Text(L10n.of(context).goToDM)
-              : Text(L10n.of(context).goToDM),
-          onPressed: () {},
-        ),
-      ];
-    }
     final joinRule = preview.joinRuleStr();
     final lang = L10n.of(context);
     final roomId = preview.roomIdStr();
@@ -199,11 +185,11 @@ class RoomPreviewWidget extends ConsumerWidget {
           ),
           ActerPrimaryActionButton(
             onPressed: () => joinRoom(
-              context,
-              ref,
-              lang.tryingToJoin(roomName),
-              roomId,
-              viaServers,
+              context: context,
+              ref: ref,
+              roomIdOrAlias: roomId,
+              serverNames: viaServers,
+              roomName: roomName,
             ),
             child: Text(lang.join),
           ),
@@ -215,11 +201,11 @@ class RoomPreviewWidget extends ConsumerWidget {
           ),
           OutlinedButton(
             onPressed: () => joinRoom(
-              context,
-              ref,
-              lang.tryingToJoin(roomName),
-              roomId,
-              viaServers,
+              context: context,
+              ref: ref,
+              roomIdOrAlias: roomId,
+              serverNames: viaServers,
+              roomName: roomName,
             ),
             child: Text(lang.join),
           ),

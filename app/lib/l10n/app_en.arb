@@ -1260,7 +1260,7 @@
   "@topic": {},
   "tryingToConfirmToken": "Trying to confirm token",
   "@tryingToConfirmToken": {},
-  "tryingToJoin": "Trying to join {name}",
+  "tryingToJoin": "Joining {name}",
   "@tryingToJoin": {},
   "tryToJoin": "Try to join",
   "@tryToJoin": {},

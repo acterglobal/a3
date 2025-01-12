@@ -12,45 +12,37 @@ Future<void> showRoomPreview({
   Widget? headerInfo,
   OnForward? onForward,
   List<String> serverNames = const [],
-}) async {
-  await showModalBottomSheet(
-    context: context,
-    isDismissible: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.only(
-        topRight: Radius.circular(20),
-        topLeft: Radius.circular(20),
+}) =>
+    showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(20),
+          topLeft: Radius.circular(20),
+        ),
       ),
-    ),
-    builder: (context) => Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (headerInfo != null) headerInfo,
-          RoomPreviewWidget(
-            roomId: roomIdOrAlias,
-            viaServers: serverNames,
-            autoForward: true,
-            onForward: (room) async {
-              if (context.canPop()) {
-                context.pop(); // close the modal
-              }
-              if (onForward != null) {
-                return await onForward(room);
-              }
-              // room found we have been tasked to forward;
-              if (room.isSpace()) {
-                goToSpace(context, room.roomIdStr());
-              } else {
-                goToChat(context, room.roomIdStr());
-              }
-            },
-          ),
-        ],
+      builder: (context) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        child: RoomPreviewWidget(
+          roomId: roomIdOrAlias,
+          headerInfo: headerInfo,
+          viaServers: serverNames,
+          onForward: (inner, ref, room) async {
+            if (context.canPop()) {
+              context.pop(); // close the modal
+            }
+            if (onForward != null) {
+              return await onForward(context, ref, room);
+            }
+            // room found we have been tasked to forward;
+            if (room.isSpace()) {
+              goToSpace(context, room.roomIdStr());
+            } else {
+              goToChat(context, room.roomIdStr());
+            }
+          },
+        ),
       ),
-    ),
-  );
-}
+    );

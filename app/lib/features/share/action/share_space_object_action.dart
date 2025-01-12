@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/attachments/actions/attach_ref_details.dart';
+import 'package:acter/features/deep_linking/widgets/reference_details_item.dart';
 import 'package:acter/features/files/actions/download_file.dart';
 import 'package:acter/features/share/widgets/attach_options.dart';
 import 'package:acter/features/share/widgets/external_share_options.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 typedef FileDetails = ({
   File file,
@@ -129,7 +131,22 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
   Widget externalShareOptionsUI(BuildContext context) {
     return ExternalShareOptions(
       qrContent: internalLink,
+      qrCodeHeader: qrCodeHeader(context),
       shareContentBuilder: shareContentBuilder,
+    );
+  }
+
+  Widget? qrCodeHeader(BuildContext context) {
+    if (refDetails == null) return null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(L10n.of(context).share),
+        ReferenceDetailsItem(
+          refDetails: refDetails!,
+          margin: EdgeInsets.zero,
+        ),
+      ],
     );
   }
 

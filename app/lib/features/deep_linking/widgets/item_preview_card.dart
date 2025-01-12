@@ -7,6 +7,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 class ItemPreviewCard extends StatelessWidget {
   final ObjectType? refType;
   final String? title;
+  final EdgeInsets? margin;
   final void Function()? onTap;
 
   const ItemPreviewCard({
@@ -14,13 +15,14 @@ class ItemPreviewCard extends StatelessWidget {
     required this.refType,
     this.title,
     this.onTap,
+    this.margin = const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
   });
 
   @override
   Widget build(BuildContext context) {
     final refTitle = title ?? L10n.of(context).unknown;
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+      margin: margin,
       child: ListTile(
         leading: Icon(getIconByType(refType), size: 25),
         title: Text(refTitle),

@@ -18,7 +18,7 @@ Future<void> showItemPreview({
     context: context,
     roomIdOrAlias: roomId,
     serverNames: serverNames,
-    onForward: (room) async {
+    onForward: (context, ref, room) async {
       forwardToObject(context, ref, uriResult);
     },
     headerInfo: Column(

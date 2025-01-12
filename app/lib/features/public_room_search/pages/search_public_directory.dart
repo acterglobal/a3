@@ -64,11 +64,11 @@ class SearchPublicDirectory extends ConsumerWidget {
       return;
     }
     final newRoomId = await joinRoom(
-      context,
-      ref,
-      lang.tryingToJoin(spaceSearchResult.name() ?? ''),
-      roomId,
-      searchServer != null ? [searchServer] : [],
+      context: context,
+      ref: ref,
+      roomIdOrAlias: roomId,
+      serverNames: searchServer != null ? [searchServer] : [],
+      roomName: spaceSearchResult.name(),
     );
 
     if (newRoomId != null && context.mounted) {
