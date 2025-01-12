@@ -156,48 +156,48 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return PageStorage(
-      bucket: bucketGlobal,
-      child: Column(
-        children: [
-          Column(
-            children: [
-              AppBar(
-                automaticallyImplyLeading: false,
-                elevation: 0,
-                leading: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: roomListTitle(context),
-                ),
-                leadingWidth: double.infinity,
-                actions: renderActions(),
-              ),
-              AnimatedOpacity(
-                opacity: !_isSearchVisible ? 0 : 1,
-                curve: Curves.easeInOut,
-                duration: const Duration(milliseconds: 400),
-                child: _isSearchVisible
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: filterBox(context),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-              searchTerms(context),
-            ],
-          ),
-          Expanded(
-            child: ref.watch(isGuestProvider)
-                ? empty
-                : ChatsList(
-                    onSelected: (roomId) {
-                      ref.read(roomListFilterProvider.notifier).clear();
-                      setState(() => _isSearchVisible = false);
-                      widget.onSelected(roomId);
-                    },
-                  ),
-          ),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.all(15),
+          child: roomListTitle(context),
+        ),
+        leadingWidth: double.infinity,
+        actions: renderActions(),
+      ),
+      body: PageStorage(
+        bucket: bucketGlobal,
+        child: Column(
+          children: [
+            AnimatedOpacity(
+              opacity: !_isSearchVisible ? 0 : 1,
+              curve: Curves.easeInOut,
+              duration: const Duration(milliseconds: 400),
+              child: _isSearchVisible
+                  ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: filterBox(context),
+              )
+                  : const SizedBox.shrink(),
+            ),
+            searchTerms(context),
+            Expanded(
+              child: ref.watch(isGuestProvider)
+                  ? empty
+                  : ChatsList(
+                      onSelected: (roomId) {
+                        ref
+                            .read(roomListFilterProvider.notifier)
+                            .updateSearchTerm(null);
+                        setState(() => _isSearchVisible = false);
+                        widget.onSelected(roomId);
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
