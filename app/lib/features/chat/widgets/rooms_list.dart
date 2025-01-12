@@ -196,7 +196,7 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
                       widget.onSelected(roomId);
                     },
                   ),
-          )
+          ),
         ],
       ),
     );
