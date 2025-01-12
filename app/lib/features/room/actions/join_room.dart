@@ -36,7 +36,6 @@ Future<String?> joinRoom(
   String displayMsg,
   String roomIdOrAlias,
   List<String>? serverNames,
-  Function(String)? forward,
 ) async {
   final lang = L10n.of(context);
   EasyLoading.show(status: displayMsg);
@@ -63,12 +62,11 @@ Future<String?> joinRoom(
       );
     } else {
       ref.invalidate(chatProvider(roomId));
+      await _ensureLoadedWithinTime(
+        () async => await ref.read(chatProvider(roomId).future),
+      );
     }
-    await _ensureLoadedWithinTime(
-      () async => await ref.read(chatProvider(roomId).future),
-    );
     EasyLoading.dismiss();
-    if (forward != null) forward(roomId);
     return roomId;
   } catch (e, s) {
     _log.severe('Failed to join room', e, s);

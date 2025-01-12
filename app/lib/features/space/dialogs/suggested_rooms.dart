@@ -145,7 +145,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
       try {
         final servers = room.viaServerNames().toDart();
         final newRoomId =
-            await joinRoom(context, ref, displayMsg, roomId, servers, null);
+            await joinRoom(context, ref, displayMsg, roomId, servers);
         if (newRoomId == null) {
           _log.warning('Joining $roomId failed');
           hadFailures = true;

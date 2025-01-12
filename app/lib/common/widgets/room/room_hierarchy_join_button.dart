@@ -42,14 +42,16 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
           message: lang.youAreAbleToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
-              await joinRoom(
+              final newRoomId = await joinRoom(
                 context,
                 ref,
                 lang.tryingToJoin(roomName),
                 roomId,
                 viaServerName,
-                forward,
               );
+              if (newRoomId != null) {
+                forward(newRoomId);
+              }
             },
             child: Text(lang.join),
           ),
@@ -58,14 +60,16 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
           message: lang.youAreAbleToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
-              await joinRoom(
+              final newRoomId = await joinRoom(
                 context,
                 ref,
                 lang.tryingToJoin(roomName),
                 roomId,
                 viaServerName,
-                forward,
               );
+              if (newRoomId != null) {
+                forward(newRoomId);
+              }
             },
             child: Text(lang.join),
           ),

@@ -198,16 +198,13 @@ class RoomPreviewWidget extends ConsumerWidget {
             child: Text(lang.youAreAbleToJoinThisRoom),
           ),
           ActerPrimaryActionButton(
-            onPressed: () async {
-              await joinRoom(
-                context,
-                ref,
-                lang.tryingToJoin(roomName),
-                roomId,
-                viaServers,
-                null,
-              );
-            },
+            onPressed: () => joinRoom(
+              context,
+              ref,
+              lang.tryingToJoin(roomName),
+              roomId,
+              viaServers,
+            ),
             child: Text(lang.join),
           ),
         ],
@@ -217,16 +214,13 @@ class RoomPreviewWidget extends ConsumerWidget {
             child: Text(lang.public),
           ),
           OutlinedButton(
-            onPressed: () async {
-              await joinRoom(
-                context,
-                ref,
-                lang.tryingToJoin(roomName),
-                roomId,
-                viaServers,
-                null,
-              );
-            },
+            onPressed: () => joinRoom(
+              context,
+              ref,
+              lang.tryingToJoin(roomName),
+              roomId,
+              viaServers,
+            ),
             child: Text(lang.join),
           ),
         ],
