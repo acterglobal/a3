@@ -109,7 +109,9 @@ void main() {
           findsOneWidget,
         );
         await tester.enterText(
-            find.byKey(ActerSearchWidget.searchBarKey), 'CD');
+          find.byKey(ActerSearchWidget.searchBarKey),
+          'CD',
+        );
         await tester.pumpProviderScope(times: 2);
         // -- we only see subset
         expect(
