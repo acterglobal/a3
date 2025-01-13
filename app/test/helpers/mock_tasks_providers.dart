@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'package:acter/features/tasks/models/tasks.dart';
 import 'package:acter/features/tasks/providers/notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
+
+import '../features/comments/mock_data/mock_message_content.dart';
 
 class SimpleReturningTasklists extends AsyncNotifier<List<TaskList>>
     with Mock
@@ -35,6 +38,39 @@ class MockAsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>>
   }
 }
 
+class MockTasksOverview extends Mock implements TasksOverview {}
+
+// Mock TaskItemsListNotifier
+class MockAsyncTaskListsNotifier extends Mock implements TaskItemsListNotifier {
+  MockAsyncTaskListsNotifier({required this.shouldFail});
+
+  final bool shouldFail;
+
+  Future<List<Task>> loadTasks() async {
+    if (shouldFail) {
+      throw Exception('Error loading tasks');  // Simulate error
+    }
+    return [];  // Return an empty task list, you can modify it to return any mock tasks
+  }
+
+  @override
+  Future<TasksOverview> build(TaskList arg) async {
+    if (shouldFail) {
+      throw Exception('Error building TasksOverview');  // Simulate error
+    }
+
+    // Return a mock TasksOverview when build is called
+    final mockOverview = MockTasksOverview();
+    when(() => mockOverview.openTasks).thenReturn([]);  // Simulate no open tasks
+    when(() => mockOverview.doneTasks).thenReturn([]);  // Simulate no completed tasks
+
+    return mockOverview;  // Return the mock TasksOverview
+  }
+
+}
+
+class MockTaskListItemNotifier extends Mock implements TaskListItemNotifier {}
+
 class FakeTaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String>
     with Mock
     implements TaskListItemNotifier {
@@ -60,6 +96,24 @@ class MockTaskItemNotifier extends FamilyAsyncNotifier<Task, Task>
   @override
   Future<Task> build(Task arg) async {
     return arg;
+  }
+}
+
+class MockTaskItemsNotifier extends FamilyAsyncNotifier<Task, Task>
+    with Mock
+    implements TaskItemNotifier {
+  // Indicates whether the mock should succeed or fail
+  bool shouldFail;
+
+  MockTaskItemsNotifier({this.shouldFail = true});
+
+  @override
+  Future<Task> build(Task task) async {
+    if (shouldFail) {
+      shouldFail = !shouldFail;
+      throw 'Simulated failure';
+    }
+    return task;
   }
 }
 
@@ -89,7 +143,10 @@ class FakeTaskList extends Fake implements TaskList {
   String spaceIdStr() => spaceId;
 
   @override
-  MsgContent? description() => null;
+  MsgContent? description() {
+    // Return the MockMsgContent with the fake description
+    return MockMsgContent(bodyText: 'This is a test task description');
+  }
 
   @override
   Display? display() => null;
@@ -116,20 +173,36 @@ class FakeTaskList extends Fake implements TaskList {
 class MockTaskList extends FakeTaskList with Mock {}
 
 class MockTask extends Fake implements Task {
+  final String fakeTitle;
+  final String? date;
+  final String desc;
+
+  MockTask({
+    this.fakeTitle = 'Fake Task',
+    this.date,
+    this.desc = '',
+  });
+
+  @override
+  String taskListIdStr() => 'taskListId';
+
   @override
   bool isDone() => false;
 
   @override
-  String title() => 'Test';
+  String title() => 'Fake Task';
 
   @override
   String eventIdStr() => 'eventId';
 
   @override
-  MsgContent? description() => null;
+  String roomIdStr() => 'roomId';
 
   @override
-  String? dueDate() => null;
+  String? dueDate() => date;
+
+  @override
+  MsgContent? description() => MockMsgContent(bodyText: desc);
 
   @override
   bool isAssignedToMe() => false;
@@ -142,5 +215,51 @@ class MockTask extends Fake implements Task {
   Future<CommentsManager> comments() => Completer<CommentsManager>().future;
 
   @override
-  Display? display() => null;
+  FfiListFfiString assigneesStr() {
+    final mockAssignees = MockFfiListFfiString();
+    // Adding dummy FfiString objects
+    mockAssignees.add(MockFfiString('user1'));
+    mockAssignees.add(MockFfiString('user2'));
+    return mockAssignees;
+  }
+}
+
+class MockFfiListFfiString extends Mock implements FfiListFfiString {
+  final List<FfiString> _strings = [];
+
+  @override
+  void add(FfiString value) {
+    _strings.add(value);
+  }
+
+  List<FfiString> get strings => _strings;
+
+  @override
+  int get length => _strings.length;
+
+  @override
+  bool get isEmpty => _strings.isEmpty;
+
+  @override
+  FfiString operator [](int index) {
+    return _strings[index];
+  }
+
+  // Corrected to include the growable parameter
+  @override
+  List<FfiString> toList({bool growable = true}) {
+    return List<FfiString>.from(_strings, growable: growable);
+  }
+}
+
+class MockFfiString extends Mock implements FfiString {
+  final String value;
+
+  MockFfiString(this.value);
+
+  @override
+  String toDartString() => value;
+
+  @override
+  String toString() => value;
 }
