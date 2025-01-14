@@ -1,0 +1,1 @@
+- You can now share boosts via the QR-code
