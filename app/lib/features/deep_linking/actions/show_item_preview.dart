@@ -32,7 +32,6 @@ Future<void> showItemPreview({
           ),
         ),
         ItemPreviewCard(
-          // showing the same item without the tap
           title: uriResult.preview.title,
           refType: uriResult.finalType(),
         ),
