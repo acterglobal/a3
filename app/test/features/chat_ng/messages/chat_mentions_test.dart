@@ -40,12 +40,12 @@ ParsedContent parseDocumentContent(Document document) {
 
 void main() {
   group('mentions parsing', () {
-    final editorState = EditorState.blank();
-    final node = paragraphNode(delta: Delta()..insert(''));
-    editorState.document.insert([0], [node]);
     test(
       'verify multiple mentions with simple plain text',
       () async {
+        final editorState = EditorState.blank();
+        final node = paragraphNode(delta: Delta()..insert(''));
+        editorState.document.insert([0], [node]);
         final transaction = editorState.transaction;
         transaction.replaceText(node, 0, 0, 'Hello ');
 
@@ -98,6 +98,9 @@ void main() {
     );
 
     test('verify multiple mentions with markdown/rich text', () {
+      final editorState = EditorState.blank();
+      final node = paragraphNode(delta: Delta()..insert(''));
+      editorState.document.insert([0], [node]);
       final transaction = editorState.transaction;
 
       // Bold text
