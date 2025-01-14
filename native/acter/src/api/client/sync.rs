@@ -449,8 +449,6 @@ impl Client {
         // in fact, when user opens app, he sees old verification popup sometimes
         // in order to avoid this issue, comment out sync event
         self.verification_controller.add_sync_event_handler(&client);
-        self.session_verification_controller
-            .add_to_device_event_handler(&client);
 
         let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
@@ -468,6 +466,12 @@ impl Client {
 
         let handle = RUNTIME.spawn(async move {
             info!("spawning sync callback");
+
+            me.session_verification_controller
+                .read()
+                .await
+                .clone()
+                .add_to_device_event_handler(&client);
 
             let mut sync_settings = SyncSettings::new().timeout(Duration::from_secs(25));
 

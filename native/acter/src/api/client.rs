@@ -65,7 +65,7 @@ pub struct Client {
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) invitation_controller: InvitationController,
     pub(crate) verification_controller: VerificationController,
-    pub(crate) session_verification_controller: SessionVerificationController,
+    pub(crate) session_verification_controller: Arc<RwLock<SessionVerificationController>>,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
     pub spaces: Arc<RwLock<ObservableVector<Space>>>,
@@ -181,8 +181,7 @@ impl Client {
             .context("Failed retrieving current user_id")?
             .to_owned();
         info!("client user id: {}", user_id);
-        let session_verification_controller =
-            SessionVerificationController::new(encryption, user_id);
+        let svc = SessionVerificationController::new(encryption, user_id);
         let mut cl = Client {
             core: core.clone(),
             state: Arc::new(RwLock::new(state)),
@@ -190,7 +189,7 @@ impl Client {
             convos: Default::default(),
             invitation_controller: InvitationController::new(core.clone()),
             verification_controller: VerificationController::new(),
-            session_verification_controller,
+            session_verification_controller: Arc::new(RwLock::new(svc)),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
         };
@@ -459,12 +458,13 @@ impl Client {
             .remove_to_device_event_handler(&client);
         self.verification_controller
             .remove_sync_event_handler(&client);
-        self.session_verification_controller
-            .remove_to_device_event_handler(&client);
+        let svc = self.session_verification_controller.clone();
         self.typing_controller.remove_event_handler(&client);
 
         RUNTIME
             .spawn(async move {
+                let mut session_verification_controller = svc.read().await.clone();
+                session_verification_controller.remove_to_device_event_handler(&client);
                 match client.matrix_auth().logout().await {
                     Ok(resp) => Ok(true),
                     Err(e) => {

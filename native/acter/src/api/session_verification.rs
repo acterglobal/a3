@@ -18,6 +18,10 @@ use tokio::sync::{
     broadcast::{channel, Receiver, Sender},
     RwLock,
 };
+use tokio_retry::{
+    strategy::{jitter, FibonacciBackoff},
+    Retry,
+};
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info};
 
@@ -63,7 +67,7 @@ pub struct VerificationRequestEvent {
     display_name: Option<String>,
     /// First time this device was seen in milliseconds since epoch.
     first_seen_timestamp: u64,
-    controller: SessionVerificationController,
+    controller: Arc<SessionVerificationController>,
 }
 
 impl VerificationRequestEvent {
@@ -73,12 +77,18 @@ impl VerificationRequestEvent {
         let controller = self.controller.clone();
         RUNTIME
             .spawn(async move {
-                let verification_request = controller
+                let request = controller
                     .encryption
                     .get_verification_request(&sender_id, flow_id)
                     .await
                     .context("Failed to get verification request")?;
-                *controller.verification_request.write().await = Some(verification_request.clone());
+                *controller.verification_request.write().await = Some(request);
+                let verification_request = controller
+                    .verification_request
+                    .read()
+                    .await
+                    .clone()
+                    .unwrap(); // it was already initialized in above statement
                 tokio::spawn(
                     SessionVerificationController::listen_to_verification_request_changes(
                         verification_request,
@@ -97,10 +107,11 @@ impl VerificationRequestEvent {
         RUNTIME
             .spawn(async move {
                 let verification_request = controller.verification_request.read().await;
-                if let Some(verification_request) = verification_request.clone() {
-                    let methods = vec![VerificationMethod::SasV1];
-                    verification_request.accept_with_methods(methods).await?;
-                }
+                let Some(verification_request) = verification_request.clone() else {
+                    bail!("verification request was not initialized")
+                };
+                let methods = vec![VerificationMethod::SasV1];
+                verification_request.accept_with_methods(methods).await?;
                 Ok(VerificationReadyStage {
                     sender_id,
                     flow_id,
@@ -111,15 +122,15 @@ impl VerificationRequestEvent {
     }
 
     pub async fn cancel(&self) -> Result<bool> {
-        let verification_request = self.controller.verification_request.clone();
+        let controller = self.controller.clone();
         RUNTIME
             .spawn(async move {
-                let verification_request = verification_request.read().await;
-                if let Some(verification_request) = verification_request.clone() {
-                    verification_request.cancel().await?;
-                    return Ok(true);
-                }
-                Ok(false)
+                let verification_request = controller.verification_request.read().await;
+                let Some(verification_request) = verification_request.clone() else {
+                    bail!("verification request was not initialized")
+                };
+                verification_request.cancel().await?;
+                Ok(true)
             })
             .await?
     }
@@ -129,23 +140,49 @@ impl VerificationRequestEvent {
 pub struct VerificationReadyStage {
     sender_id: String,
     flow_id: String,
-    controller: SessionVerificationController,
+    controller: Arc<SessionVerificationController>,
 }
 
 impl VerificationReadyStage {
     pub async fn start_sas(&self) -> Result<SasPromptStage> {
+        // wait for the state of verification request to reach Ready or Transitioned, so that start_sas can be succeeded
+        let svc = self.controller.clone();
+        let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+        let is_ready = Retry::spawn(retry_strategy, move || {
+            let controller = svc.clone();
+            async move {
+                let verification_request = controller.verification_request.read().await;
+                let Some(verification_request) = verification_request.clone() else {
+                    bail!("verification request was not initialized")
+                };
+                match verification_request.state() {
+                    VerificationRequestState::Ready { .. }
+                    | VerificationRequestState::Transitioned { .. } => Ok(true),
+                    _ => bail!(
+                        "the state of verification request didn't reach Ready or Transitioned yet"
+                    ),
+                }
+            }
+        })
+        .await?;
+        if !is_ready {
+            bail!("the state of verification request didn't reach Ready or Transitioned yet");
+        }
+
         let sender_id = self.sender_id.clone();
         let flow_id = self.flow_id.clone();
         let controller = self.controller.clone();
         RUNTIME
             .spawn(async move {
                 let verification_request = controller.verification_request.read().await;
-                if let Some(verification_request) = verification_request.clone() {
-                    if let Some(verification) = verification_request.start_sas().await? {
-                        let mut sas_verification = controller.sas_verification.write().await;
-                        *sas_verification = Some(verification.clone());
-                    }
-                }
+                let Some(verification_request) = verification_request.clone() else {
+                    bail!("verification request was not initialized")
+                };
+                let Some(verification) = verification_request.start_sas().await? else {
+                    bail!("Failed to start sas")
+                };
+                let mut sas_verification = controller.sas_verification.write().await;
+                *sas_verification = Some(verification.clone());
                 Ok(SasPromptStage {
                     sender_id,
                     flow_id,
@@ -156,15 +193,15 @@ impl VerificationReadyStage {
     }
 
     pub async fn cancel(&self) -> Result<bool> {
-        let verification_request = self.controller.verification_request.clone();
+        let controller = self.controller.clone();
         RUNTIME
             .spawn(async move {
-                let verification_request = verification_request.read().await;
-                if let Some(verification_request) = verification_request.clone() {
-                    verification_request.cancel().await?;
-                    return Ok(true);
-                }
-                Ok(false)
+                let verification_request = controller.verification_request.read().await;
+                let Some(verification_request) = verification_request.clone() else {
+                    bail!("verification request was not initialized")
+                };
+                verification_request.cancel().await?;
+                Ok(true)
             })
             .await?
     }
@@ -174,15 +211,36 @@ impl VerificationReadyStage {
 pub struct SasPromptStage {
     sender_id: String,
     flow_id: String,
-    controller: SessionVerificationController,
+    controller: Arc<SessionVerificationController>,
 }
 
 impl SasPromptStage {
     pub async fn get_emojis(&self) -> Result<SessionVerificationData> {
-        let sas_verification = self.controller.sas_verification.clone();
+        // wait for the state of sas verification to reach KeysExchanged, so that get_emoji can be succeeded
+        let svc = self.controller.clone();
+        let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+        let is_ready = Retry::spawn(retry_strategy, move || {
+            let controller = svc.clone();
+            async move {
+                let sas_verification = controller.sas_verification.read().await;
+                let Some(sas_verification) = sas_verification.clone() else {
+                    bail!("sas verification was not initialized")
+                };
+                match sas_verification.state() {
+                    SasState::KeysExchanged { .. } => Ok(true),
+                    _ => bail!("the state of sas verification didn't reach KeysExchanged yet"),
+                }
+            }
+        })
+        .await?;
+        if !is_ready {
+            bail!("the state of sas verification didn't reach KeysExchanged yet");
+        }
+
+        let controller = self.controller.clone();
         RUNTIME
             .spawn(async move {
-                let sas_verification = sas_verification.read().await;
+                let sas_verification = controller.sas_verification.read().await;
                 let Some(sas_verification) = sas_verification.clone() else {
                     bail!("sas verification was not started")
                 };
@@ -201,29 +259,29 @@ impl SasPromptStage {
     }
 
     pub async fn approve(&self) -> Result<bool> {
-        let sas_verification = self.controller.sas_verification.clone();
+        let controller = self.controller.clone();
         RUNTIME
             .spawn(async move {
-                let sas_verification = sas_verification.read().await;
-                if let Some(sas_verification) = sas_verification.clone() {
-                    sas_verification.confirm().await?;
-                    return Ok(true);
-                }
-                Ok(false)
+                let sas_verification = controller.sas_verification.read().await;
+                let Some(sas_verification) = sas_verification.clone() else {
+                    bail!("sas verification was not started")
+                };
+                sas_verification.confirm().await?;
+                Ok(true)
             })
             .await?
     }
 
     pub async fn decline(&self) -> Result<bool> {
-        let sas_verification = self.controller.sas_verification.clone();
+        let controller = self.controller.clone();
         RUNTIME
             .spawn(async move {
-                let sas_verification = sas_verification.read().await;
-                if let Some(sas_verification) = sas_verification.clone() {
-                    sas_verification.mismatch().await?;
-                    return Ok(true);
-                }
-                Ok(false)
+                let sas_verification = controller.sas_verification.read().await;
+                let Some(sas_verification) = sas_verification.clone() else {
+                    bail!("sas verification was not started")
+                };
+                sas_verification.mismatch().await?;
+                Ok(true)
             })
             .await?
     }
@@ -290,7 +348,7 @@ impl SessionVerificationController {
                         device_id: other_device_data.device_id().into(),
                         display_name: other_device_data.display_name().map(str::to_string),
                         first_seen_timestamp: other_device_data.first_time_seen_ts().get().into(),
-                        controller: me.clone(),
+                        controller: Arc::new(me.clone()),
                     };
                     if let Err(e) = me.event_tx.send(msg) {
                         error!("Dropping flow for {}: {}", ev.content.transaction_id, e);
@@ -312,35 +370,29 @@ impl SessionVerificationController {
         &self,
         dev_id: String,
     ) -> Result<VerificationRequestEvent> {
-        let me = self.clone();
-        let encryption = self.encryption.clone();
-        let user_id = self.user_id.clone();
-        RUNTIME
-            .spawn(async move {
-                let device = encryption
-                    .get_device(&user_id, device_id!(dev_id.as_str()))
-                    .await?
-                    .context("Could not get device from encryption")?;
-                let is_verified =
-                    device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
-                if is_verified {
-                    bail!("Device {} was already verified", dev_id);
-                }
-                let methods = vec![VerificationMethod::SasV1];
-                let request = device.request_verification_with_methods(methods).await?;
-                let flow_id = request.flow_id();
-                info!("requested verification - flow_id: {}", flow_id);
-                let msg = VerificationRequestEvent {
-                    sender_id: user_id.into(),
-                    flow_id: flow_id.to_owned(),
-                    device_id: dev_id,
-                    display_name: device.display_name().map(str::to_string),
-                    first_seen_timestamp: device.first_time_seen_ts().get().into(),
-                    controller: me.clone(),
-                };
-                Ok(msg)
-            })
+        let device = self
+            .encryption
+            .get_device(&self.user_id, device_id!(dev_id.as_str()))
             .await?
+            .context("Could not get device from encryption")?;
+        let is_verified =
+            device.is_cross_signed_by_owner() || device.is_verified_with_cross_signing();
+        if is_verified {
+            bail!("Device {} was already verified", dev_id);
+        }
+        let methods = vec![VerificationMethod::SasV1];
+        let request = device.request_verification_with_methods(methods).await?;
+        let flow_id = request.flow_id().to_owned();
+        info!("requested verification - flow_id: {}", flow_id);
+        let msg = VerificationRequestEvent {
+            sender_id: self.user_id.to_string(),
+            flow_id,
+            device_id: dev_id,
+            display_name: device.display_name().map(str::to_string),
+            first_seen_timestamp: device.first_time_seen_ts().get().into(),
+            controller: Arc::new(self.clone()),
+        };
+        Ok(msg)
     }
 
     async fn listen_to_verification_request_changes(
@@ -398,20 +450,30 @@ impl SessionVerificationController {
 impl Client {
     // this return value should be Unpin, because next() of this stream is called in wait_for_verification_request_event
     // this return value should be wrapped in Box::pin, to make unpin possible
-    pub fn verification_request_event_rx(
+    pub async fn verification_request_event_rx(
         &self,
-    ) -> impl Stream<Item = VerificationRequestEvent> + Unpin {
-        let mut stream =
-            BroadcastStream::new(self.session_verification_controller.event_rx.resubscribe());
-        Box::pin(stream.filter_map(|o| async move { o.ok() }))
+    ) -> Result<impl Stream<Item = VerificationRequestEvent> + Unpin> {
+        let session_verification_controller = self.session_verification_controller.clone();
+        RUNTIME
+            .spawn(async move {
+                let svc = session_verification_controller.read().await.clone();
+                let mut stream = BroadcastStream::new(svc.event_rx.resubscribe());
+                let result = stream.filter_map(|o| async move { o.ok() });
+                Ok(Box::pin(result))
+            })
+            .await?
     }
 
     pub async fn request_session_verification(
         &self,
         dev_id: String,
     ) -> Result<VerificationRequestEvent> {
-        self.session_verification_controller
-            .request_verification(dev_id)
-            .await
+        let session_verification_controller = self.session_verification_controller.clone();
+        RUNTIME
+            .spawn(async move {
+                let svc = session_verification_controller.read().await.clone();
+                svc.request_verification(dev_id).await
+            })
+            .await?
     }
 }

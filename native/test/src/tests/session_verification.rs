@@ -92,7 +92,7 @@ async fn complete_verification() -> Result<()> {
     let syncer = bob.start_sync();
     let mut first_synced = syncer.first_synced_rx();
     while first_synced.next().await != Some(true) {} // let’s wait for it to have synced
-    let mut bob_rx = bob.verification_request_event_rx();
+    let mut bob_rx = bob.verification_request_event_rx().await?;
 
     // according to alice, bob is not verfied:
     let bob_was_verified = alice.verified_device(bob_device_id.to_string()).await?;
