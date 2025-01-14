@@ -46,28 +46,22 @@ class ChatsList extends ConsumerWidget {
     return filteredChats.when(
       data: (chatsIds) {
         if (chatsIds.isEmpty) {
-          return SliverToBoxAdapter(
-            child: Center(
-              heightFactor: 10,
-              child: Text(lang.noChatsFoundMatchingYourFilter),
-            ),
+          return Center(
+            heightFactor: 10,
+            child: Text(lang.noChatsFoundMatchingYourFilter),
           );
         }
         return _renderList(context, chatsIds);
       },
-      loading: () => const SliverToBoxAdapter(
-        child: Center(
-          heightFactor: 10,
-          child: CircularProgressIndicator(),
-        ),
+      loading: () => Center(
+        heightFactor: 10,
+        child: CircularProgressIndicator(),
       ),
       error: (e, s) {
         _log.severe('Failed to filter convos', e, s);
-        return SliverToBoxAdapter(
-          child: Center(
-            heightFactor: 10,
-            child: Text(lang.searchingFailed(e)),
-          ),
+        return Center(
+          heightFactor: 10,
+          child: Text(lang.searchingFailed(e)),
         );
       },
       skipLoadingOnReload: true,
@@ -77,31 +71,27 @@ class ChatsList extends ConsumerWidget {
 
   Widget _renderSyncing(BuildContext context) {
     final lang = L10n.of(context);
-    return SliverToBoxAdapter(
-      child: Center(
-        heightFactor: 1.5,
-        child: EmptyState(
-          title: lang.noChatsStillSyncing,
-          subtitle: lang.noChatsStillSyncingSubtitle,
-          image: 'assets/images/empty_chat.svg',
-        ),
+    return Center(
+      heightFactor: 1.5,
+      child: EmptyState(
+        title: lang.noChatsStillSyncing,
+        subtitle: lang.noChatsStillSyncingSubtitle,
+        image: 'assets/images/empty_chat.svg',
       ),
     );
   }
 
   Widget _renderEmpty(BuildContext context) {
     final lang = L10n.of(context);
-    return SliverToBoxAdapter(
-      child: Center(
-        heightFactor: 1.5,
-        child: EmptyState(
-          title: lang.youHaveNoDMsAtTheMoment,
-          subtitle: lang.getInTouchWithOtherChangeMakers,
-          image: 'assets/images/empty_chat.svg',
-          primaryButton: ActerPrimaryActionButton(
-            onPressed: () => context.pushNamed(Routes.createChat.name),
-            child: Text(lang.sendDM),
-          ),
+    return Center(
+      heightFactor: 1.5,
+      child: EmptyState(
+        title: lang.youHaveNoDMsAtTheMoment,
+        subtitle: lang.getInTouchWithOtherChangeMakers,
+        image: 'assets/images/empty_chat.svg',
+        primaryButton: ActerPrimaryActionButton(
+          onPressed: () => context.pushNamed(Routes.createChat.name),
+          child: Text(lang.sendDM),
         ),
       ),
     );
@@ -245,7 +235,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
   @override
   Widget build(BuildContext context) {
     _log.fine('render list $_currentList');
-    return SliverAnimatedList(
+    return AnimatedList(
       key: _listKey,
       initialItemCount: _currentList.length,
       itemBuilder: buildItem,

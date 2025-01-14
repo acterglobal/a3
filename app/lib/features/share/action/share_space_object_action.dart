@@ -26,6 +26,7 @@ Future<void> openShareSpaceObjectDialog({
   String? internalLink,
   Future<String> Function()? shareContentBuilder,
   Future<FileDetails> Function()? fileDetailContentBuilder,
+  bool showInternalActions = true,
 }) async {
   await showModalBottomSheet(
     showDragHandle: true,
@@ -35,6 +36,7 @@ Future<void> openShareSpaceObjectDialog({
     isDismissible: true,
     builder: (context) => ShareSpaceObjectActionUI(
       refDetails: refDetails,
+      showInternalActions: showInternalActions,
       internalLink: internalLink,
       shareContentBuilder: shareContentBuilder,
       fileDetailContentBuilder: fileDetailContentBuilder,
@@ -45,6 +47,7 @@ Future<void> openShareSpaceObjectDialog({
 class ShareSpaceObjectActionUI extends ConsumerWidget {
   final RefDetails? refDetails;
   final String? internalLink;
+  final bool showInternalActions;
   final Future<String> Function()? shareContentBuilder;
   final Future<FileDetails> Function()? fileDetailContentBuilder;
 
@@ -54,6 +57,7 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
     this.internalLink,
     this.shareContentBuilder,
     this.fileDetailContentBuilder,
+    this.showInternalActions = true,
   });
 
   @override
@@ -65,7 +69,7 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            if (refDetails != null) ...[
+            if (showInternalActions && refDetails != null) ...[
               attachmentOptionsUI(context, ref, refDetails!),
               SizedBox(height: 16),
             ],

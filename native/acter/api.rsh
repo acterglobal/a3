@@ -156,36 +156,6 @@ object ColorizeBuilder {
     fn unset_background();
 }
 
-/// A builder for RefDetails
-object RefDetailsBuilder {
-    /// it is valid for Task/TaskList/CalendarEvent ref
-    /// target_id: event id of target
-    fn target_id(target_id: string);
-
-    /// it is valid for Task/TaskList/CalendarEvent ref
-    fn room_id(room_id: string);
-    /// unset the room id, it is optional field
-    fn unset_room_id();
-
-    /// it is valid for Task/TaskList/CalendarEvent ref
-    /// task_list: event id of task list
-    fn task_list(task_list: string);
-
-    /// it is valid for Task/TaskList/CalendarEvent ref
-    /// action is one of TaskAction/TaskListAction/CalendarEventAction
-    fn action(action: string);
-    /// unset the action, it is optional field
-    fn unset_action();
-
-    /// it is valid for Link ref
-    fn title(title: string);
-
-    /// it is valid for Link ref
-    fn uri(uri: string);
-
-    fn build() -> RefDetails;
-}
-
 // enum LocationType {
 //    Physical,
 //    Virtual
@@ -411,6 +381,9 @@ object NewsEntry {
 
     /// get the comment manager
     fn comments() -> Future<Result<CommentsManager>>;
+
+    /// get the internal reference object
+    fn ref_details() -> Future<Result<RefDetails>>;
 }
 
 object NewsEntryDraft {

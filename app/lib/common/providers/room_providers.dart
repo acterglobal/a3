@@ -255,7 +255,7 @@ final memberDisplayNameProvider =
 });
 
 /// Caching the MemoryImage of each room
-final _memberAvatarProvider = FutureProvider.autoDispose
+final memberAvatarProvider = FutureProvider.autoDispose
     .family<MemoryImage?, MemberInfo>((ref, query) async {
   final sdk = await ref.watch(sdkProvider.future);
 
@@ -276,7 +276,7 @@ final _memberAvatarProvider = FutureProvider.autoDispose
 final memberAvatarInfoProvider =
     Provider.autoDispose.family<AvatarInfo, MemberInfo>((ref, query) {
   final displayName = ref.watch(memberDisplayNameProvider(query)).valueOrNull;
-  final avatarData = ref.watch(_memberAvatarProvider(query)).valueOrNull;
+  final avatarData = ref.watch(memberAvatarProvider(query)).valueOrNull;
 
   return AvatarInfo(
     uniqueId: query.userId,

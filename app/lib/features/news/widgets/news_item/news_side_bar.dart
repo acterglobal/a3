@@ -14,6 +14,7 @@ import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/notifications/types.dart';
 import 'package:acter/features/notifications/widgets/object_notification_status.dart';
 import 'package:acter/features/read_receipts/widgets/read_counter.dart';
+import 'package:acter/features/share/action/share_space_object_action.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
@@ -22,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 final _log = Logger('a3::news::sidebar');
 
@@ -223,6 +225,25 @@ class ActionBox extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              TextButton.icon(
+                icon: PhosphorIcon(PhosphorIcons.shareFat()),
+                onPressed: () async {
+                  final refDetails = await news.refDetails();
+                  final internalLink = refDetails.generateInternalLink(true);
+                  if (!context.mounted) return;
+                  await openShareSpaceObjectDialog(
+                    context: context,
+                    refDetails: refDetails,
+                    internalLink: internalLink,
+                    showInternalActions: false,
+                    shareContentBuilder: () async {
+                      Navigator.pop(context);
+                      return await refDetails.generateExternalLink();
+                    },
+                  );
+                },
+                label: Text(lang.share),
+              ),
               if (canRedact.valueOrNull == true)
                 Padding(
                   padding: EdgeInsets.symmetric(

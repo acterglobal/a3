@@ -63,7 +63,7 @@ pub use acter_core::{
     events::{
         calendar::EventLocationInfo, news::NewsContent, stories::StoryContent, Category,
         CategoryBuilder, Colorize, ColorizeBuilder, Display, DisplayBuilder, ObjRefBuilder,
-        RefDetailsBuilder, UtcDateTime,
+        UtcDateTime,
     },
     models::{ActerModel, Tag, TextMessageContent},
 };
