@@ -1,0 +1,1 @@
+- [Enhancement] : ActerIcons set is enhanced by all new featured icons
