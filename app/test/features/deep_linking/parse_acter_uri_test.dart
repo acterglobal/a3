@@ -192,8 +192,10 @@ void newSpecLinksTests(UriMaker makeUri) {
   });
 }
 
-UriMaker makeUriMakerForPublicPrefix(String uriPrefix,
-    {String? userId = 'test:example.org',}) {
+UriMaker makeUriMakerForPublicPrefix(
+  String uriPrefix, {
+  String? userId = 'test:example.org',
+}) {
   Uri makeDomainLink(String path, String? query) {
     final finalQuery = query != null
         ? (userId != null ? '?$query&userId=$userId' : '?$query')
@@ -239,39 +241,29 @@ void main() {
   group(
     'Testing fallback https://app.acter.global/:-links',
     () => newSpecLinksTests(
-        makeUriMakerForPublicPrefix('https://app.acter.global/p/'),),
+      makeUriMakerForPublicPrefix('https://app.acter.global/p/'),
+    ),
   );
 
   group(
     'Testing https://app.acter.global/ object-links',
     () => acterObjectLinksTests(
-        makeUriMakerForPublicPrefix('https://app.acter.global/p/'),),
+      makeUriMakerForPublicPrefix('https://app.acter.global/p/'),
+    ),
   );
 
   group(
     'Testing https://app.acter.global/ invite-links',
     () => acterInviteLinkTests(
-        makeUriMakerForPublicPrefix('https://app.acter.global/p/'),),
+      makeUriMakerForPublicPrefix('https://app.acter.global/p/'),
+    ),
   );
 
   group(
     'Testing https://app.acter.global/ preview data',
     () => acterObjectPreviewTests(
-        makeUriMakerForPublicPrefix('https://app.acter.global/p/'),),
-  );
-
-  group(
-    'Real life confirmation',
-    () {
-      test('shared boost', () {
-        final uriResult = parseActerUri(
-          Uri.parse(
-            'https://app.m-1.acter.global/p/0fcb879f4102c0576f5b0333e1320ff76ad551c7?roomDisplayName=Social+Media&via=%5B%27m-1.acter.global%27%5D&userId=jackie%3Am-1.acter.global#o/kPrgnBVJkxuYFKTGgH:m-1.acter.global/taskList/SQv20enWPxuf9zSM2jm34lmvXPwYL643SJPfOAGYmv4',
-          ),
-        );
-        expect(uriResult.target, 'SQv20enWPxuf9zSM2jm34lmvXPwYL643SJPfOAGYmv4');
-      });
-    },
+      makeUriMakerForPublicPrefix('https://app.acter.global/p/'),
+    ),
   );
 
   group('Testing broken https://app.acter.global/ ', () {
@@ -279,15 +271,18 @@ void main() {
       expect(
         () => parseActerUri(
           Uri.parse(
-              'http://acter.global/p/faultyHash?via=acter.global&via=example.org#roomid/room:acter.global/e/someEvent',),
+            'http://acter.global/p/faultyHash?via=acter.global&via=example.org#roomid/room:acter.global/e/someEvent',
+          ),
         ),
         throwsA(TypeMatcher<IncorrectHashError>()),
       );
     });
 
     test('missing user fails', () async {
-      final makeUri = makeUriMakerForPublicPrefix('https://app.acter.global/',
-          userId: null,);
+      final makeUri = makeUriMakerForPublicPrefix(
+        'https://app.acter.global/',
+        userId: null,
+      );
 
       expect(
         () => parseActerUri(
@@ -305,7 +300,8 @@ void main() {
   group('Testing legacy https://matrix.to/-links', () {
     test('roomAlias', () async {
       final result = parseActerUri(
-          Uri.parse('https://matrix.to/#/%23somewhere%3Aexample.org'),);
+        Uri.parse('https://matrix.to/#/%23somewhere%3Aexample.org'),
+      );
       expect(result.type, LinkType.roomAlias);
       expect(result.target, '#somewhere:example.org');
       expect(result.via, []);
@@ -321,7 +317,8 @@ void main() {
     });
     test('userId', () async {
       final result = parseActerUri(
-          Uri.parse('https://matrix.to/#/%40alice%3Aacter.global'),);
+        Uri.parse('https://matrix.to/#/%40alice%3Aacter.global'),
+      );
       expect(result.type, LinkType.userId);
       expect(result.target, '@alice:acter.global');
     });

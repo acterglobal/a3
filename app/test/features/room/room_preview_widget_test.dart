@@ -15,12 +15,16 @@ void main() {
       when(() => roomPreview.hasAvatar()).thenReturn(false);
       when(() => roomPreview.name()).thenReturn('Test Chat');
       when(() => roomPreview.roomIdStr()).thenReturn('test-chat');
+      when(() => roomPreview.joinRuleStr()).thenReturn('invite');
       await tester.pumpProviderWidget(
         overrides: [
           roomPreviewProvider.overrideWith((r, a) async => roomPreview),
           maybeRoomProvider.overrideWith(() => MockAsyncMaybeRoomNotifier()),
         ],
-        child: const RoomPreviewWidget(roomId: 'roomId'),
+        child: RoomPreviewWidget(
+          roomId: 'roomId',
+          onForward: (a, b, c) {},
+        ),
       );
       await tester.pump();
       expect(find.text('Test Chat'), findsOneWidget);
@@ -33,12 +37,16 @@ void main() {
       when(() => roomPreview.hasAvatar()).thenReturn(false);
       when(() => roomPreview.name()).thenReturn('Test Chat');
       when(() => roomPreview.roomIdStr()).thenReturn('test-chat');
+      when(() => roomPreview.joinRuleStr()).thenReturn('public');
       await tester.pumpProviderWidget(
         overrides: [
           roomPreviewProvider.overrideWith((r, a) async => roomPreview),
           maybeRoomProvider.overrideWith(() => MockAsyncMaybeRoomNotifier()),
         ],
-        child: const RoomPreviewWidget(roomId: 'roomId'),
+        child: RoomPreviewWidget(
+          roomId: 'roomId',
+          onForward: (a, b, c) {},
+        ),
       );
       await tester.pump();
       expect(find.text('Test Chat'), findsOneWidget);
@@ -50,12 +58,16 @@ void main() {
       when(() => roomPreview.hasAvatar()).thenReturn(false);
       when(() => roomPreview.name()).thenReturn('Test Space');
       when(() => roomPreview.roomIdStr()).thenReturn('test-space');
+      when(() => roomPreview.joinRuleStr()).thenReturn('public');
       await tester.pumpProviderWidget(
         overrides: [
           roomPreviewProvider.overrideWith((r, a) async => roomPreview),
           maybeRoomProvider.overrideWith(() => MockAsyncMaybeRoomNotifier()),
         ],
-        child: const RoomPreviewWidget(roomId: 'roomId'),
+        child: RoomPreviewWidget(
+          roomId: 'roomId',
+          onForward: (ca, bb, ac) {},
+        ),
       );
       await tester.pump();
       expect(find.text('Test Space'), findsOneWidget);
