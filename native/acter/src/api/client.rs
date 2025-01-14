@@ -27,13 +27,14 @@ use tokio::{
     time,
 };
 use tokio_stream::wrappers::BroadcastStream;
-use tracing::{error, trace};
+use tracing::{error, info, trace};
 
 use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-    typing::TypingController, verification::VerificationController,
+    session_verification::SessionVerificationController, typing::TypingController,
+    verification::VerificationController,
 };
 
 mod sync;
@@ -64,6 +65,7 @@ pub struct Client {
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) invitation_controller: InvitationController,
     pub(crate) verification_controller: VerificationController,
+    pub(crate) session_verification_controller: Arc<RwLock<SessionVerificationController>>,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
     pub spaces: Arc<RwLock<ObservableVector<Space>>>,
@@ -173,6 +175,13 @@ impl Client {
 impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
         let core = CoreClient::new(client.clone()).await?;
+        let encryption = client.encryption();
+        let user_id = client
+            .user_id()
+            .context("Failed retrieving current user_id")?
+            .to_owned();
+        info!("client user id: {}", user_id);
+        let svc = SessionVerificationController::new(encryption, user_id);
         let mut cl = Client {
             core: core.clone(),
             state: Arc::new(RwLock::new(state)),
@@ -180,6 +189,7 @@ impl Client {
             convos: Default::default(),
             invitation_controller: InvitationController::new(core.clone()),
             verification_controller: VerificationController::new(),
+            session_verification_controller: Arc::new(RwLock::new(svc)),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
         };
@@ -427,12 +437,12 @@ impl Client {
         let user_id = self.user_id()?;
         RUNTIME
             .spawn(async move {
-                client
+                let result = client
                     .encryption()
                     .get_device(&user_id, device_id!(dev_id.as_str()))
                     .await?
-                    .context("Unable to find device")
-                    .map(|x| x.is_verified())
+                    .map_or(false, |device| device.is_verified());
+                Ok(result)
             })
             .await?
     }
@@ -448,10 +458,13 @@ impl Client {
             .remove_to_device_event_handler(&client);
         self.verification_controller
             .remove_sync_event_handler(&client);
+        let svc = self.session_verification_controller.clone();
         self.typing_controller.remove_event_handler(&client);
 
         RUNTIME
             .spawn(async move {
+                let mut session_verification_controller = svc.read().await.clone();
+                session_verification_controller.remove_to_device_event_handler(&client);
                 match client.matrix_auth().logout().await {
                     Ok(resp) => Ok(true),
                     Err(e) => {
