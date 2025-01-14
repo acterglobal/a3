@@ -16,6 +16,7 @@ import 'package:share_plus/share_plus.dart';
 class ExternalShareOptions extends ConsumerWidget {
   final String? sectionTitle;
   final String? qrContent;
+  final Widget? qrCodeHeader;
   final Future<String> Function()? shareContentBuilder;
 
   const ExternalShareOptions({
@@ -23,6 +24,7 @@ class ExternalShareOptions extends ConsumerWidget {
     this.sectionTitle,
     this.qrContent,
     this.shareContentBuilder,
+    this.qrCodeHeader,
   });
 
   @override
@@ -69,6 +71,7 @@ class ExternalShareOptions extends ConsumerWidget {
       onTap: () => showQrCode(
         context,
         qrContent,
+        title: qrCodeHeader,
       ),
     );
   }

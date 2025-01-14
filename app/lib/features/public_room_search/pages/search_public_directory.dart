@@ -63,16 +63,19 @@ class SearchPublicDirectory extends ConsumerWidget {
       EasyLoading.showToast(lang.joinRuleNotSupportedYet(joinRule));
       return;
     }
-    await joinRoom(
-      context,
-      ref,
-      lang.tryingToJoin(spaceSearchResult.name() ?? ''),
-      roomId,
-      searchServer,
-      (roomId) => context.pushNamed(
-        Routes.space.name,
-        pathParameters: {'spaceId': roomId},
-      ),
+    final newRoomId = await joinRoom(
+      context: context,
+      ref: ref,
+      roomIdOrAlias: roomId,
+      serverNames: searchServer != null ? [searchServer] : [],
+      roomName: spaceSearchResult.name(),
     );
+
+    if (newRoomId != null && context.mounted) {
+      context.pushNamed(
+        Routes.space.name,
+        pathParameters: {'spaceId': newRoomId},
+      );
+    }
   }
 }
