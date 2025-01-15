@@ -1,0 +1,1 @@
+- Fix App generating too many device calendars on some devices
