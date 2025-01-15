@@ -7,6 +7,9 @@ LIB_OUT_DIR = "debug"
 TARGET_OS = "unknown"
 DEV = true
 RELEASE = false
+# FIXME currently needed to fix building for ios
+# see https://github.com/matrix-org/matrix-rust-sdk/issues/4416
+CARGO_FEATURE_NO_NEON=1
 
 [env.release]
 RELEASE = true
