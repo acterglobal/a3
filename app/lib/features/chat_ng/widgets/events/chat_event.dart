@@ -76,7 +76,6 @@ class ChatEvent extends ConsumerWidget {
       mainAxisAlignment:
           !isUser ? MainAxisAlignment.start : MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.end,
-      mainAxisSize: MainAxisSize.min,
       children: [
         (!isNextMessageInGroup && !isUser)
             ? Padding(

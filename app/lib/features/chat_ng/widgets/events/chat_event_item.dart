@@ -9,6 +9,7 @@ import 'package:acter/features/chat_ng/widgets/events/state_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
 import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show RoomEventItem;
@@ -35,11 +36,34 @@ class ChatEventItem extends StatelessWidget {
 
     return switch (eventType) {
       // handle message inner types separately
-      'm.room.message' => buildMsgEventItem(
-          context,
-          roomId,
-          messageId,
-          item,
+      'm.room.message' => Column(
+          crossAxisAlignment:
+              isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            buildMsgEventItem(
+              context,
+              roomId,
+              messageId,
+              item,
+            ),
+            // Emoji reactions
+            Container(
+              padding: EdgeInsets.only(
+                right: isUser ? 12 : 0,
+                left: isUser ? 0 : 12,
+              ),
+              child: FractionalTranslation(
+                translation: const Offset(0, -0.1),
+                child: ReactionsList(
+                  roomId: roomId,
+                  messageId: messageId,
+                  item: item,
+                  isNextMessageInGroup: isNextMessageInGroup,
+                ),
+              ),
+            ),
+          ],
         ),
       'm.room.redaction' => isUser
           ? ChatBubble.user(
