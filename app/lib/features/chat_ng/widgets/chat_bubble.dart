@@ -7,7 +7,7 @@ class ChatBubble extends StatelessWidget {
   final Widget child;
   final int? messageWidth;
   final BoxDecoration decoration;
-  final CrossAxisAlignment bubbleAlignment;
+  final MainAxisAlignment bubbleAlignment;
   final bool isEdited;
   final Widget? repliedToBuilder;
 
@@ -43,7 +43,7 @@ class ChatBubble extends StatelessWidget {
           bottomRight: Radius.circular(16),
         ),
       ),
-      bubbleAlignment: CrossAxisAlignment.start,
+      bubbleAlignment: MainAxisAlignment.start,
       isEdited: isEdited,
       repliedToBuilder: repliedToBuilder,
       child: child,
@@ -73,8 +73,9 @@ class ChatBubble extends StatelessWidget {
           bottomRight: Radius.circular(isNextMessageInGroup ? 16 : 4),
         ),
       ),
-      bubbleAlignment: CrossAxisAlignment.end,
+      bubbleAlignment: MainAxisAlignment.end,
       repliedToBuilder: repliedToBuilder,
+      isEdited: isEdited,
       child: DefaultTextStyle.merge(
         style: theme.textTheme.bodySmall
             ?.copyWith(color: theme.colorScheme.onPrimary),
@@ -91,12 +92,22 @@ class ChatBubble extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
-      child: Column(
-        crossAxisAlignment: bubbleAlignment,
+      child: Row(
+        mainAxisAlignment: bubbleAlignment,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          if (isEdited && bubbleAlignment == MainAxisAlignment.end) ...[
+            Text(
+              L10n.of(context).edited,
+              style: chatTheme.emptyChatPlaceholderTextStyle
+                  .copyWith(fontSize: 12),
+            ),
+            const SizedBox(width: 5),
+          ],
+          const SizedBox(width: 5),
           Container(
             constraints: BoxConstraints(
-              maxWidth: msgWidth ?? size.width,
+              maxWidth: msgWidth ?? size.width * 0.75,
             ),
             width: msgWidth,
             decoration: decoration,
@@ -117,15 +128,14 @@ class ChatBubble extends StatelessWidget {
               ),
             ),
           ),
-          if (isEdited)
-            Align(
-              alignment: Alignment(0.9, 0.0),
-              child: Text(
-                L10n.of(context).edited,
-                style: chatTheme.emptyChatPlaceholderTextStyle
-                    .copyWith(fontSize: 12),
-              ),
+          if (isEdited && bubbleAlignment == MainAxisAlignment.start) ...[
+            const SizedBox(width: 5),
+            Text(
+              L10n.of(context).edited,
+              style: chatTheme.emptyChatPlaceholderTextStyle
+                  .copyWith(fontSize: 12),
             ),
+          ],
         ],
       ),
     );

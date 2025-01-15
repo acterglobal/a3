@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/models/replied_to_msg_state.dart';
@@ -21,6 +22,7 @@ const _supportedTypes = [
 
 typedef RoomMsgId = ({String roomId, String uniqueId});
 typedef MentionQuery = (String, MentionType);
+typedef ReactionItem = (String, List<ReactionRecord>);
 
 final chatStateProvider = StateNotifierProvider.family<ChatRoomMessagesNotifier,
     ChatRoomState, String>(
@@ -138,4 +140,19 @@ final mentionSuggestionsProvider =
 final repliedToMsgProvider = AsyncNotifierProvider.autoDispose
     .family<RepliedToMessageNotifier, RepliedToMsgState, RoomMsgId>(() {
   return RepliedToMessageNotifier();
+});
+
+final messageReactionsProvider = StateProvider.autoDispose
+    .family<List<ReactionItem>, RoomEventItem>((ref, item) {
+  List<ReactionItem> reactions = [];
+
+  final reactionKeys = asDartStringList(item.reactionKeys());
+  for (final key in reactionKeys) {
+    final records = item.reactionRecords(key);
+    if (records != null) {
+      reactions.add((key, records.toList()));
+    }
+  }
+
+  return reactions;
 });
