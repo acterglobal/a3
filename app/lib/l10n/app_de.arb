@@ -2347,5 +2347,11 @@
   "references": "Referenzen",
   "@references": {},
   "removeReference": "Referenz entfernen",
-  "@removeReference": {}
+  "@removeReference": {},
+  "pendingInvitesCount": "Du hast {count} Einladungen",
+  "@pendingInvitesCount": {},
+  "referencesEmptyStateTitle": "Keine Referenzen gefunden.",
+  "@referencesEmptyStateTitle": {},
+  "whatsAppBusiness": "WA Business",
+  "@whatsAppBusiness": {}
 }
