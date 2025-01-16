@@ -1,6 +1,7 @@
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
+import 'package:acter/features/chat_ng/actions/emoji_selection_action.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
@@ -41,13 +42,35 @@ class ChatEventItem extends StatelessWidget {
               isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            buildMsgEventItem(
-              context,
-              roomId,
-              messageId,
-              item,
+            GestureDetector(
+              onLongPressStart: (details) {
+                final messageWidget = buildMsgEventItem(
+                  context,
+                  roomId,
+                  messageId,
+                  item,
+                );
+                // reaction row
+                emojiSelectionAction(
+                  context: context,
+                  position: details.globalPosition,
+                  messageWidget: messageWidget,
+                  isUser: isUser,
+                  roomId: roomId,
+                  messageId: messageId,
+                );
+              },
+              child: Hero(
+                tag: messageId,
+                child: buildMsgEventItem(
+                  context,
+                  roomId,
+                  messageId,
+                  item,
+                ),
+              ),
             ),
-            // Emoji reactions
+            // Emoji reactions UI
             Container(
               padding: EdgeInsets.only(
                 right: isUser ? 12 : 0,
