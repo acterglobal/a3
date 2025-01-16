@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -19,7 +20,7 @@ class ReactionChipsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
+    final isLargeScreen = context.isLargeScreen;
     return Card(
       elevation: 8,
       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
@@ -29,7 +30,9 @@ class ReactionChipsWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 3),
+        padding: isLargeScreen
+            ? EdgeInsets.all(3)
+            : EdgeInsets.symmetric(horizontal: 3),
         child: Wrap(
           direction: Axis.horizontal,
           spacing: 3,
@@ -74,9 +77,7 @@ class _ReactionChip extends StatelessWidget {
       onTap: onTap,
       onLongPress: onLongPress,
       child: Chip(
-        padding: moreThanOne
-            ? const EdgeInsets.only(right: 4)
-            : const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
         color: WidgetStatePropertyAll(
           sentByMe ? colorScheme.secondaryContainer : colorScheme.surface,
         ),
@@ -85,10 +86,11 @@ class _ReactionChip extends StatelessWidget {
             sentByMe ? EdgeInsets.symmetric(horizontal: 3) : EdgeInsets.zero,
         shape: const StadiumBorder(side: BorderSide(color: Colors.transparent)),
         avatar: moreThanOne ? _buildEmojiText() : null,
+        labelStyle: Theme.of(context).textTheme.labelLarge,
         label: moreThanOne
             ? Text(
                 records.length.toString(),
-                style: Theme.of(context).textTheme.labelSmall,
+                style: Theme.of(context).textTheme.labelLarge,
               )
             : _buildEmojiText(),
       ),
@@ -96,6 +98,9 @@ class _ReactionChip extends StatelessWidget {
   }
 
   Widget _buildEmojiText() {
-    return Text(emoji, style: EmojiConfig.emojiTextStyle);
+    return Text(
+      emoji,
+      style: EmojiConfig.emojiTextStyle?.copyWith(fontSize: 18),
+    );
   }
 }
