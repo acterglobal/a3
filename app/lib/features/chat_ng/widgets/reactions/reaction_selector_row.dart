@@ -140,7 +140,11 @@ class ReactionSelectorRow extends ConsumerWidget {
         withBoarder: true,
         onEmojiSelected: (category, emoji) async {
           await toggleReaction(ref, messageId, emoji.emoji);
-          if (context.mounted) Navigator.pop(context);
+          if (context.mounted) {
+            // we have overlays opened, dismiss both of them
+            Navigator.pop(context);
+            Navigator.pop(context);
+          }
         },
         onClosePicker: () => Navigator.pop(context),
       ),
