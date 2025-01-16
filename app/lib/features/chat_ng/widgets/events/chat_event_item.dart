@@ -1,7 +1,7 @@
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
-import 'package:acter/features/chat_ng/actions/emoji_selection_action.dart';
+import 'package:acter/features/chat_ng/actions/reaction_selection_action.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
@@ -50,8 +50,8 @@ class ChatEventItem extends StatelessWidget {
                   messageId,
                   item,
                 );
-                // reaction row
-                emojiSelectionAction(
+                // show reaction row
+                reactionSelectionAction(
                   context: context,
                   position: details.globalPosition,
                   messageWidget: messageWidget,
@@ -70,7 +70,7 @@ class ChatEventItem extends StatelessWidget {
                 ),
               ),
             ),
-            // Emoji reactions UI
+            // reactions of message
             Container(
               padding: EdgeInsets.only(
                 right: isUser ? 12 : 0,

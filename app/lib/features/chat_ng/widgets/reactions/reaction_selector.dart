@@ -30,13 +30,13 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::chat::reactions_selector_row');
 
-class ReactionSelectorRow extends ConsumerWidget {
+class ReactionSelector extends ConsumerWidget {
   final double? size;
   final String messageId;
   final String roomId;
   final bool isUser;
 
-  const ReactionSelectorRow({
+  const ReactionSelector({
     super.key,
     required this.isUser,
     required this.messageId,

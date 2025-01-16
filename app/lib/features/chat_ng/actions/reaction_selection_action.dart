@@ -1,9 +1,10 @@
 import 'dart:ui';
 
-import 'package:acter/features/chat_ng/widgets/reactions/reaction_selector_row.dart';
+import 'package:acter/features/chat_ng/widgets/reactions/reaction_selector.dart';
 import 'package:flutter/material.dart';
 
-void emojiSelectionAction({
+// reaction selector action on chat message
+void reactionSelectionAction({
   required BuildContext context,
   required Offset position,
   required Widget messageWidget,
@@ -37,10 +38,10 @@ void emojiSelectionAction({
           Positioned(
             left: position.dx,
             top: position.dy - 60,
-            child: _AnimatedReactionRow(
+            child: _AnimatedReactionSelector(
               animation: animation,
               messageId: messageId,
-              child: ReactionSelectorRow(
+              child: ReactionSelector(
                 isUser: isUser,
                 messageId: messageId,
                 roomId: roomId,
@@ -86,12 +87,12 @@ class _ReactionOverlay extends StatelessWidget {
   }
 }
 
-class _AnimatedReactionRow extends StatelessWidget {
+class _AnimatedReactionSelector extends StatelessWidget {
   final Animation<double> animation;
   final Widget child;
   final String messageId;
 
-  const _AnimatedReactionRow({
+  const _AnimatedReactionSelector({
     required this.animation,
     required this.child,
     required this.messageId,
