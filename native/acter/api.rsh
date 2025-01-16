@@ -2920,6 +2920,9 @@ object Client {
     /// Get the verification event receiver
     fn verification_event_rx() -> Stream<VerificationEvent>;
 
+    /// Get the verification request event receiver
+    fn verification_request_event_rx() -> Stream<VerificationRequestEvent>;
+
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
 
@@ -3269,6 +3272,36 @@ object VerificationEmoji {
 
     /// text description of emoji unicode
     fn description() -> string;
+}
+
+
+object SessionVerificationEmoji {
+    /// symbol representation of emoji unicode
+    fn symbol() -> string;
+
+    /// text description of emoji unicode
+    fn description() -> string;
+}
+
+object SessionVerificationData {
+    fn emojis() -> Option<Vec<SessionVerificationEmoji>>;
+    fn decimals() -> Option<Vec<u16>>;
+}
+
+object VerificationRequestEvent {
+    fn accept() -> Future<Result<VerificationReadyStage>>;
+    fn cancel() -> Future<Result<bool>>;
+}
+
+object VerificationReadyStage {
+    fn start_sas() -> Future<Result<SasPromptStage>>;
+    fn cancel() -> Future<Result<bool>>;
+}
+
+object SasPromptStage {
+    fn get_emojis() -> Future<Result<SessionVerificationData>>;
+    fn approve() -> Future<Result<bool>>;
+    fn decline() -> Future<Result<bool>>;
 }
 
 

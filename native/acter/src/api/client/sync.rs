@@ -467,6 +467,12 @@ impl Client {
         let handle = RUNTIME.spawn(async move {
             info!("spawning sync callback");
 
+            me.session_verification_controller
+                .read()
+                .await
+                .clone()
+                .add_to_device_event_handler(&client);
+
             let mut sync_settings = SyncSettings::new().timeout(Duration::from_secs(25));
 
             match me.store().get_raw::<Option<String>>(SYNC_TOKEN_KEY).await {
