@@ -1,3 +1,0 @@
-- receive notifications of comments and likes of objects you subscribed to
-- new labs flag: to automatically subscribe to boosts you created or interacted with
-- Fix rendering of boost notifications
