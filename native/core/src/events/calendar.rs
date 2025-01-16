@@ -29,7 +29,7 @@ pub enum EventLocation {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         icon: Option<Icon>,
 
-        /// A `geo:` URI [RFC5870] for the location.
+        /// A `geo:` URI RFC5870 for the location.
         #[serde(default, skip_serializing_if = "Option::is_none")]
         coordinates: Option<String>,
 
