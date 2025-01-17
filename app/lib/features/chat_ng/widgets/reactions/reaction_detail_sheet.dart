@@ -1,5 +1,7 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -173,7 +175,7 @@ class _ReactionUsersList extends StatelessWidget {
   }
 }
 
-class ReactionUserItem extends StatelessWidget {
+class ReactionUserItem extends ConsumerWidget {
   final String roomId;
   final String userId;
   final List<String> emojis;
@@ -186,9 +188,24 @@ class ReactionUserItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final memberInfo =
+        ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
     return ListTile(
-      title: Text(userId),
+      leading: ActerAvatar(
+        options: AvatarOptions.DM(
+          AvatarInfo(
+            uniqueId: userId,
+            displayName: memberInfo.displayName,
+            avatar: memberInfo.avatar,
+          ),
+        ),
+      ),
+      title: Text(memberInfo.displayName ?? userId),
+      subtitle: memberInfo.displayName != null
+          ? Text(userId, style: theme.textTheme.labelLarge)
+          : null,
       trailing: Wrap(
         children: emojis
             .map(
