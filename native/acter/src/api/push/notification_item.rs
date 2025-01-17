@@ -44,7 +44,7 @@ use ruma::{
     push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
     OwnedDeviceId, OwnedEventId,
 };
-use std::{ops::Deref, os::unix::process::parent_id, sync::Arc};
+use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use urlencoding::encode;
 
