@@ -162,7 +162,7 @@ Future<void> _refreshCalendar(
   final currentLinkKeys = currentLinks.values;
   List<Event> foundEvents = [];
   if (currentLinkKeys.isNotEmpty) {
-    _log.info('Current links: $calendarId: ${currentLinkKeys}');
+    _log.info('Current links: $calendarId: $currentLinkKeys');
     final foundEventsResult = await deviceCalendar.retrieveEvents(
       calendarId,
       RetrieveEventsParams(eventIds: currentLinks.values.toList()),
