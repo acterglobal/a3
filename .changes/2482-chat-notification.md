@@ -1,1 +1,0 @@
-- [Fix] : Chat screen opening twice when tap on chat message notification issue is fixed now,

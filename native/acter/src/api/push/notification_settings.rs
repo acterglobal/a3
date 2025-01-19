@@ -42,7 +42,7 @@ use ruma::{
     events::policy::rule,
     push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
 };
-use std::{ops::Deref, os::unix::process::parent_id, sync::Arc};
+use std::{ops::Deref, sync::Arc};
 use strum::{Display, EnumString};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use urlencoding::encode;
