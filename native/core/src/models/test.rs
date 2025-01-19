@@ -1,6 +1,6 @@
 use derive_builder::Builder;
 use matrix_sdk_base::ruma::{
-    user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, RoomId, UserId,
+    user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, UserId,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -13,6 +13,7 @@ use crate::{store::Store, Result};
 pub struct TestModel {
     room_id: OwnedRoomId,
     event_id: OwnedEventId,
+    event_meta: EventMeta,
 
     #[builder(default)]
     indizes: Vec<String>,
@@ -47,28 +48,30 @@ impl TestModelBuilder {
             let room_id = Uuid::new_v4().hyphenated().to_string();
             self.room_id = OwnedRoomId::try_from(format!("!{room_id}:example.org")).ok();
         }
+        if self.event_meta.is_none() {
+            let event_id = self.event_id.clone().unwrap_or_else(|| {
+                let ev = Uuid::new_v4().hyphenated().to_string();
+                OwnedEventId::try_from(format!("${ev}")).unwrap()
+            });
+            let room_id = self.room_id.clone().unwrap_or_else(|| {
+                let room_id = Uuid::new_v4().hyphenated().to_string();
+                OwnedRoomId::try_from(format!("!{room_id}:example.org")).unwrap()
+            });
+            self.event_meta = Some(EventMeta {
+                event_id,
+                sender: user_id!("@test:example.org").to_owned(),
+                origin_server_ts: MilliSecondsSinceUnixEpoch(123567890u32.into()),
+                room_id,
+                redacted: None,
+            });
+        }
         self.derive_builder_build()
     }
 }
 
-impl TestModel {
-    pub fn event_meta(&self) -> EventMeta {
-        EventMeta {
-            event_id: self.event_id.clone(),
-            sender: user_id!("@test:example.org").to_owned(),
-            origin_server_ts: MilliSecondsSinceUnixEpoch(123567890u32.into()),
-            room_id: self.room_id.clone(),
-            redacted: None,
-        }
-    }
-}
-
 impl ActerModel for TestModel {
-    fn event_id(&self) -> &EventId {
-        &self.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.event_meta
     }
 
     fn capabilities(&self) -> &[Capability] {

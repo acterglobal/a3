@@ -120,12 +120,20 @@ pub async fn default_model_execute(
 
 #[enum_dispatch(AnyActerModel)]
 pub trait ActerModel: Debug {
+    /// the event metadata for this model
+    fn event_meta(&self) -> &EventMeta;
+
     fn indizes(&self, user_id: &UserId) -> Vec<String>;
+
     /// The key to store this model under
-    fn event_id(&self) -> &EventId;
+    fn event_id(&self) -> &EventId {
+        &self.event_meta().event_id
+    }
 
     /// The room id this model belongs to
-    fn room_id(&self) -> &RoomId;
+    fn room_id(&self) -> &RoomId {
+        &self.event_meta().room_id
+    }
 
     /// The models to inform about this model as it belongs to that
     fn belongs_to(&self) -> Option<Vec<String>> {
@@ -249,15 +257,12 @@ impl RedactedActerModel {
 }
 
 impl ActerModel for RedactedActerModel {
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
-    }
     fn indizes(&self, _user_id: &UserId) -> Vec<String> {
         self.indizes.clone()
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
@@ -273,6 +278,7 @@ impl ActerModel for RedactedActerModel {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[cfg_attr(any(test, feature = "testing"), derive(PartialEq, Eq))]
 pub struct EventMeta {
     /// The globally unique event identifier attached to this event
     pub event_id: OwnedEventId,

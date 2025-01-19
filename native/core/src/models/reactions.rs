@@ -1,7 +1,7 @@
 use derive_getters::Getters;
 use matrix_sdk_base::ruma::{
     events::{reaction::ReactionEventContent, relation::Annotation, OriginalMessageLikeEvent},
-    EventId, OwnedEventId, OwnedUserId, RoomId, UserId,
+    EventId, OwnedEventId, OwnedUserId, UserId,
 };
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref};
@@ -266,11 +266,8 @@ impl ActerModel for Reaction {
         vec![Reaction::index_for(&self.inner.relates_to.event_id)]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

@@ -389,7 +389,11 @@ mod tests {
         }))?;
 
         executor
-            .redact("test_model".to_owned(), model.event_meta(), redaction)
+            .redact(
+                "test_model".to_owned(),
+                model.event_meta().clone(),
+                redaction,
+            )
             .await?;
 
         let AnyActerModel::RedactedActerModel(redaction) = executor.store().get(&model_id).await?
@@ -408,7 +412,11 @@ mod tests {
         }))?;
 
         executor
-            .redact("test_model".to_owned(), model.event_meta(), redaction)
+            .redact(
+                "test_model".to_owned(),
+                model.event_meta().clone(),
+                redaction,
+            )
             .await?;
 
         let AnyActerModel::RedactedActerModel(redaction) = executor.store().get(&model_id).await?

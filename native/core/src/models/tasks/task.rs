@@ -1,6 +1,4 @@
-use matrix_sdk_base::ruma::{
-    events::OriginalMessageLikeEvent, EventId, OwnedUserId, RoomId, UserId,
-};
+use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, OwnedUserId, RoomId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
@@ -115,11 +113,8 @@ impl ActerModel for Task {
         vec![task_list_id_idx]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     fn capabilities(&self) -> &[Capability] {
@@ -183,11 +178,8 @@ impl ActerModel for TaskUpdate {
         vec![format!("{:}::history", self.inner.task.event_id)]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
@@ -251,11 +243,8 @@ impl ActerModel for TaskSelfAssign {
         vec![format!("{:}::history", self.inner.task.event_id)]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
@@ -310,11 +299,8 @@ impl ActerModel for TaskSelfUnassign {
         vec![format!("{:}::history", self.inner.task.event_id)]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {

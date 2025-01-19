@@ -1,6 +1,6 @@
 use derive_getters::Getters;
 use matrix_sdk_base::ruma::{
-    events::OriginalMessageLikeEvent, EventId, OwnedEventId, OwnedUserId, RoomId, UserId,
+    events::OriginalMessageLikeEvent, EventId, OwnedEventId, OwnedUserId, UserId,
 };
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
@@ -156,11 +156,8 @@ impl ActerModel for ReadReceipt {
         vec![ReadReceipt::index_for(&self.inner.on.event_id)]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<String>> {
