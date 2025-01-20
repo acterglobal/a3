@@ -64,8 +64,10 @@ class AppShellState extends ConsumerState<AppShell> {
       // ignore: use_build_context_synchronously
       () => bottomNavigationTutorials(context: context),
     );
-    initShake();
+    _initShake();
     _initDeepLinking();
+    // initalize main providers
+    _initProviders();
 
     // these want to be sure to execute in order
     await _initNotifications();
@@ -73,7 +75,16 @@ class AppShellState extends ConsumerState<AppShell> {
     await _initCalendarSync();
   }
 
-  Future<void> initShake() async {
+  Future<void> _initProviders() async {
+    // we read a few providers immediately at start up to ensure
+    // the content is being fetched and cached
+    ref.read(spacesProvider);
+    ref.read(chatsProvider);
+    ref.read(newsListProvider(null));
+    ref.read(hasActivitiesProvider);
+  }
+
+  Future<void> _initShake() async {
     // shake is possible in only actual mobile devices
     if (isBugReportingEnabled && await isRealPhone()) {
       detector = ShakeDetector.autoStart(
