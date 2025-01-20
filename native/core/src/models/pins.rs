@@ -1,3 +1,4 @@
+use matrix_sdk::ruma::OwnedEventId;
 use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, RoomId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
@@ -5,7 +6,7 @@ use std::ops::Deref;
 use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{
     events::pins::{PinEventContent, PinUpdateBuilder, PinUpdateEventContent},
-    statics::KEYS,
+    referencing::{ExecuteReference, IndexKey, SectionIndex},
     store::Store,
     Result,
 };
@@ -46,10 +47,12 @@ impl Pin {
 }
 
 impl ActerModel for Pin {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
-            format!("{}::{}", self.meta.room_id, KEYS::PINS),
-            KEYS::PINS.to_owned(),
+            IndexKey::RoomSection(self.meta.room_id.clone(), SectionIndex::Pins),
+            IndexKey::Section(SectionIndex::Pins),
+            IndexKey::ObjectHistory(self.meta.event_id.to_owned()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
         ]
     }
 
@@ -65,7 +68,7 @@ impl ActerModel for Pin {
         ]
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
@@ -108,20 +111,23 @@ pub struct PinUpdate {
 }
 
 impl ActerModel for PinUpdate {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![format!("{:}::history", self.inner.pin.event_id)]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            IndexKey::ObjectHistory(self.inner.pin.event_id.to_owned()),
+            IndexKey::RoomHistory(self.meta.room_id.to_owned()),
+        ]
     }
 
     fn event_meta(&self) -> &EventMeta {
         &self.meta
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.pin.event_id.to_string()])
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
+        Some(vec![self.inner.pin.event_id.to_owned()])
     }
 }
 

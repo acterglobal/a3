@@ -247,6 +247,6 @@ impl Account {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        self.client.subscribe(APP_USER_SETTINGS.to_string())
+        self.client.subscribe(APP_USER_SETTINGS.clone())
     }
 }

@@ -1,3 +1,4 @@
+use matrix_sdk::ruma::OwnedEventId;
 use matrix_sdk_base::ruma::{
     events::{room::redaction::OriginalRoomRedactionEvent, UnsignedRoomRedactionEvent},
     OwnedRoomId,
@@ -9,6 +10,7 @@ use tracing::{error, info, trace, trace_span, warn};
 
 use crate::{
     models::{ActerModel, AnyActerModel, EventMeta, RedactedActerModel},
+    referencing::ExecuteReference,
     store::Store,
     Error, Result,
 };
@@ -16,7 +18,7 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct Executor {
     store: Store,
-    notifiers: Arc<HashMap<String, Sender<()>>>,
+    notifiers: Arc<HashMap<ExecuteReference, Sender<()>>>,
 }
 
 impl Executor {
@@ -31,8 +33,8 @@ impl Executor {
         &self.store
     }
 
-    pub fn subscribe(&self, key: String) -> Receiver<()> {
-        match self.notifiers.entry(key) {
+    pub fn subscribe<K: Into<ExecuteReference>>(&self, key: K) -> Receiver<()> {
+        match self.notifiers.entry(key.into()) {
             Entry::Occupied(mut o) => {
                 let sender = o.get_mut();
                 if sender.receiver_count() == 0 {
@@ -52,11 +54,11 @@ impl Executor {
         }
     }
 
-    pub async fn wait_for(&self, key: String) -> Result<AnyActerModel> {
-        let mut subscribe = self.subscribe(key.clone());
+    pub async fn wait_for(&self, key: OwnedEventId) -> Result<AnyActerModel> {
+        let mut subscribe = self.subscribe(ExecuteReference::Model(key.clone()));
         let Ok(model) = self.store.get(&key).await else {
             if let Err(e) = subscribe.recv().await {
-                error!(key, "Receiving pong failed: {e}");
+                error!(event_id=?key, "Receiving pong failed: {e}");
             }
             return self.store.get(&key).await;
         };
@@ -64,12 +66,12 @@ impl Executor {
         Ok(model)
     }
 
-    pub fn notify(&self, mut keys: Vec<String>) -> u32 {
+    pub fn notify(&self, mut keys: Vec<ExecuteReference>) -> u32 {
         let mut counter = 0u32;
         keys.dedup();
         trace!(?keys, "notify");
         for key in keys {
-            let span = trace_span!("Asked to notify", key = key);
+            let span = trace_span!("Asked to notify", key = ?key);
             let _enter = span.enter();
             if let Entry::Occupied(o) = self.notifiers.entry(key) {
                 let v = o.get();
@@ -122,8 +124,8 @@ impl Executor {
         event_meta: EventMeta,
         reason: UnsignedRoomRedactionEvent,
     ) -> Result<()> {
-        trace!(event_id=?event_meta.event_id, ?model_type, "asked to redact");
-        let event_id = event_meta.event_id.to_string();
+        let event_id = event_meta.event_id.to_owned();
+        trace!(event_id=?event_id, ?model_type, "asked to redact");
 
         match self.store.get(&event_id).await {
             Ok(AnyActerModel::RedactedActerModel(_)) => {
@@ -131,12 +133,8 @@ impl Executor {
             }
             Ok(model) => {
                 trace!("previous model found. overwriting");
-                let redacted = RedactedActerModel::new(
-                    model_type.to_owned(),
-                    model.indizes(self.store.user_id()),
-                    event_meta,
-                    reason.into(),
-                );
+                let redacted =
+                    RedactedActerModel::new(model_type.to_owned(), event_meta, reason.into());
                 let keys = model.redact(&self.store, redacted).await?;
                 info!(
                     "******************** found model redacted: {:?}",
@@ -146,12 +144,8 @@ impl Executor {
             }
             Err(Error::ModelNotFound(_)) => {
                 trace!("no model found, storing redaction model");
-                let redacted = RedactedActerModel::new(
-                    model_type.to_owned(),
-                    vec![],
-                    event_meta,
-                    reason.into(),
-                );
+                let redacted =
+                    RedactedActerModel::new(model_type.to_owned(), event_meta, reason.into());
                 let keys = redacted.execute(&self.store).await?;
                 info!(
                     "******************** not found redacted: {:?}",
@@ -170,7 +164,7 @@ impl Executor {
             return Ok(());
         };
 
-        let event_id = meta.event_id.to_string();
+        let event_id = meta.event_id.to_owned();
 
         match self.store.get(&event_id).await {
             Ok(AnyActerModel::RedactedActerModel(_)) => {
@@ -178,19 +172,15 @@ impl Executor {
             }
             Ok(model) => {
                 trace!("live redacted: model found");
-                let redacted = RedactedActerModel::new(
-                    model.model_type().to_owned(),
-                    model.indizes(self.store.user_id()),
-                    meta,
-                    event.into(),
-                );
+                let redacted =
+                    RedactedActerModel::new(model.model_type().to_owned(), meta, event.into());
                 let keys = model.redact(&self.store, redacted).await?;
                 info!(?event_id, "live redacted: {:?}", keys.clone());
                 self.notify(keys);
             }
             Err(Error::ModelNotFound(_)) => {
                 info!(?event_id, "live redaction: not found");
-                self.notify(vec![event_id]);
+                self.notify(vec![ExecuteReference::Model(event_id)]);
             }
             Err(error) => return Err(error),
         }
@@ -421,7 +411,7 @@ mod tests {
 
         let AnyActerModel::RedactedActerModel(redaction) = executor.store().get(&model_id).await?
         else {
-            panic!("Model was not redacten :(");
+            panic!("Model was not redacted :(");
         };
         assert_eq!(redaction.origin_type(), "test_model"); // we stay with the existing redaction
 

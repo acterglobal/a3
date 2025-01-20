@@ -1,5 +1,5 @@
 use acter::api::{new_join_rule_builder, new_space_settings_builder};
-use acter_core::statics::KEYS;
+use acter_core::referencing::{IndexKey, SectionIndex};
 use anyhow::{bail, Result};
 use matrix_sdk_base::ruma::events::{
     room::join_rules::{AllowRule, JoinRule, Restricted},
@@ -114,10 +114,10 @@ async fn leaving_spaces() -> Result<()> {
     let second = spaces.pop().unwrap();
     let last = spaces.pop().unwrap();
 
-    let mut first_listener = user.subscribe(first.room_id().to_string());
-    let mut news_listener = user.subscribe(KEYS::NEWS.to_string());
-    let mut second_listener = user.subscribe(second.room_id().to_string());
-    let mut last_listener = user.subscribe(last.room_id().to_string());
+    let mut first_listener = user.subscribe(first.room_id());
+    let mut news_listener = user.subscribe(IndexKey::Section(SectionIndex::Boosts));
+    let mut second_listener = user.subscribe(second.room_id());
+    let mut last_listener = user.subscribe(last.room_id());
 
     assert!(news_listener.is_empty(), "News already has items");
 

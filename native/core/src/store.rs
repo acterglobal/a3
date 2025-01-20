@@ -1,3 +1,4 @@
+use matrix_sdk::ruma::OwnedEventId;
 use matrix_sdk::Client;
 use matrix_sdk_base::ruma::{OwnedRoomId, OwnedUserId, UserId};
 use scc::hash_map::{Entry, HashMap};
@@ -5,6 +6,7 @@ use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
 use tracing::{debug, error, info, instrument, trace, warn};
 
+use crate::referencing::{ExecuteReference, IndexKey};
 use crate::{
     models::{ActerModel, AnyActerModel},
     Error, Result,
@@ -14,16 +16,14 @@ use crate::{
 pub struct Store {
     pub(crate) client: Client,
     user_id: OwnedUserId,
-    models: Arc<HashMap<String, AnyActerModel>>,
-    indizes: Arc<HashMap<String, Vec<String>>>,
-    dirty: Arc<Mutex<HashSet<String>>>, // our key mutex;
+    models: Arc<HashMap<OwnedEventId, AnyActerModel>>,
+    indizes: Arc<HashMap<IndexKey, Vec<OwnedEventId>>>,
+    dirty: Arc<Mutex<HashSet<OwnedEventId>>>, // our key mutex;
 }
 
 static ALL_MODELS_KEY: &str = "ACTER::ALL";
 static DB_VERSION_KEY: &str = "ACTER::DB_VERSION";
 static CURRENT_DB_VERSION: u32 = 1;
-
-type ModelKeysAndIndizes = (Vec<String>, Vec<String>);
 
 async fn get_from_store<T: serde::de::DeserializeOwned>(client: Client, key: &str) -> Result<T> {
     let v = client
@@ -132,14 +132,14 @@ impl Store {
             vec![]
         };
 
-        let indizes: HashMap<String, Vec<String>> = HashMap::new();
-        let models: HashMap<String, AnyActerModel> = HashMap::new();
+        let indizes: HashMap<IndexKey, Vec<OwnedEventId>> = HashMap::new();
+        let models: HashMap<OwnedEventId, AnyActerModel> = HashMap::new();
         for m in models_vec {
             let Some(m) = m else {
                 // skip None’s
                 continue;
             };
-            let key = m.event_id().to_string();
+            let key = m.event_id().to_owned();
             for idx in m.indizes(&user_id) {
                 match indizes.entry(idx) {
                     Entry::Occupied(mut o) => {
@@ -164,15 +164,15 @@ impl Store {
     }
 
     #[instrument(skip(self))]
-    pub async fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyActerModel>> {
+    pub async fn get_list(&self, key: &IndexKey) -> Result<impl Iterator<Item = AnyActerModel>> {
         self.get_list_inner(key)
     }
 
-    pub fn get_list_inner(&self, key: &str) -> Result<impl Iterator<Item = AnyActerModel>> {
+    pub fn get_list_inner(&self, key: &IndexKey) -> Result<impl Iterator<Item = AnyActerModel>> {
         let listing = if let Some(r) = self.indizes.get(key) {
             r.get().clone()
         } else {
-            debug!(user=?self.user_id, key, "No list found");
+            debug!(user=?self.user_id, index=?key, "No list found");
             vec![]
         };
         let models = self.models.clone();
@@ -182,41 +182,46 @@ impl Store {
         Ok(res)
     }
 
-    pub async fn get(&self, model_key: &str) -> Result<AnyActerModel> {
+    pub async fn get(&self, model_key: &OwnedEventId) -> Result<AnyActerModel> {
         let Some(o) = self.models.get_async(model_key).await else {
-            return Err(Error::ModelNotFound(model_key.to_owned()));
+            return Err(Error::ModelNotFound(model_key.to_string()));
         };
 
         Ok(o.get().clone())
     }
 
-    pub async fn get_many(&self, model_keys: Vec<String>) -> Vec<Option<AnyActerModel>> {
+    pub async fn get_many(&self, model_keys: Vec<OwnedEventId>) -> Vec<Option<AnyActerModel>> {
         let models = model_keys.iter().map(|k| async { self.get(k).await.ok() });
         futures::future::join_all(models).await
     }
 
     #[instrument(skip(self))]
-    async fn save_model_inner(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
+    async fn save_model_inner(
+        &self,
+        mdl: AnyActerModel,
+    ) -> Result<(Vec<OwnedEventId>, Vec<IndexKey>)> {
         let mut dirty = self.dirty.lock()?; // hold the lock
-        let (mut keys, indizes) = self.model_inner_under_lock(mdl)?;
-        dirty.extend(keys.clone());
-        keys.extend(indizes);
-        Ok(keys)
+        let (key, idxs) = self.model_inner_under_lock(mdl)?;
+        dirty.extend(key.clone());
+        Ok((key, idxs))
     }
 
-    fn model_inner_under_lock(&self, mdl: AnyActerModel) -> Result<ModelKeysAndIndizes> {
-        let key = mdl.event_id().to_string();
+    fn model_inner_under_lock(
+        &self,
+        mdl: AnyActerModel,
+    ) -> Result<(Vec<OwnedEventId>, Vec<IndexKey>)> {
+        let key = mdl.event_id().to_owned();
         let user_id = self.user_id();
-        let room_id_idx = format!("{}::models", mdl.room_id());
-        let mut keys_changed = vec![key.clone()];
-        trace!(user = ?user_id, key, "saving");
+        let room_id = mdl.room_id().to_owned();
+        let keys_changed = vec![key.to_owned()];
+        trace!(user = ?user_id, ?key, "saving");
         let mut indizes = mdl.indizes(user_id);
         match self.models.entry(key.clone()) {
             Entry::Vacant(v) => {
                 v.insert_entry(mdl);
             }
             Entry::Occupied(mut o) => {
-                trace!(user=?self.user_id, key, "previous model found");
+                trace!(user=?self.user_id, ?key, "previous model found");
                 let prev = o.insert(mdl);
 
                 let mut remove_idzs = Vec::new();
@@ -232,13 +237,12 @@ impl Store {
                     if let Some(mut v) = self.indizes.get(&idz) {
                         v.get_mut().retain(|k| k != &key);
                     }
-                    keys_changed.push(idz);
                 }
             }
         }
 
-        for idx in indizes.iter().chain([&room_id_idx]) {
-            trace!(user = ?self.user_id, idx, key, exists=self.indizes.contains(idx), "adding to index");
+        for idx in indizes.iter().chain([&IndexKey::RoomModels(room_id)]) {
+            trace!(user = ?self.user_id, ?idx, ?key, exists=self.indizes.contains(idx), "adding to index");
             match self.indizes.entry(idx.clone()) {
                 Entry::Vacant(v) => {
                     v.insert_entry(vec![key.clone()]);
@@ -247,13 +251,13 @@ impl Store {
                     o.get_mut().push(key.clone());
                 }
             }
-            trace!(user = ?self.user_id, idx, key, "added to index");
+            trace!(user = ?self.user_id, ?idx, ?key, "added to index");
         }
-        trace!(user=?self.user_id, key, ?keys_changed, "saved");
+        trace!(user=?self.user_id, ?key, ?keys_changed, "saved");
         Ok((keys_changed, indizes))
     }
 
-    pub async fn save_many(&self, models: Vec<AnyActerModel>) -> Result<Vec<String>> {
+    pub async fn save_many(&self, models: Vec<AnyActerModel>) -> Result<Vec<ExecuteReference>> {
         let mut total_keys = Vec::new();
         let mut total_indizes = Vec::new();
         {
@@ -268,31 +272,35 @@ impl Store {
         self.sync().await?; // FIXME: should we really run this every time?
 
         // clean out the duplicates
-        total_keys.sort();
         total_keys.dedup();
-        total_indizes.sort();
         total_indizes.dedup();
 
         Ok(total_keys
             .into_iter()
-            .chain(total_indizes.into_iter())
+            .map(ExecuteReference::Model)
+            .chain(total_indizes.into_iter().map(ExecuteReference::Index))
             .collect())
     }
 
-    pub async fn save(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
-        let keys = self.save_model_inner(mdl).await?;
+    pub async fn save(&self, mdl: AnyActerModel) -> Result<Vec<ExecuteReference>> {
+        let (model_keys, indizes) = self.save_model_inner(mdl).await?;
         self.sync().await?; // FIXME: should we really run this every time?
-        Ok(keys)
+
+        Ok(model_keys
+            .into_iter()
+            .map(ExecuteReference::Model)
+            .chain(indizes.into_iter().map(ExecuteReference::Index))
+            .collect::<Vec<_>>())
     }
 
-    pub async fn clear_room(&self, room_id: &OwnedRoomId) -> Result<Vec<String>> {
+    pub async fn clear_room(&self, room_id: &OwnedRoomId) -> Result<Vec<ExecuteReference>> {
         info!(?room_id, "clearing room");
-        let idx = format!("{room_id}::models");
+        let idx = IndexKey::RoomModels(room_id.to_owned());
         let mut total_changed = {
             let mut dirty = self.dirty.lock()?; // hold the lock
             let mut total_changed = Vec::new();
             for model in self.get_list_inner(&idx)? {
-                let model_id = model.event_id().to_string();
+                let model_id = model.event_id().to_owned();
                 let indizes = model.indizes(&self.user_id);
                 // remove it from all indizes
                 for index in indizes {
@@ -300,12 +308,12 @@ impl Store {
                         .indizes
                         .entry(index.clone())
                         .and_modify(|l| l.retain(|o| *o != model_id));
-                    total_changed.push(index);
+                    total_changed.push(ExecuteReference::Index(index));
                 }
                 // remove the model itself
                 self.models.remove(&model_id);
                 dirty.insert(model_id.clone());
-                total_changed.push(model_id);
+                total_changed.push(ExecuteReference::Model(model_id));
             }
 
             // remove the room-id based index
@@ -314,7 +322,6 @@ impl Store {
         };
         self.sync().await?;
 
-        total_changed.sort();
         total_changed.dedup();
 
         Ok(total_changed)
@@ -344,8 +351,8 @@ impl Store {
                 models_to_write.push((format!("acter:{key}"), raw))
             }
 
-            let model_keys: Vec<String> = {
-                let mut model_keys: HashSet<String> = HashSet::new();
+            let model_keys: Vec<OwnedEventId> = {
+                let mut model_keys: HashSet<OwnedEventId> = HashSet::new();
                 // deduplicate the model_keys;
                 self.models.scan(|k, _v| {
                     model_keys.insert(k.clone());

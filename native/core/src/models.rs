@@ -63,6 +63,7 @@ use crate::{
         AnyActerEvent,
     },
     executor::Executor,
+    referencing::{ExecuteReference, IndexKey},
 };
 
 #[derive(Debug, Eq, PartialEq)]
@@ -82,7 +83,7 @@ pub enum Capability {
 #[async_recursion]
 pub async fn transition_tree(
     store: &Store,
-    parents: Vec<String>,
+    parents: Vec<OwnedEventId>,
     model: &AnyActerModel,
 ) -> crate::Result<Vec<AnyActerModel>> {
     let mut models = vec![];
@@ -104,11 +105,10 @@ pub async fn transition_tree(
 pub async fn default_model_execute(
     store: &Store,
     model: AnyActerModel,
-) -> crate::Result<Vec<String>> {
+) -> crate::Result<Vec<ExecuteReference>> {
     trace!(event_id=?model.event_id(), ?model, "handling");
     let Some(belongs_to) = model.belongs_to() else {
-        let event_id = model.event_id().to_string();
-        trace!(?event_id, "saving simple model");
+        trace!(event_id=?model.event_id(), "saving simple model");
         return store.save(model).await;
     };
 
@@ -123,7 +123,7 @@ pub trait ActerModel: Debug {
     /// the event metadata for this model
     fn event_meta(&self) -> &EventMeta;
 
-    fn indizes(&self, user_id: &UserId) -> Vec<String>;
+    fn indizes(&self, user_id: &UserId) -> Vec<IndexKey>;
 
     /// The key to store this model under
     fn event_id(&self) -> &EventId {
@@ -136,7 +136,7 @@ pub trait ActerModel: Debug {
     }
 
     /// The models to inform about this model as it belongs to that
-    fn belongs_to(&self) -> Option<Vec<String>> {
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
         None
     }
 
@@ -145,7 +145,7 @@ pub trait ActerModel: Debug {
         &[]
     }
     /// The execution to run when this model is found.
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>>;
+    async fn execute(self, store: &Store) -> crate::Result<Vec<ExecuteReference>>;
 
     /// handle transition from an external Item upon us
     fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
@@ -157,7 +157,7 @@ pub trait ActerModel: Debug {
         &self,
         store: &Store,
         redaction_model: RedactedActerModel,
-    ) -> crate::Result<Vec<String>> {
+    ) -> crate::Result<Vec<ExecuteReference>> {
         trace!(event_id=?redaction_model.event_id(), ?redaction_model, "handling");
         let Some(belongs_to) = self.belongs_to() else {
             let event_id = redaction_model.event_id();
@@ -226,9 +226,12 @@ impl From<OriginalRoomRedactionEvent> for RedactionContent {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct RedactedActerModel {
     orig_type: String,
-    indizes: Vec<String>,
     meta: EventMeta,
     content: RedactionContent,
+    // legacy support
+    #[serde(skip, default)]
+    #[allow(dead_code)]
+    indizes: Option<Vec<IndexKey>>,
 }
 
 impl RedactedActerModel {
@@ -238,34 +241,30 @@ impl RedactedActerModel {
 }
 
 impl RedactedActerModel {
-    pub fn new(
-        orig_type: String,
-        orig_indizes: Vec<String>,
-        meta: EventMeta,
-        content: RedactionContent,
-    ) -> Self {
+    pub fn new(orig_type: String, meta: EventMeta, content: RedactionContent) -> Self {
         RedactedActerModel {
             meta,
             orig_type,
             content,
-            indizes: orig_indizes
-                .into_iter()
-                .map(|s| format!("{s}::redacted"))
-                .collect(),
+            indizes: None,
         }
     }
 }
 
 impl ActerModel for RedactedActerModel {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        self.indizes.clone()
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        let mut indizes = vec![IndexKey::RoomHistory(self.meta.room_id.clone())];
+        if let Some(origin_event_id) = self.content.content.redacts.as_ref() {
+            indizes.push(IndexKey::ObjectHistory(origin_event_id.clone()))
+        }
+        indizes
     }
 
     fn event_meta(&self) -> &EventMeta {
         &self.meta
     }
 
-    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> crate::Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 

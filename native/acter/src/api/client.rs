@@ -1,6 +1,6 @@
 use acter_core::{
-    client::CoreClient, executor::Executor, models::AnyActerModel, store::Store, templates::Engine,
-    CustomAuthSession, RestoreToken,
+    client::CoreClient, executor::Executor, models::AnyActerModel, referencing::ExecuteReference,
+    store::Store, templates::Engine, CustomAuthSession, RestoreToken,
 };
 use anyhow::{Context, Result};
 use base64ct::{Base64UrlUnpadded, Encoding};
@@ -21,6 +21,7 @@ use matrix_sdk_base::{
     },
     RoomStateFilter,
 };
+use ruma::EventId;
 use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
 use tokio::{
     sync::{broadcast::Receiver, RwLock},
@@ -336,8 +337,10 @@ impl Client {
 
     pub async fn wait_for_room(&self, room_id: String, timeout: Option<u8>) -> Result<bool> {
         let executor = self.core.executor().clone();
-        let mut subscription = executor.subscribe(room_id.clone());
-        if self.room_by_id_typed(&RoomId::parse(room_id)?).is_ok() {
+        let room_id = RoomId::parse(room_id)?;
+
+        let mut subscription = executor.subscribe(ExecuteReference::Room(room_id.clone()));
+        if self.room_by_id_typed(&room_id).is_ok() {
             return Ok(true);
         }
 
@@ -386,11 +389,11 @@ impl Client {
         Ok(OptionString::new(room_id))
     }
 
-    pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = bool> {
+    pub fn subscribe_stream<K: Into<ExecuteReference>>(&self, key: K) -> impl Stream<Item = bool> {
         BroadcastStream::new(self.subscribe(key)).map(|_| true)
     }
 
-    pub fn subscribe(&self, key: String) -> Receiver<()> {
+    pub fn subscribe<K: Into<ExecuteReference>>(&self, key: K) -> Receiver<()> {
         self.executor().subscribe(key)
     }
 
@@ -399,7 +402,8 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
-                let waiter = executor.wait_for(key);
+                let model_id = EventId::parse(key)?;
+                let waiter = executor.wait_for(model_id);
                 let Some(tm) = timeout else {
                     return Ok(waiter.await?);
                 };

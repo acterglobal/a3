@@ -6,7 +6,11 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
-use crate::{store::Store, Result};
+use crate::{
+    referencing::{ExecuteReference, IndexKey},
+    store::Store,
+    Result,
+};
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize, Builder)]
 #[builder(build_fn(name = "derive_builder_build"))]
@@ -16,10 +20,11 @@ pub struct TestModel {
     event_meta: EventMeta,
 
     #[builder(default)]
-    indizes: Vec<String>,
+    #[serde(skip, default)]
+    indizes: Vec<IndexKey>,
 
     #[builder(default)]
-    belongs_to: Vec<String>,
+    belongs_to: Vec<OwnedEventId>,
 
     #[builder(default)]
     transition: bool,
@@ -78,11 +83,11 @@ impl ActerModel for TestModel {
         &[Capability::Commentable, Capability::Reactable]
     }
 
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         self.indizes.clone()
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
         Some(self.belongs_to.clone())
     }
 
@@ -90,7 +95,7 @@ impl ActerModel for TestModel {
         Ok(true)
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 }

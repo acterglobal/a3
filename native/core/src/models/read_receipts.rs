@@ -9,13 +9,11 @@ use tracing::{error, info, trace};
 use super::{ActerModel, Capability, EventMeta, RedactedActerModel};
 use crate::{
     events::read_receipt::ReadReceiptEventContent,
+    referencing::{ExecuteReference, IndexKey, ModelParam, ObjectListIndex},
     store::Store,
     util::{is_false, is_zero},
     Result,
 };
-
-static READ_RECEIPTS: &str = "read_receipts";
-
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
 pub struct ReadReceiptStats {
     #[serde(default, skip_serializing_if = "is_false")]
@@ -34,14 +32,16 @@ pub struct ReadReceiptsManager {
 }
 
 impl ReadReceiptsManager {
-    fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
-        let r = parent.as_ref();
-        format!("{r}::{READ_RECEIPTS}")
+    fn stats_field_for(parent: OwnedEventId) -> ExecuteReference {
+        ExecuteReference::ModelParam(parent, ModelParam::ReadReceiptsStats)
     }
 
     pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> ReadReceiptsManager {
         let store = store.clone();
-        let stats = match store.get_raw(&Self::stats_field_for(&event_id)).await {
+        let stats = match store
+            .get_raw(&Self::stats_field_for(event_id.to_owned()).as_storage_key())
+            .await
+        {
             Ok(e) => e,
             Err(error) => {
                 info!(
@@ -68,7 +68,7 @@ impl ReadReceiptsManager {
         ReadReceiptEventContent::new(self.event_id.clone())
     }
 
-    pub async fn add_receipt(&mut self, user_id: &OwnedUserId) -> Result<Option<String>> {
+    pub async fn add_receipt(&mut self, user_id: &OwnedUserId) -> Result<Option<ExecuteReference>> {
         if self.stats.users_viewed.contains(user_id) {
             // no update to perform
             return Ok(None);
@@ -86,14 +86,16 @@ impl ReadReceiptsManager {
         self.stats.clone()
     }
 
-    pub fn update_key(&self) -> String {
-        Self::stats_field_for(&self.event_id)
+    pub fn update_key(&self) -> ExecuteReference {
+        Self::stats_field_for(self.event_id.to_owned())
     }
 
-    async fn save(&self) -> Result<String> {
+    async fn save(&self) -> Result<ExecuteReference> {
         trace!(?self.stats, ?self.event_id, "Updated entry");
         let update_key = self.update_key();
-        self.store.set_raw(&update_key, &self.stats).await?;
+        self.store
+            .set_raw(&update_key.as_storage_key(), &self.stats)
+            .await?;
         Ok(update_key)
     }
 }
@@ -119,17 +121,16 @@ impl Deref for ReadReceipt {
 }
 
 impl ReadReceipt {
-    pub fn index_for<T: AsRef<str>>(parent: &T) -> String {
-        let r = parent.as_ref();
-        format!("{r}::{READ_RECEIPTS}")
+    pub fn index_for(parent: OwnedEventId) -> IndexKey {
+        IndexKey::ObjectList(parent, ObjectListIndex::ReadReceipt)
     }
 
     pub fn event_id(&self) -> &OwnedEventId {
         &self.meta.event_id
     }
 
-    async fn apply(&self, store: &Store) -> Result<Vec<String>> {
-        let belongs_to = self.inner.on.event_id.to_string();
+    async fn apply(&self, store: &Store) -> Result<Vec<ExecuteReference>> {
+        let belongs_to = self.inner.on.event_id.to_owned();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying read receipt");
 
         let model = store.get(&belongs_to).await?;
@@ -152,19 +153,23 @@ impl ReadReceipt {
 }
 
 impl ActerModel for ReadReceipt {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![ReadReceipt::index_for(&self.inner.on.event_id)]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            ReadReceipt::index_for(self.inner.on.event_id.to_owned()),
+            IndexKey::ObjectHistory(self.inner.on.event_id.to_owned()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+        ]
     }
 
     fn event_meta(&self) -> &EventMeta {
         &self.meta
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         self.apply(store).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
         // Do not trigger the parent to update, we have a manager
         None
     }
@@ -174,7 +179,7 @@ impl ActerModel for ReadReceipt {
         &self,
         _store: &Store,
         _redaction_model: RedactedActerModel,
-    ) -> crate::Result<Vec<String>> {
+    ) -> crate::Result<Vec<ExecuteReference>> {
         // we don't have redaction support
         Ok(vec![])
     }

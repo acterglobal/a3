@@ -2307,9 +2307,6 @@ object Space {
     /// the Tasks lists of this Space
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
 
-    /// the Tasks list of this Space
-    fn task_list(key: string) -> Future<Result<TaskList>>;
-
     /// task list draft builder
     fn task_list_draft() -> Result<TaskListDraft>;
 

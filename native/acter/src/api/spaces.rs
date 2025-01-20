@@ -213,7 +213,7 @@ impl Space {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        self.client.subscribe(format!("{}", self.room_id()))
+        self.client.subscribe(self.room_id())
     }
 
     // for only cli run_marking_space, not api.rsh

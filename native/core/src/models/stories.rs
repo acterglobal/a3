@@ -1,3 +1,4 @@
+use matrix_sdk::ruma::OwnedEventId;
 use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, RoomId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
@@ -5,12 +6,10 @@ use std::ops::Deref;
 use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{
     events::stories::{StoryEventContent, StoryUpdateBuilder, StoryUpdateEventContent},
-    statics::KEYS,
+    referencing::{ExecuteReference, IndexKey, SectionIndex},
     store::Store,
     Result,
 };
-
-static STORIES_KEY: &str = KEYS::STORIES;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Story {
@@ -42,10 +41,12 @@ impl Story {
 }
 
 impl ActerModel for Story {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
-            STORIES_KEY.to_string(),
-            format!("{}::{STORIES_KEY}", self.meta.room_id),
+            IndexKey::Section(SectionIndex::Stories),
+            IndexKey::RoomSection(self.meta.room_id.clone(), SectionIndex::Stories),
+            IndexKey::ObjectHistory(self.meta.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
         ]
     }
 
@@ -61,11 +62,11 @@ impl ActerModel for Story {
         ]
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
         None
     }
 
@@ -108,20 +109,23 @@ pub struct StoryUpdate {
 }
 
 impl ActerModel for StoryUpdate {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![format!("{:}::history", self.inner.story_entry.event_id)]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            IndexKey::ObjectHistory(self.inner.story_entry.event_id.to_owned()),
+            IndexKey::RoomHistory(self.meta.room_id.to_owned()),
+        ]
     }
 
     fn event_meta(&self) -> &EventMeta {
         &self.meta
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.story_entry.event_id.to_string()])
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
+        Some(vec![self.inner.story_entry.event_id.to_owned()])
     }
 }
 
