@@ -20,14 +20,14 @@ class ChatEventItem extends StatelessWidget {
   final String roomId;
   final String messageId;
   final RoomEventItem item;
-  final bool isUser;
+  final bool isMe;
   final bool isNextMessageInGroup;
   const ChatEventItem({
     super.key,
     required this.roomId,
     required this.messageId,
     required this.item,
-    required this.isUser,
+    required this.isMe,
     required this.isNextMessageInGroup,
   });
 
@@ -39,11 +39,11 @@ class ChatEventItem extends StatelessWidget {
       // handle message inner types separately
       'm.room.message' => Column(
           crossAxisAlignment:
-              isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             GestureDetector(
-              onLongPressStart: (details) {
+              onLongPressStart: (_) {
                 final messageWidget = buildMsgEventItem(
                   context,
                   roomId,
@@ -53,9 +53,8 @@ class ChatEventItem extends StatelessWidget {
                 // show reaction row
                 reactionSelectionAction(
                   context: context,
-                  position: details.globalPosition,
                   messageWidget: messageWidget,
-                  isUser: isUser,
+                  isMe: isMe,
                   roomId: roomId,
                   messageId: messageId,
                 );
@@ -73,8 +72,8 @@ class ChatEventItem extends StatelessWidget {
             // reactions of message
             Container(
               padding: EdgeInsets.only(
-                right: isUser ? 12 : 0,
-                left: isUser ? 0 : 12,
+                right: isMe ? 12 : 0,
+                left: isMe ? 0 : 12,
               ),
               child: FractionalTranslation(
                 translation: const Offset(0, -0.1),
@@ -82,14 +81,13 @@ class ChatEventItem extends StatelessWidget {
                   roomId: roomId,
                   messageId: messageId,
                   item: item,
-                  isNextMessageInGroup: isNextMessageInGroup,
                 ),
               ),
             ),
           ],
         ),
-      'm.room.redaction' => isUser
-          ? ChatBubble.user(
+      'm.room.redaction' => isMe
+          ? ChatBubble.me(
               context: context,
               isNextMessageInGroup: isNextMessageInGroup,
               child: RedactedMessageWidget(),
@@ -99,8 +97,8 @@ class ChatEventItem extends StatelessWidget {
               isNextMessageInGroup: isNextMessageInGroup,
               child: RedactedMessageWidget(),
             ),
-      'm.room.encrypted' => isUser
-          ? ChatBubble.user(
+      'm.room.encrypted' => isMe
+          ? ChatBubble.me(
               context: context,
               isNextMessageInGroup: isNextMessageInGroup,
               child: EncryptedMessageWidget(),
@@ -111,7 +109,7 @@ class ChatEventItem extends StatelessWidget {
               child: EncryptedMessageWidget(),
             ),
       'm.room.member' => MemberUpdateEvent(
-          isUser: isUser,
+          isMe: isMe,
           item: item,
         ),
       'm.policy.rule.room' ||
@@ -194,7 +192,7 @@ class ChatEventItem extends StatelessWidget {
       return TextMessageEvent.emoji(
         content: content,
         roomId: roomId,
-        isUser: isUser,
+        isMe: isMe,
       );
     }
 
@@ -203,8 +201,8 @@ class ChatEventItem extends StatelessWidget {
         ? child = TextMessageEvent.notice(content: content, roomId: roomId)
         : child = TextMessageEvent(content: content, roomId: roomId);
 
-    if (isUser) {
-      return ChatBubble.user(
+    if (isMe) {
+      return ChatBubble.me(
         context: context,
         repliedToBuilder: repliedToBuilder,
         isNextMessageInGroup: isNextMessageInGroup,

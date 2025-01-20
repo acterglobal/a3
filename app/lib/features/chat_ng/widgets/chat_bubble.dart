@@ -52,7 +52,7 @@ class ChatBubble extends StatelessWidget {
   }
 
   // for user's own messages
-  factory ChatBubble.user({
+  factory ChatBubble.me({
     Key? key,
     required BuildContext context,
     required Widget child,

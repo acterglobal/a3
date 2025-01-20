@@ -70,14 +70,14 @@ class ChatEvent extends ConsumerWidget {
     final options = AvatarOptions.DM(avatarInfo, size: 14);
     final myId = ref.watch(myUserIdStrProvider);
     final messageId = msg.uniqueId();
-    final isUser = myId == item.sender();
+    final isMe = myId == item.sender();
     // TODO: render a regular timeline event
     return Row(
       mainAxisAlignment:
-          !isUser ? MainAxisAlignment.start : MainAxisAlignment.end,
+          !isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        (!isNextMessageInGroup && !isUser)
+        (!isNextMessageInGroup && !isMe)
             ? Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: ActerAvatar(options: options),
@@ -88,7 +88,7 @@ class ChatEvent extends ConsumerWidget {
             roomId: roomId,
             messageId: messageId,
             item: item,
-            isUser: isUser,
+            isMe: isMe,
             isNextMessageInGroup: isNextMessageInGroup,
           ),
         ),

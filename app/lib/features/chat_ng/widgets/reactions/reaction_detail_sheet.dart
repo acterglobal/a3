@@ -116,7 +116,9 @@ class _ReactionDetailsSheetState extends ConsumerState<ReactionDetailsSheet>
     Map<String, List<String>> userReactions,
     Map<String, List<String>> reactionUsers,
   }) _processReactionData() {
+    // how many reactions per user
     final userReactions = <String, List<String>>{};
+    // how many users of single reaction
     final reactionUsers = <String, List<String>>{};
 
     for (final reaction in widget.reactions) {

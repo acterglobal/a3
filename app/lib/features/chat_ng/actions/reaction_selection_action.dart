@@ -6,9 +6,8 @@ import 'package:flutter/material.dart';
 // reaction selector action on chat message
 void reactionSelectionAction({
   required BuildContext context,
-  required Offset position,
   required Widget messageWidget,
-  required bool isUser,
+  required bool isMe,
   required String roomId,
   required String messageId,
 }) {
@@ -42,7 +41,7 @@ void reactionSelectionAction({
               animation: animation,
               messageId: messageId,
               child: ReactionSelector(
-                isUser: isUser,
+                isMe: isMe,
                 messageId: messageId,
                 roomId: roomId,
               ),

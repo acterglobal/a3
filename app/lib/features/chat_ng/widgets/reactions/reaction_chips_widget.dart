@@ -85,14 +85,14 @@ class _ReactionChip extends StatelessWidget {
         labelPadding:
             sentByMe ? EdgeInsets.symmetric(horizontal: 3) : EdgeInsets.zero,
         shape: const StadiumBorder(side: BorderSide(color: Colors.transparent)),
-        avatar: moreThanOne ? _buildEmojiText() : null,
+        avatar: _buildEmojiText(),
         labelStyle: Theme.of(context).textTheme.labelLarge,
         label: moreThanOne
             ? Text(
                 records.length.toString(),
                 style: Theme.of(context).textTheme.labelLarge,
               )
-            : _buildEmojiText(),
+            : const SizedBox.shrink(),
       ),
     );
   }
