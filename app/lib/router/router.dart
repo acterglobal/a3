@@ -73,7 +73,7 @@ Future<String?> forwardRedirect(
       // ignore: use_build_context_synchronously
       final ref = ProviderScope.containerOf(context);
       // ensure we have selected the right client
-      ref.invalidate(clientProvider);
+      ref.read(clientProvider.notifier).setClient(client);
     } catch (e, s) {
       _log.severe('Client not found', e, s);
       return null;

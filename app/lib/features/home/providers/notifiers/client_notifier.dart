@@ -19,4 +19,6 @@ class ClientNotifier extends AsyncNotifier<Client?> {
     };
     return asyncSdk.currentClient;
   }
+
+  void setClient(Client? client) => state = AsyncData(client);
 }
