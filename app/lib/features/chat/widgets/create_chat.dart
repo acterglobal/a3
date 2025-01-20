@@ -132,8 +132,8 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     );
     if (roomIdStr != null) {
       try {
-        final convo =
-            await ref.read(alwaysClientProvider).convoWithRetry(roomIdStr, 120);
+        final convo = await (await ref.read(alwaysClientProvider.future))
+            .convoWithRetry(roomIdStr, 120);
         EasyLoading.showToast(roomCreated);
         return convo;
       } catch (e, s) {
@@ -205,7 +205,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       return lang.startGroupDM;
     } else {
       final otherUserId = selectedUsers[0].userId().toString();
-      final client = ref.watch(alwaysClientProvider);
+      final client = ref.watch(alwaysClientProvider).valueOrNull;
       if (checkUserDMExists(otherUserId, client) != null) {
         return lang.goToDM;
       } else {
@@ -215,8 +215,8 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   }
 
   // checks whether user DM already exists or needs created
-  String? checkUserDMExists(String userId, ffi.Client client) {
-    return client.dmWithUser(userId).text();
+  String? checkUserDMExists(String userId, ffi.Client? client) {
+    return client?.dmWithUser(userId).text();
   }
 
   Widget renderSelectedUsers(BuildContext context) {
@@ -389,7 +389,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
       }
 
       final otherUserId = selectedUsers[0].userId().toString();
-      final client = ref.read(alwaysClientProvider);
+      final client = ref.read(alwaysClientProvider).valueOrNull;
       String? roomId = checkUserDMExists(otherUserId, client);
       if (roomId != null) {
         EasyLoading.dismiss();

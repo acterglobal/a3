@@ -19,7 +19,7 @@ Future<void> attachmentUploadAction({
   required BuildContext context,
   required Logger log,
 }) async {
-  final client = ref.read(alwaysClientProvider);
+  final client = await ref.read(alwaysClientProvider.future);
   final inputState = ref.read(chatInputProvider);
   final lang = L10n.of(context);
   final stream = await ref.read(timelineStreamProvider(roomId).future);

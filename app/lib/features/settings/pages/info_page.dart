@@ -46,8 +46,9 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
     final colorScheme = Theme.of(context).colorScheme;
     final appNameDigest = sha1.convert(utf8.encode(Env.rageshakeAppName));
     final urlDigest = sha1.convert(utf8.encode(Env.rageshakeUrl));
-    final deviceId = ref.watch(deviceIdProvider);
-    final devIdDigest = sha1.convert(utf8.encode(deviceId));
+    final deviceId = ref.watch(deviceIdProvider).valueOrNull;
+    final devIdDigest =
+        deviceId != null ? sha1.convert(utf8.encode(deviceId)) : 'none';
     final allowReportSending =
         ref.watch(allowSentryReportingProvider).valueOrNull ?? isNightly;
     return WithSidebar(
@@ -151,7 +152,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                           lang.deviceId,
                           style: textTheme.bodyMedium,
                         ),
-                        value: Text(deviceId),
+                        value: Text(deviceId ?? 'none'),
                       )
                     : SettingsTile(
                         title: Text(

@@ -29,7 +29,7 @@ Future<void> handleAttachmentSelected({
   /// only supports image/video/audio/file.
   final lang = L10n.of(context);
   EasyLoading.show(status: lang.sendingAttachment);
-  final client = ref.read(alwaysClientProvider);
+  final client = await ref.read(alwaysClientProvider.future);
   List<AttachmentDraft> drafts = [];
   try {
     for (final file in attachments) {

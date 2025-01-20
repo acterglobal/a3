@@ -460,7 +460,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       draft.utcEndFromRfc3339(utcEndDateTime);
       draft.descriptionHtml(plainDescription, htmlBodyDescription);
       final eventId = (await draft.send()).toString();
-      final client = ref.read(alwaysClientProvider);
+      final client = await ref.read(alwaysClientProvider.future);
       final calendarEvent = await client.waitForCalendarEvent(eventId, null);
 
       /// Event is created, set RSVP status to `Yes` by default for host.

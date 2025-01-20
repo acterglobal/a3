@@ -24,7 +24,7 @@ class AsyncRsvpStatusNotifier
   @override
   Future<RsvpStatusTag?> build(String arg) async {
     final calEvtId = arg;
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     _listener =
         client.subscribeStream('$calEvtId::rsvp'); // keep it resident in memory
     _listener.forEach((e) async {

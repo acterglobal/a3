@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
@@ -13,22 +14,33 @@ class VerificationState {
   const VerificationState({required this.stage, this.event});
 }
 
-class VerificationNotifier extends StateNotifier<VerificationState> {
-  final Ref ref;
-  final Client client;
-
+class VerificationNotifier extends Notifier<VerificationState> {
   late Stream<VerificationEvent>? _listener;
-  late StreamSubscription<VerificationEvent>? _poller;
+  StreamSubscription<VerificationEvent>? _poller;
+  late ProviderSubscription _providerSubscription;
 
-  VerificationNotifier({
-    required this.ref,
-    required this.client,
-  }) : super(const VerificationState(stage: 'verification.init')) {
-    _init();
+  @override
+  VerificationState build() {
+    _providerSubscription = ref.listen<AsyncValue<Client?>>(
+      alwaysClientProvider,
+      (AsyncValue<Client?>? oldVal, AsyncValue<Client?> newVal) {
+        final client = newVal.valueOrNull;
+        if (client == null) {
+          // we don't care for not having a proper client yet
+          return;
+        }
+        _reset(client);
+      },
+      fireImmediately: true,
+    );
+    ref.onDispose(() => _providerSubscription.close());
+    return const VerificationState(stage: 'verification.init');
   }
 
-  void _init() {
+  void _reset(Client client) {
     _listener = client.verificationEventRx(); // keep it resident in memory
+    _poller?.cancel();
+    state = const VerificationState(stage: 'verification.init');
     _poller = _listener?.listen(
       _handleEvent,
       onError: (e, s) {

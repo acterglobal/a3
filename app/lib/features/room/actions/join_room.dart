@@ -38,7 +38,7 @@ Future<String?> joinRoom(
 ) async {
   final lang = L10n.of(context);
   EasyLoading.show(status: displayMsg);
-  final client = ref.read(alwaysClientProvider);
+  final client = await ref.read(alwaysClientProvider.future);
   try {
     final newRoom = await client.joinRoom(roomIdOrAlias, server);
     final roomId = newRoom.roomIdStr();

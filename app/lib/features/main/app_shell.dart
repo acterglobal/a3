@@ -1,10 +1,13 @@
 import 'package:acter/common/providers/app_state_provider.dart';
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/config/notifications/init.dart';
+import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/auth/pages/logged_out_screen.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
@@ -17,6 +20,7 @@ import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter/features/main/widgets/bottom_navigation_widget.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -84,25 +88,27 @@ class AppShellState extends ConsumerState<AppShell> {
   }
 
   Future<void> _initNotifications() async {
-    final client = ref.read(clientProvider);
+    final client = await ref.read(clientProvider.future);
     if (client != null) {
       _initPushForClient(client);
     }
     ref.listenManual(clientProvider, (previous, next) {
-      if (next != null) {
-        _initPushForClient(next);
+      final newClient = next.valueOrNull;
+      if (newClient != null) {
+        _initPushForClient(newClient);
       }
     });
   }
 
   Future<void> _initCalendarSync() async {
-    final client = ref.read(clientProvider);
+    final client = await ref.read(clientProvider.future);
     if (client != null) {
       // calendar sync only works if we have a client
       await initCalendarSync();
     }
     ref.listenManual(clientProvider, (previous, next) {
-      if (next != null) {
+      final newClient = next.valueOrNull;
+      if (newClient != null) {
         initCalendarSync();
       }
     });
@@ -130,7 +136,7 @@ class AppShellState extends ConsumerState<AppShell> {
   @override
   Widget build(BuildContext context) {
     // get platform of context.
-    if (ref.watch(clientProvider) == null) {
+    if (ref.watch(clientProvider).valueOrNull == null) {
       // at the very startup we might not yet have a client loaded
       // show a loading spinner meanwhile.
       return const Scaffold(

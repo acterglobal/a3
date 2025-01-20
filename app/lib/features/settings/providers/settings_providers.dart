@@ -12,12 +12,12 @@ final localeProvider =
     StateNotifierProvider<LocaleNotifier, String>((ref) => LocaleNotifier());
 
 final ignoredUsersProvider = FutureProvider<List<UserId>>((ref) async {
-  final account = ref.watch(accountProvider);
+  final account = await ref.watch(accountProvider.future);
   return (await account.ignoredUsers()).toList();
 });
 
 final pushersProvider = FutureProvider<List<Pusher>>((ref) async {
-  final client = ref.watch(alwaysClientProvider);
+  final client = await ref.watch(alwaysClientProvider.future);
   return (await client.pushers()).toList();
 });
 

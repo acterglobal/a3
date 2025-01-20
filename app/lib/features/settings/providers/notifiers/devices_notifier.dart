@@ -18,7 +18,7 @@ class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
 
   @override
   Future<List<DeviceRecord>> build() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     final manager = client.sessionManager();
 
     _listener = client.deviceEventRx();

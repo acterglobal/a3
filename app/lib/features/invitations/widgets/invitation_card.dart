@@ -200,7 +200,7 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
   void _onTapAcceptInvite(BuildContext context) async {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.joining);
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     final roomId = widget.invitation.roomIdStr();
     final isSpace = widget.invitation.room().isSpace();
     try {

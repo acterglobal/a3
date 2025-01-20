@@ -46,7 +46,7 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.encryptionBackupResetting);
     try {
-      final manager = ref.read(backupManagerProvider);
+      final manager = await ref.read(backupManagerProvider.future);
       final newKey = await manager.reset();
       if (!context.mounted) {
         EasyLoading.dismiss();
