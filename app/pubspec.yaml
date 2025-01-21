@@ -78,8 +78,8 @@ dependencies:
     path: ../packages/rust_sdk
 
   # State Management
-  flutter_riverpod: ^2.5.1
-  riverpod: ^2.5.1
+  flutter_riverpod: ^2.6.1
+  riverpod: ^2.6.1
   # Routing
   go_router: ^14.1.4
 

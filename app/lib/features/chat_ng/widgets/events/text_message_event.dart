@@ -24,22 +24,22 @@ class TextMessageEvent extends StatelessWidget {
     required this.content,
     required this.roomId,
     required TextMessageType type,
-    bool isUser = false,
+    bool isMe = false,
   })  : _type = type,
-        _isUser = isUser;
+        _isUser = isMe;
 
   factory TextMessageEvent.emoji({
     Key? key,
     required MsgContent content,
     required String roomId,
-    required bool isUser,
+    required bool isMe,
   }) {
     return TextMessageEvent.inner(
       key: key,
       content: content,
       roomId: roomId,
       type: TextMessageType.emoji,
-      isUser: isUser,
+      isMe: isMe,
     );
   }
 

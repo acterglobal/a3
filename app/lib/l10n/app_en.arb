@@ -41,6 +41,7 @@
   "@all": {},
   "allMessages": "All Messages",
   "@allMessages": {},
+  "allReactionsCount": "All {total}",
   "alreadyConfirmed": "Already confirmed",
   "@alreadyConfirmed": {},
   "analyticsTitle": "Help us help you",

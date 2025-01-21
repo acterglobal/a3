@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class MemberUpdateEvent extends StatelessWidget {
-  final bool isUser;
+  final bool isMe;
   final RoomEventItem item;
   const MemberUpdateEvent({
     super.key,
-    required this.isUser,
+    required this.isMe,
     required this.item,
   });
 
@@ -22,7 +22,7 @@ class MemberUpdateEvent extends StatelessWidget {
     final firstName = simplifyUserId(senderId);
 
     if (msgType == 'Joined') {
-      if (isUser) {
+      if (isMe) {
         textMsg = lang.chatYouJoined;
       } else if (firstName != null) {
         textMsg = lang.chatJoinedDisplayName(firstName);
@@ -30,7 +30,7 @@ class MemberUpdateEvent extends StatelessWidget {
         textMsg = lang.chatJoinedUserId(senderId);
       }
     } else if (msgType == 'InvitationAccepted') {
-      if (isUser) {
+      if (isMe) {
         textMsg = lang.chatYouAcceptedInvite;
       } else if (firstName != null) {
         textMsg = lang.chatInvitationAcceptedDisplayName(firstName);
@@ -38,7 +38,7 @@ class MemberUpdateEvent extends StatelessWidget {
         textMsg = lang.chatInvitationAcceptedUserId(senderId);
       }
     } else if (msgType == 'Invited') {
-      if (isUser) {
+      if (isMe) {
         textMsg = lang.chatYouInvited;
       } else if (firstName != null) {
         textMsg = lang.chatInvitedDisplayName(firstName);
