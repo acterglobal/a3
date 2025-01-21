@@ -90,17 +90,17 @@ void main() {
       // Arrange
 
       final mockComment1 = MockComment(
-        fakeSender: MockUserId(),
+        fakeSender: MockUserId('user-1'),
         fakeMsgContent: MockMsgContent(bodyText: 'message 1'),
         fakeOriginServerTs: DateTime.now().millisecondsSinceEpoch,
       );
       final mockComment2 = MockComment(
-        fakeSender: MockUserId(),
+        fakeSender: MockUserId('user-2'),
         fakeMsgContent: MockMsgContent(bodyText: 'message 2'),
         fakeOriginServerTs: DateTime.now().millisecondsSinceEpoch,
       );
       final mockComment3 = MockComment(
-        fakeSender: MockUserId(),
+        fakeSender: MockUserId('user-3'),
         fakeMsgContent: MockMsgContent(bodyText: 'message 3'),
         fakeOriginServerTs: DateTime.now().millisecondsSinceEpoch,
       );

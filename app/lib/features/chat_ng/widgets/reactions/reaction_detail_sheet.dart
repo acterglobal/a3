@@ -5,6 +5,12 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+typedef ReactionData = ({
+  List<String> allUsers,
+  Map<String, List<String>> userReactions,
+  Map<String, List<String>> reactionUsers,
+});
+
 class ReactionDetailsSheet extends ConsumerStatefulWidget {
   final String roomId;
   final List<ReactionItem> reactions;
@@ -24,11 +30,43 @@ class _ReactionDetailsSheetState extends ConsumerState<ReactionDetailsSheet>
     with TickerProviderStateMixin {
   late TabController _tabController;
   late List<Tab> _tabs;
+  late final ReactionData _reactionData;
 
   @override
   void initState() {
     super.initState();
+    _reactionData = _processReactionData();
     _initializeTabs();
+  }
+
+  @override
+  void didUpdateWidget(ReactionDetailsSheet oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Check if reactions have changed
+    final hasChanged = widget.reactions.length != oldWidget.reactions.length ||
+        widget.reactions.any((reaction) {
+          final oldReaction = oldWidget.reactions.firstWhere(
+            (old) => old.$1 == reaction.$1,
+            orElse: () => (reaction.$1, []),
+          );
+          return reaction.$2.length != oldReaction.$2.length;
+        });
+
+    if (hasChanged) {
+      setState(() {
+        _reactionData = _processReactionData();
+        // dispose old one
+        _tabController.dispose();
+        _initializeTabs();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   void _initializeTabs() {
@@ -43,19 +81,13 @@ class _ReactionDetailsSheetState extends ConsumerState<ReactionDetailsSheet>
         (reaction) => Tab(
           child: Chip(
             avatar: Text(reaction.$1, style: EmojiConfig.emojiTextStyle),
-            label: Text('${reaction.$2.length}'),
+            label: Text(reaction.$2.length.toString()),
           ),
         ),
       ),
     ];
 
     _tabController = TabController(length: _tabs.length, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   @override
@@ -85,8 +117,6 @@ class _ReactionDetailsSheetState extends ConsumerState<ReactionDetailsSheet>
   }
 
   Widget _buildTabBarView() {
-    final reactionData = _processReactionData();
-
     return Flexible(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -95,14 +125,14 @@ class _ReactionDetailsSheetState extends ConsumerState<ReactionDetailsSheet>
           children: [
             _ReactionUsersList(
               roomId: widget.roomId,
-              users: reactionData.allUsers,
-              userReactions: reactionData.userReactions,
+              users: _reactionData.allUsers,
+              userReactions: _reactionData.userReactions,
             ),
             ...widget.reactions.map(
               (reaction) => _ReactionUsersList(
                 roomId: widget.roomId,
-                users: reactionData.reactionUsers[reaction.$1] ?? [],
-                userReactions: reactionData.userReactions,
+                users: _reactionData.reactionUsers[reaction.$1] ?? [],
+                userReactions: _reactionData.userReactions,
               ),
             ),
           ],
@@ -111,11 +141,7 @@ class _ReactionDetailsSheetState extends ConsumerState<ReactionDetailsSheet>
     );
   }
 
-  ({
-    List<String> allUsers,
-    Map<String, List<String>> userReactions,
-    Map<String, List<String>> reactionUsers,
-  }) _processReactionData() {
+  ReactionData _processReactionData() {
     // how many reactions per user
     final userReactions = <String, List<String>>{};
     // how many users of single reaction

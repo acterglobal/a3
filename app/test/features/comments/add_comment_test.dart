@@ -14,7 +14,7 @@ void main() {
 
   setUp(() {
     mockCommentsManager = MockCommentsManager();
-    mockAvatarInfo = MockAvatarInfo();
+    mockAvatarInfo = MockAvatarInfo(uniqueId: 'user-1');
   });
   group('Add Comment', () {
     testWidgets('should display avatar and comment input',
