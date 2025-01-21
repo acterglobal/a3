@@ -50,7 +50,6 @@ Future<String?> joinRoom({
   EasyLoading.show(
     status: displayMsg ?? lang.tryingToJoin(roomName ?? roomIdOrAlias),
   );
-  EasyLoading.show(status: displayMsg);
   try {
     final client = await ref.read(alwaysClientProvider.future);
     final sdk = await ref.read(sdkProvider.future);
