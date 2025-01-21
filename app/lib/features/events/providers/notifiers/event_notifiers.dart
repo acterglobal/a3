@@ -26,7 +26,7 @@ class EventListNotifier
   @override
   Future<List<CalendarEvent>> build(String? arg) async {
     final spaceId = arg;
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
 
     //GET ALL EVENTS
     if (spaceId == null) {
@@ -57,7 +57,7 @@ class AsyncCalendarEventNotifier
   @override
   Future<CalendarEvent> build(String arg) async {
     final calEvtId = arg;
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     _listener = client.subscribeStream(calEvtId); // keep it resident in memory
     _listener.forEach((e) async {
       state = await AsyncValue.guard(

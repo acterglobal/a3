@@ -96,7 +96,7 @@ void main() {
               .overrideWith(() => MockRoomAvatarInfoNotifier()),
           roomMembershipProvider.overrideWith((a, b) => null),
           spacesProvider.overrideWith(
-            (a) => MockSpaceListNotifiers([
+            () => MockSpaceListNotifiers([
               parentSpace,
               mockSpaceA,
               mockSpaceB,

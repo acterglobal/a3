@@ -18,7 +18,7 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
 
   @override
   Future<Space?> build(String arg) async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     _listener = client.subscribeStream(arg); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
@@ -37,21 +37,33 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
   }
 }
 
-class SpaceListNotifier extends StateNotifier<List<Space>> {
-  final Ref ref;
-  final Client client;
+class SpaceListNotifier extends Notifier<List<Space>> {
   late Stream<SpaceDiff> _listener;
-  late StreamSubscription<SpaceDiff> _poller;
+  StreamSubscription<SpaceDiff>? _poller;
+  late ProviderSubscription _providerSubscription;
 
-  SpaceListNotifier({
-    required this.ref,
-    required this.client,
-  }) : super(List<Space>.empty(growable: false)) {
-    _init();
+  @override
+  List<Space> build() {
+    _providerSubscription = ref.listen<AsyncValue<Client?>>(
+      alwaysClientProvider,
+      (AsyncValue<Client?>? oldVal, AsyncValue<Client?> newVal) {
+        final client = newVal.valueOrNull;
+        if (client == null) {
+          // we don't care for not having a proper client yet
+          return;
+        }
+        _reset(client);
+      },
+      fireImmediately: true,
+    );
+    ref.onDispose(() => _providerSubscription.close());
+    return List<Space>.empty(growable: false);
   }
 
-  void _init() async {
+  void _reset(Client client) async {
     _listener = client.spacesStream(); // keep it resident in memory
+    _poller?.cancel();
+    state = List<Space>.empty(growable: false);
     _poller = _listener.listen(
       _handleDiff,
       onError: (e, s) {
@@ -61,7 +73,7 @@ class SpaceListNotifier extends StateNotifier<List<Space>> {
         _log.info('space list stream ended');
       },
     );
-    ref.onDispose(() => _poller.cancel());
+    ref.onDispose(() => _poller?.cancel());
   }
 
   List<Space> listCopy() => List.from(state, growable: true);

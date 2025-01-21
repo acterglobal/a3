@@ -80,8 +80,13 @@ class MockSpaceHierarchyRoomInfo extends Fake
   bool suggested() => isSuggested;
 }
 
-class MockSpaceListNotifiers extends StateNotifier<List<Space>>
+class MockSpaceListNotifiers extends Notifier<List<Space>>
     with Mock
     implements SpaceListNotifier {
-  MockSpaceListNotifiers(super.spaces);
+  MockSpaceListNotifiers(this.spaces);
+
+  final List<Space> spaces;
+
+  @override
+  List<Space> build() => spaces;
 }
