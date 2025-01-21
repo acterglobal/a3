@@ -50,8 +50,9 @@ Future<String?> joinRoom({
   EasyLoading.show(
     status: displayMsg ?? lang.tryingToJoin(roomName ?? roomIdOrAlias),
   );
+  EasyLoading.show(status: displayMsg);
   try {
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     final sdk = await ref.read(sdkProvider.future);
     VecStringBuilder servers = sdk.api.newVecStringBuilder();
     if (serverNames != null) {

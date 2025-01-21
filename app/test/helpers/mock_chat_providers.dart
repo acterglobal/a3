@@ -176,7 +176,7 @@ class MockPersistentPrefNotifier extends StateNotifier<FilterSelection>
 
   /// Updates the value asynchronously.
   @override
-  Future<void> update(FilterSelection value) async {
+  Future<void> set(FilterSelection value) async {
     super.state = value;
   }
 }
@@ -184,7 +184,7 @@ class MockPersistentPrefNotifier extends StateNotifier<FilterSelection>
 List<Override> mockChatRoomProviders(MockedRoomData roomsData) {
   return [
     persistentRoomListFilterSelector
-        .overrideWith((_) => MockPersistentPrefNotifier()),
+        .overrideWith(() => MockPersistentPrefNotifier()),
     chatIdsProvider.overrideWithValue(roomsData.keys.toList()),
     chatTypingEventProvider.overrideWith((ref, roomId) => const Stream.empty()),
     roomIsMutedProvider.overrideWith((ref, roomId) => false),

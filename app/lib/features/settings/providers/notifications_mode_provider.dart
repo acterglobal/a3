@@ -12,7 +12,7 @@ class AsyncNotificationSettingNotifier
 
   @override
   Future<NotificationSettings> build() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     final settings = await client.notificationSettings();
     _listener = settings.changesStream(); // stay up to date
     _listener.forEach((e) async {

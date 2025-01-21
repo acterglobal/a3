@@ -28,14 +28,14 @@ final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
     // ignore we got cancelled
     return [];
   }
-  final client = ref.watch(alwaysClientProvider);
+  final client = await ref.watch(alwaysClientProvider.future);
   return (await client.searchUsers(newSearchValue)).toList();
 });
 
 final suggestedUsersProvider =
     FutureProvider.family<List<UserProfile>, String?>(
   (ref, roomId) async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     return (await client.suggestedUsers(roomId)).toList();
   },
 );

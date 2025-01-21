@@ -147,7 +147,7 @@ class BlockedUsersPage extends ConsumerWidget {
     }
     EasyLoading.show(status: lang.blockingUserProgress);
     try {
-      final account = ref.read(accountProvider);
+      final account = await ref.read(accountProvider.future);
       await account.ignoreUser(userToAdd);
       if (!context.mounted) {
         EasyLoading.dismiss();
@@ -175,7 +175,7 @@ class BlockedUsersPage extends ConsumerWidget {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.unblockingUser);
     try {
-      final account = ref.read(accountProvider);
+      final account = await ref.read(accountProvider.future);
       await account.unignoreUser(userId);
       if (!context.mounted) {
         EasyLoading.dismiss();

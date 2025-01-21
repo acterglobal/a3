@@ -8,22 +8,19 @@ class NoClientException implements Exception {
   NoClientException();
 }
 
-final clientProvider = StateNotifierProvider<ClientNotifier, Client?>((ref) {
-  return ClientNotifier(ref);
-});
+final clientProvider =
+    AsyncNotifierProvider<ClientNotifier, Client?>(() => ClientNotifier());
 
-final alwaysClientProvider = StateProvider((ref) {
-  final client = ref.watch(clientProvider);
+final alwaysClientProvider = FutureProvider((ref) async {
+  final client = await ref.watch(clientProvider.future);
   if (client == null) {
     throw NoClientException();
   }
   return client;
 });
 
-final syncStateProvider = StateNotifierProvider<SyncNotifier, SyncState>((ref) {
-  final client = ref.watch(alwaysClientProvider);
-  return SyncNotifier(client, ref);
-});
+final syncStateProvider =
+    NotifierProvider<SyncNotifier, SyncState>(() => SyncNotifier());
 
 final isSyncingStateProvider = StateProvider<bool>((ref) {
   return ref.watch(syncStateProvider).initialSync;

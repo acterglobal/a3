@@ -102,7 +102,7 @@ class MockComposeDraft extends Mock implements ComposeDraft {
 class MockAsyncConvoNotifier extends AsyncConvoNotifier {
   @override
   FutureOr<Convo> build(String roomId) async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     return await client.convoWithRetry(roomId, 0);
   }
 }

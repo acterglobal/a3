@@ -11,7 +11,7 @@ void main() {
     testWidgets('Empty renders fine', (tester) async {
       await tester.pumpProviderWidget(
         overrides: [
-          spacesProvider.overrideWith((a) => MockSpaceListNotifiers([])),
+          spacesProvider.overrideWith(() => MockSpaceListNotifiers([])),
           bookmarkedSpacesProvider.overrideWith((a) => []),
         ],
         child: const MySpacesSection(),

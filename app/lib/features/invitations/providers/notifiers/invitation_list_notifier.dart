@@ -13,7 +13,7 @@ class InvitationListNotifier extends Notifier<List<Invitation>> {
 
   @override
   List<Invitation> build() {
-    final client = ref.watch(clientProvider);
+    final client = ref.watch(clientProvider).valueOrNull;
     if (client == null) {
       return [];
     }

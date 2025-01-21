@@ -187,7 +187,7 @@ final isRoomEncryptedProvider =
 
 final chatTypingEventProvider = StreamProvider.autoDispose
     .family<List<types.User>, String>((ref, roomId) async* {
-  final client = ref.watch(alwaysClientProvider);
+  final client = await ref.watch(alwaysClientProvider.future);
   final userId = ref.watch(myUserIdStrProvider);
   yield [];
   await for (final event in client.subscribeToTypingEventStream(roomId)) {

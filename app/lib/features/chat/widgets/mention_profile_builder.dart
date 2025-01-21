@@ -1,7 +1,7 @@
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +24,7 @@ class MentionProfileBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(alwaysClientProvider);
-    final userId = client.userId().toString();
+    final userId = ref.watch(myUserIdStrProvider);
     final membersLoader = ref.watch(membersIdsProvider(roomQuery.roomId));
     return membersLoader.when(
       loading: () => Skeletonizer(

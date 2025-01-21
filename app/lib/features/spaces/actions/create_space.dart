@@ -49,7 +49,7 @@ Future<String?> createSpace(
     if (roomVisibility != null) {
       config.setVisibility(roomVisibility.name);
     }
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     final result = await client.createActerSpace(config.build());
     final roomId = result.toString();
     if (parentRoomId != null) {

@@ -134,7 +134,7 @@ class EmailAddressCard extends ConsumerWidget {
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
-              final account = ref.read(accountProvider);
+              final account = await ref.read(accountProvider.future);
               await account.removeEmailAddress(emailAddress);
               ref.invalidate(emailAddressesProvider);
 
@@ -153,7 +153,6 @@ class EmailAddressCard extends ConsumerWidget {
     WidgetRef ref,
   ) async {
     final lang = L10n.of(context);
-    final account = ref.read(accountProvider);
     final newValue = await showDialog<String>(
       context: context,
       builder: (BuildContext context) => const PasswordConfirm(),
@@ -161,6 +160,7 @@ class EmailAddressCard extends ConsumerWidget {
     if (!context.mounted) return;
     if (newValue == null) return;
     EasyLoading.show(status: lang.tryingToConfirmToken);
+    final account = await ref.read(accountProvider.future);
     try {
       await account.tryConfirmEmailStatus(emailAddress, newValue);
       ref.invalidate(emailAddressesProvider);
@@ -187,7 +187,6 @@ class EmailAddressCard extends ConsumerWidget {
     WidgetRef ref,
   ) async {
     final lang = L10n.of(context);
-    final account = ref.read(accountProvider);
     final newValue = await showDialog<EmailConfirm>(
       context: context,
       builder: (BuildContext context) => const TokenConfirm(),
@@ -195,6 +194,7 @@ class EmailAddressCard extends ConsumerWidget {
     if (!context.mounted) return;
     if (newValue == null) return;
     EasyLoading.show(status: lang.tryingToConfirmToken);
+    final account = await ref.read(accountProvider.future);
     try {
       final result = await account.submitTokenFromEmail(
         emailAddress,

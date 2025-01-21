@@ -14,7 +14,7 @@ class BookmarksManagerNotifier extends AsyncNotifier<Bookmarks> {
 
   @override
   Future<Bookmarks> build() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
 
     _listener = client.subscribeStream('global.acter.bookmarks');
 

@@ -56,7 +56,7 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
     }
 
     final pageReq = page.next ?? '';
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     final searchValue = state.filter.searchTerm;
     final server = state.filter.server;
     final roomFilter = state.filter.filterBy.name;

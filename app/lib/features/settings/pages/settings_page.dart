@@ -47,10 +47,9 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Widget _userProfileUI(BuildContext context, WidgetRef ref) {
-    final account = ref.watch(accountProvider);
     final accountInfo = ref.watch(accountAvatarInfoProvider);
     final shouldGoReplacement = context.isLargeScreen;
-    final userId = account.userId().toString();
+    final userId = ref.watch(myUserIdStrProvider);
     return InkWell(
       onTap: () => shouldGoReplacement
           ? context.pushReplacementNamed(Routes.myProfile.name)

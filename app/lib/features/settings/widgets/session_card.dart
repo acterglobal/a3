@@ -142,7 +142,7 @@ class SessionCard extends ConsumerWidget {
       },
     );
     if (result != true) return;
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     final manager = client.sessionManager();
     await manager.deleteDevice(
       deviceRecord.deviceId().toString(),
@@ -154,7 +154,7 @@ class SessionCard extends ConsumerWidget {
 
   Future<void> onVerify(BuildContext context, WidgetRef ref) async {
     final devId = deviceRecord.deviceId().toString();
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     // final manager = client.sessionManager();
 
     final event = await client.requestVerification(devId);

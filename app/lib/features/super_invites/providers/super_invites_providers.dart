@@ -11,7 +11,7 @@ final hasSuperTokensAccess = FutureProvider<bool>((ref) async {
 
 final superInvitesTokensProvider =
     FutureProvider<List<SuperInviteToken>>((ref) async {
-  final superInvites = ref.watch(superInvitesProvider);
+  final superInvites = await ref.watch(superInvitesProvider.future);
   return (await superInvites.tokens()).toList();
 });
 
@@ -24,10 +24,11 @@ final superInviteTokenProvider = FutureProvider.autoDispose
   throw 'SuperInvite $tokenCode not found';
 });
 
-final superInvitesProvider = Provider<SuperInvites>((ref) {
-  final client = ref.watch(alwaysClientProvider);
-  return client.superInvites();
-});
+final superInvitesProvider = FutureProvider<SuperInvites>(
+  (ref) => ref.watch(
+    alwaysClientProvider.selectAsync((client) => client.superInvites()),
+  ),
+);
 
 /// List of SuperInviteTokens that have the given roomId in their to-invite list
 final superInvitesForRoom = FutureProvider.autoDispose
@@ -44,7 +45,7 @@ Future<String> newSuperInviteForRooms(
   List<String> rooms, {
   String? inviteCode,
 }) async {
-  final superInvites = ref.read(superInvitesProvider);
+  final superInvites = await ref.read(superInvitesProvider.future);
   final builder = superInvites.newTokenUpdater();
   if (inviteCode != null) {
     builder.token(inviteCode);
@@ -59,6 +60,6 @@ Future<String> newSuperInviteForRooms(
 
 final superInviteInfoProvider = FutureProvider.autoDispose
     .family<SuperInviteInfo, String>((ref, token) async {
-  final superInvites = ref.watch(superInvitesProvider);
+  final superInvites = await ref.watch(superInvitesProvider.future);
   return await superInvites.info(token);
 });

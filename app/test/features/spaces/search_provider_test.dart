@@ -27,7 +27,7 @@ void main() {
       };
       final container = ProviderContainer(
         overrides: [
-          spacesProvider.overrideWith((a) => MockSpaceListNotifiers(spaces)),
+          spacesProvider.overrideWith(() => MockSpaceListNotifiers(spaces)),
           roomAvatarInfoProvider.overrideWith(
             () => MockRoomAvatarInfoNotifier(items: spaceInfos),
           ),
@@ -71,7 +71,7 @@ void main() {
       };
       final container = ProviderContainer(
         overrides: [
-          spacesProvider.overrideWith((a) => MockSpaceListNotifiers(spaces)),
+          spacesProvider.overrideWith(() => MockSpaceListNotifiers(spaces)),
           roomAvatarInfoProvider.overrideWith(
             () => MockRoomAvatarInfoNotifier(items: spaceInfos),
           ),

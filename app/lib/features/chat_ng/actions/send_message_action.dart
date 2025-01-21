@@ -31,7 +31,7 @@ Future<void> sendMessageAction({
     onTyping?.map((cb) => cb(false));
 
     // make the actual draft
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     late MsgDraft draft;
     if (html.isNotEmpty) {
       draft = client.textHtmlDraft(html, body);
