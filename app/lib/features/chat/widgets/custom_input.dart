@@ -511,9 +511,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     List<File> files,
     AttachmentType attachmentType,
   ) async {
+    final lang = L10n.of(context);
     final client = await ref.read(alwaysClientProvider.future);
     final inputState = ref.read(chatInputProvider);
-    final lang = L10n.of(context);
     final stream = await ref.read(timelineStreamProvider(widget.roomId).future);
 
     try {

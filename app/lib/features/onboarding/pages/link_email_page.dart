@@ -117,7 +117,9 @@ class LinkEmailPage extends ConsumerWidget {
       );
     } finally {
       EasyLoading.dismiss();
-      context.goNamed(Routes.uploadAvatar.name);
+      if (context.mounted) {
+        context.goNamed(Routes.uploadAvatar.name);
+      }
     }
   }
 
