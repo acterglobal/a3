@@ -44,7 +44,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
     final lang = L10n.of(context);
     await updateFeatureState(ref, LabsFeature.mobilePushNotifications, newVal);
     if (!newVal) return;
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     EasyLoading.show(status: lang.changingSettings);
     try {
       var granted = await setupPushNotifications(client, forced: true);

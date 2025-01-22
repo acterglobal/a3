@@ -214,13 +214,13 @@ class EmailAddressesPage extends ConsumerWidget {
 
   Future<void> addEmailAddress(BuildContext context, WidgetRef ref) async {
     final lang = L10n.of(context);
-    final account = ref.read(accountProvider);
     final newValue = await showDialog<String>(
       context: context,
       builder: (BuildContext context) => const AddEmailAddr(),
     );
     if (newValue != null && context.mounted) {
       EasyLoading.show(status: lang.addingEmailAddress);
+      final account = await ref.read(accountProvider.future);
       try {
         await account.request3pidManagementTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);

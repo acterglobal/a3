@@ -101,7 +101,7 @@ class LinkEmailPage extends ConsumerWidget {
   Future<void> linkEmail(BuildContext context, WidgetRef ref) async {
     if (!formKey.currentState!.validate()) return;
     final lang = L10n.of(context);
-    final account = ref.read(accountProvider);
+    final account = await ref.read(accountProvider.future);
     EasyLoading.show(status: lang.linkingEmailAddress);
     try {
       final emailAddr = emailController.text.trim();
@@ -117,7 +117,9 @@ class LinkEmailPage extends ConsumerWidget {
       );
     } finally {
       EasyLoading.dismiss();
-      context.goNamed(Routes.uploadAvatar.name);
+      if (context.mounted) {
+        context.goNamed(Routes.uploadAvatar.name);
+      }
     }
   }
 

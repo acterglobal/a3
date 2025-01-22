@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -16,11 +15,9 @@ final latestMessageProvider =
 );
 
 /// Provider for fetching rooms list. This’ll always bring up unsorted list.
-final _convosProvider =
-    StateNotifierProvider<ChatRoomsListNotifier, List<Convo>>((ref) {
-  final client = ref.watch(alwaysClientProvider);
-  return ChatRoomsListNotifier(ref: ref, client: client);
-});
+final _convosProvider = NotifierProvider<ChatRoomsListNotifier, List<Convo>>(
+  () => ChatRoomsListNotifier(),
+);
 
 /// Provider that sorts up list based on latest timestamp from [_convosProvider].
 final chatsProvider = Provider<List<Convo>>((ref) {

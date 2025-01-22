@@ -13,7 +13,7 @@ final _log = Logger('a3::common::common_providers');
 
 final eventTypeUpdatesStream =
     StreamProvider.family<int, String>((ref, key) async* {
-  final client = ref.watch(alwaysClientProvider);
+  final client = await ref.watch(alwaysClientProvider.future);
   int counter = 0; // to ensure the value updates
 
   // ignore: unused_local_variable
@@ -24,14 +24,14 @@ final eventTypeUpdatesStream =
 });
 
 final myUserIdStrProvider = Provider(
-  (ref) => ref.watch(
-    alwaysClientProvider.select((client) => client.userId().toString()),
-  ),
+  (ref) =>
+      ref.watch(alwaysClientProvider).valueOrNull?.userId().toString() ??
+      '@acter:acter.global',
 );
 
-final accountProvider = Provider(
+final accountProvider = FutureProvider(
   (ref) => ref.watch(
-    alwaysClientProvider.select((client) => client.account()),
+    alwaysClientProvider.selectAsync((client) => client.account()),
   ),
 );
 
@@ -39,12 +39,9 @@ final hasFirstSyncedProvider = Provider(
   (ref) => ref.watch(syncStateProvider.select((v) => !v.initialSync)),
 );
 
-final isGuestProvider =
-    Provider((ref) => ref.watch(alwaysClientProvider).isGuest());
-
-final deviceIdProvider = Provider(
+final deviceIdProvider = FutureProvider(
   (ref) => ref.watch(
-    alwaysClientProvider.select(
+    alwaysClientProvider.selectAsync(
       (v) => v.deviceId().toString(),
     ),
   ),
@@ -52,8 +49,7 @@ final deviceIdProvider = Provider(
 
 /// Gives [AvatarInfo] object for user account. Stays up-to-date internally.
 final accountAvatarInfoProvider = StateProvider.autoDispose<AvatarInfo>((ref) {
-  final account = ref.watch(accountProvider);
-  final userId = account.userId().toString();
+  final userId = ref.watch(myUserIdStrProvider);
 
   final displayName = ref.watch(accountDisplayNameProvider).valueOrNull;
   final avatar = ref.watch(_accountAvatarProvider).valueOrNull;
@@ -74,14 +70,14 @@ final accountAvatarInfoProvider = StateProvider.autoDispose<AvatarInfo>((ref) {
 /// Caching the name of each Room
 final accountDisplayNameProvider =
     FutureProvider.autoDispose<String?>((ref) async {
-  final account = ref.watch(accountProvider);
+  final account = await ref.watch(accountProvider.future);
   return (await account.displayName()).text();
 });
 
 final _accountAvatarProvider =
     FutureProvider.autoDispose<MemoryImage?>((ref) async {
   final sdk = await ref.watch(sdkProvider.future);
-  final account = ref.watch(accountProvider);
+  final account = await ref.watch(accountProvider.future);
   final thumbSize = sdk.api.newThumbSize(48, 48);
   final avatar = await account.avatar(thumbSize);
   // Only call data() once as it will consume the value and any subsequent
@@ -100,7 +96,7 @@ class EmailAddresses {
 }
 
 final emailAddressesProvider = FutureProvider((ref) async {
-  final account = ref.watch(accountProvider);
+  final account = await ref.watch(accountProvider.future);
   // ensure we are updated if the upgrade comes down the wire.
   ref.watch(eventTypeUpdatesStream('global.acter.dev.three_pid'));
   final confirmed = asDartStringList(await account.confirmedEmailAddresses());

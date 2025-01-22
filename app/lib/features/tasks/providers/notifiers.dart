@@ -70,7 +70,7 @@ class TaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String> {
   @override
   Future<TaskList> build(String arg) async {
     // Load initial todo list from the remote repository
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     final taskList = await _refresh(client, arg);
     _listener = taskList.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen(
@@ -125,7 +125,7 @@ class AsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
 
   @override
   Future<List<TaskList>> build() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
 
     //GET ALL TASKS LIST
     _listener = client.subscribeSectionStream('tasks');

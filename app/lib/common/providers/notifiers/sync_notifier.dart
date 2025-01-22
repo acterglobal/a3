@@ -3,33 +3,47 @@ import 'dart:math';
 
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/sync_state/sync_state.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:riverpod/riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 // ignore_for_file: avoid_print
-class SyncNotifier extends StateNotifier<SyncState> {
-  final ffi.Client client;
-  final Ref ref;
+class SyncNotifier extends Notifier<SyncState> {
+  late ffi.Client client;
 
   late ffi.SyncState syncState;
-  late Stream<bool> _syncListener;
-  late StreamSubscription<bool> _syncPoller;
-  late Stream<String> _errorListener;
-  late StreamSubscription<String> _errorPoller;
+  Stream<bool>? _syncListener;
+  StreamSubscription<bool>? _syncPoller;
+  Stream<String>? _errorListener;
+  StreamSubscription<String>? _errorPoller;
+  late ProviderSubscription _providerSubscription;
   Timer? _retryTimer;
 
-  SyncNotifier(this.client, this.ref)
-      : super(const SyncState(initialSync: true)) {
-    _startSync(ref);
-  }
-
-  void _startSync(Ref ref) {
-    // on release we have a really weird behavior, where, if we schedule
-    // any async call in rust too early, they just pend forever. this
-    // hack unfortunately means we have two wait a bit but that means
-    // we get past the threshold where it is okay to schedule...
-    Future.delayed(const Duration(milliseconds: 1500), () => _restartSync());
+  @override
+  SyncState build() {
+    _providerSubscription = ref.listen<AsyncValue<ffi.Client?>>(
+      alwaysClientProvider,
+      (AsyncValue<ffi.Client?>? oldVal, AsyncValue<ffi.Client?> newVal) {
+        final newClient = newVal.valueOrNull;
+        if (newClient == null) {
+          // we don't care for not having a proper client yet
+          return;
+        }
+        // on release we have a really weird behavior, where, if we schedule
+        // any async call in rust too early, they just pend forever. this
+        // hack unfortunately means we have two wait a bit but that means
+        // we get past the threshold where it is okay to schedule...
+        client = newClient;
+        Future.delayed(
+          const Duration(milliseconds: 1500),
+          () => _restartSync(),
+        );
+      },
+      fireImmediately: true,
+    );
+    ref.onDispose(() => _providerSubscription.close());
+    return const SyncState(initialSync: true);
   }
 
   void _tickSyncState() {
@@ -48,46 +62,44 @@ class SyncNotifier extends StateNotifier<SyncState> {
 
   void _restartSync() {
     syncState = client.startSync();
-    if (_retryTimer != null) {
-      _retryTimer!.cancel();
-      _retryTimer = null;
-    }
+
+    // reset states
+    _retryTimer?.cancel();
+    _retryTimer = null;
+    _syncPoller?.cancel();
+    _errorPoller?.cancel();
 
     _syncListener = syncState.firstSyncedRx(); // keep it resident in memory
-    _syncPoller = _syncListener.listen((synced) {
+    _syncPoller = _syncListener?.listen((synced) {
       if (synced) {
-        if (mounted) {
-          state = const SyncState(initialSync: false);
-        }
+        state = const SyncState(initialSync: false);
       }
     });
-    ref.onDispose(() => _syncPoller.cancel());
+    ref.onDispose(() => _syncPoller?.cancel());
 
     _errorListener = syncState.syncErrorRx(); // keep it resident in memory
-    _errorPoller = _errorListener.listen((msg) {
+    _errorPoller = _errorListener?.listen((msg) {
       Sentry.captureMessage('Sync failure: $msg', level: SentryLevel.error);
-      if (mounted) {
-        if (msg == 'SoftLogout' || msg == 'Unauthorized') {
-          // regular logout, we do nothing here
-          state = SyncState(initialSync: false, errorMsg: msg);
-        } else {
-          final retry = min(
-            state.nextRetry.map((nextRetry) => nextRetry * 2) ?? 5,
-            300,
-          ); // we double this to a max of 5min.
-          state = state.copyWith(
-            initialSync: false,
-            errorMsg: msg,
-            countDown: retry,
-            nextRetry: retry,
-          );
-          _retryTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-            _tickSyncState();
-          });
-          // custom errors, means we will start the retry loop
-        }
+      if (msg == 'SoftLogout' || msg == 'Unauthorized') {
+        // regular logout, we do nothing here
+        state = SyncState(initialSync: false, errorMsg: msg);
+      } else {
+        final retry = min(
+          state.nextRetry.map((nextRetry) => nextRetry * 2) ?? 5,
+          300,
+        ); // we double this to a max of 5min.
+        state = state.copyWith(
+          initialSync: false,
+          errorMsg: msg,
+          countDown: retry,
+          nextRetry: retry,
+        );
+        _retryTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          _tickSyncState();
+        });
+        // custom errors, means we will start the retry loop
       }
     });
-    ref.onDispose(() => _errorPoller.cancel());
+    ref.onDispose(() => _errorPoller?.cancel());
   }
 }

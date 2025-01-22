@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
@@ -177,24 +176,22 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
               duration: const Duration(milliseconds: 400),
               child: _isSearchVisible
                   ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: filterBox(context),
-              )
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: filterBox(context),
+                    )
                   : const SizedBox.shrink(),
             ),
             searchTerms(context),
             Expanded(
-              child: ref.watch(isGuestProvider)
-                  ? empty
-                  : ChatsList(
-                      onSelected: (roomId) {
-                        ref
-                            .read(roomListFilterProvider.notifier)
-                            .updateSearchTerm(null);
-                        setState(() => _isSearchVisible = false);
-                        widget.onSelected(roomId);
-                      },
-                    ),
+              child: ChatsList(
+                onSelected: (roomId) {
+                  ref
+                      .read(roomListFilterProvider.notifier)
+                      .updateSearchTerm(null);
+                  setState(() => _isSearchVisible = false);
+                  widget.onSelected(roomId);
+                },
+              ),
             ),
           ],
         ),

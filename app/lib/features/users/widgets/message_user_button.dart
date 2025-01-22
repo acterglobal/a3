@@ -22,8 +22,8 @@ class MessageUserButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final client = ref.watch(alwaysClientProvider);
-    final dmId = client.dmWithUser(userId).text();
+    final dmId =
+        ref.watch(alwaysClientProvider).valueOrNull?.dmWithUser(userId).text();
     if (dmId != null) {
       return Center(
         child: OutlinedButton.icon(

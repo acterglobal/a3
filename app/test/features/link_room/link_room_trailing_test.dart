@@ -69,7 +69,7 @@ void main() {
               .overrideWith(() => MockRoomAvatarInfoNotifier()),
           roomMembershipProvider.overrideWith((a, b) => null),
           spacesProvider.overrideWith(
-            (a) => MockSpaceListNotifiers([
+            () => MockSpaceListNotifiers([
               parentSpace,
             ]),
           ),
@@ -138,7 +138,7 @@ void main() {
               .overrideWith(() => MockRoomAvatarInfoNotifier()),
           roomMembershipProvider.overrideWith((a, b) => null),
           spacesProvider.overrideWith(
-            (a) => MockSpaceListNotifiers([
+            () => MockSpaceListNotifiers([
               parentSpace,
             ]),
           ),
@@ -207,7 +207,7 @@ void main() {
               .overrideWith(() => MockRoomAvatarInfoNotifier()),
           roomMembershipProvider.overrideWith((a, b) => null),
           spacesProvider.overrideWith(
-            (a) => MockSpaceListNotifiers([
+            () => MockSpaceListNotifiers([
               parentSpace,
             ]),
           ),
@@ -284,7 +284,7 @@ void main() {
             (a, b) => b == 'child-space' ? childMembership : null,
           ),
           spacesProvider.overrideWith(
-            (a) => MockSpaceListNotifiers([
+            () => MockSpaceListNotifiers([
               parentSpace,
             ]),
           ),
@@ -358,7 +358,7 @@ void main() {
             (a, b) => b == 'child-space' ? childMembership : null,
           ),
           spacesProvider.overrideWith(
-            (a) => MockSpaceListNotifiers([
+            () => MockSpaceListNotifiers([
               parentSpace,
             ]),
           ),
@@ -434,7 +434,7 @@ void main() {
             (a, b) => b == 'child-space' ? childMembership : null,
           ),
           spacesProvider.overrideWith(
-            (a) => MockSpaceListNotifiers([
+            () => MockSpaceListNotifiers([
               parentSpace,
             ]),
           ),

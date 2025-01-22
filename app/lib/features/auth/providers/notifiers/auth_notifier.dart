@@ -23,7 +23,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     final sdk = await ref.read(sdkProvider.future);
     try {
       final client = await sdk.login(username, password);
-      ref.read(clientProvider.notifier).state = client;
+      ref.read(clientProvider.notifier).setClient(client);
       state = false;
       return null;
     } catch (e, s) {
@@ -38,7 +38,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     final sdk = await ref.read(sdkProvider.future);
     try {
       final client = await sdk.newGuestClient(setAsCurrent: true);
-      ref.read(clientProvider.notifier).state = client;
+      ref.read(clientProvider.notifier).setClient(client);
       state = false;
       if (context != null && context.mounted) {
         context.goNamed(Routes.main.name);
@@ -58,7 +58,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     final sdk = await ref.read(sdkProvider.future);
     try {
       final client = await sdk.register(username, password, displayName, token);
-      ref.read(clientProvider.notifier).state = client;
+      ref.read(clientProvider.notifier).setClient(client);
       state = false;
       return null;
     } catch (e) {
@@ -72,7 +72,7 @@ class AuthStateNotifier extends StateNotifier<bool> {
     final stillHasClient = await sdk.logout();
     if (stillHasClient) {
       _log.info('Still has clients, dropping back to other');
-      ref.read(clientProvider.notifier).state = sdk.currentClient;
+      ref.read(clientProvider.notifier).setClient(sdk.currentClient);
       if (context.mounted) {
         context.goNamed(Routes.main.name);
       }

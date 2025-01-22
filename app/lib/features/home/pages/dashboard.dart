@@ -7,7 +7,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/features_nav_widget.dart';
 import 'package:acter/features/home/widgets/important_activities_section.dart';
 import 'package:acter/features/home/widgets/in_dashboard.dart';
@@ -15,8 +14,6 @@ import 'package:acter/features/home/widgets/my_events.dart';
 import 'package:acter/features/home/widgets/my_spaces_section.dart';
 import 'package:acter/features/home/widgets/my_tasks.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
-import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -29,7 +26,6 @@ class Dashboard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(alwaysClientProvider);
     return InDashboard(
       child: SafeArea(
         bottom: false,
@@ -38,7 +34,7 @@ class Dashboard extends ConsumerWidget {
               ? FloatingActionButtonLocation.miniEndDocked
               : FloatingActionButtonLocation.miniEndFloat,
           floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-          appBar: _buildDashboardAppBar(context, client),
+          appBar: _buildDashboardAppBar(context),
           floatingActionButton: manageQuickAddButton(context, ref),
           body: _buildDashboardBodyUI(context, ref),
         ),
@@ -46,7 +42,7 @@ class Dashboard extends ConsumerWidget {
     );
   }
 
-  AppBar _buildDashboardAppBar(BuildContext context, Client client) {
+  AppBar _buildDashboardAppBar(BuildContext context) {
     final lang = L10n.of(context);
     return AppBar(
       leading: !isDesktop
@@ -58,21 +54,9 @@ class Dashboard extends ConsumerWidget {
       centerTitle: true,
       title: Text(isDesktop ? lang.myDashboard : lang.acter),
       actions: <Widget>[
-        Visibility(
-          // FIXME: Only show mobile / when bottom bar shown...
-          visible: !client.isGuest(),
-          replacement: InkWell(
-            onTap: () => context.pushNamed(Routes.authLogin.name),
-            child: ActerAvatar(
-              options: AvatarOptions.DM(
-                AvatarInfo(uniqueId: UniqueKey().toString()),
-              ),
-            ),
-          ),
-          child: InkWell(
-            onTap: () => context.pushNamed(Routes.settings.name),
-            child: const UserAvatarWidget(size: 20),
-          ),
+        InkWell(
+          onTap: () => context.pushNamed(Routes.settings.name),
+          child: const UserAvatarWidget(size: 20),
         ),
       ],
     );

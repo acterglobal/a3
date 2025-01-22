@@ -16,7 +16,7 @@ class AsyncNewsListNotifier
   @override
   Future<List<NewsEntry>> build(String? arg) async {
     final spaceId = arg;
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
 
     //GET ALL NEWS
     if (spaceId == null) {

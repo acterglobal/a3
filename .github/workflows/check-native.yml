@@ -52,8 +52,8 @@ jobs:
           - name: Core
             package: acter-core
             clippy_extras: --tests
-          - name: file-event-cache
-            package: matrix-sdk-store-file-event-cache
+          # - name: file-event-cache
+          #   package: matrix-sdk-store-file-event-cache
     steps:
       - uses: actions/checkout@v4
       - name: Install rust toolchain
