@@ -20,7 +20,7 @@ pub struct TestModel {
     event_meta: EventMeta,
 
     #[builder(default)]
-    #[serde(skip, default)]
+    #[serde(default)]
     indizes: Vec<IndexKey>,
 
     #[builder(default)]

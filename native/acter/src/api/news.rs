@@ -109,7 +109,7 @@ impl Space {
             .spawn(async move {
                 let mut all_news = client
                     .store()
-                    .get_list(&IndexKey::RoomSection(room_id, SectionIndex::Calendar))
+                    .get_list(&IndexKey::RoomSection(room_id, SectionIndex::Boosts))
                     .await?
                     .filter_map(|any| {
                         if let AnyActerModel::NewsEntry(t) = any {

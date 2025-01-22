@@ -195,6 +195,7 @@ mod tests {
     use crate::{
         events::{comments::CommentEventContent, BelongsTo},
         models::{Comment, TestModelBuilder},
+        referencing::{IndexKey, ObjectListIndex},
     };
     use matrix_sdk::Client;
     use matrix_sdk_base::{
@@ -232,7 +233,7 @@ mod tests {
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
         let model_id = model.event_id();
-        let sub = executor.subscribe(model_id.to_string());
+        let sub = executor.subscribe(model_id);
         assert!(sub.is_empty(), "Already received an event");
 
         executor.handle(model.into()).await?;
@@ -247,7 +248,7 @@ mod tests {
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
         let model_id = model.event_id().to_owned();
-        let mut sub = executor.subscribe(model_id.to_string());
+        let mut sub = executor.subscribe(model_id.clone());
         assert!(sub.is_empty());
 
         executor.handle(model.into()).await?;
@@ -256,7 +257,7 @@ mod tests {
 
         let child = TestModelBuilder::default()
             .simple()
-            .belongs_to(vec![model_id.to_string()])
+            .belongs_to(vec![model_id.clone()])
             .event_id(event_id!("$advf93m").to_owned())
             .build()
             .unwrap();
@@ -274,7 +275,7 @@ mod tests {
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
         let parent_id = model.event_id().to_owned();
-        let parent_idx = format!("{parent_id}:custom");
+        let parent_idx = IndexKey::ObjectList(parent_id.clone(), ObjectListIndex::Attachments);
         let mut sub = executor.subscribe(parent_idx.clone());
         assert!(sub.is_empty());
 
@@ -283,7 +284,7 @@ mod tests {
 
         let child = TestModelBuilder::default()
             .simple()
-            .belongs_to(vec![parent_id.to_string()])
+            .belongs_to(vec![parent_id.clone()])
             .event_id(event_id!("$advf93m").to_owned())
             .indizes(vec![parent_idx.clone()])
             .build()
@@ -302,7 +303,7 @@ mod tests {
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
         let parent_id = model.event_id().to_owned();
-        let parent_idx = Comment::index_for(&parent_id);
+        let parent_idx = Comment::index_for(parent_id.clone());
         let mut sub = executor.subscribe(parent_idx.clone());
         assert!(sub.is_empty());
 
