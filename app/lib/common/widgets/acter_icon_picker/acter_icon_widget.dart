@@ -82,6 +82,7 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
 
   // Extracted method to handle showing the picker
   void _showIconPicker(BuildContext context) {
+    if (widget.onIconSelection == null) return;
     showActerIconPicker(
       context: context,
       selectedColor: color.value,
