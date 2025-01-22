@@ -264,6 +264,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ActerIconWidget(
                 iconSize: 50,
