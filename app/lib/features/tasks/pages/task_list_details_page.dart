@@ -216,45 +216,53 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
             .valueOrNull
             ?.canString('CanPostTaskList') ==
         true;
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: ActerIconWidget(
-        iconSize: 40,
-        color: convertColor(
-          tasklist.display()?.color(),
-          iconPickerColors[0],
-        ),
-        icon: ActerIcon.iconForTask(
-          tasklist.display()?.iconStr(),
-        ),
-        onIconSelection: canPost
-            ? (color, acterIcon) {
-                updateTaskListIcon(
-                  context,
-                  ref,
-                  tasklist,
-                  color,
-                  acterIcon,
-                );
-              }
-            : null,
-      ),
-      title: SelectionArea(
-        child: GestureDetector(
-          onTap: () => showEditTaskListNameBottomSheet(
-            context: context,
-            ref: ref,
-            taskList: tasklist,
-            titleValue: tasklist.name(),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ActerIconWidget(
+          iconSize: 40,
+          color: convertColor(
+            tasklist.display()?.color(),
+            iconPickerColors[0],
           ),
-          child: Text(
-            key: TaskListDetailPage.taskListTitleKey,
-            tasklist.name(),
-            style: textTheme.titleMedium,
+          icon: ActerIcon.iconForTask(
+            tasklist.display()?.iconStr(),
           ),
+          onIconSelection: canPost
+              ? (color, acterIcon) {
+                  updateTaskListIcon(
+                    context,
+                    ref,
+                    tasklist,
+                    color,
+                    acterIcon,
+                  );
+                }
+              : null,
         ),
-      ),
-      subtitle: SpaceChip(spaceId: tasklist.spaceIdStr(), useCompactView: true),
+        SizedBox(width: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SelectionArea(
+              child: GestureDetector(
+                onTap: () => showEditTaskListNameBottomSheet(
+                  context: context,
+                  ref: ref,
+                  taskList: tasklist,
+                  titleValue: tasklist.name(),
+                ),
+                child: Text(
+                  key: TaskListDetailPage.taskListTitleKey,
+                  tasklist.name(),
+                  style: textTheme.titleMedium,
+                ),
+              ),
+            ),
+            SpaceChip(spaceId: tasklist.spaceIdStr(), useCompactView: true),
+          ],
+        ),
+      ],
     );
   }
 
