@@ -160,7 +160,7 @@ impl ActerModel for Comment {
         let mut indizes = self
             .belongs_to_inner()
             .into_iter()
-            .map(|v| Comment::index_for(v))
+            .map(Comment::index_for)
             .collect::<Vec<_>>();
         indizes.push(IndexKey::ObjectHistory(self.inner.on.event_id.to_owned()));
         indizes.push(IndexKey::RoomHistory(self.meta.room_id.to_owned()));

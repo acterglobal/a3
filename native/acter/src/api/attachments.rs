@@ -17,7 +17,7 @@ use matrix_sdk_base::{
 };
 use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
-use tokio_stream::Stream;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
 
 use super::{client::Client, common::ThumbnailSize, deep_linking::RefDetails, RUNTIME};
@@ -593,7 +593,7 @@ impl AttachmentsManager {
     }
 
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
-        self.client.subscribe_stream(self.inner.update_key())
+        BroadcastStream::new(self.subscribe()).map(|f| true)
     }
 
     pub fn subscribe(&self) -> Receiver<()> {

@@ -1,6 +1,13 @@
 use acter_core::{
-    client::CoreClient, executor::Executor, models::AnyActerModel, referencing::ExecuteReference,
-    store::Store, templates::Engine, CustomAuthSession, RestoreToken,
+    client::CoreClient,
+    executor::Executor,
+    models::AnyActerModel,
+    referencing::{
+        ExecuteReference, IndexKey, ModelParam, ObjectListIndex, RoomParam, SectionIndex,
+    },
+    store::Store,
+    templates::Engine,
+    CustomAuthSession, RestoreToken,
 };
 use anyhow::{Context, Result};
 use base64ct::{Base64UrlUnpadded, Encoding};
@@ -22,7 +29,7 @@ use matrix_sdk_base::{
     RoomStateFilter,
 };
 use ruma::EventId;
-use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
+use std::{borrow::Cow, io::Write, ops::Deref, path::PathBuf, str::FromStr, sync::Arc};
 use tokio::{
     sync::{broadcast::Receiver, RwLock},
     time,
@@ -389,8 +396,76 @@ impl Client {
         Ok(OptionString::new(room_id))
     }
 
-    pub fn subscribe_stream<K: Into<ExecuteReference>>(&self, key: K) -> impl Stream<Item = bool> {
-        BroadcastStream::new(self.subscribe(key)).map(|_| true)
+    pub fn subscribe_section_stream(&self, section: String) -> Result<impl Stream<Item = bool>> {
+        let index = SectionIndex::from_str(&section)?;
+        Ok(BroadcastStream::new(self.subscribe(index)).map(|_| true))
+    }
+
+    pub fn subscribe_model_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
+        let model_id = EventId::parse(key)?;
+        Ok(BroadcastStream::new(self.subscribe(model_id)).map(|_| true))
+    }
+
+    pub fn subscribe_model_param_stream(
+        &self,
+        key: String,
+        param: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        let model_id = EventId::parse(key)?;
+        let param = ModelParam::from_str(&param)?;
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::ModelParam(model_id, param)))
+                .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_model_objects_stream(
+        &self,
+        key: String,
+        sublist: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        let model_id = EventId::parse(key)?;
+        let param = ObjectListIndex::from_str(&sublist)?;
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::Index(IndexKey::ObjectList(
+                model_id, param,
+            ))))
+            .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_room_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
+        let model_id = RoomId::parse(key)?;
+        Ok(BroadcastStream::new(self.subscribe(model_id)).map(|_| true))
+    }
+
+    pub fn subscribe_room_param_stream(
+        &self,
+        key: String,
+        param: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        let model_id = RoomId::parse(key)?;
+        let param = RoomParam::from_str(&param)?;
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::RoomParam(model_id, param)))
+                .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_room_section_stream(
+        &self,
+        key: String,
+        section: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        let index = IndexKey::RoomSection(RoomId::parse(key)?, SectionIndex::from_str(&section)?);
+        Ok(BroadcastStream::new(self.subscribe(ExecuteReference::Index(index))).map(|_| true))
+    }
+
+    pub fn subscribe_event_type_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::ModelType(Cow::Owned(key))))
+                .map(|_| true),
+        )
     }
 
     pub fn subscribe<K: Into<ExecuteReference>>(&self, key: K) -> Receiver<()> {

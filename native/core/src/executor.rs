@@ -332,7 +332,7 @@ mod tests {
         let _ = env_logger::try_init();
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
-        let model_id = model.event_id().to_string();
+        let model_id = model.event_id().to_owned();
         // nothing in the store
         assert!(executor.store().get(&model_id).await.is_err());
 
@@ -354,7 +354,7 @@ mod tests {
         let _ = env_logger::try_init();
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
-        let model_id = model.event_id().to_string();
+        let model_id = model.event_id().to_owned();
         // nothing in the store
         assert!(executor.store().get(&model_id).await.is_err());
 

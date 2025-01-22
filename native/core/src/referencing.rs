@@ -121,3 +121,9 @@ impl From<IndexKey> for ExecuteReference {
         ExecuteReference::Index(value)
     }
 }
+
+impl From<SectionIndex> for ExecuteReference {
+    fn from(value: SectionIndex) -> Self {
+        ExecuteReference::Index(IndexKey::Section(value))
+    }
+}

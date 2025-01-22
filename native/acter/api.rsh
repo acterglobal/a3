@@ -2942,8 +2942,29 @@ object Client {
     /// create default space
     fn create_acter_space(settings: CreateSpaceSettings) -> Future<Result<RoomId>>;
 
-    /// listen to updates to any model key
-    fn subscribe_stream(key: string) -> Stream<bool>;
+    /// listen to updates to any section
+    fn subscribe_section_stream(section: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any model
+    fn subscribe_model_stream(model_id: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to objects of a model, e.g. rsvp or comments
+    fn subscribe_model_objects_stream(model_id: string, sublist: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any room parameter
+    fn subscribe_model_param_stream(key: string, param: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any room
+    fn subscribe_room_stream(key: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any room parameter
+    fn subscribe_room_param_stream(key: string, param: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to a room section
+    fn subscribe_room_section_stream(key: string, section: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any event type
+    fn subscribe_event_type_stream(key: string) -> Result<Stream<bool>>;
 
     /// Find the room or wait until it becomes available
     fn wait_for_room(key: string, timeout: Option<u8>) -> Future<Result<bool>>;

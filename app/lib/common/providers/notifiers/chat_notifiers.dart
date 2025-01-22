@@ -20,7 +20,8 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
   FutureOr<Convo?> build(String arg) async {
     final roomId = arg;
     final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(roomId); // keep it resident in memory
+    _listener =
+        client.subscribeRoomStream(roomId); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
         state = await AsyncValue.guard(() async => await client.convo(roomId));
@@ -51,7 +52,7 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
   FutureOr<RoomMessage?> build(String arg) async {
     final roomId = arg;
     final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream('$roomId::latest_message');
+    _listener = client.subscribeRoomParamStream(roomId, 'latest_message');
     _poller = _listener.listen(
       (data) async {
         _log.info('received new latest message call for $roomId');
