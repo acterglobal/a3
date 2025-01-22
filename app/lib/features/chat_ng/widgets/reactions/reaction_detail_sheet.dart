@@ -85,6 +85,7 @@ class _ReactionDetailsSheetState extends ConsumerState<ReactionDetailsSheet>
       Tab(child: Chip(label: Text(L10n.of(context).allReactionsCount(total)))),
       ...widget.reactions.map(
         (reaction) => Tab(
+          key: Key('reaction-tab-${reaction.$1}'),
           child: Chip(
             avatar: Text(reaction.$1, style: EmojiConfig.emojiTextStyle),
             label: Text(reaction.$2.length.toString()),
