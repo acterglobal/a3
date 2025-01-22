@@ -3,32 +3,9 @@ import 'package:acter_notifify/util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockNotificationItem extends Mock implements NotificationItem {}
-
-class MockNotificationSender extends Mock implements NotificationSender {
-  final String username;
-  final String? name;
-
-  MockNotificationSender({this.username = "@none:user.tld", this.name});
-
-  @override
-  String userId() => username;
-
-  @override
-  String? displayName() => name;
-}
-
-class MockMsgContent extends Mock implements MsgContent {
-  final String content;
-
-  MockMsgContent({required this.content});
-
-  @override
-  String body() => content;
-}
-
-class MockNotificationParent extends Mock implements NotificationItemParent {}
-// class MockNotificationItem extends Mock implements NotificationItem {}
+import 'mock_data/mock_notification_item.dart';
+import 'mock_data/mock_notification_parent.dart';
+import 'mock_data/mock_notification_sender.dart';
 
 void main() {
   group("title and body generation", () {
