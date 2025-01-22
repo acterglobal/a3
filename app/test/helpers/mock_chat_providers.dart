@@ -169,15 +169,20 @@ class MockRoomListFilterNotifier extends StateNotifier<RoomListFilterState>
         );
 }
 
-class MockPersistentPrefNotifier extends StateNotifier<FilterSelection>
+class MockPersistentPrefNotifier extends Notifier<FilterSelection>
     with Mock
     implements MapPrefNotifier<FilterSelection> {
-  MockPersistentPrefNotifier() : super(FilterSelection.all);
+  MockPersistentPrefNotifier() : super();
+
+  @override
+  FilterSelection build() {
+    return FilterSelection.all;
+  }
 
   /// Updates the value asynchronously.
   @override
   Future<void> set(FilterSelection value) async {
-    super.state = value;
+    state = value;
   }
 }
 
