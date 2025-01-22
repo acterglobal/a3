@@ -21,7 +21,7 @@ final roomPreviewProvider =
   for (final server in query.serverNames.items) {
     servers.add(server);
   }
-  final client = ref.watch(alwaysClientProvider);
+  final client = await ref.watch(alwaysClientProvider.future);
   final prev = await client.roomPreview(query.roomIdOrAlias, servers);
   return prev;
 });
