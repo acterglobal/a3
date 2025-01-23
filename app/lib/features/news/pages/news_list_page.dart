@@ -172,7 +172,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
       background: const NewsSkeletonWidget(),
       error: error,
       stack: stack,
-      textBuilder: L10n.of(context).loadingFailed,
+      textBuilder: (error, code) => L10n.of(context).loadingFailed(error),
       onRetryTap: () {
         ref.invalidate(newsListProvider(widget.spaceId));
       },

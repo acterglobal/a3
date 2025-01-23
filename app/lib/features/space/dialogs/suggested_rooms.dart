@@ -1,6 +1,7 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/features/room/actions/join_room.dart';
@@ -142,9 +143,13 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
     for (final room in roomsToJoin) {
       final roomId = room.roomIdStr();
       try {
-        final server = room.viaServerName();
-        final newRoomId =
-            await joinRoom(context, ref, displayMsg, roomId, server, null);
+        final servers = room.viaServerNames().toDart();
+        final newRoomId = await joinRoom(
+            context: context,
+            ref: ref,
+            roomIdOrAlias: roomId,
+            serverNames: servers,
+            displayMsg: displayMsg,);
         if (newRoomId == null) {
           _log.warning('Joining $roomId failed');
           hadFailures = true;

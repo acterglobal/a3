@@ -2,7 +2,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
-import 'package:acter/common/widgets/reference_details_item.dart';
+import 'package:acter/features/deep_linking/widgets/reference_details_item.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -15,7 +15,6 @@ import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class PinListItemWidget extends ConsumerWidget {
-
   static const pinItemClick = Key('pin_item_click');
 
   final String pinId;
