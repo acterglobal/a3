@@ -2323,6 +2323,5 @@
   "removeReference": "Remove Reference",
   "removeReferenceConfirmation": "Are you sure you want to remove this reference?",
   "noObjectAccess": "You are not part of {spaceName} so you can't access this {objectType}",
-  "change":"Change",
   "@addComment": {}
 }
