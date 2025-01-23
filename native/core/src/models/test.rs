@@ -1,3 +1,5 @@
+use std::time::SystemTime;
+
 use derive_builder::Builder;
 use matrix_sdk_base::ruma::{
     user_id, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, UserId,
@@ -18,6 +20,7 @@ pub struct TestModel {
     room_id: OwnedRoomId,
     event_id: OwnedEventId,
     event_meta: EventMeta,
+    origin_server_ts: MilliSecondsSinceUnixEpoch,
 
     #[builder(default)]
     #[serde(default)]
@@ -42,7 +45,8 @@ impl TestModelBuilder {
         EventMeta {
             event_id: OwnedEventId::try_from(format!("${ev}")).unwrap(),
             sender: user_id!("@test:example.org").to_owned(),
-            origin_server_ts: MilliSecondsSinceUnixEpoch(123567890u32.into()),
+            origin_server_ts: MilliSecondsSinceUnixEpoch::from_system_time(SystemTime::now())
+                .expect("We can parse system time"),
             room_id: OwnedRoomId::try_from(format!("!{room_id}:example.org")).unwrap(),
             redacted: None,
         }
@@ -62,10 +66,15 @@ impl TestModelBuilder {
                 let room_id = Uuid::new_v4().hyphenated().to_string();
                 OwnedRoomId::try_from(format!("!{room_id}:example.org")).unwrap()
             });
+
+            let origin_server_ts = self.origin_server_ts.unwrap_or_else(|| {
+                MilliSecondsSinceUnixEpoch::from_system_time(SystemTime::now())
+                    .expect("We can parse system time")
+            });
             self.event_meta = Some(EventMeta {
                 event_id,
                 sender: user_id!("@test:example.org").to_owned(),
-                origin_server_ts: MilliSecondsSinceUnixEpoch(123567890u32.into()),
+                origin_server_ts,
                 room_id,
                 redacted: None,
             });

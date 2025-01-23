@@ -7,6 +7,7 @@ use std::sync::{Arc, Mutex};
 use tracing::{debug, error, info, instrument, trace, warn};
 
 mod index;
+pub use index::{LifoIndex, RankedIndex, StoreIndex};
 
 use crate::referencing::{ExecuteReference, IndexKey};
 use crate::{
@@ -19,7 +20,7 @@ pub struct Store {
     pub(crate) client: Client,
     user_id: OwnedUserId,
     models: Arc<HashMap<OwnedEventId, AnyActerModel>>,
-    indizes: Arc<HashMap<IndexKey, Vec<OwnedEventId>>>,
+    indizes: Arc<HashMap<IndexKey, StoreIndex>>,
     dirty: Arc<Mutex<HashSet<OwnedEventId>>>, // our key mutex;
 }
 
@@ -134,21 +135,22 @@ impl Store {
             vec![]
         };
 
-        let indizes: HashMap<IndexKey, Vec<OwnedEventId>> = HashMap::new();
+        let indizes: HashMap<IndexKey, StoreIndex> = HashMap::new();
         let models: HashMap<OwnedEventId, AnyActerModel> = HashMap::new();
         for m in models_vec {
             let Some(m) = m else {
                 // skip None’s
                 continue;
             };
+            let meta = m.event_meta();
             let key = m.event_id().to_owned();
             for idx in m.indizes(&user_id) {
-                match indizes.entry(idx) {
+                match indizes.entry(idx.clone()) {
                     Entry::Occupied(mut o) => {
-                        o.get_mut().push(key.clone());
+                        o.get_mut().insert(meta);
                     }
                     Entry::Vacant(v) => {
-                        v.insert_entry(vec![key.clone()]);
+                        v.insert_entry(StoreIndex::new_for(&idx, meta));
                     }
                 };
             }
@@ -172,7 +174,7 @@ impl Store {
 
     pub fn get_list_inner(&self, key: &IndexKey) -> Result<impl Iterator<Item = AnyActerModel>> {
         let listing = if let Some(r) = self.indizes.get(key) {
-            r.get().clone()
+            r.get().values().into_iter().cloned().collect()
         } else {
             debug!(user=?self.user_id, index=?key, "No list found");
             vec![]
@@ -219,6 +221,7 @@ impl Store {
         trace!(user = ?user_id, ?key, "saving");
         let mut new_indizes = mdl.indizes(user_id);
         let mut removed_indizes = Vec::new();
+        let event_meta = mdl.event_meta().clone();
         match self.models.entry(key.clone()) {
             Entry::Vacant(v) => {
                 v.insert_entry(mdl);
@@ -239,18 +242,18 @@ impl Store {
 
         for idz in removed_indizes.iter() {
             if let Some(mut v) = self.indizes.get(idz) {
-                v.get_mut().retain(|k| k != &key);
+                v.get_mut().remove(&key);
             }
         }
 
         for idx in new_indizes.iter().chain([&IndexKey::RoomModels(room_id)]) {
             trace!(user = ?self.user_id, ?idx, ?key, exists=self.indizes.contains(idx), "adding to index");
             match self.indizes.entry(idx.clone()) {
-                Entry::Vacant(v) => {
-                    v.insert_entry(vec![key.clone()]);
-                }
                 Entry::Occupied(mut o) => {
-                    o.get_mut().push(key.clone());
+                    o.get_mut().insert(&event_meta);
+                }
+                Entry::Vacant(v) => {
+                    v.insert_entry(StoreIndex::new_for(idx, &event_meta));
                 }
             }
             trace!(user = ?self.user_id, ?idx, ?key, "added to index");
@@ -314,7 +317,7 @@ impl Store {
                     let _ = self
                         .indizes
                         .entry(index.clone())
-                        .and_modify(|l| l.retain(|o| *o != model_id));
+                        .and_modify(|l| l.remove(&model_id));
                     total_changed.push(ExecuteReference::Index(index));
                 }
                 // remove the model itself
@@ -405,16 +408,20 @@ impl Store {
 
 #[cfg(test)]
 mod tests {
+    use std::time::{Duration, SystemTime};
+
     use super::*;
     use crate::{
         models::{TestModel, TestModelBuilder},
         referencing::SpecialListsIndex,
     };
     use anyhow::bail;
+    use matrix_sdk::ruma::MilliSecondsSinceUnixEpoch;
     use matrix_sdk_base::{
         ruma::{api::MatrixVersion, event_id, user_id, OwnedEventId, OwnedRoomId},
         store::{MemoryStore, StoreConfig},
     };
+    use uuid::Uuid;
 
     async fn fresh_store_and_client() -> Result<(Store, Client)> {
         let config = StoreConfig::new("tests".to_owned()).state_store(MemoryStore::new());
@@ -615,8 +622,87 @@ mod tests {
             res_keys
         );
 
+        // this is a lifo index: latest in, first out
         let mut index = store
             .get_list(&IndexKey::Special(SpecialListsIndex::Test1))
+            .await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn’t test model.");
+        };
+        assert_eq!(second_model, other);
+
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn’t test model.");
+        };
+        assert_eq!(model, other);
+
+        assert!(index.next().is_none()); // and nothing else
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn add_get_one_to_ranked_index() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let store = fresh_store().await?;
+        let room_id =
+            OwnedRoomId::try_from(format!("!{}:example.org", Uuid::new_v4().hyphenated())).unwrap();
+        let low_rank = MilliSecondsSinceUnixEpoch::from_system_time(
+            SystemTime::now()
+                .checked_sub(Duration::new(10000, 0))
+                .expect("Before exists"),
+        )
+        .expect("We can parse system time");
+        let high_rank = MilliSecondsSinceUnixEpoch::from_system_time(SystemTime::now())
+            .expect("We can parse system time");
+        let model = TestModelBuilder::default()
+            .simple()
+            .indizes(vec![IndexKey::RoomHistory(room_id.clone())])
+            .origin_server_ts(high_rank)
+            .room_id(room_id.clone())
+            .build()
+            .unwrap();
+        let key = model.event_id().to_owned();
+        let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
+        assert_eq!(
+            vec![
+                ExecuteReference::from(key.clone()),
+                IndexKey::RoomHistory(room_id.clone()).into()
+            ],
+            res_keys
+        );
+
+        let mut index = store
+            .get_list(&IndexKey::RoomHistory(room_id.clone()))
+            .await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn’t test model.");
+        };
+        assert!(index.next().is_none()); // and nothing else
+        assert_eq!(model, other);
+
+        let second_model = TestModelBuilder::default()
+            .simple()
+            .event_id(OwnedEventId::try_from("$secondModel").unwrap())
+            .indizes(vec![IndexKey::RoomHistory(room_id.clone())])
+            .origin_server_ts(low_rank) // this should be added _after_ the first
+            .build()
+            .unwrap();
+        let key = second_model.event_id().to_owned();
+        let res_keys = store
+            .save(AnyActerModel::TestModel(second_model.clone()))
+            .await?;
+        assert_eq!(
+            vec![
+                ExecuteReference::from(key.clone()),
+                IndexKey::RoomHistory(room_id.clone()).into()
+            ],
+            res_keys
+        );
+
+        // this is a lifo index: latest in, first out
+        let mut index = store
+            .get_list(&IndexKey::RoomHistory(room_id.clone()))
             .await?;
         let Some(AnyActerModel::TestModel(other)) = index.next() else {
             bail!("Returned model isn’t test model.");
