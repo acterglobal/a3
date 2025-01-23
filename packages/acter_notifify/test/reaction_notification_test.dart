@@ -35,12 +35,11 @@ void main() {
   group("Title and Body generation", () {
     test("Reaction on boost", () {
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ObjectType.news.name);
-      when(() => parent.emoji()).thenReturn(ObjectEmoji.news.data);
+      when(() => parent.objectTypeStr()).thenReturn(ActerObject.news.name);
+      when(() => parent.emoji()).thenReturn(ActerObject.news.emoji);
 
       // Arrange: Set reaction data
-      when(() => item.reactionKey())
-          .thenReturn(PushStylesEmoji.reactionLike.data);
+      when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
 
       // Act: process data and get tile and body
       final (title, body) = genTitleAndBody(item);
@@ -52,13 +51,12 @@ void main() {
 
     test("Reaction on Pin", () {
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ObjectType.pin.name);
-      when(() => parent.emoji()).thenReturn(ObjectEmoji.pin.data);
+      when(() => parent.objectTypeStr()).thenReturn(ActerObject.pin.name);
+      when(() => parent.emoji()).thenReturn(ActerObject.pin.emoji);
       when(() => parent.title()).thenReturn("Candlesticks");
 
       // Arrange: Set reaction data
-      when(() => item.reactionKey())
-          .thenReturn(PushStylesEmoji.reactionLike.data);
+      when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
 
       // Act: process data and get tile and body
       final (title, body) = genTitleAndBody(item);

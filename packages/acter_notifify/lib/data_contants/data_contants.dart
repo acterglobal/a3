@@ -1,11 +1,8 @@
-//PUSH STYLES
-enum PushStyles { comment, reaction }
-
 //Object Emoji
-enum PushStylesEmoji {
+enum PushStyles {
   //LIST OF PUSH STYLE EMOJIS
   comment('💬'),
-  reactionLike('❤️'),
+  reaction('❤️'),
   attachment('📎'),
   rsvpYes('✅'),
   rsvpMayBe('✔️'),
@@ -15,24 +12,21 @@ enum PushStylesEmoji {
   taskAccept('🤝'),
   taskDecline('✖️');
 
-  const PushStylesEmoji(this.data);
+  const PushStyles(this.emoji);
 
-  final String data;
+  final String emoji;
 }
 
-//Object Type
-enum ObjectType { news, pin }
-
 //Object Emoji
-enum ObjectEmoji {
+enum ActerObject {
   //LIST OF OBJECT EMOJIS
   news('🚀'),
   pin('📌'),
-  event('🗓️ '),
+  event('🗓️'),
   taskList('📋'),
   taskItem('☑️');
 
-  const ObjectEmoji(this.data);
+  const ActerObject(this.emoji);
 
-  final String data;
+  final String emoji;
 }

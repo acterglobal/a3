@@ -35,8 +35,8 @@ void main() {
   group("Title and body generation", () {
     test("Comment on boost", () {
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ObjectType.news.name);
-      when(() => parent.emoji()).thenReturn(ObjectEmoji.news.data);
+      when(() => parent.objectTypeStr()).thenReturn(ActerObject.news.name);
+      when(() => parent.emoji()).thenReturn(ActerObject.news.emoji);
 
       // Act: process data and get tile and body
       final (title, body) = genTitleAndBody(item);
@@ -48,8 +48,8 @@ void main() {
 
     test("Comment on Pin", () {
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ObjectType.pin.name);
-      when(() => parent.emoji()).thenReturn(ObjectEmoji.pin.data);
+      when(() => parent.objectTypeStr()).thenReturn(ActerObject.pin.name);
+      when(() => parent.emoji()).thenReturn(ActerObject.pin.emoji);
 
       // Act: process data and get tile and body
       when(() => parent.title()).thenReturn("The house");
