@@ -36,10 +36,10 @@ use super::{
     typing::TypingController, verification::VerificationController,
 };
 
-mod simp_sync;
+mod simplified_sync;
 mod sync;
 
-pub use simp_sync::SyncController;
+pub use simplified_sync::SyncController;
 pub use sync::{HistoryLoadState, SyncState};
 
 #[derive(Default, Builder, Debug)]
