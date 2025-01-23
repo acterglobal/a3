@@ -2353,5 +2353,19 @@
   "referencesEmptyStateTitle": "Keine Referenzen gefunden.",
   "@referencesEmptyStateTitle": {},
   "whatsAppBusiness": "WA Business",
-  "@whatsAppBusiness": {}
+  "@whatsAppBusiness": {},
+  "subscribedToParentMsg": "Benachrichtigungen auf dem Hauptobject deaktiveren, um diese hier zu aktievieren",
+  "@subscribedToParentMsg": {},
+  "parentSubscribedAction": "Benachrichtigungen über Objekt aktiv",
+  "@parentSubscribedAction": {},
+  "subscribeAction": "Benachrichtigungen aktivieren",
+  "@subscribeAction": {},
+  "unsubscribeAction": "Benachrichtigungen deaktivieren",
+  "@unsubscribeAction": {},
+  "autoSubscribeLabsFeature": "Automatische abbonieren",
+  "@autoSubscribeLabsFeature": {},
+  "autoSubscribeFeatureDesc": "bei deinen Boosts",
+  "@autoSubscribeFeatureDesc": {},
+  "autoSubscribeSettingsTitle": "Bei Interaktion automatisch abonnieren",
+  "@autoSubscribeSettingsTitle": {}
 }

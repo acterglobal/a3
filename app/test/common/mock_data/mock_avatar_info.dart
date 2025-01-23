@@ -4,9 +4,12 @@ import 'package:mocktail/mocktail.dart';
 
 class MockAvatarInfo extends Mock implements AvatarInfo {
   @override
-  String get uniqueId => 'mockUniqueId';
+  final String uniqueId;
+
+  String get userId => uniqueId;
 
   @override
   TooltipStyle get tooltip => TooltipStyle.Combined;
 
+  MockAvatarInfo({required this.uniqueId});
 }

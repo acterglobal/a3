@@ -63,7 +63,7 @@ class ChatRoomNgPage extends ConsumerWidget {
                 lang.membersCount(members.length),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
-              skipLoadingOnReload: false,
+              skipLoadingOnReload: true,
               error: (e, s) {
                 _log.severe('Failed to load active members', e, s);
                 return Text(lang.errorLoadingMembersCount(e));
