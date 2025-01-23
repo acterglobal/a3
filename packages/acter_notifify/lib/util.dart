@@ -4,6 +4,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/platform/android.dart';
 import 'package:acter_notifify/local.dart';
 import 'package:acter_notifify/platform/windows.dart';
+import 'package:acter_notifify/processing/attachment_data_process.dart';
 import 'package:acter_notifify/processing/comment_data_process.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:acter_notifify/processing/reaction_dara_process.dart';
@@ -90,6 +91,7 @@ Future<String> deviceName() async {
     switch (PushStyles.values.asNameMap()[notification.pushStyle()]) {
       PushStyles.comment => titleAndBodyForComment(notification),
       PushStyles.reaction => titleAndBodyForReaction(notification),
+      PushStyles.attachment => titleAndBodyForAttachment(notification),
       _ => _fallbackTitleAndBody(notification),
     };
 
