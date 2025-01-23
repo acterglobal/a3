@@ -15,3 +15,5 @@ class MockAsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String>
   @override
   Future<Room?> build(arg) async => items[arg];
 }
+
+class MockRoomPreview with Mock implements RoomPreview {}

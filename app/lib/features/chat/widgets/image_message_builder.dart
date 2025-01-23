@@ -155,7 +155,7 @@ class ImageMessageBuilder extends ConsumerWidget {
         icon: Icon(PhosphorIcons.imageBroken()),
         error: error,
         stack: stack,
-        textBuilder: L10n.of(context).couldNotLoadImage,
+        textBuilder: (error, code) => L10n.of(context).couldNotLoadImage(error),
         onRetryTap: () {
           final ChatMessageInfo messageInfo =
               (messageId: message.remoteId ?? message.id, roomId: roomId);

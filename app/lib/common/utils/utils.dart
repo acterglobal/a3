@@ -113,6 +113,10 @@ List<String> asDartStringList(FfiListFfiString data) {
   return data.toList().map((e) => e.toDartString()).toList();
 }
 
+extension FfiListFfiStringtoDart on FfiListFfiString {
+  List<String> toDart() => asDartStringList(this);
+}
+
 double? calcGap(BuildContext context) {
   // ignore: deprecated_member_use
   final double scale = MediaQuery.textScalerOf(context).textScaleFactor;

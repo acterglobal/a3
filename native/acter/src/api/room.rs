@@ -1,3 +1,6 @@
+mod account_data;
+mod preview;
+
 pub use acter_core::spaces::{
     CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
     SpaceRelations as CoreSpaceRelations,
@@ -55,14 +58,12 @@ use tokio::fs;
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
 
-mod account_data;
-
-use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
-
 use super::{
     api::FfiBuffer,
     push::{notification_mode_from_input, room_notification_mode_name},
 };
+use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
+pub use preview::RoomPreview;
 
 #[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
 #[strum(serialize_all = "PascalCase")]
@@ -444,14 +445,12 @@ impl SpaceHierarchyRoomInfo {
         self.chunk.avatar_url.is_some()
     }
 
-    pub fn via_server_name(&self) -> Option<String> {
+    pub fn via_server_names(&self) -> Vec<String> {
         for v in &self.chunk.children_state {
             let Ok(h) = v.deserialize() else { continue };
-            if let Some(v) = h.content.via.into_iter().next() {
-                return Some(v.to_string());
-            }
+            return h.content.via.into_iter().map(|s| s.to_string()).collect();
         }
-        None
+        vec![]
     }
 
     pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {

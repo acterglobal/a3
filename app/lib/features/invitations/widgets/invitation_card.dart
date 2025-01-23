@@ -4,6 +4,7 @@ import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
@@ -114,6 +115,9 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
   ListTile renderSpaceTile(BuildContext context) {
     final roomId = widget.invitation.roomIdStr();
     return ListTile(
+      onTap: () {
+        showRoomPreview(context: context, roomIdOrAlias: roomId);
+      },
       leading: ActerAvatar(
         options: AvatarOptions(
           avatarInfo,
@@ -133,6 +137,9 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
   ListTile renderGroupChatTile(BuildContext context) {
     final roomId = widget.invitation.roomIdStr();
     return ListTile(
+      onTap: () {
+        showRoomPreview(context: context, roomIdOrAlias: roomId);
+      },
       leading: ActerAvatar(
         options: AvatarOptions(
           avatarInfo,
@@ -158,6 +165,9 @@ class _InvitationCardState extends ConsumerState<InvitationCard> {
     final senderId = widget.invitation.senderIdStr();
     final roomId = widget.invitation.roomIdStr();
     return ListTile(
+      onTap: () {
+        showRoomPreview(context: context, roomIdOrAlias: roomId);
+      },
       leading: ActerAvatar(
         options: AvatarOptions.DM(
           AvatarInfo(

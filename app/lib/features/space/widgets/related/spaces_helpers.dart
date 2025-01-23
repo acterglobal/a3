@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
@@ -55,7 +56,7 @@ Widget renderRemoteSubspaces(
               joinRule: roomInfo.joinRuleStr().toLowerCase(),
               roomId: roomId,
               roomName: roomInfo.name() ?? roomId,
-              viaServerName: roomInfo.viaServerName(),
+              viaServerName: roomInfo.viaServerNames().toDart(),
               forward: (spaceId) {
                 goToSpace(context, spaceId);
                 ref.invalidate(spaceRelationsProvider(parentId));

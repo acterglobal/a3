@@ -1808,6 +1808,16 @@ class Api {
     return tmp9;
   }
 
+  VecStringBuilder newVecStringBuilder() {
+    final tmp0 = _newVecStringBuilder();
+    final tmp2 = tmp0;
+    final ffi.Pointer<ffi.Void> tmp2_0 = ffi.Pointer.fromAddress(tmp2);
+    final tmp2_1 = _Box(this, tmp2_0, "drop_box_VecStringBuilder");
+    tmp2_1._finalizer = this._registerFinalizer(tmp2_1);
+    final tmp1 = VecStringBuilder._(this, tmp2_1);
+    return tmp1;
+  }
+
   /// Rotate the logging file
   JoinRuleBuilder newJoinRuleBuilder() {
     final tmp0 = _newJoinRuleBuilder();
@@ -9114,6 +9124,53 @@ class Api {
     return tmp7;
   }
 
+  OptionBuffer? __roomPreviewAvatarFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomPreviewAvatarFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionBuffer._(this, tmp13_1);
+    return tmp7;
+  }
+
   SpaceRelations? __spaceSpaceRelationsFuturePoll(
     int boxed,
     int postCobject,
@@ -14462,6 +14519,53 @@ class Api {
     return tmp7;
   }
 
+  RoomPreview? __clientRoomPreviewFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientRoomPreviewFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_RoomPreview");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = RoomPreview._(this, tmp13_1);
+    return tmp7;
+  }
+
   String? __notificationSettingsDefaultNotificationModeFuturePoll(
     int boxed,
     int postCobject,
@@ -17477,6 +17581,12 @@ class Api {
         int,
         int,
       )>();
+  late final _newVecStringBuilderPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__new_vec_string_builder");
+
+  late final _newVecStringBuilder =
+      _newVecStringBuilderPtr.asFunction<int Function()>();
   late final _newJoinRuleBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
           "__new_join_rule_builder");
@@ -17638,6 +17748,16 @@ class Api {
       _RefDetailsUriReturn Function(
         int,
       )>();
+  late final _refDetailsViaServersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__RefDetails_via_servers");
+
+  late final _refDetailsViaServers = _refDetailsViaServersPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _refDetailsGenerateInternalLinkPtr = _lookup<
       ffi.NativeFunction<
           _RefDetailsGenerateInternalLinkReturn Function(
@@ -17786,6 +17906,22 @@ class Api {
           void Function(
             int,
           )>();
+  late final _vecStringBuilderAddPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__VecStringBuilder_add");
+
+  late final _vecStringBuilderAdd = _vecStringBuilderAddPtr.asFunction<
+      void Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _optionStringTextPtr = _lookup<
       ffi.NativeFunction<
           _OptionStringTextReturn Function(
@@ -24651,15 +24787,15 @@ class Api {
             int,
             int,
           )>();
-  late final _spaceHierarchyRoomInfoViaServerNamePtr = _lookup<
+  late final _spaceHierarchyRoomInfoViaServerNamesPtr = _lookup<
       ffi.NativeFunction<
-          _SpaceHierarchyRoomInfoViaServerNameReturn Function(
+          ffi.IntPtr Function(
             ffi.IntPtr,
-          )>>("__SpaceHierarchyRoomInfo_via_server_name");
+          )>>("__SpaceHierarchyRoomInfo_via_server_names");
 
-  late final _spaceHierarchyRoomInfoViaServerName =
-      _spaceHierarchyRoomInfoViaServerNamePtr.asFunction<
-          _SpaceHierarchyRoomInfoViaServerNameReturn Function(
+  late final _spaceHierarchyRoomInfoViaServerNames =
+      _spaceHierarchyRoomInfoViaServerNamesPtr.asFunction<
+          int Function(
             int,
           )>();
   late final _spaceRelationRoomIdPtr = _lookup<
@@ -25255,6 +25391,132 @@ class Api {
             int,
             int,
           )>();
+  late final _roomPreviewRoomIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPreviewRoomIdStrReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPreview_room_id_str");
+
+  late final _roomPreviewRoomIdStr = _roomPreviewRoomIdStrPtr.asFunction<
+      _RoomPreviewRoomIdStrReturn Function(
+        int,
+      )>();
+  late final _roomPreviewNamePtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPreviewNameReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPreview_name");
+
+  late final _roomPreviewName = _roomPreviewNamePtr.asFunction<
+      _RoomPreviewNameReturn Function(
+        int,
+      )>();
+  late final _roomPreviewTopicPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPreviewTopicReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPreview_topic");
+
+  late final _roomPreviewTopic = _roomPreviewTopicPtr.asFunction<
+      _RoomPreviewTopicReturn Function(
+        int,
+      )>();
+  late final _roomPreviewAvatarUrlStrPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPreviewAvatarUrlStrReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPreview_avatar_url_str");
+
+  late final _roomPreviewAvatarUrlStr = _roomPreviewAvatarUrlStrPtr.asFunction<
+      _RoomPreviewAvatarUrlStrReturn Function(
+        int,
+      )>();
+  late final _roomPreviewCanonicalAliasStrPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPreviewCanonicalAliasStrReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPreview_canonical_alias_str");
+
+  late final _roomPreviewCanonicalAliasStr =
+      _roomPreviewCanonicalAliasStrPtr.asFunction<
+          _RoomPreviewCanonicalAliasStrReturn Function(
+            int,
+          )>();
+  late final _roomPreviewRoomTypeStrPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPreviewRoomTypeStrReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPreview_room_type_str");
+
+  late final _roomPreviewRoomTypeStr = _roomPreviewRoomTypeStrPtr.asFunction<
+      _RoomPreviewRoomTypeStrReturn Function(
+        int,
+      )>();
+  late final _roomPreviewJoinRuleStrPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPreviewJoinRuleStrReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPreview_join_rule_str");
+
+  late final _roomPreviewJoinRuleStr = _roomPreviewJoinRuleStrPtr.asFunction<
+      _RoomPreviewJoinRuleStrReturn Function(
+        int,
+      )>();
+  late final _roomPreviewStateStrPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPreviewStateStrReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPreview_state_str");
+
+  late final _roomPreviewStateStr = _roomPreviewStateStrPtr.asFunction<
+      _RoomPreviewStateStrReturn Function(
+        int,
+      )>();
+  late final _roomPreviewIsDirectPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPreviewIsDirectReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPreview_is_direct");
+
+  late final _roomPreviewIsDirect = _roomPreviewIsDirectPtr.asFunction<
+      _RoomPreviewIsDirectReturn Function(
+        int,
+      )>();
+  late final _roomPreviewIsWorldReadablePtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPreviewIsWorldReadableReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPreview_is_world_readable");
+
+  late final _roomPreviewIsWorldReadable =
+      _roomPreviewIsWorldReadablePtr.asFunction<
+          _RoomPreviewIsWorldReadableReturn Function(
+            int,
+          )>();
+  late final _roomPreviewHasAvatarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__RoomPreview_has_avatar");
+
+  late final _roomPreviewHasAvatar = _roomPreviewHasAvatarPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _roomPreviewAvatarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+            ffi.IntPtr,
+          )>>("__RoomPreview_avatar");
+
+  late final _roomPreviewAvatar = _roomPreviewAvatarPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+      )>();
   late final _categoryTitlePtr = _lookup<
       ffi.NativeFunction<
           _CategoryTitleReturn Function(
@@ -27881,17 +28143,11 @@ class Api {
             ffi.IntPtr,
             ffi.UintPtr,
             ffi.UintPtr,
-            ffi.Uint8,
             ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
           )>>("__Client_join_room");
 
   late final _clientJoinRoom = _clientJoinRoomPtr.asFunction<
       int Function(
-        int,
-        int,
-        int,
         int,
         int,
         int,
@@ -29004,6 +29260,24 @@ class Api {
 
   late final _clientBackupManager = _clientBackupManagerPtr.asFunction<
       int Function(
+        int,
+      )>();
+  late final _clientRoomPreviewPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.IntPtr,
+          )>>("__Client_room_preview");
+
+  late final _clientRoomPreview = _clientRoomPreviewPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
         int,
       )>();
   late final _notificationSettingsChangesStreamPtr = _lookup<
@@ -32227,6 +32501,21 @@ class Api {
             int,
             int,
           )>();
+  late final _roomPreviewAvatarFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPreviewAvatarFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__RoomPreview_avatar_future_poll");
+
+  late final _roomPreviewAvatarFuturePoll =
+      _roomPreviewAvatarFuturePollPtr.asFunction<
+          _RoomPreviewAvatarFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _spaceSpaceRelationsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _SpaceSpaceRelationsFuturePollReturn Function(
@@ -33928,6 +34217,21 @@ class Api {
   late final _clientDeviceRecordsFuturePoll =
       _clientDeviceRecordsFuturePollPtr.asFunction<
           _ClientDeviceRecordsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _clientRoomPreviewFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientRoomPreviewFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Client_room_preview_future_poll");
+
+  late final _clientRoomPreviewFuturePoll =
+      _clientRoomPreviewFuturePollPtr.asFunction<
+          _ClientRoomPreviewFuturePollReturn Function(
             int,
             int,
             int,
@@ -37041,6 +37345,22 @@ class RefDetails {
     return tmp2;
   }
 
+  /// the via-server names for this room
+  FfiListFfiString viaServers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._refDetailsViaServers(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
   /// generating an internal acter:-link
   String generateInternalLink(
     bool includePreview,
@@ -37343,6 +37663,44 @@ class ColorizeBuilder {
     tmp0 = _box.borrow();
     _api._colorizeBuilderUnsetBackground(
       tmp0,
+    );
+    return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class VecStringBuilder {
+  final Api _api;
+  final _Box _box;
+
+  VecStringBuilder._(this._api, this._box);
+
+  void add(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._vecStringBuilderAdd(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
     );
     return;
   }
@@ -51006,36 +51364,18 @@ class SpaceHierarchyRoomInfo {
   }
 
   /// recommended server to try to join via
-  String? viaServerName() {
+  FfiListFfiString viaServerNames() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._spaceHierarchyRoomInfoViaServerName(
+    final tmp1 = _api._spaceHierarchyRoomInfoViaServerNames(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -52169,6 +52509,335 @@ class ActerAppSettingsBuilder {
       tmp4,
     );
     return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomPreview {
+  final Api _api;
+  final _Box _box;
+
+  RoomPreview._(this._api, this._box);
+
+  String roomIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPreviewRoomIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? name() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPreviewName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? topic() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPreviewTopic(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? avatarUrlStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPreviewAvatarUrlStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? canonicalAliasStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPreviewCanonicalAliasStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String roomTypeStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPreviewRoomTypeStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String joinRuleStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPreviewJoinRuleStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String stateStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPreviewStateStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  bool? isDirect() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPreviewIsDirect(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4 > 0;
+    return tmp2;
+  }
+
+  bool? isWorldReadable() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPreviewIsWorldReadable(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4 > 0;
+    return tmp2;
+  }
+
+  bool hasAvatar() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPreviewHasAvatar(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  Future<OptionBuffer> avatar(
+    ThumbnailSize? thumbSize,
+  ) {
+    final tmp1 = thumbSize;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    final tmp5 = _api._roomPreviewAvatar(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__RoomPreview_avatar_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__roomPreviewAvatarFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -57679,18 +58348,15 @@ class Client {
   /// attempt to join a room
   Future<Room> joinRoom(
     String roomIdOrAlias,
-    String? serverName,
+    VecStringBuilder serverNames,
   ) {
     final tmp1 = roomIdOrAlias;
-    final tmp5 = serverName;
+    final tmp5 = serverNames;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp4 = 0;
     var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp9 = 0;
-    var tmp10 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -57700,36 +58366,20 @@ class Client {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    if (tmp5 == null) {
-      tmp6 = 0;
-    } else {
-      tmp6 = 1;
-      final tmp7 = tmp5;
-      final tmp7_0 = utf8.encode(tmp7);
-      tmp9 = tmp7_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = _api.__allocate(tmp9 * 1, 1);
-      final Uint8List tmp8_1 = tmp8_0.asTypedList(tmp9);
-      tmp8_1.setAll(0, tmp7_0);
-      tmp8 = tmp8_0.address;
-      tmp10 = tmp9;
-    }
-    final tmp11 = _api._clientJoinRoom(
+    tmp6 = tmp5._box.move();
+    final tmp7 = _api._clientJoinRoom(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
       tmp6,
-      tmp8,
-      tmp9,
-      tmp10,
     );
-    final tmp13 = tmp11;
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(_api, tmp13_0, "__Client_join_room_future_drop");
-    tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
-    final tmp12 = _nativeFuture(tmp13_1, _api.__clientJoinRoomFuturePoll);
-    return tmp12;
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Client_join_room_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__clientJoinRoomFuturePoll);
+    return tmp8;
   }
 
   /// Get the space that user belongs to
@@ -60162,6 +60812,43 @@ class Client {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = BackupManager._(_api, tmp3_1);
     return tmp2;
+  }
+
+  /// Room preview
+  Future<RoomPreview> roomPreview(
+    String roomIdOrAlias,
+    VecStringBuilder serverNames,
+  ) {
+    final tmp1 = roomIdOrAlias;
+    final tmp5 = serverNames;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp6 = tmp5._box.move();
+    final tmp7 = _api._clientRoomPreview(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+    );
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "__Client_room_preview_future_drop");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(tmp9_1, _api.__clientRoomPreviewFuturePoll);
+    return tmp8;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -64194,17 +64881,6 @@ class _SpaceHierarchyRoomInfoJoinRuleStrReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _SpaceHierarchyRoomInfoViaServerNameReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
 class _SpaceRelationTargetTypeReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
@@ -64382,6 +65058,100 @@ class _SimpleSettingWithTurnOffBuilderBuildReturn extends ffi.Struct {
   external int arg3;
   @ffi.IntPtr()
   external int arg4;
+}
+
+class _RoomPreviewRoomIdStrReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomPreviewNameReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPreviewTopicReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPreviewAvatarUrlStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPreviewCanonicalAliasStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPreviewRoomTypeStrReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomPreviewJoinRuleStrReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomPreviewStateStrReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomPreviewIsDirectReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _RoomPreviewIsWorldReadableReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
 }
 
 class _CategoryTitleReturn extends ffi.Struct {
@@ -67632,6 +68402,21 @@ class _SpaceRelationsQueryHierarchyFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _RoomPreviewAvatarFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
 class _SpaceSpaceRelationsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -69344,6 +70129,21 @@ class _ClientNotificationSettingsFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientDeviceRecordsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ClientRoomPreviewFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

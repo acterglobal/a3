@@ -2,7 +2,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/blinking_text.dart';
-import 'package:acter/common/widgets/reference_details_item.dart';
+import 'package:acter/features/deep_linking/widgets/reference_details_item.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
@@ -95,7 +95,7 @@ class EventItem extends ConsumerWidget {
                 if (eventType == EventFilters.ongoing)
                   _buildHappeningIndication(context),
                 const SizedBox(width: 10),
-                if (isShowRsvp) _buildRsvpStatus(context, ref,event),
+                if (isShowRsvp) _buildRsvpStatus(context, ref, event),
                 const SizedBox(width: 10),
               ],
             ),

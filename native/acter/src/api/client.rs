@@ -28,7 +28,7 @@ use matrix_sdk_base::{
     },
     RoomStateFilter,
 };
-use ruma::EventId;
+use ruma::{EventId, ServerName};
 use std::{borrow::Cow, io::Write, ops::Deref, path::PathBuf, str::FromStr, sync::Arc};
 use tokio::{
     sync::{broadcast::Receiver, RwLock},
@@ -41,7 +41,7 @@ use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-    typing::TypingController, verification::VerificationController,
+    typing::TypingController, verification::VerificationController, VecStringBuilder,
 };
 
 mod sync;
@@ -146,18 +146,16 @@ impl Client {
     pub async fn join_room(
         &self,
         room_id_or_alias: String,
-        server_name: Option<String>,
+        server_names: Box<VecStringBuilder>,
     ) -> Result<Room> {
         let parsed = RoomOrAliasId::parse(room_id_or_alias)?;
-        let server_names = match server_name {
-            Some(inner) => vec![OwnedServerName::try_from(inner)?],
-            None => parsed
-                .server_name()
-                .map(|i| vec![i.to_owned()])
-                .unwrap_or_default(),
-        };
+        let servers = (*server_names)
+            .0
+            .into_iter()
+            .map(ServerName::parse)
+            .collect::<Result<Vec<OwnedServerName>, matrix_sdk::IdParseError>>()?;
 
-        self.join_room_typed(parsed, server_names).await
+        self.join_room_typed(parsed, servers).await
     }
     pub async fn join_room_typed(
         &self,
