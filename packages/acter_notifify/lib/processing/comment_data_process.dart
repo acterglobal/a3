@@ -1,6 +1,6 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter_notifify/data/data_contants.dart';
-import 'package:acter_notifify/data/parent_data_process.dart';
+import 'package:acter_notifify/model/push_styles.dart';
+import 'package:acter_notifify/processing/parent_data_process.dart';
 
 (String, String?) titleAndBodyForComment(NotificationItem notification) {
   //Generate comment title

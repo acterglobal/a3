@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter_notifify/data/comment_data_process.dart';
-import 'package:acter_notifify/data/data_contants.dart';
-import 'package:acter_notifify/data/reaction_dara_process.dart';
 import 'package:acter_notifify/platform/android.dart';
 import 'package:acter_notifify/local.dart';
 import 'package:acter_notifify/platform/windows.dart';
+import 'package:acter_notifify/processing/comment_data_process.dart';
+import 'package:acter_notifify/model/push_styles.dart';
+import 'package:acter_notifify/processing/reaction_dara_process.dart';
 import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 

@@ -1,4 +1,4 @@
-import 'package:acter_notifify/data/data_contants.dart';
+import 'package:acter_notifify/model/push_styles.dart';
 import 'package:acter_notifify/util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'mock_data/mock_notification_item.dart';
 import 'mock_data/mock_notification_parent.dart';
 import 'mock_data/mock_notification_sender.dart';
+import 'mock_data/mock_object.dart';
 
 void main() {
   late MockNotificationItem item;
@@ -34,14 +35,14 @@ void main() {
 
   group("Title and Body generation", () {
     test("Reaction on boost", () {
-      // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ActerObject.news.name);
-      when(() => parent.emoji()).thenReturn(ActerObject.news.emoji);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.news.name);
+      when(() => parent.emoji()).thenReturn(MockObject.news.emoji);
 
-      // Arrange: Set reaction data
+      // Arrange: Set reaction processing
       when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
 
-      // Act: process data and get tile and body
+      // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
@@ -50,15 +51,15 @@ void main() {
     });
 
     test("Reaction on Pin", () {
-      // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ActerObject.pin.name);
-      when(() => parent.emoji()).thenReturn(ActerObject.pin.emoji);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.pin.name);
+      when(() => parent.emoji()).thenReturn(MockObject.pin.emoji);
       when(() => parent.title()).thenReturn("Candlesticks");
 
-      // Arrange: Set reaction data
+      // Arrange: Set reaction processing
       when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
 
-      // Act: process data and get tile and body
+      // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
@@ -67,15 +68,15 @@ void main() {
     });
 
     test("Reaction on Event", () {
-      // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ActerObject.event.name);
-      when(() => parent.emoji()).thenReturn(ActerObject.event.emoji);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
       when(() => parent.title()).thenReturn("Social Hours 2025");
 
-      // Arrange: Set reaction data
+      // Arrange: Set reaction processing
       when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
 
-      // Act: process data and get tile and body
+      // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
@@ -84,15 +85,15 @@ void main() {
     });
 
     test("Reaction on Task-List", () {
-      // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ActerObject.taskList.name);
-      when(() => parent.emoji()).thenReturn(ActerObject.taskList.emoji);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskList.name);
+      when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
       when(() => parent.title()).thenReturn("New Year Goals");
 
-      // Arrange: Set reaction data
+      // Arrange: Set reaction processing
       when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
 
-      // Act: process data and get tile and body
+      // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
@@ -101,15 +102,15 @@ void main() {
     });
 
     test("Reaction on Task-Item", () {
-      // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ActerObject.taskItem.name);
-      when(() => parent.emoji()).thenReturn(ActerObject.taskItem.emoji);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
 
-      // Arrange: Set reaction data
+      // Arrange: Set reaction processing
       when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
 
-      // Act: process data and get tile and body
+      // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
@@ -118,13 +119,13 @@ void main() {
     });
 
     test("Reaction with parent", () {
-      // Arrange: Set sender and parent object data
+      // Arrange: Set sender and parent object processing
       final sender = MockNotificationSender(
           username: "@id:acter.global"); // no display name
       when(() => item.sender()).thenReturn(sender);
       when(() => item.parent()).thenReturn(null);
 
-      // Act: process data and get tile and body
+      // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected

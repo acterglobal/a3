@@ -1,4 +1,4 @@
-import 'package:acter_notifify/data/data_contants.dart';
+import 'package:acter_notifify/model/push_styles.dart';
 import 'package:acter_notifify/util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'mock_data/mock_notification_item.dart';
 import 'mock_data/mock_notification_parent.dart';
 import 'mock_data/mock_notification_sender.dart';
+import 'mock_data/mock_object.dart';
 
 void main() {
   late MockNotificationItem item;
@@ -34,11 +35,11 @@ void main() {
 
   group("Title and body generation", () {
     test("Comment on boost", () {
-      // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ActerObject.news.name);
-      when(() => parent.emoji()).thenReturn(ActerObject.news.emoji);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.news.name);
+      when(() => parent.emoji()).thenReturn(MockObject.news.emoji);
 
-      // Act: process data and get tile and body
+      // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
@@ -47,11 +48,11 @@ void main() {
     });
 
     test("Comment on Pin", () {
-      // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ActerObject.pin.name);
-      when(() => parent.emoji()).thenReturn(ActerObject.pin.emoji);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.pin.name);
+      when(() => parent.emoji()).thenReturn(MockObject.pin.emoji);
 
-      // Act: process data and get tile and body
+      // Act: process processing and get tile and body
       when(() => parent.title()).thenReturn("The house");
       final (title, body) = genTitleAndBody(item);
 
@@ -61,11 +62,11 @@ void main() {
     });
 
     test("Comment on Event", () {
-      // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ActerObject.event.name);
-      when(() => parent.emoji()).thenReturn(ActerObject.event.emoji);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
 
-      // Act: process data and get tile and body
+      // Act: process processing and get tile and body
       when(() => parent.title()).thenReturn("Social Hours 2025");
       final (title, body) = genTitleAndBody(item);
 
@@ -75,11 +76,11 @@ void main() {
     });
 
     test("Comment on Task-List", () {
-      // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ActerObject.taskList.name);
-      when(() => parent.emoji()).thenReturn(ActerObject.taskList.emoji);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskList.name);
+      when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
 
-      // Act: process data and get tile and body
+      // Act: process processing and get tile and body
       when(() => parent.title()).thenReturn("New Year Goals");
       final (title, body) = genTitleAndBody(item);
 
@@ -89,11 +90,11 @@ void main() {
     });
 
     test("Comment on Task-Item", () {
-      // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(ActerObject.taskItem.name);
-      when(() => parent.emoji()).thenReturn(ActerObject.taskItem.emoji);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
 
-      // Act: process data and get tile and body
+      // Act: process processing and get tile and body
       when(() => parent.title()).thenReturn("Website Redesign");
       final (title, body) = genTitleAndBody(item);
 
@@ -103,13 +104,13 @@ void main() {
     });
 
     test("Comment with no parent", () {
-      // Arrange: Set sender and parent object data
+      // Arrange: Set sender and parent object processing
       final sender = MockNotificationSender(
           username: "@id:acter.global"); // no display name
       when(() => item.sender()).thenReturn(sender);
       when(() => item.parent()).thenReturn(null);
 
-      // Act: process data and get tile and body
+      // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected

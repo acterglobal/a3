@@ -24,7 +24,7 @@ Future<ByteArrayAndroidBitmap?> _fetchImage(
       final image = await notification.image();
       return ByteArrayAndroidBitmap(image.asTypedList());
     } catch (e, s) {
-      _log.severe('fetching image data failed', e, s);
+      _log.severe('fetching image processing failed', e, s);
       Sentry.captureException(e, stackTrace: s);
     }
   }
@@ -42,7 +42,7 @@ Future<Person> _makeSenderPerson(NotificationItem notification) async {
         name: sender.displayName(),
       );
     } catch (e, s) {
-      _log.severe('fetching image data failed', e, s);
+      _log.severe('fetching image processing failed', e, s);
       Sentry.captureException(e, stackTrace: s);
     }
   }

@@ -1,7 +1,7 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter_notifify/data/parent_data_process.dart';
+import 'package:acter_notifify/processing/parent_data_process.dart';
 
-import 'data_contants.dart';
+import '../model/push_styles.dart';
 
 (String, String?) titleAndBodyForReaction(NotificationItem notification) {
   //Generate reaction title

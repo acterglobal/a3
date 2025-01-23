@@ -30,17 +30,3 @@ enum PushStyles {
 
   final String emoji;
 }
-
-//Object Emoji
-enum ActerObject {
-  //LIST OF OBJECT EMOJIS
-  news('🚀'),
-  pin('📌'),
-  event('🗓️'),
-  taskList('📋'),
-  taskItem('☑️');
-
-  const ActerObject(this.emoji);
-
-  final String emoji;
-}
