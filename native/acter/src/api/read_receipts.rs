@@ -1,4 +1,4 @@
-use acter_core::models;
+use acter_core::{models, referencing::ExecuteReference};
 use anyhow::Result;
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;
@@ -46,7 +46,7 @@ impl ReadReceiptsManager {
         .await
     }
 
-    pub fn update_key(&self) -> String {
+    pub fn update_key(&self) -> ExecuteReference {
         self.inner.update_key()
     }
 

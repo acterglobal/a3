@@ -4,7 +4,7 @@ use acter_core::{
         Display, RefDetails as CoreRefDetails, RefPreview,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, TaskStats},
-    statics::KEYS,
+    referencing::{IndexKey, SectionIndex, SpecialListsIndex},
 };
 use anyhow::{bail, Context, Result};
 use chrono::DateTime;
@@ -17,6 +17,7 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
+use scc::ebr::Owned;
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -72,7 +73,11 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let client = me.core.client();
-                for mdl in me.store().get_list(KEYS::TASKS::TASKS).await? {
+                for mdl in me
+                    .store()
+                    .get_list(&IndexKey::Section(SectionIndex::Tasks))
+                    .await?
+                {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::TaskList(content) = mdl {
                         let room_id = content.room_id().to_owned();
@@ -109,7 +114,11 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let client = me.core.client();
-                for mdl in me.store().get_list(KEYS::TASKS::MY_OPEN_TASKS).await? {
+                for mdl in me
+                    .store()
+                    .get_list(&IndexKey::Special(SpecialListsIndex::MyOpenTasks))
+                    .await?
+                {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::Task(content) = mdl {
                         let room_id = content.room_id().to_owned();
@@ -148,7 +157,7 @@ impl Client {
 
     pub fn subscribe_my_open_tasks(&self) -> Receiver<()> {
         self.executor()
-            .subscribe(KEYS::TASKS::MY_OPEN_TASKS.to_owned())
+            .subscribe(IndexKey::Special(SpecialListsIndex::MyOpenTasks))
     }
 }
 
@@ -160,8 +169,11 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let k = format!("{room_id}::{}", KEYS::TASKS::TASKS);
-                for mdl in client.store().get_list(&k).await? {
+                for mdl in client
+                    .store()
+                    .get_list(&IndexKey::RoomSection(room_id, SectionIndex::Tasks))
+                    .await?
+                {
                     #[allow(irrefutable_let_patterns)]
                     if let AnyActerModel::TaskList(content) = mdl {
                         task_lists.push(TaskList {
@@ -178,7 +190,7 @@ impl Space {
             .await?
     }
 
-    pub async fn task_list(&self, key: String) -> Result<TaskList> {
+    pub async fn task_list(&self, key: OwnedEventId) -> Result<TaskList> {
         let room_id = self.room_id().to_owned();
         let client = self.client.clone();
         let room = self.room.clone();
@@ -409,7 +421,7 @@ impl TaskList {
     }
 
     pub async fn refresh(&self) -> Result<TaskList> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         let client = self.client.clone();
         let room = self.room.clone();
 
@@ -441,7 +453,7 @@ impl TaskList {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         self.client.subscribe(key)
     }
 
@@ -647,7 +659,7 @@ impl Task {
 /// Custom functions
 impl Task {
     pub async fn refresh(&self) -> Result<Task> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         let client = self.client.clone();
         let room = self.room.clone();
 
@@ -749,7 +761,7 @@ impl Task {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         self.client.subscribe(key)
     }
 

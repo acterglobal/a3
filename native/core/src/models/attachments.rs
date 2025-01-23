@@ -1,7 +1,5 @@
 use derive_getters::Getters;
-use matrix_sdk_base::ruma::{
-    events::OriginalMessageLikeEvent, EventId, OwnedEventId, RoomId, UserId,
-};
+use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedEventId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use tracing::{error, trace};
@@ -14,12 +12,10 @@ use crate::{
         AttachmentBuilder, AttachmentEventContent, AttachmentUpdateBuilder,
         AttachmentUpdateEventContent,
     },
+    referencing::{ExecuteReference, IndexKey, ModelParam, ObjectListIndex},
     store::Store,
     Result,
 };
-
-static ATTACHMENTS_FIELD: &str = "attachments";
-static ATTACHMENTS_STATS_FIELD: &str = "attachments_stats";
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
 pub struct AttachmentsStats {
@@ -42,15 +38,14 @@ pub struct AttachmentsManager {
 }
 
 impl AttachmentsManager {
-    fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
-        let r = parent.as_ref();
-        format!("{r}::{ATTACHMENTS_STATS_FIELD}")
+    fn stats_field_for(parent: OwnedEventId) -> ExecuteReference {
+        ExecuteReference::ModelParam(parent, ModelParam::AttachmentsStats)
     }
 
     pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> AttachmentsManager {
         let store = store.clone();
         let stats = store
-            .get_raw(&Self::stats_field_for(&event_id))
+            .get_raw(&Self::stats_field_for(event_id.to_owned()).as_storage_key())
             .await
             .unwrap_or_default();
         AttachmentsManager {
@@ -67,7 +62,7 @@ impl AttachmentsManager {
     pub async fn attachments(&self) -> Result<Vec<Attachment>> {
         let attachments = self
             .store
-            .get_list(&Attachment::index_for(&self.event_id))
+            .get_list(&Attachment::index_for(self.event_id.to_owned()))
             .await?
             .filter_map(|e| match e {
                 AnyActerModel::Attachment(c) => Some(c),
@@ -119,13 +114,15 @@ impl AttachmentsManager {
             .to_owned()
     }
 
-    pub fn update_key(&self) -> String {
-        Self::stats_field_for(&self.event_id)
+    pub fn update_key(&self) -> ExecuteReference {
+        Self::stats_field_for(self.event_id.to_owned())
     }
 
-    pub async fn save(&self) -> Result<String> {
+    pub async fn save(&self) -> Result<ExecuteReference> {
         let update_key = self.update_key();
-        self.store.set_raw(&update_key, &self.stats).await?;
+        self.store
+            .set_raw(&update_key.as_storage_key(), &self.stats)
+            .await?;
         Ok(update_key)
     }
 }
@@ -151,9 +148,8 @@ impl Deref for Attachment {
 }
 
 impl Attachment {
-    pub fn index_for<T: AsRef<str>>(parent: &T) -> String {
-        let r = parent.as_ref();
-        format!("{r}::{ATTACHMENTS_FIELD}")
+    pub fn index_for(parent: OwnedEventId) -> IndexKey {
+        IndexKey::ObjectList(parent, ObjectListIndex::Attachments)
     }
 
     pub fn updater(&self) -> AttachmentUpdateBuilder {
@@ -166,8 +162,8 @@ impl Attachment {
         &self,
         store: &Store,
         redaction_model: Option<RedactedActerModel>,
-    ) -> Result<Vec<String>> {
-        let belongs_to = self.inner.on.event_id.to_string();
+    ) -> Result<Vec<ExecuteReference>> {
+        let belongs_to = self.inner.on.event_id.to_owned();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying attachment");
 
         let manager = {
@@ -208,30 +204,26 @@ impl Attachment {
 }
 
 impl ActerModel for Attachment {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        if self.meta.redacted.is_none() {
-            vec![Attachment::index_for(&self.inner.on.event_id)]
-        } else {
-            vec![]
-        }
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            Attachment::index_for(self.inner.on.event_id.to_owned()),
+            IndexKey::ObjectHistory(self.inner.on.event_id.to_owned()),
+            IndexKey::RoomHistory(self.meta.room_id.to_owned()),
+        ]
     }
-
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     fn capabilities(&self) -> &[Capability] {
         &[Capability::Commentable, Capability::Reactable]
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         self.apply(store, None).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
         // Do not trigger the parent to update, we have a manager
         None
     }
@@ -248,7 +240,7 @@ impl ActerModel for Attachment {
         &self,
         store: &Store,
         redaction_model: RedactedActerModel,
-    ) -> crate::Result<Vec<String>> {
+    ) -> crate::Result<Vec<ExecuteReference>> {
         self.apply(store, Some(redaction_model)).await
     }
 }
@@ -283,22 +275,22 @@ pub struct AttachmentUpdate {
 }
 
 impl ActerModel for AttachmentUpdate {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![format!("{:}::history", self.inner.attachment.event_id)]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            IndexKey::ObjectHistory(self.inner.attachment.event_id.to_owned()),
+            IndexKey::RoomHistory(self.meta.room_id.to_owned()),
+        ]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.attachment.event_id.to_string()])
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
+        Some(vec![self.inner.attachment.event_id.to_owned()])
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 }

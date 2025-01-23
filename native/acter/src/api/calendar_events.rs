@@ -7,7 +7,7 @@ use acter_core::{
         CalendarEventRefPreview, RefDetails as CoreRefDetails, UtcDateTime,
     },
     models::{self, can_redact, ActerModel, AnyActerModel},
-    statics::KEYS,
+    referencing::{IndexKey, SectionIndex},
 };
 use anyhow::{bail, Result};
 use chrono::DateTime;
@@ -21,6 +21,7 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
+use ruma::EventId;
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -56,8 +57,8 @@ impl Client {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::CalendarEvent(inner) = me.store().get(&calendar_id).await?
-                else {
+                let model_id = EventId::parse(calendar_id)?;
+                let AnyActerModel::CalendarEvent(inner) = me.store().get(&model_id).await? else {
                     bail!("Calendar event not found");
                 };
                 let room = me.room_by_id_typed(inner.room_id())?;
@@ -73,7 +74,11 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let client = me.core.client();
-                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
+                for mdl in me
+                    .store()
+                    .get_list(&IndexKey::Section(SectionIndex::Calendar))
+                    .await?
+                {
                     if let AnyActerModel::CalendarEvent(t) = mdl {
                         let room_id = t.room_id().to_owned();
                         let room = match rooms_map.entry(room_id) {
@@ -110,8 +115,11 @@ impl Space {
         let room_id = self.room_id().to_owned();
         RUNTIME
             .spawn(async move {
-                let k = format!("{room_id}::{}", KEYS::CALENDAR);
-                for mdl in client.store().get_list(&k).await? {
+                for mdl in client
+                    .store()
+                    .get_list(&IndexKey::RoomSection(room_id, SectionIndex::Calendar))
+                    .await?
+                {
                     if let AnyActerModel::CalendarEvent(inner) = mdl {
                         calendar_events.push(CalendarEvent::new(
                             client.clone(),
@@ -191,7 +199,7 @@ impl CalendarEvent {
     }
 
     pub async fn refresh(&self) -> Result<CalendarEvent> {
-        let key = self.inner.event_id().to_string();
+        let key = self.inner.event_id().to_owned();
         let client = self.client.clone();
         let room = self.room.clone();
 
@@ -234,7 +242,7 @@ impl CalendarEvent {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.inner.event_id().to_string();
+        let key = self.inner.event_id().to_owned();
         self.client.subscribe(key)
     }
 

@@ -19,7 +19,7 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
   @override
   Future<Space?> build(String arg) async {
     final client = await ref.watch(alwaysClientProvider.future);
-    _listener = client.subscribeStream(arg); // keep it resident in memory
+    _listener = client.subscribeRoomStream(arg); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
         _log.info('seen update $arg');

@@ -10046,53 +10046,6 @@ class Api {
     return tmp7;
   }
 
-  TaskList? __spaceTaskListFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _spaceTaskListFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_TaskList");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = TaskList._(this, tmp13_1);
-    return tmp7;
-  }
-
   FfiListNewsEntry? __spaceLatestNewsEntriesFuturePoll(
     int boxed,
     int postCobject,
@@ -16757,7 +16710,7 @@ class Api {
     return tmp9;
   }
 
-  bool? __clientSubscribeStreamStreamPoll(
+  bool? __clientSubscribeSectionStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -16775,7 +16728,238 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _clientSubscribeStreamStreamPoll(
+    final tmp8 = _clientSubscribeSectionStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  bool? __clientSubscribeModelStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientSubscribeModelStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  bool? __clientSubscribeModelObjectsStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientSubscribeModelObjectsStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  bool? __clientSubscribeModelParamStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientSubscribeModelParamStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  bool? __clientSubscribeRoomStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientSubscribeRoomStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  bool? __clientSubscribeRoomParamStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientSubscribeRoomParamStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  bool? __clientSubscribeRoomSectionStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientSubscribeRoomSectionStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
+  bool? __clientSubscribeEventTypeStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientSubscribeEventTypeStreamStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -25939,22 +26123,6 @@ class Api {
       int Function(
         int,
       )>();
-  late final _spaceTaskListPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Space_task_list");
-
-  late final _spaceTaskList = _spaceTaskListPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
   late final _spaceTaskListDraftPtr = _lookup<
       ffi.NativeFunction<
           _SpaceTaskListDraftReturn Function(
@@ -28247,22 +28415,166 @@ class Api {
         int,
         int,
       )>();
-  late final _clientSubscribeStreamPtr = _lookup<
+  late final _clientSubscribeSectionStreamPtr = _lookup<
       ffi.NativeFunction<
-          ffi.IntPtr Function(
+          _ClientSubscribeSectionStreamReturn Function(
             ffi.IntPtr,
             ffi.IntPtr,
             ffi.UintPtr,
             ffi.UintPtr,
-          )>>("__Client_subscribe_stream");
+          )>>("__Client_subscribe_section_stream");
 
-  late final _clientSubscribeStream = _clientSubscribeStreamPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _clientSubscribeSectionStream =
+      _clientSubscribeSectionStreamPtr.asFunction<
+          _ClientSubscribeSectionStreamReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeModelStreamPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeModelStreamReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__Client_subscribe_model_stream");
+
+  late final _clientSubscribeModelStream =
+      _clientSubscribeModelStreamPtr.asFunction<
+          _ClientSubscribeModelStreamReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeModelObjectsStreamPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeModelObjectsStreamReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__Client_subscribe_model_objects_stream");
+
+  late final _clientSubscribeModelObjectsStream =
+      _clientSubscribeModelObjectsStreamPtr.asFunction<
+          _ClientSubscribeModelObjectsStreamReturn Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeModelParamStreamPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeModelParamStreamReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__Client_subscribe_model_param_stream");
+
+  late final _clientSubscribeModelParamStream =
+      _clientSubscribeModelParamStreamPtr.asFunction<
+          _ClientSubscribeModelParamStreamReturn Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeRoomStreamPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeRoomStreamReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__Client_subscribe_room_stream");
+
+  late final _clientSubscribeRoomStream =
+      _clientSubscribeRoomStreamPtr.asFunction<
+          _ClientSubscribeRoomStreamReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeRoomParamStreamPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeRoomParamStreamReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__Client_subscribe_room_param_stream");
+
+  late final _clientSubscribeRoomParamStream =
+      _clientSubscribeRoomParamStreamPtr.asFunction<
+          _ClientSubscribeRoomParamStreamReturn Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeRoomSectionStreamPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeRoomSectionStreamReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__Client_subscribe_room_section_stream");
+
+  late final _clientSubscribeRoomSectionStream =
+      _clientSubscribeRoomSectionStreamPtr.asFunction<
+          _ClientSubscribeRoomSectionStreamReturn Function(
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeEventTypeStreamPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeEventTypeStreamReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__Client_subscribe_event_type_stream");
+
+  late final _clientSubscribeEventTypeStream =
+      _clientSubscribeEventTypeStreamPtr.asFunction<
+          _ClientSubscribeEventTypeStreamReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _clientWaitForRoomPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -32487,20 +32799,6 @@ class Api {
             int,
             int,
           )>();
-  late final _spaceTaskListFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceTaskListFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_task_list_future_poll");
-
-  late final _spaceTaskListFuturePoll = _spaceTaskListFuturePollPtr.asFunction<
-      _SpaceTaskListFuturePollReturn Function(
-        int,
-        int,
-        int,
-      )>();
   late final _spaceLatestNewsEntriesFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _SpaceLatestNewsEntriesFuturePollReturn Function(
@@ -34746,18 +35044,137 @@ class Api {
             int,
             int,
           )>();
-  late final _clientSubscribeStreamStreamPollPtr = _lookup<
+  late final _clientSubscribeSectionStreamStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientSubscribeStreamStreamPollReturn Function(
+          _ClientSubscribeSectionStreamStreamPollReturn Function(
             ffi.IntPtr,
             ffi.IntPtr,
             ffi.Int64,
             ffi.Int64,
-          )>>("__Client_subscribe_stream_stream_poll");
+          )>>("__Client_subscribe_section_stream_stream_poll");
 
-  late final _clientSubscribeStreamStreamPoll =
-      _clientSubscribeStreamStreamPollPtr.asFunction<
-          _ClientSubscribeStreamStreamPollReturn Function(
+  late final _clientSubscribeSectionStreamStreamPoll =
+      _clientSubscribeSectionStreamStreamPollPtr.asFunction<
+          _ClientSubscribeSectionStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeModelStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeModelStreamStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_subscribe_model_stream_stream_poll");
+
+  late final _clientSubscribeModelStreamStreamPoll =
+      _clientSubscribeModelStreamStreamPollPtr.asFunction<
+          _ClientSubscribeModelStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeModelObjectsStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeModelObjectsStreamStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_subscribe_model_objects_stream_stream_poll");
+
+  late final _clientSubscribeModelObjectsStreamStreamPoll =
+      _clientSubscribeModelObjectsStreamStreamPollPtr.asFunction<
+          _ClientSubscribeModelObjectsStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeModelParamStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeModelParamStreamStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_subscribe_model_param_stream_stream_poll");
+
+  late final _clientSubscribeModelParamStreamStreamPoll =
+      _clientSubscribeModelParamStreamStreamPollPtr.asFunction<
+          _ClientSubscribeModelParamStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeRoomStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeRoomStreamStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_subscribe_room_stream_stream_poll");
+
+  late final _clientSubscribeRoomStreamStreamPoll =
+      _clientSubscribeRoomStreamStreamPollPtr.asFunction<
+          _ClientSubscribeRoomStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeRoomParamStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeRoomParamStreamStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_subscribe_room_param_stream_stream_poll");
+
+  late final _clientSubscribeRoomParamStreamStreamPoll =
+      _clientSubscribeRoomParamStreamStreamPollPtr.asFunction<
+          _ClientSubscribeRoomParamStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeRoomSectionStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeRoomSectionStreamStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_subscribe_room_section_stream_stream_poll");
+
+  late final _clientSubscribeRoomSectionStreamStreamPoll =
+      _clientSubscribeRoomSectionStreamStreamPollPtr.asFunction<
+          _ClientSubscribeRoomSectionStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _clientSubscribeEventTypeStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeEventTypeStreamStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__Client_subscribe_event_type_stream_stream_poll");
+
+  late final _clientSubscribeEventTypeStreamStreamPoll =
+      _clientSubscribeEventTypeStreamStreamPollPtr.asFunction<
+          _ClientSubscribeEventTypeStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -53584,38 +54001,6 @@ class Space {
     return tmp2;
   }
 
-  /// the Tasks list of this Space
-  Future<TaskList> taskList(
-    String key,
-  ) {
-    final tmp1 = key;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._spaceTaskList(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Space_task_list_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceTaskListFuturePoll);
-    return tmp6;
-  }
-
   /// task list draft builder
   TaskListDraft taskListDraft() {
     var tmp0 = 0;
@@ -58519,8 +58904,240 @@ class Client {
     return tmp4;
   }
 
-  /// listen to updates to any model key
-  Stream<bool> subscribeStream(
+  /// listen to updates to any section
+  Stream<bool> subscribeSectionStream(
+    String section,
+  ) {
+    final tmp1 = section;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientSubscribeSectionStream(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 =
+          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Client_subscribe_section_stream_stream_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 =
+        _nativeStream(tmp11_1, _api.__clientSubscribeSectionStreamStreamPoll);
+    return tmp6;
+  }
+
+  /// listen to updates to any model
+  Stream<bool> subscribeModelStream(
+    String modelId,
+  ) {
+    final tmp1 = modelId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientSubscribeModelStream(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 =
+          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Client_subscribe_model_stream_stream_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 =
+        _nativeStream(tmp11_1, _api.__clientSubscribeModelStreamStreamPoll);
+    return tmp6;
+  }
+
+  /// listen to updates to objects of a model, e.g. rsvp or comments
+  Stream<bool> subscribeModelObjectsStream(
+    String modelId,
+    String sublist,
+  ) {
+    final tmp1 = modelId;
+    final tmp5 = sublist;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientSubscribeModelObjectsStream(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9.arg0;
+    final tmp12 = tmp9.arg1;
+    final tmp13 = tmp9.arg2;
+    final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
+    if (tmp11 == 0) {
+      debugAllocation("handle error", tmp12, tmp13);
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      final tmp11_0 =
+          utf8.decode(tmp12_0.asTypedList(tmp13), allowMalformed: true);
+      if (tmp13 > 0) {
+        final ffi.Pointer<ffi.Void> tmp12_0;
+        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+        _api.__deallocate(tmp12_0, tmp14, 1);
+      }
+      throw tmp11_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(
+        _api, tmp15_0, "__Client_subscribe_model_objects_stream_stream_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = _nativeStream(
+        tmp15_1, _api.__clientSubscribeModelObjectsStreamStreamPoll);
+    return tmp10;
+  }
+
+  /// listen to updates to any room parameter
+  Stream<bool> subscribeModelParamStream(
+    String key,
+    String param,
+  ) {
+    final tmp1 = key;
+    final tmp5 = param;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientSubscribeModelParamStream(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9.arg0;
+    final tmp12 = tmp9.arg1;
+    final tmp13 = tmp9.arg2;
+    final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
+    if (tmp11 == 0) {
+      debugAllocation("handle error", tmp12, tmp13);
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      final tmp11_0 =
+          utf8.decode(tmp12_0.asTypedList(tmp13), allowMalformed: true);
+      if (tmp13 > 0) {
+        final ffi.Pointer<ffi.Void> tmp12_0;
+        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+        _api.__deallocate(tmp12_0, tmp14, 1);
+      }
+      throw tmp11_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(
+        _api, tmp15_0, "__Client_subscribe_model_param_stream_stream_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = _nativeStream(
+        tmp15_1, _api.__clientSubscribeModelParamStreamStreamPoll);
+    return tmp10;
+  }
+
+  /// listen to updates to any room
+  Stream<bool> subscribeRoomStream(
     String key,
   ) {
     final tmp1 = key;
@@ -58537,17 +59154,217 @@ class Client {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._clientSubscribeStream(
+    final tmp5 = _api._clientSubscribeRoomStream(
       tmp0,
       tmp2,
       tmp3,
       tmp4,
     );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Client_subscribe_stream_stream_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeStream(tmp7_1, _api.__clientSubscribeStreamStreamPoll);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 =
+          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Client_subscribe_room_stream_stream_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 =
+        _nativeStream(tmp11_1, _api.__clientSubscribeRoomStreamStreamPoll);
+    return tmp6;
+  }
+
+  /// listen to updates to any room parameter
+  Stream<bool> subscribeRoomParamStream(
+    String key,
+    String param,
+  ) {
+    final tmp1 = key;
+    final tmp5 = param;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientSubscribeRoomParamStream(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9.arg0;
+    final tmp12 = tmp9.arg1;
+    final tmp13 = tmp9.arg2;
+    final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
+    if (tmp11 == 0) {
+      debugAllocation("handle error", tmp12, tmp13);
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      final tmp11_0 =
+          utf8.decode(tmp12_0.asTypedList(tmp13), allowMalformed: true);
+      if (tmp13 > 0) {
+        final ffi.Pointer<ffi.Void> tmp12_0;
+        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+        _api.__deallocate(tmp12_0, tmp14, 1);
+      }
+      throw tmp11_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 =
+        _Box(_api, tmp15_0, "__Client_subscribe_room_param_stream_stream_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 =
+        _nativeStream(tmp15_1, _api.__clientSubscribeRoomParamStreamStreamPoll);
+    return tmp10;
+  }
+
+  /// listen to updates to a room section
+  Stream<bool> subscribeRoomSectionStream(
+    String key,
+    String section,
+  ) {
+    final tmp1 = key;
+    final tmp5 = section;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientSubscribeRoomSectionStream(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9.arg0;
+    final tmp12 = tmp9.arg1;
+    final tmp13 = tmp9.arg2;
+    final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
+    if (tmp11 == 0) {
+      debugAllocation("handle error", tmp12, tmp13);
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      final tmp11_0 =
+          utf8.decode(tmp12_0.asTypedList(tmp13), allowMalformed: true);
+      if (tmp13 > 0) {
+        final ffi.Pointer<ffi.Void> tmp12_0;
+        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+        _api.__deallocate(tmp12_0, tmp14, 1);
+      }
+      throw tmp11_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(
+        _api, tmp15_0, "__Client_subscribe_room_section_stream_stream_drop");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = _nativeStream(
+        tmp15_1, _api.__clientSubscribeRoomSectionStreamStreamPoll);
+    return tmp10;
+  }
+
+  /// listen to updates to any event type
+  Stream<bool> subscribeEventTypeStream(
+    String key,
+  ) {
+    final tmp1 = key;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientSubscribeEventTypeStream(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 =
+          utf8.decode(tmp8_0.asTypedList(tmp9), allowMalformed: true);
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Client_subscribe_event_type_stream_stream_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 =
+        _nativeStream(tmp11_1, _api.__clientSubscribeEventTypeStreamStreamPoll);
     return tmp6;
   }
 
@@ -64987,6 +65804,110 @@ class _ClientDmWithUserReturn extends ffi.Struct {
   external int arg4;
 }
 
+class _ClientSubscribeSectionStreamReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _ClientSubscribeModelStreamReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _ClientSubscribeModelObjectsStreamReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _ClientSubscribeModelParamStreamReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _ClientSubscribeRoomStreamReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _ClientSubscribeRoomParamStreamReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _ClientSubscribeRoomSectionStreamReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _ClientSubscribeEventTypeStreamReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
 class _InvitationOriginServerTsReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -67777,21 +68698,6 @@ class _SpaceTaskListsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _SpaceTaskListFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.IntPtr()
-  external int arg5;
-}
-
 class _SpaceLatestNewsEntriesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -69889,7 +70795,56 @@ class _ClientSubscribeToTypingEventStreamStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientSubscribeStreamStreamPollReturn extends ffi.Struct {
+class _ClientSubscribeSectionStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _ClientSubscribeModelStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _ClientSubscribeModelObjectsStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _ClientSubscribeModelParamStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _ClientSubscribeRoomStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _ClientSubscribeRoomParamStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _ClientSubscribeRoomSectionStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _ClientSubscribeEventTypeStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

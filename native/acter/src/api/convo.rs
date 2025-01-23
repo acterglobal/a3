@@ -1,4 +1,8 @@
-use acter_core::{statics::default_acter_convo_states, Error};
+use acter_core::{
+    referencing::{ExecuteReference, RoomParam},
+    statics::default_acter_convo_states,
+    Error,
+};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
@@ -73,8 +77,8 @@ impl Ord for Convo {
     }
 }
 
-fn latest_message_storage_key(room_id: &RoomId) -> String {
-    format!("{room_id}::latest_message")
+fn latest_message_storage_key(room_id: &RoomId) -> ExecuteReference {
+    ExecuteReference::RoomParam(room_id.to_owned(), RoomParam::LatestMessage)
 }
 
 async fn set_latest_msg(
@@ -103,7 +107,10 @@ async fn set_latest_msg(
         *msg_lock = Some(new_msg.clone());
     }
 
-    client.store().set_raw(&key, &new_msg).await;
+    client
+        .store()
+        .set_raw(&key.as_storage_key(), &new_msg)
+        .await;
     info!("******************** changed latest msg: {:?}", key.clone());
     client.executor().notify(vec![key]);
 }
@@ -119,7 +126,7 @@ impl Convo {
         );
         let latest_message_content: Option<RoomMessage> = client
             .store()
-            .get_raw(&latest_message_storage_key(inner.room_id()))
+            .get_raw(&latest_message_storage_key(inner.room_id()).as_storage_key())
             .await
             .ok();
 

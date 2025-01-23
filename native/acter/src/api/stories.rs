@@ -5,7 +5,7 @@ use acter_core::{
         RefDetails as CoreRefDetails, RefPreview,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, ReactionManager},
-    statics::KEYS,
+    referencing::{IndexKey, SectionIndex},
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
@@ -57,7 +57,7 @@ impl Client {
             .spawn(async move {
                 let mut all_stories = me
                     .store()
-                    .get_list(KEYS::STORIES)
+                    .get_list(&IndexKey::Section(SectionIndex::Stories))
                     .await?
                     .filter_map(|any| {
                         if let AnyActerModel::Story(t) = any {
@@ -107,7 +107,7 @@ impl Space {
             .spawn(async move {
                 let mut all_entries = client
                     .store()
-                    .get_list(&format!("{room_id}::{}", KEYS::STORIES))
+                    .get_list(&IndexKey::RoomSection(room_id, SectionIndex::Stories))
                     .await?
                     .filter_map(|any| {
                         if let AnyActerModel::Story(t) = any {
@@ -374,7 +374,7 @@ impl Story {
     }
 
     pub async fn refresh(&self) -> Result<Story> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         let client = self.client.clone();
         let room = self.room.clone();
 
@@ -435,7 +435,7 @@ impl Story {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         self.client.subscribe(key)
     }
 

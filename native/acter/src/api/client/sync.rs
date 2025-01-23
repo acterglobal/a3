@@ -1,5 +1,6 @@
 use acter_core::{
-    events::SyncAnyActerEvent, executor::Executor, models::AnyActerModel, spaces::is_acter_space,
+    events::SyncAnyActerEvent, executor::Executor, models::AnyActerModel,
+    referencing::ExecuteReference, spaces::is_acter_space,
 };
 use anyhow::Result;
 use core::time::Duration;
@@ -23,6 +24,7 @@ use matrix_sdk_base::{
     RoomState,
 };
 use std::{
+    borrow::Cow,
     collections::BTreeMap,
     io::Write,
     ops::Deref,
@@ -341,7 +343,7 @@ impl Client {
     async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) {
         let update_keys = {
             let client = self.core.client();
-            let mut updated: Vec<String> = vec![];
+            let mut updated: Vec<OwnedRoomId> = vec![];
 
             let mut chats = self.convos.write().await;
             let mut spaces = self.spaces.write().await;
@@ -365,7 +367,7 @@ impl Client {
                     if let Err(error) = self.executor().clear_room(r_id).await {
                         error!(?error, "Error removing space {r_id}");
                     }
-                    updated.push(r_id.to_string());
+                    updated.push(r_id.clone());
                     continue;
                 }
 
@@ -380,7 +382,7 @@ impl Client {
                     }
                     // also clear from convos if it was in there...
                     remove_from_chat(&mut chats, r_id);
-                    updated.push(r_id.to_string());
+                    updated.push(r_id.clone());
                 } else {
                     if let Some(chat_idx) = chats.iter().position(|s| s.room_id() == r_id) {
                         let chat = chats.remove(chat_idx).update_room(inner);
@@ -391,14 +393,19 @@ impl Client {
                     }
                     // also clear from convos if it was in there...
                     remove_from(&mut spaces, r_id);
-                    updated.push(r_id.to_string());
+                    updated.push(r_id.clone());
                 }
             }
 
             updated
         };
-        info!("refreshed room: {:?}", update_keys.clone());
-        self.executor().notify(update_keys);
+        info!("refreshed room: {:?}", update_keys);
+        self.executor().notify(
+            update_keys
+                .into_iter()
+                .map(ExecuteReference::Room)
+                .collect(),
+        );
     }
 }
 
@@ -566,11 +573,16 @@ impl Client {
                 if !response.account_data.is_empty() {
                     info!("account data found!");
                     // account data has been updated, inform the listeners
-                    let keys = response
+                    let keys: Vec<ExecuteReference> = response
                         .account_data
                         .iter()
-                        .filter_map(|raw| raw.get_field::<String>("type").ok().flatten())
-                        .collect::<Vec<String>>();
+                        .filter_map(|raw| {
+                            raw.get_field::<String>("type")
+                                .ok()
+                                .flatten()
+                                .map(|s| ExecuteReference::ModelType(Cow::Owned(s)))
+                        })
+                        .collect();
                     if !keys.is_empty() {
                         info!("account data keys: {keys:?}");
                         me.executor().notify(keys);

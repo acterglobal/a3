@@ -30,11 +30,11 @@ class EventListNotifier
 
     //GET ALL EVENTS
     if (spaceId == null) {
-      _listener =
-          client.subscribeStream('calendar'); // keep it resident in memory
+      _listener = client
+          .subscribeSectionStream('calendar'); // keep it resident in memory
     } else {
       //GET SPACE EVENTS
-      _listener = client.subscribeStream('$spaceId::calendar');
+      _listener = client.subscribeRoomSectionStream(spaceId, 'calendar');
     }
 
     _listener.forEach((e) async {
@@ -58,7 +58,8 @@ class AsyncCalendarEventNotifier
   Future<CalendarEvent> build(String arg) async {
     final calEvtId = arg;
     final client = await ref.watch(alwaysClientProvider.future);
-    _listener = client.subscribeStream(calEvtId); // keep it resident in memory
+    _listener =
+        client.subscribeModelStream(calEvtId); // keep it resident in memory
     _listener.forEach((e) async {
       state = await AsyncValue.guard(
         () async => await _getCalEvent(client, calEvtId),

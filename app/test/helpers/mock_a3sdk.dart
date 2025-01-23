@@ -13,7 +13,12 @@ class MockActerSdk extends Mock implements ActerSdk {}
 /// Mocked version of Acter Client
 class MockClient extends Mock implements Client {
   @override
-  Stream<bool> subscribeStream(String topic) {
+  Stream<bool> subscribeRoomStream(String topic) {
+    return Stream.value(true); // Return a dummy stream
+  }
+
+  @override
+  Stream<bool> subscribeModelStream(String topic) {
     return Stream.value(true); // Return a dummy stream
   }
 

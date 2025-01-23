@@ -128,7 +128,7 @@ class AsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
     final client = await ref.watch(alwaysClientProvider.future);
 
     //GET ALL TASKS LIST
-    _listener = client.subscribeStream('tasks');
+    _listener = client.subscribeSectionStream('tasks');
 
     _poller = _listener.listen(
       (data) async {

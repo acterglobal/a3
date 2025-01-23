@@ -1,5 +1,6 @@
 use derive_getters::Getters;
-use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId, UserId};
+use matrix_sdk::ruma::OwnedEventId;
+use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, RoomId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use tracing::{trace, warn};
@@ -9,7 +10,7 @@ use super::super::{
 };
 use crate::{
     events::tasks::{TaskListEventContent, TaskListUpdateBuilder, TaskListUpdateEventContent},
-    statics::KEYS,
+    referencing::{ExecuteReference, IndexKey, ObjectListIndex, SectionIndex},
     Result,
 };
 
@@ -42,8 +43,8 @@ impl TaskList {
         &self.task_stats
     }
 
-    pub fn tasks_key(&self) -> String {
-        format!("{}::{}", self.meta.event_id, KEYS::TASKS::TASKS)
+    pub fn tasks_key(&self) -> IndexKey {
+        IndexKey::ObjectList(self.meta.event_id.clone(), ObjectListIndex::Tasks)
     }
 
     pub fn sender(&self) -> &UserId {
@@ -86,18 +87,17 @@ impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
 }
 
 impl ActerModel for TaskList {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
-            format!("{}::{}", self.meta.room_id, KEYS::TASKS::TASKS),
-            KEYS::TASKS::TASKS.to_owned(),
+            IndexKey::Section(SectionIndex::Tasks),
+            IndexKey::RoomSection(self.meta.room_id.clone(), SectionIndex::Tasks),
+            IndexKey::ObjectHistory(self.meta.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
         ]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     fn capabilities(&self) -> &[Capability] {
@@ -108,7 +108,7 @@ impl ActerModel for TaskList {
         ]
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
@@ -137,26 +137,23 @@ pub struct TaskListUpdate {
 }
 
 impl ActerModel for TaskListUpdate {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![format!(
-            "tasklist-{:}::history",
-            self.inner.task_list.event_id
-        )]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::ObjectHistory(self.inner.task_list.event_id.clone()),
+        ]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.task_list.event_id.to_string()])
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
+        Some(vec![self.inner.task_list.event_id.to_owned()])
     }
 }
 

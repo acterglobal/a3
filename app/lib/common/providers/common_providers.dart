@@ -11,13 +11,13 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::common::common_providers');
 
-final genericUpdatesStream =
+final eventTypeUpdatesStream =
     StreamProvider.family<int, String>((ref, key) async* {
   final client = await ref.watch(alwaysClientProvider.future);
   int counter = 0; // to ensure the value updates
 
   // ignore: unused_local_variable
-  await for (final value in client.subscribeStream(key)) {
+  await for (final value in client.subscribeEventTypeStream(key)) {
     yield counter;
     counter += 1;
   }
@@ -98,7 +98,7 @@ class EmailAddresses {
 final emailAddressesProvider = FutureProvider((ref) async {
   final account = await ref.watch(accountProvider.future);
   // ensure we are updated if the upgrade comes down the wire.
-  ref.watch(genericUpdatesStream('global.acter.dev.three_pid'));
+  ref.watch(eventTypeUpdatesStream('global.acter.dev.three_pid'));
   final confirmed = asDartStringList(await account.confirmedEmailAddresses());
   final requested = asDartStringList(await account.requestedEmailAddresses());
   final unconfirmed =

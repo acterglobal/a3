@@ -1,14 +1,12 @@
 use icalendar::{Component, Event as iCalEvent, EventLike};
-use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId, UserId};
+use matrix_sdk::ruma::OwnedEventId;
+use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, RoomId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
-use super::{
-    super::{
-        default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store,
-        TextMessageContent,
-    },
-    CALENDAR_KEY,
+use super::super::{
+    default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store,
+    TextMessageContent,
 };
 use crate::{
     events::{
@@ -17,6 +15,7 @@ use crate::{
         },
         UtcDateTime,
     },
+    referencing::{ExecuteReference, IndexKey, SectionIndex},
     Result,
 };
 
@@ -87,18 +86,17 @@ impl CalendarEvent {
 }
 
 impl ActerModel for CalendarEvent {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
-            format!("{}::{}", self.meta.room_id, CALENDAR_KEY),
-            CALENDAR_KEY.to_string(),
+            IndexKey::Section(SectionIndex::Calendar),
+            IndexKey::RoomSection(self.meta.room_id.clone(), SectionIndex::Calendar),
+            IndexKey::ObjectHistory(self.meta.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
         ]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     fn capabilities(&self) -> &[Capability] {
@@ -109,11 +107,11 @@ impl ActerModel for CalendarEvent {
         ]
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
         None
     }
 
@@ -159,23 +157,23 @@ pub struct CalendarEventUpdate {
 }
 
 impl ActerModel for CalendarEventUpdate {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![format!("{:}::history", self.inner.calendar_event.event_id)]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            IndexKey::ObjectHistory(self.inner.calendar_event.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+        ]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.calendar_event.event_id.to_string()])
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
+        Some(vec![self.inner.calendar_event.event_id.to_owned()])
     }
 }
 
