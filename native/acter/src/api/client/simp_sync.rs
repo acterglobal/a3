@@ -90,7 +90,7 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
-                let sync_service = Arc::new(SyncService::builder(client.clone()).build().await?);
+                let sync_service = Arc::new(SyncService::builder(client).build().await?);
                 let room_list = sync_service.room_list_service().all_rooms().await?;
 
                 let (first_synced_tx, first_synced_rx) = channel(1);
@@ -126,6 +126,10 @@ impl Client {
                         ) == Ok(true)
                         {
                             info!("received first sync");
+                            initial.store(false, Ordering::SeqCst);
+
+                            info!("issuing first sync update");
+                            first_synced_arc.send(true);
                         } else {
                             // see if we have new spaces to catch up upon
                         }
