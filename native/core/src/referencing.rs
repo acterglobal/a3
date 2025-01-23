@@ -10,6 +10,7 @@ use strum::{Display, EnumString};
 #[strum(serialize_all = "snake_case")]
 #[repr(u8)]
 pub enum SectionIndex {
+    #[strum(serialize = "news", serialize = "boosts")]
     Boosts = 0,
     Calendar,
     Pins,
