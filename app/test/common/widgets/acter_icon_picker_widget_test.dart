@@ -1,4 +1,3 @@
-import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/picker/acter_icon_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -33,7 +32,7 @@ void main() {
                     onIconSelection: onIconSelection,
                   );
                 },
-                child: const ActerIconWidget(),
+                child: const Text('Open Picker'),
               );
             },
           ),
@@ -51,7 +50,7 @@ void main() {
       onIconSelection: (color, icon) {},
     );
     // Tap the button to open the picker
-    await tester.tap(find.byType(ActerIconWidget));
+    await tester.tap(find.text('Open Picker'));
     await tester.pumpAndSettle();
 
     // Check if the bottom sheet is displayed
@@ -89,11 +88,12 @@ void main() {
         },);
 
     // Tap the button to open the picker
-    await tester.tap(find.byType(ActerIconWidget));
+    await tester.tap(find.text('Open Picker'));
     await tester.pumpAndSettle();
 
     // Check if the bottom sheet is displayed
     expect(find.byType(ActerIconPicker), findsOneWidget);
+
     // Test selecting a new color
     final colorPicker = find.byKey(Key('color-picker-0'));
     await tester.tap(colorPicker); // Select a color
@@ -125,7 +125,7 @@ void main() {
           },);
 
         // Tap the button to open the picker
-        await tester.tap(find.byType(ActerIconWidget));
+        await tester.tap(find.text('Open Picker'));
         await tester.pumpAndSettle();
 
         // Check if the bottom sheet is displayed
@@ -168,7 +168,7 @@ void main() {
     );
 
     // Tap the button to open the picker
-    await tester.tap(find.byType(ActerIconWidget));
+    await tester.tap(find.text('Open Picker'));
     await tester.pumpAndSettle();
 
     // Check if the bottom sheet is displayed

@@ -212,9 +212,9 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   Widget _taskListHeader(TaskList tasklist) {
     final textTheme = Theme.of(context).textTheme;
     final canPost = ref
-            .watch(roomMembershipProvider(tasklist.spaceIdStr()))
-            .valueOrNull
-            ?.canString('CanPostTaskList') ==
+        .watch(roomMembershipProvider(tasklist.spaceIdStr()))
+        .valueOrNull
+        ?.canString('CanPostTaskList') ==
         true;
     return ListTile(
       contentPadding: EdgeInsets.zero,
@@ -229,14 +229,14 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         ),
         onIconSelection: canPost
             ? (color, acterIcon) {
-                updateTaskListIcon(
-                  context,
-                  ref,
-                  tasklist,
-                  color,
-                  acterIcon,
-                );
-              }
+          updateTaskListIcon(
+            context,
+            ref,
+            tasklist,
+            color,
+            acterIcon,
+          );
+        }
             : null,
       ),
       title: SelectionArea(

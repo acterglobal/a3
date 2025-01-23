@@ -92,6 +92,7 @@ class _CreateUpdateTaskListConsumerState
                 const SizedBox(height: 40),
                 Center(
                   child: ActerIconWidget(
+                    showEditIconIndicator: true,
                     onIconSelection: (taskListIconColor, taskListIcon) {
                       this.taskListIconColor = taskListIconColor;
                       this.taskListIcon = taskListIcon;
