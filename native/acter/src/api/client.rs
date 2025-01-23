@@ -36,8 +36,10 @@ use super::{
     typing::TypingController, verification::VerificationController,
 };
 
+mod simp_sync;
 mod sync;
 
+pub use simp_sync::SyncController;
 pub use sync::{HistoryLoadState, SyncState};
 
 #[derive(Default, Builder, Debug)]
@@ -178,7 +180,7 @@ impl Client {
             state: Arc::new(RwLock::new(state)),
             spaces: Default::default(),
             convos: Default::default(),
-            invitation_controller: InvitationController::new(core.clone()),
+            invitation_controller: InvitationController::new(core),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),

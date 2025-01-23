@@ -35,6 +35,7 @@ dependencies = [
  "futures",
  "futures-signals",
  "icalendar",
+ "imbl",
  "indexmap 2.7.0",
  "infer",
  "lazy_static",
