@@ -6,7 +6,7 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
   //Generate attachment body
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
-  final attachmentTitle = notification.body()?.body();
+  final attachmentTitle = notification.title();
 
   String? body =
       "$username added ${PushStyles.attachment.emoji} $attachmentTitle";

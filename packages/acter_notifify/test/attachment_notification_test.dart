@@ -29,8 +29,7 @@ void main() {
     when(() => item.sender()).thenReturn(sender);
 
     //Set message content
-    msg = MockMsgContent(content: "Popular Websites");
-    when(() => item.body()).thenReturn(msg);
+    when(() => item.title()).thenReturn("Popular Websites");
   });
 
   group("Title and body generation", () {
