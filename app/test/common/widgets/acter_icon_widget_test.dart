@@ -67,7 +67,7 @@ void main() {
     );
     expect(
       (tester.widget(find.byType(Icon)) as Icon).size,
-      100,
+      70,
     ); // Default size
     expect(
       (tester.widget(find.byType(Icon)) as Icon).color,
