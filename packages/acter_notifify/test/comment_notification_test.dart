@@ -1,4 +1,4 @@
-import 'package:acter_notifify/data_contants/data_contants.dart';
+import 'package:acter_notifify/data/data_contants.dart';
 import 'package:acter_notifify/util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
