@@ -1,16 +1,30 @@
-//Object Emoji
+//LIST OF PUSH STYLE EMOJIS
 enum PushStyles {
-  //LIST OF PUSH STYLE EMOJIS
+  //Related things
   comment('💬'),
   reaction('❤️'),
   attachment('📎'),
+  link('🔗'),
+
+  //Event Change
+  eventDateChange('🕒'),
   rsvpYes('✅'),
-  rsvpMayBe('✔️'),
+  rsvpMaybe('✔️'),
   rsvpNo('✖️'),
+
+  //Task Style
   taskComplete('🟢'),
-  taskReOpen('🔁'),
+  taskReOpen('  ⃝ '),
   taskAccept('🤝'),
-  taskDecline('✖️');
+  taskDecline('✖️'),
+  taskDueDateChange('🕒'),
+
+  //General
+  creation('➕'),
+  redaction('🗑️'),
+  titleChange('✏️'),
+  descriptionChange('✏️'),
+  otherChange('✏️');
 
   const PushStyles(this.emoji);
 

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/data/comment_data_process.dart';
+import 'package:acter_notifify/data/data_contants.dart';
 import 'package:acter_notifify/data/reaction_dara_process.dart';
 import 'package:acter_notifify/platform/android.dart';
 import 'package:acter_notifify/local.dart';
@@ -86,9 +87,9 @@ Future<String> deviceName() async {
 }
 
 (String, String?) genTitleAndBody(NotificationItem notification) =>
-    switch (notification.pushStyle()) {
-      "comment" => titleAndBodyForComment(notification),
-      "reaction" => titleAndBodyForReaction(notification),
+    switch (PushStyles.values.asNameMap()[notification.pushStyle()]) {
+      PushStyles.comment => titleAndBodyForComment(notification),
+      PushStyles.reaction => titleAndBodyForReaction(notification),
       _ => _fallbackTitleAndBody(notification),
     };
 
