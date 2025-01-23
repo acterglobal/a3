@@ -6,6 +6,8 @@ use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
 use tracing::{debug, error, info, instrument, trace, warn};
 
+mod index;
+
 use crate::referencing::{ExecuteReference, IndexKey};
 use crate::{
     models::{ActerModel, AnyActerModel},
