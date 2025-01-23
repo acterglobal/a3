@@ -45,8 +45,8 @@ void main() {
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, '"❤️" to 🚀 boost');
-      expect(body, "Washington Johnson");
+      expect(title, '❤️ Washington Johnson liked');
+      expect(body, "🚀 boost");
     });
 
     test("Reaction on Pin", () {
@@ -62,8 +62,8 @@ void main() {
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, '"❤️" to 📌 Candlesticks');
-      expect(body, "Washington Johnson");
+      expect(title, '❤️ Washington Johnson liked');
+      expect(body, "📌 Candlesticks");
     });
     test("Reaction with parent", () {
       // Arrange: Set sender and parent object data
@@ -76,8 +76,8 @@ void main() {
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, '"❤️"');
-      expect(body, "@id:acter.global");
+      expect(title, '❤️ @id:acter.global liked');
+      expect(body, null);
     });
   });
 }

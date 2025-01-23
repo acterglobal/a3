@@ -42,8 +42,8 @@ void main() {
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, "💬 Comment on 🚀 boost");
-      expect(body, "Washington Johnson: This is great");
+      expect(title, "💬 Washington Johnson commented");
+      expect(body, "On 🚀 boost: This is great");
     });
 
     test("Comment on Pin", () {
@@ -56,8 +56,8 @@ void main() {
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, "💬 Comment on 📌 The house");
-      expect(body, "Washington Johnson: This is great");
+      expect(title, "💬 Washington Johnson commented");
+      expect(body, "On 📌 The house: This is great");
     });
 
     test("Comment with no parent", () {
@@ -71,8 +71,8 @@ void main() {
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, "💬 Comment");
-      expect(body, "@id:acter.global: This is great");
+      expect(title, "💬 @id:acter.global commented");
+      expect(body, "This is great");
     });
   });
 }

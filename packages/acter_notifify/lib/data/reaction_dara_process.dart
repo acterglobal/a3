@@ -4,16 +4,26 @@ import 'package:acter_notifify/data/parent_data_process.dart';
 import 'data_contants.dart';
 
 (String, String?) titleAndBodyForReaction(NotificationItem notification) {
-  final parent = notification.parent();
-  final reaction = notification.reactionKey() ?? PushStyles.reaction.emoji;
-  String title = '"$reaction"';
-  if (parent != null) {
-    final parentInfo = parentPart(parent);
-    title = "$title to $parentInfo";
-  }
-
+  //Generate reaction title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
+  final reaction = notification.reactionKey() ?? PushStyles.reaction.emoji;
 
-  return (title, username);
+  late String title;
+  if (reaction == PushStyles.reaction.emoji) {
+    title = "$reaction $username liked";
+  } else {
+    title = "$reaction $username reacted";
+  }
+
+  //Generate reaction body
+  String? body;
+  final parent = notification.parent();
+
+  if (parent != null) {
+    final parentInfo = parentPart(parent);
+    body = parentInfo;
+  }
+
+  return (title, body);
 }

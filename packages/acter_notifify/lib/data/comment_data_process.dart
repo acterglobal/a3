@@ -3,16 +3,23 @@ import 'package:acter_notifify/data/data_contants.dart';
 import 'package:acter_notifify/data/parent_data_process.dart';
 
 (String, String?) titleAndBodyForComment(NotificationItem notification) {
-  final parent = notification.parent();
-  String title = "${PushStyles.comment.emoji} Comment";
-  if (parent != null) {
-    final parentInfo = parentPart(parent);
-    title = "$title on $parentInfo";
-  }
-
-  final comment = notification.body()?.body();
+  //Generate comment title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
-  return (title, "$username: $comment");
+  String title = "${PushStyles.comment.emoji} $username commented";
+
+  //Generate comment body
+  String? body;
+  final comment = notification.body()?.body();
+  final parent = notification.parent();
+
+  if (parent != null) {
+    final parentInfo = parentPart(parent);
+    body = "On $parentInfo: $comment";
+  } else {
+    body = "$comment";
+  }
+
+  return (title, body);
 }
