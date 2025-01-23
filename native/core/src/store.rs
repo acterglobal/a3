@@ -256,10 +256,7 @@ impl Store {
         trace!(user=?self.user_id, ?key, ?keys_changed, "saved");
         Ok((
             keys_changed,
-            removed_indizes
-                .into_iter()
-                .chain(new_indizes)
-                .collect(),
+            removed_indizes.into_iter().chain(new_indizes).collect(),
         ))
     }
 

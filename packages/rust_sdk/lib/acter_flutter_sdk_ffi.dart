@@ -59004,7 +59004,7 @@ class Client {
     return tmp6;
   }
 
-  /// listen to updates to objects of a model
+  /// listen to updates to objects of a model, e.g. rsvp or comments
   Stream<bool> subscribeModelObjectsStream(
     String modelId,
     String sublist,
