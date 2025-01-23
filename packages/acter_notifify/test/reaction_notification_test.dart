@@ -1,3 +1,4 @@
+import 'package:acter_notifify/data_contants/data_contants.dart';
 import 'package:acter_notifify/util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -16,11 +17,11 @@ void main() {
     item = MockNotificationItem();
     parent = MockNotificationParent();
 
-    //Set pushStyle
-    when(() => item.pushStyle()).thenReturn("reaction");
-
     //Set parent
     when(() => item.parent()).thenReturn(parent);
+
+    //Set pushStyle
+    when(() => item.pushStyle()).thenReturn(PushStyles.reaction.name);
 
     //Set send user name
     final sender = MockNotificationSender(name: "Washington Johnson");
@@ -31,31 +32,52 @@ void main() {
     when(() => item.body()).thenReturn(msg);
   });
 
-
   group("Title and Body generation", () {
     test("Reaction on boost", () {
-      when(() => item.reactionKey()).thenReturn("❤️");
-      when(() => parent.objectTypeStr()).thenReturn("news");
-      when(() => parent.emoji()).thenReturn("🚀");
+      // Arrange: Set parent object data
+      when(() => parent.objectTypeStr()).thenReturn(ObjectType.news.name);
+      when(() => parent.emoji()).thenReturn(ObjectEmoji.news.data);
+
+      // Arrange: Set reaction data
+      when(() => item.reactionKey())
+          .thenReturn(PushStylesEmoji.reactionLike.data);
+
+      // Act: process data and get tile and body
       final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
       expect(title, '"❤️" to 🚀 boost');
       expect(body, "Washington Johnson");
     });
+
     test("Reaction on Pin", () {
-      when(() => parent.objectTypeStr()).thenReturn("pin");
-      when(() => parent.emoji()).thenReturn("📌");
-      when(() => item.reactionKey()).thenReturn("❤️");
+      // Arrange: Set parent object data
+      when(() => parent.objectTypeStr()).thenReturn(ObjectType.pin.name);
+      when(() => parent.emoji()).thenReturn(ObjectEmoji.pin.data);
       when(() => parent.title()).thenReturn("Candlesticks");
+
+      // Arrange: Set reaction data
+      when(() => item.reactionKey())
+          .thenReturn(PushStylesEmoji.reactionLike.data);
+
+      // Act: process data and get tile and body
       final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
       expect(title, '"❤️" to 📌 Candlesticks');
       expect(body, "Washington Johnson");
     });
     test("Reaction with parent", () {
+      // Arrange: Set sender and parent object data
       final sender = MockNotificationSender(
           username: "@id:acter.global"); // no display name
       when(() => item.sender()).thenReturn(sender);
       when(() => item.parent()).thenReturn(null);
+
+      // Act: process data and get tile and body
       final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
       expect(title, '"❤️"');
       expect(body, "@id:acter.global");
     });
