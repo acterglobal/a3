@@ -60,6 +60,48 @@ void main() {
       expect(body, "On 📌 The house: This is great");
     });
 
+    test("Comment on Event", () {
+      // Arrange: Set parent object data
+      when(() => parent.objectTypeStr()).thenReturn(ActerObject.event.name);
+      when(() => parent.emoji()).thenReturn(ActerObject.event.emoji);
+
+      // Act: process data and get tile and body
+      when(() => parent.title()).thenReturn("Social Hours 2025");
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, "💬 Washington Johnson commented");
+      expect(body, "On 🗓️ Social Hours 2025: This is great");
+    });
+
+    test("Comment on Task-List", () {
+      // Arrange: Set parent object data
+      when(() => parent.objectTypeStr()).thenReturn(ActerObject.taskList.name);
+      when(() => parent.emoji()).thenReturn(ActerObject.taskList.emoji);
+
+      // Act: process data and get tile and body
+      when(() => parent.title()).thenReturn("New Year Goals");
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, "💬 Washington Johnson commented");
+      expect(body, "On 📋 New Year Goals: This is great");
+    });
+
+    test("Comment on Task-Item", () {
+      // Arrange: Set parent object data
+      when(() => parent.objectTypeStr()).thenReturn(ActerObject.taskItem.name);
+      when(() => parent.emoji()).thenReturn(ActerObject.taskItem.emoji);
+
+      // Act: process data and get tile and body
+      when(() => parent.title()).thenReturn("Website Redesign");
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, "💬 Washington Johnson commented");
+      expect(body, "On ☑️ Website Redesign: This is great");
+    });
+
     test("Comment with no parent", () {
       // Arrange: Set sender and parent object data
       final sender = MockNotificationSender(
