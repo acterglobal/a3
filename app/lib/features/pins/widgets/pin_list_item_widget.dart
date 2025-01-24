@@ -56,7 +56,7 @@ class PinListItemWidget extends ConsumerWidget {
       child: Stack(
         children: [
           buildPinItemView(pin, context),
-          if (isBookmarked) buildPinBookmarkView(context)
+          if (isBookmarked) buildPinBookmarkView(context),
         ],
       ),
     );
