@@ -83,7 +83,7 @@ impl SyncController {
 
 // external API
 impl Client {
-    pub async fn start_simplified_sync(&self) -> Result<SyncController> {
+    pub async fn start_simple_sync(&self) -> Result<SyncController> {
         info!("starting simplified sync");
 
         let client = self.core.client().clone();
