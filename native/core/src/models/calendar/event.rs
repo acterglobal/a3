@@ -104,6 +104,7 @@ impl ActerModel for CalendarEvent {
             Capability::Commentable,
             Capability::Reactable,
             Capability::Attachmentable,
+            Capability::RSVPable,
         ]
     }
 

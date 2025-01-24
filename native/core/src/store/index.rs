@@ -6,7 +6,7 @@ use matrix_sdk::ruma::{MilliSecondsSinceUnixEpoch, OwnedEventId};
 
 use crate::{
     models::EventMeta,
-    referencing::{IndexKey, SectionIndex},
+    referencing::{IndexKey, ObjectListIndex, SectionIndex},
 };
 
 /// Keeps an index of items sorted by the given rank, highest rank first
@@ -109,6 +109,40 @@ where
     }
 }
 
+struct GenericIndexVectorHandler();
+
+impl GenericIndexVectorHandler {
+    /// All instances of this element from the vector
+    pub fn remove<T>(vector: &mut ObservableVector<T>, value: &T)
+    where
+        T: 'static + Clone + Eq,
+    {
+        let mut t = vector.transaction();
+        let mut entries = t.entries();
+        while let Some(entry) = entries.next() {
+            if &*entry == value {
+                ObservableVectorTransactionEntry::remove(entry);
+            }
+        }
+        t.commit();
+    }
+
+    /// Returns the current list of values in order of when they were added
+    pub fn values<T>(vector: &ObservableVector<T>) -> Vec<&T>
+    where
+        T: 'static + Clone + Eq,
+    {
+        vector.iter().collect()
+    }
+
+    pub fn update_stream<T>(vector: &ObservableVector<T>) -> impl Stream<Item = VectorDiff<T>>
+    where
+        T: 'static + Clone + Eq,
+    {
+        vector.subscribe().into_stream()
+    }
+}
+
 /// Keeps an index of items sorted by when they were added
 /// latest first
 pub struct LifoIndex<T>
@@ -134,23 +168,16 @@ where
 
     /// All instances of this element from the vector
     pub fn remove(&mut self, value: &T) {
-        let mut t = self.vector.transaction();
-        let mut entries = t.entries();
-        while let Some(entry) = entries.next() {
-            if &*entry == value {
-                ObservableVectorTransactionEntry::remove(entry);
-            }
-        }
-        t.commit();
+        GenericIndexVectorHandler::remove(&mut self.vector, value)
     }
 
     /// Returns the current list of values in order of when they were added
     pub fn values(&self) -> Vec<&T> {
-        self.vector.iter().collect()
+        GenericIndexVectorHandler::values(&self.vector)
     }
 
     pub fn update_stream(&self) -> impl Stream<Item = VectorDiff<T>> {
-        self.vector.subscribe().into_stream()
+        GenericIndexVectorHandler::update_stream(&self.vector)
     }
 }
 
@@ -176,8 +203,69 @@ where
     }
 }
 
+/// Keeps an index of items sorted by when they were added
+/// latest last
+pub struct FiloIndex<T>
+where
+    T: 'static + Clone + Eq,
+{
+    vector: ObservableVector<T>,
+}
+
+impl<T> FiloIndex<T>
+where
+    T: 'static + Clone + Eq,
+{
+    pub fn new_with(value: T) -> Self {
+        let mut m = FiloIndex::default();
+        m.insert(value);
+        m
+    }
+    /// Insert the element at the front
+    pub fn insert(&mut self, value: T) {
+        self.vector.push_back(value);
+    }
+
+    /// All instances of this element from the vector
+    pub fn remove(&mut self, value: &T) {
+        GenericIndexVectorHandler::remove(&mut self.vector, value)
+    }
+
+    /// Returns the current list of values in order of when they were added
+    pub fn values(&self) -> Vec<&T> {
+        GenericIndexVectorHandler::values(&self.vector)
+    }
+
+    pub fn update_stream(&self) -> impl Stream<Item = VectorDiff<T>> {
+        GenericIndexVectorHandler::update_stream(&self.vector)
+    }
+}
+
+impl<T> Default for FiloIndex<T>
+where
+    T: 'static + Clone + Eq,
+{
+    fn default() -> Self {
+        Self {
+            vector: Default::default(),
+        }
+    }
+}
+
+impl<T> Deref for FiloIndex<T>
+where
+    T: 'static + Clone + Eq,
+{
+    type Target = ObservableVector<T>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.vector
+    }
+}
+
 pub enum StoreIndex {
     Lifo(LifoIndex<OwnedEventId>),
+    Filo(FiloIndex<OwnedEventId>),
     Ranked(RankedIndex<MilliSecondsSinceUnixEpoch, OwnedEventId>),
 }
 
@@ -187,10 +275,19 @@ impl StoreIndex {
             IndexKey::ObjectHistory(_) | IndexKey::RoomHistory(_) => StoreIndex::Ranked(
                 RankedIndex::new_with(meta.origin_server_ts, meta.event_id.clone()),
             ),
-            IndexKey::Section(SectionIndex::Boosts)
-            | IndexKey::RoomSection(_, SectionIndex::Boosts) => StoreIndex::Ranked(
+            //RSVPs are latest first for collection
+            IndexKey::ObjectList(_, ObjectListIndex::Rsvp) => StoreIndex::Ranked(
                 RankedIndex::new_with(meta.origin_server_ts, meta.event_id.clone()),
             ),
+            IndexKey::Section(SectionIndex::Boosts)
+            | IndexKey::Section(SectionIndex::Stories)
+            | IndexKey::RoomSection(_, SectionIndex::Boosts)
+            | IndexKey::RoomSection(_, SectionIndex::Stories) => StoreIndex::Ranked(
+                RankedIndex::new_with(meta.origin_server_ts, meta.event_id.clone()),
+            ),
+            IndexKey::ObjectList(_, ObjectListIndex::Tasks) => {
+                StoreIndex::Filo(FiloIndex::new_with(meta.event_id.clone()))
+            }
             _ => StoreIndex::Lifo(LifoIndex::new_with(meta.event_id.clone())),
         }
     }
@@ -198,6 +295,7 @@ impl StoreIndex {
     pub fn insert(&mut self, meta: &EventMeta) {
         match self {
             StoreIndex::Lifo(l) => l.insert(meta.event_id.clone()),
+            StoreIndex::Filo(l) => l.insert(meta.event_id.clone()),
             StoreIndex::Ranked(r) => r.insert(meta.origin_server_ts, meta.event_id.clone()),
         }
     }
@@ -205,7 +303,8 @@ impl StoreIndex {
     /// All instances of this element from the vector
     pub fn remove(&mut self, value: &OwnedEventId) {
         match self {
-            StoreIndex::Lifo(lifo_index) => lifo_index.remove(value),
+            StoreIndex::Lifo(idx) => idx.remove(value),
+            StoreIndex::Filo(idx) => idx.remove(value),
             StoreIndex::Ranked(ranked_index) => ranked_index.remove(value),
         }
     }
@@ -213,7 +312,8 @@ impl StoreIndex {
     /// Returns the current list of values in order of when they were added
     pub fn values(&self) -> Vec<&OwnedEventId> {
         match self {
-            StoreIndex::Lifo(lifo_index) => lifo_index.values(),
+            StoreIndex::Lifo(idx) => idx.values(),
+            StoreIndex::Filo(idx) => idx.values(),
             StoreIndex::Ranked(ranked_index) => ranked_index.values(),
         }
     }
@@ -221,6 +321,7 @@ impl StoreIndex {
     // pub fn update_stream(&self) -> impl Stream<Item = VectorDiff<OwnedEventId>> {
     //     match self {
     //         StoreIndex::Lifo(lifo_index) => lifo_index.update_stream(),
+    //         StoreIndex::Filo(lifo_index) => lifo_index.update_stream(),
     //         StoreIndex::Ranked(ranked_index) => ranked_index.update_stream(),
     //     }
     // }
@@ -230,6 +331,7 @@ impl Debug for StoreIndex {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Lifo(_) => f.debug_tuple("Lifo").finish(),
+            Self::Filo(_) => f.debug_tuple("Filo").finish(),
             Self::Ranked(_) => f.debug_tuple("Ranked").finish(),
         }
     }

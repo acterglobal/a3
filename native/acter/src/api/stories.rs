@@ -66,14 +66,17 @@ impl Client {
                             None
                         }
                     })
-                    .collect::<Vec<models::Story>>();
-                all_stories.sort_by(|a, b| b.meta.origin_server_ts.cmp(&a.meta.origin_server_ts));
+                    .take_while(|_| {
+                        if count > 0 {
+                            count -= 1;
+                            true
+                        } else {
+                            false
+                        }
+                    });
 
                 let client = me.core.client();
                 for content in all_stories {
-                    if count == 0 {
-                        break; // we filled what we wanted
-                    }
                     let room_id = content.room_id().to_owned();
                     let room = match rooms_map.entry(room_id) {
                         Entry::Occupied(t) => t.get().clone(),
@@ -89,7 +92,6 @@ impl Client {
                     };
                     let story = Story::new(me.clone(), room, content).await?;
                     stories.push(story);
-                    count -= 1;
                 }
                 Ok(stories)
             })
@@ -116,15 +118,17 @@ impl Space {
                             None
                         }
                     })
-                    .collect::<Vec<models::Story>>();
-                all_entries.reverse();
+                    .take_while(|_| {
+                        if count > 0 {
+                            count -= 1;
+                            true
+                        } else {
+                            false
+                        }
+                    });
 
                 for content in all_entries {
-                    if count == 0 {
-                        break; // we filled what we wanted
-                    }
                     entries.push(Story::new(client.clone(), room.clone(), content).await?);
-                    count -= 1;
                 }
 
                 Ok(entries)

@@ -76,6 +76,8 @@ pub enum Capability {
     Attachmentable,
     // users reads/views are being tracked
     ReadTracking,
+    // someone can rsvp on this
+    RSVPable,
     // another custom capability
     Custom(&'static str),
 }
