@@ -413,7 +413,7 @@ mod tests {
     use super::*;
     use crate::{
         models::{TestModel, TestModelBuilder},
-        referencing::SpecialListsIndex,
+        referencing::{SectionIndex, SpecialListsIndex},
     };
     use anyhow::bail;
     use matrix_sdk::ruma::MilliSecondsSinceUnixEpoch;
@@ -642,7 +642,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn add_get_one_to_ranked_index() -> anyhow::Result<()> {
+    async fn add_get_one_to_history_index() -> anyhow::Result<()> {
         let _ = env_logger::try_init();
         let store = fresh_store().await?;
         let room_id =
@@ -719,6 +719,83 @@ mod tests {
         Ok(())
     }
 
+    #[tokio::test]
+    async fn add_get_one_to_ranked_section_index() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let store = fresh_store().await?;
+        let room_id =
+            OwnedRoomId::try_from(format!("!{}:example.org", Uuid::new_v4().hyphenated())).unwrap();
+        let low_rank = MilliSecondsSinceUnixEpoch::from_system_time(
+            SystemTime::now()
+                .checked_sub(Duration::new(10000, 0))
+                .expect("Before exists"),
+        )
+        .expect("We can parse system time");
+        let high_rank = MilliSecondsSinceUnixEpoch::from_system_time(SystemTime::now())
+            .expect("We can parse system time");
+        let model = TestModelBuilder::default()
+            .simple()
+            .indizes(vec![IndexKey::Section(SectionIndex::Boosts)])
+            .origin_server_ts(high_rank)
+            .room_id(room_id.clone())
+            .build()
+            .unwrap();
+        let key = model.event_id().to_owned();
+        let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
+        assert_eq!(
+            vec![
+                ExecuteReference::from(key.clone()),
+                IndexKey::Section(SectionIndex::Boosts).into()
+            ],
+            res_keys
+        );
+
+        let mut index = store
+            .get_list(&IndexKey::Section(SectionIndex::Boosts))
+            .await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("No Model found");
+        };
+        assert!(index.next().is_none()); // and nothing else
+        assert_eq!(model, other);
+
+        let second_model = TestModelBuilder::default()
+            .simple()
+            .event_id(OwnedEventId::try_from("$secondModel").unwrap())
+            .indizes(vec![IndexKey::Section(SectionIndex::Boosts)])
+            .origin_server_ts(low_rank) // this should be added _after_ the first
+            .build()
+            .unwrap();
+        let key = second_model.event_id().to_owned();
+        let res_keys = store
+            .save(AnyActerModel::TestModel(second_model.clone()))
+            .await?;
+        assert_eq!(
+            vec![
+                ExecuteReference::from(key.clone()),
+                IndexKey::Section(SectionIndex::Boosts).into()
+            ],
+            res_keys
+        );
+
+        // this is a lifo index: latest in, first out
+        let mut index = store
+            .get_list(&IndexKey::Section(SectionIndex::Boosts))
+            .await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn’t test model.");
+        };
+        assert_eq!(model, other);
+
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn’t test model.");
+        };
+        assert_eq!(second_model, other);
+
+        assert!(index.next().is_none()); // and nothing else
+
+        Ok(())
+    }
     #[tokio::test]
     async fn model_changed_index() -> anyhow::Result<()> {
         let _ = env_logger::try_init();

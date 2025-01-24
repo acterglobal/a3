@@ -4,7 +4,10 @@ use eyeball_im::{ObservableVector, ObservableVectorTransactionEntry, VectorDiff}
 use futures::{Stream, StreamExt};
 use matrix_sdk::ruma::{MilliSecondsSinceUnixEpoch, OwnedEventId};
 
-use crate::{models::EventMeta, referencing::IndexKey};
+use crate::{
+    models::EventMeta,
+    referencing::{IndexKey, SectionIndex},
+};
 
 /// Keeps an index of items sorted by the given rank, highest rank first
 pub struct RankedIndex<K, T>
@@ -184,6 +187,10 @@ impl StoreIndex {
             IndexKey::ObjectHistory(_) | IndexKey::RoomHistory(_) => StoreIndex::Ranked(
                 RankedIndex::new_with(meta.origin_server_ts, meta.event_id.clone()),
             ),
+            IndexKey::Section(SectionIndex::Boosts)
+            | IndexKey::RoomSection(_, SectionIndex::Boosts) => StoreIndex::Ranked(
+                RankedIndex::new_with(meta.origin_server_ts, meta.event_id.clone()),
+            ),
             _ => StoreIndex::Lifo(LifoIndex::new_with(meta.event_id.clone())),
         }
     }
@@ -233,9 +240,8 @@ mod tests {
 
     use super::*;
     use futures::pin_mut;
-    use matrix_sdk_test::async_test;
 
-    #[async_test]
+    #[tokio::test]
     async fn test_ranked_index_for_u64() {
         let mut index = RankedIndex::<u64, &'static str>::default();
         index.insert(18, "18");
@@ -263,7 +269,7 @@ mod tests {
         ));
     }
 
-    #[async_test]
+    #[tokio::test]
     async fn test_lifo_index_for_u64() {
         let mut index = LifoIndex::<&'static str>::default();
         index.insert("18");
