@@ -95,7 +95,11 @@ Future<String> deviceName() async {
       PushStyles.reaction => titleAndBodyForReaction(notification),
       PushStyles.attachment => titleAndBodyForAttachment(notification),
       PushStyles.references => titleAndBodyForReferences(notification),
-      PushStyles.eventDateChange => titleAndBodyForEventDateChange(notification),
+      PushStyles.eventDateChange =>
+        titleAndBodyForEventDateChange(notification),
+      PushStyles.rsvpYes => titleAndBodyForEventRsvpYes(notification),
+      PushStyles.rsvpMaybe => titleAndBodyForEventRsvpMaybe(notification),
+      PushStyles.rsvpNo => titleAndBodyForEventRsvpNo(notification),
       _ => _fallbackTitleAndBody(notification),
     };
 

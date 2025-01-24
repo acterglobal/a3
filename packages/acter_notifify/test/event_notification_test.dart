@@ -12,7 +12,7 @@ void main() {
   late MockNotificationItem item;
   late MockNotificationParent parent;
 
-  setUpAll(() {
+  setUp(() {
     //Mack declaration
     item = MockNotificationItem();
     parent = MockNotificationParent();
@@ -25,7 +25,7 @@ void main() {
     when(() => item.sender()).thenReturn(sender);
   });
 
-  group("Title and body generation for event date changes", () {
+  group("Event date changes : Title and body generation ", () {
     test("Changes in event Date with parent info", () {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.eventDateChange.name);
@@ -60,6 +60,109 @@ void main() {
 
       // Assert: Check if tile and body are as expected
       expect(title, '@id:acter.global rescheduled event to "24 January, 2025"');
+      expect(body, null);
+    });
+  });
+
+  group("Event RSVP Yes : Title and body generation ", () {
+    test("Event RSVP Yes", () {
+      // Arrange: Set pushStyle
+      when(() => item.pushStyle()).thenReturn(PushStyles.rsvpYes.name);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
+      when(() => parent.title()).thenReturn("Social Hours 2025");
+
+      // Act: process processing and get tile and body
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, '✅ Washington Johnson will join');
+      expect(body, '🗓️ Social Hours 2025');
+    });
+
+    test("Event RSVP Yes with no parent", () {
+      // Arrange: Set pushStyle
+      when(() => item.pushStyle()).thenReturn(PushStyles.rsvpYes.name);
+      // Arrange: Set sender and parent object processing
+      final sender = MockNotificationSender(
+          username: "@id:acter.global"); // no display name
+      when(() => item.sender()).thenReturn(sender);
+      when(() => item.parent()).thenReturn(null);
+
+      // Act: process processing and get tile and body
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, '✅ @id:acter.global will join');
+      expect(body, null);
+    });
+  });
+  group("Event RSVP Maybe : Title and body generation ", () {
+    test("Event RSVP Yes", () {
+      // Arrange: Set pushStyle
+      when(() => item.pushStyle()).thenReturn(PushStyles.rsvpMaybe.name);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
+      when(() => parent.title()).thenReturn("Social Hours 2025");
+
+      // Act: process processing and get tile and body
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, '✔️ Washington Johnson might join');
+      expect(body, '🗓️ Social Hours 2025');
+    });
+
+    test("Event RSVP Yes with no parent", () {
+      // Arrange: Set pushStyle
+      when(() => item.pushStyle()).thenReturn(PushStyles.rsvpMaybe.name);
+      // Arrange: Set sender and parent object processing
+      final sender = MockNotificationSender(
+          username: "@id:acter.global"); // no display name
+      when(() => item.sender()).thenReturn(sender);
+      when(() => item.parent()).thenReturn(null);
+
+      // Act: process processing and get tile and body
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, '✔️ @id:acter.global might join');
+      expect(body, null);
+    });
+  });
+  group("Event RSVP No : Title and body generation ", () {
+    test("Event RSVP Yes", () {
+      // Arrange: Set pushStyle
+      when(() => item.pushStyle()).thenReturn(PushStyles.rsvpNo.name);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
+      when(() => parent.title()).thenReturn("Social Hours 2025");
+
+      // Act: process processing and get tile and body
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, '✖️ Washington Johnson will not join');
+      expect(body, '🗓️ Social Hours 2025');
+    });
+
+    test("Event RSVP Yes with no parent", () {
+      // Arrange: Set pushStyle
+      when(() => item.pushStyle()).thenReturn(PushStyles.rsvpNo.name);
+      // Arrange: Set sender and parent object processing
+      final sender = MockNotificationSender(
+          username: "@id:acter.global"); // no display name
+      when(() => item.sender()).thenReturn(sender);
+      when(() => item.parent()).thenReturn(null);
+
+      // Act: process processing and get tile and body
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, '✖️ @id:acter.global will not join');
       expect(body, null);
     });
   });
