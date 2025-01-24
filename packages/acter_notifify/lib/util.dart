@@ -8,6 +8,7 @@ import 'package:acter_notifify/processing/attachment_data_process.dart';
 import 'package:acter_notifify/processing/comment_data_process.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:acter_notifify/processing/reaction_dara_process.dart';
+import 'package:acter_notifify/processing/references_data_process.dart';
 import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -92,6 +93,7 @@ Future<String> deviceName() async {
       PushStyles.comment => titleAndBodyForComment(notification),
       PushStyles.reaction => titleAndBodyForReaction(notification),
       PushStyles.attachment => titleAndBodyForAttachment(notification),
+      PushStyles.references => titleAndBodyForReferences(notification),
       _ => _fallbackTitleAndBody(notification),
     };
 

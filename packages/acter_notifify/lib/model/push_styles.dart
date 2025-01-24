@@ -4,7 +4,7 @@ enum PushStyles {
   comment('💬'),
   reaction('❤️'),
   attachment('📎'),
-  link('🔗'),
+  references('🔗'),
 
   //Event Change
   eventDateChange('🕒'),
