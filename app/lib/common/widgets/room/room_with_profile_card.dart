@@ -111,26 +111,9 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title =
-        avatarInfo.displayName.map((name) => name.isNotEmpty ? name : roomId) ??
-            roomId;
-
-    final avatar = ActerAvatar(
-      options: AvatarOptions(
-        AvatarInfo(
-          uniqueId: roomId,
-          displayName: title,
-          avatar: avatarInfo.avatar,
-        ),
-        parentBadges: showParents ? parents : [],
-        size: avatarSize,
-        badgesSize: avatarSize / 2,
-      ),
-    );
-
     return Stack(
       children: [
-        buildRoomItemView(context, avatar, title),
+        buildRoomItemView(context),
         if (showBookmarkedIndicator) buildRoomBookmarkView(context),
       ],
     );
@@ -181,8 +164,24 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
     );
   }
 
-  Widget buildRoomItemView(
-      BuildContext context, ActerAvatar avatar, String title) {
+  Widget buildRoomItemView(BuildContext context) {
+    final title =
+        avatarInfo.displayName.map((name) => name.isNotEmpty ? name : roomId) ??
+            roomId;
+
+    final avatar = ActerAvatar(
+      options: AvatarOptions(
+        AvatarInfo(
+          uniqueId: roomId,
+          displayName: title,
+          avatar: avatarInfo.avatar,
+        ),
+        parentBadges: showParents ? parents : [],
+        size: avatarSize,
+        badgesSize: avatarSize / 2,
+      ),
+    );
+
     return Card(
       margin: margin,
       child: ListTile(

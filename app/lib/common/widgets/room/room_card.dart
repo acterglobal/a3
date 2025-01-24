@@ -92,7 +92,7 @@ class RoomCard extends ConsumerWidget {
   final bool showVisibilityMark;
 
   /// Whether or not to render the bookmark indicator
-  ///
+  /// if it is bookmarked
   final bool showBookmarkedIndicator;
 
   const RoomCard({

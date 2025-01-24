@@ -57,7 +57,6 @@ class EventItem extends ConsumerWidget {
     WidgetRef ref,
     CalendarEvent event,
   ) {
-    final eventType = ref.watch(eventTypeProvider(event));
     final isBookmarked = ref.watch(isBookmarkedProvider(BookmarkType.forEvent(eventId)));
     return InkWell(
       key: eventItemClick,
@@ -73,7 +72,7 @@ class EventItem extends ConsumerWidget {
       },
       child: Stack(
         children: [
-          buildEventItemView(context, ref, event, eventType),
+          buildEventItemView(context, ref, event),
           if (isBookmarked)
             buildEventBookmarkView(context),
         ],
@@ -81,7 +80,8 @@ class EventItem extends ConsumerWidget {
     );
   }
 
-  Widget buildEventItemView(BuildContext context, WidgetRef ref, CalendarEvent event, EventFilters eventType) {
+  Widget buildEventItemView(BuildContext context, WidgetRef ref, CalendarEvent event) {
+    final eventType = ref.watch(eventTypeProvider(event));
     return Card(
       margin: margin,
       child: Row(
