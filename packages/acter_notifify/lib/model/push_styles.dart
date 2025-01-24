@@ -12,7 +12,10 @@ enum PushStyles {
   rsvpMaybe('✔️'),
   rsvpNo('✖️'),
 
-  //Task Style
+  //Task-list
+  taskAdd('➕'),
+
+  //Task
   taskComplete('🟢'),
   taskReOpen('  ⃝ '),
   taskAccept('🤝'),
