@@ -12,6 +12,7 @@ import 'package:acter_notifify/processing/reaction_dara_process.dart';
 import 'package:acter_notifify/processing/references_data_process.dart';
 import 'package:acter_notifify/processing/task_item_data_process.dart';
 import 'package:acter_notifify/processing/task_list_data_process.dart';
+import 'package:acter_notifify/processing/title_change_data_process.dart';
 import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -109,6 +110,7 @@ Future<String> deviceName() async {
       PushStyles.taskDecline => titleAndBodyForTaskItemDeclined(notification),
       PushStyles.taskDueDateChange =>
         titleAndBodyForTaskItemDueDateChange(notification),
+      PushStyles.titleChange => titleAndBodyForObjectTitleChange(notification),
       _ => _fallbackTitleAndBody(notification),
     };
 

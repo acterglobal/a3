@@ -23,10 +23,10 @@ enum PushStyles {
   taskDueDateChange('🕒'),
 
   //General
-  creation('➕'),
-  redaction('🗑️'),
   titleChange('✏️'),
   descriptionChange('✏️'),
+  creation('➕'),
+  redaction('🗑️'),
   otherChange('✏️');
 
   const PushStyles(this.emoji);
