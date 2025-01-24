@@ -166,4 +166,41 @@ void main() {
       expect(body, null);
     });
   });
+  group("Task Item Due Date Change: Title and body generation ", () {
+    test("Task Item Due Date Change  with parent data", () {
+      // Arrange: Set pushStyle
+      when(() => item.pushStyle()).thenReturn(PushStyles.taskDueDateChange.name);
+      // Arrange: Set parent object processing
+      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
+      when(() => parent.title()).thenReturn("Website Redesign");
+      when(() => item.title()).thenReturn("24 January, 2025");
+
+      // Act: process processing and get tile and body
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, '☑️ Website Redesign rescheduled');
+      expect(body, 'by Washington Johnson to "24 January, 2025"');
+    });
+
+    test("Task Item Due Date Change with no parent", () {
+      // Arrange: Set pushStyle
+      when(() => item.pushStyle()).thenReturn(PushStyles.taskDueDateChange.name);
+      // Arrange: Set notification item
+      when(() => item.title()).thenReturn("24 January, 2025");
+      // Arrange: Set sender and parent object processing
+      final sender = MockNotificationSender(
+          username: "@id:acter.global"); // no display name
+      when(() => item.sender()).thenReturn(sender);
+      when(() => item.parent()).thenReturn(null);
+
+      // Act: process processing and get tile and body
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, '@id:acter.global rescheduled task to "24 January, 2025"');
+      expect(body, null);
+    });
+  });
 }

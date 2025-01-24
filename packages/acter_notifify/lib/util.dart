@@ -107,6 +107,8 @@ Future<String> deviceName() async {
       PushStyles.taskReOpen => titleAndBodyForTaskItemReOpened(notification),
       PushStyles.taskAccept => titleAndBodyForTaskItemAccepted(notification),
       PushStyles.taskDecline => titleAndBodyForTaskItemDeclined(notification),
+      PushStyles.taskDueDateChange =>
+        titleAndBodyForTaskItemDueDateChange(notification),
       _ => _fallbackTitleAndBody(notification),
     };
 
