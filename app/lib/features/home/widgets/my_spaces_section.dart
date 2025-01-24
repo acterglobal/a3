@@ -39,6 +39,7 @@ class MySpacesSection extends ConsumerWidget {
         showSectionHeader: true,
         isShowSeeAllButton: true,
         showSectionBg: false,
+        showBookmarkedIndicator: false,
         sectionHeaderTitle: lang.bookmarkedSpaces,
         onClickSectionHeader: () => context.pushNamed(Routes.spaces.name),
       );

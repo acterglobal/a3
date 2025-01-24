@@ -81,6 +81,10 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
   ///
   final bool showVisibilityMark;
 
+  /// Whether or not to render the bookmark indicator
+  ///
+  final bool showBookmarkedIndicator;
+
   const RoomWithAvatarInfoCard({
     super.key,
     required this.roomId,
@@ -100,12 +104,67 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
     this.margin,
     this.showSuggestedMark = false,
     this.showVisibilityMark = false,
+    this.showBookmarkedIndicator = false,
     required this.avatarSize,
     required this.contentPadding,
   });
 
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        buildRoomItemView(context),
+        if (showBookmarkedIndicator) buildRoomBookmarkView(context),
+      ],
+    );
+  }
+
+  Widget? buildSubtitle(BuildContext context) {
+    List<Widget> subtitles = [];
+
+    //SHOW SPACE VISIBILITY INDICATION
+    if (showVisibilityMark) {
+      final visibilityWidget = VisibilityChip(
+        roomId: roomId,
+        useCompactView: true,
+      );
+      subtitles.add(visibilityWidget);
+    }
+
+    //SHOW SUGGEST LABEL
+    if (showSuggestedMark) {
+      //ADD SEPARATION
+      if (subtitles.isNotEmpty) subtitles.add(const Text(' - '));
+
+      final suggestedWidget = Text(
+        L10n.of(context).suggested,
+        style: Theme.of(context).textTheme.labelSmall,
+      );
+      subtitles.add(suggestedWidget);
+
+      //ADD CUSTOM SUBTITLE IF AVAILABLE
+      subtitle.map((t) {
+        subtitles.add(const Text(' - '));
+        subtitles.add(t);
+      });
+    }
+
+    return Row(children: subtitles);
+  }
+
+  Widget buildRoomBookmarkView(BuildContext context) {
+    return Positioned(
+      right: 30,
+      top: 5,
+      child: Icon(
+        Icons.bookmark_sharp,
+        color: Theme.of(context).unselectedWidgetColor,
+        size: 24,
+      ),
+    );
+  }
+
+  Widget buildRoomItemView(BuildContext context) {
     final title =
         avatarInfo.displayName.map((name) => name.isNotEmpty ? name : roomId) ??
             roomId;
@@ -157,38 +216,5 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
         trailing: trailing,
       ),
     );
-  }
-
-  Widget? buildSubtitle(BuildContext context) {
-    List<Widget> subtitles = [];
-
-    //SHOW SPACE VISIBILITY INDICATION
-    if (showVisibilityMark) {
-      final visibilityWidget = VisibilityChip(
-        roomId: roomId,
-        useCompactView: true,
-      );
-      subtitles.add(visibilityWidget);
-    }
-
-    //SHOW SUGGEST LABEL
-    if (showSuggestedMark) {
-      //ADD SEPARATION
-      if (subtitles.isNotEmpty) subtitles.add(const Text(' - '));
-
-      final suggestedWidget = Text(
-        L10n.of(context).suggested,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
-      subtitles.add(suggestedWidget);
-
-      //ADD CUSTOM SUBTITLE IF AVAILABLE
-      subtitle.map((t) {
-        subtitles.add(const Text(' - '));
-        subtitles.add(t);
-      });
-    }
-
-    return Row(children: subtitles);
   }
 }
