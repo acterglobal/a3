@@ -1,0 +1,1 @@
+- [UI improvement] : Better visibility of bookmark items of Pin, Event, TaskList and Space
