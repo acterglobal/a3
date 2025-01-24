@@ -2,7 +2,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
-import 'package:acter/common/widgets/reference_details_item.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/deep_linking/widgets/reference_details_item.dart';
