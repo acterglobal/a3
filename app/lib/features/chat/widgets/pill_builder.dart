@@ -1,4 +1,4 @@
-import 'package:acter/common/toolkit/buttons/room_chip.dart';
+import 'package:acter/features/room/widgets/room_chip.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +23,7 @@ class ActerPillBuilder extends ConsumerWidget {
           roomId: roomId,
           memberId: identifier,
         ),
-      '!' => RoomChip(roomId: identifier),
+      '!' => RoomChip(roomId: identifier, uri: uri),
       _ => InkWell(
           child: Text(identifier),
           onTap: () => onMessageLinkTap(Uri.parse(uri), ref, context),

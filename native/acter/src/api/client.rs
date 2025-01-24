@@ -1,5 +1,12 @@
 use acter_core::{
-    client::CoreClient, executor::Executor, models::AnyActerModel, store::Store, templates::Engine,
+    client::CoreClient,
+    executor::Executor,
+    models::AnyActerModel,
+    referencing::{
+        ExecuteReference, IndexKey, ModelParam, ObjectListIndex, RoomParam, SectionIndex,
+    },
+    store::Store,
+    templates::Engine,
     CustomAuthSession, RestoreToken,
 };
 use anyhow::{Context, Result};
@@ -21,7 +28,8 @@ use matrix_sdk_base::{
     },
     RoomStateFilter,
 };
-use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
+use ruma::{EventId, ServerName};
+use std::{borrow::Cow, io::Write, ops::Deref, path::PathBuf, str::FromStr, sync::Arc};
 use tokio::{
     sync::{broadcast::Receiver, RwLock},
     time,
@@ -33,7 +41,7 @@ use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-    typing::TypingController, verification::VerificationController,
+    typing::TypingController, verification::VerificationController, VecStringBuilder,
 };
 
 mod sync;
@@ -138,18 +146,16 @@ impl Client {
     pub async fn join_room(
         &self,
         room_id_or_alias: String,
-        server_name: Option<String>,
+        server_names: Box<VecStringBuilder>,
     ) -> Result<Room> {
         let parsed = RoomOrAliasId::parse(room_id_or_alias)?;
-        let server_names = match server_name {
-            Some(inner) => vec![OwnedServerName::try_from(inner)?],
-            None => parsed
-                .server_name()
-                .map(|i| vec![i.to_owned()])
-                .unwrap_or_default(),
-        };
+        let servers = (*server_names)
+            .0
+            .into_iter()
+            .map(ServerName::parse)
+            .collect::<Result<Vec<OwnedServerName>, matrix_sdk::IdParseError>>()?;
 
-        self.join_room_typed(parsed, server_names).await
+        self.join_room_typed(parsed, servers).await
     }
     pub async fn join_room_typed(
         &self,
@@ -336,8 +342,10 @@ impl Client {
 
     pub async fn wait_for_room(&self, room_id: String, timeout: Option<u8>) -> Result<bool> {
         let executor = self.core.executor().clone();
-        let mut subscription = executor.subscribe(room_id.clone());
-        if self.room_by_id_typed(&RoomId::parse(room_id)?).is_ok() {
+        let room_id = RoomId::parse(room_id)?;
+
+        let mut subscription = executor.subscribe(ExecuteReference::Room(room_id.clone()));
+        if self.room_by_id_typed(&room_id).is_ok() {
             return Ok(true);
         }
 
@@ -386,11 +394,79 @@ impl Client {
         Ok(OptionString::new(room_id))
     }
 
-    pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = bool> {
-        BroadcastStream::new(self.subscribe(key)).map(|_| true)
+    pub fn subscribe_section_stream(&self, section: String) -> Result<impl Stream<Item = bool>> {
+        let index = SectionIndex::from_str(&section)?;
+        Ok(BroadcastStream::new(self.subscribe(index)).map(|_| true))
     }
 
-    pub fn subscribe(&self, key: String) -> Receiver<()> {
+    pub fn subscribe_model_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
+        let model_id = EventId::parse(key)?;
+        Ok(BroadcastStream::new(self.subscribe(model_id)).map(|_| true))
+    }
+
+    pub fn subscribe_model_param_stream(
+        &self,
+        key: String,
+        param: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        let model_id = EventId::parse(key)?;
+        let param = ModelParam::from_str(&param)?;
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::ModelParam(model_id, param)))
+                .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_model_objects_stream(
+        &self,
+        key: String,
+        sublist: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        let model_id = EventId::parse(key)?;
+        let param = ObjectListIndex::from_str(&sublist)?;
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::Index(IndexKey::ObjectList(
+                model_id, param,
+            ))))
+            .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_room_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
+        let model_id = RoomId::parse(key)?;
+        Ok(BroadcastStream::new(self.subscribe(model_id)).map(|_| true))
+    }
+
+    pub fn subscribe_room_param_stream(
+        &self,
+        key: String,
+        param: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        let model_id = RoomId::parse(key)?;
+        let param = RoomParam::from_str(&param)?;
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::RoomParam(model_id, param)))
+                .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_room_section_stream(
+        &self,
+        key: String,
+        section: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        let index = IndexKey::RoomSection(RoomId::parse(key)?, SectionIndex::from_str(&section)?);
+        Ok(BroadcastStream::new(self.subscribe(ExecuteReference::Index(index))).map(|_| true))
+    }
+
+    pub fn subscribe_event_type_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::ModelType(Cow::Owned(key))))
+                .map(|_| true),
+        )
+    }
+
+    pub fn subscribe<K: Into<ExecuteReference>>(&self, key: K) -> Receiver<()> {
         self.executor().subscribe(key)
     }
 
@@ -399,7 +475,8 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
-                let waiter = executor.wait_for(key);
+                let model_id = EventId::parse(key)?;
+                let waiter = executor.wait_for(model_id);
                 let Some(tm) = timeout else {
                     return Ok(waiter.await?);
                 };

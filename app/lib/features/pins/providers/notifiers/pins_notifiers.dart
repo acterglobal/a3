@@ -22,7 +22,8 @@ class AsyncPinNotifier
   Future<ActerPin> build(String arg) async {
     final pinId = arg;
     final client = await ref.watch(alwaysClientProvider.future);
-    _listener = client.subscribeStream(pinId); // keep it resident in memory
+    _listener =
+        client.subscribeModelStream(pinId); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
         state = await AsyncValue.guard(
@@ -54,10 +55,10 @@ class AsyncPinListNotifier
 
     //GET ALL PINS
     if (spaceId == null) {
-      _listener = client.subscribeStream('pins');
+      _listener = client.subscribeSectionStream('pins');
     } else {
       //GET SPACE PINS
-      _listener = client.subscribeStream('$spaceId::pins');
+      _listener = client.subscribeRoomSectionStream(spaceId, 'pins');
     }
 
     _poller = _listener.listen(

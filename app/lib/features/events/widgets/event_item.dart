@@ -5,6 +5,7 @@ import 'package:acter/common/widgets/blinking_text.dart';
 import 'package:acter/common/widgets/reference_details_item.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/bookmarks/types.dart';
+import 'package:acter/features/deep_linking/widgets/reference_details_item.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/utils/events_utils.dart';

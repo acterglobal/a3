@@ -1,16 +1,15 @@
-use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId, UserId};
+use matrix_sdk::ruma::OwnedEventId;
+use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, RoomId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
 use super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{
     events::news::{NewsEntryEventContent, NewsEntryUpdateBuilder, NewsEntryUpdateEventContent},
-    statics::KEYS,
+    referencing::{ExecuteReference, IndexKey, SectionIndex},
     store::Store,
     Result,
 };
-
-static NEWS_KEY: &str = KEYS::NEWS;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct NewsEntry {
@@ -42,18 +41,17 @@ impl NewsEntry {
 }
 
 impl ActerModel for NewsEntry {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
-            NEWS_KEY.to_string(),
-            format!("{}::{NEWS_KEY}", self.meta.room_id),
+            IndexKey::Section(SectionIndex::Boosts),
+            IndexKey::RoomSection(self.meta.room_id.clone(), SectionIndex::Boosts),
+            IndexKey::ObjectHistory(self.meta.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
         ]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     fn capabilities(&self) -> &[Capability] {
@@ -64,11 +62,11 @@ impl ActerModel for NewsEntry {
         ]
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
         None
     }
 
@@ -111,23 +109,23 @@ pub struct NewsEntryUpdate {
 }
 
 impl ActerModel for NewsEntryUpdate {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![format!("{:}::history", self.inner.news_entry.event_id)]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            IndexKey::ObjectHistory(self.inner.news_entry.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+        ]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.news_entry.event_id.to_string()])
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
+        Some(vec![self.inner.news_entry.event_id.to_owned()])
     }
 }
 

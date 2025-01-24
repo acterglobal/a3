@@ -1,7 +1,7 @@
 use derive_getters::Getters;
 use matrix_sdk_base::ruma::{
     events::{reaction::ReactionEventContent, relation::Annotation, OriginalMessageLikeEvent},
-    EventId, OwnedEventId, OwnedUserId, RoomId, UserId,
+    EventId, OwnedEventId, OwnedUserId, UserId,
 };
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref};
@@ -9,6 +9,7 @@ use tracing::{error, info, trace};
 
 use super::{ActerModel, AnyActerModel, Capability, EventMeta, RedactedActerModel};
 use crate::{
+    referencing::{ExecuteReference, IndexKey, ModelParam, ObjectListIndex},
     store::Store,
     util::{is_false, is_zero},
     Result,
@@ -16,8 +17,6 @@ use crate::{
 
 // We understand all unicode [Red Heart](https://emojipedia.org/red-heart#technical) as quick-likes
 static LIKE_HEART: &str = "\u{2764}\u{FE0F}";
-static REACTIONS_FIELD: &str = "reactions";
-static REACTIONS_STATS_FIELD: &str = "reactions_stats";
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
 pub struct ReactionStats {
@@ -47,14 +46,16 @@ pub struct ReactionManager {
 }
 
 impl ReactionManager {
-    fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
-        let r = parent.as_ref();
-        format!("{r}::{REACTIONS_STATS_FIELD}")
+    fn stats_field_for(parent: OwnedEventId) -> ExecuteReference {
+        ExecuteReference::ModelParam(parent, ModelParam::ReactionStats)
     }
 
     pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> ReactionManager {
         let store = store.clone();
-        let stats = match store.get_raw(&Self::stats_field_for(&event_id)).await {
+        let stats = match store
+            .get_raw(&Self::stats_field_for(event_id.to_owned()).as_storage_key())
+            .await
+        {
             Ok(e) => e,
             Err(error) => {
                 info!(
@@ -84,7 +85,7 @@ impl ReactionManager {
     ) -> Result<Option<Reaction>> {
         for mdl in self
             .store
-            .get_list(&Reaction::index_for(&self.event_id))
+            .get_list(&Reaction::index_for(self.event_id.clone()))
             .await?
         {
             if let AnyActerModel::Reaction(c) = mdl {
@@ -108,7 +109,7 @@ impl ReactionManager {
         let mut entries = HashMap::new();
         for mdl in self
             .store
-            .get_list(&Reaction::index_for(&self.event_id))
+            .get_list(&Reaction::index_for(self.event_id.clone()))
             .await?
         {
             if let AnyActerModel::Reaction(c) = mdl {
@@ -182,14 +183,16 @@ impl ReactionManager {
         self.stats.clone()
     }
 
-    pub fn update_key(&self) -> String {
-        Self::stats_field_for(&self.event_id)
+    pub fn update_key(&self) -> ExecuteReference {
+        Self::stats_field_for(self.event_id.to_owned())
     }
 
-    pub async fn save(&self) -> Result<String> {
+    pub async fn save(&self) -> Result<ExecuteReference> {
         trace!(?self.stats, ?self.event_id, "Updated entry");
         let update_key = self.update_key();
-        self.store.set_raw(&update_key, &self.stats).await?;
+        self.store
+            .set_raw(&update_key.as_storage_key(), &self.stats)
+            .await?;
         Ok(update_key)
     }
 }
@@ -215,17 +218,16 @@ impl Deref for Reaction {
 }
 
 impl Reaction {
-    pub fn index_for<T: AsRef<str>>(parent: &T) -> String {
-        let r = parent.as_ref();
-        format!("{r}::{REACTIONS_FIELD}")
+    pub fn index_for(parent: OwnedEventId) -> IndexKey {
+        IndexKey::ObjectList(parent, ObjectListIndex::Reactions)
     }
 
     async fn apply(
         &self,
         store: &Store,
         redaction_model: Option<RedactedActerModel>,
-    ) -> Result<Vec<String>> {
-        let belongs_to = self.inner.relates_to.event_id.to_string();
+    ) -> Result<Vec<ExecuteReference>> {
+        let belongs_to = self.inner.relates_to.event_id.to_owned();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying reaction");
 
         let manager = {
@@ -262,22 +264,23 @@ impl Reaction {
 }
 
 impl ActerModel for Reaction {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![Reaction::index_for(&self.inner.relates_to.event_id)]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            Reaction::index_for(self.inner.relates_to.event_id.to_owned()),
+            IndexKey::ObjectHistory(self.inner.relates_to.event_id.to_owned()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+        ]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         self.apply(store, None).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
         // Do not trigger the parent to update, we have a manager
         None
     }
@@ -287,7 +290,7 @@ impl ActerModel for Reaction {
         &self,
         store: &Store,
         redaction_model: RedactedActerModel,
-    ) -> crate::Result<Vec<String>> {
+    ) -> crate::Result<Vec<ExecuteReference>> {
         self.apply(store, Some(redaction_model)).await
     }
 }

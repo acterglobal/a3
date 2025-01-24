@@ -1,0 +1,5 @@
+- Will we now show you a preview of the space when you try to access an object you don't have access to you yet with the ability to let you quickly join the space and interact with the object
+- We are now showing a Room Preview with additional information when you click on the title in an invite
+- the QR Code for objects now shows you the details that will be shared with the reader
+- A fix has been made when joining required to go through more than one server
+- We are now sharing our own target server in the via-parameter of shared links

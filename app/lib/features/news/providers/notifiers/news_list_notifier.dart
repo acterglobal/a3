@@ -20,10 +20,10 @@ class AsyncNewsListNotifier
 
     //GET ALL NEWS
     if (spaceId == null) {
-      _listener = client.subscribeStream('news');
+      _listener = client.subscribeSectionStream('news');
     } else {
       //GET SPACE NEWS
-      _listener = client.subscribeStream('$spaceId::news');
+      _listener = client.subscribeRoomSectionStream(spaceId, 'news');
     }
     _poller = _listener.listen(
       (data) async {

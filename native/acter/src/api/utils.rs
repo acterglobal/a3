@@ -176,3 +176,24 @@ where
         },
     }
 }
+
+pub struct VecStringBuilder(pub(crate) Vec<String>);
+
+impl Default for VecStringBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl VecStringBuilder {
+    pub fn new() -> VecStringBuilder {
+        VecStringBuilder(Vec::new())
+    }
+    pub fn add(&mut self, v: String) {
+        self.0.push(v);
+    }
+}
+
+pub fn new_vec_string_builder() -> VecStringBuilder {
+    VecStringBuilder::new()
+}

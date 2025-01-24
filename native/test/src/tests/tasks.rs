@@ -41,7 +41,7 @@ async fn task_smoketests() -> Result<()> {
         draft.send().await?
     };
 
-    let task_list_key = task_list_id.to_string();
+    let task_list_key = task_list_id.clone();
 
     let wait_for_space = space.clone();
     let task_list = wait_for(move || {
@@ -193,7 +193,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
         draft.send().await?
     };
 
-    let task_list_key = task_list_id.to_string();
+    let task_list_key = task_list_id.clone();
 
     let wait_for_space = space.clone();
     let task_list = wait_for(move || {
@@ -272,7 +272,7 @@ async fn task_comment_smoketests() -> Result<()> {
         draft.send().await?
     };
 
-    let task_list_key = task_list_id.to_string();
+    let task_list_key = task_list_id.clone();
 
     let wait_for_space = space.clone();
     let task_list = wait_for(move || {
@@ -374,7 +374,7 @@ async fn task_list_external_link() -> Result<()> {
         draft.send().await?
     };
 
-    let task_list_key = task_list_id.to_string();
+    let task_list_key = task_list_id.clone();
 
     let wait_for_space = space.clone();
     let task_list = wait_for(move || {

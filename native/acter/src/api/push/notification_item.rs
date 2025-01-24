@@ -626,7 +626,7 @@ impl NotificationItem {
             AnyActerEvent::Comment(MessageLikeEvent::Original(e)) => {
                 let parent_obj = client
                     .store()
-                    .get(e.content.on.event_id.as_str())
+                    .get(&e.content.on.event_id)
                     .await
                     .map_err(|error| {
                         tracing::error!(?error, "Error loading parent of comment");
@@ -648,7 +648,7 @@ impl NotificationItem {
             AnyActerEvent::Reaction(MessageLikeEvent::Original(e)) => {
                 let parent_obj = client
                     .store()
-                    .get(e.content.relates_to.event_id.as_str())
+                    .get(&e.content.relates_to.event_id)
                     .await
                     .map_err(|error| {
                         tracing::error!(?error, "Error loading parent of reaction");

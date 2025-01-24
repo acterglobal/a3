@@ -26,7 +26,7 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
   @override
   Future<Room?> build(String arg) async {
     final client = await ref.watch(alwaysClientProvider.future);
-    _listener = client.subscribeStream(arg); // keep it resident in memory
+    _listener = client.subscribeRoomStream(arg); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
         _log.info('seen update for room $arg');

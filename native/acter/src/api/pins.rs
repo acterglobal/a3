@@ -4,7 +4,7 @@ use acter_core::{
         Display, RefDetails as CoreRefDetails, RefPreview,
     },
     models::{self, can_redact, ActerModel, AnyActerModel},
-    statics::KEYS,
+    referencing::{IndexKey, SectionIndex},
 };
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
@@ -16,6 +16,7 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
+use ruma::EventId;
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -53,7 +54,11 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let client = me.core.client();
-                for mdl in me.store().get_list(KEYS::PINS).await? {
+                for mdl in me
+                    .store()
+                    .get_list(&IndexKey::Section(SectionIndex::Pins))
+                    .await?
+                {
                     if let AnyActerModel::Pin(t) = mdl {
                         let room_id = t.room_id().to_owned();
                         let room = match rooms_map.entry(room_id) {
@@ -84,9 +89,10 @@ impl Client {
 
     pub async fn pin(&self, pin_id: String) -> Result<Pin> {
         let me = self.clone();
+        let model_id = EventId::parse(pin_id)?;
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Pin(t) = me.store().get(&pin_id).await? else {
+                let AnyActerModel::Pin(t) = me.store().get(&model_id).await? else {
                     bail!("Ping not found");
                 };
                 let room = me.room_by_id_typed(t.room_id())?;
@@ -106,7 +112,11 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let client = me.core.client();
-                for mdl in me.store().get_list(KEYS::PINS).await? {
+                for mdl in me
+                    .store()
+                    .get_list(&IndexKey::Section(SectionIndex::Pins))
+                    .await?
+                {
                     if let AnyActerModel::Pin(pin) = mdl {
                         if !pin.is_link() {
                             continue;
@@ -147,8 +157,11 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let k = format!("{room_id}::{}", KEYS::PINS);
-                for mdl in client.store().get_list(&k).await? {
+                for mdl in client
+                    .store()
+                    .get_list(&IndexKey::RoomSection(room_id, SectionIndex::Pins))
+                    .await?
+                {
                     if let AnyActerModel::Pin(t) = mdl {
                         pins.push(Pin {
                             client: client.clone(),
@@ -171,8 +184,11 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let k = format!("{room_id}::{}", KEYS::PINS);
-                for mdl in client.store().get_list(&k).await? {
+                for mdl in client
+                    .store()
+                    .get_list(&IndexKey::RoomSection(room_id, SectionIndex::Pins))
+                    .await?
+                {
                     if let AnyActerModel::Pin(pin) = mdl {
                         if pin.is_link() {
                             pins.push(Pin {
@@ -281,7 +297,7 @@ impl Pin {
 /// Custom functions
 impl Pin {
     pub async fn refresh(&self) -> Result<Pin> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         let client = self.client.clone();
         let room = self.room.clone();
 
@@ -328,7 +344,7 @@ impl Pin {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         self.client.subscribe(key)
     }
 

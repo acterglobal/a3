@@ -1,18 +1,17 @@
-use matrix_sdk_base::ruma::{
-    events::OriginalMessageLikeEvent, EventId, OwnedUserId, RoomId, UserId,
-};
+use matrix_sdk::ruma::OwnedEventId;
+use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, OwnedUserId, RoomId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
-use super::{
-    super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
-    KEYS,
+use super::super::{
+    default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store,
 };
 use crate::{
     events::tasks::{
         TaskEventContent, TaskSelfAssignEventContent, TaskSelfUnassignEventContent,
         TaskUpdateBuilder, TaskUpdateEventContent,
     },
+    referencing::{ExecuteReference, IndexKey, ObjectListIndex, SpecialListsIndex},
     Result,
 };
 
@@ -101,25 +100,28 @@ impl Task {
 }
 
 impl ActerModel for Task {
-    fn indizes(&self, user_id: &UserId) -> Vec<String> {
-        let tasks_key = KEYS::TASKS;
-        let task_list_id_idx = format!("{}::{tasks_key}", self.inner.task_list_id.event_id);
+    fn indizes(&self, user_id: &UserId) -> Vec<IndexKey> {
+        let mut indizes = vec![
+            IndexKey::ObjectList(
+                self.inner.task_list_id.event_id.clone(),
+                ObjectListIndex::Tasks,
+            ),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::ObjectHistory(self.meta.event_id.clone()),
+            IndexKey::ObjectHistory(self.inner.task_list_id.event_id.clone()),
+        ];
         if self.is_assigned(user_id) {
-            if self.is_done() {
-                return vec![KEYS::MY_DONE_TASKS.to_owned(), task_list_id_idx];
+            indizes.push(if self.is_done() {
+                IndexKey::Special(SpecialListsIndex::MyDoneTasks)
             } else {
-                return vec![KEYS::MY_OPEN_TASKS.to_owned(), task_list_id_idx];
-            }
+                IndexKey::Special(SpecialListsIndex::MyOpenTasks)
+            });
         }
-        // not mine
-        vec![task_list_id_idx]
+        indizes
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     fn capabilities(&self) -> &[Capability] {
@@ -130,12 +132,12 @@ impl ActerModel for Task {
         ]
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.task_list_id.event_id.to_string()])
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
+        Some(vec![self.inner.task_list_id.event_id.to_owned()])
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
@@ -179,23 +181,23 @@ pub struct TaskUpdate {
 }
 
 impl ActerModel for TaskUpdate {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![format!("{:}::history", self.inner.task.event_id)]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            IndexKey::ObjectHistory(self.inner.task.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+        ]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.task.event_id.to_string()])
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
+        Some(vec![self.inner.task.event_id.to_owned()])
     }
 }
 
@@ -247,23 +249,23 @@ impl TaskSelfAssign {
 }
 
 impl ActerModel for TaskSelfAssign {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![format!("{:}::history", self.inner.task.event_id)]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            IndexKey::ObjectHistory(self.inner.task.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+        ]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.task.event_id.to_string()])
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
+        Some(vec![self.inner.task.event_id.to_owned()])
     }
 }
 
@@ -306,23 +308,23 @@ impl TaskSelfUnassign {
 }
 
 impl ActerModel for TaskSelfUnassign {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![format!("{:}::history", self.inner.task.event_id)]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            IndexKey::ObjectHistory(self.inner.task.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+        ]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.task.event_id.to_string()])
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
+        Some(vec![self.inner.task.event_id.to_owned()])
     }
 }
 
