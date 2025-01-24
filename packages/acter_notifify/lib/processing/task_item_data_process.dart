@@ -30,7 +30,7 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
-  String title = "${PushStyles.taskComplete.emoji} $username re-opened";
+  String title = "${PushStyles.taskReOpen.emoji} $username re-opened";
 
   //Generate comment body
   String? body;
@@ -40,7 +40,7 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
     final parentInfo = parentPart(parent);
     body = '$parentInfo of $taskList';
   } else {
-    title = '${PushStyles.taskComplete.emoji} $username re-opened Task';
+    title = '${PushStyles.taskReOpen.emoji} $username re-opened Task';
   }
 
   return (title, body);

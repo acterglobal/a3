@@ -75,7 +75,7 @@ void main() {
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, '🟢 Washington Johnson re-opened');
+      expect(title, '  ⃝  Washington Johnson re-opened');
       expect(body, '☑️ Website Redesign of 📋 Product TO-DO');
     });
 
@@ -92,7 +92,7 @@ void main() {
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, '🟢 @id:acter.global re-opened Task');
+      expect(title, '  ⃝  @id:acter.global re-opened Task');
       expect(body, null);
     });
   });
