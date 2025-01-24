@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/room/room_with_profile_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -90,6 +91,10 @@ class RoomCard extends ConsumerWidget {
   ///
   final bool showVisibilityMark;
 
+  /// Whether or not to render the bookmark indicator
+  ///
+  final bool showBookmarkedIndicator;
+
   const RoomCard({
     super.key,
     required this.roomId,
@@ -109,6 +114,7 @@ class RoomCard extends ConsumerWidget {
     this.showParents = true,
     this.showSuggestedMark = false,
     this.showVisibilityMark = false,
+    this.showBookmarkedIndicator = true,
     this.leading,
     this.trailing,
   });
@@ -131,6 +137,7 @@ class RoomCard extends ConsumerWidget {
     this.showParents = false,
     this.showSuggestedMark = false,
     this.showVisibilityMark = false,
+    this.showBookmarkedIndicator = true,
     this.leading,
     this.trailing,
   });
@@ -139,6 +146,7 @@ class RoomCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
+    final isBookmarked = ref.watch(spaceIsBookmarkedProvider(roomId)).valueOrNull ?? false;
 
     return RoomWithAvatarInfoCard(
       margin: margin,
@@ -154,6 +162,7 @@ class RoomCard extends ConsumerWidget {
       showParents: showParents,
       showSuggestedMark: showSuggestedMark,
       showVisibilityMark: showVisibilityMark,
+      showBookmarkedIndicator: showBookmarkedIndicator && isBookmarked,
       leading: leading,
       trailing: trailing,
     );

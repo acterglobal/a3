@@ -3,6 +3,8 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/blinking_text.dart';
 import 'package:acter/common/widgets/reference_details_item.dart';
+import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
+import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
@@ -56,6 +58,7 @@ class EventItem extends ConsumerWidget {
     CalendarEvent event,
   ) {
     final eventType = ref.watch(eventTypeProvider(event));
+    final isBookmarked = ref.watch(isBookmarkedProvider(BookmarkType.forEvent(eventId)));
     return InkWell(
       key: eventItemClick,
       onTap: () {
@@ -69,38 +72,55 @@ class EventItem extends ConsumerWidget {
         );
       },
       child: Stack(
-        alignment: Alignment.topLeft,
         children: [
-          Card(
-            margin: margin,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+          buildEventItemView(context, ref, event, eventType),
+          if (isBookmarked)
+            buildEventBookmarkView(context),
+        ],
+      ),
+    );
+  }
+
+  Widget buildEventItemView(BuildContext context, WidgetRef ref, CalendarEvent event, EventFilters eventType) {
+    return Card(
+      margin: margin,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          EventDateWidget(
+            calendarEvent: event,
+            eventType: eventType,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                EventDateWidget(
-                  calendarEvent: event,
-                  eventType: eventType,
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildEventTitle(context, event.title()),
-                      _buildEventSubtitle(context, ref, event),
-                      const SizedBox(height: 4),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 10),
-                if (eventType == EventFilters.ongoing)
-                  _buildHappeningIndication(context),
-                const SizedBox(width: 10),
-                if (isShowRsvp) _buildRsvpStatus(context, ref,event),
-                const SizedBox(width: 10),
+                _buildEventTitle(context, event.title()),
+                _buildEventSubtitle(context, ref, event),
+                const SizedBox(height: 4),
               ],
             ),
           ),
+          const SizedBox(width: 10),
+          if (eventType == EventFilters.ongoing)
+            _buildHappeningIndication(context),
+          const SizedBox(width: 10),
+          if (isShowRsvp) _buildRsvpStatus(context, ref, event),
+          const SizedBox(width: 10),
         ],
+      ),
+    );
+  }
+
+  Widget buildEventBookmarkView(BuildContext context) {
+    return Positioned(
+      right: 45,
+      top: 5,
+      child: Icon(
+        Icons.bookmark_sharp,
+        color: Theme.of(context).unselectedWidgetColor,
+        size: 24,
       ),
     );
   }

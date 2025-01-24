@@ -81,6 +81,10 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
   ///
   final bool showVisibilityMark;
 
+  /// Whether or not to render the bookmark indicator
+  ///
+  final bool showBookmarkedIndicator;
+
   const RoomWithAvatarInfoCard({
     super.key,
     required this.roomId,
@@ -100,6 +104,7 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
     this.margin,
     this.showSuggestedMark = false,
     this.showVisibilityMark = false,
+    this.showBookmarkedIndicator = false,
     required this.avatarSize,
     required this.contentPadding,
   });
@@ -123,39 +128,11 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
       ),
     );
 
-    return Card(
-      margin: margin,
-      child: ListTile(
-        contentPadding: contentPadding,
-        onTap: onTap ?? () => context.push('/$roomId'),
-        onFocusChange: onFocusChange,
-        onLongPress: onLongPress,
-        titleTextStyle: titleTextStyle,
-        subtitleTextStyle: subtitleTextStyle,
-        leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            avatar,
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  buildSubtitle(context) ?? const SizedBox.shrink(),
-                ],
-              ),
-            ),
-          ],
-        ),
-        leading: leading,
-        trailing: trailing,
-      ),
+    return Stack(
+      children: [
+        buildRoomItemView(context, avatar, title),
+        if (showBookmarkedIndicator) buildRoomBookmarkView(context),
+      ],
     );
   }
 
@@ -190,5 +167,55 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
     }
 
     return Row(children: subtitles);
+  }
+
+  Widget buildRoomBookmarkView(BuildContext context) {
+    return Positioned(
+      right: 30,
+      top: 5,
+      child: Icon(
+        Icons.bookmark_sharp,
+        color: Theme.of(context).unselectedWidgetColor,
+        size: 24,
+      ),
+    );
+  }
+
+  Widget buildRoomItemView(
+      BuildContext context, ActerAvatar avatar, String title) {
+    return Card(
+      margin: margin,
+      child: ListTile(
+        contentPadding: contentPadding,
+        onTap: onTap ?? () => context.push('/$roomId'),
+        onFocusChange: onFocusChange,
+        onLongPress: onLongPress,
+        titleTextStyle: titleTextStyle,
+        subtitleTextStyle: subtitleTextStyle,
+        leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            avatar,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  buildSubtitle(context) ?? const SizedBox.shrink(),
+                ],
+              ),
+            ),
+          ],
+        ),
+        leading: leading,
+        trailing: trailing,
+      ),
+    );
   }
 }

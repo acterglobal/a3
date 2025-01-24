@@ -15,6 +15,7 @@ class SpaceListWidget extends ConsumerWidget {
   final bool? isShowSeeAllButton;
   final bool showSectionBg;
   final bool shrinkWrap;
+  final bool showBookmarkedIndicator;
   final Widget emptyState;
 
   const SpaceListWidget({
@@ -27,6 +28,7 @@ class SpaceListWidget extends ConsumerWidget {
     this.isShowSeeAllButton,
     this.showSectionBg = true,
     this.shrinkWrap = true,
+    this.showBookmarkedIndicator = true,
     this.emptyState = const SizedBox.shrink(),
   });
 
@@ -60,7 +62,10 @@ class SpaceListWidget extends ConsumerWidget {
       padding: EdgeInsets.zero,
       physics: shrinkWrap ? const NeverScrollableScrollPhysics() : null,
       itemBuilder: (context, index) {
-        return RoomCard(roomId: spaceList[index].getRoomIdStr());
+        return RoomCard(
+          roomId: spaceList[index].getRoomIdStr(),
+          showBookmarkedIndicator: showBookmarkedIndicator,
+        );
       },
     );
   }
