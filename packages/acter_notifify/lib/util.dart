@@ -7,6 +7,7 @@ import 'package:acter_notifify/platform/windows.dart';
 import 'package:acter_notifify/processing/attachment_data_process.dart';
 import 'package:acter_notifify/processing/comment_data_process.dart';
 import 'package:acter_notifify/model/push_styles.dart';
+import 'package:acter_notifify/processing/description_change_data_process.dart';
 import 'package:acter_notifify/processing/event_data_process.dart';
 import 'package:acter_notifify/processing/reaction_dara_process.dart';
 import 'package:acter_notifify/processing/references_data_process.dart';
@@ -111,6 +112,7 @@ Future<String> deviceName() async {
       PushStyles.taskDueDateChange =>
         titleAndBodyForTaskItemDueDateChange(notification),
       PushStyles.titleChange => titleAndBodyForObjectTitleChange(notification),
+      PushStyles.descriptionChange => titleAndBodyForObjectDescriptionChange(notification),
       _ => _fallbackTitleAndBody(notification),
     };
 
