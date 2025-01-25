@@ -30,7 +30,7 @@ void main() {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.descriptionChange.name);
       // Arrange: Set notification item
-      when(() => item.title()).thenReturn("The House WiFi");
+      when(() => item.title()).thenReturn("Lorem Ipsum is simply dummy text of the printing");
       // Arrange: Set parent object processing
       when(() => parent.objectTypeStr()).thenReturn(MockObject.pin.name);
       when(() => parent.emoji()).thenReturn(MockObject.pin.emoji);
@@ -41,13 +41,13 @@ void main() {
 
       // Assert: Check if tile and body are as expected
       expect(title, "📌 The House changed");
-      expect(body, 'by Washington Johnson to "The House WiFi"');
+      expect(body, 'Washington Johnson updated description: "Lorem Ipsum is simply dummy text of the printing"');
     });
     test("Event title with parent info", () {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.descriptionChange.name);
       // Arrange: Set notification item
-      when(() => item.title()).thenReturn("Social Hangout 2025");
+      when(() => item.title()).thenReturn("Lorem Ipsum is simply dummy text of the printing");
       // Arrange: Set parent object processing
       when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
       when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
@@ -58,13 +58,13 @@ void main() {
 
       // Assert: Check if tile and body are as expected
       expect(title, "🗓️ Meet-up changed");
-      expect(body, 'by Washington Johnson to "Social Hangout 2025"');
+      expect(body, 'Washington Johnson updated description: "Lorem Ipsum is simply dummy text of the printing"');
     });
     test("Task-List title with parent info", () {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.descriptionChange.name);
       // Arrange: Set notification item
-      when(() => item.title()).thenReturn("New Year Goals");
+      when(() => item.title()).thenReturn("Lorem Ipsum is simply dummy text of the printing");
       // Arrange: Set parent object processing
       when(() => parent.objectTypeStr()).thenReturn(MockObject.taskList.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
@@ -75,14 +75,14 @@ void main() {
 
       // Assert: Check if tile and body are as expected
       expect(title, "📋 2025 Goals changed");
-      expect(body, 'by Washington Johnson to "New Year Goals"');
+      expect(body, 'Washington Johnson updated description: "Lorem Ipsum is simply dummy text of the printing"');
     });
 
     test("Task-Item title with parent info", () {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.descriptionChange.name);
       // Arrange: Set notification item
-      when(() => item.title()).thenReturn("Product Deployment");
+      when(() => item.title()).thenReturn("Lorem Ipsum is simply dummy text of the printing");
       // Arrange: Set parent object processing
       when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
@@ -93,14 +93,14 @@ void main() {
 
       // Assert: Check if tile and body are as expected
       expect(title, "☑️ Website Deployment changed");
-      expect(body, 'by Washington Johnson to "Product Deployment"');
+      expect(body, 'Washington Johnson updated description: "Lorem Ipsum is simply dummy text of the printing"');
     });
 
     test("Title with no parent", () {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.descriptionChange.name);
       // Arrange: Set notification item
-      when(() => item.title()).thenReturn("Social Hangout 2025");
+      when(() => item.title()).thenReturn("Lorem Ipsum is simply dummy text of the printing");
       // Arrange: Set sender and parent object processing
       final sender = MockNotificationSender(
           username: "@id:acter.global"); // no display name
@@ -111,7 +111,7 @@ void main() {
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, '@id:acter.global changed description to "Social Hangout 2025"');
+      expect(title, '@id:acter.global updated description: "Lorem Ipsum is simply dummy text of the printing"');
       expect(body, null);
     });
   });

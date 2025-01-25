@@ -9,7 +9,7 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
   final username = sender.displayName() ?? sender.userId();
   final newDescription = notification.title();
 
-  String? body = 'by $username to "$newDescription"';
+  String? body = '$username updated description: "$newDescription"';
 
   //Generate attachment title
   final parent = notification.parent();
@@ -18,7 +18,7 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
     final parentInfo = parentPart(parent);
     title = '$parentInfo changed';
   } else {
-    title = '$username changed description to "$newDescription"';
+    title = '$username updated description: "$newDescription"';
     body = null;
   }
 
