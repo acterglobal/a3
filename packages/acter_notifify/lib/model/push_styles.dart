@@ -27,7 +27,7 @@ enum PushStyles {
   descriptionChange('✏️'),
   creation('➕'),
   redaction('🗑️'),
-  otherChange('✏️');
+  otherChanges('✏️');
 
   const PushStyles(this.emoji);
 
