@@ -24,13 +24,8 @@ void main() {
     //Set pushStyle
     when(() => item.pushStyle()).thenReturn(PushStyles.reaction.name);
 
-    //Set send user name
-    final sender = MockNotificationSender(name: "Washington Johnson");
-    when(() => item.sender()).thenReturn(sender);
-
-    //Set message content
-    msg = MockMsgContent(content: "This is great");
-    when(() => item.body()).thenReturn(msg);
+    //Set reaction emoji
+    when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
   });
 
   group("Title and Body generation", () {
@@ -38,15 +33,15 @@ void main() {
       // Arrange: Set parent object processing
       when(() => parent.objectTypeStr()).thenReturn(MockObject.news.name);
       when(() => parent.emoji()).thenReturn(MockObject.news.emoji);
-
-      // Arrange: Set reaction processing
-      when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
+      // Arrange: Set sender user name
+      final sender = MockNotificationSender(name: "Bernd Maur");
+      when(() => item.sender()).thenReturn(sender);
 
       // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, '❤️ Washington Johnson liked');
+      expect(title, '❤️ Bernd Maur liked');
       expect(body, "🚀 boost");
     });
 
@@ -55,6 +50,9 @@ void main() {
       when(() => parent.objectTypeStr()).thenReturn(MockObject.pin.name);
       when(() => parent.emoji()).thenReturn(MockObject.pin.emoji);
       when(() => parent.title()).thenReturn("Candlesticks");
+      // Arrange: Set sender user name
+      final sender = MockNotificationSender(name: "Thorsten Schweitzer");
+      when(() => item.sender()).thenReturn(sender);
 
       // Arrange: Set reaction processing
       when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
@@ -63,7 +61,7 @@ void main() {
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, '❤️ Washington Johnson liked');
+      expect(title, '❤️ Thorsten Schweitzer liked');
       expect(body, "📌 Candlesticks");
     });
 
@@ -72,15 +70,15 @@ void main() {
       when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
       when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
       when(() => parent.title()).thenReturn("Social Hours 2025");
-
-      // Arrange: Set reaction processing
-      when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
+      // Arrange: Set sender user name
+      final sender = MockNotificationSender(name: "Patrick Andersen");
+      when(() => item.sender()).thenReturn(sender);
 
       // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, '❤️ Washington Johnson liked');
+      expect(title, '❤️ Patrick Andersen liked');
       expect(body, "🗓️ Social Hours 2025");
     });
 
@@ -89,15 +87,15 @@ void main() {
       when(() => parent.objectTypeStr()).thenReturn(MockObject.taskList.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
       when(() => parent.title()).thenReturn("New Year Goals");
-
-      // Arrange: Set reaction processing
-      when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
+      // Arrange: Set sender user name
+      final sender = MockNotificationSender(name: "Christine Knudsen");
+      when(() => item.sender()).thenReturn(sender);
 
       // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, '❤️ Washington Johnson liked');
+      expect(title, '❤️ Christine Knudsen liked');
       expect(body, "📋 New Year Goals");
     });
 
@@ -106,15 +104,15 @@ void main() {
       when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
-
-      // Arrange: Set reaction processing
-      when(() => item.reactionKey()).thenReturn(PushStyles.reaction.emoji);
+      // Arrange: Set sender user name
+      final sender = MockNotificationSender(name: "Bente Bang");
+      when(() => item.sender()).thenReturn(sender);
 
       // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, '❤️ Washington Johnson liked');
+      expect(title, '❤️ Bente Bang liked');
       expect(body, "☑️ Website Redesign");
     });
 

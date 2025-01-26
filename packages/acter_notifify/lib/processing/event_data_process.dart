@@ -4,14 +4,14 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 
 (String, String?) titleAndBodyForEventDateChange(
     NotificationItem notification) {
-  //Generate attachment body
+  //Generate event date change body
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
   final newEventDate = notification.title();
 
   String? body = 'by $username to "$newEventDate"';
 
-  //Generate attachment title
+  //Generate event date change title
   final parent = notification.parent();
   String title;
   if (parent != null) {
@@ -26,13 +26,13 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 }
 
 (String, String?) titleAndBodyForEventRsvpYes(NotificationItem notification) {
-  //Generate comment title
+  //Generate event rsvp yes title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
   String title = "${PushStyles.rsvpYes.emoji} $username will join";
 
-  //Generate comment body
+  //Generate event rsvp yes body
   String? body;
   final parent = notification.parent();
   if (parent != null) {
@@ -44,13 +44,13 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 }
 
 (String, String?) titleAndBodyForEventRsvpMaybe(NotificationItem notification) {
-  //Generate comment title
+  //Generate event rsvp maybe title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
   String title = "${PushStyles.rsvpMaybe.emoji} $username might join";
 
-  //Generate comment body
+  //Generate rsvp maybe body
   String? body;
   final parent = notification.parent();
   if (parent != null) {
@@ -62,13 +62,13 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 }
 
 (String, String?) titleAndBodyForEventRsvpNo(NotificationItem notification) {
-  //Generate comment title
+  //Generate rsvp no title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
   String title = "${PushStyles.rsvpNo.emoji} $username will not join";
 
-  //Generate comment body
+  //Generate rsvp no body
   String? body;
   final parent = notification.parent();
   if (parent != null) {

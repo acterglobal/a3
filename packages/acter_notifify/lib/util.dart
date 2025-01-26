@@ -12,7 +12,7 @@ import 'package:acter_notifify/processing/event_data_process.dart';
 import 'package:acter_notifify/processing/object_creation_data_process.dart';
 import 'package:acter_notifify/processing/object_other_changes_data_process.dart';
 import 'package:acter_notifify/processing/object_redaction_data_process.dart';
-import 'package:acter_notifify/processing/reaction_dara_process.dart';
+import 'package:acter_notifify/processing/reaction_data_process.dart';
 import 'package:acter_notifify/processing/references_data_process.dart';
 import 'package:acter_notifify/processing/task_item_data_process.dart';
 import 'package:acter_notifify/processing/task_list_data_process.dart';

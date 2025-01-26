@@ -3,13 +3,13 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 
 (String, String?) titleAndBodyForObjectOtherChanges(
     NotificationItem notification) {
-  //Generate attachment body
+  //Generate body
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
   String? body = 'by $username';
 
-  //Generate attachment title
+  //Generate title
   final parent = notification.parent();
   String title;
   if (parent != null) {

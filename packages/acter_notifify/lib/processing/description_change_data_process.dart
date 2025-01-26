@@ -4,14 +4,14 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 
 (String, String?) titleAndBodyForObjectDescriptionChange(
     NotificationItem notification) {
-  //Generate attachment body
+  //Generate body
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
   final newDescription = notification.title();
 
   String? body = '$username updated description: "$newDescription"';
 
-  //Generate attachment title
+  //Generate title
   final parent = notification.parent();
   String title;
   if (parent != null) {

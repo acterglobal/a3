@@ -4,13 +4,13 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 
 (String, String?) titleAndBodyForTaskItemCompleted(
     NotificationItem notification) {
-  //Generate comment title
+  //Generate title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
   String title = "${PushStyles.taskComplete.emoji} $username completed";
 
-  //Generate comment body
+  //Generate body
   String? body;
   final parent = notification.parent();
   if (parent != null) {
@@ -26,13 +26,13 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 
 (String, String?) titleAndBodyForTaskItemReOpened(
     NotificationItem notification) {
-  //Generate comment title
+  //Generate title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
   String title = "${PushStyles.taskReOpen.emoji} $username re-opened";
 
-  //Generate comment body
+  //Generate body
   String? body;
   final parent = notification.parent();
   if (parent != null) {
@@ -48,13 +48,13 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 
 (String, String?) titleAndBodyForTaskItemAccepted(
     NotificationItem notification) {
-  //Generate comment title
+  //Generate title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
   String title = "${PushStyles.taskAccept.emoji} $username accepted";
 
-  //Generate comment body
+  //Generate body
   String? body;
   final parent = notification.parent();
   if (parent != null) {
@@ -70,13 +70,13 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 
 (String, String?) titleAndBodyForTaskItemDeclined(
     NotificationItem notification) {
-  //Generate comment title
+  //Generate title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
   String title = "${PushStyles.taskDecline.emoji} $username declined";
 
-  //Generate comment body
+  //Generate body
   String? body;
   final parent = notification.parent();
   if (parent != null) {
@@ -93,14 +93,14 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 (String, String?) titleAndBodyForTaskItemDueDateChange(
     NotificationItem notification) {
 
-  //Generate attachment body
+  //Generate body
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
   final taskDueDate = notification.title();
 
   String? body = 'by $username to "$taskDueDate"';
 
-  //Generate attachment title
+  //Generate title
   final parent = notification.parent();
   String title;
   if (parent != null) {

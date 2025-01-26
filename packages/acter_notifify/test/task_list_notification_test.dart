@@ -29,8 +29,8 @@ void main() {
   });
 
   group("Title and body generation", () {
-    test("Add task in TaskList", () {
-      // Arrange: Set parent object processing
+    test("Add task in TaskList with parent", () {
+      // Arrange: Set parent object data
       when(() => parent.objectTypeStr()).thenReturn(MockObject.taskList.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
       when(() => parent.title()).thenReturn("2025 Goals");
@@ -46,7 +46,7 @@ void main() {
     });
 
     test("Add task in TaskList with no parent", () {
-      // Arrange: Set sender and parent object processing
+      // Arrange: Set parent object data
       final sender = MockNotificationSender(
           username: "@id:acter.global"); // no display name
       when(() => item.sender()).thenReturn(sender);
