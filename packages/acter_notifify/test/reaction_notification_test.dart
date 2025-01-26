@@ -11,7 +11,6 @@ import 'mock_data/mock_object.dart';
 void main() {
   late MockNotificationItem item;
   late MockNotificationParent parent;
-  late MockMsgContent msg;
 
   setUpAll(() {
     //Mack declaration
