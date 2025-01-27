@@ -68,14 +68,17 @@ impl Client {
                             None
                         }
                     })
-                    .collect::<Vec<models::NewsEntry>>();
-                all_news.sort_by(|a, b| b.meta.origin_server_ts.cmp(&a.meta.origin_server_ts));
+                    .take_while(|_| {
+                        if count > 0 {
+                            count -= 1;
+                            true
+                        } else {
+                            false
+                        }
+                    });
 
                 let client = me.core.client();
                 for content in all_news {
-                    if count == 0 {
-                        break; // we filled what we wanted
-                    }
                     let room_id = content.room_id().to_owned();
                     let room = match rooms_map.entry(room_id) {
                         Entry::Occupied(t) => t.get().clone(),
@@ -91,7 +94,6 @@ impl Client {
                     };
                     let news_entry = NewsEntry::new(me.clone(), room, content).await?;
                     news.push(news_entry);
-                    count -= 1;
                 }
                 Ok(news)
             })
@@ -107,7 +109,7 @@ impl Space {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let mut all_news = client
+                let selected_news = client
                     .store()
                     .get_list(&IndexKey::RoomSection(room_id, SectionIndex::Boosts))
                     .await?
@@ -118,15 +120,17 @@ impl Space {
                             None
                         }
                     })
-                    .collect::<Vec<models::NewsEntry>>();
-                all_news.reverse();
+                    .take_while(|_| {
+                        if count > 0 {
+                            count -= 1;
+                            true
+                        } else {
+                            false
+                        }
+                    });
 
-                for content in all_news {
-                    if count == 0 {
-                        break; // we filled what we wanted
-                    }
+                for content in selected_news {
                     news.push(NewsEntry::new(client.clone(), room.clone(), content).await?);
-                    count -= 1;
                 }
 
                 Ok(news)

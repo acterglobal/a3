@@ -379,7 +379,6 @@ impl RsvpManager {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = models::Rsvp::index_for(self.inner.event_id().to_owned());
-        self.client.subscribe(key)
+        self.client.subscribe(self.inner.update_key())
     }
 }

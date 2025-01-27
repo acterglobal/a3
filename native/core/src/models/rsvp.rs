@@ -58,7 +58,7 @@ impl RsvpManager {
         {
             if let AnyActerModel::Rsvp(c) = mdl {
                 let key = c.clone().meta.sender;
-                entries.insert(key, c);
+                entries.entry(key).or_insert(c); // we ignore older entries
             }
         }
         Ok(entries)
@@ -80,7 +80,7 @@ impl RsvpManager {
             .to_owned()
     }
 
-    fn update_key(&self) -> ExecuteReference {
+    pub fn update_key(&self) -> ExecuteReference {
         Self::stats_field_for(self.event_id.to_owned())
     }
 
@@ -142,7 +142,7 @@ impl ActerModel for Rsvp {
 
         let manager = {
             let model = store.get(&belongs_to).await?;
-            if !model.capabilities().contains(&Capability::Commentable) {
+            if !model.capabilities().contains(&Capability::RSVPable) {
                 error!(?model, rsvp = ?self, "doesn’t support entries. can’t apply");
                 None
             } else {
