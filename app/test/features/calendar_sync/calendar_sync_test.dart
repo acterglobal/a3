@@ -1,13 +1,20 @@
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
+import 'package:acter/features/calendar_sync/providers/events_to_sync_provider.dart';
+import 'package:acter/features/datetime/providers/utc_now_provider.dart';
+import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:device_calendar/device_calendar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/mock_a3sdk.dart';
 
 import 'package:mocktail/mocktail.dart';
+
+import '../../helpers/mock_event_providers.dart';
 
 class MockDeviceCalendarPlugin extends Mock implements DeviceCalendarPlugin {}
 
@@ -28,7 +35,7 @@ void main() {
 
       const calendarId = '1';
 
-      final events = generateMockCalendarEvents(10);
+      final events = generateMockCalendarEvents(count: 10);
       final firstTry =
           events.map((e) => (event: e, rsvp: RsvpStatusTag.Maybe)).toList();
       final secondTry =
@@ -75,7 +82,7 @@ void main() {
   });
   group('Calendar Event Updater tests', () {
     testWidgets('basics update fine', (tester) async {
-      final events = generateMockCalendarEvents(10);
+      final events = generateMockCalendarEvents(count: 10);
 
       final event = Event('1');
       for (final mock in events) {
@@ -87,7 +94,7 @@ void main() {
       }
     });
     testWidgets('status and reminders are set correctly', (tester) async {
-      final mockEvent = generateMockCalendarEvents(1).first;
+      final mockEvent = generateMockCalendarEvents(count: 1).first;
       final targetEvent = Event('1');
 
       // yes add reminder
@@ -113,6 +120,45 @@ void main() {
       expect(targetEvent.status, EventStatus.Tentative);
       expect(targetEvent.reminders?.length, 1);
       expect(targetEvent.reminders?.first.minutes, 10);
+    });
+  });
+
+  group('Calendar Sync Provider test', () {
+    testWidgets('by default find all', (tester) async {
+      SharedPreferences.setMockInitialValues({}); // no values set yet.
+
+      final roomAEvents = generateMockCalendarEvents(count: 5, roomId: 'roomA');
+      final roomBEvents = generateMockCalendarEvents(count: 5, roomId: 'roomB');
+      final roomCEvents = generateMockCalendarEvents(count: 5, roomId: 'roomC');
+      final List<MockCalendarEvent> events = [];
+      final client = MockClient();
+      final Stream<bool> updateSteam = Stream.empty();
+      when(() => client.subscribeModelObjectsStream(any(), any()))
+          .thenAnswer((a) => updateSteam);
+      events.addAll(roomAEvents);
+      events.addAll(roomBEvents);
+      events.addAll(roomCEvents);
+      final container = ProviderContainer(
+        overrides: [
+          utcNowProvider.overrideWith((ref) => MockUtcNowNotifier()),
+          allEventListProvider.overrideWith((r, a) => events),
+          alwaysClientProvider.overrideWith((ref) => client),
+          calendarEventProvider.overrideWith(
+            () => MockFindAsyncCalendarEventNotifier(events: events),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      // keeping the provider alive for the tests
+      // ignore: unused_local_variable
+      final subscription = container.listen(eventsToSyncProvider, (a, b) {});
+
+      final state = await container.read(eventsToSyncProvider.future);
+      expect(
+        state.length,
+        events.length,
+      );
     });
   });
 }
