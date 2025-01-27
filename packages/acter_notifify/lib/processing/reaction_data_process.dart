@@ -16,14 +16,12 @@ import '../model/push_styles.dart';
     title = "$reaction $username reacted";
   }
 
-  //Generate reaction body
-  String? body;
   final parent = notification.parent();
-
   if (parent != null) {
     final parentInfo = parentPart(parent);
-    body = parentInfo;
+    final body = parentInfo;
+    return (title, body);
   }
 
-  return (title, body);
+  return (title, null);
 }

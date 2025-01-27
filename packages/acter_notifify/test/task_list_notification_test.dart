@@ -51,12 +51,14 @@ void main() {
           username: "@id:acter.global"); // no display name
       when(() => item.sender()).thenReturn(sender);
       when(() => item.parent()).thenReturn(null);
+      // Arrange: Set reference object content
+      when(() => item.title()).thenReturn("☑️ Website Redesign");
 
       // Act: process processing and get tile and body
       final (title, body) = genTitleAndBody(item);
 
       // Assert: Check if tile and body are as expected
-      expect(title, "@id:acter.global added Task");
+      expect(title, '@id:acter.global added "☑️ Website Redesign"');
       expect(body, null);
     });
   });

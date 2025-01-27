@@ -4,112 +4,90 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 
 (String, String?) titleAndBodyForTaskItemCompleted(
     NotificationItem notification) {
-  //Generate title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
-  String title = "${PushStyles.taskComplete.emoji} $username completed";
-
-  //Generate body
-  String? body;
   final parent = notification.parent();
   if (parent != null) {
     final taskList = notification.title();
     final parentInfo = parentPart(parent);
-    body = '$parentInfo of $taskList';
+    final title = "${PushStyles.taskComplete.emoji} $username completed";
+    final body = '$parentInfo of $taskList';
+    return (title, body);
   } else {
-    title = '${PushStyles.taskComplete.emoji} $username completed Task';
+    final title = '${PushStyles.taskComplete.emoji} $username completed Task';
+    return (title, null);
   }
-
-  return (title, body);
 }
 
 (String, String?) titleAndBodyForTaskItemReOpened(
     NotificationItem notification) {
-  //Generate title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
-  String title = "${PushStyles.taskReOpen.emoji} $username re-opened";
-
-  //Generate body
-  String? body;
   final parent = notification.parent();
   if (parent != null) {
     final taskList = notification.title();
     final parentInfo = parentPart(parent);
-    body = '$parentInfo of $taskList';
+    final title = "${PushStyles.taskReOpen.emoji} $username re-opened";
+    final body = '$parentInfo of $taskList';
+    return (title, body);
   } else {
-    title = '${PushStyles.taskReOpen.emoji} $username re-opened Task';
+    final title = '${PushStyles.taskReOpen.emoji} $username re-opened Task';
+    return (title, null);
   }
-
-  return (title, body);
 }
 
 (String, String?) titleAndBodyForTaskItemAccepted(
     NotificationItem notification) {
-  //Generate title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
-  String title = "${PushStyles.taskAccept.emoji} $username accepted";
-
-  //Generate body
-  String? body;
   final parent = notification.parent();
   if (parent != null) {
     final taskList = notification.title();
     final parentInfo = parentPart(parent);
-    body = '$parentInfo of $taskList';
+    final title = "${PushStyles.taskAccept.emoji} $username accepted";
+    final body = '$parentInfo of $taskList';
+    return (title, body);
   } else {
-    title = '${PushStyles.taskAccept.emoji} $username accepted Task';
+    final title = '${PushStyles.taskAccept.emoji} $username accepted Task';
+    return (title, null);
   }
-
-  return (title, body);
 }
 
 (String, String?) titleAndBodyForTaskItemDeclined(
     NotificationItem notification) {
-  //Generate title
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
-  String title = "${PushStyles.taskDecline.emoji} $username declined";
-
-  //Generate body
-  String? body;
   final parent = notification.parent();
   if (parent != null) {
     final taskList = notification.title();
     final parentInfo = parentPart(parent);
-    body = '$parentInfo of $taskList';
+    final title = "${PushStyles.taskDecline.emoji} $username declined";
+    final body = '$parentInfo of $taskList';
+    return (title, body);
   } else {
-    title = '${PushStyles.taskDecline.emoji} $username declined Task';
+    final title = '${PushStyles.taskDecline.emoji} $username declined Task';
+    return (title, null);
   }
-
-  return (title, body);
 }
 
 (String, String?) titleAndBodyForTaskItemDueDateChange(
     NotificationItem notification) {
-
-  //Generate body
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
   final taskDueDate = notification.title();
 
-  String? body = 'by $username to "$taskDueDate"';
-
-  //Generate title
   final parent = notification.parent();
-  String title;
   if (parent != null) {
     final parentInfo = parentPart(parent);
-    title = '$parentInfo rescheduled';
+    final title = '$parentInfo rescheduled';
+    final body = 'by $username to "$taskDueDate"';
+    return (title, body);
   } else {
-    title = '$username rescheduled task to "$taskDueDate"';
-    body = null;
+    final title = '$username rescheduled task to "$taskDueDate"';
+    return (title, null);
   }
-
-  return (title, body);
 }

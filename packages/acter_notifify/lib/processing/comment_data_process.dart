@@ -16,9 +16,10 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
 
   if (parent != null) {
     final parentInfo = parentPart(parent);
-    body = "On $parentInfo: $comment";
+    final content = comment != null ? ': $comment' : '';
+    body = "On $parentInfo$content";
   } else {
-    body = "$comment";
+    body = comment;
   }
 
   return (title, body);
