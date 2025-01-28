@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/features/room/providers/room_user_settings_provider.dart';
+import 'package:acter/features/room/providers/user_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';

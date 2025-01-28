@@ -1,4 +1,4 @@
-import 'package:acter/features/room/providers/room_user_settings_provider.dart';
+import 'package:acter/features/room/providers/user_settings_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 

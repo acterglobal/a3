@@ -5,7 +5,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show UserRoomSettings;
 import 'package:riverpod/riverpod.dart';
 
-class AsyncRoomUserSettingsNotifier
+class AsyncUserRoomSettingsNotifier
     extends AutoDisposeFamilyAsyncNotifier<UserRoomSettings, String> {
   late Stream<bool> _listener;
 

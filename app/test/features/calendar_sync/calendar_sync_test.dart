@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/calendar_sync/providers/events_to_sync_provider.dart';
 import 'package:acter/features/datetime/providers/utc_now_provider.dart';
@@ -15,6 +16,7 @@ import '../../helpers/mock_a3sdk.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/mock_event_providers.dart';
+import '../../helpers/mock_room_providers.dart';
 
 class MockDeviceCalendarPlugin extends Mock implements DeviceCalendarPlugin {}
 
@@ -124,7 +126,7 @@ void main() {
   });
 
   group('Calendar Sync Provider test', () {
-    testWidgets('by default find all', (tester) async {
+    testWidgets('by default sync all', (tester) async {
       SharedPreferences.setMockInitialValues({}); // no values set yet.
 
       final roomAEvents = generateMockCalendarEvents(count: 5, roomId: 'roomA');
@@ -132,17 +134,26 @@ void main() {
       final roomCEvents = generateMockCalendarEvents(count: 5, roomId: 'roomC');
       final List<MockCalendarEvent> events = [];
       final client = MockClient();
+      final mockRoom = MockRoom();
       final Stream<bool> updateSteam = Stream.empty();
       when(() => client.subscribeModelObjectsStream(any(), any()))
           .thenAnswer((a) => updateSteam);
+      when(() => mockRoom.userSettings())
+          .thenAnswer((_) async => MockRoomUserSettings());
       events.addAll(roomAEvents);
       events.addAll(roomBEvents);
       events.addAll(roomCEvents);
+
       final container = ProviderContainer(
         overrides: [
           utcNowProvider.overrideWith((ref) => MockUtcNowNotifier()),
           allEventListProvider.overrideWith((r, a) => events),
           alwaysClientProvider.overrideWith((ref) => client),
+          maybeRoomProvider.overrideWith(
+            () => MockAlwaysTheSameRoomNotifier(
+              room: mockRoom,
+            ),
+          ),
           calendarEventProvider.overrideWith(
             () => MockFindAsyncCalendarEventNotifier(events: events),
           ),
@@ -158,6 +169,62 @@ void main() {
       expect(
         state.length,
         events.length,
+      );
+    });
+    testWidgets('excluded rooms are excluded', (tester) async {
+      SharedPreferences.setMockInitialValues({}); // no values set yet.
+
+      final roomAEvents = generateMockCalendarEvents(count: 5, roomId: 'roomA');
+      final roomBEvents = generateMockCalendarEvents(count: 5, roomId: 'roomB');
+      final roomCEvents = generateMockCalendarEvents(count: 5, roomId: 'roomC');
+      final List<MockCalendarEvent> events = [];
+      final roomA = MockRoom();
+      final roomB = MockRoom();
+      final roomC = MockRoom();
+      when(() => roomA.userSettings())
+          .thenAnswer((_) async => MockRoomUserSettings());
+      when(() => roomB.userSettings()).thenAnswer(
+        // b will be ignored
+        (_) async => MockRoomUserSettings(include_cal_sync: false),
+      );
+      when(() => roomC.userSettings())
+          .thenAnswer((_) async => MockRoomUserSettings());
+      final client = MockClient();
+      final Stream<bool> updateSteam = Stream.empty();
+      when(() => client.subscribeModelObjectsStream(any(), any()))
+          .thenAnswer((a) => updateSteam);
+      events.addAll(roomAEvents);
+      events.addAll(roomBEvents);
+      events.addAll(roomCEvents);
+      final container = ProviderContainer(
+        overrides: [
+          utcNowProvider.overrideWith((ref) => MockUtcNowNotifier()),
+          allEventListProvider.overrideWith((r, a) => events),
+          alwaysClientProvider.overrideWith((ref) => client),
+          maybeRoomProvider.overrideWith(
+            () => MockAsyncMaybeRoomNotifier(
+              items: {'roomA': roomA, 'roomB': roomB, 'roomC': roomC},
+            ),
+          ),
+          calendarEventProvider.overrideWith(
+            () => MockFindAsyncCalendarEventNotifier(events: events),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      // keeping the provider alive for the tests
+      // ignore: unused_local_variable
+      final subscription = container.listen(eventsToSyncProvider, (a, b) {});
+
+      final state = await container.read(eventsToSyncProvider.future);
+      expect(
+        state.length,
+        10,
+      );
+      expect(
+        state.map((e) => e.event.roomIdStr()).toSet(),
+        {'roomA', 'roomC'},
       );
     });
   });
