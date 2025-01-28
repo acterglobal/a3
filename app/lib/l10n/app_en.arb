@@ -134,6 +134,8 @@
   "@calendarSyncFeatureTitle": {},
   "calendarSyncFeatureDesc": "Sync (tentative and accepted) events with device calendar (Android & iOS only)",
   "@calendarSyncFeatureDesc": {},
+  "syncThisCalendarTitle": "Include in Calendar Sync",
+  "syncThisCalendarDesc": "Sync these events in the device calendar",
   "camera": "Camera",
   "@camera": {},
   "cancel": "Cancel",
