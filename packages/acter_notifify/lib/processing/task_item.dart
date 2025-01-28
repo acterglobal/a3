@@ -4,72 +4,68 @@ import 'package:acter_notifify/processing/utils.dart';
 
 (String, String?) titleAndBodyForTaskItemCompleted(
     NotificationItem notification) {
-  final sender = notification.sender();
-  final username = sender.displayName() ?? sender.userId();
+  final emoji = PushStyles.taskComplete.emoji;
 
   final parent = notification.parent();
   if (parent != null) {
     final taskList = notification.title();
     final parentInfo = parentPart(parent);
-    final title = "${PushStyles.taskComplete.emoji} $username completed";
+    final title = getUserCentricTitlePart(notification, emoji, 'completed');
     final body = '$parentInfo of $taskList';
     return (title, body);
   } else {
-    final title = '${PushStyles.taskComplete.emoji} $username completed Task';
+    final title = getUserCentricTitlePart(notification, emoji, 'completed Task');
     return (title, null);
   }
 }
 
 (String, String?) titleAndBodyForTaskItemReOpened(
     NotificationItem notification) {
-  final sender = notification.sender();
-  final username = sender.displayName() ?? sender.userId();
+  final emoji = PushStyles.taskReOpen.emoji;
 
   final parent = notification.parent();
   if (parent != null) {
     final taskList = notification.title();
     final parentInfo = parentPart(parent);
-    final title = "${PushStyles.taskReOpen.emoji} $username re-opened";
+    final title = getUserCentricTitlePart(notification, emoji, 're-opened');
     final body = '$parentInfo of $taskList';
     return (title, body);
   } else {
-    final title = '${PushStyles.taskReOpen.emoji} $username re-opened Task';
+    final title = getUserCentricTitlePart(notification, emoji, 're-opened Task');
     return (title, null);
   }
 }
 
 (String, String?) titleAndBodyForTaskItemAccepted(
     NotificationItem notification) {
-  final sender = notification.sender();
-  final username = sender.displayName() ?? sender.userId();
+  final emoji = PushStyles.taskAccept.emoji;
 
   final parent = notification.parent();
   if (parent != null) {
     final taskList = notification.title();
     final parentInfo = parentPart(parent);
-    final title = "${PushStyles.taskAccept.emoji} $username accepted";
+    final title = getUserCentricTitlePart(notification, emoji, 'accepted');
     final body = '$parentInfo of $taskList';
     return (title, body);
   } else {
-    final title = '${PushStyles.taskAccept.emoji} $username accepted Task';
+    final title = getUserCentricTitlePart(notification, emoji, 'accepted Task');
     return (title, null);
   }
 }
 
 (String, String?) titleAndBodyForTaskItemDeclined(
     NotificationItem notification) {
-  final sender = notification.sender();
-  final username = sender.displayName() ?? sender.userId();
+  final emoji = PushStyles.taskDecline.emoji;
 
   final parent = notification.parent();
   if (parent != null) {
     final taskList = notification.title();
     final parentInfo = parentPart(parent);
-    final title = "${PushStyles.taskDecline.emoji} $username declined";
+    final title = getUserCentricTitlePart(notification, emoji, 'declined');
     final body = '$parentInfo of $taskList';
     return (title, body);
   } else {
-    final title = '${PushStyles.taskDecline.emoji} $username declined Task';
+    final title = getUserCentricTitlePart(notification, emoji, 'declined Task');
     return (title, null);
   }
 }

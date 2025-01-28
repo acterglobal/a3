@@ -3,11 +3,8 @@ import 'package:acter_notifify/model/push_styles.dart';
 import 'package:acter_notifify/processing/utils.dart';
 
 (String, String?) titleAndBodyForComment(NotificationItem notification) {
-  //Generate comment title
-  final sender = notification.sender();
-  final username = sender.displayName() ?? sender.userId();
-
-  String title = "${PushStyles.comment.emoji} $username commented";
+  final emoji = PushStyles.comment.emoji;
+  final title = getUserCentricTitlePart(notification, emoji, 'commented');
 
   //Generate comment body
   String? body;

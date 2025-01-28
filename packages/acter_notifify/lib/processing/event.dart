@@ -21,10 +21,8 @@ import 'package:acter_notifify/processing/utils.dart';
 }
 
 (String, String?) titleAndBodyForEventRsvpYes(NotificationItem notification) {
-  final sender = notification.sender();
-  final username = sender.displayName() ?? sender.userId();
-
-  String title = "${PushStyles.rsvpYes.emoji} $username will join";
+  final emoji = PushStyles.rsvpYes.emoji;
+  final title = getUserCentricTitlePart(notification, emoji, 'will join');
 
   final parent = notification.parent();
   if (parent != null) {
@@ -36,10 +34,8 @@ import 'package:acter_notifify/processing/utils.dart';
 }
 
 (String, String?) titleAndBodyForEventRsvpMaybe(NotificationItem notification) {
-  final sender = notification.sender();
-  final username = sender.displayName() ?? sender.userId();
-
-  String title = "${PushStyles.rsvpMaybe.emoji} $username might join";
+  final emoji = PushStyles.rsvpMaybe.emoji;
+  final title = getUserCentricTitlePart(notification, emoji, 'might join');
 
   final parent = notification.parent();
   if (parent != null) {
@@ -51,10 +47,8 @@ import 'package:acter_notifify/processing/utils.dart';
 }
 
 (String, String?) titleAndBodyForEventRsvpNo(NotificationItem notification) {
-  final sender = notification.sender();
-  final username = sender.displayName() ?? sender.userId();
-
-  String title = "${PushStyles.rsvpNo.emoji} $username will not join";
+  final emoji = PushStyles.rsvpNo.emoji;
+  final title = getUserCentricTitlePart(notification, emoji, 'will not join');
 
   final parent = notification.parent();
   if (parent != null) {
