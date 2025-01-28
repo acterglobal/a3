@@ -8,8 +8,7 @@ import 'package:acter_notifify/processing/utils.dart';
 
   final parent = notification.parent();
   if (parent != null) {
-    final parentInfo = parentPart(parent);
-    final title = '$parentInfo updated';
+    final title = getObjectCentricTitlePart(parent, 'updated');
     final body = 'by $username';
     return (title, body);
   } else {

@@ -9,8 +9,7 @@ import 'package:acter_notifify/processing/utils.dart';
 
   final parent = notification.parent();
   if (parent != null) {
-    final parentInfo = parentPart(parent);
-    final title = '$parentInfo removed';
+    final title = getObjectCentricTitlePart(parent, 'removed');
     final body = 'by $username from "$spaceName"';
     return (title, body);
   } else {

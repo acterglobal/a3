@@ -21,3 +21,11 @@ String getUserCentricTitlePart(
   if (emoji != null) titlePart = '$emoji $titlePart';
   return titlePart;
 }
+
+String getObjectCentricTitlePart(
+  NotificationItemParent parent,
+  String suffix,
+) {
+  final parentInfo = parentPart(parent);
+  return '$parentInfo $suffix';
+}

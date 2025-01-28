@@ -11,8 +11,7 @@ import 'package:acter_notifify/processing/utils.dart';
 
   final parent = notification.parent();
   if (parent != null) {
-    final parentInfo = parentPart(parent);
-    final title = '$parentInfo changed';
+    final title = getObjectCentricTitlePart(parent, 'changed');
     return (title, content);
   } else {
     return (content, null);

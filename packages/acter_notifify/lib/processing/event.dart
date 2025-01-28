@@ -10,8 +10,7 @@ import 'package:acter_notifify/processing/utils.dart';
 
   final parent = notification.parent();
   if (parent != null) {
-    final parentInfo = parentPart(parent);
-    final title = '$parentInfo rescheduled';
+    final title = getObjectCentricTitlePart(parent, 'rescheduled');
     final body = 'by $username to "$newEventDate"';
     return (title, body);
   } else {
