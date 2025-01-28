@@ -36,6 +36,22 @@ impl UserRoomSettings {
             .await?
     }
 
+    pub fn include_cal_sync(&self) -> bool {
+        self.inner.include_cal_sync
+    }
+
+    pub async fn set_include_cal_sync(&self, new_value: bool) -> Result<bool> {
+        let mut user_settings = self.inner.clone();
+        user_settings.include_cal_sync = new_value;
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                room.set_account_data(user_settings).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
         BroadcastStream::new(self.subscribe()).map(|f| true)
     }

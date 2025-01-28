@@ -5875,6 +5875,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __userRoomSettingsSetIncludeCalSyncFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _userRoomSettingsSetIncludeCalSyncFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   RoomMessage? __timelineStreamGetMessageFuturePoll(
     int boxed,
     int postCobject,
@@ -21548,6 +21592,30 @@ class Api {
             int,
             int,
           )>();
+  late final _userRoomSettingsIncludeCalSyncPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__UserRoomSettings_include_cal_sync");
+
+  late final _userRoomSettingsIncludeCalSync =
+      _userRoomSettingsIncludeCalSyncPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _userRoomSettingsSetIncludeCalSyncPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+          )>>("__UserRoomSettings_set_include_cal_sync");
+
+  late final _userRoomSettingsSetIncludeCalSync =
+      _userRoomSettingsSetIncludeCalSyncPtr.asFunction<
+          int Function(
+            int,
+            int,
+          )>();
   late final _userRoomSettingsSubscribeStreamPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -31515,6 +31583,21 @@ class Api {
   late final _userRoomSettingsSetHasSeenSuggestedFuturePoll =
       _userRoomSettingsSetHasSeenSuggestedFuturePollPtr.asFunction<
           _UserRoomSettingsSetHasSeenSuggestedFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _userRoomSettingsSetIncludeCalSyncFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _UserRoomSettingsSetIncludeCalSyncFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__UserRoomSettings_set_include_cal_sync_future_poll");
+
+  late final _userRoomSettingsSetIncludeCalSyncFuturePoll =
+      _userRoomSettingsSetIncludeCalSyncFuturePollPtr.asFunction<
+          _UserRoomSettingsSetIncludeCalSyncFuturePollReturn Function(
             int,
             int,
             int,
@@ -45358,7 +45441,7 @@ class UserRoomSettings {
     return tmp2;
   }
 
-  /// Set the value of `user_has_seen_suggested` for this room
+  /// Set the value of `has_seen_suggested` for this room
   Future<bool> setHasSeenSuggested(
     bool newValue,
   ) {
@@ -45378,6 +45461,42 @@ class UserRoomSettings {
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
     final tmp4 = _nativeFuture(
         tmp5_1, _api.__userRoomSettingsSetHasSeenSuggestedFuturePoll);
+    return tmp4;
+  }
+
+  /// whether or not the user wants to include this in the
+  /// calendar sync
+  bool includeCalSync() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._userRoomSettingsIncludeCalSync(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// Set the value of `include_cal_sync` for this room
+  Future<bool> setIncludeCalSync(
+    bool newValue,
+  ) {
+    final tmp1 = newValue;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._userRoomSettingsSetIncludeCalSync(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+        _api, tmp5_0, "__UserRoomSettings_set_include_cal_sync_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+        tmp5_1, _api.__userRoomSettingsSetIncludeCalSyncFuturePoll);
     return tmp4;
   }
 
@@ -67447,6 +67566,21 @@ class _RoomUserSettingsFuturePollReturn extends ffi.Struct {
 }
 
 class _UserRoomSettingsSetHasSeenSuggestedFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _UserRoomSettingsSetIncludeCalSyncFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
