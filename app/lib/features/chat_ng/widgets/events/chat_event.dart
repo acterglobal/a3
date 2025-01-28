@@ -70,6 +70,9 @@ class ChatEvent extends ConsumerWidget {
     final options = AvatarOptions.DM(avatarInfo, size: 14);
     final myId = ref.watch(myUserIdStrProvider);
     final messageId = msg.uniqueId();
+    // FIXME: should check canRedact permission from the room
+    final canRedact = item.sender() == myId;
+
     final isMe = myId == item.sender();
     // TODO: render a regular timeline event
     return Row(
@@ -89,6 +92,7 @@ class ChatEvent extends ConsumerWidget {
             messageId: messageId,
             item: item,
             isMe: isMe,
+            canRedact: canRedact,
             isNextMessageInGroup: isNextMessageInGroup,
           ),
         ),
