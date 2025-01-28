@@ -1,5 +1,5 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter_notifify/processing/parent_data_process.dart';
+import 'package:acter_notifify/processing/parent_data.dart';
 
 (String, String?) titleAndBodyForObjectDescriptionChange(
     NotificationItem notification) {
@@ -7,7 +7,7 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
   final username = sender.displayName() ?? sender.userId();
   final newDescription = notification.title();
 
-  String? content = '$username updated description: "$newDescription"';
+  final content = '$username updated description: "$newDescription"';
 
   final parent = notification.parent();
   if (parent != null) {

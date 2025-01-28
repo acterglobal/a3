@@ -1,7 +1,8 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter_notifify/processing/parent_data_process.dart';
+import 'package:acter_notifify/processing/parent_data.dart';
 
-(String, String?) titleAndBodyForObjectCreation(NotificationItem notification) {
+(String, String?) titleAndBodyForObjectRedaction(
+    NotificationItem notification) {
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
   final spaceName = notification.title();
@@ -9,11 +10,11 @@ import 'package:acter_notifify/processing/parent_data_process.dart';
   final parent = notification.parent();
   if (parent != null) {
     final parentInfo = parentPart(parent);
-    final title = '$parentInfo created';
-    final body = 'by $username in "$spaceName"';
+    final title = '$parentInfo removed';
+    final body = 'by $username from "$spaceName"';
     return (title, body);
   } else {
-    final title = '$username created object in "$spaceName"';
+    final title = '$username removed object from "$spaceName"';
     return (title, null);
   }
 }

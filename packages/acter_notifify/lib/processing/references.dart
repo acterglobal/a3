@@ -1,5 +1,5 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter_notifify/processing/parent_data_process.dart';
+import 'package:acter_notifify/processing/parent_data.dart';
 
 (String, String?) titleAndBodyForReferences(NotificationItem notification) {
   final sender = notification.sender();
