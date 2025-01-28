@@ -102,6 +102,7 @@ class EventListWidget extends ConsumerWidget {
       shrinkWrap: shrinkWrap,
       itemCount: count,
       padding: EdgeInsets.zero,
+      cacheExtent: 500,
       physics: shrinkWrap ? const NeverScrollableScrollPhysics() : null,
       itemBuilder: (context, index) {
         return EventItem(
