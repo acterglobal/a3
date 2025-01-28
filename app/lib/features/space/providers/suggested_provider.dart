@@ -1,5 +1,5 @@
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/room/providers/room_user_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
@@ -9,12 +9,9 @@ final _log = Logger('a3::space::suggested_provider');
 // Whether or not to prompt the user about the suggested rooms.
 final shouldShowSuggestedProvider =
     FutureProvider.family<bool, String>((ref, spaceId) async {
-  final room = await ref.watch(maybeRoomProvider(spaceId).future);
-  if (room == null) {
-    return false;
-  }
   try {
-    if (await room.userHasSeenSuggested()) {
+    final settings = await ref.read(roomUserSettingsProvider(spaceId).future);
+    if (settings.hasSeenSuggested()) {
       return false;
     }
 

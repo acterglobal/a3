@@ -14,6 +14,7 @@ mod push;
 mod reaction;
 mod redact;
 mod reply;
+mod room;
 mod rsvp;
 mod spaces;
 mod stories;

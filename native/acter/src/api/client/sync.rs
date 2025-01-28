@@ -568,6 +568,28 @@ impl Client {
                 if !changed_rooms.is_empty() {
                     trace!(?changed_rooms, "changed rooms");
                     me.refresh_rooms(changed_rooms).await;
+
+                    // we have seen changes, see if we have
+                    // account data to inform about
+                    let keys = response
+                        .rooms
+                        .join
+                        .iter()
+                        .flat_map(|(room_id, updates)| {
+                            updates.account_data.iter().filter_map(|raw| {
+                                raw.get_field::<String>("type").ok().flatten().map(|s| {
+                                    ExecuteReference::RoomAccountData(
+                                        room_id.clone(),
+                                        Cow::Owned(s),
+                                    )
+                                })
+                            })
+                        })
+                        .collect::<Vec<ExecuteReference>>();
+                    if !keys.is_empty() {
+                        info!("room account data keys: {keys:?}");
+                        me.executor().notify(keys);
+                    }
                 }
 
                 if !response.account_data.is_empty() {
@@ -580,7 +602,7 @@ impl Client {
                             raw.get_field::<String>("type")
                                 .ok()
                                 .flatten()
-                                .map(|s| ExecuteReference::ModelType(Cow::Owned(s)))
+                                .map(|s| ExecuteReference::AccountData(Cow::Owned(s)))
                         })
                         .collect();
                     if !keys.is_empty() {

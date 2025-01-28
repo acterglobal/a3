@@ -109,7 +109,7 @@ pub use reactions::{Reaction, ReactionManager};
 pub use read_receipts::ReadReceiptsManager;
 pub use room::{
     new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
-    RoomPreview, SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
+    RoomPreview, SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations, UserRoomSettings,
 };
 pub use rsvp::{Rsvp, RsvpDraft, RsvpManager, RsvpStatus};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
