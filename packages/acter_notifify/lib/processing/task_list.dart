@@ -1,5 +1,5 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter_notifify/processing/parent_data.dart';
+import 'package:acter_notifify/processing/utils.dart';
 
 (String, String?) titleAndBodyForTaskAdd(NotificationItem notification) {
   final sender = notification.sender();

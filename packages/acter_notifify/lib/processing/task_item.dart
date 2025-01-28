@@ -1,6 +1,6 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/model/push_styles.dart';
-import 'package:acter_notifify/processing/parent_data.dart';
+import 'package:acter_notifify/processing/utils.dart';
 
 (String, String?) titleAndBodyForTaskItemCompleted(
     NotificationItem notification) {
