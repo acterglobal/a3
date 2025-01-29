@@ -42,12 +42,24 @@ final allEventListProvider =
   ),
 );
 
+final isEmptyEventList = FutureProvider.autoDispose.family<bool, String?>(
+  (ref, spaceId) async {
+    final allEvents = await ref.watch(_allEventListProvider(spaceId).future);
+    return allEvents.isEmpty;
+  },
+);
+
 final allEventSorted =
     FutureProvider.autoDispose.family<List<ffi.CalendarEvent>, String?>(
-  (ref, spaceId) async =>  (
-       await ref.watch(allOngoingEventListProvider(spaceId).future)).followedBy(
-       await ref.watch(allUpcomingEventListProvider(spaceId).future),).followedBy(
-      await ref.watch(allPastEventListProvider(spaceId).future),).toList(),
+  (ref, spaceId) async =>
+      (await ref.watch(allOngoingEventListProvider(spaceId).future))
+          .followedBy(
+            await ref.watch(allUpcomingEventListProvider(spaceId).future),
+          )
+          .followedBy(
+            await ref.watch(allPastEventListProvider(spaceId).future),
+          )
+          .toList(),
 );
 
 //ALL ONGOING EVENTS
@@ -72,6 +84,19 @@ final allOngoingEventListProvider = FutureProvider.autoDispose
       )
       .toList();
   return sortEventListAscTime(allOngoingEventList);
+});
+
+//ALL ONGOING EVENTS
+final allOngoingEventListWithSearchProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
+  final allEventList =
+      await ref.watch(allOngoingEventListProvider(spaceId).future);
+  final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
+  final eventList = _filterEventBySearchTerm(
+    searchTerm,
+    allEventList,
+  );
+  return sortEventListAscTime(eventList);
 });
 
 //MY ONGOING EVENTS
@@ -102,6 +127,19 @@ final allUpcomingEventListProvider = FutureProvider.autoDispose
   return sortEventListAscTime(allUpcomingEventList);
 });
 
+//ALL UPCOMING EVENTS
+final allUpcomingEventListWithSearchProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
+  final allEventList =
+      await ref.watch(allUpcomingEventListProvider(spaceId).future);
+  final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
+  final eventList = _filterEventBySearchTerm(
+    searchTerm,
+    allEventList,
+  );
+  return sortEventListAscTime(eventList);
+});
+
 //MY UPCOMING EVENTS
 final myUpcomingEventListProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
@@ -128,6 +166,19 @@ final allPastEventListProvider = FutureProvider.autoDispose
       )
       .toList();
   return sortEventListDscTime(allPastEventList);
+});
+
+//ALL PAST EVENTS
+final allPastEventListWithSearchProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
+  final allEventList =
+      await ref.watch(allPastEventListProvider(spaceId).future);
+  final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
+  final eventList = _filterEventBySearchTerm(
+    searchTerm,
+    allEventList,
+  );
+  return sortEventListAscTime(eventList);
 });
 
 //MY PAST EVENTS
@@ -219,8 +270,7 @@ final eventListSearchedAndFilterProvider = FutureProvider.autoDispose
       await ref.watch(allUpcomingEventListProvider(spaceId).future),
     EventFilters.past =>
       await ref.watch(allPastEventListProvider(spaceId).future),
-    EventFilters.all =>
-       await ref.watch(allEventSorted(spaceId).future),
+    EventFilters.all => await ref.watch(allEventSorted(spaceId).future),
   };
 
   final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
@@ -228,5 +278,4 @@ final eventListSearchedAndFilterProvider = FutureProvider.autoDispose
     searchTerm,
     filteredEventList,
   );
-
 });
