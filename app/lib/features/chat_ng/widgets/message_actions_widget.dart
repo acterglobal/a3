@@ -45,9 +45,7 @@ class MessageActionsWidget extends ConsumerWidget {
   List<Widget> menuItems(BuildContext context, WidgetRef ref, L10n lang) => [
         makeMenuItem(
           pressed: () {
-            ref
-                .read(chatEditorStateProvider.notifier)
-                .setReplyToMessage(messageWidget, item);
+            ref.read(chatEditorStateProvider.notifier).setReplyToMessage(item);
             Navigator.pop(context);
           },
           text: Text(lang.reply),

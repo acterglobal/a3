@@ -3,6 +3,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
+import 'package:acter/features/chat_ng/models/chat_editor_state.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/models/replied_to_msg_state.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_editor_notifier.dart';

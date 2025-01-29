@@ -1,6 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
+import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
+import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
+import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show RoomEventItem;
@@ -15,6 +19,7 @@ class ChatEditorActionsPreview extends ConsumerStatefulWidget {
   final EditorState textEditorState;
   final RoomEventItem msgItem;
   final String roomId;
+
   const ChatEditorActionsPreview({
     super.key,
     required this.textEditorState,
@@ -43,8 +48,7 @@ class _ChatEditorActionsPreviewConsumerState
       final doc = ActerDocumentHelpers.fromMsgContent(msgContent);
       Node rootNode = doc.root;
       transaction.document.insert([0], rootNode.children);
-      transaction.afterSelection =
-          Selection.single(path: rootNode.path, startOffset: 0);
+      transaction.afterSelection = textEditorState.selection;
       textEditorState.apply(transaction);
     }
   }
@@ -55,9 +59,7 @@ class _ChatEditorActionsPreviewConsumerState
     final children = <Widget>[];
     if (chatEditorState.isReplying) {
       children.add(_buildRepliedToMsgView());
-      if (chatEditorState.selectedMessage != null) {
-        children.add(chatEditorState.selectedMessage!);
-      }
+      children.add(_buildRepliedToItem(context, widget.msgItem));
     } else if (chatEditorState.isEditing) {
       children.add(_buildEditView());
       // add a bit space for clean UI
@@ -152,6 +154,49 @@ class _ChatEditorActionsPreviewConsumerState
           child: const Icon(Atlas.xmark_circle),
         ),
       ],
+    );
+  }
+
+  Widget _buildRepliedToItem(BuildContext context, RoomEventItem item) {
+    final roomId = widget.roomId;
+    final messageId = item.eventId();
+    final msgType = item.msgType();
+    final content = item.msgContent();
+    if (msgType == null || content == null || messageId == null) {
+      return const SizedBox.shrink();
+    }
+
+    Widget child = switch (msgType) {
+      'm.emote' ||
+      'm.notice' ||
+      'm.server_notice' ||
+      'm.text' =>
+        TextMessageEvent(
+          content: content,
+          roomId: roomId,
+        ),
+      'm.image' => ImageMessageEvent(
+          messageId: messageId,
+          roomId: roomId,
+          content: content,
+        ),
+      'm.video' => VideoMessageEvent(
+          roomId: roomId,
+          messageId: messageId,
+          content: content,
+        ),
+      'm.file' => FileMessageEvent(
+          roomId: roomId,
+          messageId: messageId,
+          content: content,
+        ),
+      _ => const SizedBox.shrink(),
+    };
+
+    return Container(
+      constraints: BoxConstraints(maxHeight: 100),
+      padding: const EdgeInsets.all(12.0),
+      child: child,
     );
   }
 }
