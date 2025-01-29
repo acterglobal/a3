@@ -42,6 +42,14 @@ final allEventListProvider =
   ),
 );
 
+final allEventSorted =
+    FutureProvider.autoDispose.family<List<ffi.CalendarEvent>, String?>(
+  (ref, spaceId) async =>  (
+       await ref.watch(allOngoingEventListProvider(spaceId).future)).followedBy(
+       await ref.watch(allUpcomingEventListProvider(spaceId).future),).followedBy(
+      await ref.watch(allPastEventListProvider(spaceId).future),).toList(),
+);
+
 //ALL ONGOING EVENTS
 final bookmarkedEventListProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
@@ -188,16 +196,12 @@ final eventListQuickSearchedProvider =
     FutureProvider.autoDispose<List<ffi.CalendarEvent>>((ref) async {
   final searchTerm = ref.watch(quickSearchValueProvider);
 
-  final priotizeBookmarkedEvents = await priotizeBookmarked(
-    ref,
-    BookmarkType.events,
-    await ref.watch(allEventListProvider(null).future),
-    getId: (t) => t.eventId().toString(),
-  );
+  // Fetch the full list of events
+  final allEventList = await ref.watch(allEventSorted(null).future);
 
   return _filterEventBySearchTerm(
     searchTerm,
-    priotizeBookmarkedEvents,
+    allEventList,
   );
 });
 
@@ -216,24 +220,13 @@ final eventListSearchedAndFilterProvider = FutureProvider.autoDispose
     EventFilters.past =>
       await ref.watch(allPastEventListProvider(spaceId).future),
     EventFilters.all =>
-      (await ref.watch(allOngoingEventListProvider(spaceId).future))
-          .followedBy(
-            await ref.watch(allUpcomingEventListProvider(spaceId).future),
-          )
-          .followedBy(await ref.watch(allPastEventListProvider(spaceId).future))
-          .toList(),
+       await ref.watch(allEventSorted(spaceId).future),
   };
-
-  final priotizeBookmarkedEvents = await priotizeBookmarked(
-    ref,
-    BookmarkType.events,
-    filteredEventList,
-    getId: (t) => t.eventId().toString(),
-  );
 
   final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
   return _filterEventBySearchTerm(
     searchTerm,
-    priotizeBookmarkedEvents,
+    filteredEventList,
   );
+
 });
