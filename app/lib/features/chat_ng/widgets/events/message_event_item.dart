@@ -63,8 +63,9 @@ class MessageEventItem extends StatelessWidget {
         messageWidget: messageWidget,
         isMe: isMe,
         canRedact: canRedact,
-        roomId: roomId,
+        item: item,
         messageId: messageId,
+        roomId: roomId,
       ),
       child: Hero(
         tag: messageId,

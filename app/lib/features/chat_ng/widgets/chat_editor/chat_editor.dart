@@ -8,7 +8,9 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/actions/attachment_upload_action.dart';
 import 'package:acter/features/chat_ng/actions/send_message_action.dart';
-import 'package:acter/features/chat_ng/widgets/chat_input/chat_emoji_picker.dart';
+import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_actions_preview.dart';
+import 'package:acter/features/chat_ng/widgets/chat_editor/chat_emoji_picker.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -137,15 +139,31 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
   @override
   Widget build(BuildContext context) {
+    final viewInsets = MediaQuery.viewInsetsOf(context).bottom;
     final isKeyboardVisible = ref.watch(keyboardVisibleProvider).valueOrNull;
     final emojiPickerVisible = ref
         .watch(chatInputProvider.select((value) => value.emojiPickerVisible));
     final isEncrypted =
         ref.watch(isRoomEncryptedProvider(widget.roomId)).valueOrNull == true;
+    final chatEditorState = ref.watch(chatEditorStateProvider);
 
-    final viewInsets = MediaQuery.viewInsetsOf(context).bottom;
+    Widget? previewWidget;
+
+    if (chatEditorState.isReplying || chatEditorState.isEditing) {
+      final msgItem = chatEditorState.selectedMsgItem;
+      previewWidget = msgItem.map(
+        (item) => ChatEditorActionsPreview(
+          textEditorState: textEditorState,
+          msgItem: item,
+          roomId: widget.roomId,
+        ),
+        orElse: () => const SizedBox.shrink(),
+      );
+    }
+
     return Column(
       children: <Widget>[
+        if (previewWidget != null) previewWidget,
         renderEditorUI(emojiPickerVisible, isEncrypted),
         // Emoji Picker UI
         if (emojiPickerVisible) ChatEmojiPicker(editorState: textEditorState),
@@ -158,12 +176,17 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
   // chat editor UI
   Widget renderEditorUI(bool emojiPickerVisible, bool isEncrypted) {
+    final chatEditorState = ref.watch(chatEditorStateProvider);
+    final isPreviewOpen =
+        chatEditorState.isReplying || chatEditorState.isEditing;
+    final radiusVal = isPreviewOpen ? 2.0 : 15.0;
+
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(15.0),
-          topRight: Radius.circular(15.0),
+          topLeft: Radius.circular(radiusVal),
+          topRight: Radius.circular(radiusVal),
         ),
         border: BorderDirectional(
           top: BorderSide(color: greyColor),

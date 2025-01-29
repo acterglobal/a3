@@ -1,22 +1,32 @@
+import 'package:acter/features/chat_ng/actions/redact_message_action.dart';
+import 'package:acter/features/chat_ng/actions/report_message_action.dart';
+import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show RoomEventItem;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MessageActionsWidget extends StatelessWidget {
+class MessageActionsWidget extends ConsumerWidget {
   final bool isMe;
   final bool canRedact;
+  final Widget messageWidget;
+  final RoomEventItem item;
   final String messageId;
   final String roomId;
   const MessageActionsWidget({
     super.key,
     required this.isMe,
     required this.canRedact,
+    required this.messageWidget,
+    required this.item,
     required this.messageId,
     required this.roomId,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     return Container(
       constraints: const BoxConstraints(maxWidth: 200),
@@ -27,14 +37,19 @@ class MessageActionsWidget extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
       ),
       child: Column(
-        children: menuItems(context, lang).map((e) => e).toList(),
+        children: menuItems(context, ref, lang).map((e) => e).toList(),
       ),
     );
   }
 
-  List<Widget> menuItems(BuildContext context, L10n lang) => [
+  List<Widget> menuItems(BuildContext context, WidgetRef ref, L10n lang) => [
         makeMenuItem(
-          pressed: () {},
+          pressed: () {
+            ref
+                .read(chatEditorStateProvider.notifier)
+                .setReplyToMessage(messageWidget, item);
+            Navigator.pop(context);
+          },
           text: Text(lang.reply),
           icon: const Icon(Icons.reply_rounded, size: 18),
         ),
@@ -49,13 +64,19 @@ class MessageActionsWidget extends StatelessWidget {
         //     ),
         if (isMe)
           makeMenuItem(
-            pressed: () {},
+            pressed: () {
+              ref
+                  .read(chatEditorStateProvider.notifier)
+                  .setEditMessage(messageWidget, item);
+              Navigator.pop(context);
+            },
             text: Text(lang.edit),
             icon: const Icon(Atlas.pencil_box_bold, size: 14),
           ),
         if (!isMe)
           makeMenuItem(
-            pressed: () {},
+            pressed: () =>
+                reportMessageAction(context, item, messageId, roomId),
             text: Text(
               lang.report,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
@@ -68,7 +89,8 @@ class MessageActionsWidget extends StatelessWidget {
           ),
         if (canRedact)
           makeMenuItem(
-            pressed: () {},
+            pressed: () =>
+                redactMessageAction(context, ref, item, messageId, roomId),
             text: Text(
               lang.delete,
               style: TextStyle(color: Theme.of(context).colorScheme.error),

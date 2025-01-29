@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:acter/features/chat_ng/widgets/message_actions_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_selector.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show RoomEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -11,8 +13,9 @@ void messageActions({
   required Widget messageWidget,
   required bool isMe,
   required bool canRedact,
-  required String roomId,
+  required RoomEventItem item,
   required String messageId,
+  required String roomId,
 }) async {
   // trigger vibration haptic
   await HapticFeedback.heavyImpact();
@@ -52,6 +55,8 @@ void messageActions({
             child: MessageActionsWidget(
               isMe: isMe,
               canRedact: canRedact,
+              messageWidget: messageWidget,
+              item: item,
               messageId: messageId,
               roomId: roomId,
             ),
