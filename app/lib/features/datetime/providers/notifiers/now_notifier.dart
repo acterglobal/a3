@@ -12,8 +12,7 @@ class UtcNowNotifier extends StateNotifier<DateTime> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     _timer.cancel();
+    super.dispose();
   }
 }

@@ -466,6 +466,27 @@ impl Client {
         )
     }
 
+    pub fn subscribe_account_data_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::AccountData(Cow::Owned(key))))
+                .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_room_account_data_stream(
+        &self,
+        room_id: String,
+        key: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::RoomAccountData(
+                RoomId::parse(room_id)?,
+                Cow::Owned(key),
+            )))
+            .map(|_| true),
+        )
+    }
+
     pub fn subscribe<K: Into<ExecuteReference>>(&self, key: K) -> Receiver<()> {
         self.executor().subscribe(key)
     }
