@@ -15,11 +15,11 @@ impl BoolDefaults {
     }
 
     const fn is_true(value: &bool) -> bool {
-        *value == true
+        *value
     }
 
     const fn is_false(value: &bool) -> bool {
-        *value == false
+        !(*value)
     }
 }
 #[derive(Debug, Serialize, Deserialize, Clone, EventContent)]
