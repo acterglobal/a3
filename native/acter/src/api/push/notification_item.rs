@@ -166,14 +166,19 @@ pub enum NotificationItemParent {
         parent_id: OwnedEventId,
         title: String,
     },
+    TaskList {
+        parent_id: OwnedEventId,
+        title: String,
+    },
 }
 
 impl NotificationItemParent {
     pub fn object_type_str(&self) -> String {
         match self {
             NotificationItemParent::News { .. } => "news",
-            NotificationItemParent::Pin { parent_id, title } => "pin",
-            NotificationItemParent::CalendarEvent { parent_id, title } => "event",
+            NotificationItemParent::Pin { .. } => "pin",
+            NotificationItemParent::CalendarEvent { .. } => "event",
+            NotificationItemParent::TaskList { .. } => "task-list",
         }
         .to_owned()
     }
@@ -181,6 +186,7 @@ impl NotificationItemParent {
         match self {
             NotificationItemParent::News { parent_id }
             | NotificationItemParent::Pin { parent_id, .. }
+            | NotificationItemParent::TaskList { parent_id, .. }
             | NotificationItemParent::CalendarEvent { parent_id, .. } => parent_id.to_string(),
         }
     }
@@ -188,6 +194,7 @@ impl NotificationItemParent {
         match self {
             NotificationItemParent::News { parent_id } => None,
             NotificationItemParent::Pin { title, .. }
+            | NotificationItemParent::TaskList { title, .. }
             | NotificationItemParent::CalendarEvent { title, .. } => Some(title.clone()),
         }
     }
@@ -196,6 +203,7 @@ impl NotificationItemParent {
         match self {
             NotificationItemParent::News { parent_id } => format!("/updates/{}", parent_id),
             NotificationItemParent::Pin { parent_id, .. } => format!("/pins/{}", parent_id),
+            NotificationItemParent::TaskList { parent_id, .. } => format!("/tasks/{}", parent_id),
             NotificationItemParent::CalendarEvent { parent_id, .. } => {
                 format!("/events/{}", parent_id)
             } //
@@ -206,6 +214,7 @@ impl NotificationItemParent {
         match self {
             NotificationItemParent::News { .. } => "🚀", // boost rocket
             NotificationItemParent::Pin { .. } => "📌",  // pin
+            NotificationItemParent::TaskList { .. } => "📋", // clipboard
             NotificationItemParent::CalendarEvent { .. } => "🗓️", // calendar
         }
         .to_owned()
@@ -678,6 +687,34 @@ impl NotificationItem {
                 let parent_obj = NotificationItemParent::Pin {
                     parent_id: e.event_id.clone(),
                     title: e.content.title,
+                };
+                Ok(builder
+                    .inner(NotificationItemInner::Creation {
+                        parent_obj,
+                        room_id: e.room_id,
+                        event_id: e.event_id,
+                    })
+                    .build()?)
+            }
+
+            AnyActerEvent::CalendarEvent(MessageLikeEvent::Original(e)) => {
+                let parent_obj = NotificationItemParent::CalendarEvent {
+                    parent_id: e.event_id.clone(),
+                    title: e.content.title,
+                };
+                Ok(builder
+                    .inner(NotificationItemInner::Creation {
+                        parent_obj,
+                        room_id: e.room_id,
+                        event_id: e.event_id,
+                    })
+                    .build()?)
+            }
+
+            AnyActerEvent::TaskList(MessageLikeEvent::Original(e)) => {
+                let parent_obj = NotificationItemParent::TaskList {
+                    parent_id: e.event_id.clone(),
+                    title: e.content.name,
                 };
                 Ok(builder
                     .inner(NotificationItemInner::Creation {
