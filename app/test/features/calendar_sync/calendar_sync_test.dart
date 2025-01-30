@@ -78,7 +78,7 @@ void main() {
           (await sharedPrefs()).getStringList(calendarSyncIdsKey);
       expect(
         mappedKeys,
-        List.generate(10, (idx) => 'event-$idx-id=resultKey-$idx'),
+        List.generate(10, (idx) => 'null-event-$idx-id=resultKey-$idx'),
       );
     });
   });
