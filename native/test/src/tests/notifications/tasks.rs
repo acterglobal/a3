@@ -99,6 +99,13 @@ async fn tasklist_title_update() -> Result<()> {
     })
     .await?;
 
+    // we want to see push for everything;
+    first
+        .room(obj_entry.room_id().to_string())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
     let mut update = obj_entry.update_builder()?;
     update.name("Renamed Tasklist".to_owned());
     let notification_ev = update.send().await?;
@@ -154,8 +161,15 @@ async fn tasklist_desc_update() -> Result<()> {
     })
     .await?;
 
+    // we want to see push for everything;
+    first
+        .room(obj_entry.room_id().to_string())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
     let mut update = obj_entry.update_builder()?;
-    update.description_text("Added content".to_owned());
+    update.description_text("Added description".to_owned());
     let notification_ev = update.send().await?;
 
     let notification_item = first
@@ -208,6 +222,14 @@ async fn tasklist_redaction() -> Result<()> {
         }
     })
     .await?;
+
+    // we want to see push for everything;
+    second_user
+        .room(event.room_id().to_string())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
     let obj_id = event.event_id_str();
     let space = first.space(event.room_id().to_string()).await?;
     let notification_ev = space.redact(event.event_id(), None, None).await?.event_id;

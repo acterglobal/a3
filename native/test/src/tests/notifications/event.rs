@@ -107,6 +107,13 @@ async fn event_title_update() -> Result<()> {
     })
     .await?;
 
+    // we want to see push for everything;
+    first
+        .room(obj_entry.room_id_str())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
     let mut update = obj_entry.update_builder()?;
     update.title("Renamed Event".to_owned());
     let notification_ev = update.send().await?;
@@ -162,6 +169,13 @@ async fn event_desc_update() -> Result<()> {
     })
     .await?;
 
+    // we want to see push for everything;
+    first
+        .room(obj_entry.room_id_str())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
     let mut update = obj_entry.update_builder()?;
     update.description_text("Added content".to_owned());
     let notification_ev = update.send().await?;
@@ -180,14 +194,14 @@ async fn event_desc_update() -> Result<()> {
     let obj_id = obj_entry.event_id().to_string();
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "Added description"); // new description
+    assert_eq!(content.body(), "Added content"); // new description
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
         format!("/events/{}", obj_id,)
     );
     assert_eq!(parent.object_type_str(), "event");
-    assert_eq!(parent.title().unwrap(), "Acter Website");
+    assert_eq!(parent.title().unwrap(), "First meeting");
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -216,6 +230,14 @@ async fn event_redaction() -> Result<()> {
         }
     })
     .await?;
+
+    // we want to see push for everything;
+    second_user
+        .room(event.room_id_str())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
     let obj_id = event.event_id().to_string();
     let space = first.space(event.room_id().to_string()).await?;
     let notification_ev = space.redact(&event.event_id(), None, None).await?.event_id;

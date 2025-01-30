@@ -101,6 +101,13 @@ async fn pin_title_update() -> Result<()> {
     })
     .await?;
 
+    // we want to see push for everything;
+    first
+        .room(obj_entry.room_id_str())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
     let mut update = obj_entry.update_builder()?;
     update.title("Renamed Pin".to_owned());
     let notification_ev = update.send().await?;
@@ -153,8 +160,15 @@ async fn pin_desc_update() -> Result<()> {
     })
     .await?;
 
+    // we want to see push for everything;
+    first
+        .room(obj_entry.room_id_str())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
     let mut update = obj_entry.update_builder()?;
-    update.content_text("Added content".to_owned());
+    update.content_text("Added description".to_owned());
     let notification_ev = update.send().await?;
 
     let notification_item = first
@@ -202,6 +216,14 @@ async fn pin_redaction() -> Result<()> {
         }
     })
     .await?;
+
+    // we want to see push for everything;
+    second_user
+        .room(pin.room_id_str())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
     let obj_id = pin.event_id().to_string();
     let space = first.space(pin.room_id().to_string()).await?;
     let notification_ev = space.redact(pin.event_id(), None, None).await?.event_id;
