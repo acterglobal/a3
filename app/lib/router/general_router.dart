@@ -16,7 +16,8 @@ import 'package:acter/features/intro/pages/intro_page.dart';
 import 'package:acter/features/intro/pages/intro_profile.dart';
 import 'package:acter/features/link_room/pages/link_room_page.dart';
 import 'package:acter/features/link_room/types.dart';
-import 'package:acter/features/news/pages/add_news_page.dart';
+import 'package:acter/features/news/pages/add_news/add_news_page.dart';
+import 'package:acter/features/news/pages/add_news/add_news_post_to_page.dart';
 import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
@@ -228,6 +229,21 @@ final generalRoutes = [
         child: AddNewsPage(
           initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
           refDetails: refDetails,
+        ),
+      );
+    },
+  ),
+  GoRoute(
+    parentNavigatorKey: rootNavKey,
+    name: Routes.actionAddUpdatePostTo.name,
+    path: Routes.actionAddUpdatePostTo.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      final spaceId = state.uri.queryParameters['spaceId'];
+      return MaterialPage(
+        key: state.pageKey,
+        child: AddNewsPostToPage(
+          initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
         ),
       );
     },

@@ -2,7 +2,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
-import 'package:acter/features/news/pages/add_news_page.dart';
+import 'package:acter/features/news/pages/add_news/add_news_page.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/space/dialogs/leave_space.dart';

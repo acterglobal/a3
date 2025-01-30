@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
-import 'package:acter/features/news/actions/submit_news.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
@@ -20,6 +20,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 const addNewsKey = Key('add-news');
 
@@ -191,7 +192,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       padding: const EdgeInsets.only(bottom: 90),
       child: FloatingActionButton(
         key: NewsUpdateKeys.newsSubmitBtn,
-        onPressed: () => sendNews(context, ref),
+        onPressed: () => context.push(Routes.actionAddUpdatePostTo.name),
         child: const Icon(Icons.send),
       ),
     );

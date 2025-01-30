@@ -28,6 +28,7 @@ enum Routes {
   update('/updates/:updateId([^/]+)'),
   updateList('/updateList'),
   actionAddUpdate('/actions/addUpdate'),
+  actionAddUpdatePostTo('/actions/addUpdate/PostTo'),
 
   // --- search
   searchPublicDirectory('/search/public'),
