@@ -53,6 +53,11 @@ async fn pins_creation_notification() -> Result<()> {
     })
     .await?;
 
+    let space_on_second = second.room(main_space.room_id_str()).await?;
+    space_on_second
+        .set_notification_mode(Some("all".to_owned()))
+        .await?; // we want to see push for everything;
+
     let mut draft = main_space.pin_draft()?;
     draft.title("Acter Website".to_owned());
     let event_id = draft.send().await?;

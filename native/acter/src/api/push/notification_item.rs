@@ -288,6 +288,11 @@ pub enum NotificationItemInner {
         event_id: OwnedEventId,
         key: String,
     },
+    Creation {
+        parent_obj: NotificationItemParent,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+    },
 }
 
 impl NotificationItemInner {
@@ -305,6 +310,7 @@ impl NotificationItemInner {
                 }
             }
             NotificationItemInner::Boost { .. } => "news",
+            NotificationItemInner::Creation { .. } => "creation",
         }
         .to_owned()
     }
@@ -318,6 +324,7 @@ impl NotificationItemInner {
             NotificationItemInner::Invite { room_id } => "/activities/invites".to_string(),
             NotificationItemInner::ChatMessage { room_id, .. } => format!("/chat/{room_id}"),
             NotificationItemInner::Boost { event_id, .. } => format!("/updates/{event_id}"),
+            NotificationItemInner::Creation { parent_obj, .. } => parent_obj.target_url(),
             NotificationItemInner::Comment {
                 parent_obj: Some(parent),
                 event_id,
@@ -369,6 +376,7 @@ impl NotificationItemInner {
 
     pub fn parent(&self) -> Option<NotificationItemParent> {
         match self {
+            NotificationItemInner::Creation { parent_obj, .. } => Some(parent_obj.clone()),
             NotificationItemInner::Comment { parent_obj, .. }
             | NotificationItemInner::Reaction { parent_obj, .. } => parent_obj.clone(),
             _ => None,
@@ -376,6 +384,7 @@ impl NotificationItemInner {
     }
     pub fn parent_id_str(&self) -> Option<String> {
         match self {
+            NotificationItemInner::Creation { parent_obj, .. } => Some(parent_obj.object_id_str()),
             NotificationItemInner::Comment { parent_id, .. }
             | NotificationItemInner::Reaction { parent_id, .. } => Some(parent_id.to_string()),
             _ => None,
@@ -662,6 +671,19 @@ impl NotificationItem {
                         room_id: e.room_id,
                         event_id: e.event_id,
                         key: e.content.relates_to.key,
+                    })
+                    .build()?)
+            }
+            AnyActerEvent::Pin(MessageLikeEvent::Original(e)) => {
+                let parent_obj = NotificationItemParent::Pin {
+                    parent_id: e.event_id.clone(),
+                    title: e.content.title,
+                };
+                Ok(builder
+                    .inner(NotificationItemInner::Creation {
+                        parent_obj,
+                        room_id: e.room_id,
+                        event_id: e.event_id,
                     })
                     .build()?)
             }
