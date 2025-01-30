@@ -64,7 +64,6 @@ fn new_display_builder() -> DisplayBuilder;
 /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
 fn new_obj_ref_builder(position: Option<string>, reference: RefDetails) -> Result<ObjRefBuilder>;
 
-
 //  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
 //  ##     ## ##     ##  ##  ###   ###  ##     ##     ##  ##     ## ##       ##    ## 
 //  ##     ## ##     ##  ##  #### ####  ##     ##     ##  ##     ## ##       ##       
@@ -3119,6 +3118,11 @@ object Client {
 
     /// Room preview
     fn room_preview(room_id_or_alias: string, server_names: VecStringBuilder) -> Future<Result<RoomPreview>>;
+
+
+    /// create a link ref details
+    fn new_link_ref_details(title: string, uri: string) -> Result<RefDetails>;
+
 }
 
 object NotificationSettings {

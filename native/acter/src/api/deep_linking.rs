@@ -45,6 +45,22 @@ impl Deref for RefDetails {
     }
 }
 
+pub fn new_link_ref_details(title: String, uri: String) -> Result<CoreRefDetails> {
+    Ok(CoreRefDetails::Link {
+        title,
+        uri,
+    })
+}
+impl Client {
+    /// create a link ref details
+    pub fn new_link_ref_details(&self, title: String, uri: String) -> Result<RefDetails> {
+        Ok(RefDetails::new(
+            self.clone(),
+            new_link_ref_details(title, uri)?,
+        ))
+    }
+}
+
 fn generate_object_link(
     room_id: &OwnedRoomId,
     path: &[(&str, &OwnedEventId)],
