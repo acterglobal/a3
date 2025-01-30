@@ -1,1 +1,1 @@
-- [Improvement] : Better events filter representation added for Happening Now, Upcoming and Past events.
+- [Improvement] : Better management of event list sorting mechanism and also improve visualisation
