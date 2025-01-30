@@ -11,6 +11,8 @@ import 'package:acter/features/chat_ng/actions/send_message_action.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_actions_preview.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_emoji_picker.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show RoomEventItem;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +59,22 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     // have it call the first time to adjust height
     _updateHeight();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
+
+    ref.listenManual(chatEditorStateProvider, (prev, next) async {
+      if (next.isEditing &&
+          (next.actionType != prev?.actionType ||
+              next.selectedMsgItem != prev?.selectedMsgItem)) {
+        _handleEditing(next.selectedMsgItem);
+      } else if (next.isReplying &&
+          (next.actionType != prev?.actionType ||
+              next.selectedMsgItem != prev?.selectedMsgItem)) {
+        final transaction = textEditorState.transaction;
+        transaction.afterSelection = Selection.collapsed(
+          Position(path: [0], offset: 0),
+        );
+        await textEditorState.apply(transaction);
+      }
+    });
   }
 
   @override
@@ -71,6 +89,29 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.roomId != widget.roomId) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
+    }
+  }
+
+  void _handleEditing(RoomEventItem? item) {
+    try {
+      if (item == null) return;
+      // clear existing content
+      textEditorState.clear();
+      final msgContent = item.msgContent();
+      if (msgContent == null) return;
+      final body = msgContent.body();
+      // insert editing text
+      final transaction = textEditorState.transaction;
+      final docNode = transaction.document.root;
+
+      transaction.insertText(docNode.children.last, 0, body);
+      textEditorState.updateSelectionWithReason(
+        textEditorState.selection,
+        reason: SelectionUpdateReason.transaction,
+      );
+      textEditorState.apply(transaction);
+    } catch (e) {
+      _log.severe('Error handling edit state change: $e');
     }
   }
 
@@ -108,31 +149,37 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         await ref.read(chatComposerDraftProvider(widget.roomId).future);
 
     if (draft != null) {
-      final inputNotifier = ref.read(chatInputProvider.notifier);
-      inputNotifier.unsetSelectedMessage();
+      final chatEditorState = ref.read(chatEditorStateProvider.notifier);
+      chatEditorState.unsetActions();
       draft.eventId().map((eventId) {
         final draftType = draft.draftType();
-        final m = ref
-            .read(chatMessagesProvider(widget.roomId))
-            .firstWhere((x) => x.id == eventId);
-        if (draftType == 'edit') {
-          inputNotifier.setEditMessage(m);
-        } else if (draftType == 'reply') {
-          inputNotifier.setReplyToMessage(m);
+        final msgsList =
+            ref.read(chatMessagesStateProvider(widget.roomId)).messages;
+        try {
+          final roomMsg = msgsList[eventId];
+          final item = roomMsg?.eventItem();
+
+          if (item == null) return;
+
+          if (draftType == 'edit') {
+            chatEditorState.setEditMessage(item);
+          } else if (draftType == 'reply') {
+            chatEditorState.setReplyToMessage(item);
+          }
+        } catch (e) {
+          _log.severe('Message with $eventId not found');
+          return;
         }
       });
-
       final transaction = textEditorState.transaction;
-      final doc = ActerDocumentHelpers.parse(
-        draft.plainText(),
-        htmlContent: draft.htmlText(),
-      );
-      Node rootNode = doc.root;
-      transaction.document.insert([0], rootNode.children);
-      transaction.afterSelection =
-          Selection.single(path: rootNode.path, startOffset: 0);
-      textEditorState.apply(transaction);
+      final docNode = transaction.document.root;
 
+      transaction.insertText(docNode.children.last, 0, draft.plainText());
+      textEditorState.updateSelectionWithReason(
+        textEditorState.selection,
+        reason: SelectionUpdateReason.transaction,
+      );
+      textEditorState.apply(transaction);
       _log.info('compose draft loaded for room: ${widget.roomId}');
     }
   }

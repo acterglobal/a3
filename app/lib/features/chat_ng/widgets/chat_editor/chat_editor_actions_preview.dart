@@ -11,11 +11,12 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:intl/intl.dart';
 
-class ChatEditorActionsPreview extends ConsumerStatefulWidget {
+class ChatEditorActionsPreview extends ConsumerWidget {
   final EditorState textEditorState;
   final RoomEventItem msgItem;
   final String roomId;
@@ -28,47 +29,21 @@ class ChatEditorActionsPreview extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ChatEditorActionsPreview> createState() =>
-      _ChatEditorActionsPreviewConsumerState();
-}
-
-class _ChatEditorActionsPreviewConsumerState
-    extends ConsumerState<ChatEditorActionsPreview> {
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final chatEditorState = ref.read(chatEditorStateProvider);
-    final textEditorState = widget.textEditorState;
-    final msgItem = widget.msgItem;
-
-    if (chatEditorState.isEditing) {
-      final transaction = textEditorState.transaction;
-      final msgContent = msgItem.msgContent();
-      if (msgContent == null) return;
-      final doc = ActerDocumentHelpers.fromMsgContent(msgContent);
-      Node rootNode = doc.root;
-      transaction.document.insert([0], rootNode.children);
-      transaction.afterSelection = textEditorState.selection;
-      textEditorState.apply(transaction);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final chatEditorState = ref.watch(chatEditorStateProvider);
     final children = <Widget>[];
     if (chatEditorState.isReplying) {
-      children.add(_buildRepliedToMsgView());
-      children.add(_buildRepliedToItem(context, widget.msgItem));
+      children.add(_buildRepliedToMsgView(context, ref));
+      children.add(_buildRepliedToItem(context, msgItem));
     } else if (chatEditorState.isEditing) {
-      children.add(_buildEditView());
+      children.add(_buildEditView(context, ref));
       // add a bit space for clean UI
       children.add(const SizedBox(height: 12));
     }
-    return _buildPreviewContainer(children);
+    return _buildPreviewContainer(context, children);
   }
 
-  Widget _buildPreviewContainer(List<Widget> children) {
+  Widget _buildPreviewContainer(BuildContext context, List<Widget> children) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
@@ -92,10 +67,10 @@ class _ChatEditorActionsPreviewConsumerState
     );
   }
 
-  Widget _buildRepliedToMsgView() {
-    final authorId = widget.msgItem.sender();
+  Widget _buildRepliedToMsgView(BuildContext context, WidgetRef ref) {
+    final authorId = msgItem.sender();
     final memberAvatar = ref.watch(
-      memberAvatarInfoProvider((userId: authorId, roomId: widget.roomId)),
+      memberAvatarInfoProvider((userId: authorId, roomId: roomId)),
     );
     return Row(
       children: [
@@ -130,7 +105,7 @@ class _ChatEditorActionsPreviewConsumerState
     );
   }
 
-  Widget _buildEditView() {
+  Widget _buildEditView(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
         const SizedBox(width: 1),
@@ -149,8 +124,11 @@ class _ChatEditorActionsPreviewConsumerState
         ),
         const Spacer(),
         GestureDetector(
-          onTap: () =>
-              ref.read(chatEditorStateProvider.notifier).unsetActions(),
+          onTap: () {
+            ref.read(chatEditorStateProvider.notifier).unsetActions();
+            // closing editing action, also clear the editor
+            textEditorState.clear();
+          },
           child: const Icon(Atlas.xmark_circle),
         ),
       ],
@@ -158,7 +136,6 @@ class _ChatEditorActionsPreviewConsumerState
   }
 
   Widget _buildRepliedToItem(BuildContext context, RoomEventItem item) {
-    final roomId = widget.roomId;
     final messageId = item.eventId();
     final msgType = item.msgType();
     final content = item.msgContent();
@@ -193,10 +170,21 @@ class _ChatEditorActionsPreviewConsumerState
       _ => const SizedBox.shrink(),
     };
 
-    return Container(
+    // keep this UI logic for clipping reply content
+    return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: 100),
-      padding: const EdgeInsets.all(12.0),
-      child: child,
+      child: ClipRect(
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: OverflowBox(
+            fit: OverflowBoxFit.deferToChild,
+            alignment: Alignment.topLeft,
+            maxHeight: double.infinity,
+            minHeight: 0,
+            child: child,
+          ),
+        ),
+      ),
     );
   }
 }

@@ -48,6 +48,22 @@ extension ActerEditorStateHelpers on EditorState {
   String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {
     return (codec ?? defaultMarkdownCodec).encode(document);
   }
+
+  /// clear the editor text with selection
+  void clear() async {
+    if (!document.isEmpty) {
+      final node = getNodeAtPath([0]);
+      final transaction = this.transaction;
+      final selection = this.selection;
+      if (node == null) return;
+      transaction.deleteText(node, 0, node.delta?.length ?? 0);
+      await updateSelectionWithReason(
+        selection,
+        reason: SelectionUpdateReason.transaction,
+      );
+      apply(transaction);
+    }
+  }
 }
 
 extension ActerDocumentHelpers on Document {
@@ -80,7 +96,7 @@ extension ActerDocumentHelpers on Document {
   }) {
     if (htmlContent != null) {
       final document = ActerDocumentHelpers._fromHtml(htmlContent);
-      if (document != null) {
+      if (document != null && !document.isEmpty) {
         return document;
       }
     }

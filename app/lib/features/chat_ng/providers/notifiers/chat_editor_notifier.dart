@@ -1,7 +1,6 @@
 import 'package:acter/features/chat_ng/models/chat_editor_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show RoomEventItem;
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatEditorNotifier extends AutoDisposeNotifier<ChatEditorState> {
@@ -19,10 +18,7 @@ class ChatEditorNotifier extends AutoDisposeNotifier<ChatEditorState> {
     );
   }
 
-  void setEditMessage(
-    Widget message,
-    RoomEventItem msgItem,
-  ) {
+  void setEditMessage(RoomEventItem msgItem) {
     state = state.copyWith(
       selectedMsgItem: msgItem,
       actionType: MessageAction.edit,

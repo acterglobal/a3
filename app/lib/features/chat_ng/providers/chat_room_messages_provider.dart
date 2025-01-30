@@ -26,14 +26,14 @@ typedef RoomMsgId = ({String roomId, String uniqueId});
 typedef MentionQuery = (String, MentionType);
 typedef ReactionItem = (String, List<ReactionRecord>);
 
-final chatStateProvider = StateNotifierProvider.family<ChatRoomMessagesNotifier,
-    ChatRoomState, String>(
+final chatMessagesStateProvider = StateNotifierProvider.family<
+    ChatRoomMessagesNotifier, ChatRoomState, String>(
   (ref, roomId) => ChatRoomMessagesNotifier(ref: ref, roomId: roomId),
 );
 
 final chatRoomMessageProvider =
     StateProvider.family<RoomMessage?, RoomMsgId>((ref, roomMsgId) {
-  final chatRoomState = ref.watch(chatStateProvider(roomMsgId.roomId));
+  final chatRoomState = ref.watch(chatMessagesStateProvider(roomMsgId.roomId));
   return chatRoomState.message(roomMsgId.uniqueId);
 });
 
@@ -41,13 +41,14 @@ final showHiddenMessages = StateProvider((ref) => false);
 
 final animatedListChatMessagesProvider =
     StateProvider.family<GlobalKey<AnimatedListState>, String>(
-  (ref, roomId) => ref.watch(chatStateProvider(roomId).notifier).animatedList,
+  (ref, roomId) =>
+      ref.watch(chatMessagesStateProvider(roomId).notifier).animatedList,
 );
 
 final renderableChatMessagesProvider =
     StateProvider.autoDispose.family<List<String>, String>((ref, roomId) {
-  final msgList =
-      ref.watch(chatStateProvider(roomId).select((value) => value.messageList));
+  final msgList = ref.watch(
+      chatMessagesStateProvider(roomId).select((value) => value.messageList));
   if (ref.watch(showHiddenMessages)) {
     // do not apply filters
     return msgList;

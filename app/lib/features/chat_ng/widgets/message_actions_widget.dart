@@ -11,7 +11,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class MessageActionsWidget extends ConsumerWidget {
   final bool isMe;
   final bool canRedact;
-  final Widget messageWidget;
   final RoomEventItem item;
   final String messageId;
   final String roomId;
@@ -19,7 +18,6 @@ class MessageActionsWidget extends ConsumerWidget {
     super.key,
     required this.isMe,
     required this.canRedact,
-    required this.messageWidget,
     required this.item,
     required this.messageId,
     required this.roomId,
@@ -63,9 +61,7 @@ class MessageActionsWidget extends ConsumerWidget {
         if (isMe)
           makeMenuItem(
             pressed: () {
-              ref
-                  .read(chatEditorStateProvider.notifier)
-                  .setEditMessage(messageWidget, item);
+              ref.read(chatEditorStateProvider.notifier).setEditMessage(item);
               Navigator.pop(context);
             },
             text: Text(lang.edit),

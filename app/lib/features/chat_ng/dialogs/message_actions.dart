@@ -55,7 +55,6 @@ void messageActions({
             child: MessageActionsWidget(
               isMe: isMe,
               canRedact: canRedact,
-              messageWidget: messageWidget,
               item: item,
               messageId: messageId,
               roomId: roomId,

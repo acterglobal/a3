@@ -18,7 +18,8 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
       ScrollController(keepScrollOffset: true);
 
   bool get isLoading => ref.watch(
-        chatStateProvider(widget.roomId).select((v) => v.loading.isLoading),
+        chatMessagesStateProvider(widget.roomId)
+            .select((v) => v.loading.isLoading),
       );
 
   @override
@@ -26,7 +27,7 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
     super.initState();
     // for first time messages load, should scroll at the latest (bottom)
     ref.listenManual(
-        chatStateProvider(widget.roomId)
+        chatMessagesStateProvider(widget.roomId)
             .select((value) => value.messageList.length), (_, __) {
       if (_scrollController.hasClients &&
           _scrollController.position.pixels >
@@ -52,7 +53,8 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
       if (isLoading) return;
 
       // Get the notifier to load more messages
-      final notifier = ref.read(chatStateProvider(widget.roomId).notifier);
+      final notifier =
+          ref.read(chatMessagesStateProvider(widget.roomId).notifier);
       await notifier.loadMore();
     }
   }
@@ -70,7 +72,8 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(
-      chatStateProvider(widget.roomId).select((value) => value.messageList),
+      chatMessagesStateProvider(widget.roomId)
+          .select((value) => value.messageList),
     );
 
     return PageStorage(
