@@ -237,9 +237,12 @@ impl TryFrom<&AnyActerModel> for NotificationItemParent {
                 parent_id: e.event_id().to_owned(),
                 title: e.title().clone(),
             }),
+            AnyActerModel::TaskList(e) => Ok(NotificationItemParent::TaskList {
+                parent_id: e.event_id().to_owned(),
+                title: e.name().clone(),
+            }),
             AnyActerModel::RedactedActerModel(_)
             | AnyActerModel::CalendarEventUpdate(_)
-            | AnyActerModel::TaskList(_)
             | AnyActerModel::TaskListUpdate(_)
             | AnyActerModel::Task(_)
             | AnyActerModel::TaskUpdate(_)
@@ -302,6 +305,26 @@ pub enum NotificationItemInner {
         room_id: OwnedRoomId,
         event_id: OwnedEventId,
     },
+    TitleChange {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+        old_title: Option<String>,
+    },
+    DescriptionChange {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+        content: Option<TextMessageEventContent>,
+    },
+    OtherChanges {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+    },
 }
 
 impl NotificationItemInner {
@@ -320,6 +343,9 @@ impl NotificationItemInner {
             }
             NotificationItemInner::Boost { .. } => "news",
             NotificationItemInner::Creation { .. } => "creation",
+            NotificationItemInner::TitleChange { .. } => "titleChange",
+            NotificationItemInner::DescriptionChange { .. } => "descriptionChange",
+            NotificationItemInner::OtherChanges { .. } => "otherChanges",
         }
         .to_owned()
     }
@@ -333,7 +359,19 @@ impl NotificationItemInner {
             NotificationItemInner::Invite { room_id } => "/activities/invites".to_string(),
             NotificationItemInner::ChatMessage { room_id, .. } => format!("/chat/{room_id}"),
             NotificationItemInner::Boost { event_id, .. } => format!("/updates/{event_id}"),
-            NotificationItemInner::Creation { parent_obj, .. } => parent_obj.target_url(),
+            NotificationItemInner::TitleChange {
+                parent_obj: Some(parent_obj),
+                ..
+            }
+            | NotificationItemInner::DescriptionChange {
+                parent_obj: Some(parent_obj),
+                ..
+            }
+            | NotificationItemInner::DescriptionChange {
+                parent_obj: Some(parent_obj),
+                ..
+            }
+            | NotificationItemInner::Creation { parent_obj, .. } => parent_obj.target_url(),
             NotificationItemInner::Comment {
                 parent_obj: Some(parent),
                 event_id,
@@ -353,7 +391,25 @@ impl NotificationItemInner {
                 encode(event_id.as_str()),
             ),
             // -- fallback when the parent isn't there.
-            NotificationItemInner::Comment {
+            NotificationItemInner::TitleChange {
+                parent_id,
+                room_id,
+                event_id,
+                ..
+            }
+            | NotificationItemInner::DescriptionChange {
+                parent_id,
+                room_id,
+                event_id,
+                ..
+            }
+            | NotificationItemInner::OtherChanges {
+                parent_id,
+                room_id,
+                event_id,
+                ..
+            }
+            | NotificationItemInner::Comment {
                 event_id,
                 room_id,
                 parent_id,
@@ -386,6 +442,9 @@ impl NotificationItemInner {
     pub fn parent(&self) -> Option<NotificationItemParent> {
         match self {
             NotificationItemInner::Creation { parent_obj, .. } => Some(parent_obj.clone()),
+            NotificationItemInner::TitleChange { parent_obj, .. }
+            | NotificationItemInner::DescriptionChange { parent_obj, .. }
+            | NotificationItemInner::OtherChanges { parent_obj, .. } => parent_obj.clone(),
             NotificationItemInner::Comment { parent_obj, .. }
             | NotificationItemInner::Reaction { parent_obj, .. } => parent_obj.clone(),
             _ => None,
@@ -394,6 +453,9 @@ impl NotificationItemInner {
     pub fn parent_id_str(&self) -> Option<String> {
         match self {
             NotificationItemInner::Creation { parent_obj, .. } => Some(parent_obj.object_id_str()),
+            NotificationItemInner::TitleChange { parent_id, .. }
+            | NotificationItemInner::DescriptionChange { parent_id, .. }
+            | NotificationItemInner::OtherChanges { parent_id, .. } => Some(parent_id.to_string()),
             NotificationItemInner::Comment { parent_id, .. }
             | NotificationItemInner::Reaction { parent_id, .. } => Some(parent_id.to_string()),
             _ => None,
@@ -442,6 +504,9 @@ impl NotificationItemInner {
                 | NewsContent::Location(msg_content) => Some(MsgContent::from(msg_content)),
                 _ => None,
             },
+            NotificationItemInner::DescriptionChange { content, .. } => {
+                content.as_ref().map(|e| MsgContent::from(e.clone()))
+            }
 
             _ => None,
         }
@@ -683,6 +748,8 @@ impl NotificationItem {
                     })
                     .build()?)
             }
+
+            // -- Pin
             AnyActerEvent::Pin(MessageLikeEvent::Original(e)) => {
                 let parent_obj = NotificationItemParent::Pin {
                     parent_id: e.event_id.clone(),
@@ -697,6 +764,41 @@ impl NotificationItem {
                     .build()?)
             }
 
+            AnyActerEvent::PinUpdate(MessageLikeEvent::Original(e)) => {
+                let parent_obj = client
+                    .store()
+                    .get(&e.content.pin.event_id)
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of comment");
+                    })
+                    .ok()
+                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
+
+                if let Some(Some(new_content)) = e.content.content {
+                    return Ok(builder
+                        .inner(NotificationItemInner::DescriptionChange {
+                            parent_obj,
+                            parent_id: e.content.pin.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                            content: Some(new_content),
+                        })
+                        .build()?);
+                } else {
+                    // fallback: other changes
+                    return Ok(builder
+                        .inner(NotificationItemInner::OtherChanges {
+                            parent_obj,
+                            parent_id: e.content.pin.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                        })
+                        .build()?);
+                }
+            }
+
+            // ---- Event
             AnyActerEvent::CalendarEvent(MessageLikeEvent::Original(e)) => {
                 let parent_obj = NotificationItemParent::CalendarEvent {
                     parent_id: e.event_id.clone(),
@@ -711,6 +813,41 @@ impl NotificationItem {
                     .build()?)
             }
 
+            AnyActerEvent::CalendarEventUpdate(MessageLikeEvent::Original(e)) => {
+                let parent_obj = client
+                    .store()
+                    .get(&e.content.calendar_event.event_id)
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of comment");
+                    })
+                    .ok()
+                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
+
+                if let Some(Some(new_content)) = e.content.description {
+                    return Ok(builder
+                        .inner(NotificationItemInner::DescriptionChange {
+                            parent_obj,
+                            parent_id: e.content.calendar_event.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                            content: Some(new_content),
+                        })
+                        .build()?);
+                } else {
+                    // fallback: other changes
+                    return Ok(builder
+                        .inner(NotificationItemInner::OtherChanges {
+                            parent_obj,
+                            parent_id: e.content.calendar_event.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                        })
+                        .build()?);
+                }
+            }
+
+            // --- Task listss
             AnyActerEvent::TaskList(MessageLikeEvent::Original(e)) => {
                 let parent_obj = NotificationItemParent::TaskList {
                     parent_id: e.event_id.clone(),
@@ -724,6 +861,41 @@ impl NotificationItem {
                     })
                     .build()?)
             }
+
+            AnyActerEvent::TaskListUpdate(MessageLikeEvent::Original(e)) => {
+                let parent_obj = client
+                    .store()
+                    .get(&e.content.task_list.event_id)
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of comment");
+                    })
+                    .ok()
+                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
+
+                if let Some(Some(new_content)) = e.content.description {
+                    return Ok(builder
+                        .inner(NotificationItemInner::DescriptionChange {
+                            parent_obj,
+                            parent_id: e.content.task_list.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                            content: Some(new_content),
+                        })
+                        .build()?);
+                } else {
+                    // fallback: other changes
+                    return Ok(builder
+                        .inner(NotificationItemInner::OtherChanges {
+                            parent_obj,
+                            parent_id: e.content.task_list.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                        })
+                        .build()?);
+                }
+            }
+
             _ => {
                 tracing::warn!(?event, "Notification not support");
                 Ok(builder.build()?)
