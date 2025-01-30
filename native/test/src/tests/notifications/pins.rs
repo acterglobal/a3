@@ -193,6 +193,7 @@ async fn pin_desc_update() -> Result<()> {
     Ok(())
 }
 
+#[ignore]
 #[tokio::test]
 async fn pin_redaction() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =

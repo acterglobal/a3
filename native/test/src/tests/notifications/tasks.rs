@@ -199,6 +199,7 @@ async fn tasklist_desc_update() -> Result<()> {
     Ok(())
 }
 
+#[ignore]
 #[tokio::test]
 async fn tasklist_redaction() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =

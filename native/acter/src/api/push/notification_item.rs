@@ -775,7 +775,7 @@ impl NotificationItem {
                     .and_then(|o| NotificationItemParent::try_from(&o).ok());
 
                 if let Some(new_title) = e.content.title {
-                    return Ok(builder
+                    Ok(builder
                         .title(new_title)
                         .inner(NotificationItemInner::TitleChange {
                             parent_obj,
@@ -783,7 +783,7 @@ impl NotificationItem {
                             room_id: e.room_id,
                             event_id: e.event_id,
                         })
-                        .build()?);
+                        .build()?)
                 } else if let Some(Some(new_content)) = e.content.content {
                     return Ok(builder
                         .inner(NotificationItemInner::DescriptionChange {
@@ -834,7 +834,7 @@ impl NotificationItem {
                     .and_then(|o| NotificationItemParent::try_from(&o).ok());
 
                 if let Some(new_title) = e.content.title {
-                    return Ok(builder
+                    Ok(builder
                         .title(new_title)
                         .inner(NotificationItemInner::TitleChange {
                             parent_obj,
@@ -842,7 +842,7 @@ impl NotificationItem {
                             room_id: e.room_id,
                             event_id: e.event_id,
                         })
-                        .build()?);
+                        .build()?)
                 } else if let Some(Some(new_content)) = e.content.description {
                     return Ok(builder
                         .inner(NotificationItemInner::DescriptionChange {
@@ -893,7 +893,7 @@ impl NotificationItem {
                     .and_then(|o| NotificationItemParent::try_from(&o).ok());
 
                 if let Some(new_title) = e.content.name {
-                    return Ok(builder
+                    Ok(builder
                         .title(new_title)
                         .inner(NotificationItemInner::TitleChange {
                             parent_obj,
@@ -901,7 +901,7 @@ impl NotificationItem {
                             room_id: e.room_id,
                             event_id: e.event_id,
                         })
-                        .build()?);
+                        .build()?)
                 } else if let Some(Some(new_content)) = e.content.description {
                     return Ok(builder
                         .inner(NotificationItemInner::DescriptionChange {
