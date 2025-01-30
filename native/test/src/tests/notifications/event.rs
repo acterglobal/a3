@@ -1,4 +1,6 @@
-use acter::ActerModel;
+use std::time::SystemTime;
+
+use acter::UtcDateTime;
 use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -9,23 +11,25 @@ use crate::utils::{random_users_with_random_space, random_users_with_random_spac
 
 const TMPL: &str = r#"
 version = "0.1"
-name = "Pin Notifications Setup Template"
+name = "Event Notifications Setup Template"
 
 [inputs]
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 space = { type = "space", is-default = true, required = true, description = "The main user" }
 
-[objects.acter-website-pin]
-type = "pin"
-title = "Acter Website"
-url = "https://acter.global"
+[objects.acter-event-1]
+type = "calendar-event"
+title = "First meeting"
+utc_start = "{{ future(add_mins=1).as_rfc3339 }}"
+utc_end = "{{ future(add_mins=60).as_rfc3339 }}"
 
 "#;
 
 #[tokio::test]
-async fn pins_creation_notification() -> Result<()> {
+async fn event_creation_notification() -> Result<()> {
     let _ = env_logger::try_init();
-    let (users, room_id) = random_users_with_random_space("pins_creation_notifications", 2).await?;
+    let (users, room_id) =
+        random_users_with_random_space("event_creation_notifications", 2).await?;
 
     let mut user = users[0].clone();
     let mut second = users[1].clone();
@@ -58,8 +62,10 @@ async fn pins_creation_notification() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?; // we want to see push for everything;
 
-    let mut draft = main_space.pin_draft()?;
-    draft.title("Acter Website".to_owned());
+    let mut draft = main_space.calendar_event_draft()?;
+    draft.title("First meeting".to_owned());
+    draft.utc_start_from_rfc3339(UtcDateTime::from(SystemTime::now()).to_rfc3339())?;
+    draft.utc_end_from_rfc3339(UtcDateTime::from(SystemTime::now()).to_rfc3339())?;
     let event_id = draft.send().await?;
     tracing::trace!("draft sent event id: {}", event_id);
 
@@ -68,20 +74,20 @@ async fn pins_creation_notification() -> Result<()> {
         .await?;
 
     assert_eq!(notifications.push_style(), "creation");
-    assert_eq!(notifications.target_url(), format!("/pins/{event_id}"));
+    assert_eq!(notifications.target_url(), format!("/events/{event_id}"));
     let parent = notifications.parent().unwrap();
-    assert_eq!(parent.object_type_str(), "pin".to_owned());
-    assert_eq!(parent.title().unwrap(), "Acter Website".to_owned());
-    assert_eq!(parent.emoji(), "📌"); // pin icon
+    assert_eq!(parent.object_type_str(), "event".to_owned());
+    assert_eq!(parent.title().unwrap(), "First meeting".to_owned());
+    assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), event_id);
 
     Ok(())
 }
 
 #[tokio::test]
-async fn pin_title_update() -> Result<()> {
+async fn event_title_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("pinTitleUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("eventTitleUpdate", 2, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -92,7 +98,7 @@ async fn pin_title_update() -> Result<()> {
     let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         async move {
-            let entries = client.pins().await?;
+            let entries = client.calendar_events().await?;
             if entries.is_empty() {
                 bail!("entries not found");
             }
@@ -102,7 +108,7 @@ async fn pin_title_update() -> Result<()> {
     .await?;
 
     let mut update = obj_entry.update_builder()?;
-    update.title("Renamed Pin".to_owned());
+    update.title("Renamed Event".to_owned());
     let notification_ev = update.send().await?;
 
     let notification_item = first
@@ -113,27 +119,30 @@ async fn pin_title_update() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in change"),
-        obj_entry.event_id_str(),
+        obj_entry.event_id().to_string(),
     );
 
-    let obj_id = obj_entry.event_id_str();
+    let obj_id = obj_entry.event_id().to_string();
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "Acter Website"); // old title
+    assert_eq!(content.body(), "First Meeting"); // old title
     let parent = notification_item.parent().expect("parent was found");
-    assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
-    assert_eq!(parent.object_type_str(), "pin".to_owned());
-    assert_eq!(parent.title().unwrap(), "Renamed Pin".to_owned());
-    assert_eq!(parent.emoji(), "📌"); // pin icon
+    assert_eq!(
+        notification_item.target_url(),
+        format!("/events/{}", obj_id,)
+    );
+    assert_eq!(parent.object_type_str(), "event".to_owned());
+    assert_eq!(parent.title().unwrap(), "Renamed Event".to_owned());
+    assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), obj_id);
 
     Ok(())
 }
 
 #[tokio::test]
-async fn pin_desc_update() -> Result<()> {
+async fn event_desc_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("pinDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("eventDescUpdate", 2, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -144,7 +153,7 @@ async fn pin_desc_update() -> Result<()> {
     let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         async move {
-            let entries = client.pins().await?;
+            let entries = client.calendar_events().await?;
             if entries.is_empty() {
                 bail!("entries not found");
             }
@@ -154,7 +163,7 @@ async fn pin_desc_update() -> Result<()> {
     .await?;
 
     let mut update = obj_entry.update_builder()?;
-    update.content_text("Added content".to_owned());
+    update.description_text("Added content".to_owned());
     let notification_ev = update.send().await?;
 
     let notification_item = first
@@ -162,28 +171,33 @@ async fn pin_desc_update() -> Result<()> {
         .await?;
     assert_eq!(notification_item.push_style(), "descriptionChange");
     assert_eq!(
-        notification_item.parent_id_str().expect("parent is in pin"),
-        obj_entry.event_id_str(),
+        notification_item
+            .parent_id_str()
+            .expect("parent is in event"),
+        obj_entry.event_id().to_string(),
     );
 
-    let obj_id = obj_entry.event_id_str();
+    let obj_id = obj_entry.event_id().to_string();
 
     let content = notification_item.body().expect("found content");
     assert_eq!(content.body(), "Added description"); // new description
     let parent = notification_item.parent().expect("parent was found");
-    assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
-    assert_eq!(parent.object_type_str(), "pin");
+    assert_eq!(
+        notification_item.target_url(),
+        format!("/events/{}", obj_id,)
+    );
+    assert_eq!(parent.object_type_str(), "event");
     assert_eq!(parent.title().unwrap(), "Acter Website");
-    assert_eq!(parent.emoji(), "📌"); // pin icon
+    assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), obj_id);
 
     Ok(())
 }
 
 #[tokio::test]
-async fn pin_redaction() -> Result<()> {
+async fn event_redaction() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("pinRedaction", 2, TMPL).await?;
+        random_users_with_random_space_under_template("eventRedaction", 2, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -191,10 +205,10 @@ async fn pin_redaction() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = first.clone();
-    let pin = Retry::spawn(retry_strategy.clone(), move || {
+    let event = Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         async move {
-            let entries = client.pins().await?;
+            let entries = client.calendar_events().await?;
             if entries.is_empty() {
                 bail!("entries not found");
             }
@@ -202,9 +216,9 @@ async fn pin_redaction() -> Result<()> {
         }
     })
     .await?;
-    let obj_id = pin.event_id().to_string();
-    let space = first.space(pin.room_id().to_string()).await?;
-    let notification_ev = space.redact(pin.event_id(), None, None).await?.event_id;
+    let obj_id = event.event_id().to_string();
+    let space = first.space(event.room_id().to_string()).await?;
+    let notification_ev = space.redact(&event.event_id(), None, None).await?.event_id;
 
     let notification_item = second_user
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -218,10 +232,10 @@ async fn pin_redaction() -> Result<()> {
     );
 
     let parent = notification_item.parent().expect("parent was found");
-    assert_eq!(notification_item.target_url(), format!("/pins/"));
-    assert_eq!(parent.object_type_str(), "pin");
-    assert_eq!(parent.title().unwrap(), "Acter Website");
-    assert_eq!(parent.emoji(), "📌"); // pin icon
+    assert_eq!(notification_item.target_url(), format!("/events/"));
+    assert_eq!(parent.object_type_str(), "event");
+    assert_eq!(parent.title().unwrap(), "First Meeting");
+    assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), obj_id);
 
     Ok(())
