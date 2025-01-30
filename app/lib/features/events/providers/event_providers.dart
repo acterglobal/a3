@@ -1,6 +1,5 @@
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/bookmarks/types.dart';
-import 'package:acter/features/bookmarks/util.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/actions/sort_event_list.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
@@ -253,29 +252,5 @@ final eventListQuickSearchedProvider =
   return _filterEventBySearchTerm(
     searchTerm,
     allEventList,
-  );
-});
-
-final eventListSearchedAndFilterProvider = FutureProvider.autoDispose
-    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
-  //Declare filtered event list
-
-  final List<ffi.CalendarEvent> filteredEventList =
-      switch (ref.watch(eventListFilterProvider(spaceId))) {
-    EventFilters.bookmarked =>
-      await ref.watch(bookmarkedEventListProvider(spaceId).future),
-    EventFilters.ongoing =>
-      await ref.watch(allOngoingEventListProvider(spaceId).future),
-    EventFilters.upcoming =>
-      await ref.watch(allUpcomingEventListProvider(spaceId).future),
-    EventFilters.past =>
-      await ref.watch(allPastEventListProvider(spaceId).future),
-    EventFilters.all => await ref.watch(allEventSorted(spaceId).future),
-  };
-
-  final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
-  return _filterEventBySearchTerm(
-    searchTerm,
-    filteredEventList,
   );
 });
