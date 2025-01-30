@@ -5,6 +5,7 @@ import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/common/widgets/task/taskList_selector_drawer.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/model/news_post_color_data.dart';
 import 'package:acter/features/news/model/news_post_state.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -92,9 +93,10 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     showAddEditLinkBottomSheet(
       context: context,
       bottomSheetTitle: L10n.of(context).addLink,
-      onSave: (title, link) {
+      onSave: (title, link) async {
         Navigator.pop(context);
-        RefDetails? refDetails;
+        final client = await ref.read(alwaysClientProvider.future);
+        RefDetails refDetails = client.newLinkRefDetails(title, link);
         NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
         selectedNewsSlide?.refDetails = refDetails;
         state = state.copyWith(currentNewsSlide: selectedNewsSlide);

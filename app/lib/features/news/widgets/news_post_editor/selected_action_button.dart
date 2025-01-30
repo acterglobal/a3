@@ -1,3 +1,4 @@
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
@@ -8,6 +9,7 @@ import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/skeleton/tasks_list_skeleton.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,6 +36,7 @@ class SelectedActionButton extends ConsumerWidget {
       'pin' => pinActionButton(context, ref, refObjectId),
       'calendar-event' => calendarActionButton(context, ref, refObjectId),
       'task-list' => taskListActionButton(context, ref, refObjectId),
+      'link' => linkActionButton(context, refDetails!),
       _ => const SizedBox(),
     };
   }
@@ -122,5 +125,25 @@ class SelectedActionButton extends ConsumerWidget {
             );
           },
         );
+  }
+
+  Widget linkActionButton(BuildContext context, RefDetails refDetail) {
+    final uri = refDetail.uri();
+    if (uri == null) return SizedBox.shrink();
+    return ListTile(
+      leading: const Icon(Atlas.link),
+      onTap: () => openLink(uri, context),
+      title: Text(
+        refDetail.title() ?? L10n.of(context).unknown,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.labelMedium,
+      ),
+      subtitle: Text(
+        uri,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
   }
 }
