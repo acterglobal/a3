@@ -1,0 +1,1 @@
+- [Improvement] : Better events filter representation added for Happening Now, Upcoming and Past events.
