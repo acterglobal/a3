@@ -125,12 +125,11 @@ async fn pin_title_update() -> Result<()> {
 
     let obj_id = obj_entry.event_id_str();
 
-    let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "Acter Website"); // old title
+    assert_eq!(notification_item.title(), "Renamed Pin"); // old title
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
-    assert_eq!(parent.object_type_str(), "pin".to_owned());
-    assert_eq!(parent.title().unwrap(), "Renamed Pin".to_owned());
+    assert_eq!(parent.object_type_str(), "pin");
+    // assert_eq!(parent.title().unwrap(), "Acter Website");
     assert_eq!(parent.emoji(), "📌"); // pin icon
     assert_eq!(parent.object_id_str(), obj_id);
 

@@ -310,7 +310,6 @@ pub enum NotificationItemInner {
         parent_id: OwnedEventId,
         room_id: OwnedRoomId,
         event_id: OwnedEventId,
-        old_title: Option<String>,
     },
     DescriptionChange {
         parent_obj: Option<NotificationItemParent>,
@@ -775,7 +774,17 @@ impl NotificationItem {
                     .ok()
                     .and_then(|o| NotificationItemParent::try_from(&o).ok());
 
-                if let Some(Some(new_content)) = e.content.content {
+                if let Some(new_title) = e.content.title {
+                    return Ok(builder
+                        .title(new_title)
+                        .inner(NotificationItemInner::TitleChange {
+                            parent_obj,
+                            parent_id: e.content.pin.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                        })
+                        .build()?);
+                } else if let Some(Some(new_content)) = e.content.content {
                     return Ok(builder
                         .inner(NotificationItemInner::DescriptionChange {
                             parent_obj,
@@ -824,7 +833,17 @@ impl NotificationItem {
                     .ok()
                     .and_then(|o| NotificationItemParent::try_from(&o).ok());
 
-                if let Some(Some(new_content)) = e.content.description {
+                if let Some(new_title) = e.content.title {
+                    return Ok(builder
+                        .title(new_title)
+                        .inner(NotificationItemInner::TitleChange {
+                            parent_obj,
+                            parent_id: e.content.calendar_event.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                        })
+                        .build()?);
+                } else if let Some(Some(new_content)) = e.content.description {
                     return Ok(builder
                         .inner(NotificationItemInner::DescriptionChange {
                             parent_obj,
@@ -873,7 +892,17 @@ impl NotificationItem {
                     .ok()
                     .and_then(|o| NotificationItemParent::try_from(&o).ok());
 
-                if let Some(Some(new_content)) = e.content.description {
+                if let Some(new_title) = e.content.name {
+                    return Ok(builder
+                        .title(new_title)
+                        .inner(NotificationItemInner::TitleChange {
+                            parent_obj,
+                            parent_id: e.content.task_list.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                        })
+                        .build()?);
+                } else if let Some(Some(new_content)) = e.content.description {
                     return Ok(builder
                         .inner(NotificationItemInner::DescriptionChange {
                             parent_obj,

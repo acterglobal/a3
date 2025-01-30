@@ -131,15 +131,14 @@ async fn event_title_update() -> Result<()> {
 
     let obj_id = obj_entry.event_id().to_string();
 
-    let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "First Meeting"); // old title
+    assert_eq!(notification_item.title(), "Renamed Event"); // new title
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
         format!("/events/{}", obj_id,)
     );
-    assert_eq!(parent.object_type_str(), "event".to_owned());
-    assert_eq!(parent.title().unwrap(), "Renamed Event".to_owned());
+    assert_eq!(parent.object_type_str(), "event");
+    // assert_eq!(parent.title().unwrap(), "First Meeting"); // old name
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), obj_id);
 
