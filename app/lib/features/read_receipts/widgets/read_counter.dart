@@ -1,6 +1,6 @@
 import 'dart:async';
-
 import 'package:acter/common/toolkit/errors/inline_error_button.dart';
+import 'package:acter/common/widgets/visibility/shadow_effect_widget.dart';
 import 'package:acter/features/read_receipts/providers/read_receipts.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +65,12 @@ class _ReadCounterWidgetState extends ConsumerState<ReadCounterWidget> {
     return manager.when(
       data: (manager) {
         final count = manager.readCount();
-        return Column(children: [Icon(PhosphorIcons.eye()), Text('$count')]);
+        return Column(
+          children: [
+            ShadowEffectWidget(child: Icon(PhosphorIcons.eye()),),
+            ShadowEffectWidget(child:Text('$count'),),
+          ],
+        );
       },
       loading: () => const _ReadCounterWidgetLoading(),
       error: (error, stackTrace) => Column(

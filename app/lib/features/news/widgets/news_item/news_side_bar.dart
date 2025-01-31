@@ -5,6 +5,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/like_button.dart';
+import 'package:acter/common/widgets/visibility/shadow_effect_widget.dart';
 import 'package:acter/features/comments/providers/comments_providers.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
@@ -114,9 +115,9 @@ class NewsSideBar extends ConsumerWidget {
             },
             icon: Column(
               children: [
-                const Icon(Atlas.comment_blank),
+                ShadowEffectWidget(child: Icon(Atlas.comment_blank),),
                 const SizedBox(height: 4),
-                Text(commentCount.toString(), style: style),
+                ShadowEffectWidget(child:Text(commentCount.toString(), style: style),),
               ],
             ),
           ),
@@ -137,7 +138,7 @@ class NewsSideBar extends ConsumerWidget {
               ),
             ),
             child: _SideBarItem(
-              icon: const Icon(Atlas.dots_horizontal_thin),
+              icon: ShadowEffectWidget(child: Icon(Atlas.dots_horizontal_thin)),
               label: '',
               style: bodyLarge?.copyWith(fontSize: 13),
             ),
