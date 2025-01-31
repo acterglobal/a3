@@ -226,7 +226,6 @@ class _CreateSuperInviteTokenPageConsumerState
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, idx) {
         final roomId = rooms[idx];
-        print('ttt -- ${isSpace}');
         return RoomCard(
           onTap: () {
             if(isSpace){
