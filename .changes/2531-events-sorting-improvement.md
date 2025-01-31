@@ -1,1 +1,2 @@
-- [Improvement] : Better management of event list sorting mechanism and also improve visualisation
+- [Improvement] : Reorganized event list to show "Happening Now" first, followed by "Upcoming" and "Past" events - replacing the previous bookmark-based sorting.
+- [Improvement] : Events list now also categorizes events into distinct sections for better visibility.
