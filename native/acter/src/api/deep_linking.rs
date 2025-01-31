@@ -46,10 +46,7 @@ impl Deref for RefDetails {
 }
 
 pub fn new_link_ref_details(title: String, uri: String) -> Result<CoreRefDetails> {
-    Ok(CoreRefDetails::Link {
-        title,
-        uri,
-    })
+    Ok(CoreRefDetails::Link { title, uri })
 }
 impl Client {
     /// create a link ref details
