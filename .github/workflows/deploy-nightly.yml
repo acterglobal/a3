@@ -324,12 +324,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           # publish this nightly release now
-          draft: true
+          draft: false
           generate_release_notes: false
           name: Nightly ${{ needs.tags.outputs.tag }}
           tag_name: nightly-${{ needs.tags.outputs.tag }}
           body_path: CHANGELOG.md
           prerelease: true
-      - uses: eregon/publish-release@v1
-        with:
-          release_id: ${{ steps.create_release.outputs.id }}
