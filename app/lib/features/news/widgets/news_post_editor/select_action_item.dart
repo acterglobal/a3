@@ -6,12 +6,14 @@ class SelectActionItem extends StatelessWidget {
   final VoidCallback onShareEventSelected;
   final VoidCallback onSharePinSelected;
   final VoidCallback onShareTaskListSelected;
+  final VoidCallback onShareLinkSelected;
 
   const SelectActionItem({
     super.key,
     required this.onShareEventSelected,
     required this.onSharePinSelected,
     required this.onShareTaskListSelected,
+    required this.onShareLinkSelected,
   });
 
   @override
@@ -38,8 +40,14 @@ class SelectActionItem extends StatelessWidget {
           context: context,
           actionIcon: Atlas.list,
           actionName: L10n.of(context).shareTaskList,
-
           onTap: onShareTaskListSelected,
+        ),
+        const SizedBox(height: 20),
+        actionItemUI(
+          context: context,
+          actionIcon: Atlas.link,
+          actionName: L10n.of(context).shareLink,
+          onTap: onShareLinkSelected,
         ),
         const SizedBox(height: 20),
       ],

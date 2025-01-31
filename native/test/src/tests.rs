@@ -13,6 +13,7 @@ mod pins;
 mod push;
 mod reaction;
 mod redact;
+mod ref_details;
 mod reply;
 mod room;
 mod rsvp;
