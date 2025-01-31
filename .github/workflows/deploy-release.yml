@@ -453,9 +453,6 @@ jobs:
       - changelog
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - uses: actions/download-artifact@v4
         with:
           name: Changelog
@@ -485,7 +482,6 @@ jobs:
           gh pr create -B main -H ci/release-$TAG --title "Releasing $TAG" --body "Release $TAG auto PR." -a gnunicorn -l minor
           gh pr merge --auto --merge --delete-branch ci/release-$TAG
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             TAG: ${{ needs.tags.outputs.tag }}
 
       - name: Release
@@ -501,7 +497,5 @@ jobs:
           prerelease: false
           files: CHANGELOG.md
       - uses: eregon/publish-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ steps.create_release.outputs.id }}
