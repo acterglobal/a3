@@ -2377,5 +2377,11 @@
   "forbidden": "Untersagt",
   "@forbidden": {},
   "allReactionsCount": "Alle {total}",
-  "@allReactionsCount": {}
+  "@allReactionsCount": {},
+  "shareLink": "Link teilen",
+  "@shareLink": {},
+  "syncThisCalendarTitle": "Im Geräte-Kalender synchronisieren",
+  "@syncThisCalendarTitle": {},
+  "syncThisCalendarDesc": "Synchronisiere diese Events im Kalender des Geräts",
+  "@syncThisCalendarDesc": {}
 }
