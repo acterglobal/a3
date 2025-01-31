@@ -54,8 +54,12 @@ class _CreateSuperInviteTokenPageConsumerState
   List<String> _roomIds = [];
 
   @override
-  void initState() async {
+  void initState() {
     super.initState();
+    _initializeToken();
+  }
+
+  Future<void> _initializeToken() async {
     final token = widget.token;
     if (token != null) {
       // given an update builder we are in an edit mode
@@ -66,8 +70,8 @@ class _CreateSuperInviteTokenPageConsumerState
       _initialDmCheck = token.createDm();
       tokenUpdater = token.updateBuilder();
     } else {
-      tokenUpdater =
-          (await ref.read(superInvitesProvider.future)).newTokenUpdater();
+      final superInvites = await ref.read(superInvitesProvider.future);
+      tokenUpdater = superInvites.newTokenUpdater();
     }
   }
 
