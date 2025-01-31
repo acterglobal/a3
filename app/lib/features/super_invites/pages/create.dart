@@ -9,7 +9,6 @@ import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
-import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -55,12 +54,8 @@ class _CreateSuperInviteTokenPageConsumerState
   List<String> _roomIds = [];
 
   @override
-  void initState()  {
+  void initState() async {
     super.initState();
-    _initializePage();
-  }
-
-  Future<void> _initializePage() async {
     final token = widget.token;
     if (token != null) {
       // given an update builder we are in an edit mode
@@ -71,8 +66,8 @@ class _CreateSuperInviteTokenPageConsumerState
       _initialDmCheck = token.createDm();
       tokenUpdater = token.updateBuilder();
     } else {
-      final superInvites = await ref.read(superInvitesProvider.future);
-      tokenUpdater = superInvites.newTokenUpdater();
+      tokenUpdater =
+          (await ref.read(superInvitesProvider.future)).newTokenUpdater();
     }
   }
 
@@ -81,9 +76,8 @@ class _CreateSuperInviteTokenPageConsumerState
     final lang = L10n.of(context);
     final spaces = List<String>.empty(growable: true);
     final chats = List<String>.empty(growable: true);
-    Room? room;
     for (final roomId in _roomIds) {
-      room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+      final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
       if (room?.isSpace() == true) {
         spaces.add(roomId);
       } else {
@@ -133,7 +127,7 @@ class _CreateSuperInviteTokenPageConsumerState
                   initialValue: _initialDmCheck,
                 ),
                 const SizedBox(height: 10),
-                ..._spacesSection(context, spaces, room?.isSpace() == true),
+                ..._spacesSection(context, spaces),
                 ..._chatsSection(context, chats),
                 const SizedBox(height: 10),
                 const Divider(),
@@ -147,9 +141,9 @@ class _CreateSuperInviteTokenPageConsumerState
     );
   }
 
-  List<Widget> _spacesSection(BuildContext context, List<String> rooms, bool isSpace) {
+  List<Widget> _spacesSection(BuildContext context, List<String> rooms) {
     final lang = L10n.of(context);
-    return _renderSection(context, lang.spaces, lang.addSpace, rooms, isSpace: isSpace, () async {
+    return _renderSection(context, lang.spaces, lang.addSpace, rooms, () async {
       final newSpace = await selectSpaceDrawer(
         context: context,
         currentSpaceId: null,
@@ -189,7 +183,6 @@ class _CreateSuperInviteTokenPageConsumerState
     String addLabel,
     List<String> rooms,
     VoidCallback onAdd,
-   {bool isSpace = false,}
   ) {
     return [
       Row(
@@ -208,7 +201,7 @@ class _CreateSuperInviteTokenPageConsumerState
       ),
       const SizedBox(height: 10),
       if (rooms.isNotEmpty)
-        _roomsList(context, rooms, isSpace)
+        _roomsList(context, rooms)
       else
         Center(
           child: OutlinedButton.icon(
@@ -220,20 +213,13 @@ class _CreateSuperInviteTokenPageConsumerState
     ];
   }
 
-  Widget _roomsList(BuildContext context, List<String> rooms, bool isSpace) {
+  Widget _roomsList(BuildContext context, List<String> rooms) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, idx) {
         final roomId = rooms[idx];
         return RoomCard(
-          onTap: () {
-            if(isSpace){
-              goToSpace(context, roomId);
-            }else{
-              goToChat(context, roomId);
-            }
-          },
           roomId: roomId,
           trailing: InkWell(
             onTap: () {
