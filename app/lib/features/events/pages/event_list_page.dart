@@ -5,6 +5,7 @@ import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_list_empty_state.dart';
 import 'package:acter/features/events/widgets/event_list_widget.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -166,42 +167,38 @@ class _EventListPageState extends ConsumerState<EventListPage> {
     }
 
     return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (eventFilters.value == EventFilters.bookmarked)
-            EventListWidget(
-              isShowSpaceName: widget.spaceId == null,
-              onTapEventItem: widget.onSelectEventItem,
-              listProvider: bookmarkedEventListProvider(widget.spaceId),
-            ),
-          if (eventFilters.value == EventFilters.all ||
-              eventFilters.value == EventFilters.ongoing)
-            EventListWidget(
-              isShowSpaceName: widget.spaceId == null,
-              onTapEventItem: widget.onSelectEventItem,
-              listProvider:
-                  allOngoingEventListWithSearchProvider(widget.spaceId),
-            ),
-          if (eventFilters.value == EventFilters.all) SizedBox(height: 20),
-          if (eventFilters.value == EventFilters.all ||
-              eventFilters.value == EventFilters.upcoming)
-            EventListWidget(
-              isShowSpaceName: widget.spaceId == null,
-              onTapEventItem: widget.onSelectEventItem,
-              listProvider:
-                  allUpcomingEventListWithSearchProvider(widget.spaceId),
-            ),
-          if (eventFilters.value == EventFilters.all) SizedBox(height: 20),
-          if (eventFilters.value == EventFilters.all ||
-              eventFilters.value == EventFilters.past)
-            EventListWidget(
-              isShowSpaceName: widget.spaceId == null,
-              onTapEventItem: widget.onSelectEventItem,
-              listProvider: allPastEventListWithSearchProvider(widget.spaceId),
-            ),
-        ],
-      ),
+      child: switch (eventFilters.value) {
+        EventFilters.bookmarked => _buildEventList(
+            bookmarkedEventListProvider(widget.spaceId),
+          ),
+        EventFilters.ongoing => _buildEventList(
+            allOngoingEventListWithSearchProvider(widget.spaceId),
+          ),
+        EventFilters.upcoming => _buildEventList(
+            allUpcomingEventListWithSearchProvider(widget.spaceId),
+          ),
+        EventFilters.past => _buildEventList(
+            allPastEventListWithSearchProvider(widget.spaceId),
+          ),
+        EventFilters.all => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildEventList(allOngoingEventListWithSearchProvider(widget.spaceId)),
+              const SizedBox(height: 14),
+              _buildEventList(allUpcomingEventListWithSearchProvider(widget.spaceId)),
+              const SizedBox(height: 14),
+              _buildEventList(allPastEventListWithSearchProvider(widget.spaceId)),
+            ],
+          ),
+      },
+    );
+  }
+
+  Widget _buildEventList(ProviderBase<AsyncValue<List<CalendarEvent>>> provider) {
+    return EventListWidget(
+      isShowSpaceName: widget.spaceId == null,
+      onTapEventItem: widget.onSelectEventItem,
+      listProvider: provider,
     );
   }
 }
