@@ -1,6 +1,5 @@
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/bookmarks/types.dart';
-import 'package:acter/features/bookmarks/util.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/actions/sort_event_list.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
@@ -42,6 +41,26 @@ final allEventListProvider =
   ),
 );
 
+final isEmptyEventList = FutureProvider.autoDispose.family<bool, String?>(
+  (ref, spaceId) async {
+    final allEvents = await ref.watch(_allEventListProvider(spaceId).future);
+    return allEvents.isEmpty;
+  },
+);
+
+final allEventSorted =
+    FutureProvider.autoDispose.family<List<ffi.CalendarEvent>, String?>(
+  (ref, spaceId) async =>
+      (await ref.watch(allOngoingEventListProvider(spaceId).future))
+          .followedBy(
+            await ref.watch(allUpcomingEventListProvider(spaceId).future),
+          )
+          .followedBy(
+            await ref.watch(allPastEventListProvider(spaceId).future),
+          )
+          .toList(),
+);
+
 //ALL ONGOING EVENTS
 final bookmarkedEventListProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
@@ -64,6 +83,19 @@ final allOngoingEventListProvider = FutureProvider.autoDispose
       )
       .toList();
   return sortEventListAscTime(allOngoingEventList);
+});
+
+//ALL ONGOING EVENTS
+final allOngoingEventListWithSearchProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
+  final allEventList =
+      await ref.watch(allOngoingEventListProvider(spaceId).future);
+  final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
+  final eventList = _filterEventBySearchTerm(
+    searchTerm,
+    allEventList,
+  );
+  return sortEventListAscTime(eventList);
 });
 
 //MY ONGOING EVENTS
@@ -94,6 +126,19 @@ final allUpcomingEventListProvider = FutureProvider.autoDispose
   return sortEventListAscTime(allUpcomingEventList);
 });
 
+//ALL UPCOMING EVENTS
+final allUpcomingEventListWithSearchProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
+  final allEventList =
+      await ref.watch(allUpcomingEventListProvider(spaceId).future);
+  final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
+  final eventList = _filterEventBySearchTerm(
+    searchTerm,
+    allEventList,
+  );
+  return sortEventListAscTime(eventList);
+});
+
 //MY UPCOMING EVENTS
 final myUpcomingEventListProvider = FutureProvider.autoDispose
     .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
@@ -120,6 +165,19 @@ final allPastEventListProvider = FutureProvider.autoDispose
       )
       .toList();
   return sortEventListDscTime(allPastEventList);
+});
+
+//ALL PAST EVENTS
+final allPastEventListWithSearchProvider = FutureProvider.autoDispose
+    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
+  final allEventList =
+      await ref.watch(allPastEventListProvider(spaceId).future);
+  final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
+  final eventList = _filterEventBySearchTerm(
+    searchTerm,
+    allEventList,
+  );
+  return sortEventListAscTime(eventList);
 });
 
 //MY PAST EVENTS
@@ -188,52 +246,11 @@ final eventListQuickSearchedProvider =
     FutureProvider.autoDispose<List<ffi.CalendarEvent>>((ref) async {
   final searchTerm = ref.watch(quickSearchValueProvider);
 
-  final priotizeBookmarkedEvents = await priotizeBookmarked(
-    ref,
-    BookmarkType.events,
-    await ref.watch(allEventListProvider(null).future),
-    getId: (t) => t.eventId().toString(),
-  );
+  // Fetch the full list of events
+  final allEventList = await ref.watch(allEventSorted(null).future);
 
   return _filterEventBySearchTerm(
     searchTerm,
-    priotizeBookmarkedEvents,
-  );
-});
-
-final eventListSearchedAndFilterProvider = FutureProvider.autoDispose
-    .family<List<ffi.CalendarEvent>, String?>((ref, spaceId) async {
-  //Declare filtered event list
-
-  final List<ffi.CalendarEvent> filteredEventList =
-      switch (ref.watch(eventListFilterProvider(spaceId))) {
-    EventFilters.bookmarked =>
-      await ref.watch(bookmarkedEventListProvider(spaceId).future),
-    EventFilters.ongoing =>
-      await ref.watch(allOngoingEventListProvider(spaceId).future),
-    EventFilters.upcoming =>
-      await ref.watch(allUpcomingEventListProvider(spaceId).future),
-    EventFilters.past =>
-      await ref.watch(allPastEventListProvider(spaceId).future),
-    EventFilters.all =>
-      (await ref.watch(allOngoingEventListProvider(spaceId).future))
-          .followedBy(
-            await ref.watch(allUpcomingEventListProvider(spaceId).future),
-          )
-          .followedBy(await ref.watch(allPastEventListProvider(spaceId).future))
-          .toList(),
-  };
-
-  final priotizeBookmarkedEvents = await priotizeBookmarked(
-    ref,
-    BookmarkType.events,
-    filteredEventList,
-    getId: (t) => t.eventId().toString(),
-  );
-
-  final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
-  return _filterEventBySearchTerm(
-    searchTerm,
-    priotizeBookmarkedEvents,
+    allEventList,
   );
 });
