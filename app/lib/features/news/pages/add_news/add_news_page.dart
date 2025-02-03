@@ -192,7 +192,12 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       padding: const EdgeInsets.only(bottom: 90),
       child: FloatingActionButton(
         key: NewsUpdateKeys.newsSubmitBtn,
-        onPressed: () => context.push(Routes.actionAddUpdatePostTo.name),
+        onPressed: () => context.pushNamed(
+          Routes.actionAddUpdatePostTo.name,
+          queryParameters: {
+            'spaceId': widget.initialSelectedSpace,
+          },
+        ),
         child: const Icon(Icons.send),
       ),
     );
