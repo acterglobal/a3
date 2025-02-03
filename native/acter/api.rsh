@@ -64,7 +64,6 @@ fn new_display_builder() -> DisplayBuilder;
 /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
 fn new_obj_ref_builder(position: Option<string>, reference: RefDetails) -> Result<ObjRefBuilder>;
 
-
 //  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
 //  ##     ## ##     ##  ##  ###   ###  ##     ##     ##  ##     ## ##       ##    ## 
 //  ##     ## ##     ##  ##  #### ####  ##     ##     ##  ##     ## ##       ##       
@@ -1218,15 +1217,31 @@ object Room {
     /// set name of the room
     fn set_name(name: string) -> Future<Result<EventId>>;
 
-    /// whether or not the user has already seen the suggested
-    /// children
-    fn user_has_seen_suggested() -> Future<Result<bool>>;
-
-    /// Set the value of `user_has_seen_suggested` for this room
-    fn set_user_has_seen_suggested(newValue: bool) -> Future<Result<bool>>;
-
     /// leave this room
     fn leave() -> Future<Result<bool>>;
+
+    /// user settings for this room
+    fn user_settings() -> Future<Result<UserRoomSettings>>;
+}
+
+object UserRoomSettings {
+
+    /// whether or not the user has already seen the suggested
+    /// children
+    fn has_seen_suggested() -> bool;
+
+    /// Set the value of `has_seen_suggested` for this room
+    fn set_has_seen_suggested(newValue: bool) -> Future<Result<bool>>;
+
+    /// whether or not the user wants to include this in the 
+    /// calendar sync
+    fn include_cal_sync() -> bool;
+
+    /// Set the value of `include_cal_sync` for this room
+    fn set_include_cal_sync(newValue: bool) -> Future<Result<bool>>;
+
+    /// Trigger when this object needs to be refreshed
+    fn subscribe_stream() -> Stream<bool>;
 }
 
 
@@ -3119,6 +3134,11 @@ object Client {
 
     /// Room preview
     fn room_preview(room_id_or_alias: string, server_names: VecStringBuilder) -> Future<Result<RoomPreview>>;
+
+
+    /// create a link ref details
+    fn new_link_ref_details(title: string, uri: string) -> Result<RefDetails>;
+
 }
 
 object NotificationSettings {

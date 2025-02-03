@@ -20,15 +20,3 @@ String _toCamelCase(String s) {
   words[0] = words[0].toLowerCase();
   return words.join();
 }
-
-class NewsReferencesModel {
-  NewsReferencesType type;
-  String? id;
-  String? title;
-
-  NewsReferencesModel({
-    required this.type,
-    this.title,
-    this.id,
-  });
-}

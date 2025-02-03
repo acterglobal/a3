@@ -445,7 +445,7 @@ jobs:
 
       - name: Release
         if: ${{! matrix.exclude_from_release && inputs.release }}
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           draft: true
           name: ${{ inputs.release_title }}
@@ -460,7 +460,6 @@ jobs:
         if: ${{ inputs.release && failure() && steps.skipper.outputs.skipped != 'true' }}
         uses: JasonEtco/create-an-issue@v2
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ inputs.version }}
           NAME: ${{matrix.name}}
           FAILED_RUN_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}

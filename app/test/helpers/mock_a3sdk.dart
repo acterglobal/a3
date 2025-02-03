@@ -115,7 +115,26 @@ class MockAsyncConvoNotifier extends AsyncConvoNotifier {
 //
 //  --- Calendar --
 //
-class MockCalendarEvent extends Mock implements CalendarEvent {}
+class MockOptionRsvpStatus extends Mock implements OptionRsvpStatus {
+  final RsvpStatus? inner;
+  MockOptionRsvpStatus(this.inner);
+
+  @override
+  RsvpStatus? status() => inner;
+
+  @override
+  String? statusStr() => inner?.toString();
+}
+
+class MockCalendarEvent extends Mock implements CalendarEvent {
+  final RsvpStatus? rsvpStatus;
+
+  MockCalendarEvent({required this.rsvpStatus});
+
+  @override
+  Future<MockOptionRsvpStatus> respondedByMe() async =>
+      MockOptionRsvpStatus(rsvpStatus);
+}
 
 class MockEventId extends Mock implements EventId {
   final String id;
@@ -147,11 +166,15 @@ class MockUtcDateTime extends Mock implements UtcDateTime {
 
 const hourInMilliSeconds = 3600000;
 
-List<MockCalendarEvent> generateMockCalendarEvents([int count = 1]) =>
+List<MockCalendarEvent> generateMockCalendarEvents({
+  int count = 1,
+  String? roomId,
+  RsvpStatus? rsvpStatus,
+}) =>
     List.generate(count, (idx) {
-      final eventA = MockCalendarEvent();
+      final eventA = MockCalendarEvent(rsvpStatus: rsvpStatus);
       when(eventA.title).thenReturn('Event $idx');
-      when(eventA.eventId).thenReturn(MockEventId(id: 'event-$idx-id'));
+      when(eventA.eventId).thenReturn(MockEventId(id: '$roomId-event-$idx-id'));
       when(eventA.description)
           .thenReturn(MockTextMessageContent(textBody: 'event $idx body'));
       final millisecondsBase = DateTime.now().millisecondsSinceEpoch +
@@ -163,5 +186,8 @@ List<MockCalendarEvent> generateMockCalendarEvents([int count = 1]) =>
         MockUtcDateTime(millis: millisecondsBase + hourInMilliSeconds),
         // event takes one hour
       );
+      if (roomId != null) {
+        when(eventA.roomIdStr).thenReturn(roomId);
+      }
       return eventA;
     });

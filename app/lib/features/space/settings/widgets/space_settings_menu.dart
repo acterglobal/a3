@@ -1,6 +1,10 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/calendar_sync/actions/set_room_sync_preference.dart';
+import 'package:acter/features/calendar_sync/providers/events_to_sync_provider.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -110,6 +114,25 @@ class SpaceSettingsMenu extends ConsumerWidget {
                       }
                     },
                   ),
+                  if (ref
+                      .watch(isActiveProvider(LabsFeature.deviceCalendarSync)))
+                    SettingsTile.switchTile(
+                      initialValue: ref
+                              .watch(shouldSyncRoomProvider(spaceId))
+                              .valueOrNull ??
+                          true,
+                      leading: const Icon(Atlas.calendar_dots_thin),
+                      onToggle: (newVal) {
+                        setRoomSyncPreference(
+                          ref,
+                          L10n.of(context),
+                          spaceId,
+                          newVal,
+                        );
+                      },
+                      title: Text(L10n.of(context).syncThisCalendarTitle),
+                      description: Text(L10n.of(context).syncThisCalendarDesc),
+                    ),
                 ],
               ),
               SettingsSection(

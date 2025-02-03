@@ -3,7 +3,9 @@ import 'package:acter/common/widgets/event/event_selector_drawer.dart';
 import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/common/widgets/task/taskList_selector_drawer.dart';
+import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/model/news_post_color_data.dart';
 import 'package:acter/features/news/model/news_post_state.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -11,6 +13,7 @@ import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:riverpod/riverpod.dart';
 
 final newsStateProvider =
@@ -85,6 +88,21 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
     selectedNewsSlide?.refDetails = refDetails;
     state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+  }
+  Future<void> enterLinkToShare(BuildContext context) async {
+    showAddEditLinkBottomSheet(
+      context: context,
+      bottomSheetTitle: L10n.of(context).addLink,
+      onSave: (title, link) async {
+        Navigator.pop(context);
+        final client = await ref.read(alwaysClientProvider.future);
+        RefDetails refDetails = client.newLinkRefDetails(title, link);
+        NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
+        selectedNewsSlide?.refDetails = refDetails;
+        state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+      },
+    );
+
   }
 
   void changeTextSlideValue(String body, String? html) {

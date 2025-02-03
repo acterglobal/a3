@@ -288,7 +288,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.events => EventListWidget(
           isShowSpaceName: false,
           showSectionHeader: true,
-          listProvider: allEventListProvider(widget.spaceId),
+          listProvider: allEventSorted(widget.spaceId),
           limit: 3,
           onClickSectionHeader: () => context.pushNamed(
             Routes.spaceEvents.name,

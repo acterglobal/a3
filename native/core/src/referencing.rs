@@ -87,8 +87,10 @@ pub enum ExecuteReference {
     Index(IndexKey),
     Model(OwnedEventId),
     Room(OwnedRoomId),
+    RoomAccountData(OwnedRoomId, Cow<'static, str>),
     ModelParam(OwnedEventId, ModelParam),
     RoomParam(OwnedRoomId, RoomParam),
+    AccountData(Cow<'static, str>),
     ModelType(Cow<'static, str>),
 }
 
@@ -103,10 +105,18 @@ impl ExecuteReference {
                 format!("{owned_room_id}::{room_param}")
             }
             // not actually supported
+            ExecuteReference::ModelType(model_type) => model_type.to_string(),
             ExecuteReference::Index(_index_key) => todo!(),
             ExecuteReference::Room(_owned_room_id) => todo!(),
-            ExecuteReference::ModelType(model_type) => model_type.to_string(),
+            ExecuteReference::RoomAccountData(_owned_room_id, _cow) => todo!(),
+            ExecuteReference::AccountData(_cow) => todo!(),
         }
+    }
+}
+
+impl From<&'static str> for ExecuteReference {
+    fn from(value: &'static str) -> Self {
+        ExecuteReference::ModelType(Cow::Borrowed(value))
     }
 }
 
