@@ -1,0 +1,1 @@
+- [improvement] : - Added a "Try Again" button to reload the video and image while boost video or image failed to load, also improved the error message for better clarity and user experience.
