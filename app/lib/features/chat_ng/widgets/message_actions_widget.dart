@@ -48,7 +48,7 @@ class MessageActionsWidget extends ConsumerWidget {
   ) =>
       [
         makeMenuItem(
-          pressed: () {
+          pressed: () async {
             ref.read(chatEditorStateProvider.notifier).setReplyToMessage(item);
             Navigator.pop(context);
           },
@@ -68,7 +68,7 @@ class MessageActionsWidget extends ConsumerWidget {
               size: 14,
             ),
           ),
-        if (isMe)
+        if (isMe && item.msgType() == 'm.text')
           makeMenuItem(
             pressed: () {
               ref.read(chatEditorStateProvider.notifier).setEditMessage(item);

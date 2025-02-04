@@ -39,7 +39,6 @@ class ChatEditor extends ConsumerStatefulWidget {
 class _ChatEditorState extends ConsumerState<ChatEditor> {
   EditorState textEditorState = EditorState.blank();
   late EditorScrollController scrollController;
-  FocusNode chatFocus = FocusNode();
   StreamSubscription<(TransactionTime, Transaction)>? _updateListener;
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
   double _cHeight = 0.10;
@@ -62,10 +61,24 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
 
     ref.listenManual(chatEditorStateProvider, (prev, next) async {
+      final body = textEditorState.intoMarkdown();
+      final bodyHtml = textEditorState.intoHtml();
       if (next.isEditing &&
           (next.actionType != prev?.actionType ||
               next.selectedMsgItem != prev?.selectedMsgItem)) {
         _handleEditing(next.selectedMsgItem);
+      }
+      if (next.isReplying &&
+          (next.actionType != prev?.actionType ||
+              next.selectedMsgItem != prev?.selectedMsgItem)) {
+        textEditorState.updateSelectionWithReason(
+          Selection.single(
+            path: [0],
+            startOffset: textEditorState.intoMarkdown().length - 1,
+          ),
+          reason: SelectionUpdateReason.uiEvent,
+        );
+        saveMsgDraft(body, bodyHtml, widget.roomId, ref);
       }
     });
   }
@@ -116,7 +129,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       // save composing draft
       final text = textEditorState.intoMarkdown();
       final htmlText = textEditorState.intoHtml();
-
       await saveMsgDraft(text, htmlText, widget.roomId, ref);
       _log.info('compose draft saved for room: ${widget.roomId}');
     });
@@ -138,13 +150,13 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   Future<void> _loadDraft() async {
     final draft =
         await ref.read(chatComposerDraftProvider(widget.roomId).future);
-    if (draft != null) {
-      final body = draft.plainText();
-      if (body.trim().isEmpty) return;
 
+    if (draft != null) {
       final chatEditorState = ref.read(chatEditorStateProvider.notifier);
       chatEditorState.unsetActions();
       textEditorState.clear();
+
+      final body = draft.plainText();
       draft.eventId().map((eventId) {
         final draftType = draft.draftType();
         final msgsList =
@@ -152,9 +164,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         try {
           final roomMsg = msgsList[eventId];
           final item = roomMsg?.eventItem();
-
           if (item == null) return;
-
           if (draftType == 'edit') {
             chatEditorState.setEditMessage(item);
           } else if (draftType == 'reply') {
@@ -165,6 +175,8 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
           return;
         }
       });
+
+      if (body.trim().isEmpty) return;
 
       final transaction = textEditorState.transaction;
       final docNode = textEditorState.getNodeAtPath([0]);
@@ -301,27 +313,24 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     );
   }
 
-  Widget _renderEditor(String? hintText) => Focus(
-        focusNode: chatFocus,
-        child: HtmlEditor(
-          footer: null,
-          // if provided, will activate mentions
-          roomId: widget.roomId,
-          hintText: hintText,
-          autoFocus: false,
-          editable: true,
-          shrinkWrap: true,
-          editorState: textEditorState,
-          scrollController: scrollController,
-          editorPadding: const EdgeInsets.symmetric(horizontal: 10),
-          onChanged: (body, html) {
-            if (html != null) {
-              widget.onTyping?.map((cb) => cb(html.isNotEmpty));
-            } else {
-              widget.onTyping?.map((cb) => cb(body.isNotEmpty));
-            }
-          },
-        ),
+  Widget _renderEditor(String? hintText) => HtmlEditor(
+        footer: null,
+        // if provided, will activate mentions
+        roomId: widget.roomId,
+        hintText: hintText,
+        autoFocus: false,
+        editable: true,
+        shrinkWrap: true,
+        editorState: textEditorState,
+        scrollController: scrollController,
+        editorPadding: const EdgeInsets.symmetric(horizontal: 10),
+        onChanged: (body, html) {
+          if (html != null) {
+            widget.onTyping?.map((cb) => cb(html.isNotEmpty));
+          } else {
+            widget.onTyping?.map((cb) => cb(body.isNotEmpty));
+          }
+        },
       );
 
   // attachment/send button
