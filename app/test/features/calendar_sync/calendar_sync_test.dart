@@ -15,6 +15,7 @@ import '../../helpers/mock_a3sdk.dart';
 
 import 'package:mocktail/mocktail.dart';
 
+import '../../helpers/mock_client_provider.dart';
 import '../../helpers/mock_event_providers.dart';
 import '../../helpers/mock_room_providers.dart';
 
@@ -148,7 +149,7 @@ void main() {
         overrides: [
           utcNowProvider.overrideWith((ref) => MockUtcNowNotifier()),
           allEventListProvider.overrideWith((r, a) => events),
-          alwaysClientProvider.overrideWith((ref) => client),
+          clientProvider.overrideWith(() => MockClientNotifier(client: client)),
           maybeRoomProvider.overrideWith(
             () => MockAlwaysTheSameRoomNotifier(
               room: mockRoom,
@@ -200,7 +201,7 @@ void main() {
         overrides: [
           utcNowProvider.overrideWith((ref) => MockUtcNowNotifier()),
           allEventListProvider.overrideWith((r, a) => events),
-          alwaysClientProvider.overrideWith((ref) => client),
+          clientProvider.overrideWith(() => MockClientNotifier(client: client)),
           maybeRoomProvider.overrideWith(
             () => MockAsyncMaybeRoomNotifier(
               items: {'roomA': roomA, 'roomB': roomB, 'roomC': roomC},
