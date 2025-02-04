@@ -66,7 +66,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         setState(() {
           selectedNewsPost = nextSlide;
           if (!document.isEmpty) {
+            // If the slide has content, update the editor state with it
             textEditorState = EditorState(document: document);
+          } else {
+            // If no content, create a blank editor state
+            textEditorState = EditorState.blank();
           }
         });
 
