@@ -31,8 +31,11 @@ class MockChatEditorNotifier extends AutoDisposeNotifier<ChatEditorState>
 void main() {
   group('Chat editor reply/edit preview tests', () {
     final mockMsgContent = MockMsgContent(bodyText: 'Test Content Message');
-    final mockEventItem =
-        MockRoomEventItem(mockSender: 'user-1', mockMsgContent: mockMsgContent);
+    final mockEventItem = MockRoomEventItem(
+      mockSender: 'user-1',
+      mockMsgContent: mockMsgContent,
+      mockMsgType: 'm.text',
+    );
     final roomMsg1 =
         MockRoomMessage(id: 'test-messageId-1', mockEventItem: mockEventItem);
 
@@ -128,9 +131,7 @@ void main() {
 
         // initial state
         final element = tester.element(find.byType(ChatEditor));
-
         final container = ProviderScope.containerOf(element);
-
         final initialState = container.read(chatEditorStateProvider);
         expect(initialState.actionType, equals(MessageAction.none));
         expect(initialState.selectedMsgItem, isNull);

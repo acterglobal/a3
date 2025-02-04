@@ -12,6 +12,7 @@ Future<void> reportMessageAction(
 ) async {
   final lang = L10n.of(context);
   final senderId = item.sender();
+  // pop message action options
   Navigator.pop(context);
   await openReportContentDialog(
     context,
