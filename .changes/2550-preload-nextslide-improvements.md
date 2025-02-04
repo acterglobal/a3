@@ -1,0 +1,1 @@
+- [improvement] : Accelerate slide transitions and minimize loading delays while navigating between slides, ensuring smooth horizontal and vertical navigation for users.
