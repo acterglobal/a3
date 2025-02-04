@@ -9,6 +9,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:carousel_indicator/carousel_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 
 class NewsItem extends ConsumerStatefulWidget {
   final NewsEntry news;
@@ -21,6 +22,20 @@ class NewsItem extends ConsumerStatefulWidget {
 
 class _NewsItemState extends ConsumerState<NewsItem> {
   final ValueNotifier<int> currentSlideIndex = ValueNotifier(0);
+  PreloadPageController? _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PreloadPageController(initialPage: currentSlideIndex.value);
+  }
+
+  @override
+  void dispose() {
+    _pageController?.dispose();
+    _pageController = null;
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -43,10 +58,12 @@ class _NewsItemState extends ConsumerState<NewsItem> {
   }
 
   Widget buildSlidesUI(List<NewsSlide> slides) {
-    return PageView.builder(
+    return PreloadPageView.builder(
+      controller: _pageController,
       scrollDirection: Axis.horizontal,
       itemCount: slides.length,
-      onPageChanged: (page) => currentSlideIndex.value = page,
+      preloadPagesCount: slides.length,
+      onPageChanged: (page) =>  currentSlideIndex.value = page,
       itemBuilder: (context, index) => NewsSlideItem(slide: slides[index]),
     );
   }
