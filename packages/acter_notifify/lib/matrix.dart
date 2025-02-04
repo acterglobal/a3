@@ -55,6 +55,7 @@ Future<bool> handleMatrixMessage(
       'getting notification from message failed: %s - %s',
       params: [error, message],
     );
+    return false;
   }
   _log.info('got a notification');
 
