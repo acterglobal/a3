@@ -1,6 +1,7 @@
 use acter_core::{
     events::{
         news::{FallbackNewsContent, NewsContent},
+        rsvp::RsvpStatus,
         AnyActerEvent, SyncAnyActerEvent, UtcDateTime,
     },
     models::{ActerModel, AnyActerModel},
@@ -48,7 +49,7 @@ use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use urlencoding::encode;
 
-use crate::Client;
+use crate::{Client, Rsvp};
 
 use crate::{api::api::FfiBuffer, MsgContent, RoomMessage, RUNTIME};
 
@@ -326,6 +327,14 @@ pub enum NotificationItemInner {
         event_id: OwnedEventId,
         new_date: UtcDateTime,
     },
+    // event specific
+    Rsvp {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+        rsvp: RsvpStatus,
+    },
     // catch-all for other object changes
     OtherChanges {
         parent_obj: Option<NotificationItemParent>,
@@ -354,6 +363,12 @@ impl NotificationItemInner {
             NotificationItemInner::TitleChange { .. } => "titleChange",
             NotificationItemInner::DescriptionChange { .. } => "descriptionChange",
             NotificationItemInner::EventDateChange { .. } => "eventDateChange",
+
+            NotificationItemInner::Rsvp { rsvp, .. } => match rsvp {
+                RsvpStatus::Yes => "rsvpYes",
+                RsvpStatus::Maybe => "rsvpMaybe",
+                RsvpStatus::No => "rsvpNo",
+            },
             NotificationItemInner::OtherChanges { .. } => "otherChanges",
         }
         .to_owned()
@@ -381,6 +396,10 @@ impl NotificationItemInner {
                 ..
             }
             | NotificationItemInner::EventDateChange {
+                parent_obj: Some(parent_obj),
+                ..
+            }
+            | NotificationItemInner::Rsvp {
                 parent_obj: Some(parent_obj),
                 ..
             }
@@ -417,6 +436,12 @@ impl NotificationItemInner {
                 ..
             }
             | NotificationItemInner::EventDateChange {
+                parent_id,
+                room_id,
+                event_id,
+                ..
+            }
+            | NotificationItemInner::Rsvp {
                 parent_id,
                 room_id,
                 event_id,
@@ -464,6 +489,7 @@ impl NotificationItemInner {
             NotificationItemInner::TitleChange { parent_obj, .. }
             | NotificationItemInner::DescriptionChange { parent_obj, .. }
             | NotificationItemInner::EventDateChange { parent_obj, .. }
+            | NotificationItemInner::Rsvp { parent_obj, .. }
             | NotificationItemInner::OtherChanges { parent_obj, .. } => parent_obj.clone(),
             NotificationItemInner::Comment { parent_obj, .. }
             | NotificationItemInner::Reaction { parent_obj, .. } => parent_obj.clone(),
@@ -476,6 +502,7 @@ impl NotificationItemInner {
             NotificationItemInner::TitleChange { parent_id, .. }
             | NotificationItemInner::DescriptionChange { parent_id, .. }
             | NotificationItemInner::EventDateChange { parent_id, .. }
+            | NotificationItemInner::Rsvp { parent_id, .. }
             | NotificationItemInner::OtherChanges { parent_id, .. } => Some(parent_id.to_string()),
             NotificationItemInner::Comment { parent_id, .. }
             | NotificationItemInner::Reaction { parent_id, .. } => Some(parent_id.to_string()),
@@ -913,6 +940,29 @@ impl NotificationItem {
                         })
                         .build()?);
                 }
+            }
+
+            // ---- Event
+            AnyActerEvent::Rsvp(MessageLikeEvent::Original(e)) => {
+                let parent_obj = client
+                    .store()
+                    .get(&e.content.to.event_id)
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of comment");
+                    })
+                    .ok()
+                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
+
+                Ok(builder
+                    .inner(NotificationItemInner::Rsvp {
+                        parent_obj,
+                        parent_id: e.content.to.event_id,
+                        room_id: e.room_id,
+                        event_id: e.event_id,
+                        rsvp: e.content.status,
+                    })
+                    .build()?)
             }
 
             // --- Task listss
