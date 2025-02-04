@@ -124,7 +124,7 @@ class ChatEditorActionsPreview extends ConsumerWidget {
         ),
         const Spacer(),
         GestureDetector(
-          onTap: () {
+          onTap: () async {
             ref.read(chatEditorStateProvider.notifier).unsetActions();
             // closing editing action, also clear the editor
             textEditorState.clear();

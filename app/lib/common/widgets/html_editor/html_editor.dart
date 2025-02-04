@@ -52,12 +52,13 @@ extension ActerEditorStateHelpers on EditorState {
   /// clear the editor text with selection
   void clear() async {
     if (!document.isEmpty) {
-      final node = getNodeAtPath([0]);
       final transaction = this.transaction;
       final selection = this.selection;
-      if (node == null) return;
-      transaction.deleteText(node, 0, node.delta?.length ?? 0);
-      await updateSelectionWithReason(
+      final node = transaction.document.root.children.last;
+      transaction.deleteNode(node);
+      transaction.insertNode([0], paragraphNode(text: ''));
+
+      updateSelectionWithReason(
         selection,
         reason: SelectionUpdateReason.transaction,
       );
@@ -222,6 +223,7 @@ class HtmlEditorState extends State<HtmlEditor> {
   void _triggerExport(ExportCallback exportFn) {
     final plain = editorState.intoMarkdown();
     final htmlBody = editorState.intoHtml();
+
     exportFn(plain, htmlBody != plain ? htmlBody : null);
   }
 
