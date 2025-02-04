@@ -56,19 +56,12 @@ Future<void> sendMessageAction({
     }
 
     ref.read(chatInputProvider.notifier).messageSent();
-    final transaction = textEditorState.transaction;
-    final nodes = transaction.document.root.children;
-    // delete all nodes of document (reset)
-    transaction.document.delete([0], nodes.length);
-    final delta = Delta()..insert('');
-    // insert empty text node
-    transaction.document.insert([0], [paragraphNode(delta: delta)]);
-    await textEditorState.apply(transaction, withUpdateSelection: false);
-    // FIXME: works for single line text, but doesn't get focus on multi-line (iOS)
-    textEditorState.moveCursorForward(SelectionMoveRange.line);
+    textEditorState.clear();
 
     // also clear composed state
     final convo = await ref.read(chatProvider(roomId).future);
+    final notifier = ref.read(chatEditorStateProvider.notifier);
+    notifier.unsetActions();
     if (convo != null) {
       await convo.saveMsgDraft(
         textEditorState.intoMarkdown(),

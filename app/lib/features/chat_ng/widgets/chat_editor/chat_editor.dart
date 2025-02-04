@@ -155,7 +155,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       final chatEditorState = ref.read(chatEditorStateProvider.notifier);
       chatEditorState.unsetActions();
       textEditorState.clear();
-
       final body = draft.plainText();
       draft.eventId().map((eventId) {
         final draftType = draft.draftType();

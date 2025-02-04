@@ -23,7 +23,8 @@ Future<void> redactMessageAction(
   final chatEditorNotifier = ref.watch(chatEditorStateProvider.notifier);
   final lang = L10n.of(context);
   final senderId = item.sender();
-
+  // pop message action options
+  Navigator.pop(context);
   await showAdaptiveDialog(
     context: context,
     builder: (context) => DefaultDialog(
@@ -47,8 +48,6 @@ Future<void> redactMessageAction(
               chatEditorNotifier.unsetActions();
               if (context.mounted) {
                 Navigator.pop(context);
-                // dismiss actions overlay also
-                Navigator.pop(context);
               }
             } catch (e, s) {
               _log.severe('Redacting message failed', e, s);
@@ -57,8 +56,6 @@ Future<void> redactMessageAction(
                 lang.redactionFailed(e),
                 duration: const Duration(seconds: 3),
               );
-              Navigator.pop(context);
-              // dismiss actions overlay also
               Navigator.pop(context);
             }
           },

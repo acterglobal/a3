@@ -48,7 +48,8 @@ final animatedListChatMessagesProvider =
 final renderableChatMessagesProvider =
     StateProvider.autoDispose.family<List<String>, String>((ref, roomId) {
   final msgList = ref.watch(
-      chatMessagesStateProvider(roomId).select((value) => value.messageList));
+    chatMessagesStateProvider(roomId).select((value) => value.messageList),
+  );
   if (ref.watch(showHiddenMessages)) {
     // do not apply filters
     return msgList;
