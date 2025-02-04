@@ -27619,17 +27619,6 @@ class Api {
           _NotificationItemTargetUrlReturn Function(
             int,
           )>();
-  late final _notificationItemReactionKeyPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemReactionKeyReturn Function(
-            ffi.IntPtr,
-          )>>("__NotificationItem_reaction_key");
-
-  late final _notificationItemReactionKey =
-      _notificationItemReactionKeyPtr.asFunction<
-          _NotificationItemReactionKeyReturn Function(
-            int,
-          )>();
   late final _notificationItemBodyPtr = _lookup<
       ffi.NativeFunction<
           _NotificationItemBodyReturn Function(
@@ -27720,6 +27709,27 @@ class Api {
           _NotificationItemRoomInviteStrReturn Function(
             int,
           )>();
+  late final _notificationItemReactionKeyPtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemReactionKeyReturn Function(
+            ffi.IntPtr,
+          )>>("__NotificationItem_reaction_key");
+
+  late final _notificationItemReactionKey =
+      _notificationItemReactionKeyPtr.asFunction<
+          _NotificationItemReactionKeyReturn Function(
+            int,
+          )>();
+  late final _notificationItemNewDatePtr = _lookup<
+      ffi.NativeFunction<
+          _NotificationItemNewDateReturn Function(
+            ffi.IntPtr,
+          )>>("__NotificationItem_new_date");
+
+  late final _notificationItemNewDate = _notificationItemNewDatePtr.asFunction<
+      _NotificationItemNewDateReturn Function(
+        int,
+      )>();
   late final _pusherIsEmailPusherPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -57257,39 +57267,6 @@ class NotificationItem {
     return tmp2;
   }
 
-  String? reactionKey() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemReactionKey(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
   MsgContent? body() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -57474,6 +57451,59 @@ class NotificationItem {
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// reaction specific: the reaction key used
+  String? reactionKey() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemReactionKey(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the date on eventDateChange (started or ended) or taskDueDateChane
+  UtcDateTime? newDate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemNewDate(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = UtcDateTime._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -65941,17 +65971,6 @@ class _NotificationItemTargetUrlReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _NotificationItemReactionKeyReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
 class _NotificationItemBodyReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -65990,6 +66009,24 @@ class _NotificationItemRoomInviteStrReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+}
+
+class _NotificationItemReactionKeyReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _NotificationItemNewDateReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
 }
 
 class _PusherPushkeyReturn extends ffi.Struct {
