@@ -396,6 +396,7 @@ class HtmlEditorState extends State<HtmlEditor> {
                   ...standardCharacterShortcutEvents,
                   if (roomId != null) ...mentionShortcuts(context, roomId),
                 ],
+                disableAutoScroll: true,
               ),
             ),
           ),

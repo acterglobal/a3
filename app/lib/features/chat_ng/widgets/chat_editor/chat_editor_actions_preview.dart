@@ -17,6 +17,8 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:intl/intl.dart';
 
 class ChatEditorActionsPreview extends ConsumerWidget {
+  static const closePreviewKey = Key('chat-editor-actions-close');
+
   final EditorState textEditorState;
   final RoomEventItem msgItem;
   final String roomId;
@@ -31,12 +33,22 @@ class ChatEditorActionsPreview extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chatEditorState = ref.watch(chatEditorStateProvider);
+    final memberAvatar = ref.watch(
+      memberAvatarInfoProvider((userId: msgItem.sender(), roomId: roomId)),
+    );
     final children = <Widget>[];
     if (chatEditorState.isReplying) {
-      children.add(_buildRepliedToMsgView(context, ref));
+      children.add(
+        _buildPreviewView(
+          context,
+          ref,
+          replyPreviewItems(context, memberAvatar),
+        ),
+      );
       children.add(_buildRepliedToItem(context, msgItem));
     } else if (chatEditorState.isEditing) {
-      children.add(_buildEditView(context, ref));
+      children
+          .add(_buildPreviewView(context, ref, editPreviewItems(context, ref)));
       // add a bit space for clean UI
       children.add(const SizedBox(height: 12));
     }
@@ -67,13 +79,36 @@ class ChatEditorActionsPreview extends ConsumerWidget {
     );
   }
 
-  Widget _buildRepliedToMsgView(BuildContext context, WidgetRef ref) {
-    final authorId = msgItem.sender();
-    final memberAvatar = ref.watch(
-      memberAvatarInfoProvider((userId: authorId, roomId: roomId)),
-    );
+  Widget _buildPreviewView(
+    BuildContext context,
+    WidgetRef ref,
+    List<Widget> previewItems,
+  ) {
     return Row(
       children: [
+        const SizedBox(width: 1),
+        ...previewItems,
+        GestureDetector(
+          key: closePreviewKey,
+          onTap: () {
+            final isEdit = ref.read(chatEditorStateProvider).isEditing;
+            final notifier = ref.read(chatEditorStateProvider.notifier);
+            notifier.unsetActions();
+            if (isEdit) textEditorState.clear();
+          },
+          child: const Icon(
+            Atlas.xmark_circle,
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> replyPreviewItems(
+    BuildContext context,
+    AvatarInfo memberAvatar,
+  ) =>
+      [
         const SizedBox(width: 1),
         const Icon(
           Icons.reply_rounded,
@@ -89,25 +124,16 @@ class ChatEditorActionsPreview extends ConsumerWidget {
         ),
         const SizedBox(width: 5),
         Text(
-          L10n.of(context).replyTo(toBeginningOfSentenceCase(authorId)),
+          L10n.of(context).replyTo(toBeginningOfSentenceCase(msgItem.sender())),
           style: const TextStyle(
             color: Colors.grey,
             fontSize: 12,
           ),
         ),
         const Spacer(),
-        GestureDetector(
-          onTap: () =>
-              ref.read(chatEditorStateProvider.notifier).unsetActions(),
-          child: const Icon(Atlas.xmark_circle),
-        ),
-      ],
-    );
-  }
+      ];
 
-  Widget _buildEditView(BuildContext context, WidgetRef ref) {
-    return Row(
-      children: [
+  List<Widget> editPreviewItems(BuildContext context, WidgetRef ref) => [
         const SizedBox(width: 1),
         const Icon(
           Atlas.pencil_edit_thin,
@@ -123,17 +149,7 @@ class ChatEditorActionsPreview extends ConsumerWidget {
           ),
         ),
         const Spacer(),
-        GestureDetector(
-          onTap: () async {
-            ref.read(chatEditorStateProvider.notifier).unsetActions();
-            // closing editing action, also clear the editor
-            textEditorState.clear();
-          },
-          child: const Icon(Atlas.xmark_circle),
-        ),
-      ],
-    );
-  }
+      ];
 
   Widget _buildRepliedToItem(BuildContext context, RoomEventItem item) {
     final messageId = item.eventId();
