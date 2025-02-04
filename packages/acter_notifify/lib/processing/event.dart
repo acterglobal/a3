@@ -6,6 +6,7 @@ import 'package:acter_notifify/processing/utils.dart';
     NotificationItem notification) {
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
+  // FIXME: use actual date given
   final newEventDate = notification.title();
 
   final parent = notification.parent();

@@ -17,6 +17,7 @@ features = ["testing"]
 [dependencies]
 matrix-sdk-base = { workspace = true }
 matrix-sdk = { workspace = true }
+chrono = "*"
 anyhow = "1"
 env_logger = "0.10.0"
 futures = "0.3.30"
