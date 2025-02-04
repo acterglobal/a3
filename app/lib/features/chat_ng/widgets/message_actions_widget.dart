@@ -1,3 +1,4 @@
+import 'package:acter/features/chat_ng/actions/copy_message_action.dart';
 import 'package:acter/features/chat_ng/actions/redact_message_action.dart';
 import 'package:acter/features/chat_ng/actions/report_message_action.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
@@ -40,7 +41,12 @@ class MessageActionsWidget extends ConsumerWidget {
     );
   }
 
-  List<Widget> menuItems(BuildContext context, WidgetRef ref, L10n lang) => [
+  List<Widget> menuItems(
+    BuildContext context,
+    WidgetRef ref,
+    L10n lang,
+  ) =>
+      [
         makeMenuItem(
           pressed: () {
             ref.read(chatEditorStateProvider.notifier).setReplyToMessage(item);
@@ -49,15 +55,19 @@ class MessageActionsWidget extends ConsumerWidget {
           text: Text(lang.reply),
           icon: const Icon(Icons.reply_rounded, size: 18),
         ),
-        //  if (isTextMessage)
-        //     makeMenuItem(
-        //       pressed: () => onCopyMessage(context, ref, message),
-        //       text: Text(lang.copyMessage),
-        //       icon: const Icon(
-        //         Icons.copy_all_outlined,
-        //         size: 14,
-        //       ),
-        //     ),
+        if (item.msgType() == 'm.text')
+          makeMenuItem(
+            pressed: () {
+              final messageBody = item.msgContent()?.body();
+              if (messageBody == null) return;
+              copyMessageAction(context, messageBody);
+            },
+            text: Text(lang.copyMessage),
+            icon: const Icon(
+              Icons.copy_all_outlined,
+              size: 14,
+            ),
+          ),
         if (isMe)
           makeMenuItem(
             pressed: () {
