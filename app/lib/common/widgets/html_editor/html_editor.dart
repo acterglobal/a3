@@ -48,6 +48,23 @@ extension ActerEditorStateHelpers on EditorState {
   String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {
     return (codec ?? defaultMarkdownCodec).encode(document);
   }
+
+  /// clear the editor text with selection
+  void clear() async {
+    if (!document.isEmpty) {
+      final transaction = this.transaction;
+      final selection = this.selection;
+      final node = transaction.document.root.children.last;
+      transaction.deleteNode(node);
+      transaction.insertNode([0], paragraphNode(text: ''));
+
+      updateSelectionWithReason(
+        selection,
+        reason: SelectionUpdateReason.transaction,
+      );
+      apply(transaction);
+    }
+  }
 }
 
 extension ActerDocumentHelpers on Document {
@@ -80,7 +97,7 @@ extension ActerDocumentHelpers on Document {
   }) {
     if (htmlContent != null) {
       final document = ActerDocumentHelpers._fromHtml(htmlContent);
-      if (document != null) {
+      if (document != null && !document.isEmpty) {
         return document;
       }
     }
@@ -206,6 +223,7 @@ class HtmlEditorState extends State<HtmlEditor> {
   void _triggerExport(ExportCallback exportFn) {
     final plain = editorState.intoMarkdown();
     final htmlBody = editorState.intoHtml();
+
     exportFn(plain, htmlBody != plain ? htmlBody : null);
   }
 
@@ -378,6 +396,7 @@ class HtmlEditorState extends State<HtmlEditor> {
                   ...standardCharacterShortcutEvents,
                   if (roomId != null) ...mentionShortcuts(context, roomId),
                 ],
+                disableAutoScroll: true,
               ),
             ),
           ),

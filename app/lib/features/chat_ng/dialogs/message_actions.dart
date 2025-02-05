@@ -1,19 +1,25 @@
 import 'dart:ui';
 
+import 'package:acter/features/chat_ng/widgets/message_actions_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_selector.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show RoomEventItem;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-// reaction selector action on chat message
-void reactionSelectionAction({
+// message actions on chat message
+void messageActions({
   required BuildContext context,
   required Widget messageWidget,
   required bool isMe,
-  required String roomId,
+  required bool canRedact,
+  required RoomEventItem item,
   required String messageId,
-}) {
-  final RenderBox box = context.findRenderObject() as RenderBox;
-  final Offset position = box.localToGlobal(Offset.zero);
-  final messageSize = box.size;
+  required String roomId,
+}) async {
+  // trigger vibration haptic
+  await HapticFeedback.heavyImpact();
+  if (!context.mounted) return;
 
   showGeneralDialog(
     context: context,
@@ -22,26 +28,38 @@ void reactionSelectionAction({
     barrierColor: Colors.transparent,
     transitionDuration: const Duration(milliseconds: 200),
     pageBuilder: (context, animation, secondaryAnimation) {
-      return Stack(
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _ReactionOverlay(
+          _BlurOverlay(
             animation: animation,
-            child: const SizedBox.expand(),
+            child: const SizedBox.shrink(),
           ),
-          Positioned(
-            left: position.dx,
-            top: position.dy,
-            width: messageSize.width,
-            child: messageWidget,
-          ),
-          Positioned(
-            left: position.dx,
-            top: position.dy - 60,
-            child: _AnimatedReactionSelector(
+          // Reaction Row
+          Align(
+            alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+            child: _AnimatedActionsContainer(
               animation: animation,
-              messageId: messageId,
+              tagId: messageId,
               child: ReactionSelector(
                 isMe: isMe,
+                messageId: '$messageId-reactions',
+                roomId: roomId,
+              ),
+            ),
+          ),
+          // Message
+          Center(child: messageWidget),
+          // Message actions
+          Align(
+            alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+            child: _AnimatedActionsContainer(
+              animation: animation,
+              tagId: '$messageId-actions',
+              child: MessageActionsWidget(
+                isMe: isMe,
+                canRedact: canRedact,
+                item: item,
                 messageId: messageId,
                 roomId: roomId,
               ),
@@ -53,11 +71,11 @@ void reactionSelectionAction({
   );
 }
 
-class _ReactionOverlay extends StatelessWidget {
+class _BlurOverlay extends StatelessWidget {
   final Animation<double> animation;
   final Widget child;
 
-  const _ReactionOverlay({
+  const _BlurOverlay({
     required this.animation,
     required this.child,
   });
@@ -86,21 +104,21 @@ class _ReactionOverlay extends StatelessWidget {
   }
 }
 
-class _AnimatedReactionSelector extends StatelessWidget {
+class _AnimatedActionsContainer extends StatelessWidget {
   final Animation<double> animation;
   final Widget child;
-  final String messageId;
+  final String tagId;
 
-  const _AnimatedReactionSelector({
+  const _AnimatedActionsContainer({
     required this.animation,
     required this.child,
-    required this.messageId,
+    required this.tagId,
   });
 
   @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: messageId,
+      tag: tagId,
       child: Material(
         color: Colors.transparent,
         child: AnimatedBuilder(

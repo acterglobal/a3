@@ -1,4 +1,4 @@
-import 'package:acter/features/chat_ng/widgets/chat_input/chat_input.dart';
+import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_view.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -21,7 +21,7 @@ class ChatEditorNoAccess extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              key: ChatInput.noAccessKey,
+              key: ChatEditorView.noAccessKey,
               L10n.of(context).chatMissingPermissionsToSend,
               style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
             ),

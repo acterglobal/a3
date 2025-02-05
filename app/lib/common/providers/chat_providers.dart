@@ -34,3 +34,12 @@ final selectedChatIdProvider =
     NotifierProvider<SelectedChatIdNotifier, String?>(
   () => SelectedChatIdNotifier(),
 );
+
+final chatComposerDraftProvider = FutureProvider.autoDispose
+    .family<ComposeDraft?, String>((ref, roomId) async {
+  final chat = await ref.watch(chatProvider(roomId).future);
+  if (chat == null) {
+    return null;
+  }
+  return (await chat.msgDraft().then((val) => val.draft()));
+});

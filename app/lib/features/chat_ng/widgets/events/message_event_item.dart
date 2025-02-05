@@ -1,5 +1,5 @@
 import 'package:acter/features/chat/utils.dart';
-import 'package:acter/features/chat_ng/actions/reaction_selection_action.dart';
+import 'package:acter/features/chat_ng/dialogs/message_actions.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
@@ -17,6 +17,7 @@ class MessageEventItem extends StatelessWidget {
   final String messageId;
   final RoomEventItem item;
   final bool isMe;
+  final bool canRedact;
   final bool isNextMessageInGroup;
 
   const MessageEventItem({
@@ -25,6 +26,7 @@ class MessageEventItem extends StatelessWidget {
     required this.messageId,
     required this.item,
     required this.isMe,
+    required this.canRedact,
     required this.isNextMessageInGroup,
   });
 
@@ -56,12 +58,14 @@ class MessageEventItem extends StatelessWidget {
     );
 
     return GestureDetector(
-      onLongPressStart: (_) => reactionSelectionAction(
+      onLongPressStart: (_) => messageActions(
         context: context,
         messageWidget: messageWidget,
         isMe: isMe,
-        roomId: roomId,
+        canRedact: canRedact,
+        item: item,
         messageId: messageId,
+        roomId: roomId,
       ),
       child: Hero(
         tag: messageId,
