@@ -495,11 +495,10 @@ jobs:
         id: cpr
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.tags.outputs.tag }}
         run: |
           gh pr create -B main -H ci/release-$TAG --title "Releasing $TAG" --body "Release $TAG auto PR." -a gnunicorn -l minor
           gh pr merge --merge --delete-branch ci/release-$TAG
-        env:
-            TAG: ${{ needs.tags.outputs.tag }}
 
       - name: Release
           # publish this nightly release now
