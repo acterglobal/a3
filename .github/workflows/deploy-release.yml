@@ -118,6 +118,8 @@ jobs:
     steps:
       # create temporary release to upload assets to
       - name: Create Draft Release
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release create ${{ needs.tags.outputs.tag }} \
               --verify-tag --draft \
@@ -490,6 +492,8 @@ jobs:
 
       - name: Create Pull Request
         id: cpr
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh pr create -B main -H ci/release-$TAG --title "Releasing $TAG" --body "Release $TAG auto PR." -a gnunicorn -l minor
           gh pr merge --merge --delete-branch ci/release-$TAG
@@ -498,6 +502,8 @@ jobs:
 
       - name: Release
           # publish this nightly release now
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release upload ${{ needs.tags.outputs.tag }} CHANGELOG.md
           gh release edit ${{ needs.tags.outputs.tag }} \

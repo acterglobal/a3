@@ -73,6 +73,8 @@ jobs:
     steps:
       # create temporary release to upload assets to
       - name: Create Draft Release
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release create nightly-${{ needs.tags.outputs.tag }} \
               --verify-tag --prerelease --draft \
@@ -332,6 +334,8 @@ jobs:
           git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest
       - name: Release
           # publish this nightly release now
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release upload CHANGELOG.md
           gh release edit nightly-${{ needs.tags.outputs.tag }} \
