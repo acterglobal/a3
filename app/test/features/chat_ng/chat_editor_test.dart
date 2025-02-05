@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/mock_a3sdk.dart';
+import '../../helpers/mock_client_provider.dart';
 import '../../helpers/test_wrapper_widget.dart';
 import '../comments/mock_data/mock_message_content.dart';
 import 'diff_applier_test.dart';
@@ -41,7 +42,8 @@ void main() {
 
     final overrides = [
       sdkProvider.overrideWith((ref) => MockActerSdk()),
-      alwaysClientProvider.overrideWith((ref) => MockClient()),
+      clientProvider
+          .overrideWith(() => MockClientNotifier(client: MockClient())),
       chatProvider.overrideWith(() => MockAsyncConvoNotifier()),
       chatComposerDraftProvider
           .overrideWith((ref, roomId) => MockComposeDraft()),
