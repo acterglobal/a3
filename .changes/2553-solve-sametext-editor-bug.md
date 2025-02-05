@@ -1,2 +1,1 @@
 - [Fix] : Fix Issue with Same Content Displaying on Multiple Slides in Update Editor.
-- [Description] : This update addresses a bug in the update editor where adding a new slide, creating a new slide, or switching between slides results in the same content being shown across all slides. This makes it impossible for users to create and view unique slides, as each slide displays identical text.
