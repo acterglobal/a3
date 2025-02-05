@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
@@ -38,8 +37,7 @@ Future<void> redactMessageAction(
           onPressed: () async {
             try {
               final convo = await ref.read(chatProvider(roomId).future);
-              if (convo == null) throw RoomNotFound();
-              await convo.redactMessage(
+              await convo?.redactMessage(
                 messageId,
                 senderId,
                 null,

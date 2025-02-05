@@ -30,34 +30,39 @@ void messageActions({
     pageBuilder: (context, animation, secondaryAnimation) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _BlurOverlay(
             animation: animation,
             child: const SizedBox.shrink(),
           ),
           // Reaction Row
-          _AnimatedActionsContainer(
-            animation: animation,
-            tagId: messageId,
-            child: ReactionSelector(
-              isMe: isMe,
-              messageId: '$messageId-reactions',
-              roomId: roomId,
+          Align(
+            alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+            child: _AnimatedActionsContainer(
+              animation: animation,
+              tagId: messageId,
+              child: ReactionSelector(
+                isMe: isMe,
+                messageId: '$messageId-reactions',
+                roomId: roomId,
+              ),
             ),
           ),
           // Message
-          messageWidget,
+          Center(child: messageWidget),
           // Message actions
-          _AnimatedActionsContainer(
-            animation: animation,
-            tagId: '$messageId-actions',
-            child: MessageActionsWidget(
-              isMe: isMe,
-              canRedact: canRedact,
-              item: item,
-              messageId: messageId,
-              roomId: roomId,
+          Align(
+            alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+            child: _AnimatedActionsContainer(
+              animation: animation,
+              tagId: '$messageId-actions',
+              child: MessageActionsWidget(
+                isMe: isMe,
+                canRedact: canRedact,
+                item: item,
+                messageId: messageId,
+                roomId: roomId,
+              ),
             ),
           ),
         ],
