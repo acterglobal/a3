@@ -123,7 +123,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create ${{ needs.tags.outputs.tag }} \
-              --verify-tag --draft \
+              --draft \
               --title "${{ needs.tags.outputs.release_title_prefix }} ${{ needs.tags.outputs.tag }}"
 
   build:
