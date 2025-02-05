@@ -335,6 +335,14 @@ pub enum NotificationItemInner {
         event_id: OwnedEventId,
         rsvp: RsvpStatus,
     },
+    // tasks and task list specific
+    TaskAdd {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+    },
+
     // catch-all for other object changes
     OtherChanges {
         parent_obj: Option<NotificationItemParent>,
@@ -369,6 +377,7 @@ impl NotificationItemInner {
                 RsvpStatus::Maybe => "rsvpMaybe",
                 RsvpStatus::No => "rsvpNo",
             },
+            NotificationItemInner::TaskAdd { .. } => "taskAdd",
             NotificationItemInner::OtherChanges { .. } => "otherChanges",
         }
         .to_owned()
@@ -472,6 +481,13 @@ impl NotificationItemInner {
                     encode(parent_id.as_str())
                 )
             }
+            NotificationItemInner::TaskAdd {
+                parent_id,
+                event_id,
+                ..
+            } => {
+                format!("/tasks/{parent_id}/{event_id}")
+            }
         }
     }
 
@@ -490,6 +506,7 @@ impl NotificationItemInner {
             | NotificationItemInner::DescriptionChange { parent_obj, .. }
             | NotificationItemInner::EventDateChange { parent_obj, .. }
             | NotificationItemInner::Rsvp { parent_obj, .. }
+            | NotificationItemInner::TaskAdd { parent_obj, .. }
             | NotificationItemInner::OtherChanges { parent_obj, .. } => parent_obj.clone(),
             NotificationItemInner::Comment { parent_obj, .. }
             | NotificationItemInner::Reaction { parent_obj, .. } => parent_obj.clone(),
@@ -503,6 +520,7 @@ impl NotificationItemInner {
             | NotificationItemInner::DescriptionChange { parent_id, .. }
             | NotificationItemInner::EventDateChange { parent_id, .. }
             | NotificationItemInner::Rsvp { parent_id, .. }
+            | NotificationItemInner::TaskAdd { parent_id, .. }
             | NotificationItemInner::OtherChanges { parent_id, .. } => Some(parent_id.to_string()),
             NotificationItemInner::Comment { parent_id, .. }
             | NotificationItemInner::Reaction { parent_id, .. } => Some(parent_id.to_string()),
@@ -965,7 +983,7 @@ impl NotificationItem {
                     .build()?)
             }
 
-            // --- Task listss
+            // --- Task lists
             AnyActerEvent::TaskList(MessageLikeEvent::Original(e)) => {
                 let parent_obj = NotificationItemParent::TaskList {
                     parent_id: e.event_id.clone(),
@@ -1022,6 +1040,28 @@ impl NotificationItem {
                         })
                         .build()?);
                 }
+            }
+            // -- Task Specific
+            AnyActerEvent::Task(MessageLikeEvent::Original(e)) => {
+                let parent_obj = client
+                    .store()
+                    .get(&e.content.task_list_id.event_id)
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of comment");
+                    })
+                    .ok()
+                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
+
+                Ok(builder
+                    .inner(NotificationItemInner::TaskAdd {
+                        parent_obj,
+                        parent_id: e.content.task_list_id.event_id,
+                        room_id: e.room_id,
+                        event_id: e.event_id,
+                    })
+                    .title(e.content.title)
+                    .build()?)
             }
 
             _ => {
