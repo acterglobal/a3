@@ -72,6 +72,7 @@ jobs:
     needs:
      - tags
     steps:
+      - uses: actions/checkout@v4
       # create temporary release to upload assets to
       - name: Create Draft Release
         env:
