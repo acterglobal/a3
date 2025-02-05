@@ -20,12 +20,6 @@ on:
         required: false
         type: string
         default: release
-      prerelease:
-        type: boolean
-        default: false
-      release_title:
-        required: false
-        type: string
       msix_version:
         required: false
         type: string
@@ -436,7 +430,7 @@ jobs:
           path: app/debug_symbols/*
 
       - name: "Upload debug artifacts to sentry"
-        if: ${{matrix.with_debug_symbols && inputs.release }}
+        if: ${{matrix.with_debug_symbols && inputs.release_tag }}
         working-directory: app
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -444,27 +438,8 @@ jobs:
         run: flutter packages pub run sentry_dart_plugin
 
       - name: Release
-        if: ${{! matrix.exclude_from_release && inputs.release }}
-        uses: softprops/action-gh-release@v2
-        with:
-          draft: true
-          name: ${{ inputs.release_title }}
-          tag_name: ${{inputs.release_tag}}
-          generate_release_notes: false
-          prerelease: ${{ inputs.prerelease }}
-          files: |
-            ${{ matrix.artifact_prefix }}-${{ inputs.version }}.*
-            ${{ matrix.specific_upload_artifacts }}
-
-      - name: Report issue
-        if: ${{ inputs.release && failure() && steps.skipper.outputs.skipped != 'true' }}
-        uses: JasonEtco/create-an-issue@v2
+        if: ${{! matrix.exclude_from_release && inputs.release_tag }}
         env:
-          TAG: ${{ inputs.version }}
-          NAME: ${{matrix.name}}
-          FAILED_RUN_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
-          ARTIFACT_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{env.GITHUB_RUN_ID}}
-        with:
-          assignees: gnunicorn
-          filename: .github/templates/failure-report-template.md.tmpl
-          update_existing: false
+          GH_TOKEN: ${{ github.token }}
+        run:
+          gh release upload ${{inputs.release_tag}} ${{ matrix.artifact_prefix }}-${{ inputs.version }}.* ${{ matrix.specific_upload_artifacts }}

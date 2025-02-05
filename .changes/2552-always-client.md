@@ -1,0 +1,1 @@
+- Fix an internal race conditions that lead to some systems not properly redeeming invitations upon registration

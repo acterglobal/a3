@@ -2,6 +2,7 @@ use std::time::SystemTime;
 
 use acter::UtcDateTime;
 use anyhow::{bail, Result};
+use chrono::Days;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -203,6 +204,203 @@ async fn event_desc_update() -> Result<()> {
     assert_eq!(parent.title().unwrap(), "First meeting");
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), obj_id);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn event_rescheduled() -> Result<()> {
+    let (users, _sync_states, space_id, _engine) =
+        random_users_with_random_space_under_template("eventDescUpdate", 2, TMPL).await?;
+
+    let first = users.first().expect("exists");
+    let second_user = &users[1];
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let fetcher_client = second_user.clone();
+    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            let entries = client.calendar_events().await?;
+            if entries.is_empty() {
+                bail!("entries not found");
+            }
+            Ok(entries[0].clone())
+        }
+    })
+    .await?;
+
+    // we want to see push for everything;
+    first
+        .room(obj_entry.room_id_str())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
+    let new_date = UtcDateTime::from(SystemTime::now())
+        .checked_add_days(Days::new(1))
+        .expect("there is a tomorrow");
+    let mut update = obj_entry.update_builder()?;
+    update
+        .utc_start_from_rfc3339(new_date.to_rfc3339())
+        .unwrap();
+    update
+        .utc_end_from_rfc3339(
+            new_date
+                .checked_add_days(Days::new(1))
+                .unwrap()
+                .to_rfc3339(),
+        )
+        .unwrap();
+    let notification_ev = update.send().await?;
+
+    let notification_item = first
+        .get_notification_item(space_id.to_string(), notification_ev.to_string())
+        .await?;
+    assert_eq!(notification_item.push_style(), "eventDateChange");
+    assert_eq!(
+        notification_item
+            .parent_id_str()
+            .expect("parent is in event"),
+        obj_entry.event_id().to_string(),
+    );
+
+    let obj_id = obj_entry.event_id().to_string();
+    assert_eq!(notification_item.new_date(), Some(new_date));
+    let parent = notification_item.parent().expect("parent was found");
+    assert_eq!(
+        notification_item.target_url(),
+        format!("/events/{}", obj_id,)
+    );
+    assert_eq!(parent.object_type_str(), "event");
+    assert_eq!(parent.title().unwrap(), "First meeting");
+    assert_eq!(parent.emoji(), "🗓️"); // calendar icon
+    assert_eq!(parent.object_id_str(), obj_id);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn event_rsvp() -> Result<()> {
+    let (users, _sync_states, space_id, _engine) =
+        random_users_with_random_space_under_template("eventDescUpdate", 2, TMPL).await?;
+
+    let first = users.first().expect("exists");
+    let second_user = &users[1];
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let fetcher_client = second_user.clone();
+    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            let entries = client.calendar_events().await?;
+            if entries.is_empty() {
+                bail!("entries not found");
+            }
+            Ok(entries[0].clone())
+        }
+    })
+    .await?;
+
+    // we want to see push for everything;
+    first
+        .room(obj_entry.room_id_str())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
+    let rsvp_manager = obj_entry.rsvps().await?;
+    // test yes
+    {
+        let mut rsvp = rsvp_manager.rsvp_draft()?;
+        rsvp.status("yes".to_string());
+
+        let notification_ev = rsvp.send().await?;
+
+        let notification_item = first
+            .get_notification_item(space_id.to_string(), notification_ev.to_string())
+            .await?;
+        assert_eq!(notification_item.push_style(), "rsvpYes");
+        assert_eq!(
+            notification_item
+                .parent_id_str()
+                .expect("parent is in event"),
+            obj_entry.event_id().to_string(),
+        );
+
+        let obj_id = obj_entry.event_id().to_string();
+        let parent = notification_item.parent().expect("parent was found");
+        assert_eq!(
+            notification_item.target_url(),
+            format!("/events/{}", obj_id,)
+        );
+        assert_eq!(parent.object_type_str(), "event");
+        assert_eq!(parent.title().unwrap(), "First meeting");
+        assert_eq!(parent.emoji(), "🗓️"); // calendar icon
+        assert_eq!(parent.object_id_str(), obj_id);
+    }
+
+    // test no
+    {
+        let mut rsvp = rsvp_manager.rsvp_draft()?;
+        rsvp.status("no".to_string());
+
+        let notification_ev = rsvp.send().await?;
+
+        let notification_item = first
+            .get_notification_item(space_id.to_string(), notification_ev.to_string())
+            .await?;
+        assert_eq!(notification_item.push_style(), "rsvpNo");
+        assert_eq!(
+            notification_item
+                .parent_id_str()
+                .expect("parent is in event"),
+            obj_entry.event_id().to_string(),
+        );
+
+        let obj_id = obj_entry.event_id().to_string();
+        let parent = notification_item.parent().expect("parent was found");
+        assert_eq!(
+            notification_item.target_url(),
+            format!("/events/{}", obj_id,)
+        );
+        assert_eq!(parent.object_type_str(), "event");
+        assert_eq!(parent.title().unwrap(), "First meeting");
+        assert_eq!(parent.emoji(), "🗓️"); // calendar icon
+        assert_eq!(parent.object_id_str(), obj_id);
+    }
+
+    // test no
+    {
+        let mut rsvp = rsvp_manager.rsvp_draft()?;
+        rsvp.status("maybe".to_string());
+
+        let notification_ev = rsvp.send().await?;
+
+        let notification_item = first
+            .get_notification_item(space_id.to_string(), notification_ev.to_string())
+            .await?;
+        assert_eq!(notification_item.push_style(), "rsvpMaybe");
+        assert_eq!(
+            notification_item
+                .parent_id_str()
+                .expect("parent is in event"),
+            obj_entry.event_id().to_string(),
+        );
+
+        let obj_id = obj_entry.event_id().to_string();
+        let parent = notification_item.parent().expect("parent was found");
+        assert_eq!(
+            notification_item.target_url(),
+            format!("/events/{}", obj_id,)
+        );
+        assert_eq!(parent.object_type_str(), "event");
+        assert_eq!(parent.title().unwrap(), "First meeting");
+        assert_eq!(parent.emoji(), "🗓️"); // calendar icon
+        assert_eq!(parent.object_id_str(), obj_id);
+    }
 
     Ok(())
 }

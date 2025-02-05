@@ -2771,7 +2771,6 @@ object NotificationItem {
     fn parent_id_str() -> Option<string>;
     fn room() -> NotificationRoom;
     fn target_url() -> string;
-    fn reaction_key() -> Option<string>;
     fn body() -> Option<MsgContent>;
     fn icon_url() -> Option<string>;
     fn thread_id() -> Option<string>;
@@ -2782,6 +2781,12 @@ object NotificationItem {
 
     /// if this is an invite, this the room it invites to
     fn room_invite_str() -> Option<string>;
+
+    /// reaction specific: the reaction key used
+    fn reaction_key() -> Option<string>;
+
+    /// the date on eventDateChange (started or ended) or taskDueDateChane
+    fn new_date() -> Option<UtcDateTime>;
 }
 
 /// The pusher we sent notifications via to the user
