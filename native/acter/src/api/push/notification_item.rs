@@ -358,6 +358,13 @@ pub enum NotificationItemInner {
         room_id: OwnedRoomId,
         event_id: OwnedEventId,
     },
+    TaskProgress {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+        done: bool,
+    },
 
     // catch-all for other object changes
     OtherChanges {
@@ -380,6 +387,13 @@ impl NotificationItemInner {
                     "dm"
                 } else {
                     "chat"
+                }
+            }
+            NotificationItemInner::TaskProgress { done, .. } => {
+                if *done {
+                    "taskComplete"
+                } else {
+                    "taskReOpen"
                 }
             }
             NotificationItemInner::Boost { .. } => "news",
@@ -428,6 +442,10 @@ impl NotificationItemInner {
                 parent_obj: Some(parent_obj),
                 ..
             }
+            | NotificationItemInner::TaskProgress {
+                parent_obj: Some(parent_obj),
+                ..
+            }
             | NotificationItemInner::Creation { parent_obj, .. } => parent_obj.target_url(),
             NotificationItemInner::Comment {
                 parent_obj: Some(parent),
@@ -467,6 +485,12 @@ impl NotificationItemInner {
                 ..
             }
             | NotificationItemInner::Rsvp {
+                parent_id,
+                room_id,
+                event_id,
+                ..
+            }
+            | NotificationItemInner::TaskProgress {
                 parent_id,
                 room_id,
                 event_id,
@@ -523,6 +547,7 @@ impl NotificationItemInner {
             | NotificationItemInner::EventDateChange { parent_obj, .. }
             | NotificationItemInner::Rsvp { parent_obj, .. }
             | NotificationItemInner::TaskAdd { parent_obj, .. }
+            | NotificationItemInner::TaskProgress { parent_obj, .. }
             | NotificationItemInner::OtherChanges { parent_obj, .. } => parent_obj.clone(),
             NotificationItemInner::Comment { parent_obj, .. }
             | NotificationItemInner::Reaction { parent_obj, .. } => parent_obj.clone(),
@@ -537,6 +562,7 @@ impl NotificationItemInner {
             | NotificationItemInner::EventDateChange { parent_id, .. }
             | NotificationItemInner::Rsvp { parent_id, .. }
             | NotificationItemInner::TaskAdd { parent_id, .. }
+            | NotificationItemInner::TaskProgress { parent_id, .. }
             | NotificationItemInner::OtherChanges { parent_id, .. } => Some(parent_id.to_string()),
             NotificationItemInner::Comment { parent_id, .. }
             | NotificationItemInner::Reaction { parent_id, .. } => Some(parent_id.to_string()),
@@ -1090,7 +1116,19 @@ impl NotificationItem {
                     .ok()
                     .and_then(|o| NotificationItemParent::try_from(&o).ok());
 
-                if let Some(new_title) = e.content.title {
+                if let Some(new_percent) = e.content.progress_percent {
+                    Ok(builder
+                        .inner(NotificationItemInner::TaskProgress {
+                            parent_obj,
+                            parent_id: e.content.task.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                            done: new_percent
+                                .map(|percent| percent >= 100)
+                                .unwrap_or_default(),
+                        })
+                        .build()?)
+                } else if let Some(new_title) = e.content.title {
                     Ok(builder
                         .title(new_title)
                         .inner(NotificationItemInner::TitleChange {
