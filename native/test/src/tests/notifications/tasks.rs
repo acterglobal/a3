@@ -146,7 +146,7 @@ async fn tasklist_title_update() -> Result<()> {
 #[tokio::test]
 async fn tasklist_desc_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("eventDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("tasklistDescUpdate", 2, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -209,7 +209,7 @@ async fn tasklist_desc_update() -> Result<()> {
 #[tokio::test]
 async fn tasklist_redaction() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("eventRedaction", 2, TMPL).await?;
+        random_users_with_random_space_under_template("tasklistRedaction", 2, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -264,7 +264,7 @@ async fn tasklist_redaction() -> Result<()> {
 #[tokio::test]
 async fn task_created() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("eventTitleUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskCreated", 2, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -319,6 +319,140 @@ async fn task_created() -> Result<()> {
     assert_eq!(parent.object_type_str(), "task-list".to_owned());
     assert_eq!(parent.title().unwrap(), "Onboarding list".to_owned());
     assert_eq!(parent.emoji(), "📋"); // task list icon
+    assert_eq!(parent.object_id_str(), obj_id);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn task_title_update() -> Result<()> {
+    let (users, _sync_states, space_id, _engine) =
+        random_users_with_random_space_under_template("taskTitleUpdate", 2, TMPL).await?;
+
+    let first = users.first().expect("exists");
+    let second_user = &users[1];
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let fetcher_client = second_user.clone();
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            let entries = client.task_lists().await?;
+            if entries.is_empty() {
+                bail!("entries not found");
+            }
+            let tasks = entries[0].tasks().await?;
+            let Some(task) = tasks.first() else {
+                bail!("task not found");
+            };
+            Ok((entries[0].event_id_str(), task.clone()))
+        }
+    })
+    .await?;
+
+    // we want to see push for everything;
+    first
+        .room(obj_entry.room_id().to_string())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
+    let mut update = obj_entry.update_builder()?;
+    update.title("Renamed Task".to_owned());
+    let notification_ev = update.send().await?;
+
+    let notification_item = first
+        .get_notification_item(space_id.to_string(), notification_ev.to_string())
+        .await?;
+    assert_eq!(notification_item.push_style(), "titleChange");
+    assert_eq!(
+        notification_item
+            .parent_id_str()
+            .expect("parent is in change"),
+        obj_entry.event_id_str(),
+    );
+
+    let obj_id = obj_entry.event_id_str();
+
+    assert_eq!(notification_item.title(), "Renamed Task"); // old title
+    let parent = notification_item.parent().expect("parent was found");
+    assert_eq!(
+        notification_item.target_url(),
+        format!("/tasks/{tl_id}/{obj_id}")
+    );
+    assert_eq!(parent.object_type_str(), "task");
+    // assert_eq!(parent.title().unwrap(), "Onboarding List");
+    assert_eq!(parent.emoji(), "☑️"); // task icon
+    assert_eq!(parent.object_id_str(), obj_id);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn task_desc_update() -> Result<()> {
+    let (users, _sync_states, space_id, _engine) =
+        random_users_with_random_space_under_template("taskTitleUpdate", 2, TMPL).await?;
+
+    let first = users.first().expect("exists");
+    let second_user = &users[1];
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let fetcher_client = second_user.clone();
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            let entries = client.task_lists().await?;
+            if entries.is_empty() {
+                bail!("entries not found");
+            }
+            let tasks = entries[0].tasks().await?;
+            let Some(task) = tasks.first() else {
+                bail!("task not found");
+            };
+            Ok((entries[0].event_id_str(), task.clone()))
+        }
+    })
+    .await?;
+
+    // we want to see push for everything;
+    first
+        .room(obj_entry.room_id().to_string())
+        .await?
+        .set_notification_mode(Some("all".to_owned()))
+        .await?;
+
+    let mut update = obj_entry.update_builder()?;
+    update.description_text("Task is complicated".to_owned());
+    let notification_ev = update.send().await?;
+
+    let notification_item = first
+        .get_notification_item(space_id.to_string(), notification_ev.to_string())
+        .await?;
+    assert_eq!(notification_item.push_style(), "descriptionChange");
+    assert_eq!(
+        notification_item
+            .parent_id_str()
+            .expect("parent is in change"),
+        obj_entry.event_id_str(),
+    );
+
+    let obj_id = obj_entry.event_id_str();
+
+    let content = notification_item.body().expect("found content");
+    assert_eq!(content.body(), "Task is complicated"); // new description
+    let parent = notification_item.parent().expect("parent was found");
+    assert_eq!(
+        notification_item.target_url(),
+        format!("/tasks/{tl_id}/{obj_id}")
+    );
+    assert_eq!(parent.object_type_str(), "task".to_owned());
+    assert_eq!(
+        parent.title().unwrap(),
+        "Scroll through the updates".to_owned()
+    );
+    assert_eq!(parent.emoji(), "☑️"); // task icon
     assert_eq!(parent.object_id_str(), obj_id);
 
     Ok(())

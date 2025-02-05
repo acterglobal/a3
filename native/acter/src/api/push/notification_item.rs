@@ -171,6 +171,11 @@ pub enum NotificationItemParent {
         parent_id: OwnedEventId,
         title: String,
     },
+    Task {
+        tl_id: OwnedEventId,
+        parent_id: OwnedEventId,
+        title: String,
+    },
 }
 
 impl NotificationItemParent {
@@ -180,6 +185,7 @@ impl NotificationItemParent {
             NotificationItemParent::Pin { .. } => "pin",
             NotificationItemParent::CalendarEvent { .. } => "event",
             NotificationItemParent::TaskList { .. } => "task-list",
+            NotificationItemParent::Task { .. } => "task",
         }
         .to_owned()
     }
@@ -188,6 +194,7 @@ impl NotificationItemParent {
             NotificationItemParent::News { parent_id }
             | NotificationItemParent::Pin { parent_id, .. }
             | NotificationItemParent::TaskList { parent_id, .. }
+            | NotificationItemParent::Task { parent_id, .. }
             | NotificationItemParent::CalendarEvent { parent_id, .. } => parent_id.to_string(),
         }
     }
@@ -196,6 +203,7 @@ impl NotificationItemParent {
             NotificationItemParent::News { parent_id } => None,
             NotificationItemParent::Pin { title, .. }
             | NotificationItemParent::TaskList { title, .. }
+            | NotificationItemParent::Task { title, .. }
             | NotificationItemParent::CalendarEvent { title, .. } => Some(title.clone()),
         }
     }
@@ -205,6 +213,9 @@ impl NotificationItemParent {
             NotificationItemParent::News { parent_id } => format!("/updates/{}", parent_id),
             NotificationItemParent::Pin { parent_id, .. } => format!("/pins/{}", parent_id),
             NotificationItemParent::TaskList { parent_id, .. } => format!("/tasks/{}", parent_id),
+            NotificationItemParent::Task {
+                parent_id, tl_id, ..
+            } => format!("/tasks/{tl_id}/{parent_id}"),
             NotificationItemParent::CalendarEvent { parent_id, .. } => {
                 format!("/events/{}", parent_id)
             } //
@@ -215,8 +226,9 @@ impl NotificationItemParent {
         match self {
             NotificationItemParent::News { .. } => "🚀", // boost rocket
             NotificationItemParent::Pin { .. } => "📌",  // pin
-            NotificationItemParent::TaskList { .. } => "📋", // clipboard
+            NotificationItemParent::TaskList { .. } => "📋", // tasklist-> clipboard
             NotificationItemParent::CalendarEvent { .. } => "🗓️", // calendar
+            NotificationItemParent::Task { .. } => "☑️", // task -> checkoff
         }
         .to_owned()
     }
@@ -242,10 +254,14 @@ impl TryFrom<&AnyActerModel> for NotificationItemParent {
                 parent_id: e.event_id().to_owned(),
                 title: e.name().clone(),
             }),
+            AnyActerModel::Task(e) => Ok(NotificationItemParent::Task {
+                parent_id: e.event_id().to_owned(),
+                tl_id: e.task_list_id.event_id.clone(),
+                title: e.title().clone(),
+            }),
             AnyActerModel::RedactedActerModel(_)
             | AnyActerModel::CalendarEventUpdate(_)
             | AnyActerModel::TaskListUpdate(_)
-            | AnyActerModel::Task(_)
             | AnyActerModel::TaskUpdate(_)
             | AnyActerModel::TaskSelfAssign(_)
             | AnyActerModel::TaskSelfUnassign(_)
@@ -1062,6 +1078,49 @@ impl NotificationItem {
                     })
                     .title(e.content.title)
                     .build()?)
+            }
+            AnyActerEvent::TaskUpdate(MessageLikeEvent::Original(e)) => {
+                let parent_obj = client
+                    .store()
+                    .get(&e.content.task.event_id)
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of comment");
+                    })
+                    .ok()
+                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
+
+                if let Some(new_title) = e.content.title {
+                    Ok(builder
+                        .title(new_title)
+                        .inner(NotificationItemInner::TitleChange {
+                            parent_obj,
+                            parent_id: e.content.task.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                        })
+                        .build()?)
+                } else if let Some(Some(new_content)) = e.content.description {
+                    return Ok(builder
+                        .inner(NotificationItemInner::DescriptionChange {
+                            parent_obj,
+                            parent_id: e.content.task.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                            content: Some(new_content),
+                        })
+                        .build()?);
+                } else {
+                    // fallback: other changes
+                    return Ok(builder
+                        .inner(NotificationItemInner::OtherChanges {
+                            parent_obj,
+                            parent_id: e.content.task.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                        })
+                        .build()?);
+                }
             }
 
             _ => {
