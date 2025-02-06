@@ -8,7 +8,7 @@ import 'package:acter/features/chat/pages/sub_chats_page.dart';
 import 'package:acter/features/space/widgets/space_info.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
-import 'package:acter/features/space/widgets/space_sections/chats_section.dart';
+import 'package:acter/features/space/widgets/space_sections/other_chats_section.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -174,7 +174,7 @@ void main() {
           // the actual failing ones
           spaceProvider.overrideWith((a, b) => MockSpace()),
         ],
-        child: const ChatsSection(spaceId: '!spaceId', limit: 3),
+        child: const OtherChatsSection(spaceId: '!spaceId', limit: 3),
       );
 
       // a doesn't show, b and c do because they are known
@@ -207,7 +207,7 @@ void main() {
           // the actual failing ones
           spaceProvider.overrideWith((a, b) => MockSpace()),
         ],
-        child: const ChatsSection(spaceId: '!spaceId', limit: 3),
+        child: const OtherChatsSection(spaceId: '!spaceId', limit: 3),
       );
 
       // None of the items are accessible, do not show
@@ -250,7 +250,7 @@ void main() {
           // the actual failing ones
           spaceProvider.overrideWith((a, b) => MockSpace()),
         ],
-        child: const ChatsSection(spaceId: '!spaceId', limit: 3),
+        child: const OtherChatsSection(spaceId: '!spaceId', limit: 3),
       );
 
       // a doesn't show, b and c do

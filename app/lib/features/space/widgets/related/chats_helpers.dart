@@ -8,26 +8,22 @@ import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::space::related::chats_helpers');
 
-Widget chatsListUI(
+Widget localChatsListUI(
   WidgetRef ref,
-  String parentId,
-  List<String> chats,
-  int chatsLimit, {
+  String spaceId,
+  List<String> chats, {
+  int? limit,
   bool showOptions = false,
   bool showSuggestedMarkIfGiven = true,
 }) {
   final suggestedId =
-      ref.watch(suggestedIdsProvider(parentId)).valueOrNull ?? [];
+      ref.watch(suggestedIdsProvider(spaceId)).valueOrNull ?? [];
   return ListView.builder(
     shrinkWrap: true,
-    itemCount: chatsLimit,
+    itemCount: limit ?? chats.length,
     padding: EdgeInsets.zero,
     physics: const NeverScrollableScrollPhysics(),
     itemBuilder: (context, index) {
@@ -42,7 +38,7 @@ Widget chatsListUI(
             ? RoomHierarchyOptionsMenu(
                 isSuggested: suggestedId.contains(roomId),
                 childId: roomId,
-                parentId: parentId,
+                parentId: spaceId,
               )
             : null,
       );
@@ -50,21 +46,19 @@ Widget chatsListUI(
   );
 }
 
-Widget renderRemoteChats(
-  BuildContext context,
+Widget remoteChatsListUI(
   WidgetRef ref,
   String parentId,
-  List<SpaceHierarchyRoomInfo> chats,
-  int? maxItems, {
-  bool showSuggestedMarkIfGiven = true,
-  bool renderMenu = true,
+  List<SpaceHierarchyRoomInfo> chats, {
+  int? limit,
+  bool showOptions = false,
+  bool showSuggestedMarkIfGiven = false,
 }) {
-  if (chats.isEmpty) return const SizedBox.shrink();
   return ListView.builder(
     shrinkWrap: true,
     padding: EdgeInsets.zero,
     physics: const NeverScrollableScrollPhysics(),
-    itemCount: maxItems ?? chats.length,
+    itemCount: limit ?? chats.length,
     itemBuilder: (context, index) {
       final roomInfo = chats[index];
       final roomId = roomInfo.roomIdStr();
@@ -86,7 +80,7 @@ Widget renderRemoteChats(
                 ref.invalidate(spaceRemoteRelationsProvider(parentId));
               },
             ),
-            if (renderMenu)
+            if (showOptions)
               RoomHierarchyOptionsMenu(
                 isSuggested: roomInfo.suggested(),
                 childId: roomId,
@@ -96,29 +90,5 @@ Widget renderRemoteChats(
         ),
       );
     },
-  );
-}
-
-Widget renderFurther(
-  BuildContext context,
-  WidgetRef ref,
-  String spaceId,
-  int? maxItems,
-) {
-  final lang = L10n.of(context);
-  final relatedChatsLoader = ref.watch(remoteChatRelationsProvider(spaceId));
-  return relatedChatsLoader.when(
-    data: (chats) => renderRemoteChats(context, ref, spaceId, chats, maxItems),
-    error: (e, s) {
-      _log.severe('Failed to load the related chats', e, s);
-      return Card(
-        child: Text(lang.errorLoadingRelatedChats(e)),
-      );
-    },
-    loading: () => Skeletonizer(
-      child: Card(
-        child: Text(lang.loadingOtherChats),
-      ),
-    ),
   );
 }

@@ -2325,6 +2325,7 @@
   "addComment": "Add Comment",
   "references": "References",
   "removeReference": "Remove Reference",
+  "suggestedChats": "Suggested Chats",
   "removeReferenceConfirmation": "Are you sure you want to remove this reference?",
   "noObjectAccess": "You are not part of {spaceName} so you can't access this {objectType}",
   "@addComment": {}
