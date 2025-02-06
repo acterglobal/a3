@@ -1,1 +1,0 @@
-- You can now deselect calendar sync of specific spaces in their settings to exclude them from showing in your device calendar (on supported devices)
