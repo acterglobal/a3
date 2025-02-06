@@ -53,18 +53,8 @@ class SuggestedChatsSection extends ConsumerWidget {
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        localChatsListUI(
-          ref,
-          spaceId,
-          suggestedLocalChats,
-          showSuggestedMarkIfGiven: false,
-        ),
-        remoteChatsListUI(
-          ref,
-          spaceId,
-          suggestedRemoteChats,
-          showSuggestedMarkIfGiven: false,
-        ),
+        localChatsListUI(ref, spaceId, suggestedLocalChats),
+        remoteChatsListUI(ref, spaceId, suggestedRemoteChats),
       ],
     );
   }

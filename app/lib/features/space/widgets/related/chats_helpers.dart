@@ -10,14 +10,12 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 Widget localChatsListUI(
   WidgetRef ref,
   String spaceId,
   List<String> chats, {
   int? limit,
   bool showOptions = false,
-  bool showSuggestedMarkIfGiven = true,
 }) {
   final suggestedId =
       ref.watch(suggestedIdsProvider(spaceId)).valueOrNull ?? [];
@@ -31,8 +29,6 @@ Widget localChatsListUI(
       return RoomCard(
         roomId: roomId,
         showParents: false,
-        showSuggestedMark:
-            showSuggestedMarkIfGiven && suggestedId.contains(roomId),
         onTap: () => goToChat(context, roomId),
         trailing: showOptions
             ? RoomHierarchyOptionsMenu(
@@ -52,7 +48,6 @@ Widget remoteChatsListUI(
   List<SpaceHierarchyRoomInfo> chats, {
   int? limit,
   bool showOptions = false,
-  bool showSuggestedMarkIfGiven = false,
 }) {
   return ListView.builder(
     shrinkWrap: true,
@@ -63,7 +58,6 @@ Widget remoteChatsListUI(
       final roomInfo = chats[index];
       final roomId = roomInfo.roomIdStr();
       return RoomHierarchyCard(
-        indicateIfSuggested: showSuggestedMarkIfGiven,
         parentId: parentId,
         roomInfo: roomInfo,
         trailing: Wrap(
