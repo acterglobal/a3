@@ -1,1 +1,0 @@
-- [New] : Now you can also add link with Boost Actions.

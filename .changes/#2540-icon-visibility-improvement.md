@@ -1,1 +1,0 @@
--[improvement] : A subtle shadow has been added to the icons for a more elevated, better appearance when displayed on the screen. This change applies to the boosts & stories icon.
