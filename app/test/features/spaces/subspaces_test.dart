@@ -7,7 +7,7 @@ import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/space/widgets/space_info.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
-import 'package:acter/features/space/widgets/space_sections/spaces_section.dart';
+import 'package:acter/features/space/widgets/space_sections/other_sub_spaces_section.dart';
 import 'package:acter/features/spaces/pages/sub_spaces_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -176,7 +176,7 @@ void main() {
           // the actual failing ones
           spaceProvider.overrideWith((a, b) => MockSpace()),
         ],
-        child: const SpacesSection(spaceId: '!spaceId', limit: 3),
+        child: const OtherSubSpacesSection(spaceId: '!spaceId', limit: 3),
       );
 
       // a doesn't show, b and c do because they are known
@@ -209,7 +209,7 @@ void main() {
           // the actual failing ones
           spaceProvider.overrideWith((a, b) => MockSpace()),
         ],
-        child: const SpacesSection(spaceId: '!spaceId', limit: 3),
+        child: const OtherSubSpacesSection(spaceId: '!spaceId', limit: 3),
       );
 
       // None of the items are accessible, do not show
@@ -254,7 +254,7 @@ void main() {
           // the actual failing ones
           spaceProvider.overrideWith((a, b) => MockSpace()),
         ],
-        child: const SpacesSection(spaceId: '!spaceId', limit: 3),
+        child: const OtherSubSpacesSection(spaceId: '!spaceId', limit: 3),
       );
 
       // a doesn't show, b and c do

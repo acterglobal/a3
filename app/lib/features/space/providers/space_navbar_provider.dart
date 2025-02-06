@@ -13,6 +13,7 @@ enum TabEntry {
   tasks,
   events,
   suggestedChats,
+  suggestedSpaces,
   chats,
   spaces,
   members,
@@ -69,6 +70,13 @@ final tabsProvider =
   if (hasSuggestedChats) {
     tabs.add(TabEntry.suggestedChats);
   }
+  final suggestedSpaces =
+      await ref.watch(suggestedSpacesProvider(spaceId).future);
+  final hasSuggestedSpaces =
+      suggestedSpaces.$1.isNotEmpty || suggestedSpaces.$2.isNotEmpty;
+  if (hasSuggestedSpaces) {
+    tabs.add(TabEntry.suggestedSpaces);
+  }
 
   final otherChats = await ref.watch(otherChatsProvider(spaceId).future);
   final hasChats = otherChats.$1.isNotEmpty || otherChats.$2.isNotEmpty;
@@ -76,8 +84,11 @@ final tabsProvider =
     tabs.add(TabEntry.chats);
   }
 
-  final hasSpaces = await ref.watch(hasSubSpacesProvider(spaceId).future);
-  if (hasSpaces) {
+  final otherSubSpaces =
+      await ref.watch(otherSubSpacesProvider(spaceId).future);
+  final hasOtherSubSpaces =
+      otherSubSpaces.$1.isNotEmpty || otherSubSpaces.$2.isNotEmpty;
+  if (hasOtherSubSpaces) {
     tabs.add(TabEntry.spaces);
   }
 

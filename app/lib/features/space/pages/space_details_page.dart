@@ -16,9 +16,10 @@ import 'package:acter/features/space/widgets/space_sections/about_section.dart';
 import 'package:acter/features/space/widgets/space_sections/other_chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/members_section.dart';
 import 'package:acter/features/space/widgets/space_sections/news_section.dart';
+import 'package:acter/features/space/widgets/space_sections/other_sub_spaces_section.dart';
 import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
-import 'package:acter/features/space/widgets/space_sections/spaces_section.dart';
 import 'package:acter/features/space/widgets/space_sections/suggested_chats_section.dart';
+import 'package:acter/features/space/widgets/space_sections/suggested_spaces_section.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_list_widget.dart';
@@ -256,6 +257,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.events => lang.events,
       TabEntry.news => lang.boosts,
       TabEntry.suggestedChats => lang.suggestedChats,
+      TabEntry.suggestedSpaces => lang.suggestedSpaces,
       TabEntry.chats => lang.chats,
       TabEntry.spaces => lang.spaces,
       TabEntry.members => lang.members,
@@ -298,8 +300,10 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
           ),
         ),
       TabEntry.suggestedChats => SuggestedChatsSection(spaceId: widget.spaceId),
+      TabEntry.suggestedSpaces =>
+        SuggestedSpacesSection(spaceId: widget.spaceId),
       TabEntry.chats => OtherChatsSection(spaceId: widget.spaceId),
-      TabEntry.spaces => SpacesSection(spaceId: widget.spaceId),
+      TabEntry.spaces => OtherSubSpacesSection(spaceId: widget.spaceId),
       TabEntry.members => MembersSection(spaceId: widget.spaceId),
       TabEntry.actions => SpaceActionsSection(spaceId: widget.spaceId),
     };
