@@ -48,6 +48,7 @@ class _ImageSlideState extends State<ImageSlide> {
 
   Widget buildImageUI(Uint8List imageData) {
     return Container(
+      key: Key('image_container'),
       foregroundDecoration: BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.contain,
