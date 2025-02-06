@@ -75,11 +75,12 @@ Widget remoteSubSpacesListUI(
                 ref.invalidate(spaceRemoteRelationsProvider(spaceId));
               },
             ),
-            RoomHierarchyOptionsMenu(
-              isSuggested: roomInfo.suggested(),
-              childId: roomId,
-              parentId: spaceId,
-            ),
+            if (showOptions)
+              RoomHierarchyOptionsMenu(
+                isSuggested: roomInfo.suggested(),
+                childId: roomId,
+                parentId: spaceId,
+              ),
           ],
         ),
       );
