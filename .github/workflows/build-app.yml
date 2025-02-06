@@ -404,7 +404,7 @@ jobs:
      #######  ##        ########  #######  ##     ## ########  
 
       - uses: actions/upload-artifact@v4
-        name: "Upload artifacts"
+        name: "Upload specific artifacts"
         if: matrix.specific_upload_artifacts
         with:
           name: ${{ matrix.name }}
@@ -416,7 +416,7 @@ jobs:
         run: mv ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ inputs.version }}.* .
 
       - uses: actions/upload-artifact@v4
-        name: "Upload artifacts"
+        name: "Upload generated artifacts"
         if: ${{!matrix.specific_upload_artifacts}}
         with:
           name: ${{ matrix.name }}
@@ -437,9 +437,16 @@ jobs:
           SENTRY_RELEASE: ${{ inputs.version }}
         run: flutter packages pub run sentry_dart_plugin
 
-      - name: Release
-        if: ${{! matrix.exclude_from_release && inputs.release_tag }}
+      - name: Upload specific files to Release
+        if: ${{! matrix.exclude_from_release && inputs.release_tag && matrix.specific_upload_artifacts}}
         env:
           GH_TOKEN: ${{ github.token }}
         run:
-          gh release upload ${{inputs.release_tag}} ${{ matrix.artifact_prefix }}-${{ inputs.version }}.* ${{ matrix.specific_upload_artifacts }}
+          gh release upload ${{inputs.release_tag}} ${{ matrix.specific_upload_artifacts }}
+
+      - name: Upload to Release
+        if: ${{! matrix.exclude_from_release && inputs.release_tag && !matrix.specific_upload_artifacts }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run:
+          gh release upload ${{inputs.release_tag}} ${{ matrix.artifact_prefix }}-${{ inputs.version }}.*
