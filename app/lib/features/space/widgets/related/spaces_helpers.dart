@@ -46,6 +46,7 @@ Widget remoteSubSpacesListUI(
 
   return GridView.builder(
     itemCount: itemCount,
+    padding: EdgeInsets.zero,
     physics: const NeverScrollableScrollPhysics(),
     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 1,
