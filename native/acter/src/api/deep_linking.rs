@@ -85,6 +85,17 @@ fn generate_object_link(
     )
 }
 
+fn generate_room_link(room_id: &OwnedRoomId, via: &[OwnedServerName]) -> String {
+    let room_id = &room_id.to_string()[1..];
+    format!(
+        "roomid/{room_id}/?{}",
+        via.iter()
+            .map(|v| format!("via={}", encode(v.as_str())))
+            .collect::<Vec<String>>()
+            .join("&")
+    )
+}
+
 impl RefDetails {
     pub(crate) fn new(client: SdkClient, inner: CoreRefDetails) -> Self {
         Self { client, inner }
@@ -93,6 +104,7 @@ impl RefDetails {
     pub fn can_generate_internal_link(&self) -> bool {
         match &self.inner {
             CoreRefDetails::Link { title, uri } => false,
+            CoreRefDetails::Room { room_id, .. } => true, // always
             CoreRefDetails::Task { room_id, .. }
             | CoreRefDetails::TaskList { room_id, .. }
             | CoreRefDetails::News { room_id, .. }
@@ -104,6 +116,11 @@ impl RefDetails {
     pub fn generate_internal_link(&self, include_preview: bool) -> Result<String> {
         Ok(match &self.inner {
             CoreRefDetails::Link { title, uri } => bail!("Link can't be made into internal link"),
+            CoreRefDetails::Room {
+                room_id,
+                via,
+                preview,
+            } => generate_room_link(room_id, via.as_slice()),
             CoreRefDetails::Task {
                 target_id,
                 room_id,

@@ -202,6 +202,7 @@ impl CalendarEventRefPreview {
         self.title.is_none() && self.room_display_name.is_none()
     }
 }
+
 #[derive(Eq, PartialEq, Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case", tag = "ref")]
 pub enum RefDetails {
@@ -291,6 +292,15 @@ pub enum RefDetails {
         /// The URI to open upon click
         uri: String,
     },
+    Room {
+        /// The room id of convo or space
+        room_id: OwnedRoomId,
+
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        via: Vec<OwnedServerName>,
+        #[serde(default, skip_serializing_if = "RefPreview::is_none")]
+        preview: RefPreview,
+    },
 }
 
 impl RefDetails {
@@ -300,6 +310,7 @@ impl RefDetails {
             RefDetails::TaskList { .. } => "task-list".to_string(),
             RefDetails::CalendarEvent { .. } => "calendar-event".to_string(),
             RefDetails::Link { .. } => "link".to_string(),
+            RefDetails::Room { .. } => "room".to_string(),
             RefDetails::Pin { .. } => "pin".to_string(),
             RefDetails::News { .. } => "news".to_string(),
         }
@@ -308,6 +319,7 @@ impl RefDetails {
     pub fn embed_action_str(&self) -> String {
         match self {
             RefDetails::Link { .. } => "link".to_string(),
+            RefDetails::Room { .. } => "room".to_string(),
             RefDetails::Pin { .. } => "pin".to_string(),
             RefDetails::News { .. } => "news".to_string(),
             RefDetails::Task { action, .. } => action.to_string(),
@@ -318,7 +330,7 @@ impl RefDetails {
 
     pub fn target_id_str(&self) -> Option<String> {
         match self {
-            RefDetails::Link { .. } => None,
+            RefDetails::Link { .. } | RefDetails::Room { .. } => None,
             RefDetails::Task { target_id, .. }
             | RefDetails::TaskList { target_id, .. }
             | RefDetails::Pin { target_id, .. }
@@ -330,6 +342,7 @@ impl RefDetails {
     pub fn room_id_str(&self) -> Option<String> {
         match self {
             RefDetails::Link { .. } => None,
+            RefDetails::Room { room_id, .. } => Some(room_id.to_string()),
             RefDetails::Task { room_id, .. }
             | RefDetails::TaskList { room_id, .. }
             | RefDetails::Pin { room_id, .. }
@@ -341,7 +354,8 @@ impl RefDetails {
     pub fn via_servers(&self) -> Vec<String> {
         match self {
             RefDetails::Link { .. } => vec![],
-            RefDetails::Task { via, .. }
+            RefDetails::Room { via, .. }
+            | RefDetails::Task { via, .. }
             | RefDetails::TaskList { via, .. }
             | RefDetails::Pin { via, .. }
             | RefDetails::News { via, .. }
@@ -360,7 +374,8 @@ impl RefDetails {
         match self {
             RefDetails::Link { title, .. } => Some(title.clone()),
             RefDetails::CalendarEvent { preview, .. } => preview.title.clone(),
-            RefDetails::Pin { preview, .. }
+            RefDetails::Room { preview, .. }
+            | RefDetails::Pin { preview, .. }
             | RefDetails::News { preview, .. }
             | RefDetails::Task { preview, .. }
             | RefDetails::TaskList { preview, .. } => preview.title.clone(),
@@ -378,7 +393,8 @@ impl RefDetails {
     pub fn room_display_name(&self) -> Option<String> {
         match self {
             RefDetails::CalendarEvent { preview, .. } => preview.room_display_name.clone(),
-            RefDetails::Pin { preview, .. }
+            RefDetails::Room { preview, .. }
+            | RefDetails::Pin { preview, .. }
             | RefDetails::Task { preview, .. }
             | RefDetails::News { preview, .. }
             | RefDetails::TaskList { preview, .. } => preview.room_display_name.clone(),

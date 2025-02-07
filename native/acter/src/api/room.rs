@@ -15,6 +15,7 @@ use acter_core::{
         pins::PinEventContent,
         settings::ActerAppSettingsContent,
         tasks::{TaskEventContent, TaskListEventContent},
+        RefDetails as CoreRefDetails, RefPreview,
     },
     spaces::is_acter_space,
     statics::PURPOSE_FIELD_DEV,
@@ -61,6 +62,7 @@ use tracing::{info, warn};
 
 use super::{
     api::FfiBuffer,
+    deep_linking::RefDetails,
     push::{notification_mode_from_input, room_notification_mode_name},
 };
 use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
@@ -1753,6 +1755,27 @@ impl Room {
             .spawn(async move {
                 let response = room.redact(&event_id, reason.as_deref(), None).await?;
                 Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn ref_details(&self) -> Result<RefDetails> {
+        let room = self.room.clone();
+        let client = self.core.client().clone();
+        let room_id = self.room.room_id().to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let via = room.route().await?;
+                let room_display_name = room.cached_display_name();
+                Ok(RefDetails::new(
+                    client,
+                    CoreRefDetails::Room {
+                        room_id,
+                        via,
+                        preview: RefPreview::new(None, room_display_name),
+                    },
+                ))
             })
             .await?
     }
