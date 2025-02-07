@@ -336,7 +336,7 @@ impl CalendarEvent {
 
     pub async fn ref_details(&self) -> Result<RefDetails> {
         let room = self.room.clone();
-        let client = self.client.clone();
+        let client = self.client.deref().clone();
         let target_id = self.inner.event_id().to_owned();
         let room_id = self.room.room_id().to_owned();
         let title = self.inner.title.clone();

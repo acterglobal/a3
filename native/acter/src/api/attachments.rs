@@ -93,7 +93,7 @@ impl Attachment {
 
     pub fn ref_details(&self) -> Option<RefDetails> {
         if let AttachmentContent::Reference(r) = &self.inner.content {
-            Some(RefDetails::new(self.client.clone(), r.clone()))
+            Some(RefDetails::new(self.client.deref().clone(), r.clone()))
         } else {
             None
         }
