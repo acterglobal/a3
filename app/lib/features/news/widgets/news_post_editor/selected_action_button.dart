@@ -1,4 +1,5 @@
 import 'package:acter/common/actions/open_link.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
@@ -35,6 +36,7 @@ class SelectedActionButton extends ConsumerWidget {
       'calendar-event' => calendarActionButton(context, ref, refDetails!),
       'task-list' => taskListActionButton(context, ref, refDetails!),
       'link' => linkActionButton(context, refDetails!),
+      'space' => spaceActionButton(context, ref, refDetails!),
       _ => const SizedBox(),
     };
   }
@@ -164,6 +166,22 @@ class SelectedActionButton extends ConsumerWidget {
             style: Theme.of(context).textTheme.labelSmall,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget spaceActionButton(
+    BuildContext context,
+    WidgetRef ref,
+    RefDetails refDetail,
+  ) {
+    final refObjectId = refDetail.targetIdStr();
+    if (refObjectId == null) return SizedBox();
+
+    return SizedBox(
+      width: 300,
+      child: RoomCard(
+        roomId: refObjectId,
       ),
     );
   }
