@@ -108,6 +108,7 @@ enum Routes {
   // -- super invites
   settingsSuperInvites('/settings/super_invites'),
   actionCreateSuperInvite('/actions/createSuperInvite'),
+  createSuperInvite('/settings/super_invites/create'),
   // -- utils
   bugReport('/bug-report'),
   scanQrCode('/scan-qr-code'),
