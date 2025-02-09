@@ -28,7 +28,7 @@ type = "pin"
 title = "Acter Website"
 url = "https://acter.global"
 
-[objects.acter-website-tasklist]
+[objects.tasklist]
 type = "task-list"
 name = "Onboarding list" 
 
@@ -36,12 +36,11 @@ name = "Onboarding list"
 type = "task"
 title = "Scroll news"
 assignees = ["{{ main.user_id }}"]
-"m.relates_to" = { event_id = "{{ acter-website-tasklist.id }}" } 
+"m.relates_to" = { event_id = "{{ tasklist.id }}" }
 utc_due = "{{ now().as_rfc3339 }}"
 
 "#;
 
-#[ignore]
 #[tokio::test]
 async fn ref_event_on_pin() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
@@ -142,7 +141,6 @@ async fn ref_event_on_pin() -> Result<()> {
     Ok(())
 }
 
-#[ignore]
 #[tokio::test]
 async fn reference_pin_on_event() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
@@ -242,7 +240,6 @@ async fn reference_pin_on_event() -> Result<()> {
     Ok(())
 }
 
-#[ignore]
 #[tokio::test]
 async fn reference_pin_on_tasklist() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
@@ -342,7 +339,6 @@ async fn reference_pin_on_tasklist() -> Result<()> {
     Ok(())
 }
 
-#[ignore]
 #[tokio::test]
 async fn link_attachment_on_task() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
