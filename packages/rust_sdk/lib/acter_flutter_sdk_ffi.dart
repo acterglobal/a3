@@ -10285,54 +10285,6 @@ class Api {
     return tmp7;
   }
 
-  FfiListActerPin? __spacePinnedLinksFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _spacePinnedLinksFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListActerPin");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListActerPin._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
   bool? __spaceJoinFuturePoll(
     int boxed,
     int postCobject,
@@ -12740,54 +12692,6 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_Space");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = Space._(this, tmp13_1);
-    return tmp7;
-  }
-
-  FfiListActerPin? __clientPinnedLinksFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _clientPinnedLinksFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListActerPin");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListActerPin._(this, tmp13_1);
-    final tmp7 = tmp14;
     return tmp7;
   }
 
@@ -26332,16 +26236,6 @@ class Api {
       int Function(
         int,
       )>();
-  late final _spacePinnedLinksPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-          )>>("__Space_pinned_links");
-
-  late final _spacePinnedLinks = _spacePinnedLinksPtr.asFunction<
-      int Function(
-        int,
-      )>();
   late final _spacePinDraftPtr = _lookup<
       ffi.NativeFunction<
           _SpacePinDraftReturn Function(
@@ -28303,16 +28197,6 @@ class Api {
         int,
         int,
         int,
-        int,
-      )>();
-  late final _clientPinnedLinksPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-          )>>("__Client_pinned_links");
-
-  late final _clientPinnedLinks = _clientPinnedLinksPtr.asFunction<
-      int Function(
         int,
       )>();
   late final _clientInvitationsRxPtr = _lookup<
@@ -33030,21 +32914,6 @@ class Api {
         int,
         int,
       )>();
-  late final _spacePinnedLinksFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpacePinnedLinksFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_pinned_links_future_poll");
-
-  late final _spacePinnedLinksFuturePoll =
-      _spacePinnedLinksFuturePollPtr.asFunction<
-          _SpacePinnedLinksFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
   late final _spaceJoinFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _SpaceJoinFuturePollReturn Function(
@@ -33812,21 +33681,6 @@ class Api {
         int,
         int,
       )>();
-  late final _clientPinnedLinksFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientPinnedLinksFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_pinned_links_future_poll");
-
-  late final _clientPinnedLinksFuturePoll =
-      _clientPinnedLinksFuturePollPtr.asFunction<
-          _ClientPinnedLinksFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
   late final _clientSuggestedUsersFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientSuggestedUsersFuturePollReturn Function(
@@ -54462,21 +54316,6 @@ class Space {
     return tmp2;
   }
 
-  /// the links pinned to this Space
-  Future<FfiListActerPin> pinnedLinks() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._spacePinnedLinks(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Space_pinned_links_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__spacePinnedLinksFuturePoll);
-    return tmp2;
-  }
-
   /// pin draft builder
   PinDraft pinDraft() {
     var tmp0 = 0;
@@ -58696,21 +58535,6 @@ class Client {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__clientSpaceFuturePoll);
     return tmp6;
-  }
-
-  /// Get the Pinned Links for the client
-  Future<FfiListActerPin> pinnedLinks() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientPinnedLinks(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_pinned_links_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__clientPinnedLinksFuturePoll);
-    return tmp2;
   }
 
   /// Get the invitation event stream
@@ -69141,21 +68965,6 @@ class _SpacePinsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _SpacePinnedLinksFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.IntPtr()
-  external int arg5;
-}
-
 class _SpaceJoinFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -69927,21 +69736,6 @@ class _ClientJoinRoomFuturePollReturn extends ffi.Struct {
 }
 
 class _ClientSpaceFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.IntPtr()
-  external int arg5;
-}
-
-class _ClientPinnedLinksFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
