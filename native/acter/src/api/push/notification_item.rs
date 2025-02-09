@@ -8,6 +8,7 @@ use acter_core::{
     push::default_rules,
 };
 use anyhow::{bail, Context, Result};
+use chrono::{NaiveDate, NaiveTime, Utc};
 use derive_builder::Builder;
 use futures::stream::StreamExt;
 use matrix_sdk::{
@@ -365,6 +366,13 @@ pub enum NotificationItemInner {
         event_id: OwnedEventId,
         done: bool,
     },
+    TaskDueDateChange {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+        new_due_date: Option<NaiveDate>,
+    },
 
     // catch-all for other object changes
     OtherChanges {
@@ -396,6 +404,7 @@ impl NotificationItemInner {
                     "taskReOpen"
                 }
             }
+            NotificationItemInner::TaskDueDateChange { .. } => "taskDueDateChange",
             NotificationItemInner::Boost { .. } => "news",
             NotificationItemInner::Creation { .. } => "creation",
             NotificationItemInner::TitleChange { .. } => "titleChange",
@@ -446,6 +455,10 @@ impl NotificationItemInner {
                 parent_obj: Some(parent_obj),
                 ..
             }
+            | NotificationItemInner::TaskDueDateChange {
+                parent_obj: Some(parent_obj),
+                ..
+            }
             | NotificationItemInner::Creation { parent_obj, .. } => parent_obj.target_url(),
             NotificationItemInner::Comment {
                 parent_obj: Some(parent),
@@ -491,6 +504,12 @@ impl NotificationItemInner {
                 ..
             }
             | NotificationItemInner::TaskProgress {
+                parent_id,
+                room_id,
+                event_id,
+                ..
+            }
+            | NotificationItemInner::TaskDueDateChange {
                 parent_id,
                 room_id,
                 event_id,
@@ -548,6 +567,7 @@ impl NotificationItemInner {
             | NotificationItemInner::Rsvp { parent_obj, .. }
             | NotificationItemInner::TaskAdd { parent_obj, .. }
             | NotificationItemInner::TaskProgress { parent_obj, .. }
+            | NotificationItemInner::TaskDueDateChange { parent_obj, .. }
             | NotificationItemInner::OtherChanges { parent_obj, .. } => parent_obj.clone(),
             NotificationItemInner::Comment { parent_obj, .. }
             | NotificationItemInner::Reaction { parent_obj, .. } => parent_obj.clone(),
@@ -563,6 +583,7 @@ impl NotificationItemInner {
             | NotificationItemInner::Rsvp { parent_id, .. }
             | NotificationItemInner::TaskAdd { parent_id, .. }
             | NotificationItemInner::TaskProgress { parent_id, .. }
+            | NotificationItemInner::TaskDueDateChange { parent_id, .. }
             | NotificationItemInner::OtherChanges { parent_id, .. } => Some(parent_id.to_string()),
             NotificationItemInner::Comment { parent_id, .. }
             | NotificationItemInner::Reaction { parent_id, .. } => Some(parent_id.to_string()),
@@ -580,6 +601,15 @@ impl NotificationItemInner {
     pub fn new_date(&self) -> Option<UtcDateTime> {
         match &self {
             NotificationItemInner::EventDateChange { new_date, .. } => Some(*new_date),
+            NotificationItemInner::TaskDueDateChange {
+                new_due_date: Some(new_due_date),
+                ..
+            } => Some(UtcDateTime::from_naive_utc_and_offset(
+                new_due_date.and_time(
+                    NaiveTime::from_num_seconds_from_midnight_opt(0, 0).expect("midnight exists"),
+                ),
+                Utc,
+            )),
             _ => None,
         }
     }
@@ -1126,6 +1156,21 @@ impl NotificationItem {
                             done: new_percent
                                 .map(|percent| percent >= 100)
                                 .unwrap_or_default(),
+                        })
+                        .build()?)
+                } else if let Some(due_date) = e.content.due_date {
+                    Ok(builder
+                        .inner(NotificationItemInner::TaskDueDateChange {
+                            parent_obj,
+                            parent_id: e.content.task.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                            new_due_date: due_date,
+                        })
+                        .title(if let Some(due_date) = due_date {
+                            due_date.format("%Y-%m-%d").to_string()
+                        } else {
+                            "removed due date".to_owned()
                         })
                         .build()?)
                 } else if let Some(new_title) = e.content.title {
