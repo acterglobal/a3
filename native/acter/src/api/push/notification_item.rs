@@ -1,10 +1,11 @@
 use acter_core::{
     events::{
+        attachments::{AttachmentContent, FallbackAttachmentContent},
         news::{FallbackNewsContent, NewsContent},
         rsvp::RsvpStatus,
         AnyActerEvent, SyncAnyActerEvent, UtcDateTime,
     },
-    models::{ActerModel, AnyActerModel},
+    models::{ActerModel, AnyActerModel, Attachment},
     push::default_rules,
 };
 use anyhow::{bail, Context, Result};
@@ -304,6 +305,13 @@ pub enum NotificationItemInner {
         first_slide: Option<NewsContent>,
         event_id: OwnedEventId,
     },
+    Attachment {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+        content: Option<MsgContent>,
+    },
     Comment {
         parent_obj: Option<NotificationItemParent>,
         parent_id: OwnedEventId,
@@ -401,6 +409,7 @@ impl NotificationItemInner {
             NotificationItemInner::Invite { .. } => "invite",
             NotificationItemInner::Comment { .. } => "comment",
             NotificationItemInner::Reaction { .. } => "reaction",
+            NotificationItemInner::Attachment { .. } => "attachment",
             NotificationItemInner::ChatMessage { is_dm, .. } => {
                 if *is_dm {
                     "dm"
@@ -481,6 +490,15 @@ impl NotificationItemInner {
                 ..
             }
             | NotificationItemInner::Creation { parent_obj, .. } => parent_obj.target_url(),
+            NotificationItemInner::Attachment {
+                parent_obj: Some(parent),
+                event_id,
+                ..
+            } => format!(
+                "{}?section=attachments&attachmentId={}",
+                parent.target_url(),
+                encode(event_id.as_str()),
+            ),
             NotificationItemInner::Comment {
                 parent_obj: Some(parent),
                 event_id,
@@ -560,6 +578,12 @@ impl NotificationItemInner {
                 parent_id,
                 ..
             }
+            | NotificationItemInner::Attachment {
+                event_id,
+                room_id,
+                parent_id,
+                ..
+            }
             | NotificationItemInner::Reaction {
                 parent_id,
                 room_id,
@@ -604,6 +628,7 @@ impl NotificationItemInner {
             | NotificationItemInner::TaskAccept { parent_obj, .. }
             | NotificationItemInner::TaskDecline { parent_obj, .. }
             | NotificationItemInner::OtherChanges { parent_obj, .. } => parent_obj.clone(),
+            NotificationItemInner::Attachment { parent_obj, .. } => parent_obj.clone(),
             NotificationItemInner::Comment { parent_obj, .. }
             | NotificationItemInner::Reaction { parent_obj, .. } => parent_obj.clone(),
             _ => None,
@@ -621,6 +646,7 @@ impl NotificationItemInner {
             | NotificationItemInner::TaskDueDateChange { parent_id, .. }
             | NotificationItemInner::TaskAccept { parent_id, .. }
             | NotificationItemInner::TaskDecline { parent_id, .. }
+            | NotificationItemInner::Attachment { parent_id, .. }
             | NotificationItemInner::OtherChanges { parent_id, .. } => Some(parent_id.to_string()),
             NotificationItemInner::Comment { parent_id, .. }
             | NotificationItemInner::Reaction { parent_id, .. } => Some(parent_id.to_string()),
@@ -668,6 +694,7 @@ impl NotificationItemInner {
                 }
                 _ => None,
             },
+            NotificationItemInner::Attachment { content, .. } => content.clone(),
             NotificationItemInner::Comment { content, .. } => Some(MsgContent::from(content)),
             NotificationItemInner::Boost {
                 first_slide: Some(first_slide),
@@ -901,6 +928,92 @@ impl NotificationItem {
                 let content = e.content.content;
                 Ok(builder
                     .inner(NotificationItemInner::Comment {
+                        parent_obj,
+                        parent_id: e.content.on.event_id,
+                        room_id: e.room_id,
+                        event_id: e.event_id,
+                        content,
+                    })
+                    .build()?)
+            }
+            AnyActerEvent::Attachment(MessageLikeEvent::Original(e)) => {
+                let parent_obj = client
+                    .store()
+                    .get(&e.content.on.event_id)
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of comment");
+                    })
+                    .ok()
+                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
+
+                let (content, builder) = match e.content.content {
+                    AttachmentContent::Image(i)
+                    | AttachmentContent::Fallback(FallbackAttachmentContent::Image(i)) => (
+                        Some(MsgContent::from(&i)),
+                        builder.title(
+                            i.filename
+                                .map(|f| format!("🖼️ \"{f}\""))
+                                .unwrap_or("🖼️ Image".to_owned()),
+                        ),
+                    ),
+                    AttachmentContent::Audio(i)
+                    | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(i)) => (
+                        Some(MsgContent::from(&i)),
+                        builder.title(
+                            i.filename
+                                .map(|f| format!("🎵 \"{f}\""))
+                                .unwrap_or("Audio".to_owned()),
+                        ),
+                    ),
+                    AttachmentContent::Video(i)
+                    | AttachmentContent::Fallback(FallbackAttachmentContent::Video(i)) => (
+                        Some(MsgContent::from(&i)),
+                        builder.title(
+                            i.filename
+                                .map(|f| format!("🎥 \"{f}\""))
+                                .unwrap_or("Video".to_owned()),
+                        ),
+                    ),
+                    AttachmentContent::Location(i)
+                    | AttachmentContent::Fallback(FallbackAttachmentContent::Location(i)) => (
+                        None,
+                        builder.title(
+                            i.location
+                                .and_then(|l| l.description)
+                                .map(|f| format!("📍 \"{f}\""))
+                                .unwrap_or("📍 Location".to_owned()),
+                        ),
+                    ),
+
+                    AttachmentContent::File(i)
+                    | AttachmentContent::Fallback(FallbackAttachmentContent::File(i)) => (
+                        None,
+                        builder.title(
+                            i.filename
+                                .map(|f| format!("📄 \"{f}\""))
+                                .unwrap_or("📄 File".to_owned()),
+                        ),
+                    ),
+                    AttachmentContent::Link(i) => (
+                        None,
+                        builder.title(
+                            i.name
+                                .map(|f| format!("🔗 \"{f}\""))
+                                .unwrap_or("Link".to_owned()),
+                        ),
+                    ),
+                    AttachmentContent::Reference(r) => (
+                        None,
+                        builder.title(
+                            r.title()
+                                .map(|f| format!("🔗 \"{f}\""))
+                                .unwrap_or("Reference".to_owned()),
+                        ),
+                    ),
+                };
+                Ok(builder
+                    .inner(NotificationItemInner::Attachment {
                         parent_obj,
                         parent_id: e.content.on.event_id,
                         room_id: e.room_id,
