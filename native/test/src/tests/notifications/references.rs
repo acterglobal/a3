@@ -19,7 +19,7 @@ space = { type = "space", is-default = true, required = true, description = "The
 
 [objects.acter-event-1]
 type = "calendar-event"
-title = "First meeting"wi
+title = "First meeting"
 utc_start = "{{ future(add_mins=1).as_rfc3339 }}"
 utc_end = "{{ future(add_mins=60).as_rfc3339 }}"
 
@@ -122,13 +122,12 @@ async fn ref_event_on_pin() -> Result<()> {
 
     let obj_id = obj_entry.event_id().to_string();
 
-    notification_item.body().expect("found content");
-    assert_eq!(notification_item.title(), "🖼️ \"Fishy.png\"");
+    assert_eq!(notification_item.title(), "🗓️ First meeting");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
         format!(
-            "/pins/{}?section=attachments&attachmentId={}",
+            "/pins/{}?section=references&referenceId={}",
             obj_id,
             encode(notification_id.as_str())
         )
@@ -222,12 +221,12 @@ async fn reference_pin_on_event() -> Result<()> {
 
     let obj_id = obj_entry.event_id().to_string();
 
-    assert_eq!(notification_item.title(), "📌 \"Acter Website\"");
+    assert_eq!(notification_item.title(), "📌 Acter Website");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
         format!(
-            "/events/{}?section=attachments&attachmentId={}",
+            "/events/{}?section=references&referenceId={}",
             obj_id,
             encode(notification_id.as_str())
         )
@@ -321,12 +320,12 @@ async fn reference_pin_on_tasklist() -> Result<()> {
 
     let obj_id = obj_entry.event_id().to_string();
 
-    assert_eq!(notification_item.title(), "📌 \"Acter Website\"");
+    assert_eq!(notification_item.title(), "📌 Acter Website");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
         format!(
-            "/tasks/{}?section=attachments&attachmentId={}",
+            "/tasks/{}?section=references&referenceId={}",
             obj_id,
             encode(notification_id.as_str())
         )
@@ -425,13 +424,12 @@ async fn link_attachment_on_task() -> Result<()> {
 
     let obj_id = obj_entry.event_id().to_string();
 
-    notification_item.body().expect("found content");
-    assert_eq!(notification_item.title(), "📌 \"Acter Website\"");
+    assert_eq!(notification_item.title(), "📌 Acter Website");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
         format!(
-            "/tasks/{}/{}?section=attachments&attachmentId={}",
+            "/tasks/{}/{}?section=references&referenceId={}",
             obj_entry.task_list_id_str(),
             obj_id,
             encode(notification_id.as_str())
@@ -439,7 +437,7 @@ async fn link_attachment_on_task() -> Result<()> {
     );
     assert_eq!(parent.object_type_str().as_str(), "task");
     assert_eq!(parent.title().unwrap().as_str(), "Scroll news");
-    assert_eq!(parent.emoji(), "✔️"); // task
+    assert_eq!(parent.emoji(), "☑️"); // task
 
     Ok(())
 }
