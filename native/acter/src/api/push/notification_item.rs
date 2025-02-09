@@ -1,10 +1,11 @@
 use acter_core::{
     events::{
+        attachments::{AttachmentContent, FallbackAttachmentContent},
         news::{FallbackNewsContent, NewsContent},
         rsvp::RsvpStatus,
-        AnyActerEvent, SyncAnyActerEvent, UtcDateTime,
+        AnyActerEvent, RefDetails, SyncAnyActerEvent, UtcDateTime,
     },
-    models::{ActerModel, AnyActerModel},
+    models::{ActerModel, AnyActerModel, Attachment},
     push::default_rules,
 };
 use anyhow::{bail, Context, Result};
@@ -40,6 +41,7 @@ use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup, RawNotificationEvent,
 };
+use pulldown_cmark::RefDefs;
 use ruma::{
     api::client::push::PushRule,
     events::{policy::rule, room::message::TextMessageEventContent},
@@ -304,6 +306,19 @@ pub enum NotificationItemInner {
         first_slide: Option<NewsContent>,
         event_id: OwnedEventId,
     },
+    Attachment {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+        content: Option<MsgContent>,
+    },
+    Reference {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+    },
     Comment {
         parent_obj: Option<NotificationItemParent>,
         parent_id: OwnedEventId,
@@ -401,6 +416,8 @@ impl NotificationItemInner {
             NotificationItemInner::Invite { .. } => "invite",
             NotificationItemInner::Comment { .. } => "comment",
             NotificationItemInner::Reaction { .. } => "reaction",
+            NotificationItemInner::Attachment { .. } => "attachment",
+            NotificationItemInner::Reference { .. } => "references",
             NotificationItemInner::ChatMessage { is_dm, .. } => {
                 if *is_dm {
                     "dm"
@@ -481,6 +498,24 @@ impl NotificationItemInner {
                 ..
             }
             | NotificationItemInner::Creation { parent_obj, .. } => parent_obj.target_url(),
+            NotificationItemInner::Attachment {
+                parent_obj: Some(parent),
+                event_id,
+                ..
+            } => format!(
+                "{}?section=attachments&attachmentId={}",
+                parent.target_url(),
+                encode(event_id.as_str()),
+            ),
+            NotificationItemInner::Reference {
+                parent_obj: Some(parent),
+                event_id,
+                ..
+            } => format!(
+                "{}?section=references&referenceId={}",
+                parent.target_url(),
+                encode(event_id.as_str()),
+            ),
             NotificationItemInner::Comment {
                 parent_obj: Some(parent),
                 event_id,
@@ -560,6 +595,18 @@ impl NotificationItemInner {
                 parent_id,
                 ..
             }
+            | NotificationItemInner::Attachment {
+                event_id,
+                room_id,
+                parent_id,
+                ..
+            }
+            | NotificationItemInner::Reference {
+                event_id,
+                room_id,
+                parent_id,
+                ..
+            }
             | NotificationItemInner::Reaction {
                 parent_id,
                 room_id,
@@ -603,8 +650,10 @@ impl NotificationItemInner {
             | NotificationItemInner::TaskDueDateChange { parent_obj, .. }
             | NotificationItemInner::TaskAccept { parent_obj, .. }
             | NotificationItemInner::TaskDecline { parent_obj, .. }
-            | NotificationItemInner::OtherChanges { parent_obj, .. } => parent_obj.clone(),
-            NotificationItemInner::Comment { parent_obj, .. }
+            | NotificationItemInner::OtherChanges { parent_obj, .. }
+            | NotificationItemInner::Attachment { parent_obj, .. }
+            | NotificationItemInner::Reference { parent_obj, .. }
+            | NotificationItemInner::Comment { parent_obj, .. }
             | NotificationItemInner::Reaction { parent_obj, .. } => parent_obj.clone(),
             _ => None,
         }
@@ -621,8 +670,11 @@ impl NotificationItemInner {
             | NotificationItemInner::TaskDueDateChange { parent_id, .. }
             | NotificationItemInner::TaskAccept { parent_id, .. }
             | NotificationItemInner::TaskDecline { parent_id, .. }
-            | NotificationItemInner::OtherChanges { parent_id, .. } => Some(parent_id.to_string()),
-            NotificationItemInner::Comment { parent_id, .. }
+            | NotificationItemInner::Attachment { parent_id, .. }
+            | NotificationItemInner::OtherChanges { parent_id, .. }
+            | NotificationItemInner::Comment { parent_id, .. }
+            | NotificationItemInner::Attachment { parent_id, .. }
+            | NotificationItemInner::Reference { parent_id, .. }
             | NotificationItemInner::Reaction { parent_id, .. } => Some(parent_id.to_string()),
             _ => None,
         }
@@ -668,6 +720,7 @@ impl NotificationItemInner {
                 }
                 _ => None,
             },
+            NotificationItemInner::Attachment { content, .. } => content.clone(),
             NotificationItemInner::Comment { content, .. } => Some(MsgContent::from(content)),
             NotificationItemInner::Boost {
                 first_slide: Some(first_slide),
@@ -909,6 +962,134 @@ impl NotificationItem {
                     })
                     .build()?)
             }
+            AnyActerEvent::Attachment(MessageLikeEvent::Original(e)) => {
+                let parent_obj = client
+                    .store()
+                    .get(&e.content.on.event_id)
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of comment");
+                    })
+                    .ok()
+                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
+
+                Ok(match e.content.content {
+                    AttachmentContent::Image(i)
+                    | AttachmentContent::Fallback(FallbackAttachmentContent::Image(i)) => builder
+                        .inner(NotificationItemInner::Attachment {
+                            parent_obj,
+                            parent_id: e.content.on.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                            content: Some(MsgContent::from(&i)),
+                        })
+                        .title(
+                            i.filename
+                                .map(|f| format!("🖼️ \"{f}\""))
+                                .unwrap_or("🖼️ Image".to_owned()),
+                        )
+                        .build()?,
+
+                    AttachmentContent::Audio(i)
+                    | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(i)) => builder
+                        .inner(NotificationItemInner::Attachment {
+                            parent_obj,
+                            parent_id: e.content.on.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                            content: Some(MsgContent::from(&i)),
+                        })
+                        .title(
+                            i.filename
+                                .map(|f| format!("🎵 \"{f}\""))
+                                .unwrap_or("Audio".to_owned()),
+                        )
+                        .build()?,
+
+                    AttachmentContent::Video(i)
+                    | AttachmentContent::Fallback(FallbackAttachmentContent::Video(i)) => builder
+                        .inner(NotificationItemInner::Attachment {
+                            parent_obj,
+                            parent_id: e.content.on.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                            content: Some(MsgContent::from(&i)),
+                        })
+                        .title(
+                            i.filename
+                                .map(|f| format!("🎥 \"{f}\""))
+                                .unwrap_or("Video".to_owned()),
+                        )
+                        .build()?,
+                    AttachmentContent::Location(i)
+                    | AttachmentContent::Fallback(FallbackAttachmentContent::Location(i)) => {
+                        builder
+                            .inner(NotificationItemInner::Attachment {
+                                parent_obj,
+                                parent_id: e.content.on.event_id,
+                                room_id: e.room_id,
+                                event_id: e.event_id,
+                                content: None,
+                            })
+                            .title(
+                                i.location
+                                    .and_then(|l| l.description)
+                                    .map(|f| format!("📍 \"{f}\""))
+                                    .unwrap_or("📍 Location".to_owned()),
+                            )
+                            .build()?
+                    }
+
+                    AttachmentContent::File(i)
+                    | AttachmentContent::Fallback(FallbackAttachmentContent::File(i)) => builder
+                        .inner(NotificationItemInner::Attachment {
+                            parent_obj,
+                            parent_id: e.content.on.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                            content: None,
+                        })
+                        .title(
+                            i.filename
+                                .map(|f| format!("📄 \"{f}\""))
+                                .unwrap_or("📄 File".to_owned()),
+                        )
+                        .build()?,
+                    AttachmentContent::Link(i) => builder
+                        .inner(NotificationItemInner::Attachment {
+                            parent_obj,
+                            parent_id: e.content.on.event_id,
+                            room_id: e.room_id,
+                            event_id: e.event_id,
+                            content: None,
+                        })
+                        .title(
+                            i.name
+                                .map(|f| format!("🔗 \"{f}\""))
+                                .unwrap_or("Link".to_owned()),
+                        )
+                        .build()?,
+                    AttachmentContent::Reference(r) => {
+                        let title = r.title().unwrap_or("Reference".to_owned());
+                        builder
+                            .inner(NotificationItemInner::Reference {
+                                parent_obj,
+                                parent_id: e.content.on.event_id,
+                                room_id: e.room_id,
+                                event_id: e.event_id,
+                            })
+                            .title(match r {
+                                RefDetails::CalendarEvent { .. } => format!("🗓️ {title}"),
+                                RefDetails::Pin { .. } => format!("📌 {title}"),
+                                RefDetails::News { .. } => "🚀 boost".to_string(),
+                                RefDetails::Task { .. } => format!("☑️ {title}"),
+                                RefDetails::TaskList { .. } => format!("📋 {title}"),
+                                RefDetails::Link { .. } => format!("🔗 {title}"),
+                            })
+                            .build()?
+                    }
+                })
+            }
 
             AnyActerEvent::Reaction(MessageLikeEvent::Original(e)) => {
                 let parent_obj = client
@@ -1045,6 +1226,7 @@ impl NotificationItem {
                             event_id: e.event_id,
                             new_date,
                         })
+                        .title(new_date.to_rfc3339())
                         .build()?);
                 } else if let Some(new_date) = e.content.utc_end {
                     return Ok(builder
@@ -1055,6 +1237,7 @@ impl NotificationItem {
                             event_id: e.event_id,
                             new_date,
                         })
+                        .title(new_date.to_rfc3339())
                         .build()?);
                 } else {
                     // fallback: other changes

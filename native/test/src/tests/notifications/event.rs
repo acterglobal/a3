@@ -268,7 +268,7 @@ async fn event_rescheduled() -> Result<()> {
 
     let obj_id = obj_entry.event_id().to_string();
     assert_eq!(notification_item.new_date(), Some(new_date));
-    assert_eq!(notification_item.title(), "title");
+    assert_eq!(notification_item.title(), new_date.to_rfc3339());
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
