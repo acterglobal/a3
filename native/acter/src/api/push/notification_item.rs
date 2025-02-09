@@ -373,7 +373,18 @@ pub enum NotificationItemInner {
         event_id: OwnedEventId,
         new_due_date: Option<NaiveDate>,
     },
-
+    TaskAccept {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+    },
+    TaskDecline {
+        parent_obj: Option<NotificationItemParent>,
+        parent_id: OwnedEventId,
+        room_id: OwnedRoomId,
+        event_id: OwnedEventId,
+    },
     // catch-all for other object changes
     OtherChanges {
         parent_obj: Option<NotificationItemParent>,
@@ -405,6 +416,8 @@ impl NotificationItemInner {
                 }
             }
             NotificationItemInner::TaskDueDateChange { .. } => "taskDueDateChange",
+            NotificationItemInner::TaskAccept { .. } => "taskAccept",
+            NotificationItemInner::TaskDecline { .. } => "taskDecline",
             NotificationItemInner::Boost { .. } => "news",
             NotificationItemInner::Creation { .. } => "creation",
             NotificationItemInner::TitleChange { .. } => "titleChange",
@@ -456,6 +469,14 @@ impl NotificationItemInner {
                 ..
             }
             | NotificationItemInner::TaskDueDateChange {
+                parent_obj: Some(parent_obj),
+                ..
+            }
+            | NotificationItemInner::TaskAccept {
+                parent_obj: Some(parent_obj),
+                ..
+            }
+            | NotificationItemInner::TaskDecline {
                 parent_obj: Some(parent_obj),
                 ..
             }
@@ -515,6 +536,18 @@ impl NotificationItemInner {
                 event_id,
                 ..
             }
+            | NotificationItemInner::TaskAccept {
+                parent_id,
+                room_id,
+                event_id,
+                ..
+            }
+            | NotificationItemInner::TaskDecline {
+                parent_id,
+                room_id,
+                event_id,
+                ..
+            }
             | NotificationItemInner::OtherChanges {
                 parent_id,
                 room_id,
@@ -568,6 +601,8 @@ impl NotificationItemInner {
             | NotificationItemInner::TaskAdd { parent_obj, .. }
             | NotificationItemInner::TaskProgress { parent_obj, .. }
             | NotificationItemInner::TaskDueDateChange { parent_obj, .. }
+            | NotificationItemInner::TaskAccept { parent_obj, .. }
+            | NotificationItemInner::TaskDecline { parent_obj, .. }
             | NotificationItemInner::OtherChanges { parent_obj, .. } => parent_obj.clone(),
             NotificationItemInner::Comment { parent_obj, .. }
             | NotificationItemInner::Reaction { parent_obj, .. } => parent_obj.clone(),
@@ -584,6 +619,8 @@ impl NotificationItemInner {
             | NotificationItemInner::TaskAdd { parent_id, .. }
             | NotificationItemInner::TaskProgress { parent_id, .. }
             | NotificationItemInner::TaskDueDateChange { parent_id, .. }
+            | NotificationItemInner::TaskAccept { parent_id, .. }
+            | NotificationItemInner::TaskDecline { parent_id, .. }
             | NotificationItemInner::OtherChanges { parent_id, .. } => Some(parent_id.to_string()),
             NotificationItemInner::Comment { parent_id, .. }
             | NotificationItemInner::Reaction { parent_id, .. } => Some(parent_id.to_string()),
@@ -1204,6 +1241,47 @@ impl NotificationItem {
                         })
                         .build()?);
                 }
+            }
+            AnyActerEvent::TaskSelfAssign(MessageLikeEvent::Original(e)) => {
+                let parent_obj = client
+                    .store()
+                    .get(&e.content.task.event_id)
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of comment");
+                    })
+                    .ok()
+                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
+
+                Ok(builder
+                    .inner(NotificationItemInner::TaskAccept {
+                        parent_obj,
+                        parent_id: e.content.task.event_id,
+                        room_id: e.room_id,
+                        event_id: e.event_id,
+                    })
+                    .build()?)
+            }
+
+            AnyActerEvent::TaskSelfUnassign(MessageLikeEvent::Original(e)) => {
+                let parent_obj = client
+                    .store()
+                    .get(&e.content.task.event_id)
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of comment");
+                    })
+                    .ok()
+                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
+
+                Ok(builder
+                    .inner(NotificationItemInner::TaskDecline {
+                        parent_obj,
+                        parent_id: e.content.task.event_id,
+                        room_id: e.room_id,
+                        event_id: e.event_id,
+                    })
+                    .build()?)
             }
 
             _ => {
