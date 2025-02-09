@@ -81,11 +81,22 @@ impl Client {
                 for content in all_news {
                     let room_id = content.room_id().to_owned();
                     let room = match rooms_map.entry(room_id) {
-                        Entry::Occupied(t) => t.get().clone(),
+                        Entry::Occupied(t) => {
+                            let room = t.get();
+                            if room.state() == RoomState::Joined {
+                                room.clone()
+                            } else {
+                                continue;
+                            }
+                        }
                         Entry::Vacant(e) => {
                             if let Some(room) = client.get_room(e.key()) {
                                 e.insert(room.clone());
-                                room
+                                if room.state() == RoomState::Joined {
+                                    room
+                                } else {
+                                    continue;
+                                }
                             } else {
                                 /// User not part of the room anymore, ignore
                                 continue;
