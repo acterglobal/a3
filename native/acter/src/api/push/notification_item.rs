@@ -1226,6 +1226,7 @@ impl NotificationItem {
                             event_id: e.event_id,
                             new_date,
                         })
+                        .title(new_date.to_rfc3339())
                         .build()?);
                 } else if let Some(new_date) = e.content.utc_end {
                     return Ok(builder
@@ -1236,6 +1237,7 @@ impl NotificationItem {
                             event_id: e.event_id,
                             new_date,
                         })
+                        .title(new_date.to_rfc3339())
                         .build()?);
                 } else {
                     // fallback: other changes
