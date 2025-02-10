@@ -4,6 +4,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_notifify/l10n/l10n.dart';
+import 'package:acter_notifify/l10n/l10n_en.dart';
 import 'package:acter_notifify/local.dart';
 import 'package:acter_notifify/ntfy.dart';
 import 'package:acter_notifify/push.dart';
@@ -30,6 +32,12 @@ typedef ShouldShowCheck = FutureOr<bool> Function(String url);
 /// When we get a new token, we inform all clients about this. We call this callback
 /// to get a list of currently activated clients.
 typedef CurrentClientsGen = FutureOr<List<Client>> Function();
+
+ActerNotififyL10n locales = ActerNotififyL10nEn();
+
+void setActerNotififyL1On(ActerNotififyL10n newLocale) {
+  locales = newLocale;
+}
 
 /// Initialize Notification support
 Future<String?> initializeNotifify({

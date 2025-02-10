@@ -15,6 +15,7 @@ import 'package:acter/config/setup.dart';
 import 'package:acter/features/cli/main.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/router/router.dart';
+import 'package:acter_notifify/l10n/l10n.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -134,7 +135,10 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
         title: 'Acter',
         builder: builder,
         locale: Locale(language),
-        localizationsDelegates: L10n.localizationsDelegates,
+        localizationsDelegates: [
+          ...L10n.localizationsDelegates,
+          ...ActerNotififyL10n.localizationsDelegates,
+        ],
         supportedLocales: L10n.supportedLocales,
         // MaterialApp contains our top-level Navigator
       ),

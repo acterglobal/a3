@@ -1,4 +1,5 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_notifify/acter_notifify.dart';
 import 'package:acter_notifify/processing/utils.dart';
 
 (String, String?) titleAndBodyForObjectTitleChange(
@@ -10,7 +11,7 @@ import 'package:acter_notifify/processing/utils.dart';
   final parent = notification.parent();
   if (parent != null) {
     final title = getObjectCentricTitlePart(parent, 'renamed');
-    final body = 'by $username to "$newTitle"';
+    final body = locales.objectTitleChangeBody(username, newTitle);
     return (title, body);
   } else {
     final title = '$username renamed title to "$newTitle"';
