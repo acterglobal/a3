@@ -1,5 +1,4 @@
 {
-    "@@locale": "en",
     "objectTitleChangeTitle": "{parentInfo} renamed",
     "@objectTitleChangeTitle": {
         "placeholders": {
@@ -30,5 +29,26 @@
                 "description": "The new title of this object"
             }
         }
-    }
+    },
+    "objectDescriptionChangeTitle": "{parentInfo} changed",
+    "@objectDescriptionChangeTitle": {
+        "placeholders": {
+            "parentInfo": {
+                "description": "Type Emoji & title of parent",
+                "example": "📌 The House"
+            }
+        }
+    },
+    "objectDescriptionChangeBody": "{username} updated description: \"{newDescription}\"",
+    "@objectDescriptionChangeBody": {
+        "placeholders": {
+            "username": {
+                "description": "user display name of sender"
+            },
+            "newDescription": {
+                "description": "The new description of this object"
+            }
+        }
+    },
+    "@@locale": "en"
 }

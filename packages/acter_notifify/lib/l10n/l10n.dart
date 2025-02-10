@@ -110,6 +110,18 @@ abstract class ActerNotififyL10n {
   /// In en, this message translates to:
   /// **'by {username} to \"{newTitle}\"'**
   String objectTitleChangeBody(Object username, Object newTitle);
+
+  /// No description provided for @objectDescriptionChangeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{parentInfo} changed'**
+  String objectDescriptionChangeTitle(Object parentInfo);
+
+  /// No description provided for @objectDescriptionChangeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{username} updated description: \"{newDescription}\"'**
+  String objectDescriptionChangeBody(Object username, Object newDescription);
 }
 
 class _ActerNotififyL10nDelegate extends LocalizationsDelegate<ActerNotififyL10n> {

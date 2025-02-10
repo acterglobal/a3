@@ -1,5 +1,5 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter_notifify/processing/utils.dart';
+import 'package:acter_notifify/acter_notifify.dart';
 
 (String, String?) titleAndBodyForObjectDescriptionChange(
     NotificationItem notification) {
@@ -7,11 +7,11 @@ import 'package:acter_notifify/processing/utils.dart';
   final username = sender.displayName() ?? sender.userId();
   final newDescription = notification.title();
 
-  final content = '$username updated description: "$newDescription"';
+  final content = locales.objectDescriptionChangeBody(username, newDescription);
 
   final parent = notification.parent();
   if (parent != null) {
-    final title = getObjectCentricTitlePart(parent, 'changed');
+    final title = locales.objectDescriptionChangeTitle(parent);
     return (title, content);
   } else {
     return (content, null);

@@ -20,4 +20,14 @@ class ActerNotififyL10nEn extends ActerNotififyL10n {
   String objectTitleChangeBody(Object username, Object newTitle) {
     return 'by $username to \"$newTitle\"';
   }
+
+  @override
+  String objectDescriptionChangeTitle(Object parentInfo) {
+    return '$parentInfo changed';
+  }
+
+  @override
+  String objectDescriptionChangeBody(Object username, Object newDescription) {
+    return '$username updated description: \"$newDescription\"';
+  }
 }
