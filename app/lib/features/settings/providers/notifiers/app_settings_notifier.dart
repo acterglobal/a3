@@ -19,7 +19,7 @@ class UserAppSettingsNotifier
 
   @override
   Future<ActerUserAppSettings> build() async {
-    final account = ref.watch(accountProvider);
+    final account = await ref.watch(accountProvider.future);
     _listener = account.subscribeAppSettingsStream();
     _poller = _listener.listen(
       (data) async {

@@ -1,12 +1,15 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show EventSendState;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
 
 class MessageMetadataBuilder extends ConsumerWidget {
@@ -37,12 +40,27 @@ class MessageMetadataBuilder extends ConsumerWidget {
         ),
       'SendingFailed' => Row(
           children: <Widget>[
-            Text(L10n.of(context).chatSendingFailed),
-            const SizedBox(width: 5),
             Icon(
               Atlas.warning_thin,
               color: Theme.of(context).colorScheme.error,
               size: 8,
+            ),
+            const SizedBox(width: 5),
+            Text(L10n.of(context).chatSendingFailed),
+            const SizedBox(width: 5),
+            ActerInlineTextButton.icon(
+              onPressed: () async {
+                try {
+                  sendState?.abort();
+                } catch (e) {
+                  EasyLoading.showError(L10n.of(context).error(e));
+                }
+              },
+              icon: Icon(
+                PhosphorIconsRegular.trash,
+                size: 8,
+              ),
+              label: Text(L10n.of(context).cancel),
             ),
           ],
         ),

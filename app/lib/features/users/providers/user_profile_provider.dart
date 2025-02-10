@@ -10,7 +10,7 @@ import 'package:riverpod/riverpod.dart';
 
 final globalUserProfileProvider =
     FutureProvider.family<UserProfile?, String>((ref, userId) async {
-  final client = ref.watch(alwaysClientProvider);
+  final client = await ref.watch(alwaysClientProvider.future);
   return (await client.searchUsers(userId)).toList().firstOrNull;
 });
 

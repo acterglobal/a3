@@ -78,8 +78,8 @@ dependencies:
     path: ../packages/rust_sdk
 
   # State Management
-  flutter_riverpod: ^2.5.1
-  riverpod: ^2.5.1
+  flutter_riverpod: ^2.6.1
+  riverpod: ^2.6.1
   # Routing
   go_router: ^14.1.4
 
@@ -158,6 +158,10 @@ dependencies:
   pretty_qr_code: ^3.3.0
   qr_code_dart_scan: ^0.9.3
   appcheck: ^1.5.2
+  screen_retriever: ^0.1.9
+  android_intent_plus: ^5.2.1
+  collection: ^1.18.0
+  preload_page_view: ^0.2.0
 
 dev_dependencies:
   flutter_test:

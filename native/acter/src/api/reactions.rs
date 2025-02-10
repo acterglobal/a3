@@ -3,8 +3,7 @@ use anyhow::{bail, Result};
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;
 use matrix_sdk_base::ruma::{
-    events::{reaction::ReactionEvent, MessageLikeEventType},
-    OwnedEventId, OwnedTransactionId, OwnedUserId, UserId,
+    events::MessageLikeEventType, OwnedEventId, OwnedTransactionId, OwnedUserId, UserId,
 };
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;

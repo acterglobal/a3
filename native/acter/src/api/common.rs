@@ -1,37 +1,35 @@
 use acter_core::events::{
     attachments::{AttachmentContent, FallbackAttachmentContent},
     rsvp::RsvpStatus,
-    ColorizeBuilder, Display, DisplayBuilder, ObjRefBuilder, Position, RefDetails,
-    RefDetailsBuilder,
+    ColorizeBuilder, DisplayBuilder, ObjRefBuilder, Position, RefDetails as CoreRefDetails,
 };
 use anyhow::{Context, Result};
 use core::time::Duration;
-use matrix_sdk::{
+use matrix_sdk::{HttpError, RumaApiError};
+use matrix_sdk_base::{
     media::{MediaFormat, MediaThumbnailSettings},
-    ComposerDraft, ComposerDraftType, HttpError, RumaApiError,
-};
-use matrix_sdk_base::ruma::{
-    api::{
-        client::{error::ErrorBody, media::get_content_thumbnail},
-        error::FromHttpResponseError,
-    },
-    events::room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
-            FileMessageEventContent, ImageMessageEventContent, LocationInfo,
-            LocationMessageEventContent, TextMessageEventContent, UnstableAudioDetailsContentBlock,
-            VideoInfo, VideoMessageEventContent,
+    ruma::{
+        api::{client::error::ErrorBody, error::FromHttpResponseError},
+        events::room::{
+            message::{
+                AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
+                FileMessageEventContent, ImageMessageEventContent, LocationInfo,
+                LocationMessageEventContent, TextMessageEventContent,
+                UnstableAudioDetailsContentBlock, VideoInfo, VideoMessageEventContent,
+            },
+            ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
         },
-        ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
+        EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedEventId, OwnedMxcUri, OwnedUserId,
+        UInt,
     },
-    EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedEventId, OwnedMxcUri, OwnedUserId,
-    UInt,
+    ComposerDraft, ComposerDraftType,
 };
 use serde::{Deserialize, Serialize};
-use std::str::FromStr;
+use std::{ops::Deref, str::FromStr};
 use tracing::error;
 
 use super::api::FfiBuffer;
+use super::RefDetails;
 
 pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
@@ -699,86 +697,15 @@ pub fn new_colorize_builder(
     Ok(builder)
 }
 
-pub fn new_task_ref_builder(
-    target_id: String,
-    room_id: Option<String>,
-    task_list: String,
-    action: Option<String>,
-) -> Result<RefDetailsBuilder> {
-    let target_id = EventId::parse(target_id)?;
-    let task_list = EventId::parse(task_list)?;
-    let mut builder = RefDetailsBuilder::new_task_ref_builder(target_id, task_list);
-    if let Some(room_id) = room_id {
-        builder.room_id(room_id);
-    }
-    if let Some(action) = action {
-        builder.action(action);
-    }
-    Ok(builder)
-}
-
-pub fn new_task_list_ref_builder(
-    target_id: String,
-    room_id: Option<String>,
-    action: Option<String>,
-) -> Result<RefDetailsBuilder> {
-    let target_id = EventId::parse(target_id)?;
-    let mut builder = RefDetailsBuilder::new_task_list_ref_builder(target_id);
-    if let Some(room_id) = room_id {
-        builder.room_id(room_id);
-    }
-    if let Some(action) = action {
-        builder.action(action);
-    }
-    Ok(builder)
-}
-
-pub fn new_pin_ref_builder(
-    target_id: String,
-    room_id: Option<String>,
-    action: Option<String>,
-) -> Result<RefDetailsBuilder> {
-    let target_id = EventId::parse(target_id)?;
-    let mut builder = RefDetailsBuilder::new_pin_ref_builder(target_id);
-    if let Some(room_id) = room_id {
-        builder.room_id(room_id);
-    }
-    if let Some(action) = action {
-        builder.action(action);
-    }
-    Ok(builder)
-}
-
-pub fn new_calendar_event_ref_builder(
-    target_id: String,
-    room_id: Option<String>,
-    action: Option<String>,
-) -> Result<RefDetailsBuilder> {
-    let target_id = EventId::parse(target_id)?;
-    let mut builder = RefDetailsBuilder::new_calendar_event_ref_builder(target_id);
-    if let Some(room_id) = room_id {
-        builder.room_id(room_id);
-    }
-    if let Some(action) = action {
-        builder.action(action);
-    }
-    Ok(builder)
-}
-
-pub fn new_link_ref_builder(title: String, uri: String) -> Result<RefDetailsBuilder> {
-    let builder = RefDetailsBuilder::new_link_ref_builder(title, uri);
-    Ok(builder)
-}
-
 pub fn new_obj_ref_builder(
     position: Option<String>,
     reference: Box<RefDetails>,
 ) -> Result<ObjRefBuilder> {
     if let Some(p) = position {
         let p = Position::from_str(&p)?;
-        Ok(ObjRefBuilder::new(Some(p), *reference))
+        Ok(ObjRefBuilder::new(Some(p), (*reference).deref().clone()))
     } else {
-        Ok(ObjRefBuilder::new(None, *reference))
+        Ok(ObjRefBuilder::new(None, (*reference).deref().clone()))
     }
 }
 

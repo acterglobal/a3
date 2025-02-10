@@ -1,8 +1,9 @@
 use acter_core::events::settings::{ActerUserAppSettingsContent, APP_USER_SETTINGS};
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{media::MediaRequestParameters, Account as SdkAccount};
+use matrix_sdk::Account as SdkAccount;
 use matrix_sdk_base::{
+    media::MediaRequestParameters,
     ruma::{
         api::client::uiaa::{AuthData, Password},
         assign,
@@ -246,6 +247,6 @@ impl Account {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        self.client.subscribe(APP_USER_SETTINGS.to_string())
+        self.client.subscribe(APP_USER_SETTINGS.clone())
     }
 }

@@ -16,4 +16,18 @@ final updateShellRoutes = [
       );
     },
   ),
+  GoRoute(
+    name: Routes.update.name,
+    path: Routes.update.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return MaterialPage(
+        key: state.pageKey,
+        child: NewsListPage(
+          newsViewMode: NewsViewMode.fullView,
+          initialEventId: state.pathParameters['updateId'],
+        ),
+      );
+    },
+  ),
 ];

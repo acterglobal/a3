@@ -17,54 +17,83 @@ import 'package:logging/logging.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 final _log = Logger('a3::notifify::matrix');
+
 int id = 0;
 
 const bool isProduction = bool.fromEnvironment('dart.vm.product');
+
+Future<NotificationItem> _getNotificationItem(
+  Map<String?, Object?> message,
+) async {
+  final deviceId = message['device_id'] as String;
+
+  final roomId = message['room_id'] as String;
+  final eventId = message['event_id'] as String;
+  _log.info('Received msg $roomId: $eventId');
+  final instance = await ActerSdk.instance;
+  return await instance.getNotificationFor(deviceId, roomId, eventId);
+}
+
+Future<bool> _handleCountsUpdate(
+  Map<String?, Object?> message,
+) async {
+  final msg = message['count'] as Map? ?? message;
+  final totalCounts =
+      ((msg['unread'] as int?) ?? 0) + ((msg['missed_calls'] as int?) ?? 0);
+  await updateBadgeCount(totalCounts);
+  return false;
+}
 
 Future<bool> handleMatrixMessage(
   Map<String?, Object?> message, {
   bool background = false,
   ShouldShowCheck? shouldShowCheck,
 }) async {
-  final deviceId = message['device_id'] as String;
+  late NotificationItem notification;
+  if (message["event_id"] == null ||
+      message['room_id'] == null ||
+      message['device_id'] == null) {
+    // this message doesn't actually contain any regular information
+    // just badge counter updates.
+    return _handleCountsUpdate(message);
+  }
 
-  final mayBeRoomId = message['room_id'];
-  final mayBeEventId = message['event_id'];
-
-  if (mayBeEventId == null || mayBeRoomId == null) {
-    _log.warning(
-        'Received unsupported notification without event and/or room Id. Skipping. message: $message');
+  try {
+    notification = await _getNotificationItem(message);
+  } catch (error, stack) {
+    Sentry.captureException(error, stackTrace: stack);
+    Sentry.captureMessage(
+      level: SentryLevel.error,
+      'getting notification from message failed: %s - %s',
+      params: [error, message],
+    );
     return false;
   }
-  final roomId = mayBeRoomId as String;
-  final eventId = mayBeEventId as String;
-  _log.info('Received msg $roomId: $eventId');
+  _log.info('got a notification');
+
+  if (shouldShowCheck != null &&
+      !await shouldShowCheck(notification.targetUrl())) {
+    _log.info(
+      'Ignoring notification: user is looking at this screen already',
+    );
+    return false;
+  }
   try {
-    final instance = await ActerSdk.instance;
-    final notification =
-        await instance.getNotificationFor(deviceId, roomId, eventId);
-    _log.info('got a notification');
-
-    if (shouldShowCheck != null &&
-        !await shouldShowCheck(notification.targetUrl())) {
-      _log.info(
-        'Ignoring notification: user is looking at this screen already',
-      );
-      return false;
-    }
-
     await _showNotification(notification);
     return true;
   } catch (e, s) {
-    _log.severe('Parsing Notification failed: $message', e, s);
+    _log.severe('Showing Notification failed: $message', e, s);
     Sentry.captureException(e, stackTrace: s);
+    Sentry.captureMessage(
+      level: SentryLevel.error,
+      'Showing Notification failed: %s - %s',
+      params: [e, message],
+    );
   }
   return false;
 }
 
-Future<void> _showNotification(
-  NotificationItem notification,
-) async {
+Future<void> _showNotification(NotificationItem notification) async {
   if (Platform.isAndroid) {
     return await showNotificationOnAndroid(notification);
   } else if (Platform.isWindows) {
@@ -72,12 +101,7 @@ Future<void> _showNotification(
   }
 
   // fallback for linux & macos
-  String? body;
-  String title = notification.title();
-  final msg = notification.body();
-  if (msg != null) {
-    body = msg.body();
-  }
+  final (title, body) = genTitleAndBody(notification);
   DarwinNotificationDetails? darwinDetails;
   LinuxNotificationDetails? linuxDetails;
 

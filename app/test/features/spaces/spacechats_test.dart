@@ -107,7 +107,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           ...spaceOverrides(),
-          maybeRoomProvider.overrideWith(() => MockAsyncMaybeRoomNotifier()),
+          maybeRoomProvider.overrideWith(() => MockMaybeRoomNotifier()),
           suggestedSpacesProvider.overrideWith((a, b) async {
             return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
           }),
@@ -219,7 +219,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           ...spaceOverrides(),
-          maybeRoomProvider.overrideWith(() => MockAsyncMaybeRoomNotifier()),
+          maybeRoomProvider.overrideWith(() => MockMaybeRoomNotifier()),
           suggestedSpacesProvider.overrideWith((a, b) async {
             return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
           }),

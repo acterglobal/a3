@@ -13,7 +13,12 @@ class MockActerSdk extends Mock implements ActerSdk {}
 /// Mocked version of Acter Client
 class MockClient extends Mock implements Client {
   @override
-  Stream<bool> subscribeStream(String topic) {
+  Stream<bool> subscribeRoomStream(String topic) {
+    return Stream.value(true); // Return a dummy stream
+  }
+
+  @override
+  Stream<bool> subscribeModelStream(String topic) {
     return Stream.value(true); // Return a dummy stream
   }
 
@@ -102,7 +107,7 @@ class MockComposeDraft extends Mock implements ComposeDraft {
 class MockAsyncConvoNotifier extends AsyncConvoNotifier {
   @override
   FutureOr<Convo> build(String roomId) async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     return await client.convoWithRetry(roomId, 0);
   }
 }
@@ -110,7 +115,26 @@ class MockAsyncConvoNotifier extends AsyncConvoNotifier {
 //
 //  --- Calendar --
 //
-class MockCalendarEvent extends Mock implements CalendarEvent {}
+class MockOptionRsvpStatus extends Mock implements OptionRsvpStatus {
+  final RsvpStatus? inner;
+  MockOptionRsvpStatus(this.inner);
+
+  @override
+  RsvpStatus? status() => inner;
+
+  @override
+  String? statusStr() => inner?.toString();
+}
+
+class MockCalendarEvent extends Mock implements CalendarEvent {
+  final RsvpStatus? rsvpStatus;
+
+  MockCalendarEvent({required this.rsvpStatus});
+
+  @override
+  Future<MockOptionRsvpStatus> respondedByMe() async =>
+      MockOptionRsvpStatus(rsvpStatus);
+}
 
 class MockEventId extends Mock implements EventId {
   final String id;
@@ -142,11 +166,15 @@ class MockUtcDateTime extends Mock implements UtcDateTime {
 
 const hourInMilliSeconds = 3600000;
 
-List<MockCalendarEvent> generateMockCalendarEvents([int count = 1]) =>
+List<MockCalendarEvent> generateMockCalendarEvents({
+  int count = 1,
+  String? roomId,
+  RsvpStatus? rsvpStatus,
+}) =>
     List.generate(count, (idx) {
-      final eventA = MockCalendarEvent();
+      final eventA = MockCalendarEvent(rsvpStatus: rsvpStatus);
       when(eventA.title).thenReturn('Event $idx');
-      when(eventA.eventId).thenReturn(MockEventId(id: 'event-$idx-id'));
+      when(eventA.eventId).thenReturn(MockEventId(id: '$roomId-event-$idx-id'));
       when(eventA.description)
           .thenReturn(MockTextMessageContent(textBody: 'event $idx body'));
       final millisecondsBase = DateTime.now().millisecondsSinceEpoch +
@@ -158,5 +186,8 @@ List<MockCalendarEvent> generateMockCalendarEvents([int count = 1]) =>
         MockUtcDateTime(millis: millisecondsBase + hourInMilliSeconds),
         // event takes one hour
       );
+      if (roomId != null) {
+        when(eventA.roomIdStr).thenReturn(roomId);
+      }
       return eventA;
     });

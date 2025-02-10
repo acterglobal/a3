@@ -141,7 +141,7 @@ class UploadAvatarPage extends ConsumerWidget {
   Future<void> uploadAvatar(BuildContext context, WidgetRef ref) async {
     final lang = L10n.of(context);
     try {
-      final account = ref.watch(accountProvider);
+      final account = await ref.watch(accountProvider.future);
       final filePath = selectedUserAvatar.value?.path;
       if (filePath == null) {
         if (context.mounted) EasyLoading.showToast(lang.avatarEmpty);

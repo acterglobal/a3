@@ -7,7 +7,6 @@ import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/share/action/share_space_object_action.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
@@ -15,7 +14,6 @@ import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
-import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
 import 'package:acter/features/pins/actions/pin_update_actions.dart';
@@ -23,6 +21,7 @@ import 'package:acter/features/pins/actions/reduct_pin_action.dart';
 import 'package:acter/features/pins/actions/report_pin_action.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/fake_link_attachment_item.dart';
+import 'package:acter/features/share/action/share_space_object_action.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -58,26 +57,32 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(context),
       body: _buildBodyUI(),
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
     final pinData = ref.watch(pinProvider(widget.pinId)).valueOrNull;
     return AppBar(
       actions: [
         if (pinData != null)
           IconButton(
             icon: PhosphorIcon(PhosphorIcons.shareFat()),
-            onPressed: () => openShareSpaceObjectDialog(
-              context: context,
-              spaceObjectDetails: (
-                spaceId: pinData.roomIdStr(),
-                objectType: ObjectType.pin,
-                objectId: widget.pinId,
-              ),
-            ),
+            onPressed: () async {
+              final refDetails = await pinData.refDetails();
+              final internalLink = refDetails.generateInternalLink(true);
+              if (!context.mounted) return;
+              await openShareSpaceObjectDialog(
+                context: context,
+                refDetails: refDetails,
+                internalLink: internalLink,
+                shareContentBuilder: () async {
+                  Navigator.pop(context);
+                  return await refDetails.generateExternalLink();
+                },
+              );
+            },
           ),
         BookmarkAction(bookmarker: BookmarkType.forPins(widget.pinId)),
         _buildActionMenu(),
@@ -259,6 +264,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ActerIconWidget(
                 iconSize: 50,

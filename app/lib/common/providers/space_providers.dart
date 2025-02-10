@@ -2,7 +2,6 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/notifiers/relations_notifier.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
@@ -12,10 +11,7 @@ final _log = Logger('a3::common::space_providers');
 
 /// Provider the list of all spaces, keeps up to date with the order and the underlying client
 final spacesProvider =
-    StateNotifierProvider<SpaceListNotifier, List<Space>>((ref) {
-  final client = ref.watch(alwaysClientProvider);
-  return SpaceListNotifier(ref: ref, client: client);
-});
+    NotifierProvider<SpaceListNotifier, List<Space>>(() => SpaceListNotifier());
 
 final hasSpacesProvider =
     Provider((ref) => ref.watch(spacesProvider).isNotEmpty);

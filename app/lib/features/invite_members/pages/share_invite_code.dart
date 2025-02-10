@@ -1,17 +1,10 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/features/deep_linking/actions/show_qr_code.dart';
-import 'package:acter/features/share/actions/mail_to.dart';
-import 'package:acter/features/share/actions/share_to_whatsapp.dart';
-import 'package:atlas_icons/atlas_icons.dart';
+import 'package:acter/features/share/widgets/external_share_options.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 
 class ShareInviteCode extends ConsumerWidget {
   final String inviteCode;
@@ -39,8 +32,10 @@ class ShareInviteCode extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
-    final displayName =
+    final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? '';
+    final String userName = ref.watch(accountDisplayNameProvider).valueOrNull ??
+        ref.watch(myUserIdStrProvider);
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -51,15 +46,15 @@ class ShareInviteCode extends ConsumerWidget {
             _buildMessageContent(
               context,
               ref,
-              displayName,
-              displayName,
+              roomName,
+              userName,
             ),
             const SizedBox(height: 30),
             _buildShareIntents(
               context,
               ref,
-              displayName,
-              displayName,
+              roomName,
+              userName,
             ),
             const SizedBox(height: 10),
             _buildDoneButton(context),
@@ -73,11 +68,11 @@ class ShareInviteCode extends ConsumerWidget {
   Widget _buildMessageContent(
     BuildContext context,
     WidgetRef ref,
-    String displayName,
     String roomName,
+    String userName,
   ) {
     final lang = L10n.of(context);
-    final content = lang.shareInviteContent(inviteCode, roomName, displayName);
+    final content = lang.shareInviteContent(inviteCode, roomName, userName);
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -107,85 +102,18 @@ class ShareInviteCode extends ConsumerWidget {
   Widget _buildShareIntents(
     BuildContext context,
     WidgetRef ref,
-    String displayName,
     String roomName,
+    String userName,
   ) {
     final lang = L10n.of(context);
-    final content = lang.shareInviteContent(inviteCode, roomName, displayName);
-    return Wrap(
-      direction: Axis.horizontal,
-      alignment: WrapAlignment.center,
-      spacing: 10,
-      children: [
-        _shareIntentsItem(
-          context: context,
-          iconData: PhosphorIconsThin.qrCode,
-          onTap: () async {
-            final userName = await ref.read(accountDisplayNameProvider.future);
-            final userId = ref.read(myUserIdStrProvider);
-            if (context.mounted) {
-              showQrCode(
-                context,
-                'acter:i/acter.global/$inviteCode?roomDisplayName=$displayName&userId=$userId&userDisplayName=$userName',
-                title: Text(lang.shareInviteWithCode(inviteCode)),
-              );
-            }
-          },
-        ),
-        _shareIntentsItem(
-          context: context,
-          iconData: Atlas.envelope,
-          onTap: () async => await mailTo(
-            toAddress: '',
-            subject: 'body=$content',
-          ),
-        ),
-        _shareIntentsItem(
-          context: context,
-          iconData: Atlas.whatsapp,
-          onTap: () async => await shareToWhatsApp(
-            context,
-            text: content,
-          ),
-        ),
-        _shareIntentsItem(
-          context: context,
-          iconData: Icons.ios_share_sharp,
-          onTap: () async {
-            await Share.share(content);
-          },
-        ),
-        _shareIntentsItem(
-          context: context,
-          iconData: Atlas.clipboard,
-          onTap: () async {
-            await Clipboard.setData(
-              ClipboardData(text: content),
-            );
-            EasyLoading.showToast(lang.messageCopiedToClipboard);
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _shareIntentsItem({
-    required BuildContext context,
-    required IconData iconData,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Theme.of(context).colorScheme.onSurface,
-          width: 1,
-        ),
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: IconButton(
-        onPressed: onTap,
-        icon: Icon(iconData),
-      ),
+    final userId = ref.read(myUserIdStrProvider);
+    final qrContent =
+        'acter:i/acter.global/$inviteCode?roomDisplayName=$roomName&userId=$userId&userDisplayName=$userName';
+    final shareContent =
+        lang.shareInviteContent(inviteCode, roomName, userName);
+    return ExternalShareOptions(
+      qrContent: qrContent,
+      shareContentBuilder: () async => shareContent,
     );
   }
 

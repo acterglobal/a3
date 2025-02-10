@@ -86,8 +86,8 @@ class NewsSection extends ConsumerWidget {
   }
 
   Widget newsItemUI(BuildContext context, NewsEntry newsEntry) {
+    if (newsEntry.slidesCount() == 0) return const SizedBox.shrink();
     final newsSlides = newsEntry.slides().toList();
-    if (newsSlides.isEmpty) return const SizedBox.shrink();
     final slide = newsSlides[0];
 
     return InkWell(

@@ -20,12 +20,6 @@ on:
         required: false
         type: string
         default: release
-      prerelease:
-        type: boolean
-        default: false
-      release_title:
-        required: false
-        type: string
       msix_version:
         required: false
         type: string
@@ -85,7 +79,7 @@ jobs:
           - name: Linux x64
             target: linux
             os: ubuntu-latest
-            apt_install: ninja-build libgtk-3-dev libmpv-dev mpv libayatana-appindicator3-1 libayatana-appindicator3-dev
+            apt_install: ninja-build libgtk-3-dev libmpv-dev mpv libayatana-appindicator3-1 libayatana-appindicator3-dev libsecret-1-0 libsecret-1-dev
             cargo_make_args: desktop
             flutter_config: "--enable-linux-desktop"
             flutter_build_args: "build linux"
@@ -410,7 +404,7 @@ jobs:
      #######  ##        ########  #######  ##     ## ########  
 
       - uses: actions/upload-artifact@v4
-        name: "Upload artifacts"
+        name: "Upload specific artifacts"
         if: matrix.specific_upload_artifacts
         with:
           name: ${{ matrix.name }}
@@ -422,7 +416,7 @@ jobs:
         run: mv ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ inputs.version }}.* .
 
       - uses: actions/upload-artifact@v4
-        name: "Upload artifacts"
+        name: "Upload generated artifacts"
         if: ${{!matrix.specific_upload_artifacts}}
         with:
           name: ${{ matrix.name }}
@@ -436,36 +430,37 @@ jobs:
           path: app/debug_symbols/*
 
       - name: "Upload debug artifacts to sentry"
-        if: ${{matrix.with_debug_symbols && inputs.release }}
+        if: ${{matrix.with_debug_symbols && inputs.release_tag }}
         working-directory: app
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_RELEASE: ${{ inputs.version }}
         run: flutter packages pub run sentry_dart_plugin
 
-      - name: Release
-        if: ${{! matrix.exclude_from_release && inputs.release }}
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          name: ${{ inputs.release_title }}
-          tag_name: ${{inputs.release_tag}}
-          generate_release_notes: false
-          prerelease: ${{ inputs.prerelease }}
-          files: |
-            ${{ matrix.artifact_prefix }}-${{ inputs.version }}.*
-            ${{ matrix.specific_upload_artifacts }}
-
-      - name: Report issue
-        if: ${{ inputs.release && failure() && steps.skipper.outputs.skipped != 'true' }}
-        uses: JasonEtco/create-an-issue@v2
+      - name: Upload specific files to Release
+        if: ${{! matrix.exclude_from_release && inputs.release_tag && matrix.specific_upload_artifacts}}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ inputs.version }}
-          NAME: ${{matrix.name}}
-          FAILED_RUN_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
-          ARTIFACT_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{env.GITHUB_RUN_ID}}
-        with:
-          assignees: gnunicorn
-          filename: .github/templates/failure-report-template.md.tmpl
-          update_existing: false
+          GH_TOKEN: ${{ github.token }}
+        run:
+          gh release upload ${{inputs.release_tag}} ${{ matrix.specific_upload_artifacts }}
+
+      - name: Upload to Release
+        if: ${{ matrix.os != 'windows-latest' && ! matrix.exclude_from_release && inputs.release_tag && !matrix.specific_upload_artifacts }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run:
+          gh release upload ${{inputs.release_tag}} ${{ matrix.artifact_prefix }}-${{ inputs.version }}.*
+
+      - name: Upload msix to Release
+        if: ${{ matrix.target == 'windows-msix' && ! matrix.exclude_from_release && inputs.release_tag }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run:
+          gh release upload ${{inputs.release_tag}} ${{ matrix.artifact_prefix }}-${{ inputs.version }}.msix
+
+      - name: Upload exe to Release
+        if: ${{ matrix.target == 'windows-exe' && ! matrix.exclude_from_release && inputs.release_tag }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run:
+          gh release upload ${{inputs.release_tag}} ${{ matrix.artifact_prefix }}-${{ inputs.version }}.zip

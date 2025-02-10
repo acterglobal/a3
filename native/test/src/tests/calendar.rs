@@ -148,15 +148,17 @@ async fn calendar_event_external_link() -> Result<()> {
 
     // generate the external and internal links
 
-    let internal_link = event.internal_link();
-    let external_link = event.external_link().await?;
+    let ref_details = event.ref_details().await?;
+
+    let internal_link = ref_details.generate_internal_link(false)?;
+    let external_link = ref_details.generate_external_link().await?;
 
     let room_id = &event.room_id().to_string()[1..];
     let event_id = &event.event_id().to_string()[1..];
 
     let path = format!("o/{room_id}/calendarEvent/{event_id}");
 
-    assert_eq!(internal_link, format!("acter:{path}"));
+    assert_eq!(internal_link, format!("acter:{path}?via=localhost"));
 
     let ext_url = url::Url::parse(&external_link)?;
     assert_eq!(ext_url.fragment().expect("must have fragment"), &path);

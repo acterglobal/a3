@@ -1,10 +1,12 @@
-use matrix_sdk::{OwnedServerName, RoomDisplayName};
-use matrix_sdk_base::ruma::{EventId, OwnedEventId, OwnedRoomId, RoomId};
+use matrix_sdk_base::{
+    ruma::{OwnedEventId, OwnedRoomId, OwnedServerName},
+    RoomDisplayName,
+};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use strum::Display;
 
-use super::Position;
+use super::{Position, UtcDateTime};
 
 #[derive(Eq, PartialEq, Clone, Display, Debug, Deserialize, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
@@ -170,7 +172,7 @@ pub struct CalendarEventRefPreview {
     pub title: Option<String>,
     pub room_display_name: Option<String>,
     pub participants: Option<u32>,
-    pub start_at_utc: Option<i64>,
+    pub start_at_utc: Option<UtcDateTime>,
 }
 
 impl CalendarEventRefPreview {
@@ -178,7 +180,7 @@ impl CalendarEventRefPreview {
         title: Option<String>,
         room_display_name: Option<RoomDisplayName>,
         participants: Option<u32>,
-        start_at_utc: Option<i64>,
+        start_at_utc: Option<UtcDateTime>,
     ) -> Self {
         CalendarEventRefPreview {
             title,
@@ -269,6 +271,19 @@ pub enum RefDetails {
         #[serde(default, skip_serializing_if = "CalendarEventAction::is_default")]
         action: CalendarEventAction,
     },
+    News {
+        #[serde(alias = "event_id")]
+        /// the target event id
+        target_id: OwnedEventId,
+
+        /// if this links to an object not part of this room, but a different room
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        room_id: Option<OwnedRoomId>,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        via: Vec<OwnedServerName>,
+        #[serde(default, skip_serializing_if = "RefPreview::is_none")]
+        preview: RefPreview,
+    },
     Link {
         /// The title to show for this link
         title: String,
@@ -286,6 +301,7 @@ impl RefDetails {
             RefDetails::CalendarEvent { .. } => "calendar-event".to_string(),
             RefDetails::Link { .. } => "link".to_string(),
             RefDetails::Pin { .. } => "pin".to_string(),
+            RefDetails::News { .. } => "news".to_string(),
         }
     }
 
@@ -293,6 +309,7 @@ impl RefDetails {
         match self {
             RefDetails::Link { .. } => "link".to_string(),
             RefDetails::Pin { .. } => "pin".to_string(),
+            RefDetails::News { .. } => "news".to_string(),
             RefDetails::Task { action, .. } => action.to_string(),
             RefDetails::TaskList { action, .. } => action.to_string(),
             RefDetails::CalendarEvent { action, .. } => action.to_string(),
@@ -305,6 +322,7 @@ impl RefDetails {
             RefDetails::Task { target_id, .. }
             | RefDetails::TaskList { target_id, .. }
             | RefDetails::Pin { target_id, .. }
+            | RefDetails::News { target_id, .. }
             | RefDetails::CalendarEvent { target_id, .. } => Some(target_id.to_string()),
         }
     }
@@ -315,7 +333,19 @@ impl RefDetails {
             RefDetails::Task { room_id, .. }
             | RefDetails::TaskList { room_id, .. }
             | RefDetails::Pin { room_id, .. }
+            | RefDetails::News { room_id, .. }
             | RefDetails::CalendarEvent { room_id, .. } => room_id.as_ref().map(|p| p.to_string()),
+        }
+    }
+
+    pub fn via_servers(&self) -> Vec<String> {
+        match self {
+            RefDetails::Link { .. } => vec![],
+            RefDetails::Task { via, .. }
+            | RefDetails::TaskList { via, .. }
+            | RefDetails::Pin { via, .. }
+            | RefDetails::News { via, .. }
+            | RefDetails::CalendarEvent { via, .. } => via.iter().map(|s| s.to_string()).collect(),
         }
     }
 
@@ -329,7 +359,12 @@ impl RefDetails {
     pub fn title(&self) -> Option<String> {
         match self {
             RefDetails::Link { title, .. } => Some(title.clone()),
-            _ => None,
+            RefDetails::CalendarEvent { preview, .. } => preview.title.clone(),
+            RefDetails::Pin { preview, .. }
+            | RefDetails::News { preview, .. }
+            | RefDetails::Task { preview, .. }
+            | RefDetails::TaskList { preview, .. } => preview.title.clone(),
+            // _ => None,
         }
     }
 
@@ -339,379 +374,30 @@ impl RefDetails {
             _ => None,
         }
     }
-}
 
-#[derive(Debug, Clone)]
-pub struct RefDetailsBuilder {
-    ref_details: RefDetails,
-}
-
-impl RefDetailsBuilder {
-    pub fn new_task_ref_builder(target_id: OwnedEventId, task_list: OwnedEventId) -> Self {
-        let ref_details = RefDetails::Task {
-            target_id,
-            room_id: None,
-            task_list,
-            action: TaskAction::default(),
-            via: Default::default(),
-            preview: Default::default(),
-        };
-        RefDetailsBuilder { ref_details }
-    }
-
-    pub fn new_task_list_ref_builder(target_id: OwnedEventId) -> Self {
-        let ref_details = RefDetails::TaskList {
-            target_id,
-            room_id: None,
-            action: TaskListAction::default(),
-            via: Default::default(),
-            preview: Default::default(),
-        };
-        RefDetailsBuilder { ref_details }
-    }
-
-    pub fn new_pin_ref_builder(target_id: OwnedEventId) -> Self {
-        let ref_details = RefDetails::Pin {
-            target_id,
-            room_id: None,
-            action: PinAction::default(),
-            via: Default::default(),
-            preview: Default::default(),
-        };
-        RefDetailsBuilder { ref_details }
-    }
-
-    pub fn new_calendar_event_ref_builder(target_id: OwnedEventId) -> Self {
-        let ref_details = RefDetails::CalendarEvent {
-            target_id,
-            room_id: None,
-            action: CalendarEventAction::default(),
-            via: Default::default(),
-            preview: Default::default(),
-        };
-        RefDetailsBuilder { ref_details }
-    }
-
-    pub fn new_link_ref_builder(title: String, uri: String) -> Self {
-        let ref_details = RefDetails::Link { title, uri };
-        RefDetailsBuilder { ref_details }
-    }
-
-    pub fn target_id(&mut self, target_id: String) -> crate::Result<()> {
-        match self.ref_details.clone() {
-            RefDetails::Task {
-                room_id,
-                task_list,
-                action,
-                ..
-            } => {
-                let target_id = EventId::parse(target_id)?;
-                self.ref_details = RefDetails::Task {
-                    target_id,
-                    room_id,
-                    task_list,
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            RefDetails::TaskList {
-                room_id, action, ..
-            } => {
-                let target_id = EventId::parse(target_id)?;
-                self.ref_details = RefDetails::TaskList {
-                    target_id,
-                    room_id,
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            RefDetails::CalendarEvent {
-                room_id, action, ..
-            } => {
-                let target_id = EventId::parse(target_id)?;
-                self.ref_details = RefDetails::CalendarEvent {
-                    target_id,
-                    room_id,
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            _ => {
-                return Err(crate::Error::FailedToParse {
-                    model_type: "RefDetails".to_owned(),
-                    msg: "target_id is available for only Task/TaskList/CalendarEvent ref"
-                        .to_owned(),
-                });
-            }
+    pub fn room_display_name(&self) -> Option<String> {
+        match self {
+            RefDetails::CalendarEvent { preview, .. } => preview.room_display_name.clone(),
+            RefDetails::Pin { preview, .. }
+            | RefDetails::Task { preview, .. }
+            | RefDetails::News { preview, .. }
+            | RefDetails::TaskList { preview, .. } => preview.room_display_name.clone(),
+            _ => None,
         }
-        Ok(())
     }
 
-    pub fn room_id(&mut self, room_id: String) -> crate::Result<()> {
-        match self.ref_details.clone() {
-            RefDetails::Task {
-                target_id,
-                task_list,
-                action,
-                ..
-            } => {
-                let room_id = RoomId::parse(room_id)?;
-                self.ref_details = RefDetails::Task {
-                    target_id,
-                    room_id: Some(room_id),
-                    task_list,
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            RefDetails::TaskList {
-                target_id, action, ..
-            } => {
-                let room_id = RoomId::parse(room_id)?;
-                self.ref_details = RefDetails::TaskList {
-                    target_id,
-                    room_id: Some(room_id),
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            RefDetails::CalendarEvent {
-                target_id, action, ..
-            } => {
-                let room_id = RoomId::parse(room_id)?;
-                self.ref_details = RefDetails::CalendarEvent {
-                    target_id,
-                    room_id: Some(room_id),
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            _ => {
-                return Err(crate::Error::FailedToParse {
-                    model_type: "RefDetails".to_owned(),
-                    msg: "room_id is available for only Task/TaskList/CalendarEvent ref".to_owned(),
-                });
-            }
+    pub fn participants(&self) -> Option<u32> {
+        match self {
+            RefDetails::CalendarEvent { preview, .. } => preview.participants,
+            _ => None,
         }
-        Ok(())
     }
 
-    pub fn unset_room_id(&mut self) -> crate::Result<()> {
-        match self.ref_details.clone() {
-            RefDetails::Task {
-                target_id,
-                task_list,
-                action,
-                ..
-            } => {
-                self.ref_details = RefDetails::Task {
-                    target_id,
-                    room_id: None,
-                    task_list,
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            RefDetails::TaskList {
-                target_id, action, ..
-            } => {
-                self.ref_details = RefDetails::TaskList {
-                    target_id,
-                    room_id: None,
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            RefDetails::CalendarEvent {
-                target_id, action, ..
-            } => {
-                self.ref_details = RefDetails::CalendarEvent {
-                    target_id,
-                    room_id: None,
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            _ => {
-                return Err(crate::Error::FailedToParse {
-                    model_type: "RefDetails".to_owned(),
-                    msg: "room_id is available for only Task/TaskList/CalendarEvent ref".to_owned(),
-                });
-            }
+    pub fn utc_start(&self) -> Option<UtcDateTime> {
+        match self {
+            RefDetails::CalendarEvent { preview, .. } => preview.start_at_utc,
+            _ => None,
         }
-        Ok(())
-    }
-
-    pub fn task_list(&mut self, task_list: String) -> crate::Result<()> {
-        match self.ref_details.clone() {
-            RefDetails::Task {
-                target_id,
-                room_id,
-                action,
-                ..
-            } => {
-                let task_list = EventId::parse(task_list)?;
-                self.ref_details = RefDetails::Task {
-                    target_id,
-                    room_id,
-                    task_list,
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            _ => {
-                return Err(crate::Error::FailedToParse {
-                    model_type: "RefDetails".to_owned(),
-                    msg: "task_list is available for only Task ref".to_owned(),
-                });
-            }
-        }
-        Ok(())
-    }
-
-    pub fn action(&mut self, action: String) -> crate::Result<()> {
-        match self.ref_details.clone() {
-            RefDetails::Task {
-                target_id,
-                room_id,
-                task_list,
-                ..
-            } => {
-                let action = TaskAction::from_str(&action)?;
-                self.ref_details = RefDetails::Task {
-                    target_id,
-                    room_id,
-                    task_list,
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            RefDetails::TaskList {
-                target_id, room_id, ..
-            } => {
-                let action = TaskListAction::from_str(&action)?;
-                self.ref_details = RefDetails::TaskList {
-                    target_id,
-                    room_id,
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            RefDetails::CalendarEvent {
-                target_id, room_id, ..
-            } => {
-                let action = CalendarEventAction::from_str(&action)?;
-                self.ref_details = RefDetails::CalendarEvent {
-                    target_id,
-                    room_id,
-                    action,
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            _ => {
-                return Err(crate::Error::FailedToParse {
-                    model_type: "RefDetails".to_owned(),
-                    msg: "action is available for only Task/TaskList/CalendarEvent ref".to_owned(),
-                });
-            }
-        }
-        Ok(())
-    }
-
-    pub fn unset_action(&mut self) -> crate::Result<()> {
-        match self.ref_details.clone() {
-            RefDetails::Task {
-                target_id,
-                room_id,
-                task_list,
-                ..
-            } => {
-                self.ref_details = RefDetails::Task {
-                    target_id,
-                    room_id,
-                    task_list,
-                    action: TaskAction::default(),
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            RefDetails::TaskList {
-                target_id, room_id, ..
-            } => {
-                self.ref_details = RefDetails::TaskList {
-                    target_id,
-                    room_id,
-                    action: TaskListAction::default(),
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            RefDetails::CalendarEvent {
-                target_id, room_id, ..
-            } => {
-                self.ref_details = RefDetails::CalendarEvent {
-                    target_id,
-                    room_id,
-                    action: CalendarEventAction::default(),
-                    via: Default::default(),
-                    preview: Default::default(),
-                };
-            }
-            _ => {
-                return Err(crate::Error::FailedToParse {
-                    model_type: "RefDetails".to_owned(),
-                    msg: "action is available for only Task/TaskList/CalendarEvent ref".to_owned(),
-                });
-            }
-        }
-        Ok(())
-    }
-
-    pub fn title(&mut self, title: String) -> crate::Result<()> {
-        match self.ref_details.clone() {
-            RefDetails::Link { uri, .. } => {
-                self.ref_details = RefDetails::Link { title, uri };
-            }
-            _ => {
-                return Err(crate::Error::FailedToParse {
-                    model_type: "RefDetails".to_owned(),
-                    msg: "title is available for only Link ref".to_owned(),
-                });
-            }
-        }
-        Ok(())
-    }
-
-    pub fn uri(&mut self, uri: String) -> crate::Result<()> {
-        match self.ref_details.clone() {
-            RefDetails::Link { title, .. } => {
-                self.ref_details = RefDetails::Link { title, uri };
-            }
-            _ => {
-                return Err(crate::Error::FailedToParse {
-                    model_type: "RefDetails".to_owned(),
-                    msg: "uri is available for only Link ref".to_owned(),
-                });
-            }
-        }
-        Ok(())
-    }
-
-    pub fn build(&self) -> RefDetails {
-        self.ref_details.clone()
     }
 }
 

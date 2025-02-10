@@ -4,14 +4,18 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/default_bottom_sheet.dart';
 import 'package:acter/common/widgets/like_button.dart';
+import 'package:acter/common/widgets/visibility/shadow_effect_widget.dart';
 import 'package:acter/features/comments/providers/comments_providers.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
+import 'package:acter/features/notifications/types.dart';
+import 'package:acter/features/notifications/widgets/object_notification_status.dart';
 import 'package:acter/features/read_receipts/widgets/read_counter.dart';
+import 'package:acter/features/share/action/share_space_object_action.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
@@ -20,6 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 final _log = Logger('a3::news::sidebar');
 
@@ -33,6 +38,7 @@ class NewsSideBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final objectId = news.eventId().toString();
     final roomId = news.roomId().toString();
     final userId = ref.watch(myUserIdStrProvider);
     final isLikedByMe = ref.watch(likedByMeProvider(news));
@@ -89,14 +95,29 @@ class NewsSideBar extends ConsumerWidget {
                   shrinkWrap: false,
                   centerTitle: true,
                   useCompactEmptyState: false,
+                  postCreateComment: () async {
+                    // when user create a comment, let's autosubscribe to comments
+                    await autosubscribe(
+                      ref: ref,
+                      objectId: objectId,
+                      subType: SubscriptionSubType.comments,
+                      lang: L10n.of(context),
+                    );
+                  },
+                  actions: [
+                    ObjectNotificationStatus(
+                      objectId: objectId,
+                      subType: SubscriptionSubType.comments,
+                    ),
+                  ],
                 ),
               );
             },
             icon: Column(
               children: [
-                const Icon(Atlas.comment_blank),
+                ShadowEffectWidget(child: Icon(Atlas.comment_blank),),
                 const SizedBox(height: 4),
-                Text(commentCount.toString(), style: style),
+                ShadowEffectWidget(child:Text(commentCount.toString(), style: style),),
               ],
             ),
           ),
@@ -104,17 +125,20 @@ class NewsSideBar extends ConsumerWidget {
           InkWell(
             key: NewsUpdateKeys.newsSidebarActionBottomSheet,
             onTap: () => showModalBottomSheet(
+              showDragHandle: true,
+              useSafeArea: true,
               context: context,
-              builder: (context) => DefaultBottomSheet(
-                content: ActionBox(
-                  news: news,
-                  userId: userId,
-                  roomId: roomId,
-                ),
+              isScrollControlled: true,
+              isDismissible: true,
+              constraints: BoxConstraints(maxHeight: 300),
+              builder: (context) => ActionBox(
+                news: news,
+                userId: userId,
+                roomId: roomId,
               ),
             ),
             child: _SideBarItem(
-              icon: const Icon(Atlas.dots_horizontal_thin),
+              icon: ShadowEffectWidget(child: Icon(Atlas.dots_horizontal_thin)),
               label: '',
               style: bodyLarge?.copyWith(fontSize: 13),
             ),
@@ -183,57 +207,110 @@ class ActionBox extends ConsumerWidget {
     final eventId = news.eventId().toString();
     final canRedact = ref.watch(canRedactProvider(news));
     final isAuthor = senderId == userId;
-    List<Widget> actions = [
-      Text(lang.actions),
-      const Divider(),
-    ];
 
-    if (canRedact.valueOrNull == true) {
-      actions.add(
-        TextButton.icon(
-          key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
-          onPressed: () => openRedactContentDialog(
-            context,
-            title: lang.removeThisPost,
-            eventId: eventId,
-            onSuccess: () async {
-              if (!await Navigator.maybePop(context)) {
-                if (context.mounted) {
-                  // fallback to go to home
-                  Navigator.pushReplacementNamed(context, Routes.main.name);
-                }
-              }
-            },
-            roomId: roomId,
-            isSpace: true,
-            removeBtnKey: NewsUpdateKeys.removeButton,
-          ),
-          icon: const Icon(Atlas.trash_thin),
-          label: Text(lang.remove),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        title: Text(
+          lang.actions,
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
-      );
-    } else if (!isAuthor) {
-      actions.add(
-        TextButton.icon(
-          key: NewsUpdateKeys.newsSidebarActionReportBtn,
-          onPressed: () => openReportContentDialog(
-            context,
-            title: lang.reportThisPost,
-            eventId: eventId,
-            description: lang.reportPostContent,
-            senderId: senderId,
-            roomId: roomId,
-            isSpace: true,
+        automaticallyImplyLeading: false,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextButton.icon(
+                icon: PhosphorIcon(PhosphorIcons.shareFat()),
+                onPressed: () async {
+                  final refDetails = await news.refDetails();
+                  final internalLink = refDetails.generateInternalLink(true);
+                  if (!context.mounted) return;
+                  await openShareSpaceObjectDialog(
+                    context: context,
+                    refDetails: refDetails,
+                    internalLink: internalLink,
+                    showInternalActions: false,
+                    shareContentBuilder: () async {
+                      Navigator.pop(context);
+                      return await refDetails.generateExternalLink();
+                    },
+                  );
+                },
+                label: Text(lang.share),
+              ),
+              if (canRedact.valueOrNull == true)
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 8.0,
+                    horizontal: 5,
+                  ),
+                  child: TextButton.icon(
+                    key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
+                    onPressed: () => openRedactContentDialog(
+                      context,
+                      title: lang.removeThisPost,
+                      eventId: eventId,
+                      onSuccess: () async {
+                        if (!await Navigator.maybePop(context)) {
+                          if (context.mounted) {
+                            // fallback to go to home
+                            Navigator.pushReplacementNamed(
+                              context,
+                              Routes.main.name,
+                            );
+                          }
+                        }
+                      },
+                      roomId: roomId,
+                      isSpace: true,
+                      removeBtnKey: NewsUpdateKeys.removeButton,
+                    ),
+                    icon: const Icon(Atlas.trash_thin),
+                    label: Text(lang.remove),
+                  ),
+                )
+              else if (!isAuthor)
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 8.0,
+                    horizontal: 5,
+                  ),
+                  child: TextButton.icon(
+                    key: NewsUpdateKeys.newsSidebarActionReportBtn,
+                    onPressed: () => openReportContentDialog(
+                      context,
+                      title: lang.reportThisPost,
+                      eventId: eventId,
+                      description: lang.reportPostContent,
+                      senderId: senderId,
+                      roomId: roomId,
+                      isSpace: true,
+                    ),
+                    icon: const Icon(Atlas.exclamation_chat_thin),
+                    label: Text(lang.reportThis),
+                  ),
+                ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 5,
+                ),
+                child: ObjectNotificationStatus(
+                  objectId: eventId,
+                  includeText: true,
+                ),
+              ),
+            ],
           ),
-          icon: const Icon(Atlas.exclamation_chat_thin),
-          label: Text(lang.reportThis),
         ),
-      );
-    }
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: actions,
+      ),
     );
   }
 }

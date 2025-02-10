@@ -83,4 +83,12 @@ class UriParseResult {
     this.objectPath,
     this.preview = const ObjectPreview(),
   });
+
+  ObjectType? finalType() {
+    ObjectRef? cur = objectPath;
+    while (cur?.child != null) {
+      cur = cur?.child; // find the deepest object
+    }
+    return cur?.objectType;
+  }
 }

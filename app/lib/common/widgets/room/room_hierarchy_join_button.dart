@@ -9,7 +9,7 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
   final String roomId;
   final String joinRule;
   final String roomName;
-  final String? viaServerName;
+  final List<String>? viaServerName;
 
   const RoomHierarchyJoinButton({
     super.key,
@@ -42,14 +42,16 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
           message: lang.youAreAbleToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
-              await joinRoom(
-                context,
-                ref,
-                lang.tryingToJoin(roomName),
-                roomId,
-                viaServerName,
-                forward,
+              final newRoomId = await joinRoom(
+                context: context,
+                ref: ref,
+                roomIdOrAlias: roomId,
+                serverNames: viaServerName,
+                roomName: roomName,
               );
+              if (newRoomId != null) {
+                forward(newRoomId);
+              }
             },
             child: Text(lang.join),
           ),
@@ -58,14 +60,16 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
           message: lang.youAreAbleToJoinThisRoom,
           child: OutlinedButton(
             onPressed: () async {
-              await joinRoom(
-                context,
-                ref,
-                lang.tryingToJoin(roomName),
-                roomId,
-                viaServerName,
-                forward,
+              final newRoomId = await joinRoom(
+                context: context,
+                ref: ref,
+                roomIdOrAlias: roomId,
+                serverNames: viaServerName,
+                roomName: roomName,
               );
+              if (newRoomId != null) {
+                forward(newRoomId);
+              }
             },
             child: Text(lang.join),
           ),

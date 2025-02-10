@@ -1,3 +1,7 @@
+mod account_data;
+mod preview;
+mod subscription;
+
 pub use acter_core::spaces::{
     CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
     SpaceRelations as CoreSpaceRelations,
@@ -18,49 +22,50 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use futures::Stream;
 use matrix_sdk::{
-    deserialized_responses::SyncOrStrippedState,
-    media::{MediaFormat, MediaRequestParameters},
     notification_settings::{IsEncrypted, IsOneToOne},
     room::{Room as SdkRoom, RoomMember},
-    RoomDisplayName, RoomMemberships, RoomState,
 };
-use matrix_sdk_base::ruma::{
-    api::client::{
-        room::report_content,
-        space::{get_hierarchy, SpaceHierarchyRoomsChunk},
-    },
-    assign,
-    events::{
-        room::{
-            avatar::ImageInfo as AvatarImageInfo,
-            join_rules::{
-                AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
-            },
-            message::{MessageType, RoomMessageEvent},
-            MediaSource,
+use matrix_sdk_base::{
+    deserialized_responses::SyncOrStrippedState,
+    media::{MediaFormat, MediaRequestParameters},
+    ruma::{
+        api::client::{
+            room::report_content,
+            space::{get_hierarchy, SpaceHierarchyRoomsChunk},
         },
-        space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
-        MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
+        assign,
+        events::{
+            room::{
+                avatar::ImageInfo as AvatarImageInfo,
+                join_rules::{
+                    AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
+                },
+                message::{MessageType, RoomMessageEvent},
+                MediaSource,
+            },
+            space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
+            MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
+        },
+        room::RoomType,
+        serde::Raw,
+        space::SpaceRoomJoinRule,
+        EventId, IdParseError, Int, OwnedEventId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
+        OwnedTransactionId, OwnedUserId, RoomId, ServerName, UserId,
     },
-    room::RoomType,
-    serde::Raw,
-    space::SpaceRoomJoinRule,
-    EventId, IdParseError, Int, OwnedEventId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
-    OwnedTransactionId, OwnedUserId, RoomId, ServerName, UserId,
+    RoomDisplayName, RoomMemberships, RoomState,
 };
 use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
 use tokio::fs;
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
 
-mod account_data;
-
-use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
-
 use super::{
     api::FfiBuffer,
     push::{notification_mode_from_input, room_notification_mode_name},
 };
+use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
+pub use account_data::UserRoomSettings;
+pub use preview::RoomPreview;
 
 #[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]
 #[strum(serialize_all = "PascalCase")]
@@ -442,14 +447,12 @@ impl SpaceHierarchyRoomInfo {
         self.chunk.avatar_url.is_some()
     }
 
-    pub fn via_server_name(&self) -> Option<String> {
+    pub fn via_server_names(&self) -> Vec<String> {
         for v in &self.chunk.children_state {
             let Ok(h) = v.deserialize() else { continue };
-            if let Some(v) = h.content.via.into_iter().next() {
-                return Some(v.to_string());
-            }
+            return h.content.via.into_iter().map(|s| s.to_string()).collect();
         }
-        None
+        vec![]
     }
 
     pub async fn get_avatar(&self, thumb_size: Option<Box<ThumbnailSize>>) -> Result<OptionBuffer> {

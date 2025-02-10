@@ -1,18 +1,16 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:acter/features/deep_linking/actions/handle_deep_link_uri.dart';
 import 'package:acter/features/deep_linking/parse_acter_uri.dart';
-import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
 import 'package:html/parser.dart';
@@ -179,56 +177,8 @@ Future<void> navigateToRoomOrAskToJoin(
 
   /// Ask to join room if not yet joined
   else {
-    askToJoinRoom(context, ref, roomId);
+    showRoomPreview(context: context, roomIdOrAlias: roomId);
   }
-}
-
-Future<void> askToJoinRoom(
-  BuildContext context,
-  WidgetRef ref,
-  String roomId,
-) async {
-  await showModalBottomSheet(
-    context: context,
-    isDismissible: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.only(
-        topRight: Radius.circular(20),
-        topLeft: Radius.circular(20),
-      ),
-    ),
-    builder: (context) {
-      final lang = L10n.of(context);
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(lang.youAreNotPartOfThisGroup),
-            const SizedBox(height: 20),
-            ActerPrimaryActionButton(
-              onPressed: () async {
-                Navigator.pop(context);
-                final server = roomId.split(':').last;
-                await joinRoom(
-                  context,
-                  ref,
-                  lang.tryingToJoin(roomId),
-                  roomId,
-                  server,
-                  (roomId) => navigateToRoomOrAskToJoin(context, ref, roomId),
-                );
-              },
-              child: Text(lang.joinRoom),
-            ),
-          ],
-        ),
-      );
-    },
-  );
 }
 
 final matrixLinks = RegExp(
@@ -404,4 +354,12 @@ Future<void> onMessageLinkTap(
       await openLink(uri.toString(), context);
     }
   }
+}
+
+bool isOnlyEmojis(String text) {
+  final emojiRegex = RegExp(
+    r'^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|\s)+$',
+  );
+
+  return emojiRegex.hasMatch(text.trim());
 }

@@ -1,13 +1,11 @@
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,7 +24,7 @@ Future<NewsSlideDraft> _makeTextSlide(
   L10n lang,
 ) async {
   final sdk = await ref.read(sdkProvider.future);
-  final client = ref.read(alwaysClientProvider);
+  final client = await ref.read(alwaysClientProvider.future);
 
   final text = slidePost.text?.trim();
   if (text == null || text.isEmpty == true) {
@@ -42,11 +40,10 @@ Future<NewsSlideDraft> _makeTextSlide(
     sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
   );
 
-  final referenceModel = slidePost.newsReferencesModel;
-
-  if (referenceModel != null) {
-    final objRef = getSlideReference(sdk, referenceModel);
-    textSlideDraft.addReference(objRef);
+  final refDetails = slidePost.refDetails;
+  if (refDetails != null) {
+    final objRefBuilder = sdk.api.newObjRefBuilder(null, refDetails);
+    textSlideDraft.addReference(objRefBuilder);
   }
 
   return textSlideDraft;
@@ -58,7 +55,7 @@ Future<NewsSlideDraft> _makeImageSlide(
   L10n lang,
 ) async {
   final sdk = await ref.read(sdkProvider.future);
-  final client = ref.read(alwaysClientProvider);
+  final client = await ref.read(alwaysClientProvider.future);
 
   final file = slidePost.mediaFile;
   if (file == null) {
@@ -80,10 +77,11 @@ Future<NewsSlideDraft> _makeImageSlide(
   imageSlideDraft.color(
     sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
   );
-  final reference = slidePost.newsReferencesModel;
-  if (reference != null) {
-    final objRef = getSlideReference(sdk, reference);
-    imageSlideDraft.addReference(objRef);
+
+  final refDetails = slidePost.refDetails;
+  if (refDetails != null) {
+    final objRefBuilder = sdk.api.newObjRefBuilder(null, refDetails);
+    imageSlideDraft.addReference(objRefBuilder);
   }
   return imageSlideDraft;
 }
@@ -94,7 +92,7 @@ Future<NewsSlideDraft> _makeVideoSlide(
   L10n lang,
 ) async {
   final sdk = await ref.read(sdkProvider.future);
-  final client = ref.read(alwaysClientProvider);
+  final client = await ref.read(alwaysClientProvider.future);
   final file = slidePost.mediaFile;
   if (file == null) {
     throw 'Video File missing';
@@ -111,10 +109,10 @@ Future<NewsSlideDraft> _makeVideoSlide(
   videoSlideDraft.color(
     sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
   );
-  final referenceModel = slidePost.newsReferencesModel;
-  if (referenceModel != null) {
-    final objRef = getSlideReference(sdk, referenceModel);
-    videoSlideDraft.addReference(objRef);
+  final refDetails = slidePost.refDetails;
+  if (refDetails != null) {
+    final objRefBuilder = sdk.api.newObjRefBuilder(null, refDetails);
+    videoSlideDraft.addReference(objRefBuilder);
   }
   return videoSlideDraft;
 }
@@ -166,7 +164,9 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
     }
   }
   try {
-    await draft.send();
+    final eventId = await draft.send();
+    // we want to stay informed about this via push notifications
+    await autosubscribe(ref: ref, objectId: eventId.toString(), lang: lang);
   } catch (e, s) {
     _log.severe('Failed to send news', e, s);
     EasyLoading.showError(
@@ -185,37 +185,4 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
   if (!context.mounted) return;
   Navigator.pop(context);
   context.pushReplacementNamed(Routes.main.name); // go to the home/main updates
-}
-
-ObjRef getSlideReference(ActerSdk sdk, NewsReferencesModel refModel) {
-  final refDetails = switch (refModel.type) {
-    NewsReferencesType.calendarEvent => sdk.api
-        .newCalendarEventRefBuilder(
-          refModel.id.expect('Referenced Calendar misses id'),
-          null,
-          null,
-        )
-        .build(),
-    NewsReferencesType.pin => sdk.api
-        .newPinRefBuilder(
-          refModel.id.expect('Referenced Pin misses id'),
-          null,
-          null,
-        )
-        .build(),
-    NewsReferencesType.taskList => sdk.api
-        .newTaskListRefBuilder(
-          refModel.id.expect('Referenced TaskList misses id'),
-          null,
-          null,
-        )
-        .build(),
-    NewsReferencesType.link => sdk.api
-        .newLinkRefBuilder(
-          refModel.title.expect('Referenced link misses title'),
-          refModel.id.expect('Referenced link misses id'),
-        )
-        .build(),
-  };
-  return sdk.api.newObjRefBuilder(null, refDetails).build();
 }

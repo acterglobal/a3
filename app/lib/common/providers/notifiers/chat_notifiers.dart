@@ -19,8 +19,9 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
   @override
   FutureOr<Convo?> build(String arg) async {
     final roomId = arg;
-    final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(roomId); // keep it resident in memory
+    final client = await ref.watch(alwaysClientProvider.future);
+    _listener =
+        client.subscribeRoomStream(roomId); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
         state = AsyncValue.data(await client.convo(roomId));
@@ -50,8 +51,8 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
   @override
   FutureOr<RoomMessage?> build(String arg) async {
     final roomId = arg;
-    final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream('$roomId::latest_message');
+    final client = await ref.watch(alwaysClientProvider.future);
+    _listener = client.subscribeRoomParamStream(roomId, 'latest_message');
     _poller = _listener.listen(
       (data) async {
         _log.info('received new latest message call for $roomId');
@@ -70,20 +71,15 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
   }
 }
 
-class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
-  final Client client;
+class ChatRoomsListNotifier extends Notifier<List<Convo>> {
   late Stream<ConvoDiff> _listener;
-  late StreamSubscription<ConvoDiff> _poller;
+  StreamSubscription<ConvoDiff>? _poller;
+  late ProviderSubscription _providerSubscription;
 
-  ChatRoomsListNotifier({
-    required Ref ref,
-    required this.client,
-  }) : super(List<Convo>.empty(growable: false)) {
-    _init(ref);
-  }
-
-  void _init(Ref ref) {
+  void _reset(Client client) {
+    state = List<Convo>.empty(growable: false);
     _listener = client.convosStream(); // keep it resident in memory
+    _poller?.cancel();
     _poller = _listener.listen(
       _handleDiff,
       onError: (e, s) {
@@ -93,7 +89,7 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
         _log.info('convo list stream ended');
       },
     );
-    ref.onDispose(() => _poller.cancel());
+    ref.onDispose(() => _poller?.cancel());
   }
 
   List<Convo> listCopy() => List.from(state, growable: true);
@@ -203,6 +199,24 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
       default:
         break;
     }
+  }
+
+  @override
+  List<Convo> build() {
+    _providerSubscription = ref.listen<AsyncValue<Client?>>(
+      alwaysClientProvider,
+      (AsyncValue<Client?>? oldVal, AsyncValue<Client?> newVal) {
+        final client = newVal.valueOrNull;
+        if (client == null) {
+          // we don't care for not having a proper client yet
+          return;
+        }
+        _reset(client);
+      },
+      fireImmediately: true,
+    );
+    ref.onDispose(() => _providerSubscription.close());
+    return List<Convo>.empty(growable: false);
   }
 }
 

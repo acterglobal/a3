@@ -1,15 +1,12 @@
 use anyhow::Result;
-use matrix_sdk::{
+use matrix_sdk::{room::RoomMember, Client};
+use matrix_sdk_base::{
     media::{MediaFormat, MediaRequestParameters},
-    room::RoomMember,
-    Client, Room,
-};
-use matrix_sdk_base::ruma::{
-    api::client::user_directory::search_users, events::room::MediaSource, OwnedRoomId, OwnedUserId,
+    ruma::{api::client::user_directory::search_users, events::room::MediaSource, OwnedUserId},
 };
 
 use super::{
-    common::{OptionBuffer, OptionString, ThumbnailSize},
+    common::{OptionBuffer, ThumbnailSize},
     RUNTIME,
 };
 

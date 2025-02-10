@@ -26,9 +26,9 @@ const Map<String, AvatarInfo> _roomsData = {
 void main() {
   group('Chat Listing Search', () {
     final mockedProviders = [
-      // Same as before
-      isGuestProvider.overrideWithValue(false),
-      deviceIdProvider.overrideWithValue('asdf'),
+      deviceIdProvider.overrideWith((a) async {
+        return 'asdf';
+      }),
       hasFirstSyncedProvider.overrideWithValue(true),
       ...mockChatRoomProviders(_roomsData),
     ];
@@ -108,7 +108,10 @@ void main() {
           find.byKey(ActerSearchWidget.searchBarKey),
           findsOneWidget,
         );
-        await tester.enterText(find.byKey(ActerSearchWidget.searchBarKey), 'CD');
+        await tester.enterText(
+          find.byKey(ActerSearchWidget.searchBarKey),
+          'CD',
+        );
         await tester.pumpProviderScope(times: 2);
         // -- we only see subset
         expect(
@@ -119,7 +122,8 @@ void main() {
           ),
           findsExactly(2),
         );
-
+        await tester
+            .tap(find.byKey(ActerSearchWidget.clearSearchActionButtonKey));
         await tester.enterText(find.byKey(ActerSearchWidget.searchBarKey), 'E');
         await tester.pumpProviderScope(times: 2);
         // -- we only see subset
@@ -190,7 +194,8 @@ void main() {
           findsOneWidget,
         );
         await tester.enterText(
-          find.byKey(ActerSearchWidget.searchBarKey), 'mA', // part of one room ID
+          find.byKey(ActerSearchWidget.searchBarKey),
+          'mA', // part of one room ID
         );
         await tester.pumpProviderScope(times: 2);
         // -- we only see subset
@@ -206,9 +211,11 @@ void main() {
           find.text('Room ABC'),
           findsOne,
         );
-
+        await tester
+            .tap(find.byKey(ActerSearchWidget.clearSearchActionButtonKey));
         await tester.enterText(
-          find.byKey(ActerSearchWidget.searchBarKey), 'mD', // part of one room ID
+          find.byKey(ActerSearchWidget.searchBarKey),
+          'mD', // part of one room ID
         );
         await tester.pumpProviderScope(times: 2);
         // -- we only see subset
@@ -231,7 +238,7 @@ void main() {
         // and we close
         await tester
             .tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
-        await tester.pumpProviderScope(times: 1);
+        await tester.pumpProviderScope(times: 2);
         // -- we should see all of them again
         expect(
           find.byType(

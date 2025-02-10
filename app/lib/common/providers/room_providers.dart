@@ -1,7 +1,6 @@
 /// Get the relations of the given SpaceId.  Throws
 library;
 
-import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:acter/common/extensions/async_value.dart';
@@ -250,10 +249,11 @@ final membershipStatusStr =
 
 final memberDisplayNameProvider = StateNotifierProvider.family<
     CachedAsyncStateProvider<String?>, AsyncValue<String?>, MemberInfo>(
-  (ref, arg) => CachedAsyncStateProvider(_memberDisplayNameProvider(arg), ref),
+  (ref, arg) =>
+      CachedAsyncStateProvider(memberDisplayNameProviderInner(arg), ref),
 );
 
-final _memberDisplayNameProvider =
+final memberDisplayNameProviderInner =
     FutureProvider.autoDispose.family<String?, MemberInfo>((ref, query) async {
   try {
     final profile = ref.watch(_memberProfileProvider(query)).valueOrNull;
@@ -263,15 +263,15 @@ final _memberDisplayNameProvider =
   }
 });
 
-final _memberAvatarProvider = StateNotifierProvider.family<
+final memberAvatarProvider = StateNotifierProvider.family<
     CachedAsyncStateProvider<MemoryImage?>,
     AsyncValue<MemoryImage?>,
     MemberInfo>(
-  (ref, arg) => CachedAsyncStateProvider(_memberAvatarProviderInner(arg), ref),
+  (ref, arg) => CachedAsyncStateProvider(memberAvatarProviderInner(arg), ref),
 );
 
 /// Caching the MemoryImage of each room
-final _memberAvatarProviderInner = FutureProvider.autoDispose
+final memberAvatarProviderInner = FutureProvider.autoDispose
     .family<MemoryImage?, MemberInfo>((ref, query) async {
   final sdk = await ref.watch(sdkProvider.future);
 
@@ -292,7 +292,7 @@ final _memberAvatarProviderInner = FutureProvider.autoDispose
 final memberAvatarInfoProvider =
     Provider.autoDispose.family<AvatarInfo, MemberInfo>((ref, query) {
   final displayName = ref.watch(memberDisplayNameProvider(query)).valueOrNull;
-  final avatarData = ref.watch(_memberAvatarProvider(query)).valueOrNull;
+  final avatarData = ref.watch(memberAvatarProvider(query)).valueOrNull;
 
   return AvatarInfo(
     uniqueId: query.userId,

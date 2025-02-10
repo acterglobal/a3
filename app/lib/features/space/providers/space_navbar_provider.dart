@@ -30,10 +30,10 @@ final tabsProvider = StateNotifierProvider.family<
     AsyncValue<List<TabEntry>>,
     String>(
   (ref, arg) =>
-      CachedAsyncStateProvider(_innerTabsProvider(arg), ref, defaultTabs),
+      CachedAsyncStateProvider(tabsProviderInner(arg), ref, defaultTabs),
 );
 
-final _innerTabsProvider =
+final tabsProviderInner =
     FutureProvider.family<EnumList<TabEntry>, String>((ref, spaceId) async {
   final space = await ref.watch(spaceProvider(spaceId).future);
 

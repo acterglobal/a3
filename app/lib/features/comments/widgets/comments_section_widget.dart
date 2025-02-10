@@ -18,6 +18,8 @@ class CommentsSectionWidget extends ConsumerWidget {
   final bool shrinkWrap;
   final bool centerTitle;
   final bool useCompactEmptyState;
+  final List<Widget>? actions;
+  final PostCreateComment? postCreateComment;
 
   const CommentsSectionWidget({
     super.key,
@@ -25,6 +27,8 @@ class CommentsSectionWidget extends ConsumerWidget {
     this.centerTitle = false,
     this.useCompactEmptyState = true,
     required this.managerProvider,
+    this.postCreateComment,
+    this.actions,
   });
 
   @override
@@ -65,7 +69,10 @@ class CommentsSectionWidget extends ConsumerWidget {
         const SizedBox(height: 12),
         commentTitleUI(context),
         commentListUI(commentManager),
-        AddCommentWidget(manager: commentManager),
+        AddCommentWidget(
+          manager: commentManager,
+          postCreateComment: postCreateComment,
+        ),
       ],
     );
   }
@@ -73,10 +80,15 @@ class CommentsSectionWidget extends ConsumerWidget {
   Widget commentTitleUI(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Text(
-        L10n.of(context).comments,
-        style: Theme.of(context).textTheme.titleMedium,
-        textAlign: centerTitle ? TextAlign.center : TextAlign.start,
+      child: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: centerTitle,
+        backgroundColor: Colors.transparent,
+        title: Text(
+          L10n.of(context).comments,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        actions: actions,
       ),
     );
   }
@@ -108,7 +120,7 @@ class CommentsSectionWidget extends ConsumerWidget {
       background: const CommentListSkeletonWidget(),
       error: error,
       stack: stack,
-      textBuilder: L10n.of(context).loadingFailed,
+      textBuilder: (error, code) => L10n.of(context).loadingFailed(error),
       onRetryTap: () => managerProvider
           .map((manager) => ref.invalidate(commentsManagerProvider(manager))),
     );

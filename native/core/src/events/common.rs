@@ -15,8 +15,8 @@ pub use categories::{
 pub use color::Color;
 pub use labels::Labels;
 pub use object_reference::{
-    CalendarEventAction, CalendarEventRefPreview, ObjRef, ObjRefBuilder, RefDetails,
-    RefDetailsBuilder, RefPreview, TaskAction, TaskListAction,
+    CalendarEventAction, CalendarEventRefPreview, ObjRef, ObjRefBuilder, RefDetails, RefPreview,
+    TaskAction, TaskListAction,
 };
 pub use rendering::{ActerIcon, BrandLogo, Colorize, ColorizeBuilder, Icon, Position};
 

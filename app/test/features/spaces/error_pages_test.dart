@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/enum_list.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/space_info.dart';
@@ -40,11 +41,11 @@ void main() {
             }
             return MockSpace();
           }),
-          tabsProvider.overrideWith((ref, id) async {
+          tabsProviderInner.overrideWith((ref, id) async {
             await ref.watch(
               spaceProvider(id).future,
             ); // let this fail internally
-            return [];
+            return EnumList();
           }),
         ],
         child: const SpaceDetailsPage(spaceId: '!spaceId'),

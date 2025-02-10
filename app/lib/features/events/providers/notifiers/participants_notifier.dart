@@ -18,9 +18,11 @@ class AsyncParticipantsNotifier
   @override
   Future<List<String>> build(String arg) async {
     final calEvtId = arg;
-    final client = ref.watch(alwaysClientProvider);
-    _listener =
-        client.subscribeStream('$calEvtId::rsvp'); // keep it resident in memory
+    final client = await ref.watch(alwaysClientProvider.future);
+    _listener = client.subscribeModelObjectsStream(
+      calEvtId,
+      'rsvp',
+    ); // keep it resident in memory
     _listener.forEach((e) async {
       state = AsyncData(await _getParticipants(client, calEvtId));
     });

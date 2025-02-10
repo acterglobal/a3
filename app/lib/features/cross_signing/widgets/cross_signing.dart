@@ -19,6 +19,7 @@ final _log = Logger('a3::cross_signing::widget');
 
 // this widget has no elements
 // it just pops up stage dialogs for verification
+@immutable
 class CrossSigning extends ConsumerStatefulWidget {
   const CrossSigning({super.key});
 
@@ -148,11 +149,11 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
     );
   }
 
-  void onRequestTransitioned(VerificationEvent event) {
+  void onRequestTransitioned(VerificationEvent event) async {
     _log.info('emitter request.transitioned');
 
     // start sas event loop
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     client.installSasEventHandler(event.flowId());
   }
 
@@ -206,7 +207,7 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
     );
   }
 
-  void onVerificationRequest(VerificationEvent event) {
+  void onVerificationRequest(VerificationEvent event) async {
     _log.info('emitter verification.request');
 
     // starting of verifiee’s flow
@@ -217,11 +218,12 @@ class CrossSigningState extends ConsumerState<CrossSigning> {
     });
 
     // start request event loop
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     client.installRequestEventHandler(fId);
 
     // open verification.request dialog
     showModalBottomSheet(
+      // ignore: use_build_context_synchronously
       context: context,
       builder: (BuildContext context) => VerificationRequestView(
         sender: event.sender(),

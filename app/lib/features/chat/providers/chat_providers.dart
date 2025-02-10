@@ -45,15 +45,6 @@ final chatStateProvider =
   (ref, roomId) => ChatRoomNotifier(ref: ref, roomId: roomId),
 );
 
-final chatComposerDraftProvider = FutureProvider.autoDispose
-    .family<ComposeDraft?, String>((ref, roomId) async {
-  final chat = await ref.watch(chatProvider(roomId).future);
-  if (chat == null) {
-    return null;
-  }
-  return (await chat.msgDraft().then((val) => val.draft()));
-});
-
 final chatTopic =
     FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
   final c = await ref.watch(chatProvider(roomId).future);
@@ -187,7 +178,7 @@ final isRoomEncryptedProvider =
 
 final chatTypingEventProvider = StreamProvider.autoDispose
     .family<List<types.User>, String>((ref, roomId) async* {
-  final client = ref.watch(alwaysClientProvider);
+  final client = await ref.watch(alwaysClientProvider.future);
   final userId = ref.watch(myUserIdStrProvider);
   yield [];
   await for (final event in client.subscribeToTypingEventStream(roomId)) {

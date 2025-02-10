@@ -9,8 +9,8 @@ import 'package:riverpod/riverpod.dart';
 final _log = Logger('a3::settings::devices_notifier');
 
 class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
-  Stream<DeviceEvent>? _listener;
-  StreamSubscription<DeviceEvent>? _poller;
+  late Stream<DeviceEvent> _listener;
+  late StreamSubscription<DeviceEvent> _poller;
 
   Future<List<DeviceRecord>> _getSessions(SessionManager manager) async {
     return (await manager.allSessions()).toList();
@@ -18,11 +18,11 @@ class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
 
   @override
   Future<List<DeviceRecord>> build() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     final manager = client.sessionManager();
 
     _listener = client.deviceEventRx();
-    _poller = _listener?.listen(
+    _poller = _listener.listen(
       (data) async {
         state = AsyncData(await _getSessions(manager));
       },
@@ -33,7 +33,7 @@ class AsyncDevicesNotifier extends AsyncNotifier<List<DeviceRecord>> {
         _log.info('stream ended');
       },
     );
-    ref.onDispose(() => _poller?.cancel());
+    ref.onDispose(() => _poller.cancel());
 
     return await _getSessions(manager);
   }

@@ -23,7 +23,8 @@ class ChatEvent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final msg = ref.watch(chatRoomMessageProvider((roomId, eventId)));
+    final msg =
+        ref.watch(chatRoomMessageProvider((roomId: roomId, uniqueId: eventId)));
 
     if (msg == null) {
       _log.severe('Msg not found $roomId $eventId');
@@ -56,8 +57,8 @@ class ChatEvent extends ConsumerWidget {
     required RoomEventItem item,
     required WidgetRef ref,
   }) {
-    final nextMessageGroup =
-        ref.watch(isNextMessageGroupProvider((roomId, eventId)));
+    final isNextMessageInGroup = ref
+        .watch(isNextMessageGroupProvider((roomId: roomId, uniqueId: eventId)));
     final avatarInfo = ref.watch(
       memberAvatarInfoProvider(
         (
@@ -69,15 +70,17 @@ class ChatEvent extends ConsumerWidget {
     final options = AvatarOptions.DM(avatarInfo, size: 14);
     final myId = ref.watch(myUserIdStrProvider);
     final messageId = msg.uniqueId();
-    final isUser = myId == item.sender();
+    // FIXME: should check canRedact permission from the room
+    final canRedact = item.sender() == myId;
+
+    final isMe = myId == item.sender();
     // TODO: render a regular timeline event
     return Row(
       mainAxisAlignment:
-          !isUser ? MainAxisAlignment.start : MainAxisAlignment.end,
+          !isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.end,
-      mainAxisSize: MainAxisSize.min,
       children: [
-        (!nextMessageGroup && !isUser)
+        (!isNextMessageInGroup && !isMe)
             ? Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: ActerAvatar(options: options),
@@ -88,8 +91,9 @@ class ChatEvent extends ConsumerWidget {
             roomId: roomId,
             messageId: messageId,
             item: item,
-            isUser: isUser,
-            nextMessageGroup: nextMessageGroup,
+            isMe: isMe,
+            canRedact: canRedact,
+            isNextMessageInGroup: isNextMessageInGroup,
           ),
         ),
       ],

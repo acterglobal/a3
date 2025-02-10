@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
@@ -14,6 +13,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 final bucketGlobal = PageStorageBucket();
+
 typedef RoomSelectAction = Function(String);
 
 class RoomsListWidget extends ConsumerStatefulWidget {
@@ -155,26 +155,22 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return PageStorage(
-      bucket: bucketGlobal,
-      child: CustomScrollView(
-        controller: controller,
-        key: const PageStorageKey<String>('convo-list'),
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            automaticallyImplyLeading: false,
-            floating: true,
-            elevation: 0,
-            leading: Padding(
-              padding: const EdgeInsets.all(15),
-              child: roomListTitle(context),
-            ),
-            leadingWidth: double.infinity,
-            actions: renderActions(),
-          ),
-          SliverToBoxAdapter(
-            child: AnimatedOpacity(
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.all(15),
+          child: roomListTitle(context),
+        ),
+        leadingWidth: double.infinity,
+        actions: renderActions(),
+      ),
+      body: PageStorage(
+        bucket: bucketGlobal,
+        child: Column(
+          children: [
+            AnimatedOpacity(
               opacity: !_isSearchVisible ? 0 : 1,
               curve: Curves.easeInOut,
               duration: const Duration(milliseconds: 400),
@@ -185,14 +181,20 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
                     )
                   : const SizedBox.shrink(),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: searchTerms(context),
-          ),
-          ref.watch(isGuestProvider)
-              ? empty
-              : ChatsList(onSelected: widget.onSelected),
-        ],
+            searchTerms(context),
+            Expanded(
+              child: ChatsList(
+                onSelected: (roomId) {
+                  ref
+                      .read(roomListFilterProvider.notifier)
+                      .updateSearchTerm(null);
+                  setState(() => _isSearchVisible = false);
+                  widget.onSelected(roomId);
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -256,10 +258,8 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget get empty {
-    return SliverToBoxAdapter(
-      child: Center(
-        child: SvgPicture.asset('assets/images/empty_messages.svg'),
-      ),
+    return Center(
+      child: SvgPicture.asset('assets/images/empty_messages.svg'),
     );
   }
 }

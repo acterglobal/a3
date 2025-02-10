@@ -172,10 +172,10 @@ class _CloseRoomConfirmationState
 
       var skippedParents = 0;
       if (parents.isNotEmpty) {
-        for (var i = 1; i <= parents.length; i++) {
+        for (var i = 0; i < parents.length; i++) {
           EasyLoading.showProgress(
             i / parents.length,
-            status: lang.closingRoomRemovingFromParents(i, parents.length),
+            status: lang.closingRoomRemovingFromParents(i + 1, parents.length),
           );
           final parent = await ref.read(maybeSpaceProvider(parents[i]).future);
 

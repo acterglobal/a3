@@ -1,16 +1,8 @@
-use acter_core::models::{self, ActerModel, AnyActerModel};
-use anyhow::{bail, Result};
+use acter_core::{models, referencing::ExecuteReference};
+use anyhow::Result;
 use futures::stream::StreamExt;
 use matrix_sdk::room::Room;
-use matrix_sdk::ruma::api::client::receipt::create_receipt::v3::ReceiptType;
-use matrix_sdk_base::ruma::{
-    events::{
-        receipt::{Receipt, ReceiptThread, SyncReceiptEvent},
-        MessageLikeEventType,
-    },
-    OwnedEventId, OwnedTransactionId, OwnedUserId, UserId,
-};
-use std::{collections::BTreeMap, ops::Deref};
+use matrix_sdk_base::ruma::OwnedEventId;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 
@@ -54,7 +46,7 @@ impl ReadReceiptsManager {
         .await
     }
 
-    pub fn update_key(&self) -> String {
+    pub fn update_key(&self) -> ExecuteReference {
         self.inner.update_key()
     }
 

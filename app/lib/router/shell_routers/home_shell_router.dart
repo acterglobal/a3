@@ -27,7 +27,7 @@ import 'package:acter/features/settings/pages/info_page.dart';
 import 'package:acter/features/settings/pages/labs_page.dart';
 import 'package:acter/features/settings/pages/language_select_page.dart';
 import 'package:acter/features/settings/pages/licenses_page.dart';
-import 'package:acter/features/settings/pages/notifications_page.dart';
+import 'package:acter/features/notifications/pages/notifications_page.dart';
 import 'package:acter/features/settings/pages/sessions_page.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/space/pages/members_page.dart';

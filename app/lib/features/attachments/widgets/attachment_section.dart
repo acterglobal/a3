@@ -1,12 +1,13 @@
+import 'package:acter/common/actions/add_space_object_ref.dart';
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
 import 'package:acter/features/attachments/types.dart';
-import 'package:acter/features/attachments/widgets/attachment_item.dart';
+import 'package:acter/features/attachments/widgets/msg_content_attachment_item.dart';
+import 'package:acter/features/attachments/widgets/reference_attachment_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Attachment, AttachmentsManager;
+    show AttachmentsManager;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -79,9 +80,59 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final attachmentsLoader = ref.watch(attachmentsProvider(attachmentManager));
-    return attachmentsLoader.when(
-      data: (attachments) => attachmentData(attachments, context, ref),
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          referenceAttachmentsUI(context, ref),
+          msgContentAttachmentsUI(context, ref),
+        ],
+      ),
+    );
+  }
+
+  Widget referenceAttachmentsUI(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    final lang = L10n.of(context);
+    final referenceAttachmentsLoader =
+        ref.watch(referenceAttachmentsProvider(attachmentManager));
+    bool canEdit = attachmentManager.canEditAttachments();
+
+    return referenceAttachmentsLoader.when(
+      data: (refAttachmentList) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            attachmentHeader(
+              context: context,
+              title: lang.references,
+              canEdit: canEdit,
+              onTapAdd: () => addSpaceObjectRefDialog(
+                context: context,
+                attachmentManager: attachmentManager,
+              ),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: refAttachmentList.length,
+              padding: EdgeInsets.zero,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return ReferenceAttachmentItem(
+                  attachment: refAttachmentList[index],
+                  canEdit: canEdit,
+                );
+              },
+            ),
+            if (refAttachmentList.isEmpty)
+              Text(L10n.of(context).referencesEmptyStateTitle),
+            const SizedBox(height: 20),
+          ],
+        );
+      },
       error: (e, s) {
         _log.severe('Failed to load attachments', e, s);
         return Text(L10n.of(context).errorLoadingAttachments(e));
@@ -96,83 +147,96 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
     );
   }
 
-  Widget attachmentData(
-    List<Attachment> list,
+  Widget msgContentAttachmentsUI(
     BuildContext context,
     WidgetRef ref,
   ) {
+    final lang = L10n.of(context);
+    final msgContentAttachmentsLoader =
+        ref.watch(msgContentAttachmentsProvider(attachmentManager));
     bool canEdit = attachmentManager.canEditAttachments();
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          attachmentHeader(context, ref),
-          if (list.isEmpty) ...[
-            const SizedBox(height: 10),
-            Text(L10n.of(context).attachmentEmptyStateTitle),
+
+    return msgContentAttachmentsLoader.when(
+      data: (msgContentAttachmentList) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            attachmentHeader(
+              context: context,
+              title: lang.attachments,
+              canEdit: canEdit,
+              onTapAdd: () => selectAttachment(
+                context: context,
+                onLinkSelected: (title, link) {
+                  Navigator.pop(context);
+                  return handleAttachmentSelected(
+                    context: context,
+                    ref: ref,
+                    manager: attachmentManager,
+                    title: title,
+                    link: link,
+                    attachmentType: AttachmentType.link,
+                    attachments: [],
+                  );
+                },
+                onSelected: (files, selectedType) {
+                  return handleAttachmentSelected(
+                    context: context,
+                    ref: ref,
+                    manager: attachmentManager,
+                    attachments: files,
+                    attachmentType: selectedType,
+                  );
+                },
+              ),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: msgContentAttachmentList.length,
+              padding: EdgeInsets.zero,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return MsgContentAttachmentItem(
+                  attachment: msgContentAttachmentList[index],
+                  canEdit: canEdit,
+                );
+              },
+            ),
+            if (msgContentAttachmentList.isEmpty)
+              Text(L10n.of(context).attachmentEmptyStateTitle),
           ],
-          Wrap(
-            spacing: 5.0,
-            runSpacing: 10.0,
-            children: <Widget>[
-              for (final item in list)
-                _buildAttachmentItem(context, item, canEdit),
-            ],
-          ),
-        ],
+        );
+      },
+      error: (e, s) {
+        _log.severe('Failed to load attachments', e, s);
+        return Text(L10n.of(context).errorLoadingAttachments(e));
+      },
+      loading: () => const Skeletonizer(
+        child: Wrap(
+          spacing: 5.0,
+          runSpacing: 10.0,
+          children: [],
+        ),
       ),
     );
   }
 
-  Widget attachmentHeader(BuildContext context, WidgetRef ref) {
-    final lang = L10n.of(context);
-    final attachmentTitleTextStyle = Theme.of(context).textTheme.titleSmall;
+  Widget attachmentHeader({
+    required BuildContext context,
+    required String title,
+    required VoidCallback? onTapAdd,
+    required bool canEdit,
+  }) {
     return Row(
       children: [
-        Text(lang.attachments, style: attachmentTitleTextStyle),
-        const Spacer(),
-        ActerInlineTextButton(
-          onPressed: () => selectAttachment(
-            context: context,
-            onLinkSelected: (title, link) {
-              Navigator.pop(context);
-              return handleAttachmentSelected(
-                context: context,
-                ref: ref,
-                manager: attachmentManager,
-                title: title,
-                link: link,
-                attachmentType: AttachmentType.link,
-                attachments: [],
-              );
-            },
-            onSelected: (files, selectedType) {
-              return handleAttachmentSelected(
-                context: context,
-                ref: ref,
-                manager: attachmentManager,
-                attachments: files,
-                attachmentType: selectedType,
-              );
-            },
+        Expanded(
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall,
           ),
-          child: Text(lang.add),
         ),
+        if (canEdit) IconButton(onPressed: onTapAdd, icon: Icon(Icons.add)),
       ],
-    );
-  }
-
-  Widget _buildAttachmentItem(
-    BuildContext context,
-    Attachment item,
-    bool canEdit,
-  ) {
-    final eventId = item.attachmentIdStr();
-    return AttachmentItem(
-      key: Key('$eventId-attachment'),
-      attachment: item,
-      canEdit: canEdit,
     );
   }
 }

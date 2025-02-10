@@ -102,7 +102,7 @@ class MyProfilePage extends StatelessWidget {
     if (newText == null) return;
 
     EasyLoading.show(status: lang.updatingDisplayName);
-    final account = ref.read(accountProvider);
+    final account = await ref.read(accountProvider.future);
     await account.setDisplayName(newText);
     ref.invalidate(accountProvider);
 
@@ -123,7 +123,7 @@ class MyProfilePage extends StatelessWidget {
       }
       if (!context.mounted) return;
       EasyLoading.show(status: L10n.of(context).updatingProfileImage);
-      final account = ref.read(accountProvider);
+      final account = await ref.read(accountProvider.future);
       await account.uploadAvatar(filePath);
       ref.invalidate(accountProvider);
       // close loading

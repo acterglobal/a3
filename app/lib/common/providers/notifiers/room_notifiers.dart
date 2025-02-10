@@ -11,26 +11,38 @@ import 'package:riverpod/riverpod.dart';
 final _log = Logger('a3::common::room_notifiers');
 
 class MaybeRoomNotifier extends FamilyNotifier<Room?, String> {
-  late Stream<bool> _listener;
-  late StreamSubscription<bool> _poller;
+  // ignore: unused_field
+  Stream<bool>? _listener;
+  StreamSubscription<bool>? _poller;
+  late ProviderSubscription sub;
+  Client? client;
 
-  Future<Room?> _getRoom(Client client) async {
+  Future<Room?> _refresh(Client client) async {
     try {
-      return await client.room(arg);
+      final room = await client.room(arg);
+      state = room;
+      return room;
     } catch (e) {
       _log.warning('room $arg not found', e);
       return null;
     }
   }
 
-  @override
-  Room? build(String arg) {
-    final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(arg); // keep it resident in memory
-    _poller = _listener.listen(
+  Future<Room?> refresh() async {
+    final curClient = client;
+    if (curClient == null) {
+      return null;
+    }
+    return await _refresh(curClient);
+  }
+
+  void _newClient(Client newClient) {
+    final listener = newClient.subscribeRoomStream(arg);
+    _poller?.cancel();
+    _poller = listener.listen(
       (data) async {
         _log.info('seen update for room $arg');
-        state = await _getRoom(client);
+        _refresh(newClient);
       },
       onError: (e, s) {
         _log.severe('room stream errored', e, s);
@@ -39,9 +51,26 @@ class MaybeRoomNotifier extends FamilyNotifier<Room?, String> {
         _log.info('room stream ended');
       },
     );
-    ref.onDispose(() => _poller.cancel());
+
+    _listener = listener; // keep it resident in memory
+    ref.onDispose(() => _poller?.cancel());
     // initial call
-    _getRoom(client).then((value) => state = value);
+    _refresh(newClient);
+    client = newClient;
+  }
+
+  @override
+  Room? build(String arg) {
+    sub = ref.listen<AsyncValue<Client>>(
+      alwaysClientProvider,
+      (AsyncValue<Client>? prev, AsyncValue<Client> next) {
+        final client = next.valueOrNull;
+        if (client != null) {
+          _newClient(client);
+        }
+      },
+      fireImmediately: true,
+    );
     return null;
   }
 }

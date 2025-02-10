@@ -1,3 +1,4 @@
+use matrix_sdk::ruma::OwnedEventId;
 use matrix_sdk_base::ruma::{
     events::{room::redaction::OriginalRoomRedactionEvent, UnsignedRoomRedactionEvent},
     OwnedRoomId,
@@ -9,6 +10,7 @@ use tracing::{error, info, trace, trace_span, warn};
 
 use crate::{
     models::{ActerModel, AnyActerModel, EventMeta, RedactedActerModel},
+    referencing::ExecuteReference,
     store::Store,
     Error, Result,
 };
@@ -16,7 +18,7 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct Executor {
     store: Store,
-    notifiers: Arc<HashMap<String, Sender<()>>>,
+    notifiers: Arc<HashMap<ExecuteReference, Sender<()>>>,
 }
 
 impl Executor {
@@ -31,8 +33,8 @@ impl Executor {
         &self.store
     }
 
-    pub fn subscribe(&self, key: String) -> Receiver<()> {
-        match self.notifiers.entry(key) {
+    pub fn subscribe<K: Into<ExecuteReference>>(&self, key: K) -> Receiver<()> {
+        match self.notifiers.entry(key.into()) {
             Entry::Occupied(mut o) => {
                 let sender = o.get_mut();
                 if sender.receiver_count() == 0 {
@@ -52,11 +54,11 @@ impl Executor {
         }
     }
 
-    pub async fn wait_for(&self, key: String) -> Result<AnyActerModel> {
-        let mut subscribe = self.subscribe(key.clone());
+    pub async fn wait_for(&self, key: OwnedEventId) -> Result<AnyActerModel> {
+        let mut subscribe = self.subscribe(ExecuteReference::Model(key.clone()));
         let Ok(model) = self.store.get(&key).await else {
             if let Err(e) = subscribe.recv().await {
-                error!(key, "Receiving pong failed: {e}");
+                error!(event_id=?key, "Receiving pong failed: {e}");
             }
             return self.store.get(&key).await;
         };
@@ -64,12 +66,12 @@ impl Executor {
         Ok(model)
     }
 
-    pub fn notify(&self, mut keys: Vec<String>) -> u32 {
+    pub fn notify(&self, mut keys: Vec<ExecuteReference>) -> u32 {
         let mut counter = 0u32;
         keys.dedup();
         trace!(?keys, "notify");
         for key in keys {
-            let span = trace_span!("Asked to notify", key = key);
+            let span = trace_span!("Asked to notify", key = ?key);
             let _enter = span.enter();
             if let Entry::Occupied(o) = self.notifiers.entry(key) {
                 let v = o.get();
@@ -122,8 +124,8 @@ impl Executor {
         event_meta: EventMeta,
         reason: UnsignedRoomRedactionEvent,
     ) -> Result<()> {
-        trace!(event_id=?event_meta.event_id, ?model_type, "asked to redact");
-        let event_id = event_meta.event_id.to_string();
+        let event_id = event_meta.event_id.to_owned();
+        trace!(event_id=?event_id, ?model_type, "asked to redact");
 
         match self.store.get(&event_id).await {
             Ok(AnyActerModel::RedactedActerModel(_)) => {
@@ -131,12 +133,8 @@ impl Executor {
             }
             Ok(model) => {
                 trace!("previous model found. overwriting");
-                let redacted = RedactedActerModel::new(
-                    model_type.to_owned(),
-                    model.indizes(self.store.user_id()),
-                    event_meta,
-                    reason.into(),
-                );
+                let redacted =
+                    RedactedActerModel::new(model_type.to_owned(), event_meta, reason.into());
                 let keys = model.redact(&self.store, redacted).await?;
                 info!(
                     "******************** found model redacted: {:?}",
@@ -146,12 +144,8 @@ impl Executor {
             }
             Err(Error::ModelNotFound(_)) => {
                 trace!("no model found, storing redaction model");
-                let redacted = RedactedActerModel::new(
-                    model_type.to_owned(),
-                    vec![],
-                    event_meta,
-                    reason.into(),
-                );
+                let redacted =
+                    RedactedActerModel::new(model_type.to_owned(), event_meta, reason.into());
                 let keys = redacted.execute(&self.store).await?;
                 info!(
                     "******************** not found redacted: {:?}",
@@ -170,7 +164,7 @@ impl Executor {
             return Ok(());
         };
 
-        let event_id = meta.event_id.to_string();
+        let event_id = meta.event_id.to_owned();
 
         match self.store.get(&event_id).await {
             Ok(AnyActerModel::RedactedActerModel(_)) => {
@@ -178,19 +172,15 @@ impl Executor {
             }
             Ok(model) => {
                 trace!("live redacted: model found");
-                let redacted = RedactedActerModel::new(
-                    model.model_type().to_owned(),
-                    model.indizes(self.store.user_id()),
-                    meta,
-                    event.into(),
-                );
+                let redacted =
+                    RedactedActerModel::new(model.model_type().to_owned(), meta, event.into());
                 let keys = model.redact(&self.store, redacted).await?;
                 info!(?event_id, "live redacted: {:?}", keys.clone());
                 self.notify(keys);
             }
             Err(Error::ModelNotFound(_)) => {
                 info!(?event_id, "live redaction: not found");
-                self.notify(vec![event_id]);
+                self.notify(vec![ExecuteReference::Model(event_id)]);
             }
             Err(error) => return Err(error),
         }
@@ -205,6 +195,7 @@ mod tests {
     use crate::{
         events::{comments::CommentEventContent, BelongsTo},
         models::{Comment, TestModelBuilder},
+        referencing::{IndexKey, ObjectListIndex},
     };
     use matrix_sdk::Client;
     use matrix_sdk_base::{
@@ -242,7 +233,7 @@ mod tests {
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
         let model_id = model.event_id();
-        let sub = executor.subscribe(model_id.to_string());
+        let sub = executor.subscribe(model_id);
         assert!(sub.is_empty(), "Already received an event");
 
         executor.handle(model.into()).await?;
@@ -257,7 +248,7 @@ mod tests {
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
         let model_id = model.event_id().to_owned();
-        let mut sub = executor.subscribe(model_id.to_string());
+        let mut sub = executor.subscribe(model_id.clone());
         assert!(sub.is_empty());
 
         executor.handle(model.into()).await?;
@@ -266,7 +257,7 @@ mod tests {
 
         let child = TestModelBuilder::default()
             .simple()
-            .belongs_to(vec![model_id.to_string()])
+            .belongs_to(vec![model_id.clone()])
             .event_id(event_id!("$advf93m").to_owned())
             .build()
             .unwrap();
@@ -284,7 +275,7 @@ mod tests {
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
         let parent_id = model.event_id().to_owned();
-        let parent_idx = format!("{parent_id}:custom");
+        let parent_idx = IndexKey::ObjectList(parent_id.clone(), ObjectListIndex::Attachments);
         let mut sub = executor.subscribe(parent_idx.clone());
         assert!(sub.is_empty());
 
@@ -293,7 +284,7 @@ mod tests {
 
         let child = TestModelBuilder::default()
             .simple()
-            .belongs_to(vec![parent_id.to_string()])
+            .belongs_to(vec![parent_id.clone()])
             .event_id(event_id!("$advf93m").to_owned())
             .indizes(vec![parent_idx.clone()])
             .build()
@@ -312,7 +303,7 @@ mod tests {
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
         let parent_id = model.event_id().to_owned();
-        let parent_idx = Comment::index_for(&parent_id);
+        let parent_idx = Comment::index_for(parent_id.clone());
         let mut sub = executor.subscribe(parent_idx.clone());
         assert!(sub.is_empty());
 
@@ -342,7 +333,7 @@ mod tests {
         let _ = env_logger::try_init();
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
-        let model_id = model.event_id().to_string();
+        let model_id = model.event_id().to_owned();
         // nothing in the store
         assert!(executor.store().get(&model_id).await.is_err());
 
@@ -364,7 +355,7 @@ mod tests {
         let _ = env_logger::try_init();
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
-        let model_id = model.event_id().to_string();
+        let model_id = model.event_id().to_owned();
         // nothing in the store
         assert!(executor.store().get(&model_id).await.is_err());
 
@@ -389,7 +380,11 @@ mod tests {
         }))?;
 
         executor
-            .redact("test_model".to_owned(), model.event_meta(), redaction)
+            .redact(
+                "test_model".to_owned(),
+                model.event_meta().clone(),
+                redaction,
+            )
             .await?;
 
         let AnyActerModel::RedactedActerModel(redaction) = executor.store().get(&model_id).await?
@@ -408,12 +403,16 @@ mod tests {
         }))?;
 
         executor
-            .redact("test_model".to_owned(), model.event_meta(), redaction)
+            .redact(
+                "test_model".to_owned(),
+                model.event_meta().clone(),
+                redaction,
+            )
             .await?;
 
         let AnyActerModel::RedactedActerModel(redaction) = executor.store().get(&model_id).await?
         else {
-            panic!("Model was not redacten :(");
+            panic!("Model was not redacted :(");
         };
         assert_eq!(redaction.origin_type(), "test_model"); // we stay with the existing redaction
 

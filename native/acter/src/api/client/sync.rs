@@ -1,5 +1,6 @@
 use acter_core::{
-    events::SyncAnyActerEvent, executor::Executor, models::AnyActerModel, spaces::is_acter_space,
+    events::SyncAnyActerEvent, executor::Executor, models::AnyActerModel,
+    referencing::ExecuteReference, spaces::is_acter_space,
 };
 use anyhow::Result;
 use core::time::Duration;
@@ -10,25 +11,23 @@ use futures::{
     stream::{Stream, StreamExt},
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
-use matrix_sdk::{
-    config::SyncSettings,
-    event_handler::{Ctx, EventHandlerHandle},
-    room::Room as SdkRoom,
-    RoomState, RumaApiError,
-};
-use matrix_sdk_base::ruma::events::AnySyncEphemeralRoomEvent;
-use matrix_sdk_base::ruma::{
-    api::client::{
-        error::{ErrorBody, ErrorKind},
-        Error,
+use matrix_sdk::{config::SyncSettings, event_handler::Ctx, room::Room as SdkRoom, RumaApiError};
+use matrix_sdk_base::{
+    ruma::{
+        api::client::{
+            error::{ErrorBody, ErrorKind},
+            Error,
+        },
+        events::room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
+        OwnedRoomId,
     },
-    OwnedRoomId,
+    RoomState,
 };
-use ruma::events::room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent};
 use std::{
-    collections::{btree_map::Entry, BTreeMap, HashMap},
+    borrow::Cow,
+    collections::BTreeMap,
     io::Write,
-    ops::{Deref, Index},
+    ops::Deref,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -37,14 +36,14 @@ use std::{
 use tokio::{
     sync::{
         broadcast::{channel, Receiver},
-        Mutex, RwLockWriteGuard,
+        RwLockWriteGuard,
     },
     task::JoinHandle,
 };
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::{error, info, trace, warn};
 
-use crate::{api::spaces::HistoryState, Convo, Room, Space, RUNTIME};
+use crate::{Convo, Room, Space, RUNTIME};
 
 use super::Client;
 
@@ -344,7 +343,7 @@ impl Client {
     async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) {
         let update_keys = {
             let client = self.core.client();
-            let mut updated: Vec<String> = vec![];
+            let mut updated: Vec<OwnedRoomId> = vec![];
 
             let mut chats = self.convos.write().await;
             let mut spaces = self.spaces.write().await;
@@ -368,7 +367,7 @@ impl Client {
                     if let Err(error) = self.executor().clear_room(r_id).await {
                         error!(?error, "Error removing space {r_id}");
                     }
-                    updated.push(r_id.to_string());
+                    updated.push(r_id.clone());
                     continue;
                 }
 
@@ -383,7 +382,7 @@ impl Client {
                     }
                     // also clear from convos if it was in there...
                     remove_from_chat(&mut chats, r_id);
-                    updated.push(r_id.to_string());
+                    updated.push(r_id.clone());
                 } else {
                     if let Some(chat_idx) = chats.iter().position(|s| s.room_id() == r_id) {
                         let chat = chats.remove(chat_idx).update_room(inner);
@@ -394,14 +393,19 @@ impl Client {
                     }
                     // also clear from convos if it was in there...
                     remove_from(&mut spaces, r_id);
-                    updated.push(r_id.to_string());
+                    updated.push(r_id.clone());
                 }
             }
 
             updated
         };
-        info!("refreshed room: {:?}", update_keys.clone());
-        self.executor().notify(update_keys);
+        info!("refreshed room: {:?}", update_keys);
+        self.executor().notify(
+            update_keys
+                .into_iter()
+                .map(ExecuteReference::Room)
+                .collect(),
+        );
     }
 }
 
@@ -564,16 +568,43 @@ impl Client {
                 if !changed_rooms.is_empty() {
                     trace!(?changed_rooms, "changed rooms");
                     me.refresh_rooms(changed_rooms).await;
+
+                    // we have seen changes, see if we have
+                    // account data to inform about
+                    let keys = response
+                        .rooms
+                        .join
+                        .iter()
+                        .flat_map(|(room_id, updates)| {
+                            updates.account_data.iter().filter_map(|raw| {
+                                raw.get_field::<String>("type").ok().flatten().map(|s| {
+                                    ExecuteReference::RoomAccountData(
+                                        room_id.clone(),
+                                        Cow::Owned(s),
+                                    )
+                                })
+                            })
+                        })
+                        .collect::<Vec<ExecuteReference>>();
+                    if !keys.is_empty() {
+                        info!("room account data keys: {keys:?}");
+                        me.executor().notify(keys);
+                    }
                 }
 
                 if !response.account_data.is_empty() {
                     info!("account data found!");
                     // account data has been updated, inform the listeners
-                    let keys = response
+                    let keys: Vec<ExecuteReference> = response
                         .account_data
                         .iter()
-                        .filter_map(|raw| raw.get_field::<String>("type").ok().flatten())
-                        .collect::<Vec<String>>();
+                        .filter_map(|raw| {
+                            raw.get_field::<String>("type")
+                                .ok()
+                                .flatten()
+                                .map(|s| ExecuteReference::AccountData(Cow::Owned(s)))
+                        })
+                        .collect();
                     if !keys.is_empty() {
                         info!("account data keys: {keys:?}");
                         me.executor().notify(keys);

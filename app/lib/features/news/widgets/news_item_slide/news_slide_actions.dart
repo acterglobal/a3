@@ -1,21 +1,13 @@
 import 'package:acter/common/actions/open_link.dart';
-import 'package:acter/common/toolkit/errors/error_dialog.dart';
-import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
-import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
-import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
-import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger('a3::news::news_action_actions');
 
 class NewsSlideActions extends ConsumerWidget {
   final NewsSlide newsSlide;
@@ -33,125 +25,26 @@ class NewsSlideActions extends ConsumerWidget {
     final evtType = NewsReferencesType.fromStr(referenceDetails.typeStr());
     final id = referenceDetails.targetIdStr() ?? '';
     return switch (evtType) {
-      NewsReferencesType.calendarEvent =>
-        renderCalendarEventAction(context, ref, id),
-      NewsReferencesType.pin => renderPinAction(context, ref, id),
-      NewsReferencesType.taskList => renderTaskListAction(context, ref, id),
+      NewsReferencesType.calendarEvent => EventItem(
+          eventId: id,
+          refDetails: referenceDetails,
+        ),
+      NewsReferencesType.pin => PinListItemWidget(
+          pinId: id,
+          refDetails: referenceDetails,
+          showPinIndication: true,
+        ),
+      NewsReferencesType.taskList => TaskListItemCard(
+          taskListId: id,
+          refDetails: referenceDetails,
+          showOnlyTaskList: true,
+          canExpand: false,
+          showTaskListIndication: true,
+        ),
       NewsReferencesType.link =>
         renderLinkActionButton(context, ref, referenceDetails),
       _ => renderNotSupportedAction(context)
     };
-  }
-
-  Widget renderPinAction(
-    BuildContext context,
-    WidgetRef ref,
-    String pinId,
-  ) {
-    final lang = L10n.of(context);
-    final pinData = ref.watch(pinProvider(pinId));
-    final pinError = pinData.asError;
-    if (pinError != null) {
-      _log.severe('Error loading pin', pinError.error, pinError.stackTrace);
-      return Card(
-        child: ListTile(
-          leading: const Icon(Icons.pin),
-          title: Text(lang.pinNoLongerAvailable),
-          subtitle: Text(
-            lang.pinDeletedOrFailedToLoad,
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
-          onTap: () async {
-            await ActerErrorDialog.show(
-              context: context,
-              error: pinError.error,
-              stack: pinError.stackTrace,
-              onRetryTap: () => ref.invalidate(pinProvider(pinId)),
-            );
-          },
-        ),
-      );
-    }
-    return PinListItemWidget(
-      pinId: pinId,
-      showPinIndication: true,
-    );
-  }
-
-  Widget renderTaskListAction(
-    BuildContext context,
-    WidgetRef ref,
-    String taskListId,
-  ) {
-    final lang = L10n.of(context);
-    final taskListData = ref.watch(taskListProvider(taskListId));
-    final taskListError = taskListData.asError;
-    if (taskListError != null) {
-      _log.severe(
-        'Error loading task list',
-        taskListError.error,
-        taskListError.stackTrace,
-      );
-      return Card(
-        child: ListTile(
-          leading: const Icon(Icons.list),
-          title: Text(lang.pinNoLongerAvailable),
-          subtitle: Text(
-            lang.pinDeletedOrFailedToLoad,
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
-          onTap: () async {
-            await ActerErrorDialog.show(
-              context: context,
-              error: taskListError.error,
-              stack: taskListError.stackTrace,
-              onRetryTap: () => ref.invalidate(pinProvider(taskListId)),
-            );
-          },
-        ),
-      );
-    }
-    return TaskListItemCard(
-      taskListId: taskListId,
-      showOnlyTaskList: true,
-      canExpand: false,
-      showTaskListIndication: true,
-    );
-  }
-
-  Widget renderCalendarEventAction(
-    BuildContext context,
-    WidgetRef ref,
-    String eventId,
-  ) {
-    final lang = L10n.of(context);
-    final calEventLoader = ref.watch(calendarEventProvider(eventId));
-    return calEventLoader.when(
-      data: (calEvent) => EventItem(event: calEvent),
-      loading: () => const EventItemSkeleton(),
-      error: (e, s) {
-        _log.severe('Failed to load cal event', e, s);
-        return Card(
-          child: ListTile(
-            leading: const Icon(Icons.calendar_month),
-            title: Text(lang.eventNoLongerAvailable),
-            subtitle: Text(
-              lang.eventDeletedOrFailedToLoad,
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-            onTap: () async {
-              await ActerErrorDialog.show(
-                context: context,
-                error: e,
-                stack: s,
-                onRetryTap: () =>
-                    ref.invalidate(calendarEventProvider(eventId)),
-              );
-            },
-          ),
-        );
-      },
-    );
   }
 
   Widget renderLinkActionButton(
@@ -167,7 +60,10 @@ class NewsSlideActions extends ConsumerWidget {
     }
     if (referenceDetails.title() == 'shareEvent' && uri.startsWith('\$')) {
       // fallback support for older, badly formatted calendar events.
-      return renderCalendarEventAction(context, ref, uri);
+      return EventItem(
+        eventId: uri,
+        refDetails: referenceDetails,
+      );
     }
 
     final title = referenceDetails.title();
@@ -180,12 +76,12 @@ class NewsSlideActions extends ConsumerWidget {
             title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: textTheme.labelMedium,
           ),
           subtitle: Text(
             uri,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
+            style: textTheme.labelSmall,
           ),
         ),
       );

@@ -21,7 +21,6 @@ void showChangeDateBottomSheet({
     showDragHandle: true,
     useSafeArea: true,
     context: context,
-    constraints: const BoxConstraints(maxHeight: 500),
     builder: (context) => ChangeDateSheet(
       bottomSheetTitle: bottomSheetTitle,
       calendarId: calendarId,

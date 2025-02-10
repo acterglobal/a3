@@ -3,27 +3,24 @@ use acter_core::{
         attachments::{
             AttachmentBuilder, AttachmentContent, FallbackAttachmentContent, LinkAttachmentContent,
         },
-        RefDetails,
+        RefDetails as CoreRefDetails,
     },
     models::{self, can_redact, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{
+use matrix_sdk::room::Room;
+use matrix_sdk_base::{
     media::{MediaFormat, MediaRequestParameters},
-    room::Room,
+    ruma::{events::MessageLikeEventType, EventId, OwnedEventId, OwnedTransactionId, OwnedUserId},
     RoomState,
 };
-use matrix_sdk_base::ruma::{
-    events::{room::message::RoomMessageEvent, MessageLikeEventType},
-    EventId, OwnedEventId, OwnedTransactionId, OwnedUserId,
-};
-use std::{fs::exists, io::Write, ops::Deref, path::PathBuf, str::FromStr};
+use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
-use tokio_stream::Stream;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
 
-use super::{client::Client, common::ThumbnailSize, RUNTIME};
+use super::{client::Client, common::ThumbnailSize, deep_linking::RefDetails, RUNTIME};
 use crate::{MsgContent, MsgDraft, OptionString};
 
 impl Client {
@@ -96,7 +93,7 @@ impl Attachment {
 
     pub fn ref_details(&self) -> Option<RefDetails> {
         if let AttachmentContent::Reference(r) = &self.inner.content {
-            Some(r.clone())
+            Some(RefDetails::new(self.client.clone(), r.clone()))
         } else {
             None
         }
@@ -584,7 +581,7 @@ impl AttachmentsManager {
         let room = self.room.clone();
         let client = self.client.deref().clone();
 
-        let content = AttachmentContent::Reference(*ref_details);
+        let content = AttachmentContent::Reference((*ref_details).deref().clone());
 
         let mut builder = self.inner.draft_builder();
         builder.content(content);
@@ -596,7 +593,7 @@ impl AttachmentsManager {
     }
 
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
-        self.client.subscribe_stream(self.inner.update_key())
+        BroadcastStream::new(self.subscribe()).map(|f| true)
     }
 
     pub fn subscribe(&self) -> Receiver<()> {

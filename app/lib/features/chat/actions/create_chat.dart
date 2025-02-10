@@ -50,7 +50,7 @@ Future<String?> createChat(
     if (parentId != null) {
       config.setParent(parentId);
     }
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     final roomId = await client.createConvo(config.build());
     final roomIdStr = roomId.toString();
     // add room to child of space (if given)

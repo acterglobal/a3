@@ -15,9 +15,8 @@ final persistentRoomListFilterSelector = createMapPrefProvider<FilterSelection>(
 );
 
 final roomListFilterProvider =
-    StateNotifierProvider<RoomListFilterNotifier, RoomListFilterState>(
-  (ref) =>
-      RoomListFilterNotifier(ref.read(persistentRoomListFilterSelector), ref),
+    NotifierProvider<RoomListFilterNotifier, RoomListFilterState>(
+  () => RoomListFilterNotifier(),
 );
 
 final hasRoomFilters = Provider((ref) {
@@ -30,25 +29,10 @@ final hasRoomFilters = Provider((ref) {
   return state.selection != FilterSelection.all;
 });
 
-class RoomListFilterNotifier extends StateNotifier<RoomListFilterState> {
-  final Ref ref;
-
-  RoomListFilterNotifier(
-    FilterSelection selection,
-    this.ref,
-  ) : super(RoomListFilterState(selection: selection)) {
-    ref.listen(persistentRoomListFilterSelector, (previous, next) {
-      // the persistance loader might come back a little late ...
-      if (state.selection != next) {
-        // live update, apply
-        state = state.copyWith(selection: next);
-      }
-    });
-  }
-
+class RoomListFilterNotifier extends Notifier<RoomListFilterState> {
   Future<void> setSelection(FilterSelection newFilter) async {
     state = state.copyWith(selection: newFilter);
-    await ref.read(persistentRoomListFilterSelector.notifier).update(newFilter);
+    await ref.read(persistentRoomListFilterSelector.notifier).set(newFilter);
   }
 
   void updateSearchTerm(String? newTerm) {
@@ -58,5 +42,18 @@ class RoomListFilterNotifier extends StateNotifier<RoomListFilterState> {
   void clear() {
     // reset to nothing
     state = const RoomListFilterState();
+  }
+
+  @override
+  RoomListFilterState build() {
+    ref.listen(persistentRoomListFilterSelector, (previous, next) {
+      // the persistence loader might come back a little late ...
+      if (state.selection != next) {
+        // live update, apply
+        state = state.copyWith(selection: next);
+      }
+    });
+    final selection = ref.read(persistentRoomListFilterSelector);
+    return RoomListFilterState(selection: selection);
   }
 }

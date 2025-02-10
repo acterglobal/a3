@@ -9,14 +9,12 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/common/widgets/share/action/share_space_object_action.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
-import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
@@ -27,6 +25,7 @@ import 'package:acter/features/events/widgets/participants_list.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/share/action/share_space_object_action.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -73,7 +72,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         background: const EventDetailsSkeleton(),
         error: errored.error,
         stack: errored.stackTrace,
-        textBuilder: L10n.of(context).errorLoadingEventDueTo,
+        textBuilder: (error, code) =>
+            L10n.of(context).errorLoadingEventDueTo(error),
         onRetryTap: () {
           ref.invalidate(calendarEventProvider(widget.calendarId));
         },
@@ -381,7 +381,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       final rsvpId = await draft.send();
       _log.info('new rsvp id: $rsvpId');
       // refresh cache
-      final client = ref.read(alwaysClientProvider);
+      final client = await ref.read(alwaysClientProvider.future);
       await client.waitForRsvp(rsvpId.toString(), null);
       EasyLoading.dismiss();
     } catch (e, s) {
@@ -444,23 +444,29 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Future<void> onShareEvent(BuildContext context, CalendarEvent event) async {
     final lang = L10n.of(context);
     try {
-      final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
-      final tempDir = await getTemporaryDirectory();
-      final icalPath = join(tempDir.path, '$filename.ics');
-      event.icalForSharing(icalPath);
-
+      final refDetails = await event.refDetails();
+      final internalLink = refDetails.generateInternalLink(true);
       if (context.mounted) {
         openShareSpaceObjectDialog(
           context: context,
-          spaceObjectDetails: (
-            spaceId: event.roomIdStr(),
-            objectType: ObjectType.calendarEvent,
-            objectId: widget.calendarId,
-          ),
-          fileDetails: (
-            file: File(icalPath),
-            mimeType: 'text/calendar',
-          ),
+          refDetails: refDetails,
+          internalLink: internalLink,
+          shareContentBuilder: () async {
+            Navigator.pop(context);
+            return await refDetails.generateExternalLink();
+          },
+          fileDetailContentBuilder: () async {
+            Navigator.pop(context);
+            final filename =
+                event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+            final tempDir = await getTemporaryDirectory();
+            final icalPath = join(tempDir.path, '$filename.ics');
+            event.icalForSharing(icalPath);
+            return (
+              file: File(icalPath),
+              mimeType: 'text/calendar',
+            );
+          },
         );
       }
     } catch (e, s) {
