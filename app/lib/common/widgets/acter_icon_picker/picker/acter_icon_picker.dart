@@ -80,6 +80,7 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
           const SizedBox(height: 24),
           Expanded(child: _buildIconSelector()),
           ActerPrimaryActionButton(
+            key: Key('acter-primary-action-button'),
             onPressed: () {
               widget.onIconSelection.map((cb) {
                 cb(selectedColor.value, selectedIcon.value);
@@ -104,6 +105,7 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 child: Icon(
+                  key: Key('icon-preview'),
                   acterIcon.data,
                   size: 100,
                   color: color,
@@ -117,8 +119,11 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
   }
 
   Widget _buildColorSelector() {
-    final colorBoxes =
-        iconPickerColors.map((color) => _buildColorBoxItem(color)).toList();
+    final colorBoxes = iconPickerColors
+        .asMap()
+        .map((index, color) => MapEntry(index, _buildColorBoxItem(color, index)))
+        .values
+        .toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -129,11 +134,12 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
     );
   }
 
-  Widget _buildColorBoxItem(Color colorItem) {
+  Widget _buildColorBoxItem(Color colorItem, int index) {
     return ValueListenableBuilder<Color>(
       valueListenable: selectedColor,
       builder: (context, color, child) {
         return InkWell(
+          key: Key('color-picker-$index'),
           borderRadius: BorderRadius.circular(100),
           onTap: () => selectedColor.value = colorItem,
           child: Container(
@@ -156,7 +162,10 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
 
   Widget _buildIconSelector() {
     final iconBoxes = ActerIcon.values
-        .map((acterIcon) => _buildIconBoxItem(acterIcon))
+        .asMap()
+        .map((index, acterIcon) =>
+            MapEntry(index, _buildIconBoxItem(acterIcon, index)),)
+        .values
         .toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,11 +181,12 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
     );
   }
 
-  Widget _buildIconBoxItem(ActerIcon acterIconItem) {
+  Widget _buildIconBoxItem(ActerIcon acterIconItem, int index) {
     return ValueListenableBuilder<ActerIcon>(
       valueListenable: selectedIcon,
       builder: (context, acterIcon, child) {
         return InkWell(
+          key: Key('icon-picker-$index'),
           borderRadius: BorderRadius.circular(100),
           onTap: () => selectedIcon.value = acterIconItem,
           child: Container(

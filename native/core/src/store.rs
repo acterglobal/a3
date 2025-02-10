@@ -1,3 +1,4 @@
+use matrix_sdk::ruma::OwnedEventId;
 use matrix_sdk::Client;
 use matrix_sdk_base::ruma::{OwnedRoomId, OwnedUserId, UserId};
 use scc::hash_map::{Entry, HashMap};
@@ -5,6 +6,10 @@ use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
 use tracing::{debug, error, info, instrument, trace, warn};
 
+mod index;
+pub use index::{LifoIndex, RankedIndex, StoreIndex};
+
+use crate::referencing::{ExecuteReference, IndexKey};
 use crate::{
     models::{ActerModel, AnyActerModel},
     Error, Result,
@@ -14,16 +19,14 @@ use crate::{
 pub struct Store {
     pub(crate) client: Client,
     user_id: OwnedUserId,
-    models: Arc<HashMap<String, AnyActerModel>>,
-    indizes: Arc<HashMap<String, Vec<String>>>,
-    dirty: Arc<Mutex<HashSet<String>>>, // our key mutex;
+    models: Arc<HashMap<OwnedEventId, AnyActerModel>>,
+    indizes: Arc<HashMap<IndexKey, StoreIndex>>,
+    dirty: Arc<Mutex<HashSet<OwnedEventId>>>, // our key mutex;
 }
 
 static ALL_MODELS_KEY: &str = "ACTER::ALL";
 static DB_VERSION_KEY: &str = "ACTER::DB_VERSION";
 static CURRENT_DB_VERSION: u32 = 1;
-
-type ModelKeysAndIndizes = (Vec<String>, Vec<String>);
 
 async fn get_from_store<T: serde::de::DeserializeOwned>(client: Client, key: &str) -> Result<T> {
     let v = client
@@ -132,21 +135,22 @@ impl Store {
             vec![]
         };
 
-        let indizes: HashMap<String, Vec<String>> = HashMap::new();
-        let models: HashMap<String, AnyActerModel> = HashMap::new();
+        let indizes: HashMap<IndexKey, StoreIndex> = HashMap::new();
+        let models: HashMap<OwnedEventId, AnyActerModel> = HashMap::new();
         for m in models_vec {
             let Some(m) = m else {
                 // skip None’s
                 continue;
             };
-            let key = m.event_id().to_string();
+            let meta = m.event_meta();
+            let key = m.event_id().to_owned();
             for idx in m.indizes(&user_id) {
-                match indizes.entry(idx) {
+                match indizes.entry(idx.clone()) {
                     Entry::Occupied(mut o) => {
-                        o.get_mut().push(key.clone());
+                        o.get_mut().insert(meta);
                     }
                     Entry::Vacant(v) => {
-                        v.insert_entry(vec![key.clone()]);
+                        v.insert_entry(StoreIndex::new_for(&idx, meta));
                     }
                 };
             }
@@ -164,15 +168,15 @@ impl Store {
     }
 
     #[instrument(skip(self))]
-    pub async fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyActerModel>> {
+    pub async fn get_list(&self, key: &IndexKey) -> Result<impl Iterator<Item = AnyActerModel>> {
         self.get_list_inner(key)
     }
 
-    pub fn get_list_inner(&self, key: &str) -> Result<impl Iterator<Item = AnyActerModel>> {
+    pub fn get_list_inner(&self, key: &IndexKey) -> Result<impl Iterator<Item = AnyActerModel>> {
         let listing = if let Some(r) = self.indizes.get(key) {
-            r.get().clone()
+            r.get().values().into_iter().cloned().collect()
         } else {
-            debug!(user=?self.user_id, key, "No list found");
+            debug!(user=?self.user_id, index=?key, "No list found");
             vec![]
         };
         let models = self.models.clone();
@@ -182,78 +186,86 @@ impl Store {
         Ok(res)
     }
 
-    pub async fn get(&self, model_key: &str) -> Result<AnyActerModel> {
+    pub async fn get(&self, model_key: &OwnedEventId) -> Result<AnyActerModel> {
         let Some(o) = self.models.get_async(model_key).await else {
-            return Err(Error::ModelNotFound(model_key.to_owned()));
+            return Err(Error::ModelNotFound(model_key.to_string()));
         };
 
         Ok(o.get().clone())
     }
 
-    pub async fn get_many(&self, model_keys: Vec<String>) -> Vec<Option<AnyActerModel>> {
+    pub async fn get_many(&self, model_keys: Vec<OwnedEventId>) -> Vec<Option<AnyActerModel>> {
         let models = model_keys.iter().map(|k| async { self.get(k).await.ok() });
         futures::future::join_all(models).await
     }
 
     #[instrument(skip(self))]
-    async fn save_model_inner(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
+    async fn save_model_inner(
+        &self,
+        mdl: AnyActerModel,
+    ) -> Result<(Vec<OwnedEventId>, Vec<IndexKey>)> {
         let mut dirty = self.dirty.lock()?; // hold the lock
-        let (mut keys, indizes) = self.model_inner_under_lock(mdl)?;
-        dirty.extend(keys.clone());
-        keys.extend(indizes);
-        Ok(keys)
+        let (key, idxs) = self.model_inner_under_lock(mdl)?;
+        dirty.extend(key.clone());
+        Ok((key, idxs))
     }
 
-    fn model_inner_under_lock(&self, mdl: AnyActerModel) -> Result<ModelKeysAndIndizes> {
-        let key = mdl.event_id().to_string();
+    fn model_inner_under_lock(
+        &self,
+        mdl: AnyActerModel,
+    ) -> Result<(Vec<OwnedEventId>, Vec<IndexKey>)> {
+        let key = mdl.event_id().to_owned();
         let user_id = self.user_id();
-        let room_id_idx = format!("{}::models", mdl.room_id());
-        let mut keys_changed = vec![key.clone()];
-        trace!(user = ?user_id, key, "saving");
-        let mut indizes = mdl.indizes(user_id);
+        let room_id = mdl.room_id().to_owned();
+        let keys_changed = vec![key.to_owned()];
+        trace!(user = ?user_id, ?key, "saving");
+        let mut new_indizes = mdl.indizes(user_id);
+        let mut removed_indizes = Vec::new();
+        let event_meta = mdl.event_meta().clone();
         match self.models.entry(key.clone()) {
             Entry::Vacant(v) => {
                 v.insert_entry(mdl);
             }
             Entry::Occupied(mut o) => {
-                trace!(user=?self.user_id, key, "previous model found");
+                trace!(user=?self.user_id, ?key, "previous model found");
                 let prev = o.insert(mdl);
 
-                let mut remove_idzs = Vec::new();
                 for idz in prev.indizes(user_id) {
-                    if let Some(idx) = indizes.iter().position(|i| i == &idz) {
-                        indizes.remove(idx);
+                    if let Some(idx) = new_indizes.iter().position(|i| i == &idz) {
+                        new_indizes.remove(idx);
                     } else {
-                        remove_idzs.push(idz)
+                        removed_indizes.push(idz)
                     }
-                }
-
-                for idz in remove_idzs {
-                    if let Some(mut v) = self.indizes.get(&idz) {
-                        v.get_mut().retain(|k| k != &key);
-                    }
-                    keys_changed.push(idz);
                 }
             }
         }
 
-        for idx in indizes.iter().chain([&room_id_idx]) {
-            trace!(user = ?self.user_id, idx, key, exists=self.indizes.contains(idx), "adding to index");
+        for idz in removed_indizes.iter() {
+            if let Some(mut v) = self.indizes.get(idz) {
+                v.get_mut().remove(&key);
+            }
+        }
+
+        for idx in new_indizes.iter().chain([&IndexKey::RoomModels(room_id)]) {
+            trace!(user = ?self.user_id, ?idx, ?key, exists=self.indizes.contains(idx), "adding to index");
             match self.indizes.entry(idx.clone()) {
-                Entry::Vacant(v) => {
-                    v.insert_entry(vec![key.clone()]);
-                }
                 Entry::Occupied(mut o) => {
-                    o.get_mut().push(key.clone());
+                    o.get_mut().insert(&event_meta);
+                }
+                Entry::Vacant(v) => {
+                    v.insert_entry(StoreIndex::new_for(idx, &event_meta));
                 }
             }
-            trace!(user = ?self.user_id, idx, key, "added to index");
+            trace!(user = ?self.user_id, ?idx, ?key, "added to index");
         }
-        trace!(user=?self.user_id, key, ?keys_changed, "saved");
-        Ok((keys_changed, indizes))
+        trace!(user=?self.user_id, ?key, ?keys_changed, "saved");
+        Ok((
+            keys_changed,
+            removed_indizes.into_iter().chain(new_indizes).collect(),
+        ))
     }
 
-    pub async fn save_many(&self, models: Vec<AnyActerModel>) -> Result<Vec<String>> {
+    pub async fn save_many(&self, models: Vec<AnyActerModel>) -> Result<Vec<ExecuteReference>> {
         let mut total_keys = Vec::new();
         let mut total_indizes = Vec::new();
         {
@@ -267,7 +279,7 @@ impl Store {
         }
         self.sync().await?; // FIXME: should we really run this every time?
 
-        // clean out the duplicates
+        // clean out the duplicates, must be sorted as only consecutive ones are removed
         total_keys.sort();
         total_keys.dedup();
         total_indizes.sort();
@@ -275,37 +287,43 @@ impl Store {
 
         Ok(total_keys
             .into_iter()
-            .chain(total_indizes.into_iter())
+            .map(ExecuteReference::Model)
+            .chain(total_indizes.into_iter().map(ExecuteReference::Index))
             .collect())
     }
 
-    pub async fn save(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
-        let keys = self.save_model_inner(mdl).await?;
+    pub async fn save(&self, mdl: AnyActerModel) -> Result<Vec<ExecuteReference>> {
+        let (model_keys, indizes) = self.save_model_inner(mdl).await?;
         self.sync().await?; // FIXME: should we really run this every time?
-        Ok(keys)
+
+        Ok(model_keys
+            .into_iter()
+            .map(ExecuteReference::Model)
+            .chain(indizes.into_iter().map(ExecuteReference::Index))
+            .collect::<Vec<_>>())
     }
 
-    pub async fn clear_room(&self, room_id: &OwnedRoomId) -> Result<Vec<String>> {
+    pub async fn clear_room(&self, room_id: &OwnedRoomId) -> Result<Vec<ExecuteReference>> {
         info!(?room_id, "clearing room");
-        let idx = format!("{room_id}::models");
+        let idx = IndexKey::RoomModels(room_id.to_owned());
         let mut total_changed = {
             let mut dirty = self.dirty.lock()?; // hold the lock
             let mut total_changed = Vec::new();
             for model in self.get_list_inner(&idx)? {
-                let model_id = model.event_id().to_string();
+                let model_id = model.event_id().to_owned();
                 let indizes = model.indizes(&self.user_id);
                 // remove it from all indizes
                 for index in indizes {
                     let _ = self
                         .indizes
                         .entry(index.clone())
-                        .and_modify(|l| l.retain(|o| *o != model_id));
-                    total_changed.push(index);
+                        .and_modify(|l| l.remove(&model_id));
+                    total_changed.push(ExecuteReference::Index(index));
                 }
                 // remove the model itself
                 self.models.remove(&model_id);
                 dirty.insert(model_id.clone());
-                total_changed.push(model_id);
+                total_changed.push(ExecuteReference::Model(model_id));
             }
 
             // remove the room-id based index
@@ -314,6 +332,7 @@ impl Store {
         };
         self.sync().await?;
 
+        // deduplicate needs them to be sorted first
         total_changed.sort();
         total_changed.dedup();
 
@@ -344,8 +363,8 @@ impl Store {
                 models_to_write.push((format!("acter:{key}"), raw))
             }
 
-            let model_keys: Vec<String> = {
-                let mut model_keys: HashSet<String> = HashSet::new();
+            let model_keys: Vec<OwnedEventId> = {
+                let mut model_keys: HashSet<OwnedEventId> = HashSet::new();
                 // deduplicate the model_keys;
                 self.models.scan(|k, _v| {
                     model_keys.insert(k.clone());
@@ -389,13 +408,20 @@ impl Store {
 
 #[cfg(test)]
 mod tests {
+    use std::time::{Duration, SystemTime};
+
     use super::*;
-    use crate::models::{TestModel, TestModelBuilder};
+    use crate::{
+        models::{TestModel, TestModelBuilder},
+        referencing::{SectionIndex, SpecialListsIndex},
+    };
     use anyhow::bail;
+    use matrix_sdk::ruma::MilliSecondsSinceUnixEpoch;
     use matrix_sdk_base::{
         ruma::{api::MatrixVersion, event_id, user_id, OwnedEventId, OwnedRoomId},
         store::{MemoryStore, StoreConfig},
     };
+    use uuid::Uuid;
 
     async fn fresh_store_and_client() -> Result<(Store, Client)> {
         let config = StoreConfig::new("tests".to_owned()).state_store(MemoryStore::new());
@@ -428,9 +454,9 @@ mod tests {
         let _ = env_logger::try_init();
         let store = fresh_store().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
-        let key = model.event_id().to_string();
+        let key = model.event_id().to_owned();
         let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
-        assert_eq!(vec![key.clone()], res_keys);
+        assert_eq!(vec![ExecuteReference::Model(key.clone())], res_keys);
         let mdl = store.get(&key).await?;
         let AnyActerModel::TestModel(other) = mdl else {
             bail!("Returned model isn’t test model: {mdl:?}");
@@ -463,8 +489,8 @@ mod tests {
         assert_eq!(
             models
                 .iter()
-                .map(|m| m.event_id().to_string())
-                .collect::<Vec<String>>(),
+                .map(|m| ExecuteReference::Model(m.event_id().to_owned()))
+                .collect::<Vec<_>>(),
             res_keys
         );
 
@@ -472,8 +498,8 @@ mod tests {
             .get_many(
                 models
                     .iter()
-                    .map(|m| m.event_id().to_string())
-                    .collect::<Vec<String>>(),
+                    .map(|m| m.event_id().to_owned())
+                    .collect::<Vec<_>>(),
             )
             .await
             .into_iter()
@@ -485,7 +511,7 @@ mod tests {
         assert_eq!(models, loaded_models);
 
         for model in models.into_iter() {
-            let key = model.event_id().to_string();
+            let key = model.event_id().to_owned();
             let mdl = store.get(&key).await?;
             let AnyActerModel::TestModel(other) = mdl else {
                 bail!("Returned model isn’t test model: {mdl:?}");
@@ -501,13 +527,20 @@ mod tests {
         let store = fresh_store().await?;
         let model = TestModelBuilder::default()
             .simple()
-            .indizes(vec!["indexA".to_owned(), "index::b".to_owned()])
+            .indizes(vec![
+                IndexKey::Special(SpecialListsIndex::Test1),
+                IndexKey::Special(SpecialListsIndex::Test2),
+            ])
             .build()
             .unwrap();
-        let key = model.event_id().to_string();
+        let key = model.event_id().to_owned();
         let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
         assert_eq!(
-            vec![key.clone(), "indexA".to_owned(), "index::b".to_owned()],
+            vec![
+                ExecuteReference::from(key.clone()),
+                IndexKey::Special(SpecialListsIndex::Test1).into(),
+                IndexKey::Special(SpecialListsIndex::Test2).into()
+            ],
             res_keys
         );
         let mdl = store.get(&key).await?;
@@ -516,21 +549,27 @@ mod tests {
         };
         assert_eq!(model, other);
 
-        let mut index = store.get_list("indexA").await?;
+        let mut index = store
+            .get_list(&IndexKey::Special(SpecialListsIndex::Test1))
+            .await?;
         let Some(AnyActerModel::TestModel(other)) = index.next() else {
             bail!("Returned model isn’t test model.");
         };
         assert!(index.next().is_none()); // and nothing else
         assert_eq!(model, other);
 
-        let mut index = store.get_list("index::b").await?;
+        let mut index = store
+            .get_list(&IndexKey::Special(SpecialListsIndex::Test1))
+            .await?;
         let Some(AnyActerModel::TestModel(other)) = index.next() else {
             bail!("Returned model isn’t test model.");
         };
         assert!(index.next().is_none()); // and nothing else
         assert_eq!(model, other);
 
-        let mut index = store.get_list("empty_index").await?;
+        let mut index = store
+            .get_list(&IndexKey::Special(SpecialListsIndex::Test3))
+            .await?;
         assert!(index.next().is_none()); // and nothing here
         assert_eq!(model, other);
 
@@ -543,14 +582,22 @@ mod tests {
         let store = fresh_store().await?;
         let model = TestModelBuilder::default()
             .simple()
-            .indizes(vec!["indexA".to_owned()])
+            .indizes(vec![IndexKey::Special(SpecialListsIndex::Test1)])
             .build()
             .unwrap();
-        let key = model.event_id().to_string();
+        let key = model.event_id().to_owned();
         let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
-        assert_eq!(vec![key.clone(), "indexA".to_owned()], res_keys);
+        assert_eq!(
+            vec![
+                ExecuteReference::from(key.clone()),
+                IndexKey::Special(SpecialListsIndex::Test1).into()
+            ],
+            res_keys
+        );
 
-        let mut index = store.get_list("indexA").await?;
+        let mut index = store
+            .get_list(&IndexKey::Special(SpecialListsIndex::Test1))
+            .await?;
         let Some(AnyActerModel::TestModel(other)) = index.next() else {
             bail!("Returned model isn’t test model.");
         };
@@ -560,16 +607,103 @@ mod tests {
         let second_model = TestModelBuilder::default()
             .simple()
             .event_id(OwnedEventId::try_from("$secondModel").unwrap())
-            .indizes(vec!["indexA".to_owned()])
+            .indizes(vec![IndexKey::Special(SpecialListsIndex::Test1)])
             .build()
             .unwrap();
-        let key = second_model.event_id().to_string();
+        let key = second_model.event_id().to_owned();
         let res_keys = store
             .save(AnyActerModel::TestModel(second_model.clone()))
             .await?;
-        assert_eq!(vec![key.clone(), "indexA".to_owned()], res_keys);
+        assert_eq!(
+            vec![
+                ExecuteReference::from(key.clone()),
+                IndexKey::Special(SpecialListsIndex::Test1).into()
+            ],
+            res_keys
+        );
 
-        let mut index = store.get_list("indexA").await?;
+        // this is a lifo index: latest in, first out
+        let mut index = store
+            .get_list(&IndexKey::Special(SpecialListsIndex::Test1))
+            .await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn’t test model.");
+        };
+        assert_eq!(second_model, other);
+
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn’t test model.");
+        };
+        assert_eq!(model, other);
+
+        assert!(index.next().is_none()); // and nothing else
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn add_get_one_to_history_index() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let store = fresh_store().await?;
+        let room_id =
+            OwnedRoomId::try_from(format!("!{}:example.org", Uuid::new_v4().hyphenated())).unwrap();
+        let low_rank = MilliSecondsSinceUnixEpoch::from_system_time(
+            SystemTime::now()
+                .checked_sub(Duration::new(10000, 0))
+                .expect("Before exists"),
+        )
+        .expect("We can parse system time");
+        let high_rank = MilliSecondsSinceUnixEpoch::from_system_time(SystemTime::now())
+            .expect("We can parse system time");
+        let model = TestModelBuilder::default()
+            .simple()
+            .indizes(vec![IndexKey::RoomHistory(room_id.clone())])
+            .origin_server_ts(high_rank)
+            .room_id(room_id.clone())
+            .build()
+            .unwrap();
+        let key = model.event_id().to_owned();
+        let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
+        assert_eq!(
+            vec![
+                ExecuteReference::from(key.clone()),
+                IndexKey::RoomHistory(room_id.clone()).into()
+            ],
+            res_keys
+        );
+
+        let mut index = store
+            .get_list(&IndexKey::RoomHistory(room_id.clone()))
+            .await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn’t test model.");
+        };
+        assert!(index.next().is_none()); // and nothing else
+        assert_eq!(model, other);
+
+        let second_model = TestModelBuilder::default()
+            .simple()
+            .event_id(OwnedEventId::try_from("$secondModel").unwrap())
+            .indizes(vec![IndexKey::RoomHistory(room_id.clone())])
+            .origin_server_ts(low_rank) // this should be added _after_ the first
+            .build()
+            .unwrap();
+        let key = second_model.event_id().to_owned();
+        let res_keys = store
+            .save(AnyActerModel::TestModel(second_model.clone()))
+            .await?;
+        assert_eq!(
+            vec![
+                ExecuteReference::from(key.clone()),
+                IndexKey::RoomHistory(room_id.clone()).into()
+            ],
+            res_keys
+        );
+
+        // this is a lifo index: latest in, first out
+        let mut index = store
+            .get_list(&IndexKey::RoomHistory(room_id.clone()))
+            .await?;
         let Some(AnyActerModel::TestModel(other)) = index.next() else {
             bail!("Returned model isn’t test model.");
         };
@@ -586,6 +720,83 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn add_get_one_to_ranked_section_index() -> anyhow::Result<()> {
+        let _ = env_logger::try_init();
+        let store = fresh_store().await?;
+        let room_id =
+            OwnedRoomId::try_from(format!("!{}:example.org", Uuid::new_v4().hyphenated())).unwrap();
+        let low_rank = MilliSecondsSinceUnixEpoch::from_system_time(
+            SystemTime::now()
+                .checked_sub(Duration::new(10000, 0))
+                .expect("Before exists"),
+        )
+        .expect("We can parse system time");
+        let high_rank = MilliSecondsSinceUnixEpoch::from_system_time(SystemTime::now())
+            .expect("We can parse system time");
+        let model = TestModelBuilder::default()
+            .simple()
+            .indizes(vec![IndexKey::Section(SectionIndex::Boosts)])
+            .origin_server_ts(high_rank)
+            .room_id(room_id.clone())
+            .build()
+            .unwrap();
+        let key = model.event_id().to_owned();
+        let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
+        assert_eq!(
+            vec![
+                ExecuteReference::from(key.clone()),
+                IndexKey::Section(SectionIndex::Boosts).into()
+            ],
+            res_keys
+        );
+
+        let mut index = store
+            .get_list(&IndexKey::Section(SectionIndex::Boosts))
+            .await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("No Model found");
+        };
+        assert!(index.next().is_none()); // and nothing else
+        assert_eq!(model, other);
+
+        let second_model = TestModelBuilder::default()
+            .simple()
+            .event_id(OwnedEventId::try_from("$secondModel").unwrap())
+            .indizes(vec![IndexKey::Section(SectionIndex::Boosts)])
+            .origin_server_ts(low_rank) // this should be added _after_ the first
+            .build()
+            .unwrap();
+        let key = second_model.event_id().to_owned();
+        let res_keys = store
+            .save(AnyActerModel::TestModel(second_model.clone()))
+            .await?;
+        assert_eq!(
+            vec![
+                ExecuteReference::from(key.clone()),
+                IndexKey::Section(SectionIndex::Boosts).into()
+            ],
+            res_keys
+        );
+
+        // this is a lifo index: latest in, first out
+        let mut index = store
+            .get_list(&IndexKey::Section(SectionIndex::Boosts))
+            .await?;
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn’t test model.");
+        };
+        assert_eq!(model, other);
+
+        let Some(AnyActerModel::TestModel(other)) = index.next() else {
+            bail!("Returned model isn’t test model.");
+        };
+        assert_eq!(second_model, other);
+
+        assert!(index.next().is_none()); // and nothing else
+
+        Ok(())
+    }
+    #[tokio::test]
     async fn model_changed_index() -> anyhow::Result<()> {
         let _ = env_logger::try_init();
         let e_id = event_id!("$asdfAsdf");
@@ -594,13 +805,20 @@ mod tests {
             let model = TestModelBuilder::default()
                 .simple()
                 .event_id(e_id.to_owned())
-                .indizes(vec!["indexA".to_owned(), "index::b".to_owned()])
+                .indizes(vec![
+                    IndexKey::Special(SpecialListsIndex::Test1),
+                    IndexKey::Special(SpecialListsIndex::Test2),
+                ])
                 .build()
                 .unwrap();
-            let key = model.event_id().to_string();
+            let key = model.event_id().to_owned();
             let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
             assert_eq!(
-                vec![key.clone(), "indexA".to_owned(), "index::b".to_owned()],
+                vec![
+                    ExecuteReference::from(key.clone()),
+                    IndexKey::Special(SpecialListsIndex::Test1).into(),
+                    IndexKey::Special(SpecialListsIndex::Test2).into()
+                ],
                 res_keys
             );
             let mdl = store.get(&key).await?;
@@ -609,21 +827,27 @@ mod tests {
             };
             assert_eq!(model, other);
 
-            let mut index = store.get_list("indexA").await?;
+            let mut index = store
+                .get_list(&IndexKey::Special(SpecialListsIndex::Test1))
+                .await?;
             let Some(AnyActerModel::TestModel(other)) = index.next() else {
                 bail!("Returned model isn’t test model.");
             };
             assert!(index.next().is_none()); // and nothing else
             assert_eq!(model, other);
 
-            let mut index = store.get_list("index::b").await?;
+            let mut index = store
+                .get_list(&IndexKey::Special(SpecialListsIndex::Test1))
+                .await?;
             let Some(AnyActerModel::TestModel(other)) = index.next() else {
                 bail!("Returned model isn’t test model.");
             };
             assert!(index.next().is_none()); // and nothing else
             assert_eq!(model, other);
 
-            let mut index = store.get_list("new_index").await?;
+            let mut index = store
+                .get_list(&IndexKey::Special(SpecialListsIndex::Test3))
+                .await?;
             assert!(index.next().is_none()); // and nothing here
             assert_eq!(model, other);
         }
@@ -632,29 +856,35 @@ mod tests {
             let model = TestModelBuilder::default()
                 .simple()
                 .event_id(e_id.to_owned())
-                .indizes(vec!["new_index".to_owned()])
+                .indizes(vec![IndexKey::Special(SpecialListsIndex::Test3)])
                 .build()
                 .unwrap();
-            let key = model.event_id().to_string();
+            let key = model.event_id().to_owned();
             // we overwrite this
             let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
             assert_eq!(
                 vec![
-                    key.clone(),
-                    "indexA".to_owned(),
-                    "index::b".to_owned(),
-                    "new_index".to_owned()
+                    ExecuteReference::from(key.clone()),
+                    IndexKey::Special(SpecialListsIndex::Test1).into(),
+                    IndexKey::Special(SpecialListsIndex::Test2).into(),
+                    IndexKey::Special(SpecialListsIndex::Test3).into(),
                 ],
                 res_keys
             );
-            let mut index = store.get_list("indexA").await?;
+            let mut index = store
+                .get_list(&IndexKey::Special(SpecialListsIndex::Test1))
+                .await?;
             assert!(index.next().is_none()); // empty now
 
-            let mut index = store.get_list("index::b").await?;
+            let mut index = store
+                .get_list(&IndexKey::Special(SpecialListsIndex::Test1))
+                .await?;
             assert!(index.next().is_none()); // empty now
 
             // only via our new index
-            let mut index = store.get_list("new_index").await?;
+            let mut index = store
+                .get_list(&IndexKey::Special(SpecialListsIndex::Test3))
+                .await?;
             let Some(AnyActerModel::TestModel(other)) = index.next() else {
                 bail!("Returned model isn’t test model.");
             };
@@ -672,12 +902,18 @@ mod tests {
             let (store, client) = fresh_store_and_client().await?;
             let model = TestModelBuilder::default()
                 .simple()
-                .indizes(vec!["test_index".to_owned()])
+                .indizes(vec![IndexKey::Special(SpecialListsIndex::Test2)])
                 .build()
                 .unwrap();
-            let key = model.event_id().to_string();
+            let key = model.event_id().to_owned();
             let res_keys = store.save(AnyActerModel::TestModel(model.clone())).await?;
-            assert_eq!(vec![key.clone(), "test_index".to_owned()], res_keys);
+            assert_eq!(
+                vec![
+                    ExecuteReference::from(key.clone()),
+                    IndexKey::Special(SpecialListsIndex::Test2).into()
+                ],
+                res_keys
+            );
             let mdl = store.get(&key).await?;
             let AnyActerModel::TestModel(other) = mdl else {
                 bail!("Returned model isn’t test model: {mdl:?}");
@@ -691,7 +927,7 @@ mod tests {
             Store::new_with_auth(client.clone(), user_id!("@test:example.org").to_owned()).await?;
 
         // and we should be able to get it again.
-        let mdl = store.get(model.event_id().as_ref()).await?;
+        let mdl = store.get(&model.event_id().to_owned()).await?;
         let AnyActerModel::TestModel(other) = mdl else {
             bail!("Returned model isn’t test model: {mdl:?}");
         };
@@ -699,16 +935,19 @@ mod tests {
 
         // now recover from the the index!
 
-        let mut index = store.get_list("test_index").await?;
+        let mut index = store
+            .get_list(&IndexKey::Special(SpecialListsIndex::Test2))
+            .await?;
         let Some(AnyActerModel::TestModel(other)) = index.next() else {
             bail!("Returned model isn’t test model.");
         };
         assert!(index.next().is_none()); // and nothing else
         assert_eq!(model, other);
 
-        let mut index = store.get_list("empty_index").await?;
+        let mut index = store
+            .get_list(&IndexKey::Special(SpecialListsIndex::Test3))
+            .await?;
         assert!(index.next().is_none()); // and nothing here
-        assert_eq!(model, other);
 
         Ok(())
     }
@@ -731,9 +970,9 @@ mod tests {
         let store = fresh_store().await?;
         let first_room_id = OwnedRoomId::try_from("!firstRoom:example.org").unwrap();
         let second_room_id = OwnedRoomId::try_from("!secondRoom:example.org").unwrap();
-        let index_a = "index_a".to_owned();
-        let index_b = "index_b".to_owned();
-        let index_c = "index_c".to_owned();
+        let index_a = IndexKey::Special(SpecialListsIndex::Test1);
+        let index_b = IndexKey::Special(SpecialListsIndex::Test2);
+        let index_c = IndexKey::Special(SpecialListsIndex::Test3);
 
         let first_room_models = (0..5)
             .map(|idx| {
@@ -761,18 +1000,18 @@ mod tests {
 
         let first_model_keys = first_room_models
             .iter()
-            .map(|m| m.event_id().to_string())
-            .collect::<Vec<String>>();
+            .map(|m| m.event_id().to_owned())
+            .collect::<Vec<_>>();
         let second_model_keys = second_room_models
             .iter()
-            .map(|m| m.event_id().to_string())
-            .collect::<Vec<String>>();
+            .map(|m| m.event_id().to_owned())
+            .collect::<Vec<_>>();
 
         let all_model_keys = first_model_keys
             .iter()
             .chain(second_model_keys.iter())
             .map(Clone::clone)
-            .collect::<Vec<String>>();
+            .collect::<Vec<_>>();
 
         // submit all
         let res_keys = store
@@ -789,13 +1028,14 @@ mod tests {
         assert_eq!(
             all_model_keys
                 .into_iter()
+                .map(ExecuteReference::Model)
                 .chain(
                     // add the indizes that are also updated
-                    ["index_a", "index_b", "index_c"]
+                    [index_a, index_b, index_c]
                         .into_iter()
-                        .map(ToString::to_string)
+                        .map(ExecuteReference::Index)
                 )
-                .collect::<Vec<String>>(),
+                .collect::<Vec<_>>(),
             res_keys
         );
 
@@ -832,7 +1072,7 @@ mod tests {
 
         // but second are all there
 
-        let loaded_models_second = store
+        let loaded_models_second: Vec<TestModel> = store
             .get_many(second_model_keys.clone())
             .await
             .into_iter()

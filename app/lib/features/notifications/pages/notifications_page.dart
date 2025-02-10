@@ -328,7 +328,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
     if (!context.mounted) return;
     if (emailToAdd == null) return;
     EasyLoading.show(status: lang.adding(emailToAdd));
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     try {
       await client.addEmailPusher(
         appIdPrefix,

@@ -7,6 +7,7 @@ class ActerIconWidget extends StatefulWidget {
   final double? iconSize;
   final Color? color;
   final ActerIcon? icon;
+  final bool showEditIconIndicator;
   final Function(Color, ActerIcon)? onIconSelection;
 
   const ActerIconWidget({
@@ -14,6 +15,7 @@ class ActerIconWidget extends StatefulWidget {
     this.iconSize,
     this.color,
     this.icon,
+    this.showEditIconIndicator = false,
     this.onIconSelection,
   });
 
@@ -60,7 +62,9 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
           );
         },
       ),
-      child: _buildIconUI(),
+      child: widget.showEditIconIndicator
+          ? _buildEditIconUI(context)
+          : _buildIconUI(),
     );
   }
 
@@ -71,8 +75,39 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
         valueListenable: icon,
         builder: (context, acterIcon, child) => Icon(
           acterIcon.data,
-          size: widget.iconSize ?? 100,
+          size: widget.iconSize ?? 70,
           color: colorData,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditIconUI(BuildContext context) {
+    final borderColor = Theme.of(context).unselectedWidgetColor;
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(width: 2, color: borderColor),
+        ),
+        child: Stack(
+          children: [
+            Padding(padding: const EdgeInsets.all(16), child: _buildIconUI()),
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(width: 1, color: borderColor),
+                    color: borderColor,
+                  ),
+                  child: const Icon(Icons.edit, size: 16),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

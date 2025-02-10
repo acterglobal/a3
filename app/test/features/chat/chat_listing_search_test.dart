@@ -26,9 +26,9 @@ const Map<String, AvatarInfo> _roomsData = {
 void main() {
   group('Chat Listing Search', () {
     final mockedProviders = [
-      // Same as before
-      isGuestProvider.overrideWithValue(false),
-      deviceIdProvider.overrideWithValue('asdf'),
+      deviceIdProvider.overrideWith((a) async {
+        return 'asdf';
+      }),
       hasFirstSyncedProvider.overrideWithValue(true),
       ...mockChatRoomProviders(_roomsData),
     ];

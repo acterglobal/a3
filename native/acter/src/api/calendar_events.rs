@@ -7,11 +7,11 @@ use acter_core::{
         CalendarEventRefPreview, RefDetails as CoreRefDetails, UtcDateTime,
     },
     models::{self, can_redact, ActerModel, AnyActerModel},
-    statics::KEYS,
+    referencing::{IndexKey, SectionIndex},
 };
 use anyhow::{bail, Result};
 use chrono::DateTime;
-use futures::stream::StreamExt;
+use futures::{stream::StreamExt, FutureExt};
 use icalendar::Calendar as iCalendar;
 use matrix_sdk::room::Room;
 use matrix_sdk_base::{
@@ -21,6 +21,7 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
+use ruma::EventId;
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -54,80 +55,33 @@ impl Client {
 
     pub async fn calendar_event(&self, calendar_id: String) -> Result<CalendarEvent> {
         let me = self.clone();
-        RUNTIME
-            .spawn(async move {
-                let AnyActerModel::CalendarEvent(inner) = me.store().get(&calendar_id).await?
-                else {
-                    bail!("Calendar event not found");
-                };
-                let room = me.room_by_id_typed(inner.room_id())?;
-                Ok(CalendarEvent::new(me, room, inner))
-            })
-            .await?
+        self.model_with_room(EventId::parse(calendar_id)?)
+            .await
+            .map(|(model, room)| CalendarEvent::new(me, room, model))
     }
 
     pub async fn calendar_events(&self) -> Result<Vec<CalendarEvent>> {
-        let mut calendar_events = Vec::new();
-        let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let me = self.clone();
-        RUNTIME
-            .spawn(async move {
-                let client = me.core.client();
-                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
-                    if let AnyActerModel::CalendarEvent(t) = mdl {
-                        let room_id = t.room_id().to_owned();
-                        let room = match rooms_map.entry(room_id) {
-                            Entry::Occupied(t) => t.get().clone(),
-                            Entry::Vacant(e) => {
-                                if let Some(room) = client.get_room(e.key()) {
-                                    e.insert(room.clone());
-                                    room
-                                } else {
-                                    /// User not part of the room anymore, ignore
-                                    continue;
-                                }
-                            }
-                        };
-                        calendar_events.push(CalendarEvent::new(me.clone(), room, t));
-                    } else {
-                        warn!(
-                            "Non calendar_event model found in `calendar_events` index: {:?}",
-                            mdl
-                        );
-                    }
-                }
-                Ok(calendar_events)
-            })
+        Ok(self
+            .models_of_list_with_room(IndexKey::Section(SectionIndex::Calendar))
             .await?
+            .map(|(inner, room)| CalendarEvent::new(self.clone(), room, inner))
+            .collect())
     }
 }
 
 impl Space {
     pub async fn calendar_events(&self) -> Result<Vec<CalendarEvent>> {
         let client = self.client.clone();
-        let mut calendar_events = Vec::new();
         let room = self.room.clone();
-        let room_id = self.room_id().to_owned();
-        RUNTIME
-            .spawn(async move {
-                let k = format!("{room_id}::{}", KEYS::CALENDAR);
-                for mdl in client.store().get_list(&k).await? {
-                    if let AnyActerModel::CalendarEvent(inner) = mdl {
-                        calendar_events.push(CalendarEvent::new(
-                            client.clone(),
-                            room.clone(),
-                            inner,
-                        ));
-                    } else {
-                        warn!(
-                            "Non calendar_event model found in `calendar_events` index: {:?}",
-                            mdl
-                        );
-                    }
-                }
-                Ok(calendar_events)
-            })
+        Ok(client
+            .models_of_list_with_room_under_check(
+                IndexKey::RoomSection(room.room_id().to_owned(), SectionIndex::Calendar),
+                move |_r| Ok(room.clone()),
+            )
             .await?
+            .map(|(inner, room)| CalendarEvent::new(client.clone(), room, inner))
+            .collect())
     }
 }
 
@@ -191,7 +145,7 @@ impl CalendarEvent {
     }
 
     pub async fn refresh(&self) -> Result<CalendarEvent> {
-        let key = self.inner.event_id().to_string();
+        let key = self.inner.event_id().to_owned();
         let client = self.client.clone();
         let room = self.room.clone();
 
@@ -234,7 +188,7 @@ impl CalendarEvent {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.inner.event_id().to_string();
+        let key = self.inner.event_id().to_owned();
         self.client.subscribe(key)
     }
 

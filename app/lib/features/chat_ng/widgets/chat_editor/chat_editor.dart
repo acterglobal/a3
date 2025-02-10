@@ -1,14 +1,19 @@
 import 'dart:async';
 
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/actions/attachment_upload_action.dart';
 import 'package:acter/features/chat_ng/actions/send_message_action.dart';
-import 'package:acter/features/chat_ng/widgets/chat_input/chat_emoji_picker.dart';
+import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/utils.dart';
+import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_actions_preview.dart';
+import 'package:acter/features/chat_ng/widgets/chat_editor/chat_emoji_picker.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show RoomEventItem;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +39,6 @@ class ChatEditor extends ConsumerStatefulWidget {
 class _ChatEditorState extends ConsumerState<ChatEditor> {
   EditorState textEditorState = EditorState.blank();
   late EditorScrollController scrollController;
-  FocusNode chatFocus = FocusNode();
   StreamSubscription<(TransactionTime, Transaction)>? _updateListener;
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
   double _cHeight = 0.10;
@@ -55,6 +59,28 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     // have it call the first time to adjust height
     _updateHeight();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
+
+    ref.listenManual(chatEditorStateProvider, (prev, next) async {
+      final body = textEditorState.intoMarkdown();
+      final bodyHtml = textEditorState.intoHtml();
+      if (next.isEditing &&
+          (next.actionType != prev?.actionType ||
+              next.selectedMsgItem != prev?.selectedMsgItem)) {
+        _handleEditing(next.selectedMsgItem);
+      }
+      if (next.isReplying &&
+          (next.actionType != prev?.actionType ||
+              next.selectedMsgItem != prev?.selectedMsgItem)) {
+        textEditorState.updateSelectionWithReason(
+          Selection.single(
+            path: [0],
+            startOffset: textEditorState.intoMarkdown().length - 1,
+          ),
+          reason: SelectionUpdateReason.uiEvent,
+        );
+        saveMsgDraft(body, bodyHtml, widget.roomId, ref);
+      }
+    });
   }
 
   @override
@@ -72,6 +98,26 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     }
   }
 
+  void _handleEditing(RoomEventItem? item) {
+    try {
+      if (item == null) return;
+      final msgContent = item.msgContent();
+      if (msgContent == null) return;
+      final body = msgContent.body();
+      // insert editing text
+      final transaction = textEditorState.transaction;
+      final docNode = textEditorState.getNodeAtPath([0]);
+      if (docNode == null) return;
+
+      transaction.replaceText(docNode, 0, docNode.delta?.length ?? 0, body);
+      final pos = Position(path: [0], offset: body.length);
+      transaction.afterSelection = Selection.collapsed(pos);
+      textEditorState.apply(transaction);
+    } catch (e) {
+      _log.severe('Error handling edit state change: $e');
+    }
+  }
+
   void _editorUpdate(Transaction data) {
     // check if actual document content is empty
     final state = data.document.root.children
@@ -83,7 +129,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       // save composing draft
       final text = textEditorState.intoMarkdown();
       final htmlText = textEditorState.intoHtml();
-      await saveDraft(text, htmlText, widget.roomId, ref);
+      await saveMsgDraft(text, htmlText, widget.roomId, ref);
       _log.info('compose draft saved for room: ${widget.roomId}');
     });
   }
@@ -106,46 +152,74 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         await ref.read(chatComposerDraftProvider(widget.roomId).future);
 
     if (draft != null) {
-      final inputNotifier = ref.read(chatInputProvider.notifier);
-      inputNotifier.unsetSelectedMessage();
+      final chatEditorState = ref.read(chatEditorStateProvider.notifier);
+      chatEditorState.unsetActions();
+      textEditorState.clear();
+      final body = draft.plainText();
       draft.eventId().map((eventId) {
         final draftType = draft.draftType();
-        final m = ref
-            .read(chatMessagesProvider(widget.roomId))
-            .firstWhere((x) => x.id == eventId);
-        if (draftType == 'edit') {
-          inputNotifier.setEditMessage(m);
-        } else if (draftType == 'reply') {
-          inputNotifier.setReplyToMessage(m);
+        final msgsList =
+            ref.read(chatMessagesStateProvider(widget.roomId)).messages;
+        try {
+          final roomMsg = msgsList[eventId];
+          final item = roomMsg?.eventItem();
+          if (item == null) return;
+          if (draftType == 'edit') {
+            chatEditorState.setEditMessage(item);
+          } else if (draftType == 'reply') {
+            chatEditorState.setReplyToMessage(item);
+          }
+        } catch (e) {
+          _log.severe('Message with $eventId not found');
+          return;
         }
       });
 
-      final transaction = textEditorState.transaction;
-      final doc = ActerDocumentHelpers.parse(
-        draft.plainText(),
-        htmlContent: draft.htmlText(),
-      );
-      Node rootNode = doc.root;
-      transaction.document.insert([0], rootNode.children);
-      transaction.afterSelection =
-          Selection.single(path: rootNode.path, startOffset: 0);
-      textEditorState.apply(transaction);
+      if (body.trim().isEmpty) return;
 
+      final transaction = textEditorState.transaction;
+      final docNode = textEditorState.getNodeAtPath([0]);
+      if (docNode == null) return;
+      transaction.replaceText(
+        docNode,
+        0,
+        docNode.delta?.length ?? 0,
+        body,
+      );
+      final pos = Position(path: [0], offset: body.length);
+      transaction.afterSelection = Selection.collapsed(pos);
+      textEditorState.apply(transaction);
       _log.info('compose draft loaded for room: ${widget.roomId}');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final viewInsets = MediaQuery.viewInsetsOf(context).bottom;
     final isKeyboardVisible = ref.watch(keyboardVisibleProvider).valueOrNull;
     final emojiPickerVisible = ref
         .watch(chatInputProvider.select((value) => value.emojiPickerVisible));
     final isEncrypted =
         ref.watch(isRoomEncryptedProvider(widget.roomId)).valueOrNull == true;
+    final chatEditorState = ref.watch(chatEditorStateProvider);
 
-    final viewInsets = MediaQuery.viewInsetsOf(context).bottom;
+    Widget? previewWidget;
+
+    if (chatEditorState.isReplying || chatEditorState.isEditing) {
+      final msgItem = chatEditorState.selectedMsgItem;
+      previewWidget = msgItem.map(
+        (item) => ChatEditorActionsPreview(
+          textEditorState: textEditorState,
+          msgItem: item,
+          roomId: widget.roomId,
+        ),
+        orElse: () => const SizedBox.shrink(),
+      );
+    }
+
     return Column(
       children: <Widget>[
+        if (previewWidget != null) previewWidget,
         renderEditorUI(emojiPickerVisible, isEncrypted),
         // Emoji Picker UI
         if (emojiPickerVisible) ChatEmojiPicker(editorState: textEditorState),
@@ -158,12 +232,17 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
   // chat editor UI
   Widget renderEditorUI(bool emojiPickerVisible, bool isEncrypted) {
+    final chatEditorState = ref.watch(chatEditorStateProvider);
+    final isPreviewOpen =
+        chatEditorState.isReplying || chatEditorState.isEditing;
+    final radiusVal = isPreviewOpen ? 2.0 : 15.0;
+
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(15.0),
-          topRight: Radius.circular(15.0),
+          topLeft: Radius.circular(radiusVal),
+          topRight: Radius.circular(radiusVal),
         ),
         border: BorderDirectional(
           top: BorderSide(color: greyColor),
@@ -233,27 +312,24 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     );
   }
 
-  Widget _renderEditor(String? hintText) => Focus(
-        focusNode: chatFocus,
-        child: HtmlEditor(
-          footer: null,
-          // if provided, will activate mentions
-          roomId: widget.roomId,
-          hintText: hintText,
-          autoFocus: false,
-          editable: true,
-          shrinkWrap: true,
-          editorState: textEditorState,
-          scrollController: scrollController,
-          editorPadding: const EdgeInsets.symmetric(horizontal: 10),
-          onChanged: (body, html) {
-            if (html != null) {
-              widget.onTyping?.map((cb) => cb(html.isNotEmpty));
-            } else {
-              widget.onTyping?.map((cb) => cb(body.isNotEmpty));
-            }
-          },
-        ),
+  Widget _renderEditor(String? hintText) => HtmlEditor(
+        footer: null,
+        // if provided, will activate mentions
+        roomId: widget.roomId,
+        hintText: hintText,
+        autoFocus: false,
+        editable: true,
+        shrinkWrap: true,
+        editorState: textEditorState,
+        scrollController: scrollController,
+        editorPadding: const EdgeInsets.symmetric(horizontal: 10),
+        onChanged: (body, html) {
+          if (html != null) {
+            widget.onTyping?.map((cb) => cb(html.isNotEmpty));
+          } else {
+            widget.onTyping?.map((cb) => cb(body.isNotEmpty));
+          }
+        },
       );
 
   // attachment/send button

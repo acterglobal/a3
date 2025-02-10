@@ -42,7 +42,8 @@ void acterObjectLinksTests(UriMaker makeUri) {
   test('taskList', () async {
     final result = parseActerUri(
       makeUri(
-        'o/room:acter.global/taskList/someEvent', 'via=acter.global&via=example.org',
+        'o/room:acter.global/taskList/someEvent',
+        'via=acter.global&via=example.org',
       ),
     );
     expect(result.type, LinkType.spaceObject);
@@ -55,7 +56,8 @@ void acterObjectLinksTests(UriMaker makeUri) {
   test('task', () async {
     final result = parseActerUri(
       makeUri(
-        'o/room:acter.global/taskList/listId/task/taskId', 'via=acter.global&via=example.org',
+        'o/room:acter.global/taskList/listId/task/taskId',
+        'via=acter.global&via=example.org',
       ),
     );
     expect(result.type, LinkType.spaceObject);
@@ -71,7 +73,9 @@ void acterObjectLinksTests(UriMaker makeUri) {
 
   test('comment on task', () async {
     final result = parseActerUri(
-      makeUri('o/room:acter.global/taskList/someEvent/task/taskId/comment/commentId', 'via=acter.global&via=example.org',
+      makeUri(
+        'o/room:acter.global/taskList/someEvent/task/taskId/comment/commentId',
+        'via=acter.global&via=example.org',
       ),
     );
     expect(result.type, LinkType.spaceObject);
@@ -87,7 +91,6 @@ void acterObjectLinksTests(UriMaker makeUri) {
   });
 }
 
-
 void acterInviteLinkTests(UriMaker makeUri) {
   test('simple invite', () async {
     final result = parseActerUri(
@@ -102,7 +105,8 @@ void acterInviteLinkTests(UriMaker makeUri) {
   test('with preview', () async {
     final result = parseActerUri(
       makeUri(
-        'i/acter.global/inviteCode', 'roomDisplayName=Room+Name&userId=ben:acter.global&userDisplayName=Ben+From+Acter',
+        'i/acter.global/inviteCode',
+        'roomDisplayName=Room+Name&userId=ben:acter.global&userDisplayName=Ben+From+Acter',
       ),
     );
     expect(result.type, LinkType.superInvite);
@@ -115,11 +119,12 @@ void acterInviteLinkTests(UriMaker makeUri) {
   });
 }
 
-
 void acterObjectPreviewTests(UriMaker makeUri) {
   test('calendarEvent', () async {
     final result = parseActerUri(
-      makeUri('o/somewhere:example.org/calendarEvent/spaceObjectId', 'title=Our+Awesome+Event&startUtc=12334567&participants=3',
+      makeUri(
+        'o/somewhere:example.org/calendarEvent/spaceObjectId',
+        'title=Our+Awesome+Event&startUtc=12334567&participants=3',
       ),
     );
     expect(result.type, LinkType.spaceObject);
@@ -134,7 +139,9 @@ void acterObjectPreviewTests(UriMaker makeUri) {
 
   test('comment on task', () async {
     final result = parseActerUri(
-      makeUri('o/room:acter.global/taskList/someEvent/task/taskId/comment/commentId', 'via=acter.global&via=example.org&roomDisplayName=someRoom+Name',
+      makeUri(
+        'o/room:acter.global/taskList/someEvent/task/taskId/comment/commentId',
+        'via=acter.global&via=example.org&roomDisplayName=someRoom+Name',
       ),
     );
     expect(result.type, LinkType.spaceObject);
@@ -159,8 +166,7 @@ void newSpecLinksTests(UriMaker makeUri) {
     expect(result.via, []);
   });
   test('roomId', () async {
-    final sourceUri =
-        makeUri('roomid/room:acter.global', 'via=elsewhere.ca');
+    final sourceUri = makeUri('roomid/room:acter.global', 'via=elsewhere.ca');
     final result = parseActerUri(sourceUri);
     expect(result.type, LinkType.roomId);
     expect(result.target, '!room:acter.global');
@@ -175,7 +181,8 @@ void newSpecLinksTests(UriMaker makeUri) {
   test('eventId', () async {
     final result = parseActerUri(
       makeUri(
-      'roomid/room:acter.global/e/someEvent', 'via=acter.global&via=example.org',
+        'roomid/room:acter.global/e/someEvent',
+        'via=acter.global&via=example.org',
       ),
     );
     expect(result.type, LinkType.chatEvent);
@@ -185,82 +192,116 @@ void newSpecLinksTests(UriMaker makeUri) {
   });
 }
 
-UriMaker makeUriMakerForPublicPrefix(String uriPrefix, {String? userId = 'test:example.org'}) {
+UriMaker makeUriMakerForPublicPrefix(
+  String uriPrefix, {
+  String? userId = 'test:example.org',
+}) {
   Uri makeDomainLink(String path, String? query) {
-    final finalQuery = query != null ? ( userId != null ? '?$query&userId=$userId' : '?$query') : userId != null ? '?userId=$userId' : null;
-    final hash = sha1.convert(utf8.encode('$uriPrefix$finalQuery#$path')).toString();
+    final finalQuery = query != null
+        ? (userId != null ? '?$query&userId=$userId' : '?$query')
+        : userId != null
+            ? '?userId=$userId'
+            : null;
+    final hash =
+        sha1.convert(utf8.encode('$uriPrefix$finalQuery#$path')).toString();
     return Uri.parse('$uriPrefix/$hash$finalQuery#$path');
   }
+
   return makeDomainLink;
 }
 
 // --- Actual tests start
 
 void main() {
-  group('Testing matrix:-links', () =>
-    newSpecLinksTests((u, q) => Uri.parse('matrix:$u?$q')),
+  group(
+    'Testing matrix:-links',
+    () => newSpecLinksTests((u, q) => Uri.parse('matrix:$u?$q')),
   );
 
-  group('Testing fallback acter:-links', () =>
-    newSpecLinksTests((u, q) => Uri.parse('acter:$u?$q')),
+  group(
+    'Testing fallback acter:-links',
+    () => newSpecLinksTests((u, q) => Uri.parse('acter:$u?$q')),
   );
 
-  group('Testing acter: object-links', () =>
-    acterObjectLinksTests((u, q) => Uri.parse('acter:$u?$q')),
+  group(
+    'Testing acter: object-links',
+    () => acterObjectLinksTests((u, q) => Uri.parse('acter:$u?$q')),
   );
 
-  group('Testing acter: invite-links',  () =>
-    acterInviteLinkTests((u, q) => Uri.parse('acter:$u?$q')),
+  group(
+    'Testing acter: invite-links',
+    () => acterInviteLinkTests((u, q) => Uri.parse('acter:$u?$q')),
   );
 
-  group('Testing acter: preview data', () =>
-    acterObjectPreviewTests((u, q) => Uri.parse('acter:$u?$q')),
+  group(
+    'Testing acter: preview data',
+    () => acterObjectPreviewTests((u, q) => Uri.parse('acter:$u?$q')),
   );
 
-  group('Testing fallback https://app.acter.global/:-links', () =>
-   newSpecLinksTests(makeUriMakerForPublicPrefix('https://app.acter.global/p/')),
+  group(
+    'Testing fallback https://app.acter.global/:-links',
+    () => newSpecLinksTests(
+      makeUriMakerForPublicPrefix('https://app.acter.global/p/'),
+    ),
   );
 
-  group('Testing https://app.acter.global/ object-links', () =>
-    acterObjectLinksTests(makeUriMakerForPublicPrefix('https://app.acter.global/p/')),
+  group(
+    'Testing https://app.acter.global/ object-links',
+    () => acterObjectLinksTests(
+      makeUriMakerForPublicPrefix('https://app.acter.global/p/'),
+    ),
   );
 
-  group('Testing https://app.acter.global/ invite-links',  () =>
-    acterInviteLinkTests(makeUriMakerForPublicPrefix('https://app.acter.global/p/')),
+  group(
+    'Testing https://app.acter.global/ invite-links',
+    () => acterInviteLinkTests(
+      makeUriMakerForPublicPrefix('https://app.acter.global/p/'),
+    ),
   );
 
-  group('Testing https://app.acter.global/ preview data', () =>
-    acterObjectPreviewTests(makeUriMakerForPublicPrefix('https://app.acter.global/p/')),
+  group(
+    'Testing https://app.acter.global/ preview data',
+    () => acterObjectPreviewTests(
+      makeUriMakerForPublicPrefix('https://app.acter.global/p/'),
+    ),
   );
 
   group('Testing broken https://app.acter.global/ ', () {
     test('faulty hash fails', () async {
-      expect(() => parseActerUri(
-          Uri.parse('http://acter.global/p/faultyHash?via=acter.global&via=example.org#roomid/room:acter.global/e/someEvent'),
+      expect(
+        () => parseActerUri(
+          Uri.parse(
+            'http://acter.global/p/faultyHash?via=acter.global&via=example.org#roomid/room:acter.global/e/someEvent',
+          ),
         ),
         throwsA(TypeMatcher<IncorrectHashError>()),
       );
     });
 
     test('missing user fails', () async {
-      final makeUri = makeUriMakerForPublicPrefix('https://app.acter.global/', userId: null);
+      final makeUri = makeUriMakerForPublicPrefix(
+        'https://app.acter.global/',
+        userId: null,
+      );
 
-      expect(() => parseActerUri(
+      expect(
+        () => parseActerUri(
           makeUri(
-          'roomid/room:acter.global/e/someEvent', 'via=acter.global&via=example.org',
-          ),),
+            'roomid/room:acter.global/e/someEvent',
+            'via=acter.global&via=example.org',
+          ),
+        ),
         throwsA(TypeMatcher<MissingUserError>()),
       );
     });
-
-
   });
 
   // legacy matrix.to-links (we are not creating anymore but can still read)
   group('Testing legacy https://matrix.to/-links', () {
     test('roomAlias', () async {
-      final result =
-          parseActerUri(Uri.parse('https://matrix.to/#/%23somewhere%3Aexample.org'));
+      final result = parseActerUri(
+        Uri.parse('https://matrix.to/#/%23somewhere%3Aexample.org'),
+      );
       expect(result.type, LinkType.roomAlias);
       expect(result.target, '#somewhere:example.org');
       expect(result.via, []);
@@ -275,8 +316,9 @@ void main() {
       expect(result.via, ['elsewhere.ca']);
     });
     test('userId', () async {
-      final result =
-          parseActerUri(Uri.parse('https://matrix.to/#/%40alice%3Aacter.global'));
+      final result = parseActerUri(
+        Uri.parse('https://matrix.to/#/%40alice%3Aacter.global'),
+      );
       expect(result.type, LinkType.userId);
       expect(result.target, '@alice:acter.global');
     });

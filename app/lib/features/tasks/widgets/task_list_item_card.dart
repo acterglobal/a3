@@ -2,7 +2,9 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
-import 'package:acter/common/widgets/reference_details_item.dart';
+import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
+import 'package:acter/features/bookmarks/types.dart';
+import 'package:acter/features/deep_linking/widgets/reference_details_item.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_items_list_widget.dart';
@@ -44,13 +46,17 @@ class TaskListItemCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final taskList = ref.watch(taskListProvider(taskListId)).valueOrNull;
+    final isBookmarked = ref.watch(isBookmarkedProvider(BookmarkType.forTaskList(taskListId)));
     if (taskList != null) {
       return Card(
         margin: cardMargin,
         key: Key('task-list-card-$taskListId'),
-        child: canExpand
-            ? expandable(context, ref, taskList)
-            : simple(context, ref, taskList),
+        child: Stack(
+          children: [
+            taskListItemView(context, ref, taskList),
+            if (isBookmarked) buildTaskBookmarkView(context),
+          ],
+        ),
       );
     } else if (refDetails != null) {
       return ReferenceDetailsItem(refDetails: refDetails!);
@@ -59,33 +65,56 @@ class TaskListItemCard extends ConsumerWidget {
     }
   }
 
-  Widget expandable(BuildContext context, WidgetRef ref, TaskList taskList) =>
-      ExpansionTile(
-        initiallyExpanded: initiallyExpanded,
-        leading: ActerIconWidget(
-          iconSize: 30,
-          color: convertColor(
-            taskList.display()?.color(),
-            iconPickerColors[0],
-          ),
-          icon: ActerIcon.iconForTask(taskList.display()?.iconStr()),
+  Widget taskListItemView(
+    BuildContext context,
+    WidgetRef ref,
+    TaskList taskList,
+  ) {
+    return canExpand
+        ? expandable(context, ref, taskList)
+        : simple(context, ref, taskList);
+  }
+
+  Widget expandable(BuildContext context, WidgetRef ref, TaskList taskList) {
+    return ExpansionTile(
+      initiallyExpanded: initiallyExpanded,
+      leading: ActerIconWidget(
+        iconSize: 30,
+        color: convertColor(
+          taskList.display()?.color(),
+          iconPickerColors[0],
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        iconColor: Theme.of(context).colorScheme.onSurface,
-        childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
-        title: title(context, taskList),
-        subtitle: subtitle(ref, taskList),
-        children: showOnlyTaskList
-            ? []
-            : [
-                TaskItemsListWidget(
-                  taskList: taskList,
-                  showCompletedTask: showCompletedTask,
-                ),
-              ],
-      );
+        icon: ActerIcon.iconForTask(taskList.display()?.iconStr()),
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      iconColor: Theme.of(context).colorScheme.onSurface,
+      childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
+      title: title(context, taskList),
+      subtitle: subtitle(ref, taskList),
+      children: showOnlyTaskList
+          ? []
+          : [
+              TaskItemsListWidget(
+                taskList: taskList,
+                showCompletedTask: showCompletedTask,
+              ),
+            ],
+    );
+  }
+
+  Widget buildTaskBookmarkView(BuildContext context) {
+    return Positioned(
+      right: 15,
+      top: -4,
+      child: Icon(
+        Icons.bookmark_sharp,
+        color: Theme.of(context).unselectedWidgetColor,
+        size: 24,
+      ),
+    );
+  }
 
   Widget simple(BuildContext context, WidgetRef ref, TaskList taskList) =>
       ListTile(

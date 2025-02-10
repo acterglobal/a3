@@ -5,7 +5,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
-import 'package:acter/features/chat_ng/widgets/chat_input/chat_input.dart';
+import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_view.dart';
 import 'package:acter/features/chat_ng/widgets/chat_messages.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +63,7 @@ class ChatRoomNgPage extends ConsumerWidget {
                 lang.membersCount(members.length),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
-              skipLoadingOnReload: false,
+              skipLoadingOnReload: true,
               error: (e, s) {
                 _log.severe('Failed to load active members', e, s);
                 return Text(lang.errorLoadingMembersCount(e));
@@ -123,8 +123,8 @@ class ChatRoomNgPage extends ConsumerWidget {
         (settings) => settings.valueOrNull?.typingNotice() ?? false,
       ),
     );
-    return ChatInput(
-      key: Key('chat-input-$roomId'),
+    return ChatEditorView(
+      key: Key('chat-editor-$roomId'),
       roomId: roomId,
       onTyping: (typing) async {
         if (sendTypingNotice) {

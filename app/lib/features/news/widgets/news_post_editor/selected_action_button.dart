@@ -1,3 +1,4 @@
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
@@ -8,6 +9,7 @@ import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/skeleton/tasks_list_skeleton.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,20 +28,25 @@ class SelectedActionButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (refDetails == null) return SizedBox();
-    final refObjectId = refDetails!.targetIdStr();
     final refObjectType = refDetails!.typeStr();
-    if (refObjectId == null) return SizedBox();
 
     return switch (refObjectType) {
-      'pin' => pinActionButton(context, ref, refObjectId),
-      'calendar-event' => calendarActionButton(context, ref, refObjectId),
-      'task-list' => taskListActionButton(context, ref, refObjectId),
+      'pin' => pinActionButton(context, ref, refDetails!),
+      'calendar-event' => calendarActionButton(context, ref, refDetails!),
+      'task-list' => taskListActionButton(context, ref, refDetails!),
+      'link' => linkActionButton(context, refDetails!),
       _ => const SizedBox(),
     };
   }
 
-  Widget calendarActionButton(BuildContext context, WidgetRef ref, String id) {
-    return ref.watch(calendarEventProvider(id)).when(
+  Widget calendarActionButton(
+    BuildContext context,
+    WidgetRef ref,
+    RefDetails refDetail,
+  ) {
+    final refObjectId = refDetails!.targetIdStr();
+    if (refObjectId == null) return SizedBox();
+    return ref.watch(calendarEventProvider(refObjectId)).when(
           data: (calendarEvent) {
             return SizedBox(
               width: 300,
@@ -66,8 +73,14 @@ class SelectedActionButton extends ConsumerWidget {
         );
   }
 
-  Widget pinActionButton(BuildContext context, WidgetRef ref, String id) {
-    return ref.watch(pinProvider(id)).when(
+  Widget pinActionButton(
+    BuildContext context,
+    WidgetRef ref,
+    RefDetails refDetail,
+  ) {
+    final refObjectId = refDetails!.targetIdStr();
+    if (refObjectId == null) return SizedBox();
+    return ref.watch(pinProvider(refObjectId)).when(
           data: (pin) {
             return SizedBox(
               width: 300,
@@ -94,8 +107,14 @@ class SelectedActionButton extends ConsumerWidget {
         );
   }
 
-  Widget taskListActionButton(BuildContext context, WidgetRef ref, String id) {
-    return ref.watch(taskListProvider(id)).when(
+  Widget taskListActionButton(
+    BuildContext context,
+    WidgetRef ref,
+    RefDetails refDetail,
+  ) {
+    final refObjectId = refDetails!.targetIdStr();
+    if (refObjectId == null) return SizedBox();
+    return ref.watch(taskListProvider(refObjectId)).when(
           data: (taskList) {
             return SizedBox(
               width: 300,
@@ -122,5 +141,30 @@ class SelectedActionButton extends ConsumerWidget {
             );
           },
         );
+  }
+
+  Widget linkActionButton(BuildContext context, RefDetails refDetail) {
+    final uri = refDetail.uri();
+    if (uri == null) return SizedBox.shrink();
+    return SizedBox(
+      width: 300,
+      child: Card(
+        child: ListTile(
+          leading: const Icon(Atlas.link),
+          onTap: () => openLink(uri, context),
+          title: Text(
+            refDetail.title() ?? L10n.of(context).unknown,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            uri,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+        ),
+      ),
+    );
   }
 }

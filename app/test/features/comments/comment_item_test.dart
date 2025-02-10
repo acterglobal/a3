@@ -21,11 +21,11 @@ void main() {
   setUp(() {
     mockCommentsManager = MockCommentsManager();
     mockComment = MockComment(
-      fakeSender: MockUserId(),
+      fakeSender: MockUserId('user-1'),
       fakeMsgContent: MockMsgContent(bodyText: 'This is a test message'),
       fakeOriginServerTs: DateTime.now().millisecondsSinceEpoch,
     );
-    mockAvatarInfo = MockAvatarInfo();
+    mockAvatarInfo = MockAvatarInfo(uniqueId: 'user-1');
 
     // Mock the values expected by the widget
     when(() => mockCommentsManager.roomIdStr()).thenReturn('roomId');

@@ -94,7 +94,7 @@ pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,
 };
 pub use core::time::Duration as EfkDuration;
-pub use deep_linking::{ObjRef, RefDetails};
+pub use deep_linking::{new_link_ref_details, ObjRef, RefDetails};
 pub use device::DeviceEvent;
 pub use invitation::Invitation;
 pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
@@ -109,7 +109,7 @@ pub use reactions::{Reaction, ReactionManager};
 pub use read_receipts::ReadReceiptsManager;
 pub use room::{
     new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
-    SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
+    RoomPreview, SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations, UserRoomSettings,
 };
 pub use rsvp::{Rsvp, RsvpDraft, RsvpManager, RsvpStatus};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
@@ -132,7 +132,7 @@ pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
 pub use typing::TypingEvent;
-pub use utils::parse_markdown;
+pub use utils::{new_vec_string_builder, parse_markdown, VecStringBuilder};
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
 pub type DeviceId = matrix_sdk_base::ruma::OwnedDeviceId;

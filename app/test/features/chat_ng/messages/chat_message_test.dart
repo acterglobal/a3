@@ -20,10 +20,21 @@ import '../diff_applier_test.dart';
 
 class MockRoomEventItem extends Mock implements RoomEventItem {
   final String mockSender;
-
-  MockRoomEventItem({required this.mockSender});
+  final MockMsgContent? mockMsgContent;
+  final String? mockMsgType;
+  MockRoomEventItem({
+    required this.mockSender,
+    this.mockMsgContent,
+    this.mockMsgType,
+  });
   @override
   String sender() => mockSender;
+
+  @override
+  MockMsgContent? msgContent() => mockMsgContent;
+
+  @override
+  String? msgType() => mockMsgType;
 }
 
 void main() {

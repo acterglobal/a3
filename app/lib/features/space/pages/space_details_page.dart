@@ -167,7 +167,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       background: const SpaceDetailsSkeletons(),
       error: error,
       stack: stack,
-      textBuilder: L10n.of(context).loadingFailed,
+      textBuilder: (error, code) => L10n.of(context).loadingFailed(error),
       onRetryTap: () {
         ref.invalidate(spaceProvider(widget.spaceId));
       },
@@ -288,7 +288,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.events => EventListWidget(
           isShowSpaceName: false,
           showSectionHeader: true,
-          listProvider: allEventListProvider(widget.spaceId),
+          listProvider: allEventSorted(widget.spaceId),
           limit: 3,
           onClickSectionHeader: () => context.pushNamed(
             Routes.spaceEvents.name,

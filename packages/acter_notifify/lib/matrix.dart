@@ -25,19 +25,23 @@ const bool isProduction = bool.fromEnvironment('dart.vm.product');
 Future<NotificationItem> _getNotificationItem(
   Map<String?, Object?> message,
 ) async {
-  final deviceId = message['device_id'] as String?;
+  final deviceId = message['device_id'] as String;
 
-  final mayBeRoomId = message['room_id'];
-  final mayBeEventId = message['event_id'];
-
-  if (mayBeEventId == null || mayBeRoomId == null || deviceId == null) {
-    throw 'Received unsupported notification without deviceId, eventId and/or room Id. Skipping. message: $message';
-  }
-  final roomId = mayBeRoomId as String;
-  final eventId = mayBeEventId as String;
+  final roomId = message['room_id'] as String;
+  final eventId = message['event_id'] as String;
   _log.info('Received msg $roomId: $eventId');
   final instance = await ActerSdk.instance;
   return await instance.getNotificationFor(deviceId, roomId, eventId);
+}
+
+Future<bool> _handleCountsUpdate(
+  Map<String?, Object?> message,
+) async {
+  final msg = message['count'] as Map? ?? message;
+  final totalCounts =
+      ((msg['unread'] as int?) ?? 0) + ((msg['missed_calls'] as int?) ?? 0);
+  await updateBadgeCount(totalCounts);
+  return false;
 }
 
 Future<bool> handleMatrixMessage(
@@ -46,6 +50,14 @@ Future<bool> handleMatrixMessage(
   ShouldShowCheck? shouldShowCheck,
 }) async {
   late NotificationItem notification;
+  if (message["event_id"] == null ||
+      message['room_id'] == null ||
+      message['device_id'] == null) {
+    // this message doesn't actually contain any regular information
+    // just badge counter updates.
+    return _handleCountsUpdate(message);
+  }
+
   try {
     notification = await _getNotificationItem(message);
   } catch (error, stack) {
@@ -55,6 +67,7 @@ Future<bool> handleMatrixMessage(
       'getting notification from message failed: %s - %s',
       params: [error, message],
     );
+    return false;
   }
   _log.info('got a notification');
 

@@ -221,16 +221,17 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
   }) async {
     final roomIdOrAlias = alias ?? roomId;
     if (roomIdOrAlias == null) throw 'neither room id nor alias available';
-    await joinRoom(
-      context,
-      ref,
-      L10n.of(context).tryingToJoin(roomIdOrAlias),
-      roomIdOrAlias,
-      serverNames.first,
-      (roomId) => context.pushNamed(
-        Routes.forward.name,
-        pathParameters: {'roomId': roomId},
-      ),
+    final newRoomId = await joinRoom(
+      context: context,
+      ref: ref,
+      roomIdOrAlias: roomIdOrAlias,
+      serverNames: serverNames,
     );
+    if (newRoomId != null && context.mounted) {
+      context.pushNamed(
+        Routes.forward.name,
+        pathParameters: {'roomId': newRoomId},
+      );
+    }
   }
 }

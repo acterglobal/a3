@@ -4,6 +4,19 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/platform/android.dart';
 import 'package:acter_notifify/local.dart';
 import 'package:acter_notifify/platform/windows.dart';
+import 'package:acter_notifify/processing/attachment.dart';
+import 'package:acter_notifify/processing/comment.dart';
+import 'package:acter_notifify/model/push_styles.dart';
+import 'package:acter_notifify/processing/description.dart';
+import 'package:acter_notifify/processing/event.dart';
+import 'package:acter_notifify/processing/object_creation.dart';
+import 'package:acter_notifify/processing/object_other_changes.dart';
+import 'package:acter_notifify/processing/object_redaction.dart';
+import 'package:acter_notifify/processing/reaction.dart';
+import 'package:acter_notifify/processing/references.dart';
+import 'package:acter_notifify/processing/task_item.dart';
+import 'package:acter_notifify/processing/task_list.dart';
+import 'package:acter_notifify/processing/title_change.dart';
 import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -84,50 +97,31 @@ Future<String> deviceName() async {
 }
 
 (String, String?) genTitleAndBody(NotificationItem notification) =>
-    switch (notification.pushStyle()) {
-      "comment" => _titleAndBodyForComment(notification),
-      "reaction" => _titleAndBodyForReaction(notification),
+    switch (PushStyles.values.asNameMap()[notification.pushStyle()]) {
+      PushStyles.comment => titleAndBodyForComment(notification),
+      PushStyles.reaction => titleAndBodyForReaction(notification),
+      PushStyles.attachment => titleAndBodyForAttachment(notification),
+      PushStyles.references => titleAndBodyForReferences(notification),
+      PushStyles.eventDateChange =>
+        titleAndBodyForEventDateChange(notification),
+      PushStyles.rsvpYes => titleAndBodyForEventRsvpYes(notification),
+      PushStyles.rsvpMaybe => titleAndBodyForEventRsvpMaybe(notification),
+      PushStyles.rsvpNo => titleAndBodyForEventRsvpNo(notification),
+      PushStyles.taskAdd => titleAndBodyForTaskAdd(notification),
+      PushStyles.taskComplete => titleAndBodyForTaskItemCompleted(notification),
+      PushStyles.taskReOpen => titleAndBodyForTaskItemReOpened(notification),
+      PushStyles.taskAccept => titleAndBodyForTaskItemAccepted(notification),
+      PushStyles.taskDecline => titleAndBodyForTaskItemDeclined(notification),
+      PushStyles.taskDueDateChange =>
+        titleAndBodyForTaskItemDueDateChange(notification),
+      PushStyles.titleChange => titleAndBodyForObjectTitleChange(notification),
+      PushStyles.descriptionChange =>
+        titleAndBodyForObjectDescriptionChange(notification),
+      PushStyles.creation => titleAndBodyForObjectCreation(notification),
+      PushStyles.redaction => titleAndBodyForObjectRedaction(notification),
+      PushStyles.otherChanges => titleAndBodyForObjectOtherChanges(notification),
       _ => _fallbackTitleAndBody(notification),
     };
 
 (String, String?) _fallbackTitleAndBody(NotificationItem notification) =>
     (notification.title(), notification.body()?.body());
-
-String _parentPart(NotificationItemParent parent) {
-  final emoji = parent.emoji();
-  final title = switch (parent.objectTypeStr()) {
-    'news' => "boost",
-    _ => parent.title(),
-  };
-  return "$emoji $title";
-}
-
-(String, String?) _titleAndBodyForComment(NotificationItem notification) {
-  final parent = notification.parent();
-  String title = "💬 Comment";
-  if (parent != null) {
-    final parentInfo = _parentPart(parent);
-    title = "$title on $parentInfo";
-  }
-
-  final comment = notification.body()?.body();
-  final sender = notification.sender();
-  final username = sender.displayName() ?? sender.userId();
-
-  return (title, "$username: $comment");
-}
-
-(String, String?) _titleAndBodyForReaction(NotificationItem notification) {
-  final parent = notification.parent();
-  final reaction = notification.reactionKey() ?? '❤️';
-  String title = '"$reaction"';
-  if (parent != null) {
-    final parentInfo = _parentPart(parent);
-    title = "$title to $parentInfo";
-  }
-
-  final sender = notification.sender();
-  final username = sender.displayName() ?? sender.userId();
-
-  return (title, username);
-}

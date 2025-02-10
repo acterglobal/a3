@@ -24,7 +24,7 @@ Future<NewsSlideDraft> _makeTextSlide(
   L10n lang,
 ) async {
   final sdk = await ref.read(sdkProvider.future);
-  final client = ref.read(alwaysClientProvider);
+  final client = await ref.read(alwaysClientProvider.future);
 
   final text = slidePost.text?.trim();
   if (text == null || text.isEmpty == true) {
@@ -55,7 +55,7 @@ Future<NewsSlideDraft> _makeImageSlide(
   L10n lang,
 ) async {
   final sdk = await ref.read(sdkProvider.future);
-  final client = ref.read(alwaysClientProvider);
+  final client = await ref.read(alwaysClientProvider.future);
 
   final file = slidePost.mediaFile;
   if (file == null) {
@@ -92,7 +92,7 @@ Future<NewsSlideDraft> _makeVideoSlide(
   L10n lang,
 ) async {
   final sdk = await ref.read(sdkProvider.future);
-  final client = ref.read(alwaysClientProvider);
+  final client = await ref.read(alwaysClientProvider.future);
   final file = slidePost.mediaFile;
   if (file == null) {
     throw 'Video File missing';

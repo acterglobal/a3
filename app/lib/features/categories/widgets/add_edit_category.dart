@@ -89,6 +89,7 @@ class _AddEditCategoryBottomSheet
               ActerIconWidget(
                 color: color,
                 icon: icon,
+                showEditIconIndicator: true,
                 onIconSelection: (clr, icn) {
                   setState(() {
                     color = clr;

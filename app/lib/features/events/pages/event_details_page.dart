@@ -72,7 +72,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         background: const EventDetailsSkeleton(),
         error: errored.error,
         stack: errored.stackTrace,
-        textBuilder: L10n.of(context).errorLoadingEventDueTo,
+        textBuilder: (error, code) =>
+            L10n.of(context).errorLoadingEventDueTo(error),
         onRetryTap: () {
           ref.invalidate(calendarEventProvider(widget.calendarId));
         },
@@ -380,7 +381,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       final rsvpId = await draft.send();
       _log.info('new rsvp id: $rsvpId');
       // refresh cache
-      final client = ref.read(alwaysClientProvider);
+      final client = await ref.read(alwaysClientProvider.future);
       await client.waitForRsvp(rsvpId.toString(), null);
       EasyLoading.dismiss();
     } catch (e, s) {
@@ -449,10 +450,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         openShareSpaceObjectDialog(
           context: context,
           refDetails: refDetails,
-          internalLink: internalLink, shareContentBuilder: () async {
-          Navigator.pop(context);
-          return await refDetails.generateExternalLink();
-        },
+          internalLink: internalLink,
+          shareContentBuilder: () async {
+            Navigator.pop(context);
+            return await refDetails.generateExternalLink();
+          },
           fileDetailContentBuilder: () async {
             Navigator.pop(context);
             final filename =

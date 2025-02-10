@@ -104,6 +104,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                     children: <Widget>[
                       Center(
                         child: ActerIconWidget(
+                          showEditIconIndicator: true,
                           icon: pinIcon ?? ActerIcon.pin,
                           onIconSelection: (pinIconColor, pinIcon) {
                             this.pinIcon = pinIcon;

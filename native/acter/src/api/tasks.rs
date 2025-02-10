@@ -4,7 +4,7 @@ use acter_core::{
         Display, RefDetails as CoreRefDetails, RefPreview,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, TaskStats},
-    statics::KEYS,
+    referencing::{IndexKey, SectionIndex, SpecialListsIndex},
 };
 use anyhow::{bail, Context, Result};
 use chrono::DateTime;
@@ -17,6 +17,7 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
+use scc::ebr::Owned;
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -66,80 +67,29 @@ impl Client {
     }
 
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
-        let mut task_lists = Vec::new();
-        let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let me = self.clone();
-        RUNTIME
-            .spawn(async move {
-                let client = me.core.client();
-                for mdl in me.store().get_list(KEYS::TASKS::TASKS).await? {
-                    #[allow(irrefutable_let_patterns)]
-                    if let AnyActerModel::TaskList(content) = mdl {
-                        let room_id = content.room_id().to_owned();
-                        let room = match rooms_map.entry(room_id) {
-                            Entry::Occupied(t) => t.get().clone(),
-                            Entry::Vacant(e) => {
-                                if let Some(room) = client.get_room(e.key()) {
-                                    e.insert(room.clone());
-                                    room
-                                } else {
-                                    /// User not part of the room anymore, ignore
-                                    continue;
-                                }
-                            }
-                        };
-                        task_lists.push(TaskList {
-                            client: me.clone(),
-                            room,
-                            content,
-                        })
-                    } else {
-                        warn!("Non task list model found in `tasks` index: {:?}", mdl);
-                    }
-                }
-                Ok(task_lists)
-            })
+        Ok(self
+            .models_of_list_with_room(IndexKey::Section(SectionIndex::Tasks))
             .await?
+            .map(|(inner, room)| TaskList {
+                client: self.clone(),
+                room,
+                content: inner,
+            })
+            .collect())
     }
 
     pub async fn my_open_tasks(&self) -> Result<Vec<Task>> {
-        let mut tasks = Vec::new();
-        let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let me = self.clone();
-        RUNTIME
-            .spawn(async move {
-                let client = me.core.client();
-                for mdl in me.store().get_list(KEYS::TASKS::MY_OPEN_TASKS).await? {
-                    #[allow(irrefutable_let_patterns)]
-                    if let AnyActerModel::Task(content) = mdl {
-                        let room_id = content.room_id().to_owned();
-                        let room = match rooms_map.entry(room_id) {
-                            Entry::Occupied(t) => t.get().clone(),
-                            Entry::Vacant(e) => {
-                                if let Some(room) = client.get_room(e.key()) {
-                                    e.insert(room.clone());
-                                    room
-                                } else {
-                                    /// User not part of the room anymore, ignore
-                                    continue;
-                                }
-                            }
-                        };
-                        tasks.push(Task {
-                            client: me.clone(),
-                            room,
-                            content,
-                        })
-                    } else {
-                        warn!(
-                            "Non task list model found in `my open tasks` index: {:?}",
-                            mdl
-                        );
-                    }
-                }
-                Ok(tasks)
-            })
+        Ok(self
+            .models_of_list_with_room(IndexKey::Special(SpecialListsIndex::MyOpenTasks))
             .await?
+            .map(|(inner, room)| Task {
+                client: self.clone(),
+                room,
+                content: inner,
+            })
+            .collect())
     }
 
     pub fn subscribe_my_open_tasks_stream(&self) -> impl Stream<Item = bool> {
@@ -148,58 +98,44 @@ impl Client {
 
     pub fn subscribe_my_open_tasks(&self) -> Receiver<()> {
         self.executor()
-            .subscribe(KEYS::TASKS::MY_OPEN_TASKS.to_owned())
+            .subscribe(IndexKey::Special(SpecialListsIndex::MyOpenTasks))
     }
 }
 
 impl Space {
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
-        let mut task_lists = Vec::new();
-        let room_id = self.room_id().to_owned();
         let client = self.client.clone();
         let room = self.room.clone();
-        RUNTIME
-            .spawn(async move {
-                let k = format!("{room_id}::{}", KEYS::TASKS::TASKS);
-                for mdl in client.store().get_list(&k).await? {
-                    #[allow(irrefutable_let_patterns)]
-                    if let AnyActerModel::TaskList(content) = mdl {
-                        task_lists.push(TaskList {
-                            client: client.clone(),
-                            room: room.clone(),
-                            content,
-                        });
-                    } else {
-                        warn!("Non task list model found in `tasks` index: {:?}", mdl);
-                    }
-                }
-                Ok(task_lists)
-            })
+        Ok(client
+            .models_of_list_with_room_under_check(
+                IndexKey::RoomSection(room.room_id().to_owned(), SectionIndex::Tasks),
+                move |_r| Ok(room.clone()),
+            )
             .await?
+            .map(|(inner, room)| TaskList {
+                client: client.clone(),
+                room: room.clone(),
+                content: inner,
+            })
+            .collect())
     }
-
-    pub async fn task_list(&self, key: String) -> Result<TaskList> {
+    #[cfg(any(test, feature = "testing"))]
+    pub async fn task_list(&self, key: OwnedEventId) -> Result<TaskList> {
         let room_id = self.room_id().to_owned();
-        let client = self.client.clone();
-        let room = self.room.clone();
-        RUNTIME
-            .spawn(async move {
-                let mdl = client.store().get(&key).await?;
+        let (model, room) = self
+            .client
+            .model_with_room::<acter_core::models::TaskList>(key)
+            .await?;
 
-                let AnyActerModel::TaskList(content) = mdl else {
-                    bail!("Not a Tasklist model: {key}")
-                };
-                if room_id != content.room_id() {
-                    bail!("This task doesn’t belong to this room");
-                }
+        if room_id != model.room_id() {
+            bail!("This task doesn’t belong to this room");
+        }
 
-                Ok(TaskList {
-                    client: client.clone(),
-                    room: room.clone(),
-                    content,
-                })
-            })
-            .await?
+        Ok(TaskList {
+            client: self.client.clone(),
+            room: room.clone(),
+            content: model,
+        })
     }
 }
 
@@ -409,7 +345,7 @@ impl TaskList {
     }
 
     pub async fn refresh(&self) -> Result<TaskList> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         let client = self.client.clone();
         let room = self.room.clone();
 
@@ -441,7 +377,7 @@ impl TaskList {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         self.client.subscribe(key)
     }
 
@@ -647,7 +583,7 @@ impl Task {
 /// Custom functions
 impl Task {
     pub async fn refresh(&self) -> Result<Task> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         let client = self.client.clone();
         let room = self.room.clone();
 
@@ -749,7 +685,7 @@ impl Task {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         self.client.subscribe(key)
     }
 

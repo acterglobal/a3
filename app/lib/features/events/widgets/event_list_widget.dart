@@ -62,7 +62,7 @@ class EventListWidget extends ConsumerWidget {
       background: const EventListSkeleton(),
       error: error,
       stack: stack,
-      textBuilder: L10n.of(context).loadingFailed,
+      textBuilder: (error, code) => L10n.of(context).loadingFailed(error),
       onRetryTap: () {
         ref.invalidate(listProvider);
       },
@@ -102,6 +102,7 @@ class EventListWidget extends ConsumerWidget {
       shrinkWrap: shrinkWrap,
       itemCount: count,
       padding: EdgeInsets.zero,
+      cacheExtent: 500,
       physics: shrinkWrap ? const NeverScrollableScrollPhysics() : null,
       itemBuilder: (context, index) {
         return EventItem(

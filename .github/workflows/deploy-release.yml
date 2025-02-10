@@ -111,15 +111,30 @@ jobs:
           echo "stopping right here"
           exit 1
   
+  create_draft_release:
+    runs-on: ubuntu-latest
+    needs:
+     - tags
+    steps:
+      - uses: actions/checkout@v4
+      # create temporary release to upload assets to
+      - name: Create Draft Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create ${{ needs.tags.outputs.tag }} \
+              --draft \
+              --title "${{ needs.tags.outputs.release_title_prefix }} ${{ needs.tags.outputs.tag }}"
+
   build:
     uses: ./.github/workflows/build-app.yml
     needs:
      - tags
+     - create_draft_release
     with:
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.version }}
       msix_version: ${{ needs.tags.outputs.msix_version }}
-      release_title: "${{ needs.tags.outputs.release_title_prefix }} ${{ needs.tags.outputs.tag }}"
       release_tag: ${{ needs.tags.outputs.tag }}
       targets: ${{ needs.tags.outputs.targets }}
       release: true
@@ -453,9 +468,6 @@ jobs:
       - changelog
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - uses: actions/download-artifact@v4
         with:
           name: Changelog
@@ -481,27 +493,19 @@ jobs:
 
       - name: Create Pull Request
         id: cpr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.tags.outputs.tag }}
         run: |
           gh pr create -B main -H ci/release-$TAG --title "Releasing $TAG" --body "Release $TAG auto PR." -a gnunicorn -l minor
-          gh pr merge --auto --merge --delete-branch ci/release-$TAG
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            TAG: ${{ needs.tags.outputs.tag }}
+          gh pr merge --merge --delete-branch ci/release-$TAG
 
       - name: Release
-        id: create_release
-        uses: softprops/action-gh-release@v2
-        with:
-          # publish this full release now
-          draft: true
-          generate_release_notes: false
-          name: "${{ needs.tags.outputs.release_title_prefix }} ${{ needs.tags.outputs.tag }}"
-          tag_name: ${{ needs.tags.outputs.tag }}
-          # body_path: CHANGELOG.md
-          prerelease: false
-          files: CHANGELOG.md
-      - uses: eregon/publish-release@v1
+          # publish this nightly release now
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_id: ${{ steps.create_release.outputs.id }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ needs.tags.outputs.tag }} CHANGELOG.md
+          gh release edit ${{ needs.tags.outputs.tag }} \
+            --latest --draft=false \
+            --note-file CHANGELOG.md

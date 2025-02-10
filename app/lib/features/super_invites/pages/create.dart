@@ -56,7 +56,10 @@ class _CreateSuperInviteTokenPageConsumerState
   @override
   void initState() {
     super.initState();
-    final provider = ref.read(superInvitesProvider);
+    _initializeToken();
+  }
+
+  Future<void> _initializeToken() async {
     final token = widget.token;
     if (token != null) {
       // given an update builder we are in an edit mode
@@ -67,7 +70,8 @@ class _CreateSuperInviteTokenPageConsumerState
       _initialDmCheck = token.createDm();
       tokenUpdater = token.updateBuilder();
     } else {
-      tokenUpdater = provider.newTokenUpdater();
+      final superInvites = await ref.read(superInvitesProvider.future);
+      tokenUpdater = superInvites.newTokenUpdater();
     }
   }
 
@@ -280,7 +284,7 @@ class _CreateSuperInviteTokenPageConsumerState
         tokenUpdater.token(tokenTxt);
       }
       // all other changes happen on the object itself;
-      final superInvites = ref.read(superInvitesProvider);
+      final superInvites = await ref.read(superInvitesProvider.future);
       await superInvites.createOrUpdateToken(tokenUpdater);
       ref.invalidate(superInvitesTokensProvider);
       EasyLoading.dismiss();
@@ -340,7 +344,7 @@ class _CreateSuperInviteTokenPageConsumerState
     try {
       final tokenTxt = _tokenController.text;
       // all other changes happen on the object itself;
-      final provider = ref.read(superInvitesProvider);
+      final provider = await ref.read(superInvitesProvider.future);
       await provider.delete(tokenTxt);
       ref.invalidate(superInvitesTokensProvider);
       EasyLoading.dismiss();

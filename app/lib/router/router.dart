@@ -70,14 +70,27 @@ Future<String?> forwardRedirect(
       final deviceId = state.uri.queryParameters['deviceId']
           .expect('query params should contain device id');
       client = await acterSdk.getClientWithDeviceId(deviceId, true);
-      // ignore: use_build_context_synchronously
-      final ref = ProviderScope.containerOf(context);
-      // ensure we have selected the right client
-      ref.invalidate(clientProvider);
     } catch (e, s) {
-      _log.severe('Client not found', e, s);
-      return null;
+      _log.severe('Specified Client not found', e, s);
+      final currentClient = acterSdk.currentClient;
+      if (currentClient == null) {
+        // we have no client at all, forward through login
+        final next = Uri.encodeComponent(state.uri.toString());
+
+        // ignore: deprecated_member_use
+        return state.namedLocation(
+          Routes.intro.name,
+          queryParameters: {'next': next},
+        );
+      }
+      client = currentClient; // continuing with the client we did find
     }
+
+    // ignore: use_build_context_synchronously
+    final ref = ProviderScope.containerOf(context);
+    // ensure we have selected the right client
+    ref.read(clientProvider.notifier).setClient(client);
+
     final roomId = state.uri.queryParameters['roomId'];
     if (roomId == null) {
       _log.severe(
@@ -91,7 +104,7 @@ Future<String?> forwardRedirect(
       // we haven’t joined yet or have been kicked
       // either way, we are to be shown the thing on the activities page
       return state.namedLocation(
-        Routes.activities.name,
+        Routes.myOpenInvitations.name,
         queryParameters: state.uri.queryParameters,
       );
     }

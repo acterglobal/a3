@@ -64,7 +64,6 @@ fn new_display_builder() -> DisplayBuilder;
 /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
 fn new_obj_ref_builder(position: Option<string>, reference: RefDetails) -> Result<ObjRefBuilder>;
 
-
 //  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
 //  ##     ## ##     ##  ##  ###   ###  ##     ##     ##  ##     ## ##       ##    ## 
 //  ##     ## ##     ##  ##  #### ####  ##     ##     ##  ##     ## ##       ##       
@@ -105,6 +104,9 @@ object RefDetails {
     fn utc_start() -> Option<UtcDateTime>;
     /// if ref is `link`, its uri
     fn uri() -> Option<string>;
+
+    /// the via-server names for this room
+    fn via_servers() -> Vec<string>;
 
     /// generating an internal acter:-link
     fn generate_internal_link(include_preview: bool) -> Result<string>;
@@ -178,6 +180,11 @@ object ColorizeBuilder {
 //  ########  ##     ##  ######  ####  ######        ##       ##    ##        ########  ######  
 
 
+object VecStringBuilder {
+    fn add(value: string);
+}
+
+fn new_vec_string_builder() -> VecStringBuilder;
 
 object OptionString {
     /// get text
@@ -1210,15 +1217,31 @@ object Room {
     /// set name of the room
     fn set_name(name: string) -> Future<Result<EventId>>;
 
-    /// whether or not the user has already seen the suggested
-    /// children
-    fn user_has_seen_suggested() -> Future<Result<bool>>;
-
-    /// Set the value of `user_has_seen_suggested` for this room
-    fn set_user_has_seen_suggested(newValue: bool) -> Future<Result<bool>>;
-
     /// leave this room
     fn leave() -> Future<Result<bool>>;
+
+    /// user settings for this room
+    fn user_settings() -> Future<Result<UserRoomSettings>>;
+}
+
+object UserRoomSettings {
+
+    /// whether or not the user has already seen the suggested
+    /// children
+    fn has_seen_suggested() -> bool;
+
+    /// Set the value of `has_seen_suggested` for this room
+    fn set_has_seen_suggested(newValue: bool) -> Future<Result<bool>>;
+
+    /// whether or not the user wants to include this in the 
+    /// calendar sync
+    fn include_cal_sync() -> bool;
+
+    /// Set the value of `include_cal_sync` for this room
+    fn set_include_cal_sync(newValue: bool) -> Future<Result<bool>>;
+
+    /// Trigger when this object needs to be refreshed
+    fn subscribe_stream() -> Stream<bool>;
 }
 
 
@@ -2035,7 +2058,7 @@ object SpaceHierarchyRoomInfo {
     /// if thumb size is not given, avatar file is returned
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
     /// recommended server to try to join via
-    fn via_server_name() -> Option<string>;
+    fn via_server_names() -> Vec<string>;
 }
 
 object SpaceRelation {
@@ -2151,6 +2174,33 @@ object ActerAppSettingsBuilder {
     fn events(events: Option<SimpleSettingWithTurnOff>);
     fn tasks(tasks: Option<SimpleOnOffSetting>);
 }
+
+
+
+//  ########   #######   #######  ##     ##    ########  ########  ######## ##     ## #### ######## ##      ## 
+//  ##     ## ##     ## ##     ## ###   ###    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ## 
+//  ##     ## ##     ## ##     ## #### ####    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ## 
+//  ########  ##     ## ##     ## ## ### ##    ########  ########  ######   ##     ##  ##  ######   ##  ##  ## 
+//  ##   ##   ##     ## ##     ## ##     ##    ##        ##   ##   ##        ##   ##   ##  ##       ##  ##  ## 
+//  ##    ##  ##     ## ##     ## ##     ##    ##        ##    ##  ##         ## ##    ##  ##       ##  ##  ## 
+//  ##     ##  #######   #######  ##     ##    ##        ##     ## ########    ###    #### ########  ###  ###  
+
+
+object RoomPreview {
+    fn room_id_str() -> string;
+    fn name() -> Option<string>;
+    fn topic() -> Option<string>;
+    fn avatar_url_str() -> Option<string>;
+    fn canonical_alias_str() -> Option<string>;
+    fn room_type_str() -> string;
+    fn join_rule_str() -> string;
+    fn state_str() -> string;
+    fn is_direct() -> Option<bool>;
+    fn is_world_readable() -> Option<bool>;
+    fn has_avatar() -> bool;
+    fn avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
+}
+
 
 
 //   ######     ###    ######## ########  ######    #######  ########  ##    ## 
@@ -2307,9 +2357,6 @@ object Space {
     /// the Tasks lists of this Space
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
 
-    /// the Tasks list of this Space
-    fn task_list(key: string) -> Future<Result<TaskList>>;
-
     /// task list draft builder
     fn task_list_draft() -> Result<TaskListDraft>;
 
@@ -2333,9 +2380,6 @@ object Space {
 
     /// the pins of this Space
     fn pins() -> Future<Result<Vec<ActerPin>>>;
-
-    /// the links pinned to this Space
-    fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
 
     /// pin draft builder
     fn pin_draft() -> Result<PinDraft>;
@@ -2724,7 +2768,6 @@ object NotificationItem {
     fn parent_id_str() -> Option<string>;
     fn room() -> NotificationRoom;
     fn target_url() -> string;
-    fn reaction_key() -> Option<string>;
     fn body() -> Option<MsgContent>;
     fn icon_url() -> Option<string>;
     fn thread_id() -> Option<string>;
@@ -2735,6 +2778,12 @@ object NotificationItem {
 
     /// if this is an invite, this the room it invites to
     fn room_invite_str() -> Option<string>;
+
+    /// reaction specific: the reaction key used
+    fn reaction_key() -> Option<string>;
+
+    /// the date on eventDateChange (started or ended) or taskDueDateChane
+    fn new_date() -> Option<UtcDateTime>;
 }
 
 /// The pusher we sent notifications via to the user
@@ -2830,7 +2879,6 @@ object CreateSpaceSettings {}
 //   ######  ######## #### ######## ##    ##    ##    
 
 
-
 /// Main entry point for `acter`.
 object Client {
     /// start the sync
@@ -2891,13 +2939,10 @@ object Client {
     fn spaces_stream() -> Stream<SpaceDiff>;
 
     /// attempt to join a room
-    fn join_room(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Room>>;
+    fn join_room(room_id_or_alias: string, server_names: VecStringBuilder) -> Future<Result<Room>>;
 
     /// Get the space that user belongs to
     fn space(room_id_or_alias: string) -> Future<Result<Space>>;
-
-    /// Get the Pinned Links for the client
-    fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
 
     /// Get the invitation event stream
     fn invitations_rx() -> Stream<Vec<Invitation>>;
@@ -2945,8 +2990,29 @@ object Client {
     /// create default space
     fn create_acter_space(settings: CreateSpaceSettings) -> Future<Result<RoomId>>;
 
-    /// listen to updates to any model key
-    fn subscribe_stream(key: string) -> Stream<bool>;
+    /// listen to updates to any section
+    fn subscribe_section_stream(section: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any model
+    fn subscribe_model_stream(model_id: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to objects of a model, e.g. rsvp or comments
+    fn subscribe_model_objects_stream(model_id: string, sublist: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any room parameter
+    fn subscribe_model_param_stream(key: string, param: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any room
+    fn subscribe_room_stream(key: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any room parameter
+    fn subscribe_room_param_stream(key: string, param: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to a room section
+    fn subscribe_room_section_stream(key: string, section: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any event type
+    fn subscribe_event_type_stream(key: string) -> Result<Stream<bool>>;
 
     /// Find the room or wait until it becomes available
     fn wait_for_room(key: string, timeout: Option<u8>) -> Future<Result<bool>>;
@@ -3064,6 +3130,14 @@ object Client {
 
     /// get access to the backup manager
     fn backup_manager() -> BackupManager;
+
+    /// Room preview
+    fn room_preview(room_id_or_alias: string, server_names: VecStringBuilder) -> Future<Result<RoomPreview>>;
+
+
+    /// create a link ref details
+    fn new_link_ref_details(title: string, uri: string) -> Result<RefDetails>;
+
 }
 
 object NotificationSettings {

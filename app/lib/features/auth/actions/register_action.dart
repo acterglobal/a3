@@ -34,7 +34,7 @@ Future<bool> register({
     throw errorMsg;
   }
   if (token.isNotEmpty) {
-    final superInvites = ref.read(superInvitesProvider);
+    final superInvites = await ref.read(superInvitesProvider.future);
     _tryRedeem(superInvites, token);
   }
   return true;

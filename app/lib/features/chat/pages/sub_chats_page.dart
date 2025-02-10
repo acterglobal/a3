@@ -2,6 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/skeletons/general_list_skeleton_widget.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
@@ -11,6 +12,7 @@ import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/router/utils.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -167,7 +169,7 @@ class SubChatsPage extends ConsumerWidget {
         [];
     final remoteSubchats =
         ref.watch(remoteChatRelationsProvider(spaceId)).valueOrNull ?? [];
-    final entries = [];
+    final List<(SpaceHierarchyRoomInfo?, String)> entries = [];
 
     for (final subId in categoryModelLocal.entries) {
       if (knownChats.contains(subId)) {
@@ -229,7 +231,7 @@ class SubChatsPage extends ConsumerWidget {
                     joinRule: roomInfo.joinRuleStr().toLowerCase(),
                     roomId: roomId,
                     roomName: roomInfo.name() ?? roomId,
-                    viaServerName: roomInfo.viaServerName(),
+                    viaServerName: roomInfo.viaServerNames().toDart(),
                     forward: (spaceId) {
                       goToChat(context, spaceId);
                       ref.invalidate(spaceRelationsProvider(parentId));

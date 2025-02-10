@@ -2,7 +2,7 @@ pub use acter_core::events::rsvp::RsvpStatus;
 use acter_core::{
     events::rsvp::RsvpBuilder,
     models::{self, ActerModel, AnyActerModel},
-    statics::KEYS,
+    referencing::{IndexKey, SectionIndex},
 };
 use anyhow::{bail, Result};
 use core::time::Duration;
@@ -45,7 +45,11 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let mut cal_events = vec![];
-                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
+                for mdl in me
+                    .store()
+                    .get_list(&IndexKey::Section(SectionIndex::Calendar))
+                    .await?
+                {
                     if let AnyActerModel::CalendarEvent(inner) = mdl {
                         let now = chrono::Utc::now();
                         let start_time = inner.utc_start();
@@ -83,7 +87,11 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let mut cal_events = vec![];
-                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
+                for mdl in me
+                    .store()
+                    .get_list(&IndexKey::Section(SectionIndex::Calendar))
+                    .await?
+                {
                     if let AnyActerModel::CalendarEvent(inner) = mdl {
                         let now = chrono::Utc::now();
                         let start_time = inner.utc_start();
@@ -125,7 +133,11 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let mut cal_events = vec![];
-                for mdl in me.store().get_list(KEYS::CALENDAR).await? {
+                for mdl in me
+                    .store()
+                    .get_list(&IndexKey::Section(SectionIndex::Calendar))
+                    .await?
+                {
                     if let AnyActerModel::CalendarEvent(inner) = mdl {
                         let now = chrono::Utc::now();
                         let start_time = inner.utc_start();
@@ -367,7 +379,6 @@ impl RsvpManager {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = models::Rsvp::index_for(&self.inner.event_id());
-        self.client.subscribe(key)
+        self.client.subscribe(self.inner.update_key())
     }
 }

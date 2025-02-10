@@ -111,7 +111,7 @@ class BackupStateWidget extends ConsumerWidget {
     EasyLoading.show(status: lang.encryptionBackupEnabling);
     String secret;
     try {
-      final manager = ref.read(backupManagerProvider);
+      final manager = await ref.read(backupManagerProvider.future);
       secret = await manager.enable();
     } catch (e, s) {
       _log.severe('Failed to enable backup', e, s);

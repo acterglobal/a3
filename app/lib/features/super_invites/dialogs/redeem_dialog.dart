@@ -106,7 +106,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
 
   void redeem(BuildContext context, WidgetRef ref) async {
     final lang = L10n.of(context);
-    final superInvites = ref.read(superInvitesProvider);
+    final superInvites = await ref.read(superInvitesProvider.future);
 
     EasyLoading.show(status: lang.redeeming(token));
     try {
