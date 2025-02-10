@@ -98,7 +98,14 @@ pub struct SyncController {
 
 impl SyncController {
     pub fn cancel(&self) {
+        info!("aborted main listener");
         self.main_listener.abort();
+
+        let timelines = self.timelines.lock().unwrap();
+        for (room_id, timeline) in timelines.iter() {
+            info!("aborted room timeline listener: {}", room_id);
+            timeline.task.abort();
+        }
     }
 
     pub fn first_synced_rx(&self) -> impl Stream<Item = bool> {
