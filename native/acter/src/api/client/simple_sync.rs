@@ -98,12 +98,17 @@ pub struct SyncController {
 
 impl SyncController {
     pub fn cancel(&self) {
-        info!("aborted main listener");
+        info!("abort main listener");
         self.main_listener.abort();
+
+        if let Some(first_sync_task) = self.first_sync_task.lock_ref().as_ref() {
+            info!("abort first sync task");
+            first_sync_task.abort();
+        }
 
         let timelines = self.timelines.lock().unwrap();
         for (room_id, timeline) in timelines.iter() {
-            info!("aborted room timeline listener: {}", room_id);
+            info!("abort room timeline listener: {}", room_id);
             timeline.task.abort();
         }
     }
