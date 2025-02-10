@@ -1,0 +1,1 @@
+- Fix properly update the UI when you bookmark an item
