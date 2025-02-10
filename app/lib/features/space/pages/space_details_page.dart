@@ -149,7 +149,9 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
 
           // we allow this to be refreshed by over-pulling
           onRefresh: () async {
-            ref.refresh(maybeRoomProvider(widget.spaceId));
+            await ref
+                .read(maybeRoomProvider(widget.spaceId).notifier)
+                .refresh();
             return await ref.refresh(spaceProvider(widget.spaceId).future);
           },
         );
