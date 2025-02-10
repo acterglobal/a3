@@ -144,7 +144,11 @@ impl Client {
 
         let me = self.clone();
         let client = self.core.client().clone();
-        let user_id = client.clone().user_id().expect("User must be logged in").to_owned();
+        let user_id = client
+            .clone()
+            .user_id()
+            .expect("User must be logged in")
+            .to_owned();
 
         RUNTIME
             .spawn(async move {

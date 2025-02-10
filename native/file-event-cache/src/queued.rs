@@ -78,9 +78,7 @@ where
             .acquire()
             .await
             .expect("We never close the semaphore");
-        self.inner
-            .reload_linked_chunk(room_id)
-            .await
+        self.inner.reload_linked_chunk(room_id).await
     }
 
     async fn clear_all_rooms_chunks(&self) -> Result<(), Self::Error> {
