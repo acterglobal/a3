@@ -93,11 +93,23 @@ abstract class ActerNotififyL10n {
     Locale('en')
   ];
 
+  /// No description provided for @objectTitleChangeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{parentInfo} renamed'**
+  String objectTitleChangeTitle(Object parentInfo);
+
+  /// No description provided for @objectTitleChangeTitleNoParent.
+  ///
+  /// In en, this message translates to:
+  /// **'{username} renamed title to \"{newTitle}\"'**
+  String objectTitleChangeTitleNoParent(Object username, Object newTitle);
+
   /// No description provided for @objectTitleChangeBody.
   ///
   /// In en, this message translates to:
-  /// **'by \${username} to \"\${newTitle}\"'**
-  String objectTitleChangeBody(Object newTitle, Object username);
+  /// **'by {username} to \"{newTitle}\"'**
+  String objectTitleChangeBody(Object username, Object newTitle);
 }
 
 class _ActerNotififyL10nDelegate extends LocalizationsDelegate<ActerNotififyL10n> {

@@ -10,11 +10,12 @@ import 'package:acter_notifify/processing/utils.dart';
 
   final parent = notification.parent();
   if (parent != null) {
-    final title = getObjectCentricTitlePart(parent, 'renamed');
+    final parentInfo = parentPart(parent);
+    final title = locales.objectTitleChangeTitle(parentInfo);
     final body = locales.objectTitleChangeBody(username, newTitle);
     return (title, body);
   } else {
-    final title = '$username renamed title to "$newTitle"';
+    final title = locales.objectTitleChangeTitleNoParent(username, newTitle);
     return (title, null);
   }
 }

@@ -7,7 +7,17 @@ class ActerNotififyL10nEn extends ActerNotififyL10n {
   ActerNotififyL10nEn([String locale = 'en']) : super(locale);
 
   @override
-  String objectTitleChangeBody(Object newTitle, Object username) {
-    return 'by \$$username to \"\$$newTitle\"';
+  String objectTitleChangeTitle(Object parentInfo) {
+    return '$parentInfo renamed';
+  }
+
+  @override
+  String objectTitleChangeTitleNoParent(Object username, Object newTitle) {
+    return '$username renamed title to \"$newTitle\"';
+  }
+
+  @override
+  String objectTitleChangeBody(Object username, Object newTitle) {
+    return 'by $username to \"$newTitle\"';
   }
 }

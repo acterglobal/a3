@@ -1,3 +1,34 @@
 {
-    "objectTitleChangeBody": "by ${username} to \"${newTitle}\""
+    "@@locale": "en",
+    "objectTitleChangeTitle": "{parentInfo} renamed",
+    "@objectTitleChangeTitle": {
+        "placeholders": {
+            "parentInfo": {
+                "description": "Type Emoji & title of parent",
+                "example": "📌 The House"
+            }
+        }
+    },
+    "objectTitleChangeTitleNoParent": "{username} renamed title to \"{newTitle}\"",
+    "@objectTitleChangeTitleNoParent": {
+        "placeholders": {
+            "username": {
+                "description": "user display name of sender"
+            },
+            "newTitle": {
+                "description": "The new title of this object"
+            }
+        }
+    },
+    "objectTitleChangeBody": "by {username} to \"{newTitle}\"",
+    "@objectTitleChangeBody": {
+        "placeholders": {
+            "username": {
+                "description": "user display name of sender"
+            },
+            "newTitle": {
+                "description": "The new title of this object"
+            }
+        }
+    }
 }
