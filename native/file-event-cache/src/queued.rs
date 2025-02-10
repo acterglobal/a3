@@ -1,8 +1,8 @@
 use crate::EventCacheStore;
 use async_trait::async_trait;
 use matrix_sdk_base::{
-    event_cache::{store::DEFAULT_CHUNK_CAPACITY, Event, Gap},
-    linked_chunk::{LinkedChunk, Update},
+    event_cache::{Event, Gap},
+    linked_chunk::{RawChunk, Update},
     media::MediaRequestParameters,
     ruma::{MxcUri, RoomId},
 };
@@ -72,13 +72,20 @@ where
     async fn reload_linked_chunk(
         &self,
         room_id: &RoomId,
-    ) -> Result<Option<LinkedChunk<DEFAULT_CHUNK_CAPACITY, Event, Gap>>, Self::Error> {
+    ) -> Result<Vec<RawChunk<Event, Gap>>, Self::Error> {
         let _handle = self
             .queue
             .acquire()
             .await
             .expect("We never close the semaphore");
-        self.inner.reload_linked_chunk(room_id).await
+        self.inner
+            .reload_linked_chunk(room_id)
+            .await
+    }
+
+    async fn clear_all_rooms_chunks(&self) -> Result<(), Self::Error> {
+        self.inner.clear_all_rooms_chunks().await?;
+        Ok(())
     }
 
     #[instrument(skip_all)]

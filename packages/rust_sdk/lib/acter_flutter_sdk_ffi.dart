@@ -43006,7 +43006,7 @@ class RoomVirtualItem {
 
   RoomVirtualItem._(this._api, this._box);
 
-  /// DayDivider or ReadMarker
+  /// DateDivider or ReadMarker
   String eventType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();

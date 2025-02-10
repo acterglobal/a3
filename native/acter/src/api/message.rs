@@ -402,7 +402,7 @@ pub struct RoomVirtualItem {
 impl RoomVirtualItem {
     pub(crate) fn new(event: &VirtualTimelineItem) -> Self {
         match event {
-            VirtualTimelineItem::DayDivider(ts) => {
+            VirtualTimelineItem::DateDivider(ts) => {
                 let desc = if let Some(st) = ts.to_system_time() {
                     let dt: DateTime<Utc> = st.into();
                     Some(dt.format("%Y-%m-%d").to_string())
@@ -410,7 +410,7 @@ impl RoomVirtualItem {
                     None
                 };
                 RoomVirtualItem {
-                    event_type: "DayDivider".to_string(),
+                    event_type: "DateDivider".to_string(),
                     desc,
                 }
             }
