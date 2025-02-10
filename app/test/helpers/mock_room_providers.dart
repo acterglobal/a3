@@ -1,7 +1,10 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
+import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -51,3 +54,21 @@ class MockAlwaysTheSameRoomNotifier extends FamilyAsyncNotifier<Room?, String>
 }
 
 class MockRoomPreview with Mock implements RoomPreview {}
+
+// Mock of RoomNotifier that returns a Room when requested.
+class MockRoomNotifier extends Mock implements AsyncMaybeRoomNotifier {}
+
+class MockRoomUserSettingsNotifier extends Mock implements MockRoomUserSettings {}
+
+// Notifier to manage the state of the space's bookmarked status
+class MockSpaceIsBookmarkedNotifier {
+  final bool isBookmarked;
+
+  MockSpaceIsBookmarkedNotifier(this.isBookmarked);
+
+  // Simulate asynchronous behavior
+  Future<bool> fetchBookmarkStatus() async {
+    return isBookmarked;
+  }
+}
+

@@ -125,6 +125,7 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
     //SHOW SPACE VISIBILITY INDICATION
     if (showVisibilityMark) {
       final visibilityWidget = VisibilityChip(
+        key: Key('visibility-chip'),
         roomId: roomId,
         useCompactView: true,
       );
@@ -205,6 +206,7 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
                   Text(
                     title,
                     overflow: TextOverflow.ellipsis,
+                    style: titleTextStyle,
                   ),
                   buildSubtitle(context) ?? const SizedBox.shrink(),
                 ],
