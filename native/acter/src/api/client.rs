@@ -46,6 +46,7 @@ use super::{
 
 mod models;
 mod simple_convo;
+mod simple_space;
 mod simple_sync;
 mod sync;
 

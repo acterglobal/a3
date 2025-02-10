@@ -39,11 +39,11 @@ use tracing::{error, info, trace, warn};
 use super::{
     super::{
         message::RoomMessage,
-        spaces::SpaceDiff,
         utils::{remap_for_diff, ApiVectorDiff},
         RUNTIME,
     },
     simple_convo::SimpleConvo,
+    simple_space::SimpleSpace,
     Client, Room, Space,
 };
 
@@ -96,6 +96,9 @@ pub struct SyncController {
     first_synced_rx: Arc<Receiver<bool>>,
 }
 
+type ConvoDiff = ApiVectorDiff<SimpleConvo>;
+type SpaceDiff = ApiVectorDiff<SimpleSpace>;
+
 impl SyncController {
     pub fn cancel(&self) {
         info!("abort main listener");
@@ -117,17 +120,49 @@ impl SyncController {
         BroadcastStream::new(self.first_synced_rx.resubscribe()).map(|o| o.unwrap_or_default())
     }
 
+    pub fn convos_stream(&self) -> impl Stream<Item = ConvoDiff> {
+        let rooms = self.rooms.clone();
+        let client = self.client.clone();
+        async_stream::stream! {
+            let (current_items, stream) = {
+                let locked = rooms.read().await;
+                let values: Vec<SimpleConvo> = locked
+                    .iter()
+                    .filter(|room| room.is_space())
+                    .map(|room| Room::new(client.core.clone(), room.inner_room().clone()))
+                    .map(|inner| SimpleConvo::new(client.clone(), inner))
+                    .collect();
+                (
+                    ConvoDiff::current_items(values),
+                    locked.subscribe(),
+                )
+            };
+            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(
+                diff,
+                |x| {
+                    let inner = Room::new(client.core.clone(), x.inner_room().clone());
+                    SimpleConvo::new(client.clone(), inner)
+                },
+            ));
+            yield current_items;
+
+            while let Some(d) = remap.next().await {
+                yield d
+            }
+        }
+    }
+
     pub fn spaces_stream(&self) -> impl Stream<Item = SpaceDiff> {
         let rooms = self.rooms.clone();
         let client = self.client.clone();
         async_stream::stream! {
             let (current_items, stream) = {
                 let locked = rooms.read().await;
-                let values: Vec<Space> = locked
+                let values: Vec<SimpleSpace> = locked
                     .iter()
                     .filter(|room| room.is_space())
                     .map(|room| Room::new(client.core.clone(), room.inner_room().clone()))
-                    .map(|inner| Space::new(client.clone(), inner))
+                    .map(|inner| SimpleSpace::new(client.clone(), inner))
                     .collect();
                 (
                     SpaceDiff::current_items(values),
@@ -138,7 +173,7 @@ impl SyncController {
                 diff,
                 |x| {
                     let inner = Room::new(client.core.clone(), x.inner_room().clone());
-                    Space::new(client.clone(), inner)
+                    SimpleSpace::new(client.clone(), inner)
                 },
             ));
             yield current_items;
