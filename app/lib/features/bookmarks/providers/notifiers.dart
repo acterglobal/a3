@@ -16,7 +16,7 @@ class BookmarksManagerNotifier extends AsyncNotifier<Bookmarks> {
   Future<Bookmarks> build() async {
     final client = await ref.watch(alwaysClientProvider.future);
 
-    _listener = client.subscribeEventTypeStream('global.acter.bookmarks');
+    _listener = client.subscribeAccountDataStream('global.acter.bookmarks');
 
     _listener.forEach((e) async {
       state = AsyncValue.data(await _getBookmarkManager(client));
