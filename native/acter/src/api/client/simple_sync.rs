@@ -1,3 +1,4 @@
+use acter_core::referencing::ExecuteReference;
 use anyhow::Result;
 use eyeball_im::{ObservableVector, VectorDiff};
 use futures::{
@@ -403,7 +404,7 @@ impl Client {
     async fn update_rooms(&self, changed_rooms: &Vector<room_list_service::Room>) {
         let update_keys = {
             let client = self.core.client();
-            let mut updated: Vec<String> = vec![];
+            let mut updated: Vec<OwnedRoomId> = vec![];
 
             let mut simple_convos = self.simple_convos.write().await;
             let mut spaces = self.spaces.write().await;
@@ -418,7 +419,7 @@ impl Client {
                     if let Err(error) = self.executor().clear_room(&r_id).await {
                         error!(?error, "Error removing space {r_id}");
                     }
-                    updated.push(r_id.to_string());
+                    updated.push(r_id);
                     continue;
                 }
 
@@ -433,7 +434,7 @@ impl Client {
                     }
                     // also clear from convos if it was in there...
                     remove_from_convo(&mut simple_convos, &r_id);
-                    updated.push(r_id.to_string());
+                    updated.push(r_id);
                 } else {
                     if let Some(convo_idx) = simple_convos.iter().position(|s| s.room_id() == r_id)
                     {
@@ -445,14 +446,19 @@ impl Client {
                     }
                     // also clear from convos if it was in there...
                     remove_from(&mut spaces, &r_id);
-                    updated.push(r_id.to_string());
+                    updated.push(r_id);
                 }
             }
 
             updated
         };
         info!("refreshed room: {:?}", update_keys.clone());
-        self.executor().notify(update_keys);
+        self.executor().notify(
+            update_keys
+                .into_iter()
+                .map(ExecuteReference::Room)
+                .collect(),
+        );
     }
 }
 
