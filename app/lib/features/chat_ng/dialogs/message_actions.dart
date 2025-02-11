@@ -7,6 +7,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+// message actions on chat message
 void messageActions({
   required BuildContext context,
   required Widget messageWidget,
@@ -16,6 +17,7 @@ void messageActions({
   required String messageId,
   required String roomId,
 }) async {
+  // trigger vibration haptic
   await HapticFeedback.heavyImpact();
   if (!context.mounted) return;
 
