@@ -3,6 +3,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
+import 'package:acter/common/widgets/info_widget.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
@@ -11,7 +12,6 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:screenshot/screenshot.dart';
 
 class CreateSuperInvitePage extends ConsumerStatefulWidget {
   final SuperInviteToken? token;
@@ -74,8 +74,13 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
           children: [
             Form(key: _formKey, child: tokenInputUI(lang)),
             SizedBox(height: 22),
+            InfoWidget(
+              title: 'Select Spaces and Chats',
+              subTitle:
+                  'While redeeming code, selected spaces and chats are auto joined',
+            ),
+            SizedBox(height: 12),
             Expanded(child: selectedRoomsSections()),
-            SizedBox(height: 22),
             createDmCheckBoxUI(lang),
             SizedBox(height: 12),
             ActerPrimaryActionButton(
@@ -92,7 +97,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
     return TextFormField(
       onSaved: (value) {},
       decoration: InputDecoration(
-        hintText: 'Super invite code',
+        hintText: 'Invite code',
         suffixIcon: IconButton(
           onPressed: () {},
           icon: Row(
@@ -144,8 +149,8 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
         ),
         Expanded(
           child: TabBarView(controller: tabController, children: [
-            _renderRoomsSection(spaces),
-            _renderRoomsSection(chats),
+            roomListView(spaces),
+            roomListView(chats),
           ]),
         ),
       ],
@@ -175,8 +180,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
         if (selectedRoomId != null) {
           if (!_roomIds.contains(selectedRoomId)) {
             tokenUpdater.addRoom(selectedRoomId);
-            setState(
-                () => _roomIds = List.from(_roomIds)..add(selectedRoomId!));
+            setState(() => _roomIds.add(selectedRoomId!));
           }
         }
       },
@@ -184,7 +188,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
     );
   }
 
-  Widget _renderRoomsSection(List<String> rooms) {
+  Widget roomListView(List<String> rooms) {
     return ListView.builder(
       itemBuilder: (context, idx) {
         final roomId = rooms[idx];
@@ -193,12 +197,9 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
           trailing: InkWell(
             onTap: () {
               tokenUpdater.removeRoom(roomId);
-              setState(() => _roomIds = List.from(_roomIds)..remove(roomId));
+              setState(() => _roomIds.remove(roomId));
             },
-            child: Icon(
-              Atlas.trash_can_thin,
-              key: Key('room-to-invite-$roomId-remove'),
-            ),
+            child: Icon(Atlas.trash_can_thin),
           ),
         );
       },
