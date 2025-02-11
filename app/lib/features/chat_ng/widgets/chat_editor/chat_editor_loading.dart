@@ -25,7 +25,7 @@ class ChatEditorLoading extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Theme.of(context)
                         .unselectedWidgetColor
-                        .withOpacity(0.5),
+                        .withValues(alpha:0.5),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const SingleChildScrollView(
