@@ -41,17 +41,12 @@ class ReactionSelector extends ConsumerWidget {
   }
 
   Widget _buildEmojiRow(BuildContext context, WidgetRef ref) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Wrap(
+      direction: Axis.horizontal,
+      spacing: 10.0,
       children: [
-        Wrap(
-          direction: Axis.horizontal,
-          spacing: 10.0,
-          children: [
-            ..._buildEmojiButtons(context, ref),
-            _buildMoreButton(context, ref),
-          ],
-        ),
+        ..._buildEmojiButtons(context, ref),
+        _buildMoreButton(context, ref),
       ],
     );
   }

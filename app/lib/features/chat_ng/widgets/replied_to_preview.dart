@@ -11,12 +11,12 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class RepliedToPreview extends ConsumerWidget {
   final String roomId;
   final String originalId;
-  final bool isUser;
+  final bool isMe;
   const RepliedToPreview({
     super.key,
     required this.roomId,
     required this.originalId,
-    this.isUser = false,
+    this.isMe = false,
   });
 
   @override
@@ -73,7 +73,7 @@ class RepliedToPreview extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
-        color: isUser
+        color: isMe
             ? colorScheme.surface.withOpacity(0.3)
             : colorScheme.onSurface.withOpacity(0.2),
         borderRadius: BorderRadius.circular(22),
