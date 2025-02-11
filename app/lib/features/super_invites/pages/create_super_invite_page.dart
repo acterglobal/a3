@@ -5,7 +5,6 @@ import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
-import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -26,7 +25,9 @@ class CreateSuperInvitePage extends ConsumerStatefulWidget {
       _CreateSuperInvitePageState();
 }
 
-class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage> {
+class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
+    with SingleTickerProviderStateMixin {
+  late TabController tabController;
   final TextEditingController _tokenController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late SuperInvitesTokenUpdateBuilder tokenUpdater;
@@ -38,6 +39,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage> {
   @override
   void initState() {
     super.initState();
+    tabController = TabController(length: 2, vsync: this);
     _initializeToken();
   }
 
@@ -60,51 +62,30 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage> {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
-    final spaces = List<String>.empty(growable: true);
-    final chats = List<String>.empty(growable: true);
-    for (final roomId in _roomIds) {
-      final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
-      if (room?.isSpace() == true) {
-        spaces.add(roomId);
-      } else {
-        chats.add(roomId);
-      }
-    }
     return Scaffold(
       appBar: AppBar(
         title: Text('Create'),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              formUI(lang),
-              ..._spacesSection(spaces),
-              ..._chatsSection(chats),
-              SizedBox(height: 22),
-              ActerPrimaryActionButton(
-                onPressed: () {},
-                child: Text(isEdit ? lang.save : lang.createCode),
-              ),
-            ],
-          ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Form(
+              key: _formKey,
+              child: tokenInputUI(lang)
+            ),
+            SizedBox(height: 22),
+            Expanded(child: selectedRoomsSections()),
+            SizedBox(height: 22),
+            createDmCheckBoxUI(lang),
+            SizedBox(height: 12),
+            ActerPrimaryActionButton(
+              onPressed: () {},
+              child: Text(isEdit ? lang.save : lang.createCode),
+            ),
+          ],
         ),
-      ),
-    );
-  }
-
-  Widget formUI(L10n lang) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          tokenInputUI(lang),
-          SizedBox(height: 12),
-          createDmCheckBoxUI(lang),
-        ],
       ),
     );
   }
@@ -130,6 +111,112 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage> {
     );
   }
 
+  Widget selectedRoomsSections() {
+    final lang = L10n.of(context);
+    final spaces = List<String>.empty(growable: true);
+    final chats = List<String>.empty(growable: true);
+    for (final roomId in _roomIds) {
+      final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+      if (room?.isSpace() == true) {
+        spaces.add(roomId);
+      } else {
+        chats.add(roomId);
+      }
+    }
+
+    final tabPadding = const EdgeInsets.all(8.0);
+    return Column(
+      children: [
+        TabBar(
+          controller: tabController,
+          indicatorColor: Theme.of(context).primaryColor,
+          labelColor: Theme.of(context).primaryColor,
+          unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
+          dividerColor: Colors.transparent,
+          tabs: [
+            Padding(padding: tabPadding, child: Text('Spaces')),
+            Padding(padding: tabPadding, child: Text('Chats')),
+          ],
+        ),
+        Expanded(
+          child: TabBarView(controller: tabController, children: [
+            _renderRoomsSection(
+                rooms: spaces,
+                onTapAdd: () async {
+                  final newSpace = await selectSpaceDrawer(
+                    context: context,
+                    currentSpaceId: null,
+                    canCheck: 'CanInvite',
+                    title: Text(lang.addSpace),
+                  );
+                  if (newSpace != null) {
+                    if (!_roomIds.contains(newSpace)) {
+                      tokenUpdater.addRoom(newSpace);
+                      setState(
+                          () => _roomIds = List.from(_roomIds)..add(newSpace));
+                    }
+                  }
+                }),
+            _renderRoomsSection(
+                rooms: chats,
+                onTapAdd: () async {
+                  final newSpace = await selectChatDrawer(
+                    context: context,
+                    currentChatId: null,
+                    canCheck: 'CanInvite',
+                    title: Text(lang.addChat),
+                  );
+                  if (newSpace != null) {
+                    if (!_roomIds.contains(newSpace)) {
+                      tokenUpdater.addRoom(newSpace);
+                      setState(
+                          () => _roomIds = List.from(_roomIds)..add(newSpace));
+                    }
+                  }
+                }),
+          ]),
+        ),
+      ],
+    );
+  }
+
+  Widget _renderRoomsSection({
+    required List<String> rooms,
+    required VoidCallback onTapAdd,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        IconButton(
+          onPressed: onTapAdd,
+          icon: const Icon(Atlas.plus_circle_thin),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemBuilder: (context, idx) {
+              final roomId = rooms[idx];
+              return RoomCard(
+                roomId: roomId,
+                trailing: InkWell(
+                  onTap: () {
+                    tokenUpdater.removeRoom(roomId);
+                    setState(
+                        () => _roomIds = List.from(_roomIds)..remove(roomId));
+                  },
+                  child: Icon(
+                    Atlas.trash_can_thin,
+                    key: Key('room-to-invite-$roomId-remove'),
+                  ),
+                ),
+              );
+            },
+            itemCount: rooms.length,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget createDmCheckBoxUI(L10n lang) {
     return CheckboxFormField(
       title: Column(
@@ -147,102 +234,6 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage> {
         setState(() => tokenUpdater.createDm(isCreateDM ?? false));
       },
       initialValue: _initialDmCheck,
-    );
-  }
-
-  List<Widget> _spacesSection(List<String> rooms) {
-    final lang = L10n.of(context);
-    return _renderSection(context, lang.spaces, lang.addSpace, rooms, () async {
-      final newSpace = await selectSpaceDrawer(
-        context: context,
-        currentSpaceId: null,
-        canCheck: 'CanInvite',
-        title: Text(lang.addSpace),
-      );
-      if (newSpace != null) {
-        if (!_roomIds.contains(newSpace)) {
-          tokenUpdater.addRoom(newSpace);
-          setState(() => _roomIds = List.from(_roomIds)..add(newSpace));
-        }
-      }
-    });
-  }
-
-  List<Widget> _chatsSection(List<String> rooms) {
-    final lang = L10n.of(context);
-    return _renderSection(context, lang.chats, lang.addChat, rooms, () async {
-      final newSpace = await selectChatDrawer(
-        context: context,
-        currentChatId: null,
-        canCheck: 'CanInvite',
-        title: Text(lang.addChat),
-      );
-      if (newSpace != null) {
-        if (!_roomIds.contains(newSpace)) {
-          tokenUpdater.addRoom(newSpace);
-          setState(() => _roomIds = List.from(_roomIds)..add(newSpace));
-        }
-      }
-    });
-  }
-
-  List<Widget> _renderSection(
-    BuildContext context,
-    String title,
-    String addLabel,
-    List<String> rooms,
-    VoidCallback onAdd,
-  ) {
-    return [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          if (rooms.isNotEmpty)
-            IconButton(
-              onPressed: onAdd,
-              icon: const Icon(Atlas.plus_circle_thin),
-            ),
-        ],
-      ),
-      const SizedBox(height: 10),
-      if (rooms.isNotEmpty)
-        _roomsList(context, rooms)
-      else
-        Center(
-          child: OutlinedButton.icon(
-            onPressed: onAdd,
-            label: Text(addLabel),
-            icon: const Icon(Atlas.plus_circle_thin),
-          ),
-        ),
-    ];
-  }
-
-  Widget _roomsList(BuildContext context, List<String> rooms) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, idx) {
-        final roomId = rooms[idx];
-        return RoomCard(
-          roomId: roomId,
-          trailing: InkWell(
-            onTap: () {
-              tokenUpdater.removeRoom(roomId);
-              setState(() => _roomIds = List.from(_roomIds)..remove(roomId));
-            },
-            child: Icon(
-              Atlas.trash_can_thin,
-              key: Key('room-to-invite-$roomId-remove'),
-            ),
-          ),
-        );
-      },
-      itemCount: rooms.length,
     );
   }
 }
