@@ -27,11 +27,15 @@ dependencies:
   sentry: any
 
   sentry_flutter: any
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
   mocktail: ^1.0.4
+  flutter_gen: ^5.9.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

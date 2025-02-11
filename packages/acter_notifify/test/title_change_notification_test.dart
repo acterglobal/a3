@@ -1,3 +1,5 @@
+import 'package:acter_notifify/acter_notifify.dart';
+import 'package:acter_notifify/l10n/l10n_en.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:acter_notifify/util.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +13,10 @@ import 'mock_data/mock_object.dart';
 void main() {
   late MockNotificationItem item;
   late MockNotificationParent parent;
+
+  setUpAll(() {
+    setActerNotififyL1On(ActerNotififyL10nEn());
+  });
 
   setUp(() {
     //Mack declaration
