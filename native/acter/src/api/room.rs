@@ -1772,6 +1772,7 @@ impl Room {
                     client,
                     CoreRefDetails::Room {
                         room_id,
+                        is_space: room.is_space(),
                         via,
                         preview: RefPreview::new(None, room_display_name),
                     },

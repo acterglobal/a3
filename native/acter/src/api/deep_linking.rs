@@ -118,6 +118,7 @@ impl RefDetails {
             CoreRefDetails::Link { title, uri } => bail!("Link can't be made into internal link"),
             CoreRefDetails::Room {
                 room_id,
+                is_space,
                 via,
                 preview,
             } => generate_room_link(room_id, via.as_slice()),
