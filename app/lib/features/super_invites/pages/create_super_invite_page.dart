@@ -7,6 +7,7 @@ import 'package:acter/common/widgets/info_widget.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -194,6 +195,15 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
         final roomId = rooms[idx];
         return RoomCard(
           roomId: roomId,
+          onTap: () async {
+            final room = await ref.read(maybeRoomProvider(roomId).future);
+            if (!context.mounted) return;
+            if (room?.isSpace() == true) {
+              goToSpace(context, roomId);
+            } else {
+              goToChat(context, roomId);
+            }
+          },
           trailing: InkWell(
             onTap: () {
               tokenUpdater.removeRoom(roomId);
