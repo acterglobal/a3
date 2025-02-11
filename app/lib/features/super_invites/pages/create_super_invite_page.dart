@@ -11,6 +11,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:screenshot/screenshot.dart';
 
 class CreateSuperInvitePage extends ConsumerStatefulWidget {
   final SuperInviteToken? token;
@@ -71,10 +72,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Form(
-              key: _formKey,
-              child: tokenInputUI(lang)
-            ),
+            Form(key: _formKey, child: tokenInputUI(lang)),
             SizedBox(height: 22),
             Expanded(child: selectedRoomsSections()),
             SizedBox(height: 22),
@@ -112,7 +110,6 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
   }
 
   Widget selectedRoomsSections() {
-    final lang = L10n.of(context);
     final spaces = List<String>.empty(growable: true);
     final chats = List<String>.empty(growable: true);
     for (final roomId in _roomIds) {
@@ -127,93 +124,85 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
     final tabPadding = const EdgeInsets.all(8.0);
     return Column(
       children: [
-        TabBar(
-          controller: tabController,
-          indicatorColor: Theme.of(context).primaryColor,
-          labelColor: Theme.of(context).primaryColor,
-          unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
-          dividerColor: Colors.transparent,
-          tabs: [
-            Padding(padding: tabPadding, child: Text('Spaces')),
-            Padding(padding: tabPadding, child: Text('Chats')),
+        Row(
+          children: [
+            Expanded(
+              child: TabBar(
+                controller: tabController,
+                indicatorColor: Theme.of(context).primaryColor,
+                labelColor: Theme.of(context).primaryColor,
+                unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
+                dividerColor: Colors.transparent,
+                tabs: [
+                  Padding(padding: tabPadding, child: Text('Spaces')),
+                  Padding(padding: tabPadding, child: Text('Chats')),
+                ],
+              ),
+            ),
+            addRoomButtonUI()
           ],
         ),
         Expanded(
           child: TabBarView(controller: tabController, children: [
-            _renderRoomsSection(
-                rooms: spaces,
-                onTapAdd: () async {
-                  final newSpace = await selectSpaceDrawer(
-                    context: context,
-                    currentSpaceId: null,
-                    canCheck: 'CanInvite',
-                    title: Text(lang.addSpace),
-                  );
-                  if (newSpace != null) {
-                    if (!_roomIds.contains(newSpace)) {
-                      tokenUpdater.addRoom(newSpace);
-                      setState(
-                          () => _roomIds = List.from(_roomIds)..add(newSpace));
-                    }
-                  }
-                }),
-            _renderRoomsSection(
-                rooms: chats,
-                onTapAdd: () async {
-                  final newSpace = await selectChatDrawer(
-                    context: context,
-                    currentChatId: null,
-                    canCheck: 'CanInvite',
-                    title: Text(lang.addChat),
-                  );
-                  if (newSpace != null) {
-                    if (!_roomIds.contains(newSpace)) {
-                      tokenUpdater.addRoom(newSpace);
-                      setState(
-                          () => _roomIds = List.from(_roomIds)..add(newSpace));
-                    }
-                  }
-                }),
+            _renderRoomsSection(spaces),
+            _renderRoomsSection(chats),
           ]),
         ),
       ],
     );
   }
 
-  Widget _renderRoomsSection({
-    required List<String> rooms,
-    required VoidCallback onTapAdd,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        IconButton(
-          onPressed: onTapAdd,
-          icon: const Icon(Atlas.plus_circle_thin),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemBuilder: (context, idx) {
-              final roomId = rooms[idx];
-              return RoomCard(
-                roomId: roomId,
-                trailing: InkWell(
-                  onTap: () {
-                    tokenUpdater.removeRoom(roomId);
-                    setState(
-                        () => _roomIds = List.from(_roomIds)..remove(roomId));
-                  },
-                  child: Icon(
-                    Atlas.trash_can_thin,
-                    key: Key('room-to-invite-$roomId-remove'),
-                  ),
-                ),
-              );
+  Widget addRoomButtonUI() {
+    final lang = L10n.of(context);
+    return IconButton(
+      onPressed: () async {
+        String? selectedRoomId;
+        if (tabController.index == 0) {
+          selectedRoomId = await selectSpaceDrawer(
+            context: context,
+            currentSpaceId: null,
+            canCheck: 'CanInvite',
+            title: Text(lang.addSpace),
+          );
+        } else if (tabController.index == 1) {
+          selectedRoomId = await selectChatDrawer(
+            context: context,
+            currentChatId: null,
+            canCheck: 'CanInvite',
+            title: Text(lang.addChat),
+          );
+        }
+        if (selectedRoomId != null) {
+          if (!_roomIds.contains(selectedRoomId)) {
+            tokenUpdater.addRoom(selectedRoomId);
+            setState(
+                () => _roomIds = List.from(_roomIds)..add(selectedRoomId!));
+          }
+        }
+      },
+      icon: const Icon(Atlas.plus_circle_thin),
+    );
+  }
+
+  Widget _renderRoomsSection(List<String> rooms) {
+    return ListView.builder(
+      itemBuilder: (context, idx) {
+        final roomId = rooms[idx];
+        return RoomCard(
+          roomId: roomId,
+          trailing: InkWell(
+            onTap: () {
+              tokenUpdater.removeRoom(roomId);
+              setState(() => _roomIds = List.from(_roomIds)..remove(roomId));
             },
-            itemCount: rooms.length,
+            child: Icon(
+              Atlas.trash_can_thin,
+              key: Key('room-to-invite-$roomId-remove'),
+            ),
           ),
-        ),
-      ],
+        );
+      },
+      itemCount: rooms.length,
     );
   }
 
