@@ -1071,6 +1071,8 @@ impl NotificationItem {
                         .build()?,
                     AttachmentContent::Reference(r) => {
                         let title = r.title().unwrap_or("Reference".to_owned());
+                        let room_display_name =
+                            r.room_display_name().unwrap_or("Reference".to_owned());
                         builder
                             .inner(NotificationItemInner::Reference {
                                 parent_obj,
@@ -1085,6 +1087,7 @@ impl NotificationItem {
                                 RefDetails::Task { .. } => format!("☑️ {title}"),
                                 RefDetails::TaskList { .. } => format!("📋 {title}"),
                                 RefDetails::Link { .. } => format!("🔗 {title}"),
+                                RefDetails::Room { .. } => format!("{room_display_name}"),
                             })
                             .build()?
                     }
