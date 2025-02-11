@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/room/room_with_profile_card.dart';
+import 'package:acter/features/deep_linking/widgets/reference_details_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,6 +96,8 @@ class RoomCard extends ConsumerWidget {
   /// if it is bookmarked
   final bool showBookmarkedIndicator;
 
+  final RefDetails? refDetails;
+
   const RoomCard({
     super.key,
     required this.roomId,
@@ -117,6 +120,7 @@ class RoomCard extends ConsumerWidget {
     this.showBookmarkedIndicator = true,
     this.leading,
     this.trailing,
+    this.refDetails,
   });
 
   const RoomCard.small({
@@ -140,6 +144,7 @@ class RoomCard extends ConsumerWidget {
     this.showBookmarkedIndicator = true,
     this.leading,
     this.trailing,
+    this.refDetails,
   });
 
   @override
@@ -147,7 +152,10 @@ class RoomCard extends ConsumerWidget {
     final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
     final isBookmarked = ref.watch(spaceIsBookmarkedProvider(roomId)).valueOrNull ?? false;
-
+    final isRoomAvailable = ref.watch(maybeRoomProvider(roomId)).valueOrNull ?? false;
+    if (isRoomAvailable == false) {
+      return ReferenceDetailsItem(refDetails: refDetails!);
+    }
     return RoomWithAvatarInfoCard(
       margin: margin,
       roomId: roomId,

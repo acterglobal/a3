@@ -175,13 +175,12 @@ class SelectedActionButton extends ConsumerWidget {
     WidgetRef ref,
     RefDetails refDetail,
   ) {
-    final refObjectId = refDetail.targetIdStr();
-    if (refObjectId == null) return SizedBox();
-
+    final roomId = refDetail.roomIdStr();
+    if (roomId == null) return SizedBox();
     return SizedBox(
       width: 300,
       child: RoomCard(
-        roomId: refObjectId,
+        roomId: roomId,
       ),
     );
   }

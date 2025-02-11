@@ -11,5 +11,6 @@ ObjectType? typeFromRefDetails(RefDetails refDetails) =>
       'task-list' => ObjectType.taskList,
       'comment' => ObjectType.comment,
       'attachment' => ObjectType.attachment,
+      'space' => ObjectType.space,
       _ => null,
     };

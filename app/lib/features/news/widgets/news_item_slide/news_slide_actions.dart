@@ -1,4 +1,5 @@
 import 'package:acter/common/actions/open_link.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
@@ -24,6 +25,7 @@ class NewsSlideActions extends ConsumerWidget {
     final referenceDetails = newsReferencesList.first.refDetails();
     final evtType = NewsReferencesType.fromStr(referenceDetails.typeStr());
     final id = referenceDetails.targetIdStr() ?? '';
+    final roomId = referenceDetails.roomIdStr() ?? '';
     return switch (evtType) {
       NewsReferencesType.calendarEvent => EventItem(
           eventId: id,
@@ -43,7 +45,8 @@ class NewsSlideActions extends ConsumerWidget {
         ),
       NewsReferencesType.link =>
         renderLinkActionButton(context, ref, referenceDetails),
-      _ => renderNotSupportedAction(context)
+      NewsReferencesType.space => RoomCard(roomId: roomId, refDetails: referenceDetails,),
+      _ => renderNotSupportedAction(context),
     };
   }
 

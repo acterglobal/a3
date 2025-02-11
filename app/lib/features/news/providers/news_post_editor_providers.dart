@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/event/event_selector_drawer.dart';
@@ -94,11 +93,11 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
 
 
   Future<void> selectSpaceToShare(BuildContext context) async {
-    final selectedSpaceId = await selectSpaceDrawer(context: context, canCheck: 'CanInvite');
+    final selectedSpaceId = await selectSpaceDrawer(context: context);
     RefDetails? refDetails;
     if (selectedSpaceId != null) {
       final selectedSpace = await ref.read(spaceProvider(selectedSpaceId).future);
-      //refDetails = selectedSpace.refDetails();
+      refDetails = await selectedSpace.refDetails();
     }
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
     selectedNewsSlide?.refDetails = refDetails;
