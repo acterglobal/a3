@@ -16,14 +16,18 @@ impl TryFrom<AnyActerModel> for Activity {
     type Error = crate::Error;
 
     fn try_from(mdl: AnyActerModel) -> Result<Self, Self::Error> {
-        if let AnyActerModel::RoomStatus(s) = mdl { match s.inner {
-            ActerSupportedRoomStatusEvents::MemberInvited(r) => {
-                return Ok(Self::MemberInvited(r))
+        if let AnyActerModel::RoomStatus(s) = mdl {
+            match s.inner {
+                ActerSupportedRoomStatusEvents::MemberInvited(r) => {
+                    return Ok(Self::MemberInvited(r))
+                }
+                ActerSupportedRoomStatusEvents::RoomCreate(_) => {}
             }
-            ActerSupportedRoomStatusEvents::RoomCreate(_) => {}
-        } };
+        };
         // fallback for everything else for now
-        Err(crate::Error::Custom("Converting model into activity not yet supported".to_string()))
+        Err(crate::Error::Custom(
+            "Converting model into activity not yet supported".to_string(),
+        ))
     }
 }
 

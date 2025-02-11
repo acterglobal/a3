@@ -6,10 +6,7 @@ use tokio_retry::{
     Retry,
 };
 
-use acter::{
-    matrix_sdk_ui::timeline::{MembershipChange, RoomExt, TimelineItemContent},
-    Client, SyncState,
-};
+use acter::{Client, SyncState};
 
 use crate::utils::{random_user, random_users_with_random_space};
 
@@ -34,13 +31,15 @@ async fn _setup_accounts(
 #[tokio::test]
 async fn invite_and_join() -> Result<()> {
     let _ = env_logger::try_init();
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
         _setup_accounts("ij-status-notif").await?;
     let third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
 
     let admin_room = admin.room(room_id.to_string()).await?;
-    let timeline = admin_room.timeline().await?;
+    let observer_room_activities = observer.activities_for_room(room_id.to_string())?;
+    let mut obs_observer = observer_room_activities.subscribe();
 
     // ensure it was sent
     assert!(
@@ -49,43 +48,20 @@ async fn invite_and_join() -> Result<()> {
             .await?
     );
 
-    // fetch the items
-    timeline.paginate_backwards(5).await?;
+    obs_observer.recv().await?; // await for it have been coming in
 
-    // find the event id for the invite
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let r = admin_room.clone();
-    let u = to_invite_user_name.clone();
-    let notif_id = Retry::spawn(retry_strategy.clone(), move || {
-        let r = r.clone();
-        let u = u.clone();
-        async move {
-            let Some(e) = r.timeline().await?.latest_event().await else {
-                bail!("No event found")
-            };
-            let TimelineItemContent::MembershipChange(c) = e.content() else {
-                bail!("latest is not membership change");
-            };
-
-            let Some(MembershipChange::Invited) = c.change() else {
-                bail!("not an invite")
-            };
-
-            if c.user_id() != u {
-                bail!("Not the latest user");
-            }
-
-            Ok(e.event_id().expect("it has an event_id").to_owned())
-        }
-    })
-    .await?;
-
+    // wait for the event to come in
     let obs = observer.clone();
-    let id = notif_id.to_string();
-    let activity = Retry::spawn(retry_strategy.clone(), || {
+    let activity = Retry::spawn(retry_strategy.clone(), move || {
+        let room_activities = observer_room_activities.clone();
         let ob = obs.clone();
-        let id = id.clone();
-        async move { ob.activity(id).await }
+        async move {
+            let m = room_activities.get_ids(0, 1).await?;
+            let Some(id) = m.first().cloned() else {
+                bail!("no latest room activity found");
+            };
+            ob.activity(id).await
+        }
     })
     .await?;
 
