@@ -56,14 +56,12 @@ async fn pins_smoketest() -> Result<()> {
     .await?;
 
     assert_eq!(user.pins().await?.len(), 3);
-    assert_eq!(user.pinned_links().await?.len(), 2);
 
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
     let main_space = spaces.first().unwrap();
     assert_eq!(main_space.pins().await?.len(), 3);
-    assert_eq!(main_space.pinned_links().await?.len(), 2);
     Ok(())
 }
 

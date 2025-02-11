@@ -44,6 +44,7 @@ use super::{
     typing::TypingController, verification::VerificationController, VecStringBuilder,
 };
 
+mod models;
 mod sync;
 
 pub use sync::{HistoryLoadState, SyncState};

@@ -72,13 +72,14 @@ jobs:
     needs:
      - tags
     steps:
+      - uses: actions/checkout@v4
       # create temporary release to upload assets to
       - name: Create Draft Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create nightly-${{ needs.tags.outputs.tag }} \
-              --verify-tag --prerelease --draft \
+              --prerelease --draft \
               --title "Nightly ${{ needs.tags.outputs.tag }}"
 
   build:
