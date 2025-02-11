@@ -132,7 +132,7 @@ class CustomChatInput extends ConsumerWidget {
                         prefixIcon: Icon(
                           Icons.shield,
                           size: 18,
-                          color: colorScheme.primary.withOpacity(0.8),
+                          color: colorScheme.primary.withValues(alpha:0.8),
                         ),
                         suffixIcon: const Icon(Icons.emoji_emotions),
                         border: OutlineInputBorder(
@@ -875,7 +875,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         onSubmitted: (_) => widget.onSendButtonPressed(),
         style: Theme.of(context).textTheme.bodyMedium,
         decoration: InputDecoration(
-          fillColor: Theme.of(context).unselectedWidgetColor.withOpacity(0.5),
+          fillColor: Theme.of(context).unselectedWidgetColor.withValues(alpha:0.5),
           contentPadding: const EdgeInsets.all(15),
           isCollapsed: true,
           prefixIcon: InkWell(

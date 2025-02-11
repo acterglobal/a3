@@ -28,7 +28,7 @@ RegExp logFileRegExp = RegExp('app_.*log');
 RegExp screenshotFileRegExp = RegExp('screenshot_.*png');
 
 Color convertColor(int? primary, Color fallback) =>
-    Color(primary ?? fallback.value);
+    primary != null ? Color(primary) : fallback;
 
 Completer<SharedPreferences>? _sharedPrefCompl;
 Completer<String>? _appDirCompl;
