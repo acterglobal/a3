@@ -36,6 +36,8 @@ impl Activities {
                         .get_list(&me.index)
                         .await?
                         .filter_map(|a| {
+                            // potential optimization: do the check without conversation and
+                            // return the event id if feasible
                             let event_id = a.event_id().to_string();
                             CoreActivity::try_from(a).map(|_| event_id).ok()
                         })

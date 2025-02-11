@@ -2,14 +2,14 @@ use matrix_sdk::ruma::{events::room::member::RoomMemberEventContent, OwnedEventI
 
 use crate::{
     client::CoreClient,
-    models::{ActerSupportedRoomStatusEvents, AnyActerModel},
+    models::{status::membership::MembershipChange, ActerSupportedRoomStatusEvents, AnyActerModel},
 };
 
 mod status;
 
 #[derive(Clone, Debug)]
 pub enum Activity {
-    MemberInvited(RoomMemberEventContent),
+    MembershipChange(RoomMemberEventContent, MembershipChange),
 }
 
 impl TryFrom<AnyActerModel> for Activity {
@@ -18,8 +18,8 @@ impl TryFrom<AnyActerModel> for Activity {
     fn try_from(mdl: AnyActerModel) -> Result<Self, Self::Error> {
         if let AnyActerModel::RoomStatus(s) = mdl {
             match s.inner {
-                ActerSupportedRoomStatusEvents::MemberInvited(r) => {
-                    return Ok(Self::MemberInvited(r))
+                ActerSupportedRoomStatusEvents::MembershipChange(r, c) => {
+                    return Ok(Self::MembershipChange(r, c))
                 }
                 ActerSupportedRoomStatusEvents::RoomCreate(_) => {}
             }

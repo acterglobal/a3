@@ -1,4 +1,4 @@
-use acter_core::activities::Activity;
+use acter_core::{activities::Activity, models::status::membership::MembershipChange};
 use anyhow::{bail, Result};
 use matrix_sdk::ruma::OwnedRoomId;
 use tokio_retry::{
@@ -34,8 +34,9 @@ async fn invite_and_join() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
         _setup_accounts("ij-status-notif").await?;
-    let third = random_user("mickey").await?;
+    let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
+    let _third_state = third.start_sync();
 
     let admin_room = admin.room(room_id.to_string()).await?;
     let observer_room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -52,8 +53,9 @@ async fn invite_and_join() -> Result<()> {
 
     // wait for the event to come in
     let obs = observer.clone();
+    let room_activities = observer_room_activities.clone();
     let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let room_activities = observer_room_activities.clone();
+        let room_activities = room_activities.clone();
         let ob = obs.clone();
         async move {
             let m = room_activities.get_ids(0, 1).await?;
@@ -65,20 +67,48 @@ async fn invite_and_join() -> Result<()> {
     })
     .await?;
 
-    assert!(matches!(activity.inner(), Activity::MemberInvited(_)));
+    let Activity::MembershipChange(_, r) = activity.inner();
 
-    // assert_eq!(
-    //     notification_item
-    //         .parent_id_str()
-    //         .expect("parent is in like"),
-    //     news_entry.event_id().to_string()
-    // );
-    // assert!(notification_item.body().is_none());
-    // assert_eq!(notification_item.reaction_key(), Some("❤️".to_owned()));
-    // let parent = notification_item.parent().expect("parent was found");
-    // assert_eq!(parent.title(), None);
-    // assert_eq!(parent.emoji(), "🚀"); // rocket
-    // assert_eq!(parent.object_id_str(), news_entry.event_id().to_string());
+    assert!(matches!(r, MembershipChange::Invited));
+
+    // let the third accept the invite
+
+    let third = third.clone();
+    let invited_room = Retry::spawn(retry_strategy.clone(), move || {
+        let third = third.clone();
+
+        async move {
+            let Some(room) = third.invited_rooms().first().cloned() else {
+                bail!("No invite found");
+            };
+            Ok(room)
+        }
+    })
+    .await?;
+
+    invited_room.join().await?;
+
+    obs_observer.recv().await?; // await for it have been coming in
+
+    // wait for the event to come in
+    let obs = observer.clone();
+    let room_activities = observer_room_activities.clone();
+    let activity = Retry::spawn(retry_strategy.clone(), move || {
+        let room_activities = room_activities.clone();
+        let ob = obs.clone();
+        async move {
+            let m = room_activities.get_ids(0, 1).await?;
+            let Some(id) = m.first().cloned() else {
+                bail!("no latest room activity found");
+            };
+            ob.activity(id).await
+        }
+    })
+    .await?;
+
+    let Activity::MembershipChange(_, r) = activity.inner();
+
+    assert!(matches!(r, MembershipChange::InvitationAccepted));
 
     Ok(())
 }
