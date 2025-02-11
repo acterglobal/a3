@@ -45,7 +45,7 @@ class NewsSlideActions extends ConsumerWidget {
         ),
       NewsReferencesType.link =>
         renderLinkActionButton(context, ref, referenceDetails),
-      NewsReferencesType.space => RoomCard(roomId: roomId,),
+      NewsReferencesType.space => RoomCard(roomId: roomId, refDetails: referenceDetails,),
       _ => renderNotSupportedAction(context),
     };
   }

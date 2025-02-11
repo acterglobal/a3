@@ -1,5 +1,6 @@
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/deep_linking/actions/handle_deep_link_uri.dart';
+import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/deep_linking/util.dart';
 import 'package:acter/features/deep_linking/widgets/item_preview_card.dart';
 import 'package:acter/features/preview/actions/show_room_preview.dart';
@@ -23,7 +24,7 @@ class ReferenceDetailsItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => ItemPreviewCard(
-        title: refDetails.title(),
+        title: typeFromRefDetails(refDetails) == ObjectType.space ? refDetails.roomDisplayName() : refDetails.title(),
         refType: typeFromRefDetails(refDetails),
         onTap: tapEnabled ? () => onTap(context, ref) : null,
         margin: margin,
