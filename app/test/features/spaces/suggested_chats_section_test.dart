@@ -27,50 +27,51 @@ void main() {
     );
   }
 
-  testWidgets('Suggested Chats - Empty State', (tester) async {
-    await createWidgetUnderTest(
-      tester: tester,
-      suggestedLocalChats: List<String>.empty(),
-      suggestedRemoteChats: List<SpaceHierarchyRoomInfo>.empty(),
-    );
-    expect(find.byType(RoomCard), findsNothing);
-    expect(find.byType(RoomHierarchyCard), findsNothing);
-  });
+  group('Suggested Chats', () {
+    testWidgets('Suggested Chats - Empty State', (tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        suggestedLocalChats: List<String>.empty(),
+        suggestedRemoteChats: List<SpaceHierarchyRoomInfo>.empty(),
+      );
+      expect(find.byType(RoomCard), findsNothing);
+      expect(find.byType(RoomHierarchyCard), findsNothing);
+    });
 
-  testWidgets('Suggested Chats - With Local Chats Only', (tester) async {
-    await createWidgetUnderTest(
-      tester: tester,
-      suggestedLocalChats: ['room1', 'room2'],
-      suggestedRemoteChats: List<SpaceHierarchyRoomInfo>.empty(),
-    );
-    expect(find.byType(RoomCard), findsExactly(2));
-    expect(find.byType(RoomHierarchyCard), findsNothing);
-  });
+    testWidgets('With Local Chats Only', (tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        suggestedLocalChats: ['room1', 'room2'],
+        suggestedRemoteChats: List<SpaceHierarchyRoomInfo>.empty(),
+      );
+      expect(find.byType(RoomCard), findsExactly(2));
+      expect(find.byType(RoomHierarchyCard), findsNothing);
+    });
 
-  testWidgets('Suggested Chats - With Remote Chats Only', (tester) async {
-    await createWidgetUnderTest(
-      tester: tester,
-      suggestedLocalChats: [],
-      suggestedRemoteChats: [
-        MockSpaceHierarchyRoomInfo(roomId: 'A', joinRule: 'Public'),
-        MockSpaceHierarchyRoomInfo(roomId: 'B', joinRule: 'Public'),
-      ],
-    );
-    expect(find.byType(RoomCard), findsNothing);
-    expect(find.byType(RoomHierarchyCard), findsExactly(2));
-  });
+    testWidgets('With Remote Chats Only', (tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        suggestedLocalChats: [],
+        suggestedRemoteChats: [
+          MockSpaceHierarchyRoomInfo(roomId: 'A', joinRule: 'Public'),
+          MockSpaceHierarchyRoomInfo(roomId: 'B', joinRule: 'Public'),
+        ],
+      );
+      expect(find.byType(RoomCard), findsNothing);
+      expect(find.byType(RoomHierarchyCard), findsExactly(2));
+    });
 
-  testWidgets('Suggested Chats - With Both Local and Remote Chat',
-      (tester) async {
-    await createWidgetUnderTest(
-      tester: tester,
-      suggestedLocalChats: ['room1', 'room2'],
-      suggestedRemoteChats: [
-        MockSpaceHierarchyRoomInfo(roomId: 'A', joinRule: 'Public'),
-        MockSpaceHierarchyRoomInfo(roomId: 'B', joinRule: 'Public'),
-      ],
-    );
-    expect(find.byType(RoomCard), findsExactly(2));
-    expect(find.byType(RoomHierarchyCard), findsExactly(2));
+    testWidgets('With Both Local and Remote Chat', (tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        suggestedLocalChats: ['room1', 'room2'],
+        suggestedRemoteChats: [
+          MockSpaceHierarchyRoomInfo(roomId: 'A', joinRule: 'Public'),
+          MockSpaceHierarchyRoomInfo(roomId: 'B', joinRule: 'Public'),
+        ],
+      );
+      expect(find.byType(RoomCard), findsExactly(2));
+      expect(find.byType(RoomHierarchyCard), findsExactly(2));
+    });
   });
 }

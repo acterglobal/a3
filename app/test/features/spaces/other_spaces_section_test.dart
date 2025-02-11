@@ -27,52 +27,54 @@ void main() {
     );
   }
 
-  testWidgets('Other Spaces - Empty State', (tester) async {
-    await createWidgetUnderTest(
-      tester: tester,
-      otherLocalSpaces: List<String>.empty(),
-      otherRemoteSpaces: List<SpaceHierarchyRoomInfo>.empty(),
-    );
-    expect(find.byType(RoomCard), findsNothing);
-    expect(find.byType(RoomHierarchyCard), findsNothing);
-  });
+  group('Other Spaces', () {
+    testWidgets('Other Spaces - Empty State', (tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        otherLocalSpaces: List<String>.empty(),
+        otherRemoteSpaces: List<SpaceHierarchyRoomInfo>.empty(),
+      );
+      expect(find.byType(RoomCard), findsNothing);
+      expect(find.byType(RoomHierarchyCard), findsNothing);
+    });
 
-  testWidgets('Other Spaces - With Local Spaces Only', (tester) async {
-    await createWidgetUnderTest(
-      tester: tester,
-      otherLocalSpaces: ['room1', 'room2'],
-      otherRemoteSpaces: List<SpaceHierarchyRoomInfo>.empty(),
-    );
-    expect(find.byType(RoomCard), findsExactly(2));
-    expect(find.byType(RoomHierarchyCard), findsNothing);
-  });
+    testWidgets('With Local Spaces Only', (tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        otherLocalSpaces: ['room1', 'room2'],
+        otherRemoteSpaces: List<SpaceHierarchyRoomInfo>.empty(),
+      );
+      expect(find.byType(RoomCard), findsExactly(2));
+      expect(find.byType(RoomHierarchyCard), findsNothing);
+    });
 
-  testWidgets('Other Spaces - With Remote Spaces Only', (tester) async {
-    await createWidgetUnderTest(
-      tester: tester,
-      otherLocalSpaces: [],
-      otherRemoteSpaces: [
-        MockSpaceHierarchyRoomInfo(roomId: 'A', joinRule: 'Public'),
-        MockSpaceHierarchyRoomInfo(roomId: 'B', joinRule: 'Public'),
-      ],
-    );
-    expect(find.byType(RoomCard), findsNothing);
-    expect(find.byType(RoomHierarchyCard), findsExactly(2));
-  });
+    testWidgets('With Remote Spaces Only', (tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        otherLocalSpaces: [],
+        otherRemoteSpaces: [
+          MockSpaceHierarchyRoomInfo(roomId: 'A', joinRule: 'Public'),
+          MockSpaceHierarchyRoomInfo(roomId: 'B', joinRule: 'Public'),
+        ],
+      );
+      expect(find.byType(RoomCard), findsNothing);
+      expect(find.byType(RoomHierarchyCard), findsExactly(2));
+    });
 
-  testWidgets('Other Spaces - With Both Local and Remote Spaces', (tester) async {
-    await createWidgetUnderTest(
-      tester: tester,
-      otherLocalSpaces: ['room1', 'room2'],
-      otherRemoteSpaces: [
-        MockSpaceHierarchyRoomInfo(roomId: 'A', joinRule: 'Public'),
-        MockSpaceHierarchyRoomInfo(roomId: 'B', joinRule: 'Public'),
-        MockSpaceHierarchyRoomInfo(roomId: 'C', joinRule: 'Public'),
-      ],
-    );
+    testWidgets('With Both Local and Remote Spaces', (tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        otherLocalSpaces: ['room1', 'room2'],
+        otherRemoteSpaces: [
+          MockSpaceHierarchyRoomInfo(roomId: 'A', joinRule: 'Public'),
+          MockSpaceHierarchyRoomInfo(roomId: 'B', joinRule: 'Public'),
+          MockSpaceHierarchyRoomInfo(roomId: 'C', joinRule: 'Public'),
+        ],
+      );
 
-    //Two Local + One Remote as limit is 3
-    expect(find.byType(RoomCard), findsExactly(2));
-    expect(find.byType(RoomHierarchyCard), findsExactly(1));
+      //Two Local + One Remote as limit is 3
+      expect(find.byType(RoomCard), findsExactly(2));
+      expect(find.byType(RoomHierarchyCard), findsExactly(1));
+    });
   });
 }
