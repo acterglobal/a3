@@ -2177,6 +2177,49 @@ object ActerAppSettingsBuilder {
 
 
 
+//     ###     ######  ######## #### ##     ## #### ######## #### ########  ######  
+//    ## ##   ##    ##    ##     ##  ##     ##  ##     ##     ##  ##       ##    ## 
+//   ##   ##  ##          ##     ##  ##     ##  ##     ##     ##  ##       ##       
+//  ##     ## ##          ##     ##  ##     ##  ##     ##     ##  ######    ######  
+//  ######### ##          ##     ##   ##   ##   ##     ##     ##  ##             ## 
+//  ##     ## ##    ##    ##     ##    ## ##    ##     ##     ##  ##       ##    ## 
+//  ##     ##  ######     ##    ####    ###    ####    ##    #### ########  ######  
+
+object MembershipChange {
+    /// user_id of the member that has changed
+    fn user_id_str() -> string;
+
+    /// avatar_url of the member that has changed
+    fn avatar_url() -> Option<string>;
+
+    /// display_name of the member that has changed
+    fn display_name() -> Option<string>;
+
+    /// reason if any was provided
+    fn reason() -> Option<string>;
+}
+
+
+object Activity {
+    /// the type of this activity as a string
+    /// e.g. invited, invitationAccepted
+    fn type_str() -> string;
+
+    /// the details of this membership change activity
+    fn membership_change() -> Option<MembershipChange>;
+
+}
+
+object Activities {
+    /// get the activity ids from offset to limit for this activities listing
+    fn get_ids(offset: u32, limit: u32) -> Future<Result<Vec<string>>>;
+
+    /// Receive an update when a the activities stream has changed
+    fn subscribe_stream() -> Stream<bool>;
+}
+
+
+
 //  ########   #######   #######  ##     ##    ########  ########  ######## ##     ## #### ######## ##      ## 
 //  ##     ## ##     ## ##     ## ###   ###    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ## 
 //  ##     ## ##     ## ##     ## #### ####    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ## 
@@ -3138,6 +3181,14 @@ object Client {
     /// create a link ref details
     fn new_link_ref_details(title: string, uri: string) -> Result<RefDetails>;
 
+    /// get a specific activity
+    fn activity(key: string) -> Future<Result<Activity>>;
+
+    /// get the activities listener for a room
+    fn activities_for_room(key: string) -> Result<Activities>;
+
+    /// get the activities listener for a specific object
+    fn activities_for_obj(key: string) -> Result<Activities>;
 }
 
 object NotificationSettings {

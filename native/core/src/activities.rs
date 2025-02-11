@@ -5,7 +5,7 @@ use crate::{
     models::{status::membership::MembershipChange, ActerSupportedRoomStatusEvents, AnyActerModel},
 };
 
-mod status;
+pub mod status;
 
 #[derive(Clone, Debug)]
 pub enum Activity {
@@ -20,7 +20,9 @@ impl Activity {
     }
 
     pub fn membership_change(&self) -> Option<MembershipChange> {
-        let Activity::MembershipChange(c) = self else {
+        #[allow(irrefutable_let_patterns)]
+        let Activity::MembershipChange(c) = self
+        else {
             return None;
         };
         Some(c.clone())

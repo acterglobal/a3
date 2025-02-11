@@ -68,6 +68,7 @@ pub use acter_core::{
     },
     models::{ActerModel, Tag, TextMessageContent},
 };
+pub use activities::{Activities, Activity, MembershipChange};
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     destroy_local_data, guest_client, login_new_client, login_with_token, register_with_token,
