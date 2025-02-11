@@ -242,7 +242,7 @@ impl TryFrom<&AnyActerModel> for NotificationItemParent {
                 parent_id: e.event_id().to_owned(),
                 title: e.name().clone(),
             }),
-            AnyActerModel::RedactedActerModel(_)
+            AnyActerModel::RedactedActerModel(..)
             | AnyActerModel::CalendarEventUpdate(_)
             | AnyActerModel::TaskListUpdate(_)
             | AnyActerModel::Task(_)
