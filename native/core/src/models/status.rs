@@ -48,6 +48,11 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
             origin_server_ts: event.origin_server_ts(),
             redacted: None,
         };
+        let make_err = |event| {
+            ParseError::UnsupportedEvent(AnyActerEvent::RegularTimelineEvent(
+                AnyTimelineEvent::State(event),
+            ))
+        };
         match &event {
             AnyStateEvent::RoomCreate(StateEvent::Original(inner)) => Ok(RoomStatus {
                 inner: ActerSupportedRoomStatusEvents::RoomCreate(inner.content.clone()),
@@ -56,13 +61,14 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
             AnyStateEvent::RoomMember(StateEvent::Original(inner)) => Ok(RoomStatus {
                 inner: ActerSupportedRoomStatusEvents::MembershipChange(
                     inner.content.clone(),
-                    inner.membership_change().into(),
+                    inner
+                        .membership_change()
+                        .try_into()
+                        .map_err(|_| make_err(event))?,
                 ),
                 meta,
             }),
-            _ => Err(Self::Error::UnsupportedEvent(
-                AnyActerEvent::RegularTimelineEvent(AnyTimelineEvent::State(event)),
-            )),
+            _ => Err(make_err(event)),
         }
     }
 }

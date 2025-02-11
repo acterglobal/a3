@@ -17,12 +17,6 @@ pub struct Change<T> {
 /// Translation of the membership change in `m.room.member` event.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum MembershipChange {
-    /// No change.
-    None,
-
-    /// Must never happen.
-    Error,
-
     /// User joined the room.
     Joined,
 
@@ -73,17 +67,14 @@ pub enum MembershipChange {
         /// The details of the avatar url change, if applicable.
         avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
     },
-
-    /// Not implemented.
-    NotImplemented,
 }
 
-impl From<RumaMembershipChange<'_>> for MembershipChange {
-    fn from(v: RumaMembershipChange<'_>) -> Self {
-        match v {
+impl TryFrom<RumaMembershipChange<'_>> for MembershipChange {
+    type Error = ();
+
+    fn try_from(value: RumaMembershipChange<'_>) -> Result<Self, ()> {
+        Ok(match value {
             RumaMembershipChange::Banned => MembershipChange::Banned,
-            RumaMembershipChange::None => MembershipChange::None,
-            RumaMembershipChange::Error => MembershipChange::Error,
             RumaMembershipChange::Joined => MembershipChange::Joined,
             RumaMembershipChange::Left => MembershipChange::Left,
             RumaMembershipChange::Unbanned => MembershipChange::Unbanned,
@@ -110,7 +101,32 @@ impl From<RumaMembershipChange<'_>> for MembershipChange {
                     new: c.new.map(ToOwned::to_owned),
                 }),
             },
-            _ => MembershipChange::NotImplemented,
+            RumaMembershipChange::None
+            | RumaMembershipChange::Error
+            | RumaMembershipChange::NotImplemented
+            | _ => return Err(()),
+        })
+    }
+}
+
+impl MembershipChange {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            MembershipChange::Joined => "joined",
+            MembershipChange::Left => "left",
+            MembershipChange::Banned => "banned",
+            MembershipChange::Unbanned => "unbanned",
+            MembershipChange::Kicked => "kicked",
+            MembershipChange::Invited => "invited",
+            MembershipChange::KickedAndBanned => "kickedAndBanned",
+            MembershipChange::InvitationAccepted => "invitationAccepted",
+            MembershipChange::InvitationRejected => "invitationRejected",
+            MembershipChange::InvitationRevoked => "invitationRevoked",
+            MembershipChange::Knocked => "knocked",
+            MembershipChange::KnockAccepted => "knockAccepted",
+            MembershipChange::KnockRetracted => "knockRetraced",
+            MembershipChange::KnockDenied => "knockDenied",
+            MembershipChange::ProfileChanged { .. } => "profileChanged",
         }
     }
 }
