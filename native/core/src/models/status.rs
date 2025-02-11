@@ -1,10 +1,7 @@
 use std::ops::Deref;
 
 use matrix_sdk::ruma::{
-    events::{
-        room::{create::RoomCreateEventContent, member::RoomMemberEventContent},
-        AnyStateEvent, AnyTimelineEvent, StateEvent,
-    },
+    events::{room::create::RoomCreateEventContent, AnyStateEvent, AnyTimelineEvent, StateEvent},
     OwnedEventId, UserId,
 };
 use serde::{Deserialize, Serialize};
@@ -21,7 +18,7 @@ use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum ActerSupportedRoomStatusEvents {
     RoomCreate(RoomCreateEventContent),
-    MembershipChange(RoomMemberEventContent, MembershipChange),
+    MembershipChange(MembershipChange),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -58,16 +55,20 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 inner: ActerSupportedRoomStatusEvents::RoomCreate(inner.content.clone()),
                 meta,
             }),
-            AnyStateEvent::RoomMember(StateEvent::Original(inner)) => Ok(RoomStatus {
-                inner: ActerSupportedRoomStatusEvents::MembershipChange(
-                    inner.content.clone(),
-                    inner
-                        .membership_change()
-                        .try_into()
-                        .map_err(|_| make_err(event))?,
-                ),
-                meta,
-            }),
+            AnyStateEvent::RoomMember(StateEvent::Original(inner)) => inner
+                .membership_change()
+                .try_into()
+                .map(|change| RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::MembershipChange(MembershipChange {
+                        change,
+                        user_id: inner.state_key.clone(),
+                        display_name: inner.content.displayname.clone(),
+                        avatar_url: inner.content.avatar_url.clone(),
+                        reason: inner.content.reason.clone(),
+                    }),
+                    meta,
+                })
+                .map_err(|_| make_err(event)),
             _ => Err(make_err(event)),
         }
     }

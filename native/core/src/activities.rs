@@ -1,4 +1,4 @@
-use matrix_sdk::ruma::{events::room::member::RoomMemberEventContent, OwnedEventId};
+use matrix_sdk::ruma::OwnedEventId;
 
 use crate::{
     client::CoreClient,
@@ -9,7 +9,22 @@ mod status;
 
 #[derive(Clone, Debug)]
 pub enum Activity {
-    MembershipChange(RoomMemberEventContent, MembershipChange),
+    MembershipChange(MembershipChange),
+}
+
+impl Activity {
+    pub fn type_str(&self) -> String {
+        match self {
+            Activity::MembershipChange(c) => c.as_str().to_owned(),
+        }
+    }
+
+    pub fn membership_change(&self) -> Option<MembershipChange> {
+        let Activity::MembershipChange(c) = self else {
+            return None;
+        };
+        Some(c.clone())
+    }
 }
 
 impl TryFrom<AnyActerModel> for Activity {
@@ -18,8 +33,8 @@ impl TryFrom<AnyActerModel> for Activity {
     fn try_from(mdl: AnyActerModel) -> Result<Self, Self::Error> {
         if let AnyActerModel::RoomStatus(s) = mdl {
             match s.inner {
-                ActerSupportedRoomStatusEvents::MembershipChange(r, c) => {
-                    return Ok(Self::MembershipChange(r, c))
+                ActerSupportedRoomStatusEvents::MembershipChange(c) => {
+                    return Ok(Self::MembershipChange(c))
                 }
                 ActerSupportedRoomStatusEvents::RoomCreate(_) => {}
             }

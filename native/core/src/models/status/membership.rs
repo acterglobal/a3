@@ -1,5 +1,5 @@
 use matrix_sdk::ruma::{
-    events::room::member::MembershipChange as RumaMembershipChange, OwnedMxcUri,
+    events::room::member::MembershipChange as RumaMembershipChange, OwnedMxcUri, OwnedUserId,
 };
 use serde::{Deserialize, Serialize};
 
@@ -16,7 +16,7 @@ pub struct Change<T> {
 
 /// Translation of the membership change in `m.room.member` event.
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum MembershipChange {
+pub enum MembershipChangeType {
     /// User joined the room.
     Joined,
 
@@ -69,29 +69,29 @@ pub enum MembershipChange {
     },
 }
 
-impl TryFrom<RumaMembershipChange<'_>> for MembershipChange {
+impl TryFrom<RumaMembershipChange<'_>> for MembershipChangeType {
     type Error = ();
 
     fn try_from(value: RumaMembershipChange<'_>) -> Result<Self, ()> {
         Ok(match value {
-            RumaMembershipChange::Banned => MembershipChange::Banned,
-            RumaMembershipChange::Joined => MembershipChange::Joined,
-            RumaMembershipChange::Left => MembershipChange::Left,
-            RumaMembershipChange::Unbanned => MembershipChange::Unbanned,
-            RumaMembershipChange::Kicked => MembershipChange::Kicked,
-            RumaMembershipChange::Invited => MembershipChange::Invited,
-            RumaMembershipChange::KickedAndBanned => MembershipChange::KickedAndBanned,
-            RumaMembershipChange::InvitationAccepted => MembershipChange::InvitationAccepted,
-            RumaMembershipChange::InvitationRejected => MembershipChange::InvitationRejected,
-            RumaMembershipChange::InvitationRevoked => MembershipChange::InvitationRevoked,
-            RumaMembershipChange::Knocked => MembershipChange::Knocked,
-            RumaMembershipChange::KnockAccepted => MembershipChange::KnockAccepted,
-            RumaMembershipChange::KnockRetracted => MembershipChange::KnockRetracted,
-            RumaMembershipChange::KnockDenied => MembershipChange::KnockDenied,
+            RumaMembershipChange::Banned => MembershipChangeType::Banned,
+            RumaMembershipChange::Joined => MembershipChangeType::Joined,
+            RumaMembershipChange::Left => MembershipChangeType::Left,
+            RumaMembershipChange::Unbanned => MembershipChangeType::Unbanned,
+            RumaMembershipChange::Kicked => MembershipChangeType::Kicked,
+            RumaMembershipChange::Invited => MembershipChangeType::Invited,
+            RumaMembershipChange::KickedAndBanned => MembershipChangeType::KickedAndBanned,
+            RumaMembershipChange::InvitationAccepted => MembershipChangeType::InvitationAccepted,
+            RumaMembershipChange::InvitationRejected => MembershipChangeType::InvitationRejected,
+            RumaMembershipChange::InvitationRevoked => MembershipChangeType::InvitationRevoked,
+            RumaMembershipChange::Knocked => MembershipChangeType::Knocked,
+            RumaMembershipChange::KnockAccepted => MembershipChangeType::KnockAccepted,
+            RumaMembershipChange::KnockRetracted => MembershipChangeType::KnockRetracted,
+            RumaMembershipChange::KnockDenied => MembershipChangeType::KnockDenied,
             RumaMembershipChange::ProfileChanged {
                 displayname_change,
                 avatar_url_change,
-            } => MembershipChange::ProfileChanged {
+            } => MembershipChangeType::ProfileChanged {
                 displayname_change: displayname_change.map(|c| Change {
                     old: c.old.map(ToOwned::to_owned),
                     new: c.new.map(ToOwned::to_owned),
@@ -109,24 +109,39 @@ impl TryFrom<RumaMembershipChange<'_>> for MembershipChange {
     }
 }
 
-impl MembershipChange {
+impl MembershipChangeType {
     pub fn as_str(&self) -> &'static str {
         match self {
-            MembershipChange::Joined => "joined",
-            MembershipChange::Left => "left",
-            MembershipChange::Banned => "banned",
-            MembershipChange::Unbanned => "unbanned",
-            MembershipChange::Kicked => "kicked",
-            MembershipChange::Invited => "invited",
-            MembershipChange::KickedAndBanned => "kickedAndBanned",
-            MembershipChange::InvitationAccepted => "invitationAccepted",
-            MembershipChange::InvitationRejected => "invitationRejected",
-            MembershipChange::InvitationRevoked => "invitationRevoked",
-            MembershipChange::Knocked => "knocked",
-            MembershipChange::KnockAccepted => "knockAccepted",
-            MembershipChange::KnockRetracted => "knockRetraced",
-            MembershipChange::KnockDenied => "knockDenied",
-            MembershipChange::ProfileChanged { .. } => "profileChanged",
+            MembershipChangeType::Joined => "joined",
+            MembershipChangeType::Left => "left",
+            MembershipChangeType::Banned => "banned",
+            MembershipChangeType::Unbanned => "unbanned",
+            MembershipChangeType::Kicked => "kicked",
+            MembershipChangeType::Invited => "invited",
+            MembershipChangeType::KickedAndBanned => "kickedAndBanned",
+            MembershipChangeType::InvitationAccepted => "invitationAccepted",
+            MembershipChangeType::InvitationRejected => "invitationRejected",
+            MembershipChangeType::InvitationRevoked => "invitationRevoked",
+            MembershipChangeType::Knocked => "knocked",
+            MembershipChangeType::KnockAccepted => "knockAccepted",
+            MembershipChangeType::KnockRetracted => "knockRetraced",
+            MembershipChangeType::KnockDenied => "knockDenied",
+            MembershipChangeType::ProfileChanged { .. } => "profileChanged",
         }
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct MembershipChange {
+    pub user_id: OwnedUserId,
+    pub display_name: Option<String>,
+    pub avatar_url: Option<OwnedMxcUri>,
+    pub reason: Option<String>,
+    pub change: MembershipChangeType,
+}
+
+impl MembershipChange {
+    pub fn as_str(&self) -> &'static str {
+        self.change.as_str()
     }
 }
