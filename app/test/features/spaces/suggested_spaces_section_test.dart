@@ -7,7 +7,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/mock_space_providers.dart';
 import '../../helpers/test_util.dart';
-import 'utils.dart';
 
 void main() {
   Future<void> createWidgetUnderTest({
@@ -17,11 +16,9 @@ void main() {
   }) async {
     await tester.pumpProviderWidget(
       overrides: [
-        ...spaceOverrides(),
         suggestedSpacesProvider.overrideWith(
           (a, b) => (suggestedLocalSpaces, suggestedRemoteSpaces),
         ),
-        spaceProvider.overrideWith((a, b) => MockSpace()),
       ],
       child: const SuggestedSpacesSection(spaceId: '!spaceId', limit: 3),
     );

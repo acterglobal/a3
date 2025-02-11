@@ -7,7 +7,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/mock_space_providers.dart';
 import '../../helpers/test_util.dart';
-import 'utils.dart';
 
 void main() {
   Future<void> createWidgetUnderTest({
@@ -17,11 +16,12 @@ void main() {
   }) async {
     await tester.pumpProviderWidget(
       overrides: [
-        ...spaceOverrides(),
         suggestedChatsProvider.overrideWith(
-          (a, b) => (suggestedLocalChats, suggestedRemoteChats),
+          (a, b) => (
+            suggestedLocalChats,
+            suggestedRemoteChats,
+          ),
         ),
-        spaceProvider.overrideWith((a, b) => MockSpace()),
       ],
       child: const SuggestedChatsSection(spaceId: '!spaceId', limit: 3),
     );
