@@ -1087,7 +1087,7 @@ impl NotificationItem {
                                 RefDetails::Task { .. } => format!("☑️ {title}"),
                                 RefDetails::TaskList { .. } => format!("📋 {title}"),
                                 RefDetails::Link { .. } => format!("🔗 {title}"),
-                                RefDetails::Room { .. } => format!("{room_display_name}"),
+                                RefDetails::Room { .. } => room_display_name,
                             })
                             .build()?
                     }
