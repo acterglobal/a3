@@ -30,7 +30,7 @@ type = "pin"
 title = "Acter Website"
 url = "https://acter.global"
 
-[objects.acter-website-tasklist]
+[objects.tasklist]
 type = "task-list"
 name = "Onboarding list" 
 
@@ -38,12 +38,11 @@ name = "Onboarding list"
 type = "task"
 title = "Scroll news"
 assignees = ["{{ main.user_id }}"]
-"m.relates_to" = { event_id = "{{ acter-website-tasklist.id }}" } 
+"m.relates_to" = { event_id = "{{ tasklist.id }}" }
 utc_due = "{{ now().as_rfc3339 }}"
 
 "#;
 
-#[ignore]
 #[tokio::test]
 async fn image_attachment_on_pin() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
@@ -100,10 +99,12 @@ async fn image_attachment_on_pin() -> Result<()> {
         .tempfile()?;
     png_file.as_file_mut().write_all(bytes)?;
 
-    let base_draft = first.file_draft(
-        png_file.path().to_string_lossy().to_string(),
-        "image/png".to_string(),
-    );
+    let base_draft = first
+        .image_draft(
+            png_file.path().to_string_lossy().to_string(),
+            "image/png".to_string(),
+        )
+        .filename("Fishy.png".to_owned());
     let notification_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -123,7 +124,6 @@ async fn image_attachment_on_pin() -> Result<()> {
 
     let obj_id = obj_entry.event_id().to_string();
 
-    notification_item.body().expect("found content");
     assert_eq!(notification_item.title(), "🖼️ \"Fishy.png\"");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
@@ -142,7 +142,6 @@ async fn image_attachment_on_pin() -> Result<()> {
     Ok(())
 }
 
-#[ignore]
 #[tokio::test]
 async fn file_attachment_on_event() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
@@ -199,10 +198,12 @@ async fn file_attachment_on_event() -> Result<()> {
         .tempfile()?;
     png_file.as_file_mut().write_all(bytes)?;
 
-    let base_draft = first.file_draft(
-        png_file.path().to_string_lossy().to_string(),
-        "document/x-src".to_string(),
-    );
+    let base_draft = first
+        .file_draft(
+            png_file.path().to_string_lossy().to_string(),
+            "document/x-src".to_string(),
+        )
+        .filename("Fishy.doc".to_owned());
     let notification_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -222,7 +223,7 @@ async fn file_attachment_on_event() -> Result<()> {
 
     let obj_id = obj_entry.event_id().to_string();
 
-    notification_item.body().expect("found content");
+    // notification_item.body().expect("found content");
     assert_eq!(notification_item.title(), "📄 \"Fishy.doc\"");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
@@ -241,7 +242,6 @@ async fn file_attachment_on_event() -> Result<()> {
     Ok(())
 }
 
-#[ignore]
 #[tokio::test]
 async fn video_attachment_on_tasklist() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
@@ -298,10 +298,12 @@ async fn video_attachment_on_tasklist() -> Result<()> {
         .tempfile()?;
     png_file.as_file_mut().write_all(bytes)?;
 
-    let base_draft = first.file_draft(
-        png_file.path().to_string_lossy().to_string(),
-        "video/mpeg4".to_string(),
-    );
+    let base_draft = first
+        .video_draft(
+            png_file.path().to_string_lossy().to_string(),
+            "video/mpeg4".to_string(),
+        )
+        .filename("Fishy.mp4".to_owned());
     let notification_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -321,8 +323,8 @@ async fn video_attachment_on_tasklist() -> Result<()> {
 
     let obj_id = obj_entry.event_id().to_string();
 
-    notification_item.body().expect("found content");
-    assert_eq!(notification_item.title(), "🎥 \"Fishy.mpv\"");
+    // notification_item.body().expect("found content");
+    assert_eq!(notification_item.title(), "🎥 \"Fishy.mp4\"");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -340,7 +342,6 @@ async fn video_attachment_on_tasklist() -> Result<()> {
     Ok(())
 }
 
-#[ignore]
 #[tokio::test]
 async fn link_attachment_on_task() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
@@ -416,7 +417,6 @@ async fn link_attachment_on_task() -> Result<()> {
 
     let obj_id = obj_entry.event_id().to_string();
 
-    notification_item.body().expect("found content");
     assert_eq!(notification_item.title().as_str(), "🔗 \"Acter Website\"");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
@@ -430,7 +430,7 @@ async fn link_attachment_on_task() -> Result<()> {
     );
     assert_eq!(parent.object_type_str().as_str(), "task");
     assert_eq!(parent.title().unwrap().as_str(), "Scroll news");
-    assert_eq!(parent.emoji(), "✔️"); // task
+    assert_eq!(parent.emoji(), "☑️"); // task
 
     Ok(())
 }

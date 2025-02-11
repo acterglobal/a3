@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -12,7 +11,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 final _log = Logger('a3::news::video_slide');
 
-class VideoSlide extends StatelessWidget {
+class VideoSlide extends StatefulWidget {
   final NewsSlide slide;
 
   const VideoSlide({
@@ -20,9 +19,15 @@ class VideoSlide extends StatelessWidget {
     required this.slide,
   });
 
+  @override
+  State<VideoSlide> createState() => _VideoSlideState();
+}
+
+class _VideoSlideState extends State<VideoSlide> {
+
   Future<File> getNewsVideoFile() async {
-    final newsVideo = await slide.sourceBinary(null);
-    final videoName = slide.uniqueId();
+    final newsVideo = await widget.slide.sourceBinary(null);
+    final videoName = widget.slide.uniqueId();
     final tempDir = await getTemporaryDirectory();
     final filePath = p.join(tempDir.path, videoName);
     File file = File(filePath);
@@ -80,7 +85,28 @@ class VideoSlide extends StatelessWidget {
   ) {
     _log.severe('Failed to load video of slide', error, stackTrace);
     return Center(
-      child: Text(L10n.of(context).loadingFailed(error)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.videocam_off_outlined,
+            size: 100,
+          ),
+          SizedBox(height: 10),
+          Text(L10n.of(context).unableToLoadVideo),
+          SizedBox(height: 20),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white, width: 1),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+            ),
+            child: TextButton(
+              onPressed: () => setState(() {}),
+              child: Text(L10n.of(context).tryAgain),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

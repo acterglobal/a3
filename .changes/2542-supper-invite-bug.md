@@ -1,1 +1,0 @@
--[Fix] : Resolves unexpected crashes and ensures that the invites code functionality works correctly.  
