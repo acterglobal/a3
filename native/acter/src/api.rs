@@ -19,6 +19,7 @@ lazy_static! {
 }
 
 mod account;
+mod activities;
 mod attachments;
 mod auth;
 mod backup;

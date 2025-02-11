@@ -1,4 +1,4 @@
-use super::{AnyActerModel, EventMeta};
+use super::{AnyActerModel, EventMeta, RoomStatus};
 use crate::events::{
     attachments::{AttachmentEventContent, AttachmentUpdateEventContent},
     calendar::{CalendarEventEventContent, CalendarEventUpdateEventContent},
@@ -15,6 +15,7 @@ use crate::events::{
     AnyActerEvent,
 };
 use core::fmt::Debug;
+use matrix_sdk::ruma::events::AnyTimelineEvent;
 use matrix_sdk_base::ruma::events::{
     reaction::ReactionEventContent, MessageLikeEvent, StaticEventContent,
     UnsignedRoomRedactionEvent,
@@ -334,7 +335,9 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                     reason: r.unsigned.redacted_because,
                 }),
             },
-            // should not really happen
+            AnyActerEvent::RegularTimelineEvent(AnyTimelineEvent::State(s)) => {
+                RoomStatus::try_from(s).map(AnyActerModel::RoomStatus)
+            }
             AnyActerEvent::RegularTimelineEvent(_) => Err(Self::Error::UnsupportedEvent(value)),
         }
     }

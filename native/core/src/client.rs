@@ -7,9 +7,9 @@ use tokio::sync::broadcast::Receiver;
 /// Core Client wrapper
 #[derive(Clone, Debug, Getters)]
 pub struct CoreClient {
-    client: Client,
-    store: Store,
-    executor: Executor,
+    pub(crate) client: Client,
+    pub(crate) store: Store,
+    pub(crate) executor: Executor,
 }
 
 impl CoreClient {
