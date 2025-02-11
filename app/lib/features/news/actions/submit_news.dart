@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
@@ -37,7 +38,7 @@ Future<NewsSlideDraft> _makeTextSlide(
   final textSlideDraft = textDraft.intoNewsSlideDraft();
 
   textSlideDraft.color(
-    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
+    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
   );
 
   final refDetails = slidePost.refDetails;
@@ -75,7 +76,7 @@ Future<NewsSlideDraft> _makeImageSlide(
       .height(decodedImage.height);
   final imageSlideDraft = imageDraft.intoNewsSlideDraft();
   imageSlideDraft.color(
-    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
+    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
   );
 
   final refDetails = slidePost.refDetails;
@@ -107,7 +108,7 @@ Future<NewsSlideDraft> _makeVideoSlide(
   final videoDraft = client.videoDraft(file.path, mimeType).size(bytes.length);
   final videoSlideDraft = videoDraft.intoNewsSlideDraft();
   videoSlideDraft.color(
-    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.value),
+    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
   );
   final refDetails = slidePost.refDetails;
   if (refDetails != null) {
