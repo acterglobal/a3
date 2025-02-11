@@ -40,6 +40,7 @@ import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter/features/spaces/pages/create_space_page.dart';
 import 'package:acter/features/spaces/pages/space_list_page.dart';
 import 'package:acter/features/spaces/pages/sub_spaces_page.dart';
+import 'package:acter/features/super_invites/pages/create_super_invite_page.dart';
 import 'package:acter/features/super_invites/pages/super_invites.dart';
 import 'package:acter/features/tasks/pages/task_item_detail_page.dart';
 import 'package:acter/features/tasks/pages/task_list_details_page.dart';
@@ -126,6 +127,17 @@ final homeShellRoutes = [
       return MaterialPage(
         key: state.pageKey,
         child: const SuperInvitesPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.createSuperInvite.name,
+    path: Routes.createSuperInvite.route,
+    pageBuilder: (context, state) {
+      final token = state.extra as SuperInviteToken?;
+      return MaterialPage(
+        key: state.pageKey,
+        child: CreateSuperInvitePage(token: token),
       );
     },
   ),

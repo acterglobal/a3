@@ -168,18 +168,6 @@ final generalRoutes = [
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
-    name: Routes.createSuperInvite.name,
-    path: Routes.createSuperInvite.route,
-    pageBuilder: (context, state) {
-      final token = state.extra as SuperInviteToken?;
-      return MaterialPage(
-        key: state.pageKey,
-        child: CreateSuperInvitePage(token: token),
-      );
-    },
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
     name: Routes.linkChat.name,
     path: Routes.linkChat.route,
     pageBuilder: (context, state) {
