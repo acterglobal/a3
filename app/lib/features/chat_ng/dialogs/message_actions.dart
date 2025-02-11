@@ -40,10 +40,10 @@ void messageActions({
             alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
             child: _AnimatedActionsContainer(
               animation: animation,
-              tagId: messageId,
+              tagId: '$messageId-reactions',
               child: ReactionSelector(
                 isMe: isMe,
-                messageId: '$messageId-reactions',
+                messageId: messageId,
                 roomId: roomId,
               ),
             ),
