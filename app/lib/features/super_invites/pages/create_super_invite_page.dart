@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
@@ -122,7 +123,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
             SizedBox(height: 12),
             createDmCheckBoxUI(lang),
             SizedBox(height: 32),
-            createInvite(lang),
+            actionButtons(lang),
           ],
         ),
       ),
@@ -253,10 +254,28 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
     );
   }
 
-  Widget createInvite(L10n lang) {
-    return ActerPrimaryActionButton(
-      onPressed: _submit,
-      child: Text(isEdit ? lang.save : lang.createCode),
+  Widget actionButtons(L10n lang) {
+    final redColor = Theme.of(context).colorScheme.error;
+    return Row(
+      children: [
+        if (isEdit) ...[
+          Expanded(
+            child: OutlinedButton(
+              onPressed: _deleteInvite,
+              style:
+                  OutlinedButton.styleFrom(side: BorderSide(color: redColor)),
+              child: Text(lang.delete, style: TextStyle(color: redColor)),
+            ),
+          ),
+          SizedBox(width: 22),
+        ],
+        Expanded(
+          child: ActerPrimaryActionButton(
+            onPressed: _submit,
+            child: Text(isEdit ? lang.save : lang.createCode),
+          ),
+        ),
+      ],
     );
   }
 
@@ -297,6 +316,58 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
           : lang.createInviteCodeFailed(e);
       EasyLoading.showError(
         status,
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> _deleteInvite() async {
+    final lang = L10n.of(context);
+    final bool? confirm = await showAdaptiveDialog(
+      context: context,
+      useRootNavigator: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(lang.deleteCode),
+          content: Text(lang.doYouWantToDeleteInviteCode),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
+          actions: <Widget>[
+            OutlinedButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(lang.no),
+            ),
+            ActerDangerActionButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: Text(lang.delete),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirm != true || !context.mounted) {
+      return;
+    }
+
+    EasyLoading.show(status: lang.deletingCode);
+    try {
+      final tokenTxt = _tokenController.text;
+      // all other changes happen on the object itself;
+      final provider = await ref.read(superInvitesProvider.future);
+      await provider.delete(tokenTxt);
+      ref.invalidate(superInvitesTokensProvider);
+      EasyLoading.dismiss();
+      if (!context.mounted) return;
+      Navigator.pop(context); // pop the create sheet
+    } catch (e, s) {
+      _log.severe('Failed to delete the invitation code', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        lang.deleteInviteCodeFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
