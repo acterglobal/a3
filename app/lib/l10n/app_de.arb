@@ -2383,5 +2383,11 @@
   "syncThisCalendarTitle": "Im Geräte-Kalender synchronisieren",
   "@syncThisCalendarTitle": {},
   "syncThisCalendarDesc": "Synchronisiere diese Events im Kalender des Geräts",
-  "@syncThisCalendarDesc": {}
+  "@syncThisCalendarDesc": {},
+  "unableToLoadVideo": "Video laden fehlgeschlagen",
+  "@unableToLoadVideo": {},
+  "tryAgain": "Erneut versuchen",
+  "@tryAgain": {},
+  "unableToLoadImage": "Image laden fehlgeschlagen",
+  "@unableToLoadImage": {}
 }
