@@ -45,95 +45,48 @@ impl Client {
                     bail!("{key} is not a news");
                 };
                 let room = me.room_by_id_typed(content.room_id())?;
-                Story::new(me.clone(), room, content).await
+                Ok(Story::new(me.clone(), room, content))
             })
             .await?
     }
     pub async fn latest_stories(&self, mut count: u32) -> Result<Vec<Story>> {
-        let mut stories = Vec::new();
-        let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let me = self.clone();
-        RUNTIME
-            .spawn(async move {
-                let mut all_stories = me
-                    .store()
-                    .get_list(&IndexKey::Section(SectionIndex::Stories))
-                    .await?
-                    .filter_map(|any| {
-                        if let AnyActerModel::Story(t) = any {
-                            Some(t)
-                        } else {
-                            None
-                        }
-                    })
-                    .take_while(|_| {
-                        if count > 0 {
-                            count -= 1;
-                            true
-                        } else {
-                            false
-                        }
-                    });
-
-                let client = me.core.client();
-                for content in all_stories {
-                    let room_id = content.room_id().to_owned();
-                    let room = match rooms_map.entry(room_id) {
-                        Entry::Occupied(t) => t.get().clone(),
-                        Entry::Vacant(e) => {
-                            if let Some(room) = client.get_room(e.key()) {
-                                e.insert(room.clone());
-                                room
-                            } else {
-                                /// User not part of the room anymore, ignore
-                                continue;
-                            }
-                        }
-                    };
-                    let story = Story::new(me.clone(), room, content).await?;
-                    stories.push(story);
-                }
-                Ok(stories)
-            })
+        Ok(self
+            .models_of_list_with_room(IndexKey::Section(SectionIndex::Stories))
             .await?
+            .take_while(|_| {
+                if count > 0 {
+                    count -= 1;
+                    true
+                } else {
+                    false
+                }
+            })
+            .map(|(inner, room)| Story::new(self.clone(), room, inner))
+            .collect())
     }
 }
 
 impl Space {
     pub async fn latest_stories(&self, mut count: u32) -> Result<Vec<Story>> {
-        let mut entries = Vec::new();
-        let room_id = self.room_id().to_owned();
-        let client = self.client.clone();
         let room = self.room.clone();
-        RUNTIME
-            .spawn(async move {
-                let mut all_entries = client
-                    .store()
-                    .get_list(&IndexKey::RoomSection(room_id, SectionIndex::Stories))
-                    .await?
-                    .filter_map(|any| {
-                        if let AnyActerModel::Story(t) = any {
-                            Some(t)
-                        } else {
-                            None
-                        }
-                    })
-                    .take_while(|_| {
-                        if count > 0 {
-                            count -= 1;
-                            true
-                        } else {
-                            false
-                        }
-                    });
-
-                for content in all_entries {
-                    entries.push(Story::new(client.clone(), room.clone(), content).await?);
-                }
-
-                Ok(entries)
-            })
+        let room_id = room.room_id().to_owned();
+        Ok(self
+            .client
+            .models_of_list_with_room_under_check(
+                IndexKey::RoomSection(room_id, SectionIndex::Stories),
+                move |_r| Ok(room.clone()),
+            )
             .await?
+            .take_while(|_| {
+                if count > 0 {
+                    count -= 1;
+                    true
+                } else {
+                    false
+                }
+            })
+            .map(|(inner, room)| Story::new(self.client.clone(), room, inner))
+            .collect())
     }
 }
 
@@ -335,12 +288,12 @@ impl Deref for Story {
 
 /// Custom functions
 impl Story {
-    pub async fn new(client: Client, room: Room, content: models::Story) -> Result<Self> {
-        Ok(Story {
+    pub fn new(client: Client, room: Room, content: models::Story) -> Self {
+        Story {
             client,
             room,
             content,
-        })
+        }
     }
 
     pub fn slides_count(&self) -> u8 {
@@ -387,7 +340,7 @@ impl Story {
                 let AnyActerModel::Story(content) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a news")
                 };
-                Story::new(client, room, content).await
+                Ok(Story::new(client, room, content))
             })
             .await?
     }

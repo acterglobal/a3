@@ -2381,9 +2381,6 @@ object Space {
     /// the pins of this Space
     fn pins() -> Future<Result<Vec<ActerPin>>>;
 
-    /// the links pinned to this Space
-    fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
-
     /// pin draft builder
     fn pin_draft() -> Result<PinDraft>;
 
@@ -2947,9 +2944,6 @@ object Client {
     /// Get the space that user belongs to
     fn space(room_id_or_alias: string) -> Future<Result<Space>>;
 
-    /// Get the Pinned Links for the client
-    fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
-
     /// Get the invitation event stream
     fn invitations_rx() -> Stream<Vec<Invitation>>;
 
@@ -3019,6 +3013,12 @@ object Client {
 
     /// listen to updates to any event type
     fn subscribe_event_type_stream(key: string) -> Result<Stream<bool>>;
+
+    /// listen to account data updates
+    fn subscribe_account_data_stream(key: string) -> Result<Stream<bool>>;
+
+    /// listen to account data updates of specific room
+    fn subscribe_room_account_data_stream(room: string, key: string) -> Result<Stream<bool>>;
 
     /// Find the room or wait until it becomes available
     fn wait_for_room(key: string, timeout: Option<u8>) -> Future<Result<bool>>;

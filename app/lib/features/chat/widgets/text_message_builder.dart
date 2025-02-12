@@ -158,7 +158,7 @@ class _TextWidget extends ConsumerWidget {
                   defaultTextStyle: textTheme.bodySmall?.copyWith(
                     overflow: isReply ? TextOverflow.ellipsis : null,
                     color: isNotice
-                        ? colorScheme.onSurface.withOpacity(0.5)
+                        ? colorScheme.onSurface.withValues(alpha:0.5)
                         : null,
                   ),
                   maxLines: isReply ? 3 : null,

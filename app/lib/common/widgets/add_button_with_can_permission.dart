@@ -41,7 +41,7 @@ class AddButtonWithCanPermission extends ConsumerWidget {
       icon: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
           borderRadius: const BorderRadius.all(Radius.circular(100)),
         ),
         child: const Icon(Icons.add),

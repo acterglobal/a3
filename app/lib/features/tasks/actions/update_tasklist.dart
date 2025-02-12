@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/sdk_provider.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -23,7 +24,7 @@ Future<void> updateTaskListIcon(
   // TaskList IconData
   final sdk = await ref.watch(sdkProvider.future);
   final displayBuilder = sdk.api.newDisplayBuilder();
-  displayBuilder.color(color.value);
+  displayBuilder.color(color.toInt());
   displayBuilder.icon('acter-icon', acterIcon.name);
 
   final updateBuilder = taskList.updateBuilder();
