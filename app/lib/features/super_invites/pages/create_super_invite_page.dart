@@ -269,6 +269,11 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
       final tokenTxt = _tokenController.text;
       if (tokenTxt.isNotEmpty) {
         tokenUpdater.token(tokenTxt);
+      } else if (_roomIds.isNotEmpty) {
+        final displayName =
+            await ref.read(roomDisplayNameProvider(_roomIds[0]).future);
+        final inviteCode = generateInviteCodeName(displayName);
+        tokenUpdater.token(inviteCode);
       }
       // all other changes happen on the object itself;
       final superInvites = await ref.read(superInvitesProvider.future);

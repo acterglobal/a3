@@ -1,10 +1,9 @@
-import 'dart:math';
-
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/dotted_border_widget.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -217,32 +216,14 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
     final lang = L10n.of(context);
     try {
       EasyLoading.show(status: lang.generateInviteCode);
-      final dispName =
+      final displayName =
           await ref.read(roomDisplayNameProvider(widget.roomId).future);
-      String prefix =
-          dispName?.replaceAll(RegExp(r'[^A-Za-z]'), '').toLowerCase() ?? '';
-
-      final rng = Random();
-
-      int end = 5;
-      if (prefix.isEmpty) {
-        end = 8;
-      } else if (prefix.length > 8) {
-        prefix = prefix.substring(0, 8);
-        end = 3;
-      } else if (prefix.length > 4) {
-        end = 3;
-      }
-
-      List<String> name = [prefix];
-      for (var i = 0; i < end; i++) {
-        name.add(rng.nextInt(10).toString());
-      }
+      final inviteCode = generateInviteCodeName(displayName);
 
       await newSuperInviteForRooms(
         ref,
         [widget.roomId],
-        inviteCode: name.join(''),
+        inviteCode: inviteCode,
       );
       ref.invalidate(superInvitesProvider);
       EasyLoading.dismiss();
