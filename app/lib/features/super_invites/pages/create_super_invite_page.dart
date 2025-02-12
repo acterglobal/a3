@@ -3,6 +3,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
+import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/info_widget.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
@@ -11,8 +12,13 @@ import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:logging/logging.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+final _log = Logger('a3::super_invites::create');
 
 class CreateSuperInvitePage extends ConsumerStatefulWidget {
   final SuperInviteToken? token;
@@ -66,56 +72,37 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
     final lang = L10n.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create'),
+        title: Text(isEdit ? lang.editInviteCode : lang.createInviteCode),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Form(key: _formKey, child: tokenInputUI(lang)),
+            Form(
+              key: _formKey,
+              child: TextFormField(
+                controller: _tokenController,
+                decoration: InputDecoration(hintText: lang.inviteCode),
+              ),
+            ),
             SizedBox(height: 22),
             InfoWidget(
-              title: 'Select Spaces and Chats',
-              subTitle:
-                  'While redeeming code, selected spaces and chats are auto joined',
+              title: lang.selectSpacesAndChats,
+              subTitle: lang.autoJoinSpacesAndChatsInfo,
             ),
             SizedBox(height: 12),
-            Expanded(child: selectedRoomsSections()),
+            Expanded(child: selectedRoomsSections(lang)),
             createDmCheckBoxUI(lang),
             SizedBox(height: 12),
-            ActerPrimaryActionButton(
-              onPressed: () {},
-              child: Text(isEdit ? lang.save : lang.createCode),
-            ),
+            createInvite(lang),
           ],
         ),
       ),
     );
   }
 
-  Widget tokenInputUI(L10n lang) {
-    return TextFormField(
-      onSaved: (value) {},
-      decoration: InputDecoration(
-        hintText: 'Invite code',
-        suffixIcon: IconButton(
-          onPressed: () {},
-          icon: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.generating_tokens),
-              SizedBox(width: 6),
-              Text('Auto'),
-              SizedBox(width: 6),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget selectedRoomsSections() {
+  Widget selectedRoomsSections(L10n lang) {
     final spaces = List<String>.empty(growable: true);
     final chats = List<String>.empty(growable: true);
     for (final roomId in _roomIds) {
@@ -140,8 +127,8 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
                 unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
                 dividerColor: Colors.transparent,
                 tabs: [
-                  Padding(padding: tabPadding, child: Text('Spaces')),
-                  Padding(padding: tabPadding, child: Text('Chats')),
+                  Padding(padding: tabPadding, child: Text(lang.spaces)),
+                  Padding(padding: tabPadding, child: Text(lang.chats)),
                 ],
               ),
             ),
@@ -150,8 +137,8 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
         ),
         Expanded(
           child: TabBarView(controller: tabController, children: [
-            roomListView(spaces),
-            roomListView(chats),
+            roomListView(lang, spaces),
+            roomListView(lang, chats),
           ]),
         ),
       ],
@@ -189,7 +176,19 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
     );
   }
 
-  Widget roomListView(List<String> rooms) {
+  Widget roomListView(L10n lang, List<String> rooms) {
+    if (rooms.isEmpty) {
+      return Center(
+        child: EmptyState(
+          subtitle: lang.noSpacesFound,
+          imageSize: 100,
+          image: tabController.index == 0
+              ? 'assets/images/empty_space.svg'
+              : 'assets/images/empty_chat.svg',
+        ),
+      );
+    }
+
     return ListView.builder(
       itemBuilder: (context, idx) {
         final roomId = rooms[idx];
@@ -209,7 +208,10 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
               tokenUpdater.removeRoom(roomId);
               setState(() => _roomIds.remove(roomId));
             },
-            child: Icon(Atlas.trash_can_thin),
+            child: Icon(
+              PhosphorIcons.trash(),
+              color: Theme.of(context).colorScheme.error,
+            ),
           ),
         );
       },
@@ -223,9 +225,9 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text('Create DM'),
+          Text(lang.createDM),
           Text(
-            'While redeeming code, DM will be created',
+            lang.autoDMWhileRedeemCode,
             style: Theme.of(context).textTheme.labelMedium,
           ),
         ],
@@ -235,5 +237,49 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
       },
       initialValue: _initialDmCheck,
     );
+  }
+
+  Widget createInvite(L10n lang) {
+    return ActerPrimaryActionButton(
+      onPressed: _submit,
+      child: Text(isEdit ? lang.save : lang.createCode),
+    );
+  }
+
+  Future<void> _submit() async {
+    final lang = L10n.of(context);
+    if (!_formKey.currentState!.validate()) return;
+    final status = isEdit ? lang.savingCode : lang.creatingCode;
+    EasyLoading.show(status: status);
+    try {
+      final tokenTxt = _tokenController.text;
+      if (tokenTxt.isNotEmpty) {
+        tokenUpdater.token(tokenTxt);
+      }
+      // all other changes happen on the object itself;
+      final superInvites = await ref.read(superInvitesProvider.future);
+      await superInvites.createOrUpdateToken(tokenUpdater);
+      ref.invalidate(superInvitesTokensProvider);
+      EasyLoading.dismiss();
+      if (!mounted) return;
+      Navigator.pop(context); // pop the create sheet
+    } catch (e, s) {
+      if (isEdit) {
+        _log.severe('Failed to change the invitation code', e, s);
+      } else {
+        _log.severe('Failed to create the invitation code', e, s);
+      }
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      final status = isEdit
+          ? lang.saveInviteCodeFailed(e)
+          : lang.createInviteCodeFailed(e);
+      EasyLoading.showError(
+        status,
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
