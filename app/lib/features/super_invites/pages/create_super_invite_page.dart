@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/checkbox_form_field.dart';
 import 'package:acter/common/widgets/info_widget.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
+import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/super_invites/widgets/invite_list_item.dart';
 import 'package:acter/router/utils.dart';
@@ -181,12 +182,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
       children: [
         Row(
           children: [
-            Expanded(
-              child: Text(
-                title,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-            ),
+            Expanded(child: SectionHeader(title: title)),
             IconButton(
               onPressed: onTapAdd,
               icon: const Icon(Atlas.plus_circle_thin),
