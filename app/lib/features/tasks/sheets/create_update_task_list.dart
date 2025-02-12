@@ -2,6 +2,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
@@ -218,7 +219,7 @@ class _CreateUpdateTaskListConsumerState
       if (taskListIconColor != null || taskListIcon != null) {
         final sdk = await ref.read(sdkProvider.future);
         final displayBuilder = sdk.api.newDisplayBuilder();
-        taskListIconColor.map((color) => displayBuilder.color(color.value));
+        taskListIconColor.map((color) => displayBuilder.color(color.toInt()));
         taskListIcon
             .map((icon) => displayBuilder.icon('acter-icon', icon.name));
         taskListDraft.display(displayBuilder.build());

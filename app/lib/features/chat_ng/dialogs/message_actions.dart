@@ -105,7 +105,7 @@ class _BlurOverlay extends StatelessWidget {
               sigmaY: 8 * animation.value,
             ),
             child: Container(
-              color: Colors.black.withOpacity(0.1 * animation.value),
+              color: Colors.black.withValues(alpha:(0.1 * animation.value)),
               child: child,
             ),
           );

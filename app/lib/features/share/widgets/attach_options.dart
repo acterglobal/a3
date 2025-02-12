@@ -104,7 +104,7 @@ class AttachOptions extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.3),
+                color: color.withValues(alpha:0.3),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: color,

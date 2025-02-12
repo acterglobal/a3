@@ -236,7 +236,7 @@ class _SmallHeartWidget extends StatelessWidget {
       color: Theme.of(context)
           .colorScheme
           .tertiary
-          .withOpacity(smallHeartOpacity.value * 0.8),
+          .withValues(alpha:smallHeartOpacity.value * 0.8),
       size: 12,
     );
   }
