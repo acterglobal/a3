@@ -93,7 +93,7 @@ class SuperInvitesPage extends ConsumerWidget {
                           ),
                           onTap: () {
                             context.pushNamed(
-                              Routes.actionCreateSuperInvite.name,
+                              Routes.createSuperInvite.name,
                               extra: token,
                             );
                           },
