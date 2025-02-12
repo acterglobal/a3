@@ -124,6 +124,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
             createDmCheckBoxUI(lang),
             SizedBox(height: 32),
             actionButtons(lang),
+            SizedBox(height: 32),
           ],
         ),
       ),
@@ -281,7 +282,6 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
 
   Future<void> _submit() async {
     final lang = L10n.of(context);
-    if (!_formKey.currentState!.validate()) return;
     final status = isEdit ? lang.savingCode : lang.creatingCode;
     EasyLoading.show(status: status);
     try {
