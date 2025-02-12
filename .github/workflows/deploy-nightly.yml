@@ -77,12 +77,14 @@ jobs:
     if: ${{ needs.run_checker.outputs.should_run != 'false' }}
     # Map a step output to a job output
     outputs:
-      tag: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.tag.outputs.tag }}
       version: ${{ steps.version.outputs.version }}
       msix_version: ${{ steps.msix_version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
       targets: 'all'
     steps:
+      - id: tag
+        run: echo "tag=`date +%F`" >> $GITHUB_OUTPUT
       - id: version
         run: |
           VERSION=`date +1.%y.$RELEASE_STUPIDITY_PREFIX%-m%d$PATCH_VERSION`
