@@ -22,6 +22,15 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 final _log = Logger('a3::super_invites::create');
 
 class CreateSuperInvitePage extends ConsumerStatefulWidget {
+  static Key tokenFieldKey = const Key('super-invites-create-token-token');
+  static Key createDmKey = const Key('super-invites-create-token-create-dm');
+  static Key addSpaceKey = const Key('super-invites-create-token-add-space');
+  static Key addSubmenu = const Key('super-invites-create-token-add-submenu');
+  static Key addChatKey = const Key('super-invites-create-token-add-chat');
+  static Key submitBtn = const Key('super-invites-create-submitBtn');
+  static Key deleteBtn = const Key('super-invites-create-delete');
+  static Key deleteConfirm = const Key('super-invites-create-delete-confirm');
+
   final SuperInviteToken? token;
 
   const CreateSuperInvitePage({
