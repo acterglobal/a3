@@ -1011,7 +1011,7 @@ object RoomEventItem {
 }
 
 object RoomVirtualItem {
-    /// DayDivider or ReadMarker
+    /// DateDivider or ReadMarker
     fn event_type() -> string;
 
     /// contains description text

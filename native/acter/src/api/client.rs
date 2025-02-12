@@ -45,8 +45,13 @@ use super::{
 };
 
 mod models;
+mod simple_convo;
+mod simple_space;
+mod simple_sync;
 mod sync;
 
+use simple_convo::SimpleConvo;
+pub use simple_sync::SyncController;
 pub use sync::{HistoryLoadState, SyncState};
 
 #[derive(Default, Builder, Debug)]
@@ -77,6 +82,8 @@ pub struct Client {
     pub(crate) typing_controller: TypingController,
     pub spaces: Arc<RwLock<ObservableVector<Space>>>,
     pub convos: Arc<RwLock<ObservableVector<Convo>>>,
+    pub simple_spaces: Arc<RwLock<ObservableVector<Space>>>,
+    pub simple_convos: Arc<RwLock<ObservableVector<SimpleConvo>>>,
 }
 
 impl Deref for Client {
@@ -185,7 +192,9 @@ impl Client {
             state: Arc::new(RwLock::new(state)),
             spaces: Default::default(),
             convos: Default::default(),
-            invitation_controller: InvitationController::new(core.clone()),
+            simple_spaces: Default::default(),
+            simple_convos: Default::default(),
+            invitation_controller: InvitationController::new(core),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),

@@ -3,10 +3,10 @@ use base64ct::{Base64UrlUnpadded, Encoding};
 use core::fmt::Debug;
 use matrix_sdk_base::{
     event_cache::{
-        store::{EventCacheStore, EventCacheStoreError, DEFAULT_CHUNK_CAPACITY},
+        store::{EventCacheStore, EventCacheStoreError},
         Event, Gap,
     },
-    linked_chunk::{LinkedChunk, Update},
+    linked_chunk::{RawChunk, Update},
     media::{MediaRequestParameters, UniqueKey},
     ruma::{MxcUri, RoomId},
     StateStore,
@@ -108,9 +108,16 @@ where
     async fn reload_linked_chunk(
         &self,
         room_id: &RoomId,
-    ) -> Result<Option<LinkedChunk<DEFAULT_CHUNK_CAPACITY, Event, Gap>>, Self::Error> {
+    ) -> Result<Vec<RawChunk<Event, Gap>>, Self::Error> {
         self.inner
             .reload_linked_chunk(room_id)
+            .await
+            .map_err(|e| e.into())
+    }
+
+    async fn clear_all_rooms_chunks(&self) -> Result<(), Self::Error> {
+        self.inner
+            .clear_all_rooms_chunks()
             .await
             .map_err(|e| e.into())
     }

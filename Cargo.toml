@@ -8,38 +8,38 @@ members = [
 default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-# path = "../matrix-rust-sdk/crates/matrix-sdk"
+git = "https://github.com/acterglobal/matrix-rust-sdk"
+rev = "5a25e65da3faa6188c966083f9ea82614cb8ebc5"
 default-features = false
 features = [
   "experimental-sliding-sync",
   "rustls-tls",
 ]
 
-
 [workspace.dependencies.matrix-sdk-base]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-# path = "../matrix-rust-sdk/crates/matrix-sdk-base"
+git = "https://github.com/acterglobal/matrix-rust-sdk"
+rev = "5a25e65da3faa6188c966083f9ea82614cb8ebc5"
 default-features = false
+
 [workspace.dependencies.matrix-sdk-sqlite]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-# path = "../matrix-rust-sdk/crates/matrix-sdk-sqlite"
+git = "https://github.com/acterglobal/matrix-rust-sdk"
+rev = "5a25e65da3faa6188c966083f9ea82614cb8ebc5"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-# path = "../matrix-rust-sdk/crates/matrix-sdk-store-encryption"
+git = "https://github.com/acterglobal/matrix-rust-sdk"
+rev = "5a25e65da3faa6188c966083f9ea82614cb8ebc5"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-# path = "../matrix-rust-sdk/crates/matrix-sdk-ui"
+git = "https://github.com/acterglobal/matrix-rust-sdk"
+rev = "5a25e65da3faa6188c966083f9ea82614cb8ebc5"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-test]
-git = "https://github.com/matrix-org/matrix-rust-sdk"
-# path = "../matrix-rust-sdk/testing/matrix-sdk-test"
+git = "https://github.com/acterglobal/matrix-rust-sdk"
+rev = "5a25e65da3faa6188c966083f9ea82614cb8ebc5"
 default-features = false
 
 

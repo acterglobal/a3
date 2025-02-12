@@ -38,8 +38,9 @@ ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "main
 futures = "0.3.30"
 futures-signals = "0.3.33"
 icalendar = { workspace = true }
-infer = "0.15.0"
+imbl = "3.0.0"
 indexmap = { version = "2.2.5", features = ["serde"]}
+infer = "0.15.0"
 lazy_static = "1.4"
 log = "0.4"
 log-panics = "2.1.0"
@@ -79,7 +80,7 @@ tracing-log = { version = "0.2", optional = true }
 console-subscriber = { version = "0.2.0", optional = true }
 
 # not used directly but needed to enable specific features from ruma
-ruma = { workspace = true, features = ["html", "rand", "unstable-msc2448", "unstable-msc2965", "unstable-msc3930", "unstable-msc3245-v1-compat"] }
+ruma = { workspace = true, features = ["html", "rand", "unstable-msc2448", "unstable-msc2965", "unstable-msc3930", "unstable-msc3245-v1-compat", "unstable-msc3575", "unstable-msc4186"] }
 ruma-common = { workspace = true, features = ["client", "unstable-unspecified"] }
 
 [dev-dependencies]
