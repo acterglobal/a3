@@ -8,6 +8,7 @@ import 'package:acter/common/widgets/info_widget.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
+import 'package:acter/features/super_invites/widgets/invite_list_item.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -40,7 +41,6 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late SuperInvitesTokenUpdateBuilder tokenUpdater;
   bool isEdit = false;
-  int _acceptedCount = 0;
   bool _initialDmCheck = false;
   List<String> _roomIds = [];
 
@@ -58,7 +58,6 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
       isEdit = true;
       _tokenController.text = token.token();
       _roomIds = asDartStringList(token.rooms());
-      _acceptedCount = token.acceptedCount();
       _initialDmCheck = token.createDm();
       tokenUpdater = token.updateBuilder();
     } else {
@@ -79,18 +78,21 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Form(
-              key: _formKey,
-              child: TextFormField(
-                controller: _tokenController,
-                decoration: InputDecoration(hintText: lang.inviteCode),
-              ),
-            ),
+            isEdit && widget.token != null
+                ? InviteListItem(inviteToken: widget.token!)
+                : Form(
+                    key: _formKey,
+                    child: TextFormField(
+                      controller: _tokenController,
+                      decoration: InputDecoration(hintText: lang.inviteCode),
+                    ),
+                  ),
             SizedBox(height: 22),
-            InfoWidget(
-              title: lang.selectSpacesAndChats,
-              subTitle: lang.autoJoinSpacesAndChatsInfo,
-            ),
+            if (!isEdit)
+              InfoWidget(
+                title: lang.selectSpacesAndChats,
+                subTitle: lang.autoJoinSpacesAndChatsInfo,
+              ),
             SizedBox(height: 12),
             Expanded(child: selectedRoomsSections(lang)),
             createDmCheckBoxUI(lang),
@@ -132,14 +134,17 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
                 ],
               ),
             ),
-            addRoomButtonUI()
+            addRoomButtonUI(),
           ],
         ),
         Expanded(
-          child: TabBarView(controller: tabController, children: [
-            roomListView(lang, spaces),
-            roomListView(lang, chats),
-          ]),
+          child: TabBarView(
+            controller: tabController,
+            children: [
+              roomListView(lang, spaces),
+              roomListView(lang, chats),
+            ],
+          ),
         ),
       ],
     );
