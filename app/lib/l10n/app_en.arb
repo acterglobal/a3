@@ -1610,6 +1610,7 @@
   "autoJoinSpacesAndChatsInfo": "While redeeming this code, selected spaces and chats are auto join.",
   "createDM": "Create DM",
   "autoDMWhileRedeemCode": "While redeeming code, DM will be created'",
+  "redeemInviteCode": "Redeem Invite Code",
   "saveInviteCodeFailed": "Saving code failed: {error}",
   "@saveInviteCodeFailed": {},
   "createInviteCodeFailed": "Creating code failed: {error}",

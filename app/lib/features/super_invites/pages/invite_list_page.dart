@@ -3,6 +3,7 @@ import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/super_invites/widgets/invite_list_widget.dart';
+import 'package:acter/features/super_invites/widgets/redeem_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -29,6 +30,22 @@ class _InviteListPageState extends ConsumerState<InviteListPage> {
     return Scaffold(
       appBar: _buildAppBar(context),
       body: _buildBody(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          showModalBottomSheet(
+            showDragHandle: true,
+            useSafeArea: true,
+            context: context,
+            isScrollControlled: true,
+            builder: (context) {
+              return RedeemToken();
+            },
+          );
+        },
+        backgroundColor: Theme.of(context).primaryColor,
+        label: Text('Redeem'),
+      ),
     );
   }
 
