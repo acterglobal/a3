@@ -358,11 +358,11 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
       await provider.delete(tokenTxt);
       ref.invalidate(superInvitesTokensProvider);
       EasyLoading.dismiss();
-      if (!context.mounted) return;
+      if (!mounted) return;
       Navigator.pop(context); // pop the create sheet
     } catch (e, s) {
       _log.severe('Failed to delete the invitation code', e, s);
-      if (!context.mounted) {
+      if (!mounted) {
         EasyLoading.dismiss();
         return;
       }
