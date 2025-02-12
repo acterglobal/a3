@@ -30,7 +30,7 @@ class _InviteListPageState extends ConsumerState<InviteListPage> {
     return Scaffold(
       appBar: _buildAppBar(context),
       body: _buildBody(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           showModalBottomSheet(
@@ -43,6 +43,13 @@ class _InviteListPageState extends ConsumerState<InviteListPage> {
             },
           );
         },
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            width: 1,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+          borderRadius: BorderRadius.circular(100),
+        ),
         backgroundColor: Theme.of(context).primaryColor,
         label: Text('Redeem'),
       ),
