@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
-      should_run: ${{ steps.check-new-commits.outputs.has-new-commits == 'true' && steps.check-changelog-files.outputs.has-changelog-files == 'true' }}
+      should_run: ${{  inputs.patch_version != null || (steps.check-new-commits.outputs.has-new-commits == 'true' && steps.check-changelog-files.outputs.has-changelog-files == 'true') }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -77,7 +77,7 @@ jobs:
     if: ${{ needs.run_checker.outputs.should_run != 'false' }}
     # Map a step output to a job output
     outputs:
-      tag: v${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.version }}
       version: ${{ steps.version.outputs.version }}
       msix_version: ${{ steps.msix_version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
