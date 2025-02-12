@@ -26,8 +26,6 @@ class InviteListWidget extends ConsumerWidget {
 
   Widget buildInviteListUI(List<SuperInviteToken> inviteList) {
     return ListView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
       itemCount: inviteList.length,
       itemBuilder: (context, index) {
         return InviteListItem(inviteToken: inviteList[index]);
