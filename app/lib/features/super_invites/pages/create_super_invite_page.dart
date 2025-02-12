@@ -84,14 +84,15 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
   Widget _buildBodyView(L10n lang) {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             isEdit && widget.token != null
                 ? InviteListItem(
                     inviteToken: widget.token!,
-                    cardMargin: EdgeInsets.zero,
+                    cardMargin:
+                        EdgeInsets.symmetric(horizontal: 0, vertical: 12),
                   )
                 : Form(
                     key: _formKey,
