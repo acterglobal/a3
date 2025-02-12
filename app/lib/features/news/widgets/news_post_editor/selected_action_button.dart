@@ -30,13 +30,13 @@ class SelectedActionButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (refDetails == null) return SizedBox();
     final refObjectType = refDetails!.typeStr();
-
     return switch (refObjectType) {
       'pin' => pinActionButton(context, ref, refDetails!),
       'calendar-event' => calendarActionButton(context, ref, refDetails!),
       'task-list' => taskListActionButton(context, ref, refDetails!),
       'link' => linkActionButton(context, refDetails!),
       'space' => spaceActionButton(context, ref, refDetails!),
+      'convo' => spaceActionButton(context, ref, refDetails!),
       _ => const SizedBox(),
     };
   }

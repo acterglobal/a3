@@ -12,5 +12,6 @@ ObjectType? typeFromRefDetails(RefDetails refDetails) =>
       'comment' => ObjectType.comment,
       'attachment' => ObjectType.attachment,
       'space' => ObjectType.space,
+      'convo' => ObjectType.convo,
       _ => null,
     };
