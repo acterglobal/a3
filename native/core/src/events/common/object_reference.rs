@@ -313,10 +313,8 @@ impl RefDetails {
             RefDetails::TaskList { .. } => "task-list".to_string(),
             RefDetails::CalendarEvent { .. } => "calendar-event".to_string(),
             RefDetails::Link { .. } => "link".to_string(),
-            RefDetails::Room { is_space, .. } => match is_space {
-                true => "space".to_string(),
-                false => "convo".to_string(),
-            },
+            RefDetails::Room { is_space, .. } if is_space.clone() => "space".to_string(),
+            RefDetails::Room { .. } => "chat".to_string(),
             RefDetails::Pin { .. } => "pin".to_string(),
             RefDetails::News { .. } => "news".to_string(),
         }
@@ -325,10 +323,8 @@ impl RefDetails {
     pub fn embed_action_str(&self) -> String {
         match self {
             RefDetails::Link { .. } => "link".to_string(),
-            RefDetails::Room { is_space, .. } => match is_space {
-                true => "space".to_string(),
-                false => "convo".to_string(),
-            },
+            RefDetails::Room { is_space, .. } if is_space.clone() => "space".to_string(),
+            RefDetails::Room { .. } => "chat".to_string(),
             RefDetails::Pin { .. } => "pin".to_string(),
             RefDetails::News { .. } => "news".to_string(),
             RefDetails::Task { action, .. } => action.to_string(),
