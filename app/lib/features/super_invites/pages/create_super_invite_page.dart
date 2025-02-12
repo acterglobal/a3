@@ -3,7 +3,6 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/checkbox_form_field.dart';
-import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/info_widget.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
@@ -36,7 +35,6 @@ class CreateSuperInvitePage extends ConsumerStatefulWidget {
 
 class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
     with SingleTickerProviderStateMixin {
-  late TabController tabController;
   final TextEditingController _tokenController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late SuperInvitesTokenUpdateBuilder tokenUpdater;
@@ -47,7 +45,6 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 2, vsync: this);
     _initializeToken();
   }
 
@@ -70,16 +67,31 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isEdit ? lang.editInviteCode : lang.createInviteCode),
+      appBar: _buildAppBarView(lang),
+      body: _buildBodyView(lang),
+    );
+  }
+
+  AppBar _buildAppBarView(L10n lang) {
+    return AppBar(
+      title: Text(
+        isEdit ? lang.editInviteCode : lang.createInviteCode,
       ),
-      body: Padding(
+    );
+  }
+
+  Widget _buildBodyView(L10n lang) {
+    return SingleChildScrollView(
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             isEdit && widget.token != null
-                ? InviteListItem(inviteToken: widget.token!)
+                ? InviteListItem(
+                    inviteToken: widget.token!,
+                    cardMargin: EdgeInsets.zero,
+                  )
                 : Form(
                     key: _formKey,
                     child: TextFormField(
@@ -87,16 +99,18 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
                       decoration: InputDecoration(hintText: lang.inviteCode),
                     ),
                   ),
-            SizedBox(height: 22),
-            if (!isEdit)
+            if (!isEdit) ...[
+              SizedBox(height: 22),
               InfoWidget(
                 title: lang.selectSpacesAndChats,
                 subTitle: lang.autoJoinSpacesAndChatsInfo,
               ),
+            ],
             SizedBox(height: 12),
-            Expanded(child: selectedRoomsSections(lang)),
+            selectRoomsSections(lang),
+            SizedBox(height: 12),
             createDmCheckBoxUI(lang),
-            SizedBox(height: 12),
+            SizedBox(height: 32),
             createInvite(lang),
           ],
         ),
@@ -104,7 +118,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
     );
   }
 
-  Widget selectedRoomsSections(L10n lang) {
+  Widget selectRoomsSections(L10n lang) {
     final spaces = List<String>.empty(growable: true);
     final chats = List<String>.empty(growable: true);
     for (final roomId in _roomIds) {
@@ -116,111 +130,100 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
       }
     }
 
-    final tabPadding = const EdgeInsets.all(8.0);
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: TabBar(
-                controller: tabController,
-                indicatorColor: Theme.of(context).primaryColor,
-                labelColor: Theme.of(context).primaryColor,
-                unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
-                dividerColor: Colors.transparent,
-                tabs: [
-                  Padding(padding: tabPadding, child: Text(lang.spaces)),
-                  Padding(padding: tabPadding, child: Text(lang.chats)),
-                ],
-              ),
-            ),
-            addRoomButtonUI(),
-          ],
+        roomSection(
+          title: lang.spaces,
+          rooms: spaces,
+          onTapAdd: () async {
+            final selectedSpaceId = await selectSpaceDrawer(
+              context: context,
+              currentSpaceId: null,
+              canCheck: 'CanInvite',
+              title: Text(lang.addSpace),
+            );
+            if (selectedSpaceId != null) {
+              if (!_roomIds.contains(selectedSpaceId)) {
+                tokenUpdater.addRoom(selectedSpaceId);
+                setState(() => _roomIds.add(selectedSpaceId));
+              }
+            }
+          },
         ),
-        Expanded(
-          child: TabBarView(
-            controller: tabController,
-            children: [
-              roomListView(lang, spaces),
-              roomListView(lang, chats),
-            ],
-          ),
+        roomSection(
+          title: lang.chats,
+          rooms: chats,
+          onTapAdd: () async {
+            final selectedChatId = await selectChatDrawer(
+              context: context,
+              currentChatId: null,
+              canCheck: 'CanInvite',
+              title: Text(lang.addChat),
+            );
+            if (selectedChatId != null) {
+              if (!_roomIds.contains(selectedChatId)) {
+                tokenUpdater.addRoom(selectedChatId);
+                setState(() => _roomIds.add(selectedChatId));
+              }
+            }
+          },
         ),
       ],
     );
   }
 
-  Widget addRoomButtonUI() {
-    final lang = L10n.of(context);
-    return IconButton(
-      onPressed: () async {
-        String? selectedRoomId;
-        if (tabController.index == 0) {
-          selectedRoomId = await selectSpaceDrawer(
-            context: context,
-            currentSpaceId: null,
-            canCheck: 'CanInvite',
-            title: Text(lang.addSpace),
-          );
-        } else if (tabController.index == 1) {
-          selectedRoomId = await selectChatDrawer(
-            context: context,
-            currentChatId: null,
-            canCheck: 'CanInvite',
-            title: Text(lang.addChat),
-          );
-        }
-        if (selectedRoomId != null) {
-          if (!_roomIds.contains(selectedRoomId)) {
-            tokenUpdater.addRoom(selectedRoomId);
-            setState(() => _roomIds.add(selectedRoomId!));
-          }
-        }
-      },
-      icon: const Icon(Atlas.plus_circle_thin),
-    );
-  }
-
-  Widget roomListView(L10n lang, List<String> rooms) {
-    if (rooms.isEmpty) {
-      return Center(
-        child: EmptyState(
-          subtitle: lang.noSpacesFound,
-          imageSize: 100,
-          image: tabController.index == 0
-              ? 'assets/images/empty_space.svg'
-              : 'assets/images/empty_chat.svg',
-        ),
-      );
-    }
-
-    return ListView.builder(
-      itemBuilder: (context, idx) {
-        final roomId = rooms[idx];
-        return RoomCard(
-          roomId: roomId,
-          onTap: () async {
-            final room = await ref.read(maybeRoomProvider(roomId).future);
-            if (!context.mounted) return;
-            if (room?.isSpace() == true) {
-              goToSpace(context, roomId);
-            } else {
-              goToChat(context, roomId);
-            }
-          },
-          trailing: InkWell(
-            onTap: () {
-              tokenUpdater.removeRoom(roomId);
-              setState(() => _roomIds.remove(roomId));
-            },
-            child: Icon(
-              PhosphorIcons.trash(),
-              color: Theme.of(context).colorScheme.error,
+  Widget roomSection({
+    required String title,
+    required List<String> rooms,
+    required VoidCallback onTapAdd,
+  }) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
             ),
-          ),
-        );
-      },
-      itemCount: rooms.length,
+            IconButton(
+              onPressed: onTapAdd,
+              icon: const Icon(Atlas.plus_circle_thin),
+            ),
+          ],
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemBuilder: (context, idx) {
+            final roomId = rooms[idx];
+            return RoomCard(
+              roomId: roomId,
+              onTap: () async {
+                final room = await ref.read(maybeRoomProvider(roomId).future);
+                if (!context.mounted) return;
+                if (room?.isSpace() == true) {
+                  goToSpace(context, roomId);
+                } else {
+                  goToChat(context, roomId);
+                }
+              },
+              trailing: InkWell(
+                onTap: () {
+                  tokenUpdater.removeRoom(roomId);
+                  setState(() => _roomIds.remove(roomId));
+                },
+                child: Icon(
+                  PhosphorIcons.trash(),
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+            );
+          },
+          itemCount: rooms.length,
+        ),
+      ],
     );
   }
 

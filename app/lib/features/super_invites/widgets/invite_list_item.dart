@@ -8,10 +8,12 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class InviteListItem extends StatelessWidget {
   final SuperInviteToken inviteToken;
+  final EdgeInsetsGeometry? cardMargin;
 
   const InviteListItem({
     super.key,
     required this.inviteToken,
+    this.cardMargin,
   });
 
   @override
@@ -23,6 +25,7 @@ class InviteListItem extends StatelessWidget {
     return ClipPath(
       clipper: MyClipper(),
       child: Card(
+        margin: cardMargin,
         child: ListTile(
           title: Text(token),
           subtitle: Text(
@@ -75,5 +78,5 @@ class MyClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(CustomClipper old) => false;
+  bool shouldReclip(CustomClipper oldClipper) => false;
 }
