@@ -23,12 +23,17 @@ class ReferenceDetailsItem extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => ItemPreviewCard(
-        title: typeFromRefDetails(refDetails) == ObjectType.space ? refDetails.roomDisplayName() : refDetails.title(),
-        refType: typeFromRefDetails(refDetails),
-        onTap: tapEnabled ? () => onTap(context, ref) : null,
-        margin: margin,
-      );
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    ObjectType? type = typeFromRefDetails(refDetails);
+
+    return ItemPreviewCard(
+      title: type == ObjectType.space ? refDetails.roomDisplayName() : refDetails.title(),
+      refType: type,
+      onTap: tapEnabled ? () => onTap(context, ref) : null,
+      margin: margin,
+    );
+  }
 
   void onTap(BuildContext context, WidgetRef ref) {
     final roomId = refDetails.roomIdStr();

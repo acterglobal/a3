@@ -25,7 +25,6 @@ class NewsSlideActions extends ConsumerWidget {
     final referenceDetails = newsReferencesList.first.refDetails();
     final evtType = NewsReferencesType.fromStr(referenceDetails.typeStr());
     final id = referenceDetails.targetIdStr() ?? '';
-    final roomId = referenceDetails.roomIdStr() ?? '';
     return switch (evtType) {
       NewsReferencesType.calendarEvent => EventItem(
           eventId: id,
@@ -45,7 +44,7 @@ class NewsSlideActions extends ConsumerWidget {
         ),
       NewsReferencesType.link =>
         renderLinkActionButton(context, ref, referenceDetails),
-      NewsReferencesType.space => RoomCard(roomId: roomId, refDetails: referenceDetails,),
+      NewsReferencesType.space => RoomCard(roomId: referenceDetails.roomIdStr() ?? '', refDetails: referenceDetails,),
       _ => renderNotSupportedAction(context),
     };
   }
