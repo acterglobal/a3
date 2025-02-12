@@ -40,13 +40,7 @@ class SuperInvitesPage extends ConsumerWidget {
                 ref.invalidate(superInvitesTokensProvider);
               },
             ),
-            IconButton(
-              icon: const Icon(Icons.add),
-              iconSize: 28,
-              onPressed: () {
-                context.pushNamed(Routes.createSuperInvite.name);
-              },
-            ),
+
             IconButton(
               key: createNewToken,
               icon: const Icon(Atlas.plus_circle_thin),
