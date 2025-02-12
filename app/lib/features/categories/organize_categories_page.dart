@@ -83,7 +83,7 @@ class _DraggableCategoriesListState
         categoryModelLocal: categoryList[categoryIndex],
         isShowDragHandle: true,
         headerBackgroundColor:
-            Theme.of(context).unselectedWidgetColor.withOpacity(0.7),
+            Theme.of(context).unselectedWidgetColor.withValues(alpha: 0.7),
         onClickEditCategory: () => callEditCategory(categoryIndex),
         onClickDeleteCategory: () => callDeleteCategory(categoryIndex),
       ),

@@ -3020,6 +3020,12 @@ object Client {
     /// listen to updates to any event type
     fn subscribe_event_type_stream(key: string) -> Result<Stream<bool>>;
 
+    /// listen to account data updates
+    fn subscribe_account_data_stream(key: string) -> Result<Stream<bool>>;
+
+    /// listen to account data updates of specific room
+    fn subscribe_room_account_data_stream(room: string, key: string) -> Result<Stream<bool>>;
+
     /// Find the room or wait until it becomes available
     fn wait_for_room(key: string, timeout: Option<u8>) -> Future<Result<bool>>;
 

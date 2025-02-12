@@ -112,9 +112,9 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              colorScheme.primary.withOpacity(0.7),
-              colorScheme.surface.withOpacity(0.5),
-              colorScheme.surface.withOpacity(0.1),
+              colorScheme.primary.withValues(alpha:0.7),
+              colorScheme.surface.withValues(alpha:0.5),
+              colorScheme.surface.withValues(alpha:0.1),
               colorScheme.secondaryContainer,
             ],
             begin: Alignment.topCenter,
