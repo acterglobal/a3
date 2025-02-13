@@ -64,7 +64,8 @@ extension ActerEditorStateHelpers on EditorState {
         for (final op in delta) {
           if (op.attributes != null && op.attributes?['@'] != null) {
             final mention = op.attributes!['@'] as MentionAttributes;
-            final displayText = mention.displayName ?? mention.mentionId;
+            final displayText =
+                mention.displayName ?? mention.mentionId.substring(1);
             final replacement = htmlText != null
                 ? '<a href="https://matrix.to/#/${mention.mentionId}">@$displayText</a>'
                 : '[@$displayText](https://matrix.to/#/${mention.mentionId})';

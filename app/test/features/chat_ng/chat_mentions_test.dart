@@ -256,28 +256,28 @@ void main() {
       );
     });
 
-    // test('handles mentions with missing displayName correctly', () {
-    //   final delta = Delta()
-    //     ..insert('Hello ')
-    //     ..insert(
-    //       uniqueMarker,
-    //       attributes: {
-    //         '@': MentionAttributes(
-    //           type: MentionType.user,
-    //           mentionId: '@user123',
-    //           displayName: null,
-    //         ),
-    //       },
-    //     );
-    //   final node = paragraphNode(delta: delta);
-    //   editorState.document.insert([0], [node]);
-    //   // verify markdown
-    //   final markdown = editorState.intoMarkdown();
-    //   expect(
-    //     editorState.mentionsParsedText(markdown, null).$1,
-    //     'Hello [@user123](https://matrix.to/#/@user123)',
-    //   );
-    // });
+    test('handles mentions with missing displayName correctly', () {
+      final delta = Delta()
+        ..insert('Hello ')
+        ..insert(
+          uniqueMarker,
+          attributes: {
+            '@': MentionAttributes(
+              type: MentionType.user,
+              mentionId: '@user123',
+              displayName: null,
+            ),
+          },
+        );
+      final node = paragraphNode(delta: delta);
+      editorState.document.insert([0], [node]);
+      // verify markdown
+      final markdown = editorState.intoMarkdown();
+      expect(
+        editorState.mentionsParsedText(markdown, null).$1,
+        'Hello [@user123](https://matrix.to/#/@user123)',
+      );
+    });
 
     test('processes multiple nodes with mixed content correctly', () {
       final delta1 = Delta()
