@@ -2201,12 +2201,26 @@ object MembershipChange {
 
 
 object Activity {
+    // generic
+
+    /// the event_id as a string
+    fn event_id_str() -> string;
+    /// the sender of this event as a string
+    fn sender_id_str() -> string;
+
+    /// the server receiving timestamp in milliseconds
+    fn origin_server_ts() -> u64;
+
+    /// the room_id of this event
+    fn room_id_str() -> string;
+
     /// the type of this activity as a string
     /// e.g. invited, invitationAccepted
     fn type_str() -> string;
 
     /// the details of this membership change activity
     fn membership_change() -> Option<MembershipChange>;
+
 
 }
 

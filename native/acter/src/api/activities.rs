@@ -12,6 +12,8 @@ use tokio_stream::wrappers::BroadcastStream;
 
 use super::{Client, RUNTIME};
 
+#[cfg(any(test, feature = "testing"))]
+use acter_core::activities::ActivityContent;
 #[derive(Clone, Debug)]
 pub struct MembershipChange(CoreMembershipChange);
 
@@ -38,12 +40,28 @@ pub struct Activity {
 
 impl Activity {
     #[cfg(any(test, feature = "testing"))]
-    pub fn inner(&self) -> CoreActivity {
-        self.inner.clone()
+    pub fn content(&self) -> &ActivityContent {
+        self.inner.content()
     }
 
     pub fn membership_change(&self) -> Option<MembershipChange> {
         self.inner.membership_change().map(MembershipChange)
+    }
+
+    pub fn sender_id_str(&self) -> String {
+        self.inner.event_meta().sender.to_string()
+    }
+
+    pub fn origin_server_ts(&self) -> u64 {
+        self.inner.event_meta().origin_server_ts.get().into()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.inner.event_meta().room_id.to_string()
+    }
+
+    pub fn event_id_str(&self) -> String {
+        self.inner.event_meta().event_id.to_string()
     }
 }
 

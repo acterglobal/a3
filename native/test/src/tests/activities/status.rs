@@ -1,4 +1,4 @@
-use acter_core::{activities::Activity, models::status::membership::MembershipChangeType};
+use acter_core::{activities::ActivityContent, models::status::membership::MembershipChangeType};
 use anyhow::{bail, Result};
 use matrix_sdk::ruma::OwnedRoomId;
 use tokio_retry::{
@@ -67,7 +67,7 @@ async fn invite_and_join() -> Result<()> {
     })
     .await?;
 
-    let Activity::MembershipChange(r) = activity.inner();
+    let ActivityContent::MembershipChange(r) = activity.content();
 
     assert!(matches!(r.change, MembershipChangeType::Invited));
     assert_eq!(r.as_str(), "invited");
@@ -108,11 +108,13 @@ async fn invite_and_join() -> Result<()> {
     })
     .await?;
 
-    let Activity::MembershipChange(r) = activity.inner();
+    let ActivityContent::MembershipChange(r) = activity.content();
+    let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::InvitationAccepted));
     assert_eq!(r.as_str(), "invitationAccepted");
     assert_eq!(r.user_id, to_invite_user_name);
+    assert_eq!(meta.sender, r.user_id);
 
     Ok(())
 }
@@ -149,11 +151,13 @@ async fn kicked() -> Result<()> {
     })
     .await?;
 
-    let Activity::MembershipChange(r) = activity.inner();
+    let ActivityContent::MembershipChange(r) = activity.content();
+    let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::Kicked));
     assert_eq!(r.as_str(), "kicked");
     assert_eq!(r.user_id, observer.user_id()?);
+    assert_eq!(meta.sender, admin.user_id()?);
     Ok(())
 }
 
@@ -196,11 +200,13 @@ async fn invite_and_rejected() -> Result<()> {
     })
     .await?;
 
-    let Activity::MembershipChange(r) = activity.inner();
+    let ActivityContent::MembershipChange(r) = activity.content();
+    let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::Invited));
     assert_eq!(r.as_str(), "invited");
     assert_eq!(r.user_id, to_invite_user_name);
+    assert_eq!(meta.sender, admin.user_id()?);
 
     // let the third accept the invite
 
@@ -237,11 +243,13 @@ async fn invite_and_rejected() -> Result<()> {
     })
     .await?;
 
-    let Activity::MembershipChange(r) = activity.inner();
+    let ActivityContent::MembershipChange(r) = activity.content();
+    let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::InvitationRejected));
     assert_eq!(r.as_str(), "invitationRejected");
     assert_eq!(r.user_id, to_invite_user_name);
+    assert_eq!(meta.sender, r.user_id);
 
     Ok(())
 }
@@ -278,11 +286,13 @@ async fn kickban_and_unban() -> Result<()> {
     })
     .await?;
 
-    let Activity::MembershipChange(r) = activity.inner();
+    let ActivityContent::MembershipChange(r) = activity.content();
+    let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::KickedAndBanned));
     assert_eq!(r.as_str(), "kickedAndBanned");
     assert_eq!(r.user_id, observer.user_id()?);
+    assert_eq!(meta.sender, admin.user_id()?);
 
     // ensure it was sent
     admin_room.unban_user(&observer.user_id()?, None).await?;
@@ -305,11 +315,13 @@ async fn kickban_and_unban() -> Result<()> {
     })
     .await?;
 
-    let Activity::MembershipChange(r) = activity.inner();
+    let ActivityContent::MembershipChange(r) = activity.content();
+    let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::Unbanned));
     assert_eq!(r.as_str(), "unbanned");
     assert_eq!(r.user_id, observer.user_id()?);
+    assert_eq!(meta.sender, admin.user_id()?);
     Ok(())
 }
 
@@ -345,10 +357,23 @@ async fn left() -> Result<()> {
     })
     .await?;
 
-    let Activity::MembershipChange(r) = activity.inner();
+    let ActivityContent::MembershipChange(r) = activity.content();
+    let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::Left));
     assert_eq!(r.as_str(), "left");
     assert_eq!(r.user_id, observer.user_id()?);
+    assert_eq!(meta.sender, observer.user_id()?);
+
+    // external API check
+    assert_eq!(activity.sender_id_str(), observer.user_id()?);
+    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
+    assert_eq!(activity.room_id_str(), room.room_id_str());
+    assert_eq!(activity.type_str(), "left");
+    assert_eq!(
+        activity.origin_server_ts(),
+        Into::<u64>::into(meta.origin_server_ts.get())
+    );
+
     Ok(())
 }
