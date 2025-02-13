@@ -1,4 +1,5 @@
 import 'package:acter/common/animations/like_animation.dart';
+import 'package:acter/common/widgets/visibility/shadow_effect_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -146,22 +147,24 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                         }
                       }
                     },
-                    child: _LikeWidget(
-                      size: Size(
-                        heartSize.value * 30,
-                        heartSize.value * 30,
+                    child: ShadowEffectWidget(
+                      child: _LikeWidget(
+                        size: Size(
+                          heartSize.value * 30,
+                          heartSize.value * 30,
+                        ),
+                        icon: widget.isLiked
+                            ? Icon(
+                                Atlas.heart,
+                                fill: 1.0,
+                                color: Theme.of(context).colorScheme.error,
+                              )
+                            : const Icon(Atlas.heart),
+                        color: widget.isLiked
+                            ? Theme.of(context).colorScheme.tertiary
+                            : widget.color,
+                        isSmall: false,
                       ),
-                      icon: widget.isLiked
-                          ? Icon(
-                              Atlas.heart,
-                              fill: 1.0,
-                              color: Theme.of(context).colorScheme.error,
-                            )
-                          : const Icon(Atlas.heart),
-                      color: widget.isLiked
-                          ? Theme.of(context).colorScheme.tertiary
-                          : widget.color,
-                      isSmall: false,
                     ),
                   ),
                   Align(
@@ -189,9 +192,11 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
             );
           },
         ),
-        Text(
-          widget.likeCount.toString(),
-          style: widget.style,
+        ShadowEffectWidget(
+          child: Text(
+            widget.likeCount.toString(),
+            style: widget.style,
+          ),
         ),
       ],
     );
@@ -231,7 +236,7 @@ class _SmallHeartWidget extends StatelessWidget {
       color: Theme.of(context)
           .colorScheme
           .tertiary
-          .withOpacity(smallHeartOpacity.value * 0.8),
+          .withValues(alpha:smallHeartOpacity.value * 0.8),
       size: 12,
     );
   }

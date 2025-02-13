@@ -44,6 +44,7 @@ use super::{
     typing::TypingController, verification::VerificationController, VecStringBuilder,
 };
 
+mod models;
 mod sync;
 
 pub use sync::{HistoryLoadState, SyncState};
@@ -463,6 +464,27 @@ impl Client {
         Ok(
             BroadcastStream::new(self.subscribe(ExecuteReference::ModelType(Cow::Owned(key))))
                 .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_account_data_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::AccountData(Cow::Owned(key))))
+                .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_room_account_data_stream(
+        &self,
+        room_id: String,
+        key: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::RoomAccountData(
+                RoomId::parse(room_id)?,
+                Cow::Owned(key),
+            )))
+            .map(|_| true),
         )
     }
 

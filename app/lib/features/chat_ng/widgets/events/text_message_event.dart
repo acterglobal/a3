@@ -125,7 +125,7 @@ class TextMessageEvent extends StatelessWidget {
       maxLines: _type == TextMessageType.reply ? 2 : null,
       defaultTextStyle: textTheme.bodySmall?.copyWith(
         color: _type == TextMessageType.notice
-            ? colorScheme.onSurface.withOpacity(0.5)
+            ? colorScheme.onSurface.withValues(alpha:0.5)
             : null,
         overflow: _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
       ),

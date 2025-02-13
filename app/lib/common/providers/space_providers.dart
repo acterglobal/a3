@@ -328,28 +328,59 @@ typedef RoomsAndRoomInfos = (List<String>, List<SpaceHierarchyRoomInfo>);
 final suggestedChatsProvider =
     FutureProvider.family<RoomsAndRoomInfos, String>((ref, spaceId) async {
   try {
-    final relatedSpaces =
-        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
-    final suggestedRooms = relatedSpaces.suggestedIds;
-    if (suggestedRooms.isEmpty) {
+    //Fetch suggested chat ids
+    final suggestedId = await ref.watch(suggestedIdsProvider(spaceId).future);
+
+    //Return empty lists if there no suggested chats
+    if (suggestedId.isEmpty) {
       return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
     }
-    final toIgnore = relatedSpaces.knownChats.toList();
-    final localRooms = relatedSpaces.knownChats
-        .where((r) => suggestedRooms.contains(r))
+
+    //Fetch Local and Remote Chats
+    final relatedSpaces =
+        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    final relatedChats =
+        await ref.watch(remoteChatRelationsProvider(spaceId).future);
+
+    //Filter suggested local and remote chats
+    final localSuggestedChats = relatedSpaces.knownChats
+        .where((roomId) => suggestedId.contains(roomId))
         .toList();
-    final roomHierarchy =
-        await ref.watch(spaceRemoteRelationsProvider(spaceId).future);
-    // filter out the known rooms
-    final remoteRooms = roomHierarchy
-        .where(
-          (r) =>
-              !r.isSpace() &&
-              suggestedRooms.contains(r.roomIdStr()) &&
-              !toIgnore.contains(r.roomIdStr()),
-        )
+    final remoteSuggestedChats = relatedChats
+        .where((room) => suggestedId.contains(room.roomIdStr()))
         .toList();
-    return (localRooms, remoteRooms);
+    return (localSuggestedChats, remoteSuggestedChats);
+  } on SpaceNotFound {
+    return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
+  }
+});
+
+final otherChatsProvider =
+    FutureProvider.family<RoomsAndRoomInfos, String>((ref, spaceId) async {
+  try {
+    //Fetch suggested chat ids
+    final suggestedId = await ref.watch(suggestedIdsProvider(spaceId).future);
+
+    //Fetch Local and Remote Chats
+    final relatedSpaces =
+        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    final relatedChats =
+        await ref.watch(remoteChatRelationsProvider(spaceId).future);
+
+    //Return local and remote chats directly if suggested ids is empty
+    if (suggestedId.isEmpty) {
+      return (relatedSpaces.knownChats, relatedChats);
+    }
+
+    //Exclude suggested chats
+    final localOtherChats = relatedSpaces.knownChats
+        .where((roomId) => !suggestedId.contains(roomId))
+        .toList();
+    final remoteOtherChats = relatedChats
+        .where((room) => !suggestedId.contains(room.roomIdStr()))
+        .toList();
+
+    return (localOtherChats, remoteOtherChats);
   } on SpaceNotFound {
     return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
   }
@@ -358,28 +389,59 @@ final suggestedChatsProvider =
 final suggestedSpacesProvider =
     FutureProvider.family<RoomsAndRoomInfos, String>((ref, spaceId) async {
   try {
-    final relatedSpaces =
-        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
-    final suggestedRooms = relatedSpaces.suggestedIds;
-    if (suggestedRooms.isEmpty) {
+    //Fetch suggested ids
+    final suggestedId = await ref.watch(suggestedIdsProvider(spaceId).future);
+
+    //Return empty lists if there no suggested sub-spaces
+    if (suggestedId.isEmpty) {
       return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
     }
-    final toIgnore = relatedSpaces.knownSubspaces.toList();
-    final localRooms = relatedSpaces.knownSubspaces
-        .where((r) => suggestedRooms.contains(r))
+
+    //Fetch Local and Remote sub-spaces
+    final relatedSpaces =
+        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    final remoteSubSpaces =
+        await ref.watch(remoteSubspaceRelationsProvider(spaceId).future);
+
+    //Filter suggested local and remote sub-spaces
+    final localSuggestedSpaces = relatedSpaces.knownSubspaces
+        .where((roomId) => suggestedId.contains(roomId))
         .toList();
-    final roomHierarchy =
-        await ref.watch(spaceRemoteRelationsProvider(spaceId).future);
-    // filter out the known rooms
-    final remoteRooms = roomHierarchy
-        .where(
-          (r) =>
-              r.isSpace() &&
-              suggestedRooms.contains(r.roomIdStr()) &&
-              !toIgnore.contains(r.roomIdStr()),
-        )
+    final remoteSuggestedSpaces = remoteSubSpaces
+        .where((room) => suggestedId.contains(room.roomIdStr()))
         .toList();
-    return (localRooms, remoteRooms);
+    return (localSuggestedSpaces, remoteSuggestedSpaces);
+  } on SpaceNotFound {
+    return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
+  }
+});
+
+final otherSubSpacesProvider =
+    FutureProvider.family<RoomsAndRoomInfos, String>((ref, spaceId) async {
+  try {
+    //Fetch suggested ids
+    final suggestedId = await ref.watch(suggestedIdsProvider(spaceId).future);
+
+    //Fetch Local and Remote sub-spaces
+    final relatedSpaces =
+        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    final remoteSubSpaces =
+        await ref.watch(remoteSubspaceRelationsProvider(spaceId).future);
+
+    //Return local and remote sub-spaces directly if suggested ids is empty
+    if (suggestedId.isEmpty) {
+      return (relatedSpaces.knownSubspaces, remoteSubSpaces);
+    }
+
+    //Exclude suggested sub-spaces
+    final localOtherChats = relatedSpaces.knownSubspaces
+        .where((roomId) => !suggestedId.contains(roomId))
+        .toList();
+    final remoteOtherChats = remoteSubSpaces
+        .where((room) => !suggestedId.contains(room.roomIdStr()))
+        .toList();
+
+    return (localOtherChats, remoteOtherChats);
   } on SpaceNotFound {
     return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
   }

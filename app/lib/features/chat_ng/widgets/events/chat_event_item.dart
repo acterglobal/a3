@@ -14,6 +14,7 @@ class ChatEventItem extends StatelessWidget {
   final String messageId;
   final RoomEventItem item;
   final bool isMe;
+  final bool canRedact;
   final bool isNextMessageInGroup;
   const ChatEventItem({
     super.key,
@@ -21,6 +22,7 @@ class ChatEventItem extends StatelessWidget {
     required this.messageId,
     required this.item,
     required this.isMe,
+    required this.canRedact,
     required this.isNextMessageInGroup,
   });
 
@@ -35,6 +37,7 @@ class ChatEventItem extends StatelessWidget {
           messageId: messageId,
           item: item,
           isMe: isMe,
+          canRedact: canRedact,
           isNextMessageInGroup: isNextMessageInGroup,
         ),
       'm.room.redaction' => isMe

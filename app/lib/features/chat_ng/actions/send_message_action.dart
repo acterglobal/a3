@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
-import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -40,15 +40,15 @@ Future<void> sendMessageAction({
     }
 
     // actually send it out
-    final inputState = ref.read(chatInputProvider);
+    final chatEditorState = ref.read(chatEditorStateProvider);
     final stream = await ref.read(timelineStreamProvider(roomId).future);
 
-    if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
-      final remoteId = inputState.selectedMessage?.remoteId;
+    if (chatEditorState.isReplying) {
+      final remoteId = chatEditorState.selectedMsgItem?.eventId();
       if (remoteId == null) throw 'remote id of sel msg not available';
       await stream.replyMessage(remoteId, draft);
-    } else if (inputState.selectedMessageState == SelectedMessageState.edit) {
-      final remoteId = inputState.selectedMessage?.remoteId;
+    } else if (chatEditorState.isEditing) {
+      final remoteId = chatEditorState.selectedMsgItem?.eventId();
       if (remoteId == null) throw 'remote id of sel msg not available';
       await stream.editMessage(remoteId, draft);
     } else {
@@ -56,19 +56,12 @@ Future<void> sendMessageAction({
     }
 
     ref.read(chatInputProvider.notifier).messageSent();
-    final transaction = textEditorState.transaction;
-    final nodes = transaction.document.root.children;
-    // delete all nodes of document (reset)
-    transaction.document.delete([0], nodes.length);
-    final delta = Delta()..insert('');
-    // insert empty text node
-    transaction.document.insert([0], [paragraphNode(delta: delta)]);
-    await textEditorState.apply(transaction, withUpdateSelection: false);
-    // FIXME: works for single line text, but doesn't get focus on multi-line (iOS)
-    textEditorState.moveCursorForward(SelectionMoveRange.line);
+    textEditorState.clear();
 
     // also clear composed state
     final convo = await ref.read(chatProvider(roomId).future);
+    final notifier = ref.read(chatEditorStateProvider.notifier);
+    notifier.unsetActions();
     if (convo != null) {
       await convo.saveMsgDraft(
         textEditorState.intoMarkdown(),

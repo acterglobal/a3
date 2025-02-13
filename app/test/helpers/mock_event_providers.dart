@@ -27,6 +27,25 @@ class MockAsyncCalendarEventNotifier
   }
 }
 
+class MockFindAsyncCalendarEventNotifier
+    extends AutoDisposeFamilyAsyncNotifier<CalendarEvent, String>
+    with Mock
+    implements AsyncCalendarEventNotifier {
+  final List<CalendarEvent> events;
+
+  MockFindAsyncCalendarEventNotifier({required this.events});
+
+  @override
+  Future<CalendarEvent> build(String arg) async {
+    for (final e in events) {
+      if (e.eventId().toString() == arg) {
+        return e;
+      }
+    }
+    throw 'Event not found';
+  }
+}
+
 class MockAsyncParticipantsNotifier
     extends AutoDisposeFamilyAsyncNotifier<List<String>, String>
     with Mock
@@ -108,7 +127,11 @@ class FakeUtcDateTime extends Fake implements UtcDateTime {
   int timestampMillis() => 10;
 }
 
-class MockUtcNowNotifier extends Mock implements UtcNowNotifier {}
+class MockUtcNowNotifier extends StateNotifier<DateTime>
+    implements UtcNowNotifier {
+  MockUtcNowNotifier({DateTime? state})
+      : super(state ?? DateTime.now().toUtc());
+}
 
 class MockEventId extends Mock implements EventId {
   final String fakeEventId;

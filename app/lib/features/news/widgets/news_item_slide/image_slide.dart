@@ -9,7 +9,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 final _log = Logger('a3::news::image_slide');
 
-class ImageSlide extends StatelessWidget {
+class ImageSlide extends StatefulWidget {
   final NewsSlide slide;
 
   const ImageSlide({
@@ -17,6 +17,11 @@ class ImageSlide extends StatelessWidget {
     required this.slide,
   });
 
+  @override
+  State<ImageSlide> createState() => _ImageSlideState();
+}
+
+class _ImageSlideState extends State<ImageSlide> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,7 +32,7 @@ class ImageSlide extends StatelessWidget {
 
   Widget renderImageContent() {
     return FutureBuilder<FfiBufferUint8>(
-      future: slide.sourceBinary(null),
+      future: widget.slide.sourceBinary(null),
       builder: (BuildContext context, AsyncSnapshot<FfiBufferUint8> snapshot) {
         final data = snapshot.data;
         final error = snapshot.error;
@@ -43,6 +48,7 @@ class ImageSlide extends StatelessWidget {
 
   Widget buildImageUI(Uint8List imageData) {
     return Container(
+      key: Key('image_container'),
       foregroundDecoration: BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.contain,
@@ -68,7 +74,28 @@ class ImageSlide extends StatelessWidget {
   ) {
     _log.severe('Failed to load image of slide', error, stackTrace);
     return Center(
-      child: Text(L10n.of(context).errorLoadingImage(error)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            PhosphorIcons.imageBroken(),
+            size: 100,
+          ),
+          SizedBox(height: 10),
+          Text(L10n.of(context).unableToLoadImage),
+          SizedBox(height: 20),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white, width: 1),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+            ),
+            child: TextButton(
+              onPressed: () => setState(() {}),
+              child: Text(L10n.of(context).tryAgain),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

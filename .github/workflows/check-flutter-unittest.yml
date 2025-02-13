@@ -27,7 +27,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: Set up flutter
         with:
-          flutter-version: '3.24'
+          flutter-version: '3.27.4'
           channel: 'stable'
       - name: Generate env
         working-directory: ${{ matrix.path }}
@@ -41,8 +41,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: codecov/codecov-action@v4
         with:
-          working-directory: ${{ matrix.path }}
-          directory: coverage
+          directory: ${{ matrix.path }}/coverage
           flags: unittest
           name: flutter-widget-tests
           token: ${{ secrets.CODECOV_TOKEN }}

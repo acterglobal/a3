@@ -1,9 +1,10 @@
 use derive_getters::Getters;
 use matrix_sdk::Client;
 
-use crate::{error::Error, executor::Executor, store::Store};
+use crate::{error::Error, executor::Executor, referencing::ExecuteReference, store::Store};
+use tokio::sync::broadcast::Receiver;
 
-/// Comment Event
+/// Core Client wrapper
 #[derive(Clone, Debug, Getters)]
 pub struct CoreClient {
     client: Client,
@@ -22,5 +23,9 @@ impl CoreClient {
             executor,
             client,
         })
+    }
+
+    pub fn subscribe<K: Into<ExecuteReference>>(&self, key: K) -> Receiver<()> {
+        self.executor.subscribe(key)
     }
 }

@@ -33,7 +33,7 @@ class ReactionSelector extends ConsumerWidget {
         ),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(20)),
-          color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
         ),
         child: _buildEmojiRow(context, ref),
       ),
@@ -41,17 +41,12 @@ class ReactionSelector extends ConsumerWidget {
   }
 
   Widget _buildEmojiRow(BuildContext context, WidgetRef ref) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Wrap(
+      direction: Axis.horizontal,
+      spacing: 10.0,
       children: [
-        Wrap(
-          direction: Axis.horizontal,
-          spacing: 10.0,
-          children: [
-            ..._buildEmojiButtons(context, ref),
-            _buildMoreButton(context, ref),
-          ],
-        ),
+        ..._buildEmojiButtons(context, ref),
+        _buildMoreButton(context, ref),
       ],
     );
   }

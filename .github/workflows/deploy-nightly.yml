@@ -7,16 +7,38 @@ concurrency:
 on:
   schedule:
    - cron: 0 1 * * 0-3,5-6
+  workflow_dispatch:
+    inputs:
+      patch_version:
+        description: 'Provide the patch version for this release'
+        required: true
+        default: '1'
+        type: choice
+        options:
+          - '0'
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          - '8'
+          - '9'
 
 permissions:
   contents: write
+
+env:
+  # Due to a typo the last needs to be prefixed with this
+  RELEASE_STUPIDITY_PREFIX: '1'
 
 jobs:
   run_checker:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
-      should_run: ${{ steps.check-new-commits.outputs.has-new-commits == 'true' && steps.check-changelog-files.outputs.has-changelog-files == 'true' }}
+      should_run: ${{  inputs.patch_version != null || (steps.check-new-commits.outputs.has-new-commits == 'true' && steps.check-changelog-files.outputs.has-changelog-files == 'true') }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,6 +69,8 @@ jobs:
             fi
 
   tags:
+    env:
+      PATCH_VERSION: ${{ inputs.patch_version || 0 }}
     runs-on: ubuntu-latest
     needs:
      - run_checker
@@ -55,31 +79,57 @@ jobs:
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
       version: ${{ steps.version.outputs.version }}
+      msix_version: ${{ steps.msix_version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
-      prev_tag: 'nightly-latest'
+      targets: 'all'
     steps:
       - id: tag
         run: echo "tag=`date +%F`" >> $GITHUB_OUTPUT
-      - id: build_num
-        run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
       - id: version
-        # the suffix 0 allows us to provide up to 9 more hotfixes on the same day
-        run: echo "version=`date +1.%y.%-m%d0`" >> $GITHUB_OUTPUT
+        run: |
+          VERSION=`date +1.%y.$RELEASE_STUPIDITY_PREFIX%-m%d$PATCH_VERSION`
+          echo "version=$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - id: msix_version
+        run: |
+          VERSION=`date +1.%y.%-m%d$PATCH_VERSION`
+          echo "version=$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - id: build_num
+        run: |
+          BUILD_NUM=`date +%s`
+          echo "build_num=$BUILD_NUM"
+          echo "build_num=$BUILD_NUM" >> $GITHUB_OUTPUT
   
+  create_draft_release:
+    runs-on: ubuntu-latest
+    needs:
+     - tags
+    steps:
+      - uses: actions/checkout@v4
+      # create temporary release to upload assets to
+      - name: Create Draft Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create nightly-${{ needs.tags.outputs.tag }} \
+              --prerelease --draft \
+              --title "Nightly ${{ needs.tags.outputs.tag }}"
+
   build:
     uses: ./.github/workflows/build-app.yml
     needs:
      - tags
+     - create_draft_release
     with:
       targets: android,linux,ios,macos,windows-exe # skip: windows-msix
       artifacts_prefix: 'nightly-'
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.version }}
-      release_title: "Nightly ${{ needs.tags.outputs.tag }}"
+      msix_version: ${{ needs.tags.outputs.msix_version }}
       release_tag: nightly-${{ needs.tags.outputs.tag }}
       release_env: 'nightly'
       release: true
-      prerelease: true
       env_extra: "IS_NIGHTLY=true"
     secrets: inherit
 
@@ -303,8 +353,6 @@ jobs:
       - changelog
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v4
         with:
@@ -322,18 +370,11 @@ jobs:
           git tag -f nightly-latest
           git push -f origin main nightly-${{ needs.tags.outputs.tag }} nightly-latest
       - name: Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
           # publish this nightly release now
-          draft: true
-          generate_release_notes: false
-          name: Nightly ${{ needs.tags.outputs.tag }}
-          tag_name: nightly-${{ needs.tags.outputs.tag }}
-          body_path: CHANGELOG.md
-          prerelease: true
-      - uses: eregon/publish-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_id: ${{ steps.create_release.outputs.id }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload nightly-${{ needs.tags.outputs.tag }} CHANGELOG.md
+          gh release edit nightly-${{ needs.tags.outputs.tag }} \
+            --prerelease --draft=false \
+            --note-file CHANGELOG.md

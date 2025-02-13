@@ -46,96 +46,49 @@ impl Client {
                     bail!("{key} is not a news");
                 };
                 let room = me.room_by_id_typed(content.room_id())?;
-                NewsEntry::new(me.clone(), room, content).await
+                Ok(NewsEntry::new(me.clone(), room, content))
             })
             .await?
     }
 
     pub async fn latest_news_entries(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
-        let mut news = Vec::new();
-        let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let me = self.clone();
-        RUNTIME
-            .spawn(async move {
-                let mut all_news = me
-                    .store()
-                    .get_list(&IndexKey::Section(SectionIndex::Boosts))
-                    .await?
-                    .filter_map(|any| {
-                        if let AnyActerModel::NewsEntry(t) = any {
-                            Some(t)
-                        } else {
-                            None
-                        }
-                    })
-                    .take_while(|_| {
-                        if count > 0 {
-                            count -= 1;
-                            true
-                        } else {
-                            false
-                        }
-                    });
-
-                let client = me.core.client();
-                for content in all_news {
-                    let room_id = content.room_id().to_owned();
-                    let room = match rooms_map.entry(room_id) {
-                        Entry::Occupied(t) => t.get().clone(),
-                        Entry::Vacant(e) => {
-                            if let Some(room) = client.get_room(e.key()) {
-                                e.insert(room.clone());
-                                room
-                            } else {
-                                /// User not part of the room anymore, ignore
-                                continue;
-                            }
-                        }
-                    };
-                    let news_entry = NewsEntry::new(me.clone(), room, content).await?;
-                    news.push(news_entry);
-                }
-                Ok(news)
-            })
+        Ok(self
+            .models_of_list_with_room(IndexKey::Section(SectionIndex::Boosts))
             .await?
+            .take_while(|_| {
+                if count > 0 {
+                    count -= 1;
+                    true
+                } else {
+                    false
+                }
+            })
+            .map(|(inner, room)| NewsEntry::new(self.clone(), room, inner))
+            .collect())
     }
 }
 
 impl Space {
     pub async fn latest_news_entries(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
-        let mut news = Vec::new();
-        let room_id = self.room_id().to_owned();
-        let client = self.client.clone();
         let room = self.room.clone();
-        RUNTIME
-            .spawn(async move {
-                let selected_news = client
-                    .store()
-                    .get_list(&IndexKey::RoomSection(room_id, SectionIndex::Boosts))
-                    .await?
-                    .filter_map(|any| {
-                        if let AnyActerModel::NewsEntry(t) = any {
-                            Some(t)
-                        } else {
-                            None
-                        }
-                    })
-                    .take_while(|_| {
-                        if count > 0 {
-                            count -= 1;
-                            true
-                        } else {
-                            false
-                        }
-                    });
-
-                for content in selected_news {
-                    news.push(NewsEntry::new(client.clone(), room.clone(), content).await?);
-                }
-
-                Ok(news)
-            })
+        let room_id = room.room_id().to_owned();
+        Ok(self
+            .client
+            .models_of_list_with_room_under_check(
+                IndexKey::RoomSection(room_id, SectionIndex::Boosts),
+                move |_r| Ok(room.clone()),
+            )
             .await?
+            .take_while(|_| {
+                if count > 0 {
+                    count -= 1;
+                    true
+                } else {
+                    false
+                }
+            })
+            .map(|(inner, room)| NewsEntry::new(self.client.clone(), room, inner))
+            .collect())
     }
 }
 
@@ -361,12 +314,12 @@ impl Deref for NewsEntry {
 
 /// Custom functions
 impl NewsEntry {
-    pub async fn new(client: Client, room: Room, content: models::NewsEntry) -> Result<Self> {
-        Ok(NewsEntry {
+    pub fn new(client: Client, room: Room, content: models::NewsEntry) -> Self {
+        NewsEntry {
             client,
             room,
             content,
-        })
+        }
     }
 
     pub fn slides_count(&self) -> u8 {
@@ -413,7 +366,7 @@ impl NewsEntry {
                 let AnyActerModel::NewsEntry(content) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a news")
                 };
-                NewsEntry::new(client, room, content).await
+                Ok(NewsEntry::new(client, room, content))
             })
             .await?
     }

@@ -1,5 +1,6 @@
 mod account_data;
 mod preview;
+mod subscription;
 
 pub use acter_core::spaces::{
     CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
@@ -63,6 +64,7 @@ use super::{
     push::{notification_mode_from_input, room_notification_mode_name},
 };
 use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
+pub use account_data::UserRoomSettings;
 pub use preview::RoomPreview;
 
 #[derive(Eq, PartialEq, Clone, strum::Display, strum::EnumString, Debug)]

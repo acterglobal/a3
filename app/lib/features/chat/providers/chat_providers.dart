@@ -45,15 +45,6 @@ final chatStateProvider =
   (ref, roomId) => ChatRoomNotifier(ref: ref, roomId: roomId),
 );
 
-final chatComposerDraftProvider = FutureProvider.autoDispose
-    .family<ComposeDraft?, String>((ref, roomId) async {
-  final chat = await ref.watch(chatProvider(roomId).future);
-  if (chat == null) {
-    return null;
-  }
-  return (await chat.msgDraft().then((val) => val.draft()));
-});
-
 final chatTopic =
     FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
   final c = await ref.watch(chatProvider(roomId).future);

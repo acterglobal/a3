@@ -76,12 +76,12 @@ class NewsSlideActions extends ConsumerWidget {
             title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: textTheme.labelMedium,
           ),
           subtitle: Text(
             uri,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
+            style: textTheme.labelSmall,
           ),
         ),
       );

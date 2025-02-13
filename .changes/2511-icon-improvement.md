@@ -1,1 +1,0 @@
-- [Improvement] : Better visualisation on custom icon selection option for Pin/Task-List/Category.

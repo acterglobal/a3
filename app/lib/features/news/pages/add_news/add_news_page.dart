@@ -67,7 +67,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         setState(() {
           selectedNewsPost = nextSlide;
           if (!document.isEmpty) {
+            // If the slide has content, update the editor state with it
             textEditorState = EditorState(document: document);
+          } else {
+            // If no content, create a blank editor state
+            textEditorState = EditorState.blank();
           }
         });
 
@@ -226,6 +230,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               Navigator.pop(context);
               final notifier = ref.read(newsStateProvider.notifier);
               await notifier.selectTaskListToShare(buildContext);
+            },
+            onShareLinkSelected: () async {
+              Navigator.pop(context);
+              final notifier = ref.read(newsStateProvider.notifier);
+              await notifier.enterLinkToShare(buildContext);
             },
           ),
         );

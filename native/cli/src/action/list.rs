@@ -136,13 +136,12 @@ impl List {
                     let news_count = sp.latest_news_entries(100).await?.len();
                     let task_lists = sp.task_lists().await?.len();
                     let pins = sp.pins().await?.len();
-                    let pinned_links = sp.pinned_links().await?.len();
                     let events_count = sp.calendar_events().await?.len();
                     println!(" - Objects: ");
                     println!("   * {news_count} NewsItems ");
                     println!("   * {task_lists} TaskList ");
                     println!("   * {events_count} Calendar Events ");
-                    println!("   * {pins} Pins of which {pinned_links} are links");
+                    println!("   * {pins} Pins ");
                 }
 
                 println!(); // give it space to breath
