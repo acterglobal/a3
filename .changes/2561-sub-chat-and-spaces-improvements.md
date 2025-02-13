@@ -1,2 +1,0 @@
-- [Improvement] : Suggested sub-chats and sub-spaces now show with their on section in Space Detail Screen
-- [New] : You can now see all the suggested items (sub-chats and sub-spaces) without any limit criteria

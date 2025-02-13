@@ -1,1 +1,0 @@
-- Fix runtime error on certain notification calls
