@@ -275,18 +275,20 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     // Calculate length from trigger to cursor
     final lengthToReplace = cursorPosition - atSymbolPosition;
     final mentionType = MentionType.fromStr(mentionTypeStr);
+    final uniqueMarker = '‖';
 
     transaction.replaceText(
       node,
       atSymbolPosition, // Start exactly from trigger
       lengthToReplace, // Replace everything including trigger
-      ' ',
+      uniqueMarker,
       attributes: {
         mentionTypeStr: MentionAttributes(
           type: mentionType,
           mentionId: id,
           displayName: displayName,
         ),
+        'inline': true,
       },
     );
 
