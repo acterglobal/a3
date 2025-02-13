@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
+import 'package:acter/features/super_invites/utils.dart';
 import 'package:acter/features/super_invites/widgets/invite_list_item.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -92,25 +93,26 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
   }
 
   Widget _buildBodyView(L10n lang) {
+    final token = widget.token;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            isEdit && widget.token != null
-                ? InviteListItem(
-                    inviteToken: widget.token!,
-                    cardMargin:
-                        EdgeInsets.symmetric(horizontal: 0, vertical: 12),
-                  )
-                : Form(
-                    key: _formKey,
-                    child: TextFormField(
-                      controller: _tokenController,
-                      decoration: InputDecoration(hintText: lang.inviteCode),
-                    ),
-                  ),
+            if (isEdit && token != null)
+              InviteListItem(
+                inviteToken: token,
+                cardMargin: EdgeInsets.symmetric(horizontal: 0, vertical: 12),
+              )
+            else
+              Form(
+                key: _formKey,
+                child: TextFormField(
+                  controller: _tokenController,
+                  decoration: InputDecoration(hintText: lang.inviteCode),
+                ),
+              ),
             if (!isEdit) ...[
               SizedBox(height: 22),
               InfoWidget(
