@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../helpers/test_util.dart';
 import 'invite_list_item_widget_test.dart';
+import 'mock_data/mock_super_invites.dart';
 
 void main() {
   group('InviteList Widget Tests', () {

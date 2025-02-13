@@ -264,6 +264,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
         if (isEdit) ...[
           Expanded(
             child: OutlinedButton(
+              key: CreateSuperInvitePage.deleteBtn,
               onPressed: _deleteInvite,
               style:
                   OutlinedButton.styleFrom(side: BorderSide(color: redColor)),
@@ -274,6 +275,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
         ],
         Expanded(
           child: ActerPrimaryActionButton(
+            key: CreateSuperInvitePage.submitBtn,
             onPressed: _submit,
             child: Text(isEdit ? lang.save : lang.createCode),
           ),
