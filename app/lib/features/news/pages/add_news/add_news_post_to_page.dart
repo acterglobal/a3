@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
@@ -21,9 +22,19 @@ class AddNewsPostToPage extends ConsumerStatefulWidget {
 class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
   int selectedOption = 1;
   ValueNotifier<bool> canPostBoost = ValueNotifier(false);
+  bool canLinkSpaces = false;
 
   @override
   Widget build(BuildContext context) {
+    final selectedSpaceId = ref.read(newsStateProvider).newsPostSpaceId;
+    if (selectedSpaceId != null) {
+      final membership =
+          ref.watch(roomMembershipProvider(selectedSpaceId)).valueOrNull;
+      canPostBoost.value = membership?.canString('CanPostNews') == true;
+      if (canPostBoost.value == false) {
+        selectedOption = 1;
+      }
+    }
     return Scaffold(
       appBar: appBarUI(),
       body: postToBodyUI(),
