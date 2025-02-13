@@ -5,12 +5,12 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('EditorState Mentions Tests', () {
+  group('chat-ng mentions unit tests', () {
     // for mentions
     final uniqueMarker = '‖';
     late EditorState editorState;
 
-    setUpAll(() {
+    setUp(() {
       editorState = EditorState.blank();
     });
 
