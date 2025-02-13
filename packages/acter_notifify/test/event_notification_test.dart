@@ -28,7 +28,7 @@ void main() {
       // Arrange: Set new date
       when(() => item.title()).thenReturn("24 January, 2025");
       // Arrange: Set parent data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.event.name);
       when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
       when(() => parent.title()).thenReturn("Social Hours 2025");
       // Arrange: Set sender user name
@@ -68,7 +68,7 @@ void main() {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.rsvpYes.name);
       // Arrange: Set parent object processing
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.event.name);
       when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
       when(() => parent.title()).thenReturn("Social Hours 2025");
       // Arrange: Set sender user name
@@ -105,7 +105,7 @@ void main() {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.rsvpMaybe.name);
       // Arrange: Set parent object processing
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.event.name);
       when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
       when(() => parent.title()).thenReturn("Social Hours 2025");
       // Arrange: Set sender user name
@@ -142,7 +142,7 @@ void main() {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.rsvpNo.name);
       // Arrange: Set parent object processing
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.event.name);
       when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
       when(() => parent.title()).thenReturn("Social Hours 2025");
       // Arrange: Set sender user name

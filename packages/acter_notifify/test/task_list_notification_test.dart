@@ -31,7 +31,7 @@ void main() {
   group("Title and body generation", () {
     test("Add task in TaskList with parent", () {
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskList.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskList.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
       when(() => parent.title()).thenReturn("2025 Goals");
       // Arrange: Set reference object content

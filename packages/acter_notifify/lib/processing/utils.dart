@@ -1,8 +1,8 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
-String parentPart(NotificationItemParent parent) {
+String parentPart(ActivityObject parent) {
   final emoji = parent.emoji();
-  final title = switch (parent.objectTypeStr()) {
+  final title = switch (parent.typeStr()) {
     'news' => "boost",
     _ => parent.title(),
   };
@@ -23,7 +23,7 @@ String getUserCentricTitlePart(
 }
 
 String getObjectCentricTitlePart(
-  NotificationItemParent parent,
+  ActivityObject parent,
   String suffix,
 ) {
   final parentInfo = parentPart(parent);

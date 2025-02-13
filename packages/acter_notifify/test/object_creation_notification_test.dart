@@ -27,7 +27,7 @@ void main() {
   group("Object creation : Title and body generation ", () {
     test("Pin creation with parent info", () {
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.pin.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.pin.name);
       when(() => parent.emoji()).thenReturn(MockObject.pin.emoji);
       when(() => parent.title()).thenReturn("The House");
       // Arrange: Set space name
@@ -45,7 +45,7 @@ void main() {
     });
     test("Event creation with parent info", () {
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.event.name);
       when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
       when(() => parent.title()).thenReturn("Meet-up");
       // Arrange: Set space name
@@ -63,7 +63,7 @@ void main() {
     });
     test("Task-List creation with parent info", () {
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskList.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskList.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
       when(() => parent.title()).thenReturn("2025 Goals");
       // Arrange: Set space name
@@ -82,7 +82,7 @@ void main() {
 
     test("Task-Item creation with parent info", () {
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Deployment");
       // Arrange: Set space name

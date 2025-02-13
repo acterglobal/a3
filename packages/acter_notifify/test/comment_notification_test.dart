@@ -28,7 +28,7 @@ void main() {
   group("Title and body generation", () {
     test("Comment on boost", () {
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.news.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.news.name);
       when(() => parent.emoji()).thenReturn(MockObject.news.emoji);
       // Arrange: Set sender user name
       final sender = MockNotificationSender(name: "Bernd Maur");
@@ -47,7 +47,7 @@ void main() {
 
     test("Comment on Pin", () {
       // Arrange: Set parent data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.pin.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.pin.name);
       when(() => parent.emoji()).thenReturn(MockObject.pin.emoji);
       // Arrange: Set sender user name
       final sender = MockNotificationSender(name: "Thorsten Schweitzer");
@@ -67,7 +67,7 @@ void main() {
 
     test("Comment on Event", () {
       // Arrange: Set parent data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.event.name);
       when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
       // Arrange: Set sender user name
       final sender = MockNotificationSender(name: "Patrick Andersen");
@@ -87,7 +87,7 @@ void main() {
 
     test("Comment on Task-List", () {
       // Arrange: Set parent data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskList.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskList.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
       // Arrange: Set sender user name
       final sender = MockNotificationSender(name: "Christine Knudsen");
@@ -107,7 +107,7 @@ void main() {
 
     test("Comment on Task-Item", () {
       // Arrange: Set parent data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       // Arrange: Set sender user name
       final sender = MockNotificationSender(name: "Bente Bang");

@@ -1,5 +1,8 @@
+use std::future;
+
 use acter_core::{activities::ActivityContent, models::status::membership::MembershipChangeType};
 use anyhow::{bail, Result};
+use futures::{pin_mut, StreamExt};
 use matrix_sdk::ruma::OwnedRoomId;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -28,7 +31,7 @@ async fn _setup_accounts(
     Ok(((admin, sync_state1), (observer, sync_state2), room_id))
 }
 
-async fn get_latest_activity(
+pub(crate) async fn get_latest_activity(
     cl: &Client,
     room_id: String,
     activity_type: &str,
@@ -41,10 +44,12 @@ async fn get_latest_activity(
     Retry::spawn(retry_strategy.clone(), move || {
         let room_activities = room_activities.clone();
         async move {
-            let Some(a) = room_activities
-                .iter()
-                .await?
-                .find(|f| f.type_str() == activity_type)
+            let stream = room_activities.iter().await?;
+            pin_mut!(stream);
+            let Some(a) = stream
+                .filter(|f| future::ready(f.type_str() == activity_type))
+                .next()
+                .await
             else {
                 bail!("activity not found")
             };

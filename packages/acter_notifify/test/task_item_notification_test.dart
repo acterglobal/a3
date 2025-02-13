@@ -26,7 +26,7 @@ void main() {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.taskComplete.name);
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
       when(() => item.title()).thenReturn("📋 Product TO-DO");
@@ -65,7 +65,7 @@ void main() {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.taskReOpen.name);
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
       when(() => item.title()).thenReturn("📋 Product TO-DO");
@@ -103,7 +103,7 @@ void main() {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.taskAccept.name);
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
       when(() => item.title()).thenReturn("📋 Product TO-DO");
@@ -141,7 +141,7 @@ void main() {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.taskDecline.name);
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
       when(() => item.title()).thenReturn("📋 Product TO-DO");
@@ -180,7 +180,7 @@ void main() {
       when(() => item.pushStyle())
           .thenReturn(PushStyles.taskDueDateChange.name);
       // Arrange: Set parent object data
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
       when(() => item.title()).thenReturn("24 January, 2025");

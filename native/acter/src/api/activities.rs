@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+pub use acter_core::activities::object::ActivityObject;
 use acter_core::{
     activities::Activity as CoreActivity,
     models::{status::membership::MembershipChange as CoreMembershipChange, ActerModel},
@@ -12,7 +13,6 @@ use tokio_stream::wrappers::BroadcastStream;
 
 use super::{Client, RUNTIME};
 
-#[cfg(any(test, feature = "testing"))]
 use acter_core::activities::ActivityContent;
 #[derive(Clone, Debug)]
 pub struct MembershipChange(CoreMembershipChange);
@@ -39,7 +39,6 @@ pub struct Activity {
 }
 
 impl Activity {
-    #[cfg(any(test, feature = "testing"))]
     pub fn content(&self) -> &ActivityContent {
         self.inner.content()
     }
@@ -90,24 +89,19 @@ impl Activities {
                         .map(|e| e.event_meta().event_id.to_string())
                         .skip(offset as usize)
                         .take(limit as usize)
-                        .collect(),
+                        .collect()
+                        .await,
                 )
             })
             .await?
     }
 
-    pub async fn iter(&self) -> anyhow::Result<impl Iterator<Item = CoreActivity>> {
-        Ok(self
-            .client
-            .store()
-            .get_list(&self.index)
-            .await?
-            .filter_map(|a| {
-                // potential optimization: do the check without conversation and
-                // return the event id if feasible
-                let event_id = a.event_id().to_string();
-                CoreActivity::try_from(a).ok()
-            }))
+    pub async fn iter(&self) -> anyhow::Result<impl Stream<Item = CoreActivity> + '_> {
+        let store = self.client.store();
+        Ok(
+            futures::stream::iter(self.client.store().get_list(&self.index).await?)
+                .filter_map(|a| async { CoreActivity::for_acter_model(store, a).await.ok() }),
+        )
     }
 
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {

@@ -106,7 +106,7 @@ impl From<OriginalMessageLikeEvent<PinEventContent>> for Pin {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct PinUpdate {
-    inner: PinUpdateEventContent,
+    pub(crate) inner: PinUpdateEventContent,
     meta: EventMeta,
 }
 

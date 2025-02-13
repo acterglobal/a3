@@ -30,7 +30,7 @@ void main() {
   group("Title and Body generation", () {
     test("Reaction on boost", () {
       // Arrange: Set parent object processing
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.news.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.news.name);
       when(() => parent.emoji()).thenReturn(MockObject.news.emoji);
       // Arrange: Set sender user name
       final sender = MockNotificationSender(name: "Bernd Maur");
@@ -46,7 +46,7 @@ void main() {
 
     test("Reaction on Pin", () {
       // Arrange: Set parent object processing
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.pin.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.pin.name);
       when(() => parent.emoji()).thenReturn(MockObject.pin.emoji);
       when(() => parent.title()).thenReturn("Candlesticks");
       // Arrange: Set sender user name
@@ -66,7 +66,7 @@ void main() {
 
     test("Reaction on Event", () {
       // Arrange: Set parent object processing
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.event.name);
       when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
       when(() => parent.title()).thenReturn("Social Hours 2025");
       // Arrange: Set sender user name
@@ -83,7 +83,7 @@ void main() {
 
     test("Reaction on Task-List", () {
       // Arrange: Set parent object processing
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskList.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskList.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
       when(() => parent.title()).thenReturn("New Year Goals");
       // Arrange: Set sender user name
@@ -100,7 +100,7 @@ void main() {
 
     test("Reaction on Task-Item", () {
       // Arrange: Set parent object processing
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
       // Arrange: Set sender user name

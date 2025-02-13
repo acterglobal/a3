@@ -27,7 +27,7 @@ void main() {
   group("Title and body generation", () {
     test("Add reference on Pin", () {
       // Arrange: Set parent object processing
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.pin.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.pin.name);
       when(() => parent.emoji()).thenReturn(MockObject.pin.emoji);
       when(() => parent.title()).thenReturn("The house");
       // Arrange: Set send user name
@@ -46,7 +46,7 @@ void main() {
 
     test("Add reference on Event", () {
       // Arrange: Set parent object processing
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.event.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.event.name);
       when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
       when(() => parent.title()).thenReturn("Social Hours 2025");
       // Arrange: Set send user name
@@ -65,7 +65,7 @@ void main() {
 
     test("Add reference on Task-List", () {
       // Arrange: Set parent object processing
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskList.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskList.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
       when(() => parent.title()).thenReturn("New Year Goals");
       // Arrange: Set send user name
@@ -84,7 +84,7 @@ void main() {
 
     test("Add reference on Task-Item", () {
       // Arrange: Set parent object processing
-      when(() => parent.objectTypeStr()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
       // Arrange: Set send user name

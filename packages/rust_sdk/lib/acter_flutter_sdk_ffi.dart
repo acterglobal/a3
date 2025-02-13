@@ -25657,6 +25657,47 @@ class Api {
       _MembershipChangeReasonReturn Function(
         int,
       )>();
+  late final _activityObjectTypeStrPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityObjectTypeStrReturn Function(
+            ffi.IntPtr,
+          )>>("__ActivityObject_type_str");
+
+  late final _activityObjectTypeStr = _activityObjectTypeStrPtr.asFunction<
+      _ActivityObjectTypeStrReturn Function(
+        int,
+      )>();
+  late final _activityObjectObjectIdStrPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityObjectObjectIdStrReturn Function(
+            ffi.IntPtr,
+          )>>("__ActivityObject_object_id_str");
+
+  late final _activityObjectObjectIdStr =
+      _activityObjectObjectIdStrPtr.asFunction<
+          _ActivityObjectObjectIdStrReturn Function(
+            int,
+          )>();
+  late final _activityObjectTitlePtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityObjectTitleReturn Function(
+            ffi.IntPtr,
+          )>>("__ActivityObject_title");
+
+  late final _activityObjectTitle = _activityObjectTitlePtr.asFunction<
+      _ActivityObjectTitleReturn Function(
+        int,
+      )>();
+  late final _activityObjectEmojiPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityObjectEmojiReturn Function(
+            ffi.IntPtr,
+          )>>("__ActivityObject_emoji");
+
+  late final _activityObjectEmoji = _activityObjectEmojiPtr.asFunction<
+      _ActivityObjectEmojiReturn Function(
+        int,
+      )>();
   late final _activityEventIdStrPtr = _lookup<
       ffi.NativeFunction<
           _ActivityEventIdStrReturn Function(
@@ -27719,50 +27760,6 @@ class Api {
       int Function(
         int,
       )>();
-  late final _notificationItemParentObjectTypeStrPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemParentObjectTypeStrReturn Function(
-            ffi.IntPtr,
-          )>>("__NotificationItemParent_object_type_str");
-
-  late final _notificationItemParentObjectTypeStr =
-      _notificationItemParentObjectTypeStrPtr.asFunction<
-          _NotificationItemParentObjectTypeStrReturn Function(
-            int,
-          )>();
-  late final _notificationItemParentObjectIdStrPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemParentObjectIdStrReturn Function(
-            ffi.IntPtr,
-          )>>("__NotificationItemParent_object_id_str");
-
-  late final _notificationItemParentObjectIdStr =
-      _notificationItemParentObjectIdStrPtr.asFunction<
-          _NotificationItemParentObjectIdStrReturn Function(
-            int,
-          )>();
-  late final _notificationItemParentTitlePtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemParentTitleReturn Function(
-            ffi.IntPtr,
-          )>>("__NotificationItemParent_title");
-
-  late final _notificationItemParentTitle =
-      _notificationItemParentTitlePtr.asFunction<
-          _NotificationItemParentTitleReturn Function(
-            int,
-          )>();
-  late final _notificationItemParentEmojiPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemParentEmojiReturn Function(
-            ffi.IntPtr,
-          )>>("__NotificationItemParent_emoji");
-
-  late final _notificationItemParentEmoji =
-      _notificationItemParentEmojiPtr.asFunction<
-          _NotificationItemParentEmojiReturn Function(
-            int,
-          )>();
   late final _notificationItemPushStylePtr = _lookup<
       ffi.NativeFunction<
           _NotificationItemPushStyleReturn Function(
@@ -53271,6 +53268,138 @@ class MembershipChange {
   }
 }
 
+class ActivityObject {
+  final Api _api;
+  final _Box _box;
+
+  ActivityObject._(this._api, this._box);
+
+  String typeStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityObjectTypeStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String objectIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityObjectObjectIdStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? title() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityObjectTitle(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String emoji() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityObjectEmoji(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class Activity {
   final Api _api;
   final _Box _box;
@@ -57657,138 +57786,6 @@ class NotificationRoom {
   }
 }
 
-class NotificationItemParent {
-  final Api _api;
-  final _Box _box;
-
-  NotificationItemParent._(this._api, this._box);
-
-  String objectTypeStr() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemParentObjectTypeStr(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  String objectIdStr() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemParentObjectIdStr(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  String? title() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemParentTitle(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  String emoji() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._notificationItemParentEmoji(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
 class NotificationItem {
   final Api _api;
   final _Box _box;
@@ -57867,7 +57864,7 @@ class NotificationItem {
     return tmp2;
   }
 
-  NotificationItemParent? parent() {
+  ActivityObject? parent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._notificationItemParent(
@@ -57879,9 +57876,9 @@ class NotificationItem {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_NotificationItemParent");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ActivityObject");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = NotificationItemParent._(_api, tmp4_1);
+    final tmp2 = ActivityObject._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -66373,6 +66370,44 @@ class _MembershipChangeReasonReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _ActivityObjectTypeStrReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _ActivityObjectObjectIdStrReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _ActivityObjectTitleReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _ActivityObjectEmojiReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
 class _ActivityEventIdStrReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
@@ -66888,44 +66923,6 @@ class _NotificationRoomRoomIdReturn extends ffi.Struct {
 }
 
 class _NotificationRoomDisplayNameReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-}
-
-class _NotificationItemParentObjectTypeStrReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-}
-
-class _NotificationItemParentObjectIdStrReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-}
-
-class _NotificationItemParentTitleReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
-class _NotificationItemParentEmojiReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
