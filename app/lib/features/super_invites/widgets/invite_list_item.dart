@@ -7,21 +7,24 @@ import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class InviteListItem extends StatelessWidget {
-  final SuperInviteToken inviteToken;
+  final SuperInviteToken? inviteToken;
   final EdgeInsetsGeometry? cardMargin;
 
   const InviteListItem({
     super.key,
-    required this.inviteToken,
+    this.inviteToken,
     this.cardMargin,
   });
 
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
-    final token = inviteToken.token();
-    final firstRoom = asDartStringList(inviteToken.rooms()).firstOrNull;
-    final acceptedCount = lang.usedTimes(inviteToken.acceptedCount());
+
+    if (inviteToken == null) return SizedBox.shrink();
+
+    final token = inviteToken!.token();
+    final firstRoom = asDartStringList(inviteToken!.rooms()).firstOrNull;
+    final acceptedCount = lang.usedTimes(inviteToken!.acceptedCount());
     return ClipPath(
       clipper: MyClipper(),
       child: Card(

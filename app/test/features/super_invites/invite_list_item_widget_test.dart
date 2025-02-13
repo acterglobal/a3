@@ -6,7 +6,16 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../helpers/mock_tasks_providers.dart';
 import '../../helpers/test_util.dart';
 
-class MockSuperInviteToken extends Mock implements SuperInviteToken {}
+class MockSuperInviteToken extends Mock implements SuperInviteToken {
+  @override
+  String token() => 'FakeInviteCode';
+
+  @override
+  FfiListFfiString rooms() => MockFfiListFfiString();
+
+  @override
+  int acceptedCount() => 0;
+}
 
 void main() {
   group('InviteListItem Widget Tests', () {
@@ -45,8 +54,7 @@ void main() {
       expect(find.byIcon(PhosphorIcons.share()), findsOneWidget);
     });
 
-    testWidgets('display share button when room is available',
-        (tester) async {
+    testWidgets('display share button when room is available', (tester) async {
       final inviteToken = MockSuperInviteToken();
 
       // Mock the methods of SuperInviteToken

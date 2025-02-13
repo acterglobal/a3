@@ -2311,6 +2311,7 @@
   "calenderWithEvents": "Calender with Events",
   "@calenderWithEvents": {},
   "pinNoLongerAvailable": "Pin no longer available",
+  "inviteCodeEmptyState": "No invite codes are generated yet",
   "pinDeletedOrFailedToLoad": "This may due to pin deletion or failed to load",
   "sharePin": "Share Pin",
   "selectPin": "Select Pin",

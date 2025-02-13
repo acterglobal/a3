@@ -100,7 +100,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (isEdit && token != null)
+            if (isEdit)
               InviteListItem(
                 inviteToken: token,
                 cardMargin: EdgeInsets.symmetric(horizontal: 0, vertical: 12),
