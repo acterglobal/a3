@@ -1,6 +1,6 @@
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
-import 'package:acter/features/news/pages/add_news_page.dart';
+import 'package:acter/features/news/pages/add_news/add_news_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
