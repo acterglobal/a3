@@ -82,7 +82,5 @@ class MentionMenu {
     );
 
     Overlay.of(context).insert(_menuEntry!);
-    editorState.service.keyboardService?.disable(showCursor: true);
-    editorState.service.scrollService?.disable();
   }
 }

@@ -96,16 +96,6 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
   final _focusNode = FocusNode();
   final _scrollController = ScrollController();
 
-  int _selectedIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNode.requestFocus();
-    });
-  }
-
   @override
   void dispose() {
     widget.onDismiss();
@@ -122,7 +112,7 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     if (suggestions == null) {
       return ErrorWidget(L10n.of(context).loadingFailed);
     }
-    final menuWidget = Column(
+    return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildMenuHeader(),
@@ -130,12 +120,6 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
         const SizedBox(height: 8),
         _buildMenuList(suggestions),
       ],
-    );
-
-    return KeyboardListener(
-      focusNode: _focusNode,
-      onKeyEvent: (event) => _handleKeyEvent(event, suggestions),
-      child: menuWidget,
     );
   }
 
@@ -165,86 +149,11 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
                   mentionId: mentionId,
                   displayName: displayName,
                   avatarOptions: options(mentionId, ref),
-                  isSelected: index == _selectedIndex,
                   onTap: () => _selectItem(mentionId, displayName),
                 );
               },
             ),
     );
-  }
-
-  KeyEventResult _handleKeyEvent(
-    KeyEvent event,
-    Map<String, String?> suggestions,
-  ) {
-    if (event is! KeyDownEvent) return KeyEventResult.ignored;
-
-    switch (event.logicalKey) {
-      case LogicalKeyboardKey.escape:
-        widget.onDismiss();
-        return KeyEventResult.handled;
-
-      case LogicalKeyboardKey.enter:
-        if (suggestions.isNotEmpty) {
-          final selectedItem = suggestions.entries.elementAt(_selectedIndex);
-          _selectItem(selectedItem.key, selectedItem.value);
-        }
-        widget.onDismiss();
-        return KeyEventResult.handled;
-
-      case LogicalKeyboardKey.arrowUp:
-        setState(() {
-          _selectedIndex =
-              (_selectedIndex - 1).clamp(0, suggestions.length - 1);
-        });
-        _scrollToSelected();
-        return KeyEventResult.handled;
-
-      case LogicalKeyboardKey.arrowDown:
-        setState(() {
-          _selectedIndex =
-              (_selectedIndex + 1).clamp(0, suggestions.length - 1);
-        });
-        _scrollToSelected();
-        return KeyEventResult.handled;
-
-      case LogicalKeyboardKey.backspace:
-        final selection = widget.editorState.selection;
-        if (selection == null) return KeyEventResult.handled;
-
-        final node = widget.editorState.getNodeAtPath(selection.end.path);
-        if (node == null) return KeyEventResult.handled;
-
-        // Get text before cursor
-        final text = node.delta?.toPlainText() ?? '';
-        final cursorPosition = selection.end.offset;
-        final mentionTriggers = [userMentionChar, roomMentionChar];
-
-        if (_canDeleteLastCharacter()) {
-          // Check if we're about to delete an mention symbol
-          if (cursorPosition > 0 &&
-              mentionTriggers.contains(text[cursorPosition - 1])) {
-            widget.onDismiss(); // Dismiss menu when is deleted
-          }
-          widget.editorState.deleteBackward();
-        } else {
-          // Workaround for editor regaining focus
-          widget.editorState.apply(
-            widget.editorState.transaction..afterSelection = selection,
-          );
-        }
-        return KeyEventResult.handled;
-
-      default:
-        if (event.character != null &&
-                !HardwareKeyboard.instance.isAltPressed &&
-                !HardwareKeyboard.instance.isMetaPressed ||
-            !HardwareKeyboard.instance.isShiftPressed) {
-          widget.editorState.insertTextAtCurrentSelection(event.character!);
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-    }
   }
 
   void _selectItem(String id, String? displayName) {
@@ -294,40 +203,5 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
 
     widget.editorState.apply(transaction);
     widget.onDismiss();
-  }
-
-  void _scrollToSelected() {
-    const double kItemHeight = 60;
-    final itemPosition = _selectedIndex * kItemHeight;
-    if (itemPosition < _scrollController.offset) {
-      _scrollController.animateTo(
-        itemPosition,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
-    } else if (itemPosition + kItemHeight >
-        _scrollController.offset +
-            _scrollController.position.viewportDimension) {
-      _scrollController.animateTo(
-        itemPosition +
-            kItemHeight -
-            _scrollController.position.viewportDimension,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-
-  bool _canDeleteLastCharacter() {
-    final selection = widget.editorState.selection;
-    if (selection == null || !selection.isCollapsed) {
-      return false;
-    }
-
-    final node = widget.editorState.getNodeAtPath(selection.start.path);
-    if (node?.delta == null) {
-      return false;
-    }
-    return selection.start.offset > 0;
   }
 }
