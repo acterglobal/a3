@@ -14,7 +14,10 @@ pub mod tasks;
 pub mod three_pid;
 
 pub use common::*;
-use matrix_sdk::event_handler::{HandlerKind, SyncEvent};
+use matrix_sdk::{
+    event_handler::{HandlerKind, SyncEvent},
+    ruma::events::AnySyncTimelineEvent,
+};
 use matrix_sdk_base::ruma::{
     events::{reaction, AnyTimelineEvent, EventTypeDeHelper, StaticEventContent},
     exports::{serde::de::Error as SerdeDeError, serde_json as smart_serde_json},
@@ -290,6 +293,9 @@ pub enum SyncAnyActerEvent {
     Reaction(reaction::SyncReactionEvent),
     ReadReceipt(read_receipt::SyncReadReceiptEvent),
     Rsvp(rsvp::SyncRsvpEvent),
+
+    // Regular Matrix / Ruma Event
+    RegularTimelineEvent(AnySyncTimelineEvent),
 }
 
 impl SyncAnyActerEvent {
@@ -323,6 +329,9 @@ impl SyncAnyActerEvent {
             Self::Reaction(e) => AnyActerEvent::Reaction(e.into_full_event(room_id)),
             Self::ReadReceipt(e) => AnyActerEvent::ReadReceipt(e.into_full_event(room_id)),
             Self::Rsvp(e) => AnyActerEvent::Rsvp(e.into_full_event(room_id)),
+            Self::RegularTimelineEvent(e) => {
+                AnyActerEvent::RegularTimelineEvent(e.into_full_event(room_id))
+            }
         }
     }
 }
@@ -469,32 +478,41 @@ impl<'de> serde::Deserialize<'de> for SyncAnyActerEvent {
                 Ok(Self::Reaction(event))
             }
 
-            _ => Err(SerdeDeError::unknown_variant(
-                &ev_type,
-                &[
-                    calendar::CalendarEventEventContent::TYPE,
-                    calendar::CalendarEventUpdateEventContent::TYPE,
-                    pins::PinEventContent::TYPE,
-                    pins::PinUpdateEventContent::TYPE,
-                    news::NewsEntryEventContent::TYPE,
-                    news::NewsEntryUpdateEventContent::TYPE,
-                    stories::StoryEventContent::TYPE,
-                    stories::StoryUpdateEventContent::TYPE,
-                    tasks::TaskListEventContent::TYPE,
-                    tasks::TaskListUpdateEventContent::TYPE,
-                    tasks::TaskEventContent::TYPE,
-                    tasks::TaskUpdateEventContent::TYPE,
-                    tasks::TaskSelfAssignEventContent::TYPE,
-                    tasks::TaskSelfUnassignEventContent::TYPE,
-                    comments::CommentEventContent::TYPE,
-                    comments::CommentUpdateEventContent::TYPE,
-                    attachments::AttachmentEventContent::TYPE,
-                    attachments::AttachmentUpdateEventContent::TYPE,
-                    rsvp::RsvpEventContent::TYPE,
-                    read_receipt::ReadReceiptEventContent::TYPE,
-                    reaction::ReactionEventContent::TYPE,
-                ],
-            )),
+            _ => {
+                if let Ok(event) = ::matrix_sdk_base::ruma::exports::serde_json::from_str::<
+                    AnySyncTimelineEvent,
+                >(json.get())
+                {
+                    Ok(Self::RegularTimelineEvent(event))
+                } else {
+                    Err(SerdeDeError::unknown_variant(
+                        &ev_type,
+                        &[
+                            calendar::CalendarEventEventContent::TYPE,
+                            calendar::CalendarEventUpdateEventContent::TYPE,
+                            pins::PinEventContent::TYPE,
+                            pins::PinUpdateEventContent::TYPE,
+                            news::NewsEntryEventContent::TYPE,
+                            news::NewsEntryUpdateEventContent::TYPE,
+                            stories::StoryEventContent::TYPE,
+                            stories::StoryUpdateEventContent::TYPE,
+                            tasks::TaskListEventContent::TYPE,
+                            tasks::TaskListUpdateEventContent::TYPE,
+                            tasks::TaskEventContent::TYPE,
+                            tasks::TaskUpdateEventContent::TYPE,
+                            tasks::TaskSelfAssignEventContent::TYPE,
+                            tasks::TaskSelfUnassignEventContent::TYPE,
+                            comments::CommentEventContent::TYPE,
+                            comments::CommentUpdateEventContent::TYPE,
+                            attachments::AttachmentEventContent::TYPE,
+                            attachments::AttachmentUpdateEventContent::TYPE,
+                            rsvp::RsvpEventContent::TYPE,
+                            read_receipt::ReadReceiptEventContent::TYPE,
+                            reaction::ReactionEventContent::TYPE,
+                        ],
+                    ))
+                }
+            }
         }
     }
 }
