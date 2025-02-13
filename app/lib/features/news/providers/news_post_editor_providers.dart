@@ -35,7 +35,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   Future<void> changeNewsPostSpaceId(BuildContext context) async {
     final spaceId = await selectSpaceDrawer(
       context: context,
-      canCheck: 'CanPostNews',
+      canCheck: 'CanInvite',
     );
     state = state.copyWith(newsPostSpaceId: spaceId);
   }
@@ -89,6 +89,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     selectedNewsSlide?.refDetails = refDetails;
     state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
+
   Future<void> enterLinkToShare(BuildContext context) async {
     showAddEditLinkBottomSheet(
       context: context,
@@ -102,7 +103,6 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
         state = state.copyWith(currentNewsSlide: selectedNewsSlide);
       },
     );
-
   }
 
   void changeTextSlideValue(String body, String? html) {
