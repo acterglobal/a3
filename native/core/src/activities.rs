@@ -1,4 +1,4 @@
-use matrix_sdk::ruma::OwnedEventId;
+use matrix_sdk::ruma::{events::room::create::RoomCreateEventContent, OwnedEventId};
 
 use crate::{
     client::CoreClient,
@@ -13,6 +13,8 @@ pub mod status;
 #[derive(Clone, Debug)]
 pub enum ActivityContent {
     MembershipChange(MembershipChange),
+    RoomCreate(RoomCreateEventContent),
+    RoomName(String),
 }
 
 #[derive(Clone, Debug)]
@@ -32,6 +34,8 @@ impl Activity {
     pub fn type_str(&self) -> String {
         match &self.inner {
             ActivityContent::MembershipChange(c) => c.as_str().to_owned(),
+            ActivityContent::RoomCreate(_) => "roomCreate".to_owned(),
+            ActivityContent::RoomName(_) => "roomName".to_owned(),
         }
     }
 
@@ -53,19 +57,24 @@ impl TryFrom<AnyActerModel> for Activity {
     type Error = crate::Error;
 
     fn try_from(mdl: AnyActerModel) -> Result<Self, Self::Error> {
-        if let AnyActerModel::RoomStatus(s) = mdl {
-            let meta = s.event_meta().clone();
-            match s.inner {
-                ActerSupportedRoomStatusEvents::MembershipChange(c) => {
-                    return Ok(Self::new(meta, ActivityContent::MembershipChange(c)))
-                }
-                ActerSupportedRoomStatusEvents::RoomCreate(_) => {}
-            }
+        let AnyActerModel::RoomStatus(s) = mdl else {
+            return Err(crate::Error::Custom(
+                "Converting model into activity not yet supported".to_string(),
+            ));
         };
+        let meta = s.event_meta().clone();
+        match s.inner {
+            ActerSupportedRoomStatusEvents::MembershipChange(c) => {
+                Ok(Self::new(meta, ActivityContent::MembershipChange(c)))
+            }
+            ActerSupportedRoomStatusEvents::RoomCreate(c) => {
+                Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
+            }
+            ActerSupportedRoomStatusEvents::RoomName(c) => {
+                Ok(Self::new(meta, ActivityContent::RoomName(c)))
+            }
+        }
         // fallback for everything else for now
-        Err(crate::Error::Custom(
-            "Converting model into activity not yet supported".to_string(),
-        ))
     }
 }
 

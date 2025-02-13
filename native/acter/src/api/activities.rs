@@ -85,22 +85,29 @@ impl Activities {
         RUNTIME
             .spawn(async move {
                 anyhow::Ok(
-                    me.client
-                        .store()
-                        .get_list(&me.index)
+                    me.iter()
                         .await?
-                        .filter_map(|a| {
-                            // potential optimization: do the check without conversation and
-                            // return the event id if feasible
-                            let event_id = a.event_id().to_string();
-                            CoreActivity::try_from(a).map(|_| event_id).ok()
-                        })
+                        .map(|e| e.event_meta().event_id.to_string())
                         .skip(offset as usize)
                         .take(limit as usize)
                         .collect(),
                 )
             })
             .await?
+    }
+
+    pub async fn iter(&self) -> anyhow::Result<impl Iterator<Item = CoreActivity>> {
+        Ok(self
+            .client
+            .store()
+            .get_list(&self.index)
+            .await?
+            .filter_map(|a| {
+                // potential optimization: do the check without conversation and
+                // return the event id if feasible
+                let event_id = a.event_id().to_string();
+                CoreActivity::try_from(a).ok()
+            }))
     }
 
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {

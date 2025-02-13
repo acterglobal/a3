@@ -6,7 +6,7 @@ use tokio_retry::{
     Retry,
 };
 
-use acter::{Client, SyncState};
+use acter::{Activity, Client, SyncState};
 
 use crate::utils::{random_user, random_users_with_random_space};
 
@@ -26,6 +26,73 @@ async fn _setup_accounts(
     sync_state2.await_has_synced_history().await?;
 
     Ok(((admin, sync_state1), (observer, sync_state2), room_id))
+}
+
+async fn get_latest_activity(
+    cl: &Client,
+    room_id: String,
+    activity_type: &str,
+) -> Result<Activity> {
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let observer_room_activities = cl.activities_for_room(room_id)?;
+
+    // check the create event
+    let room_activities = observer_room_activities.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let room_activities = room_activities.clone();
+        async move {
+            let Some(a) = room_activities
+                .iter()
+                .await?
+                .find(|f| f.type_str() == activity_type)
+            else {
+                bail!("activity not found")
+            };
+            cl.activity(a.event_meta().event_id.to_string()).await
+        }
+    })
+    .await
+}
+
+#[tokio::test]
+async fn initial_events() -> Result<()> {
+    let _ = env_logger::try_init();
+    let ((admin, _handle1), (observer, _handle2), room_id) =
+        _setup_accounts("room-create-activity").await?;
+
+    // ensure the roomName works on both
+    let activity = get_latest_activity(&admin, room_id.to_string(), "roomName").await?;
+    assert_eq!(activity.type_str(), "roomName");
+
+    let activity = get_latest_activity(&observer, room_id.to_string(), "roomName").await?;
+    assert_eq!(activity.type_str(), "roomName");
+
+    // // check the create event
+    // let room_activities = observer_room_activities.clone();
+    // let created = Retry::spawn(retry_strategy.clone(), move || {
+    //     let room_activities = room_activities.clone();
+    //     async move {
+    //         let Some(a) = room_activities
+    //             .iter()
+    //             .await?
+    //             .find(|f| f.type_str() == "roomCreated")
+    //         else {
+    //             bail!("no create activity found")
+    //         };
+    //         Ok(a)
+    //     }
+    // })
+    // .await?;
+    // assert_eq!(created.type_str(), "created");
+
+    // let ActivityContent::MembershipChange(r) = activity.content() else {
+    //     bail!("not a membership event");}
+    // ;
+    // assert!(matches!(r.change, MembershipChangeType::Invited));
+    // assert_eq!(r.as_str(), "invited");
+    // assert_eq!(r.user_id, to_invite_user_name);
+
+    Ok(())
 }
 
 #[tokio::test]
@@ -67,7 +134,9 @@ async fn invite_and_join() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content();
+    let ActivityContent::MembershipChange(r) = activity.content() else {
+        bail!("not a membership event");
+    };
 
     assert!(matches!(r.change, MembershipChangeType::Invited));
     assert_eq!(r.as_str(), "invited");
@@ -108,7 +177,9 @@ async fn invite_and_join() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content();
+    let ActivityContent::MembershipChange(r) = activity.content() else {
+        bail!("not a membership event");
+    };
     let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::InvitationAccepted));
@@ -151,7 +222,9 @@ async fn kicked() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content();
+    let ActivityContent::MembershipChange(r) = activity.content() else {
+        bail!("not a membership event");
+    };
     let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::Kicked));
@@ -200,7 +273,9 @@ async fn invite_and_rejected() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content();
+    let ActivityContent::MembershipChange(r) = activity.content() else {
+        bail!("not a membership event");
+    };
     let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::Invited));
@@ -243,7 +318,9 @@ async fn invite_and_rejected() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content();
+    let ActivityContent::MembershipChange(r) = activity.content() else {
+        bail!("not a membership event");
+    };
     let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::InvitationRejected));
@@ -286,7 +363,9 @@ async fn kickban_and_unban() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content();
+    let ActivityContent::MembershipChange(r) = activity.content() else {
+        bail!("not a membership event");
+    };
     let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::KickedAndBanned));
@@ -315,7 +394,9 @@ async fn kickban_and_unban() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content();
+    let ActivityContent::MembershipChange(r) = activity.content() else {
+        bail!("not a membership event");
+    };
     let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::Unbanned));
@@ -357,7 +438,9 @@ async fn left() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content();
+    let ActivityContent::MembershipChange(r) = activity.content() else {
+        bail!("not a membership event");
+    };
     let meta = activity.event_meta();
 
     assert!(matches!(r.change, MembershipChangeType::Left));
