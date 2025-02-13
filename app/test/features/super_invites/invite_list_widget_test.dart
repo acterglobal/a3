@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../helpers/test_util.dart';
-import 'invite_list_item_widget_test.dart';
 import 'mock_data/mock_super_invites.dart';
 
 void main() {
@@ -28,10 +27,12 @@ void main() {
       expect(find.byType(ListView), findsNothing);
     });
     testWidgets('List of invites available', (tester) async {
-      final override = superInvitesTokensProvider.overrideWith((list) => [
-            MockSuperInviteToken(),
-            MockSuperInviteToken(),
-          ]);
+      final override = superInvitesTokensProvider.overrideWith(
+        (list) => [
+          MockSuperInviteToken(),
+          MockSuperInviteToken(),
+        ],
+      );
       await createWidgetUnderTest(tester: tester, overrides: [override]);
       await tester.pumpAndSettle();
       expect(find.byType(ListView), findsOneWidget);
