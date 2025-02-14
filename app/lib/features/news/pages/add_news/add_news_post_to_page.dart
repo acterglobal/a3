@@ -3,6 +3,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/news/actions/submit_news.dart';
+import 'package:acter/features/news/actions/submit_story.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
@@ -76,7 +77,9 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
         Padding(
           padding: const EdgeInsets.all(18),
           child: ActerPrimaryActionButton(
-            onPressed: () => sendNews(context, ref),
+            onPressed: () => selectedOption == 1
+                ? sendStory(context, ref)
+                : sendNews(context, ref),
             child: Text(lang.post.toUpperCase()),
           ),
         ),
