@@ -25,9 +25,8 @@ class ReferenceDetailsItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ObjectType? type = typeFromRefDetails(refDetails);
-
     return ItemPreviewCard(
-      title: type == ObjectType.space
+      title: type == ObjectType.space || type == ObjectType.chat
           ? refDetails.roomDisplayName()
           : refDetails.title(),
       refType: type,
@@ -59,7 +58,7 @@ class ReferenceDetailsItem extends ConsumerWidget {
           uri: Uri.parse(refDetails.generateInternalLink(false)),
         );
       },
-      headerInfo: type != ObjectType.space ? headerInfo(context) : null,
+      headerInfo: type != ObjectType.space && type != ObjectType.chat ? headerInfo(context) : null,
     );
   }
 

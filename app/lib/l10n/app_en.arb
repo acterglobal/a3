@@ -2319,6 +2319,7 @@
   "selectEvent": "Select Event",
   "shareTaskList": "Share TaskList",
   "shareSpace": "Share Space",
+  "shareChat": "Share Chat",
   "addBoost": "Add Boost",
   "@addBoost": {},
   "addTaskList": "Add TaskList",
