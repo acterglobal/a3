@@ -60,7 +60,7 @@ version = "2.5.0"
 features = ["serde"]
 
 [workspace.dependencies]
-strum = { version = "0.26.1", features = ["derive"] }
+strum = { version = "0.27.0", features = ["derive"] }
 base64ct = "1.6.0"
 derive-getters = "0.5.0"
 derive_builder = "0.20.0"
