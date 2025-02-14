@@ -2,7 +2,8 @@ enum NewsReferencesType {
   calendarEvent,
   pin,
   taskList,
-  link;
+  link,
+  space;
 
   static NewsReferencesType? fromStr(String typeStr) {
     return values.asNameMap()[_toCamelCase(typeStr)];

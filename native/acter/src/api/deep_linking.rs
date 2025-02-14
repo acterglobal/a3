@@ -5,12 +5,13 @@ use crate::{Client, RUNTIME};
 use acter_core::events::{ObjRef as CoreObjRef, RefDetails as CoreRefDetails};
 use acter_core::share_link::api;
 use anyhow::{bail, Result};
+use matrix_sdk::Client as SdkClient;
 use ruma::{OwnedEventId, OwnedRoomId, OwnedServerName};
 use urlencoding::encode;
 
 #[derive(Clone)]
 pub struct ObjRef {
-    client: Client,
+    client: SdkClient,
     inner: CoreObjRef,
 }
 
@@ -22,7 +23,7 @@ impl Deref for ObjRef {
 }
 
 impl ObjRef {
-    pub(crate) fn new(client: Client, inner: CoreObjRef) -> Self {
+    pub(crate) fn new(client: SdkClient, inner: CoreObjRef) -> Self {
         Self { client, inner }
     }
 
@@ -35,7 +36,7 @@ impl ObjRef {
 }
 pub struct RefDetails {
     inner: CoreRefDetails,
-    client: Client,
+    client: SdkClient,
 }
 
 impl Deref for RefDetails {
@@ -48,11 +49,12 @@ impl Deref for RefDetails {
 pub fn new_link_ref_details(title: String, uri: String) -> Result<CoreRefDetails> {
     Ok(CoreRefDetails::Link { title, uri })
 }
+
 impl Client {
     /// create a link ref details
     pub fn new_link_ref_details(&self, title: String, uri: String) -> Result<RefDetails> {
         Ok(RefDetails::new(
-            self.clone(),
+            self.core.client().clone(),
             new_link_ref_details(title, uri)?,
         ))
     }
@@ -83,14 +85,26 @@ fn generate_object_link(
     )
 }
 
+fn generate_room_link(room_id: &OwnedRoomId, via: &[OwnedServerName]) -> String {
+    let room_id = &room_id.to_string()[1..];
+    format!(
+        "matrix:roomid/{room_id}/?{}",
+        via.iter()
+            .map(|v| format!("via={}", encode(v.as_str())))
+            .collect::<Vec<String>>()
+            .join("&")
+    )
+}
+
 impl RefDetails {
-    pub(crate) fn new(client: Client, inner: CoreRefDetails) -> Self {
+    pub(crate) fn new(client: SdkClient, inner: CoreRefDetails) -> Self {
         Self { client, inner }
     }
 
     pub fn can_generate_internal_link(&self) -> bool {
         match &self.inner {
             CoreRefDetails::Link { title, uri } => false,
+            CoreRefDetails::Room { room_id, .. } => true, // always
             CoreRefDetails::Task { room_id, .. }
             | CoreRefDetails::TaskList { room_id, .. }
             | CoreRefDetails::News { room_id, .. }
@@ -102,6 +116,12 @@ impl RefDetails {
     pub fn generate_internal_link(&self, include_preview: bool) -> Result<String> {
         Ok(match &self.inner {
             CoreRefDetails::Link { title, uri } => bail!("Link can't be made into internal link"),
+            CoreRefDetails::Room {
+                room_id,
+                is_space,
+                via,
+                preview,
+            } => generate_room_link(room_id, via.as_slice()),
             CoreRefDetails::Task {
                 target_id,
                 room_id,
@@ -243,7 +263,7 @@ impl RefDetails {
     }
 
     pub async fn generate_external_link(&self) -> Result<String> {
-        let c = self.client.core.client().clone();
+        let c = self.client.clone();
         let inner = self.inner.clone();
         RUNTIME
             .spawn(async move {

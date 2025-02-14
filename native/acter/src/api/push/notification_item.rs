@@ -4,7 +4,7 @@ use acter_core::{
         attachments::{AttachmentContent, FallbackAttachmentContent},
         news::{FallbackNewsContent, NewsContent},
         rsvp::RsvpStatus,
-        AnyActerEvent, RefDetails, SyncAnyActerEvent, UtcDateTime,
+        AnyActerEvent, RefDetails, RefPreview, SyncAnyActerEvent, UtcDateTime,
     },
     models::{ActerModel, AnyActerModel, Attachment},
     push::default_rules,
@@ -339,10 +339,7 @@ impl NotificationItem {
         self.inner.room_invite().map(|r| r.to_string())
     }
     pub fn has_image(&self) -> bool {
-        self.msg_content
-            .as_ref()
-            .and_then(|a| a.source())
-            .is_some()
+        self.msg_content.as_ref().and_then(|a| a.source()).is_some()
     }
     pub async fn image(&self) -> Result<FfiBuffer<u8>> {
         #[allow(clippy::diverging_sub_expression)]
@@ -525,7 +522,17 @@ impl NotificationItemBuilder {
                 _ => &mut builder,
             },
             ActivityContent::Reference { object, details } => {
-                if let Some(title) = details.title() {
+                if let RefDetails::Room {
+                    preview:
+                        RefPreview {
+                            room_display_name: Some(room_name),
+                            ..
+                        },
+                    ..
+                } = details
+                {
+                    builder.title(room_name.clone())
+                } else if let Some(title) = details.title() {
                     builder.title(match details {
                         RefDetails::CalendarEvent { .. } => format!("🗓️ {title}"),
                         RefDetails::Pin { .. } => format!("📌 {title}"),
@@ -533,6 +540,7 @@ impl NotificationItemBuilder {
                         RefDetails::Task { .. } => format!("☑️ {title}"),
                         RefDetails::TaskList { .. } => format!("📋 {title}"),
                         RefDetails::Link { .. } => format!("🔗 {title}"),
+                        RefDetails::Room { .. } => title,
                     })
                 } else {
                     builder.title("Reference".to_owned())
