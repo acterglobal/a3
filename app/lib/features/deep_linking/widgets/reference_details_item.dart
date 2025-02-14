@@ -50,9 +50,10 @@ class ReferenceDetailsItem extends ConsumerWidget {
     showRoomPreview(
       context: context,
       roomIdOrAlias: roomId,
+      fallbackRoomDisplayName: refDetails.roomDisplayName(),
       serverNames: serverNames,
-        onForward: (context, ref, room) async {
-          handleDeepLinkUri(
+      onForward: (context, ref, room) async {
+        handleDeepLinkUri(
           context: context,
           ref: ref,
           uri: Uri.parse(refDetails.generateInternalLink(false)),
