@@ -14,7 +14,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut sisko, mut kyra, _, room_id) = random_users_with_random_convo("detect_read").await?;
 
-    let sisko_sync = sisko.start_sync();
+    let sisko_sync = sisko.start_sync().await?;
     sisko_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -30,7 +30,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
 
     let sisko_convo = sisko.convo(room_id.to_string()).await?;
 
-    let kyra_sync = kyra.start_sync();
+    let kyra_sync = kyra.start_sync().await?;
     kyra_sync.await_has_synced_history().await?;
 
     for invited in kyra.invited_rooms().iter() {

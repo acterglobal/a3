@@ -10,8 +10,7 @@ use anyhow::{bail, Result};
 async fn history_sync_restart() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("history_sync__restart").await?;
-    let state_sync = user.start_sync();
-    let sync_controller = user.start_simple_sync().await?;
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -45,14 +44,14 @@ async fn history_sync_restart() -> Result<()> {
 
     // stop syncing
     state_sync.cancel();
-    sync_controller.cancel();
+    user.sync_controller().cancel().await?;
 
     let slides = space.latest_news_entries(1).await?;
     let final_entry = slides.first().unwrap();
     let news_sub = final_entry.subscribe();
 
     // restarting sync. We do _not_ expect to see the subscribe issue anything
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     assert!(news_sub.is_empty(), "We received updates about the entry");

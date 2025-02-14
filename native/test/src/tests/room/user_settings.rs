@@ -16,7 +16,7 @@ fn is_default(settings: &UserRoomSettings) {
 async fn has_seen_suggested_test() -> Result<()> {
     let (mut user, room_id) = random_user_with_random_space("has_seen_suggested").await?;
 
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -78,7 +78,7 @@ async fn has_seen_suggested_test() -> Result<()> {
 async fn include_cal_sync_test() -> Result<()> {
     let (mut user, room_id) = random_user_with_random_space("include_cal_sync").await?;
 
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up

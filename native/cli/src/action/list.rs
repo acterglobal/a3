@@ -27,7 +27,7 @@ impl List {
     pub async fn run(&self) -> Result<()> {
         let mut client = self.login.client().await?;
         info!(" - Syncing -");
-        let sync_state = client.start_sync();
+        let sync_state = client.start_sync().await?;
 
         let mut is_synced = sync_state.first_synced_rx();
         while is_synced.next().await != Some(true) {} // let’s wait for it to have synced

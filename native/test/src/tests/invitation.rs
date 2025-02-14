@@ -10,10 +10,10 @@ async fn load_pending_invitation() -> Result<()> {
     let _ = env_logger::try_init();
 
     let mut sisko = random_user("loading_pending_invitation_sisko").await?;
-    let _sisko_syncer = sisko.start_sync();
+    let _sisko_syncer = sisko.start_sync().await?;
 
     let mut kyra = random_user("loading_pending_invitation_kyra").await?;
-    let _kyra_syncer = kyra.start_sync();
+    let _kyra_syncer = kyra.start_sync().await?;
 
     sleep(Duration::from_secs(3)).await;
 

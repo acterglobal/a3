@@ -15,6 +15,7 @@ pub struct SimpleConvo {
 impl PartialEq for SimpleConvo {
     fn eq(&self, other: &Self) -> bool {
         self.inner.room_id() == other.inner.room_id()
+            && self.latest_message_ts() == other.latest_message_ts()
     }
 }
 

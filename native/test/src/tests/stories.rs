@@ -108,7 +108,7 @@ async fn story_smoketest() -> Result<()> {
 async fn story_plain_text_test() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("story_plain").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -170,7 +170,7 @@ async fn story_plain_text_test() -> Result<()> {
 async fn story_slide_color_test() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("story_plain").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -227,7 +227,7 @@ async fn story_slide_color_test() -> Result<()> {
 async fn story_markdown_text_test() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("story_mkd").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -292,7 +292,7 @@ async fn story_markdown_text_test() -> Result<()> {
 async fn story_jpg_image_with_text_test() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("story_jpg").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -359,7 +359,7 @@ async fn story_jpg_image_with_text_test() -> Result<()> {
 async fn story_png_image_with_text_test() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("story_png").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -411,7 +411,7 @@ async fn story_png_image_with_text_test() -> Result<()> {
 async fn story_multiple_slide_test() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("story_png").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -502,7 +502,7 @@ async fn story_multiple_slide_test() -> Result<()> {
 async fn story_like_reaction_test() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("story_like").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -607,7 +607,7 @@ async fn story_read_receipt_test() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut users, room_id) = random_users_with_random_space("story_views", 4).await?;
     let mut user = users.remove(0);
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -645,7 +645,7 @@ async fn story_read_receipt_test() -> Result<()> {
     assert_eq!(main_receipts_manager.read_count(), 0);
 
     for (idx, mut user) in users.into_iter().enumerate() {
-        let state_sync = user.start_sync();
+        let state_sync = user.start_sync().await?;
         state_sync.await_has_synced_history().await?;
         let uidx = idx as u32;
         let subscriber = main_receipts_manager.subscribe();
@@ -717,7 +717,7 @@ async fn multi_story_read_receipt_test() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut users, room_id) = random_users_with_random_space("story_views", 4).await?;
     let mut user = users.remove(0);
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -766,7 +766,7 @@ async fn multi_story_read_receipt_test() -> Result<()> {
     assert_eq!(older_slide_rr_manager.read_count(), 0);
 
     for (idx, mut user) in users.into_iter().enumerate() {
-        let state_sync = user.start_sync();
+        let state_sync = user.start_sync().await?;
         state_sync.await_has_synced_history().await?;
         let uidx = idx as u32;
         let newest_subscriber = newest_slide_rr_manager.subscribe();

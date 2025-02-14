@@ -46,12 +46,11 @@ use super::{
 
 mod models;
 mod simple_convo;
-mod simple_space;
-mod simple_sync;
+mod sliding_sync;
 mod sync;
 
 use simple_convo::SimpleConvo;
-pub use simple_sync::SyncController;
+pub use sliding_sync::SyncController;
 pub use sync::{HistoryLoadState, SyncState};
 
 #[derive(Default, Builder, Debug)]
@@ -80,6 +79,7 @@ pub struct Client {
     pub(crate) verification_controller: VerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
+    pub(crate) sync_controller: SyncController,
     pub spaces: Arc<RwLock<ObservableVector<Space>>>,
     pub convos: Arc<RwLock<ObservableVector<Convo>>>,
     pub simple_spaces: Arc<RwLock<ObservableVector<Space>>>,
@@ -198,6 +198,7 @@ impl Client {
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
+            sync_controller: SyncController::new(),
         };
         cl.load_from_cache().await;
         cl.setup_handlers();
@@ -549,6 +550,7 @@ impl Client {
         if let Ok(mut w) = self.state.try_write() {
             w.should_stop_syncing = true;
         }
+        let sync_controller = self.sync_controller.clone();
         let client = self.core.client().clone();
 
         self.invitation_controller.remove_event_handler();
@@ -560,6 +562,7 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
+                sync_controller.cancel().await?;
                 match client.matrix_auth().logout().await {
                     Ok(resp) => Ok(true),
                     Err(e) => {
@@ -569,5 +572,9 @@ impl Client {
                 }
             })
             .await?
+    }
+
+    pub fn sync_controller(&self) -> SyncController {
+        self.sync_controller.clone()
     }
 }

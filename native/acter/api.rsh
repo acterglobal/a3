@@ -2882,7 +2882,7 @@ object CreateSpaceSettings {}
 /// Main entry point for `acter`.
 object Client {
     /// start the sync
-    fn start_sync() -> SyncState;
+    fn start_sync() -> Future<Result<SyncState>>;
 
     /// Get the restore token for this session
     fn restore_token() -> Future<Result<string>>;

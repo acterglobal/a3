@@ -33,7 +33,10 @@ use tracing::{error, info, trace, warn};
 
 use crate::{Client, Room, TimelineStream, RUNTIME};
 
-use super::utils::{remap_for_diff, ApiVectorDiff};
+use super::{
+    client::SyncController,
+    utils::{remap_for_diff, ApiVectorDiff},
+};
 
 #[derive(Debug, Clone)]
 pub struct Space {
@@ -71,6 +74,7 @@ impl HistoryState {
     pub fn new(last_seen: String) -> HistoryState {
         HistoryState { seen: last_seen }
     }
+
     pub(crate) fn storage_key(room_id: &RoomId) -> String {
         format!("{room_id}::history")
     }
@@ -82,6 +86,7 @@ impl HistoryState {
         trace!(?room_id, seen = history.seen, "Loading history key");
         Ok(history)
     }
+
     pub(crate) async fn store(store: &Store, room_id: &RoomId, seen: String) -> Result<()> {
         trace!(?room_id, ?seen, "Storing history key");
         Ok(store
@@ -423,16 +428,29 @@ impl Client {
     }
 
     pub fn spaces_stream(&self) -> impl Stream<Item = SpaceDiff> {
-        let spaces = self.spaces.clone();
+        let rooms = self.sync_controller.rooms.clone();
+        let me = self.clone();
         async_stream::stream! {
             let (current_items, stream) = {
-                let locked = spaces.read().await;
+                let locked = rooms.read().await;
+                let values: Vec<Space> = locked
+                    .iter()
+                    .filter(|room| room.is_space())
+                    .map(|room| Room::new(me.core.clone(), room.inner_room().clone()))
+                    .map(|inner| Space::new(me.clone(), inner))
+                    .collect();
                 (
-                    SpaceDiff::current_items(locked.clone().into_iter().collect()),
+                    SpaceDiff::current_items(values),
                     locked.subscribe(),
                 )
             };
-            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(diff, |x| x));
+            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(
+                diff,
+                |x| {
+                    let inner = Room::new(me.core.clone(), x.inner_room().clone());
+                    Space::new(me.clone(), inner)
+                },
+            ));
             yield current_items;
 
             while let Some(d) = remap.next().await {
@@ -443,39 +461,40 @@ impl Client {
 
     // ***_typed fn accepts rust-typed input, not string-based one
     async fn space_typed(&self, room_id: &RoomId) -> Option<Space> {
-        self.spaces
-            .read()
-            .await
-            .iter()
-            .find(|s| s.room_id() == room_id)
-            .cloned()
+        let ui_rooms = self.sync_controller.ui_rooms.lock().await;
+        let me = self.clone();
+        ui_rooms
+            .get(room_id)
+            .filter(|r| r.is_space())
+            .map(|room| Room::new(me.core.clone(), room.inner_room().clone()))
+            .map(|inner| Space::new(me.clone(), inner))
     }
 
     // ***_typed fn accepts rust-typed input, not string-based one
     async fn space_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Space> {
-        let space = self
-            .spaces
-            .read()
-            .await
+        let ui_rooms = self.sync_controller.ui_rooms.lock().await;
+        let me = self.clone();
+        let space = ui_rooms
             .iter()
-            .find(|s| {
-                if let Some(con_alias) = s.canonical_alias() {
+            .find(|(room_id, room)| {
+                if let Some(con_alias) = room.canonical_alias() {
                     if con_alias == room_alias {
                         return true;
                     }
                 }
-                for alt_alias in s.alt_aliases() {
+                for alt_alias in room.alt_aliases() {
                     if alt_alias == room_alias {
                         return true;
                     }
                 }
                 false
             })
-            .cloned();
+            .map(|(room_id, room)| Room::new(me.core.clone(), room.inner_room().clone()))
+            .map(|inner| Space::new(me.clone(), inner));
         match space {
             Some(space) => Ok(space),
             None => {
-                let room_id = self.resolve_room_alias(room_alias.clone()).await?;
+                let room_id = me.resolve_room_alias(room_alias.clone()).await?;
                 self.space_typed(&room_id).await.context(format!(
                     "Space with alias {room_alias} ({room_id}) not found"
                 ))
@@ -484,17 +503,22 @@ impl Client {
     }
 
     pub async fn space(&self, room_id_or_alias: String) -> Result<Space> {
-        let either = RoomOrAliasId::parse(&room_id_or_alias)?;
-        if either.is_room_id() {
-            let room_id = RoomId::parse(either.as_str())?;
-            self.space_typed(&room_id)
-                .await
-                .context(format!("Space {room_id} not found"))
-        } else if either.is_room_alias_id() {
-            let room_alias = RoomAliasId::parse(either.as_str())?;
-            self.space_by_alias_typed(room_alias).await
-        } else {
-            bail!("{room_id_or_alias} isn’t a valid room id or alias...");
-        }
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let either = RoomOrAliasId::parse(&room_id_or_alias)?;
+                if either.is_room_id() {
+                    let room_id = RoomId::parse(either.as_str())?;
+                    me.space_typed(&room_id)
+                        .await
+                        .context(format!("Space {room_id} not found"))
+                } else if either.is_room_alias_id() {
+                    let room_alias = RoomAliasId::parse(either.as_str())?;
+                    me.space_by_alias_typed(room_alias).await
+                } else {
+                    bail!("{room_id_or_alias} isn’t a valid room id or alias...");
+                }
+            })
+            .await?
     }
 }

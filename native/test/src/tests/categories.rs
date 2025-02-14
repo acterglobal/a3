@@ -11,7 +11,7 @@ async fn categories_e2e() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("categories-e2e").await?;
 
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
