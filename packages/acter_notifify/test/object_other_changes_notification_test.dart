@@ -4,18 +4,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'mock_data/mock_notification_item.dart';
-import 'mock_data/mock_notification_parent.dart';
+import 'mock_data/mock_activity_object.dart';
 import 'mock_data/mock_notification_sender.dart';
 import 'mock_data/mock_object.dart';
 
 void main() {
   late MockNotificationItem item;
-  late MockNotificationParent parent;
+  late MockActivityObject parent;
 
   setUp(() {
     //Mack declaration
     item = MockNotificationItem();
-    parent = MockNotificationParent();
+    parent = MockActivityObject();
 
     //Set parent
     when(() => item.parent()).thenReturn(parent);
@@ -27,7 +27,7 @@ void main() {
   group("Object other changes : Title and body generation ", () {
     test("Pin other changes with parent info", () {
       // Arrange: Set parent object data
-      when(() => parent.typeStr()()).thenReturn(MockObject.pin.name);
+      when(() => parent.typeStr()).thenReturn(MockObject.pin.name);
       when(() => parent.emoji()).thenReturn(MockObject.pin.emoji);
       when(() => parent.title()).thenReturn("The House");
       // Arrange: Set space name
@@ -45,7 +45,7 @@ void main() {
     });
     test("Event other changes with parent info", () {
       // Arrange: Set parent object data
-      when(() => parent.typeStr()()).thenReturn(MockObject.event.name);
+      when(() => parent.typeStr()).thenReturn(MockObject.event.name);
       when(() => parent.emoji()).thenReturn(MockObject.event.emoji);
       when(() => parent.title()).thenReturn("Meet-up");
       // Arrange: Set space name
@@ -63,7 +63,7 @@ void main() {
     });
     test("Task-List other changes with parent info", () {
       // Arrange: Set parent object data
-      when(() => parent.typeStr()()).thenReturn(MockObject.taskList.name);
+      when(() => parent.typeStr()).thenReturn(MockObject.taskList.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
       when(() => parent.title()).thenReturn("2025 Goals");
       // Arrange: Set space name
@@ -82,7 +82,7 @@ void main() {
 
     test("Task-Item other changes with parent info", () {
       // Arrange: Set parent object data
-      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Deployment");
       // Arrange: Set space name

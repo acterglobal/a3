@@ -4,18 +4,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'mock_data/mock_notification_item.dart';
-import 'mock_data/mock_notification_parent.dart';
+import 'mock_data/mock_activity_object.dart';
 import 'mock_data/mock_notification_sender.dart';
 import 'mock_data/mock_object.dart';
 
 void main() {
   late MockNotificationItem item;
-  late MockNotificationParent parent;
+  late MockActivityObject parent;
 
   setUpAll(() {
     //Mack declaration
     item = MockNotificationItem();
-    parent = MockNotificationParent();
+    parent = MockActivityObject();
 
     //Set parent
     when(() => item.parent()).thenReturn(parent);
@@ -31,7 +31,7 @@ void main() {
   group("Title and body generation", () {
     test("Add task in TaskList with parent", () {
       // Arrange: Set parent object data
-      when(() => parent.typeStr()()).thenReturn(MockObject.taskList.name);
+      when(() => parent.typeStr()).thenReturn(MockObject.taskList.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
       when(() => parent.title()).thenReturn("2025 Goals");
       // Arrange: Set reference object content

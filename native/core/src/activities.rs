@@ -190,7 +190,7 @@ impl Activity {
 
     pub fn new_date(&self) -> Option<UtcDateTime> {
         match &self.inner {
-            &ActivityContent::EventDateChange { new_date, .. } => Some(new_date.clone()),
+            &ActivityContent::EventDateChange { new_date, .. } => Some(new_date),
             ActivityContent::TaskDueDateChange {
                 new_due_date: Some(new_due_date),
                 ..

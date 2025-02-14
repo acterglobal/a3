@@ -4,18 +4,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'mock_data/mock_notification_item.dart';
-import 'mock_data/mock_notification_parent.dart';
+import 'mock_data/mock_activity_object.dart';
 import 'mock_data/mock_notification_sender.dart';
 import 'mock_data/mock_object.dart';
 
 void main() {
   late MockNotificationItem item;
-  late MockNotificationParent parent;
+  late MockActivityObject parent;
 
   setUp(() {
     //Mack declaration
     item = MockNotificationItem();
-    parent = MockNotificationParent();
+    parent = MockActivityObject();
 
     //Set parent
     when(() => item.parent()).thenReturn(parent);
@@ -26,7 +26,7 @@ void main() {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.taskComplete.name);
       // Arrange: Set parent object data
-      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
       when(() => item.title()).thenReturn("📋 Product TO-DO");
@@ -65,7 +65,7 @@ void main() {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.taskReOpen.name);
       // Arrange: Set parent object data
-      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
       when(() => item.title()).thenReturn("📋 Product TO-DO");
@@ -103,7 +103,7 @@ void main() {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.taskAccept.name);
       // Arrange: Set parent object data
-      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
       when(() => item.title()).thenReturn("📋 Product TO-DO");
@@ -141,7 +141,7 @@ void main() {
       // Arrange: Set pushStyle
       when(() => item.pushStyle()).thenReturn(PushStyles.taskDecline.name);
       // Arrange: Set parent object data
-      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
       when(() => item.title()).thenReturn("📋 Product TO-DO");
@@ -180,7 +180,7 @@ void main() {
       when(() => item.pushStyle())
           .thenReturn(PushStyles.taskDueDateChange.name);
       // Arrange: Set parent object data
-      when(() => parent.typeStr()()).thenReturn(MockObject.taskItem.name);
+      when(() => parent.typeStr()).thenReturn(MockObject.taskItem.name);
       when(() => parent.emoji()).thenReturn(MockObject.taskItem.emoji);
       when(() => parent.title()).thenReturn("Website Redesign");
       when(() => item.title()).thenReturn("24 January, 2025");

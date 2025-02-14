@@ -341,8 +341,7 @@ impl NotificationItem {
     pub fn has_image(&self) -> bool {
         self.msg_content
             .as_ref()
-            .map(|a| a.source())
-            .flatten()
+            .and_then(|a| a.source())
             .is_some()
     }
     pub async fn image(&self) -> Result<FfiBuffer<u8>> {
