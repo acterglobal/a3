@@ -205,6 +205,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   void selectActionItemDialog(BuildContext buildContext) {
     showAdaptiveDialog(
       context: context,
+      barrierDismissible: true,
       builder: (context) {
         final lang = L10n.of(context);
         return AlertDialog.adaptive(

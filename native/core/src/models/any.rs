@@ -13,6 +13,7 @@ use super::redaction::RedactedActerModel;
 use super::rsvp::Rsvp;
 use super::stories::{Story, StoryUpdate};
 use super::tasks::{Task, TaskList, TaskListUpdate, TaskSelfAssign, TaskSelfUnassign, TaskUpdate};
+use super::RoomStatus;
 use core::fmt::Debug;
 use enum_dispatch::enum_dispatch;
 use matrix_sdk_base::ruma::{
@@ -140,6 +141,8 @@ pub enum AnyActerModel {
     Reaction(Reaction),
     ReadReceipt(ReadReceipt),
 
+    RoomStatus(RoomStatus),
+
     #[cfg(any(test, feature = "testing"))]
     TestModel(TestModel),
 }
@@ -168,6 +171,7 @@ impl AnyActerModel {
             AnyActerModel::Rsvp(_) => RsvpEventContent::TYPE,
             AnyActerModel::Reaction(_) => ReactionEventContent::TYPE,
             AnyActerModel::ReadReceipt(_) => ReadReceiptEventContent::TYPE,
+            AnyActerModel::RoomStatus(_) => "room status",
             AnyActerModel::RedactedActerModel(..) => "unknown_redacted_model",
             #[cfg(any(test, feature = "testing"))]
             AnyActerModel::TestModel(_) => "test_model",

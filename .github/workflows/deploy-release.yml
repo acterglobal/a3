@@ -491,15 +491,6 @@ jobs:
           git tag ${{ needs.tags.outputs.tag }}
           git push origin ci/release-${{ needs.tags.outputs.tag }} ${{ needs.tags.outputs.tag }}
 
-      - name: Create Pull Request
-        id: cpr
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ needs.tags.outputs.tag }}
-        run: |
-          gh pr create -B main -H ci/release-$TAG --title "Releasing $TAG" --body "Release $TAG auto PR." -a gnunicorn -l minor
-          gh pr merge --merge --delete-branch ci/release-$TAG
-
       - name: Release
           # publish this nightly release now
         env:
@@ -509,3 +500,13 @@ jobs:
           gh release edit ${{ needs.tags.outputs.tag }} \
             --latest --draft=false \
             --note-file CHANGELOG.md
+
+      - name: Create Pull Request
+        id: cpr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.tags.outputs.tag }}
+        run: |
+          gh pr create -B main -H ci/release-$TAG --title "Releasing $TAG" --body "Release $TAG auto PR." -a gnunicorn -l minor
+          gh pr merge --merge --auto --delete-branch ci/release-$TAG
+

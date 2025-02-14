@@ -88,7 +88,7 @@ fn generate_object_link(
 fn generate_room_link(room_id: &OwnedRoomId, via: &[OwnedServerName]) -> String {
     let room_id = &room_id.to_string()[1..];
     format!(
-        "roomid/{room_id}/?{}",
+        "matrix:roomid/{room_id}/?{}",
         via.iter()
             .map(|v| format!("via={}", encode(v.as_str())))
             .collect::<Vec<String>>()

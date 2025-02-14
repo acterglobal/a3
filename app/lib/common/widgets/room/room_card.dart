@@ -152,8 +152,8 @@ class RoomCard extends ConsumerWidget {
     final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
     final isBookmarked = ref.watch(spaceIsBookmarkedProvider(roomId)).valueOrNull ?? false;
-    final isRoomAvailable = ref.watch(maybeRoomProvider(roomId)).valueOrNull ?? false;
-    if (isRoomAvailable == false) {
+    final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
+    if (room == null && refDetails != null) {
       return ReferenceDetailsItem(refDetails: refDetails!);
     }
     return RoomWithAvatarInfoCard(
