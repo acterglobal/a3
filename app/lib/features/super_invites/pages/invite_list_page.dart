@@ -4,13 +4,16 @@ import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/super_invites/widgets/invite_list_widget.dart';
 import 'package:acter/features/super_invites/widgets/redeem_token_widget.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 class InviteListPage extends ConsumerStatefulWidget {
-  const InviteListPage({super.key});
+  final Function(SuperInviteToken)? onSelectInviteCode;
+
+  const InviteListPage({super.key, this.onSelectInviteCode});
 
   @override
   ConsumerState<InviteListPage> createState() => _InviteListPageState();
@@ -61,9 +64,10 @@ class _InviteListPageState extends ConsumerState<InviteListPage> {
     return AppBar(
       title: Text(lang.superInvites),
       actions: [
-        PlusIconWidget(
-          onPressed: () => context.pushNamed(Routes.createSuperInvite.name),
-        ),
+        if (widget.onSelectInviteCode == null)
+          PlusIconWidget(
+            onPressed: () => context.pushNamed(Routes.createSuperInvite.name),
+          ),
       ],
     );
   }
@@ -81,7 +85,7 @@ class _InviteListPageState extends ConsumerState<InviteListPage> {
             notifier.state = '';
           },
         ),
-        Expanded(child: InviteListWidget()),
+        Expanded(child: InviteListWidget(onSelectInviteCode: widget.onSelectInviteCode)),
       ],
     );
   }

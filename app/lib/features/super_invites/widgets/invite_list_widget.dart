@@ -12,7 +12,8 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::super-invites::list');
 
 class InviteListWidget extends ConsumerWidget {
-  const InviteListWidget({super.key});
+  final Function(SuperInviteToken)? onSelectInviteCode;
+  const InviteListWidget({super.key, this.onSelectInviteCode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,7 +32,7 @@ class InviteListWidget extends ConsumerWidget {
     return ListView.builder(
       itemCount: inviteList.length,
       itemBuilder: (context, index) {
-        return InviteListItem(inviteToken: inviteList[index]);
+        return InviteListItem(inviteToken: inviteList[index], onSelectInviteCode: onSelectInviteCode,);
       },
     );
   }

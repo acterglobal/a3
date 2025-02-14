@@ -2,6 +2,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/event/event_selector_drawer.dart';
 import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
+import 'package:acter/common/widgets/super_invite/superInvite_selector_drawer.dart';
 import 'package:acter/common/widgets/task/taskList_selector_drawer.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -10,6 +11,7 @@ import 'package:acter/features/news/model/news_post_color_data.dart';
 import 'package:acter/features/news/model/news_post_state.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -89,6 +91,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     selectedNewsSlide?.refDetails = refDetails;
     state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
+
   Future<void> enterLinkToShare(BuildContext context) async {
     showAddEditLinkBottomSheet(
       context: context,
@@ -102,7 +105,18 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
         state = state.copyWith(currentNewsSlide: selectedNewsSlide);
       },
     );
+  }
 
+  Future<void> selectInvitationCodeToShare(BuildContext context) async {
+    final superInviteCode = await selectSuperInviteListDrawer(context: context);
+    RefDetails? refDetails;
+    if (superInviteCode != null) {
+      final selectedInviteCode = await ref.watch(superInviteTokenProvider(superInviteCode.token()).future);
+      // refDetails = await selectedInviteCode.refDetails();
+    }
+    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
+    selectedNewsSlide?.refDetails = refDetails;
+    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
 
   void changeTextSlideValue(String body, String? html) {
