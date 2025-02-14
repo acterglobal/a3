@@ -31,7 +31,7 @@ base64ct = { workspace = true, features = ["alloc"] }
 chrono = "0.4"
 derive-getters = { workspace = true }
 derive_builder = { workspace = true }
-eyeball-im = "0.5.0"
+eyeball-im = { workspace = true }
 fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
 ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen", branch = "main" }
 # ffi-gen-macro = { path = "../../../ffi-gen/macro" }
@@ -79,8 +79,8 @@ tracing-log = { version = "0.2", optional = true }
 console-subscriber = { version = "0.2.0", optional = true }
 
 # not used directly but needed to enable specific features from ruma
-ruma = { workspace = true, features = ["html", "rand", "unstable-msc2448", "unstable-msc2965", "unstable-msc3930", "unstable-msc3245-v1-compat"] }
-ruma-common = { workspace = true, features = ["client", "unstable-unspecified"] }
+ruma = { workspace = true, features = ["api", "html", "rand", "unstable-msc2448", "unstable-msc2965", "unstable-msc3930", "unstable-msc3245-v1-compat"] }
+ruma-common = { workspace = true, features = ["client"] }
 
 [dev-dependencies]
 tempfile = "3.9.0"
@@ -136,3 +136,8 @@ crate-type = ["cdylib", "staticlib", "lib"]
 required-features = ["uniffi"]
 name = "uniffi-bindgen"
 path = "src/uniffi-bindgen.rs"
+
+
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ruma_unstable_exhaustive_types)'] }

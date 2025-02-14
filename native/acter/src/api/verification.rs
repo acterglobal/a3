@@ -1050,7 +1050,7 @@ impl SessionManager {
         RUNTIME
             .spawn(async move {
                 let request = delete_device::v3::Request::new(dev_id.clone());
-                if let Err(e) = client.send(request, None).await {
+                if let Err(e) = client.send(request).await {
                     if let Some(info) = e.as_uiaa_response() {
                         let pass_data = assign!(Password::new(
                             UserIdentifier::UserIdOrLocalpart(username),
@@ -1062,7 +1062,7 @@ impl SessionManager {
                         let request = assign!(delete_device::v3::Request::new(dev_id), {
                             auth: Some(auth_data),
                         });
-                        client.send(request, None).await?;
+                        client.send(request).await?;
                     } else {
                         return Ok(false);
                     }

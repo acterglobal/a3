@@ -13,6 +13,12 @@ use anyhow::{bail, Context, Result};
 use chrono::{NaiveDate, NaiveTime, Utc};
 use derive_builder::Builder;
 use futures::stream::StreamExt;
+use matrix_sdk::ruma::{
+    api::client::push::PushRule,
+    events::{policy::rule, room::message::TextMessageEventContent},
+    push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
+    OwnedDeviceId, OwnedEventId,
+};
 use matrix_sdk::{
     notification_settings::{
         IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings,
@@ -43,12 +49,6 @@ use matrix_sdk_ui::notification_client::{
     NotificationProcessSetup, RawNotificationEvent,
 };
 use pulldown_cmark::RefDefs;
-use ruma::{
-    api::client::push::PushRule,
-    events::{policy::rule, room::message::TextMessageEventContent},
-    push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
-    OwnedDeviceId, OwnedEventId,
-};
 use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
@@ -130,7 +130,7 @@ impl NotificationRoom {
         NotificationRoom {
             room_id: room.room_id().to_string(),
             display_name: room
-                .compute_display_name()
+                .display_name()
                 .await
                 .map(|e| e.to_string())
                 .unwrap_or("".to_owned()),

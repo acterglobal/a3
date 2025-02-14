@@ -1,4 +1,4 @@
-use eyeball_im::VectorDiff;
+use matrix_sdk_ui::eyeball_im::VectorDiff;
 
 // copied from ruma, which - unfortunately, doesn’t expose this helper
 // https://github.com/ruma/ruma/blob/fec7d23cfd44266cc396f5abc08ea821dc138d6d/crates/ruma-common/src/events/room/message.rs#L937
