@@ -20,21 +20,16 @@ class MentionMenu {
   bool selectionChangedByMenu = false;
 
   void dismiss() {
-    editorState.service.keyboardService?.enable();
-    editorState.service.scrollService?.enable();
-    keepEditorFocusNotifier.decrease();
-
     _menuEntry?.remove();
     _menuEntry = null;
   }
 
   void show() {
+    if (_menuEntry != null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) => _show());
   }
 
   void _show() {
-    dismiss();
-
     // Get position of editor
     final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
@@ -46,11 +41,13 @@ class MentionMenu {
       userMentionChar => UserMentionList(
           editorState: editorState,
           onDismiss: dismiss,
+          onShow: show,
           roomId: roomId,
         ),
       roomMentionChar => RoomMentionList(
           editorState: editorState,
           onDismiss: dismiss,
+          onShow: show,
           roomId: roomId,
         ),
       _ => const SizedBox.shrink(),
@@ -82,7 +79,5 @@ class MentionMenu {
     );
 
     Overlay.of(context).insert(_menuEntry!);
-    editorState.service.keyboardService?.disable(showCursor: true);
-    editorState.service.scrollService?.disable();
   }
 }

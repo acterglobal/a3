@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_item.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
@@ -6,19 +9,20 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserMentionList extends ConsumerWidget {
   final EditorState editorState;
   final VoidCallback onDismiss;
+  final VoidCallback onShow;
   final String roomId;
 
   const UserMentionList({
     super.key,
     required this.editorState,
     required this.onDismiss,
+    required this.onShow,
     required this.roomId,
   });
   @override
@@ -26,6 +30,7 @@ class UserMentionList extends ConsumerWidget {
         roomId: roomId,
         editorState: editorState,
         onDismiss: onDismiss,
+        onShow: onShow,
         // the actual provider
         mentionsProvider: userMentionSuggestionsProvider(roomId),
         avatarBuilder: (matchId, ref) {
@@ -43,12 +48,14 @@ class UserMentionList extends ConsumerWidget {
 class RoomMentionList extends StatelessWidget {
   final EditorState editorState;
   final VoidCallback onDismiss;
+  final VoidCallback onShow;
   final String roomId;
 
   const RoomMentionList({
     super.key,
     required this.editorState,
     required this.onDismiss,
+    required this.onShow,
     required this.roomId,
   });
   @override
@@ -56,6 +63,7 @@ class RoomMentionList extends StatelessWidget {
         roomId: roomId,
         editorState: editorState,
         onDismiss: onDismiss,
+        onShow: onShow,
         // the actual provider
         mentionsProvider: roomMentionsSuggestionsProvider(roomId),
         avatarBuilder: (matchId, ref) {
@@ -78,6 +86,7 @@ class MentionList extends ConsumerStatefulWidget {
     required this.headerTitle,
     required this.notFoundTitle,
     required this.onDismiss,
+    required this.onShow,
   });
 
   final String roomId;
@@ -87,30 +96,49 @@ class MentionList extends ConsumerStatefulWidget {
   final String headerTitle;
   final String notFoundTitle;
   final VoidCallback onDismiss;
+  final VoidCallback onShow;
 
   @override
   ConsumerState<MentionList> createState() => _MentionHandlerState();
 }
 
 class _MentionHandlerState extends ConsumerState<MentionList> {
-  final _focusNode = FocusNode();
   final _scrollController = ScrollController();
-
-  int _selectedIndex = 0;
+  StreamSubscription<(TransactionTime, Transaction)>? _updateListener;
+  Map<String, String>? _filteredSuggestions;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNode.requestFocus();
+    _updateListener?.cancel();
+    _updateListener = widget.editorState.transactionStream.listen((data) {
+      // to use dismiss overlay also search list
+      final selection = widget.editorState.selection;
+      if (selection == null) {
+        widget.onDismiss();
+        return;
+      }
+
+      final node = widget.editorState.getNodeAtPath(selection.end.path);
+      if (node == null) {
+        widget.onDismiss();
+        return;
+      }
+
+      final text = node.delta?.toPlainText() ?? '';
+      final cursorPosition = selection.end.offset;
+
+      // inject handlers
+      _overlayHandler(text, cursorPosition);
+      _mentionSearchHandler(text, cursorPosition);
     });
   }
 
   @override
   void dispose() {
     widget.onDismiss();
+    _updateListener?.cancel();
     _scrollController.dispose();
-    _focusNode.dispose();
     super.dispose();
   }
 
@@ -122,20 +150,15 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     if (suggestions == null) {
       return ErrorWidget(L10n.of(context).loadingFailed);
     }
-    final menuWidget = Column(
+    final displaySuggestions = _filteredSuggestions ?? suggestions;
+    return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildMenuHeader(),
         const Divider(height: 1, endIndent: 5, indent: 5),
         const SizedBox(height: 8),
-        _buildMenuList(suggestions),
+        _buildMenuList(displaySuggestions),
       ],
-    );
-
-    return KeyboardListener(
-      focusNode: _focusNode,
-      onKeyEvent: (event) => _handleKeyEvent(event, suggestions),
-      child: menuWidget,
     );
   }
 
@@ -165,7 +188,6 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
                   mentionId: mentionId,
                   displayName: displayName,
                   avatarOptions: options(mentionId, ref),
-                  isSelected: index == _selectedIndex,
                   onTap: () => _selectItem(mentionId, displayName),
                 );
               },
@@ -173,78 +195,93 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     );
   }
 
-  KeyEventResult _handleKeyEvent(
-    KeyEvent event,
-    Map<String, String?> suggestions,
-  ) {
-    if (event is! KeyDownEvent) return KeyEventResult.ignored;
-
-    switch (event.logicalKey) {
-      case LogicalKeyboardKey.escape:
-        widget.onDismiss();
-        return KeyEventResult.handled;
-
-      case LogicalKeyboardKey.enter:
-        if (suggestions.isNotEmpty) {
-          final selectedItem = suggestions.entries.elementAt(_selectedIndex);
-          _selectItem(selectedItem.key, selectedItem.value);
-        }
-        widget.onDismiss();
-        return KeyEventResult.handled;
-
-      case LogicalKeyboardKey.arrowUp:
-        setState(() {
-          _selectedIndex =
-              (_selectedIndex - 1).clamp(0, suggestions.length - 1);
-        });
-        _scrollToSelected();
-        return KeyEventResult.handled;
-
-      case LogicalKeyboardKey.arrowDown:
-        setState(() {
-          _selectedIndex =
-              (_selectedIndex + 1).clamp(0, suggestions.length - 1);
-        });
-        _scrollToSelected();
-        return KeyEventResult.handled;
-
-      case LogicalKeyboardKey.backspace:
-        final selection = widget.editorState.selection;
-        if (selection == null) return KeyEventResult.handled;
-
-        final node = widget.editorState.getNodeAtPath(selection.end.path);
-        if (node == null) return KeyEventResult.handled;
-
-        // Get text before cursor
-        final text = node.delta?.toPlainText() ?? '';
-        final cursorPosition = selection.end.offset;
-        final mentionTriggers = [userMentionChar, roomMentionChar];
-
-        if (_canDeleteLastCharacter()) {
-          // Check if we're about to delete an mention symbol
-          if (cursorPosition > 0 &&
-              mentionTriggers.contains(text[cursorPosition - 1])) {
-            widget.onDismiss(); // Dismiss menu when is deleted
-          }
-          widget.editorState.deleteBackward();
-        } else {
-          // Workaround for editor regaining focus
-          widget.editorState.apply(
-            widget.editorState.transaction..afterSelection = selection,
-          );
-        }
-        return KeyEventResult.handled;
-
-      default:
-        if (event.character != null &&
-                !HardwareKeyboard.instance.isAltPressed &&
-                !HardwareKeyboard.instance.isMetaPressed ||
-            !HardwareKeyboard.instance.isShiftPressed) {
-          widget.editorState.insertTextAtCurrentSelection(event.character!);
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
+  void _overlayHandler(String text, int cursorPosition) {
+    // basic validation
+    if (text.isEmpty || cursorPosition < 0) {
+      widget.onDismiss();
+      return;
     }
+
+    // ensure within bounds
+    final effectiveCursorPos = math.min(cursorPosition, text.length);
+    final searchStartIndex = math.max(0, effectiveCursorPos - 1);
+
+    // last trigger char before cursor
+    int triggerIndex = -1;
+    for (int i = searchStartIndex; i >= 0; i--) {
+      if (text[i] == userMentionChar || text[i] == roomMentionChar) {
+        triggerIndex = i;
+
+        break;
+      }
+    }
+
+    // no trigger found, dismiss
+    if (triggerIndex == -1) {
+      widget.onDismiss();
+      return;
+    }
+
+    //cursor is before or at trigger position, dismiss
+    if (effectiveCursorPos <= triggerIndex) {
+      widget.onDismiss();
+      return;
+    }
+
+    final textBetween = text.substring(triggerIndex + 1, effectiveCursorPos);
+
+    if (textBetween.contains(' ')) {
+      widget.onDismiss();
+    } else {
+      // we're in a valid mention context
+
+      widget.onShow();
+    }
+  }
+
+  void _mentionSearchHandler(String text, int cursorPosition) {
+    if (text.isEmpty || cursorPosition <= 0 || cursorPosition > text.length) {
+      return;
+    }
+
+    final mentionTriggers = [userMentionChar, roomMentionChar];
+    String searchQuery = '';
+
+    // ensure search start index is within bounds
+    final searchStartIndex = math.min(cursorPosition - 1, text.length - 1);
+
+    for (int i = searchStartIndex; i >= 0; i--) {
+      if (mentionTriggers.contains(text[i])) {
+        // Ensure substring bounds are within text length
+        final endIndex = math.min(cursorPosition, text.length);
+        searchQuery = text.substring(i + 1, endIndex).trim().toLowerCase();
+        break;
+      }
+    }
+
+    // Update filtered suggestions based on search query
+    _updateFilteredSuggestions(searchQuery);
+  }
+
+  void _updateFilteredSuggestions(String query) {
+    final allSuggestions = ref.read(widget.mentionsProvider);
+    if (allSuggestions == null) return;
+
+    if (query.isEmpty) {
+      setState(() => _filteredSuggestions = allSuggestions);
+      return;
+    }
+
+    // Filter suggestions based on query
+    final filtered = Map.fromEntries(
+      allSuggestions.entries.where((entry) {
+        final displayName = entry.value.toLowerCase();
+        final id = entry.key.toLowerCase();
+        return displayName.contains(query) || id.contains(query);
+      }),
+    );
+
+    setState(() => _filteredSuggestions = filtered);
   }
 
   void _selectItem(String id, String? displayName) {
@@ -275,57 +312,24 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     // Calculate length from trigger to cursor
     final lengthToReplace = cursorPosition - atSymbolPosition;
     final mentionType = MentionType.fromStr(mentionTypeStr);
+    final uniqueMarker = '‖';
 
     transaction.replaceText(
       node,
       atSymbolPosition, // Start exactly from trigger
       lengthToReplace, // Replace everything including trigger
-      ' ',
+      uniqueMarker,
       attributes: {
         mentionTypeStr: MentionAttributes(
           type: mentionType,
           mentionId: id,
           displayName: displayName,
         ),
+        'inline': true,
       },
     );
 
     widget.editorState.apply(transaction);
     widget.onDismiss();
-  }
-
-  void _scrollToSelected() {
-    const double kItemHeight = 60;
-    final itemPosition = _selectedIndex * kItemHeight;
-    if (itemPosition < _scrollController.offset) {
-      _scrollController.animateTo(
-        itemPosition,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
-    } else if (itemPosition + kItemHeight >
-        _scrollController.offset +
-            _scrollController.position.viewportDimension) {
-      _scrollController.animateTo(
-        itemPosition +
-            kItemHeight -
-            _scrollController.position.viewportDimension,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-
-  bool _canDeleteLastCharacter() {
-    final selection = widget.editorState.selection;
-    if (selection == null || !selection.isCollapsed) {
-      return false;
-    }
-
-    final node = widget.editorState.getNodeAtPath(selection.start.path);
-    if (node?.delta == null) {
-      return false;
-    }
-    return selection.start.offset > 0;
   }
 }
