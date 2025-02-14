@@ -24,18 +24,19 @@ class ReferenceDetailsItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     ObjectType? type = typeFromRefDetails(refDetails);
 
     return ItemPreviewCard(
-      title: type == ObjectType.space ? refDetails.roomDisplayName() : refDetails.title(),
+      title: type == ObjectType.space
+          ? refDetails.roomDisplayName()
+          : refDetails.title(),
       refType: type,
-      onTap: tapEnabled ? () => onTap(context, ref) : null,
+      onTap: tapEnabled ? () => onTap(context, ref, type) : null,
       margin: margin,
     );
   }
 
-  void onTap(BuildContext context, WidgetRef ref) {
+  void onTap(BuildContext context, WidgetRef ref, ObjectType? type) {
     final roomId = refDetails.roomIdStr();
     if (roomId == null) {
       EasyLoading.showError(
@@ -50,37 +51,41 @@ class ReferenceDetailsItem extends ConsumerWidget {
       context: context,
       roomIdOrAlias: roomId,
       serverNames: serverNames,
-      onForward: (context, ref, room) async {
-        handleDeepLinkUri(
+        onForward: (context, ref, room) async {
+          handleDeepLinkUri(
           context: context,
           ref: ref,
           uri: Uri.parse(refDetails.generateInternalLink(false)),
         );
       },
-      headerInfo: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              L10n.of(context).toAccess,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+      headerInfo: type != ObjectType.space ? headerInfo(context) : null,
+    );
+  }
+
+  Widget headerInfo(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            L10n.of(context).toAccess,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
-          ItemPreviewCard(
-            // showing the same item without the tap
-            title: refDetails.title(),
-            refType: typeFromRefDetails(refDetails),
+        ),
+        ItemPreviewCard(
+          // showing the same item without the tap
+          title: refDetails.title(),
+          refType: typeFromRefDetails(refDetails),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            L10n.of(context).needToBeMemberOf,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              L10n.of(context).needToBeMemberOf,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
