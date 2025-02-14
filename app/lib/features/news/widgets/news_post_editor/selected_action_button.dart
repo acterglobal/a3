@@ -181,6 +181,10 @@ class SelectedActionButton extends ConsumerWidget {
       width: 300,
       child: RoomCard(
         roomId: roomId,
+        onTap: () async {
+          final notifier = ref.read(newsStateProvider.notifier);
+          await notifier.selectSpaceToShare(context);
+        },
       ),
     );
   }
