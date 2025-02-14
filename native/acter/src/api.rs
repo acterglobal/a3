@@ -68,7 +68,7 @@ pub use acter_core::{
     },
     models::{ActerModel, Tag, TextMessageContent},
 };
-pub use activities::{Activities, Activity, MembershipChange};
+pub use activities::{Activities, Activity, ActivityObject, MembershipChange};
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     destroy_local_data, guest_client, login_new_client, login_with_token, register_with_token,
@@ -104,8 +104,8 @@ pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, New
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::UserProfile;
 pub use push::{
-    NotificationItem, NotificationItemParent, NotificationRoom, NotificationSender,
-    NotificationSettings, Pusher, SubscriptionStatus,
+    NotificationItem, NotificationRoom, NotificationSender, NotificationSettings, Pusher,
+    SubscriptionStatus,
 };
 pub use reactions::{Reaction, ReactionManager};
 pub use read_receipts::ReadReceiptsManager;

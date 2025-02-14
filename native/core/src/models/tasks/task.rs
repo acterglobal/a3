@@ -17,7 +17,7 @@ use crate::{
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Task {
-    inner: TaskEventContent,
+    pub(crate) inner: TaskEventContent,
     pub meta: EventMeta,
 
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -176,7 +176,7 @@ impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TaskUpdate {
-    inner: TaskUpdateEventContent,
+    pub(crate) inner: TaskUpdateEventContent,
     meta: EventMeta,
 }
 
@@ -233,7 +233,7 @@ impl From<OriginalMessageLikeEvent<TaskUpdateEventContent>> for TaskUpdate {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TaskSelfAssign {
-    inner: TaskSelfAssignEventContent,
+    pub(crate) inner: TaskSelfAssignEventContent,
     meta: EventMeta,
 }
 
@@ -294,7 +294,7 @@ impl From<OriginalMessageLikeEvent<TaskSelfAssignEventContent>> for TaskSelfAssi
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TaskSelfUnassign {
-    inner: TaskSelfUnassignEventContent,
+    pub(crate) inner: TaskSelfUnassignEventContent,
     meta: EventMeta,
 }
 

@@ -2202,8 +2202,27 @@ object MembershipChange {
     fn reason() -> Option<string>;
 }
 
+object ActivityObject {
+    fn type_str() -> string;
+    fn object_id_str() -> string;
+    fn title() -> Option<string>;
+    fn emoji() -> string;
+}
 
 object Activity {
+    // generic
+
+    /// the event_id as a string
+    fn event_id_str() -> string;
+    /// the sender of this event as a string
+    fn sender_id_str() -> string;
+
+    /// the server receiving timestamp in milliseconds
+    fn origin_server_ts() -> u64;
+
+    /// the room_id of this event
+    fn room_id_str() -> string;
+
     /// the type of this activity as a string
     /// e.g. invited, invitationAccepted
     fn type_str() -> string;
@@ -2800,20 +2819,13 @@ object NotificationRoom {
     fn image() -> Future<Result<buffer<u8>>>;
 }
 
-object NotificationItemParent {
-    fn object_type_str() -> string;
-    fn object_id_str() -> string;
-    fn title() -> Option<string>;
-    fn emoji() -> string;
-}
-
 // converting a room_id+event_id into the notification item to show
 // from push context.
 object NotificationItem {
     fn push_style() -> string;
     fn title() -> string;
     fn sender() -> NotificationSender;
-    fn parent() -> Option<NotificationItemParent>;
+    fn parent() -> Option<ActivityObject>;
     fn parent_id_str() -> Option<string>;
     fn room() -> NotificationRoom;
     fn target_url() -> string;

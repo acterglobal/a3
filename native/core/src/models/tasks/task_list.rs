@@ -22,7 +22,7 @@ pub struct TaskStats {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TaskList {
-    inner: TaskListEventContent,
+    pub(crate) inner: TaskListEventContent,
     meta: EventMeta,
     task_stats: TaskStats,
 }
@@ -132,7 +132,7 @@ impl ActerModel for TaskList {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TaskListUpdate {
-    inner: TaskListUpdateEventContent,
+    pub(crate) inner: TaskListUpdateEventContent,
     meta: EventMeta,
 }
 
