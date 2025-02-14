@@ -3,6 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/errors/inline_error_button.dart';
 import 'package:acter/common/toolkit/errors/util.dart';
+import 'package:acter/common/widgets/info_widget.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/preview/types.dart';
 import 'package:acter/features/room/providers/room_preview_provider.dart';
@@ -21,14 +22,18 @@ class RoomPreviewWidget extends ConsumerWidget {
   final OnForward onForward;
   final Widget? headerInfo;
   final List<String> viaServers;
+  final String? fallbackRoomDisplayName;
+  final String? senderId;
 
   const RoomPreviewWidget({
     super.key,
     required this.roomId,
+    required this.onForward,
     this.viaServers = const [],
     this.autoForward = true,
     this.headerInfo,
-    required this.onForward,
+    this.fallbackRoomDisplayName,
+    this.senderId,
   });
 
   RoomPreviewQuery get query => (
@@ -79,20 +84,42 @@ class RoomPreviewWidget extends ConsumerWidget {
     WidgetRef ref,
     Object error,
     StackTrace? stack,
-  ) =>
-      ActerInlineErrorButton(
-        error: error,
-        stack: stack,
-        textBuilder: (error, errCode) => switch (errCode) {
-          ErrorCode.forbidden =>
-            L10n.of(context).accessDeniedToRoom(query.roomIdOrAlias),
-          _ => L10n.of(context).loadingFailed(error)
-        },
-        onRetryTap: () {
-          ref.invalidate(maybeRoomProvider(roomId));
-          ref.invalidate(roomPreviewProvider(query));
-        },
-      );
+  ) {
+    final code = ErrorCode.guessFromError(error);
+    return Column(
+      children: [
+        ListTile(
+          leading: ActerAvatar(
+            options: AvatarOptions(AvatarInfo(uniqueId: roomId)),
+          ),
+          title: Text(fallbackRoomDisplayName ?? roomId),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+          child: switch (code) {
+            // forbidden is a specific code we want to handle differently
+            // by showing an information box and hand out the sender Id to
+            // to contact the author
+            ErrorCode.forbidden => InfoWidget(
+                title: L10n.of(context).forbidden,
+                icon: Icons.warning,
+                subTitle: L10n.of(context).forbiddenRoomExplainer,
+              ),
+            _ => ActerInlineErrorButton(
+                error: error,
+                stack: stack,
+                textBuilder: (error, errCode) =>
+                    L10n.of(context).loadingFailed(error),
+                onRetryTap: () {
+                  ref.invalidate(maybeRoomProvider(roomId));
+                  ref.invalidate(roomPreviewProvider(query));
+                },
+              )
+          },
+        ),
+      ],
+    );
+  }
 
   Widget roomHeader(RoomPreview preview) => Consumer(
         builder: (context, ref, child) => ListTile(

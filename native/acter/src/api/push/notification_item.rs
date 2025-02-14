@@ -262,7 +262,7 @@ impl TryFrom<&AnyActerModel> for NotificationItemParent {
                 tl_id: e.task_list_id.event_id.clone(),
                 title: e.title().clone(),
             }),
-            AnyActerModel::RedactedActerModel(_)
+            AnyActerModel::RedactedActerModel(..)
             | AnyActerModel::CalendarEventUpdate(_)
             | AnyActerModel::TaskListUpdate(_)
             | AnyActerModel::TaskUpdate(_)
@@ -1072,6 +1072,8 @@ impl NotificationItem {
                         .build()?,
                     AttachmentContent::Reference(r) => {
                         let title = r.title().unwrap_or("Reference".to_owned());
+                        let room_display_name =
+                            r.room_display_name().unwrap_or("Reference".to_owned());
                         builder
                             .inner(NotificationItemInner::Reference {
                                 parent_obj,
@@ -1086,6 +1088,7 @@ impl NotificationItem {
                                 RefDetails::Task { .. } => format!("☑️ {title}"),
                                 RefDetails::TaskList { .. } => format!("📋 {title}"),
                                 RefDetails::Link { .. } => format!("🔗 {title}"),
+                                RefDetails::Room { .. } => room_display_name,
                             })
                             .build()?
                     }

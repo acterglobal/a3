@@ -1,4 +1,5 @@
 import 'package:acter/common/actions/open_link.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
@@ -43,7 +44,8 @@ class NewsSlideActions extends ConsumerWidget {
         ),
       NewsReferencesType.link =>
         renderLinkActionButton(context, ref, referenceDetails),
-      _ => renderNotSupportedAction(context)
+      NewsReferencesType.space => RoomCard(roomId: referenceDetails.roomIdStr() ?? '', refDetails: referenceDetails,),
+      _ => renderNotSupportedAction(context),
     };
   }
 

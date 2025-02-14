@@ -1519,6 +1519,9 @@ object Convo {
 
     /// clear composed message state of the room
     fn clear_msg_draft() -> Future<Result<bool>>;
+
+    /// get the internal reference object, defined in Room
+    fn ref_details() -> Future<Result<RefDetails>>;
 }
 
 
@@ -2466,6 +2469,9 @@ object Space {
 
     /// Set the categories for a specific key
     fn set_categories(key: string, categories: CategoriesBuilder) -> Future<Result<bool>>;
+
+    /// get the internal reference object, defined in Room
+    fn ref_details() -> Future<Result<RefDetails>>;
 }
 
 enum MembershipStatus {

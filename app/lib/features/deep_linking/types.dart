@@ -13,7 +13,7 @@ enum ObjectType {
   taskList,
   task,
   boost,
-
+  space,
   // reference types
   comment,
   attachment,

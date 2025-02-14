@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/event/event_selector_drawer.dart';
 import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
@@ -89,6 +90,20 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     selectedNewsSlide?.refDetails = refDetails;
     state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
+
+
+  Future<void> selectSpaceToShare(BuildContext context) async {
+    final selectedSpaceId = await selectSpaceDrawer(context: context);
+    RefDetails? refDetails;
+    if (selectedSpaceId != null) {
+      final selectedSpace = await ref.read(spaceProvider(selectedSpaceId).future);
+      refDetails = await selectedSpace.refDetails();
+    }
+    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
+    selectedNewsSlide?.refDetails = refDetails;
+    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+  }
+
   Future<void> enterLinkToShare(BuildContext context) async {
     showAddEditLinkBottomSheet(
       context: context,
