@@ -14,52 +14,52 @@ final _log = Logger('a3::chat::message_actions_redact');
 
 Future<void> redactMessageAction(
   BuildContext context,
-  WidgetRef ref,
   RoomEventItem item,
   String messageId,
   String roomId,
 ) async {
-  final chatEditorNotifier = ref.watch(chatEditorStateProvider.notifier);
   final lang = L10n.of(context);
   final senderId = item.sender();
   // pop message action options
   Navigator.pop(context);
   await showAdaptiveDialog(
     context: context,
-    builder: (context) => DefaultDialog(
-      title: Text(lang.areYouSureYouWantToDeleteThisMessage),
-      actions: <Widget>[
-        OutlinedButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(lang.no),
-        ),
-        ActerPrimaryActionButton(
-          onPressed: () async {
-            try {
-              final convo = await ref.read(chatProvider(roomId).future);
-              await convo?.redactMessage(
-                messageId,
-                senderId,
-                null,
-                null,
-              );
-              chatEditorNotifier.unsetActions();
-              if (context.mounted) {
+    builder: (context) => Consumer(
+      builder: (context, ref, child) => DefaultDialog(
+        title: Text(lang.areYouSureYouWantToDeleteThisMessage),
+        actions: <Widget>[
+          OutlinedButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(lang.no),
+          ),
+          ActerPrimaryActionButton(
+            onPressed: () async {
+              try {
+                final convo = await ref.read(chatProvider(roomId).future);
+                await convo?.redactMessage(
+                  messageId,
+                  senderId,
+                  null,
+                  null,
+                );
+                ref.read(chatEditorStateProvider.notifier).unsetActions();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              } catch (e, s) {
+                _log.severe('Redacting message failed', e, s);
+                if (!context.mounted) return;
+                EasyLoading.showError(
+                  lang.redactionFailed(e),
+                  duration: const Duration(seconds: 3),
+                );
                 Navigator.pop(context);
               }
-            } catch (e, s) {
-              _log.severe('Redacting message failed', e, s);
-              if (!context.mounted) return;
-              EasyLoading.showError(
-                lang.redactionFailed(e),
-                duration: const Duration(seconds: 3),
-              );
-              Navigator.pop(context);
-            }
-          },
-          child: Text(lang.yes),
-        ),
-      ],
+            },
+            child: Text(lang.yes),
+          ),
+        ],
+      ),
     ),
   );
 }
