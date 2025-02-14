@@ -36,7 +36,7 @@ class SelectedActionButton extends ConsumerWidget {
       'task-list' => taskListActionButton(context, ref, refDetails!),
       'link' => linkActionButton(context, refDetails!),
       'space' => spaceActionButton(context, ref, refDetails!),
-      'convo' => spaceActionButton(context, ref, refDetails!),
+      'chat' => chatActionButton(context, ref, refDetails!),
       _ => const SizedBox(),
     };
   }
@@ -184,6 +184,25 @@ class SelectedActionButton extends ConsumerWidget {
         onTap: () async {
           final notifier = ref.read(newsStateProvider.notifier);
           await notifier.selectSpaceToShare(context);
+        },
+      ),
+    );
+  }
+
+  Widget chatActionButton(
+    BuildContext context,
+    WidgetRef ref,
+    RefDetails refDetail,
+  ) {
+    final roomId = refDetail.roomIdStr();
+    if (roomId == null) return SizedBox();
+    return SizedBox(
+      width: 300,
+      child: RoomCard(
+        roomId: roomId,
+        onTap: () async {
+          final notifier = ref.read(newsStateProvider.notifier);
+          await notifier.selectChatToShare(context);
         },
       ),
     );

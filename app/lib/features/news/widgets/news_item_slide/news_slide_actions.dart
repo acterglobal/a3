@@ -50,7 +50,7 @@ class NewsSlideActions extends ConsumerWidget {
           roomId: roomId,
           refDetails: referenceDetails,
         ),
-      NewsReferencesType.convo => RoomCard(
+      NewsReferencesType.chat => RoomCard(
           roomId: roomId,
           refDetails: referenceDetails,
           onTap: () {
