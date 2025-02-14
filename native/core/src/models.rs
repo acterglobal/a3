@@ -13,6 +13,7 @@ mod reactions;
 mod read_receipts;
 mod redaction;
 mod rsvp;
+pub mod status;
 mod stories;
 mod tag;
 mod tasks;
@@ -34,6 +35,7 @@ pub use reactions::{Reaction, ReactionManager, ReactionStats};
 pub use read_receipts::{ReadReceipt, ReadReceiptStats, ReadReceiptsManager};
 pub use redaction::RedactedActerModel;
 pub use rsvp::{Rsvp, RsvpManager, RsvpStats};
+pub use status::{ActerSupportedRoomStatusEvents, RoomStatus};
 pub use stories::{Story, StoryUpdate};
 pub use tag::Tag;
 pub use tasks::{

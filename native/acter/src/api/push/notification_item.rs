@@ -278,6 +278,7 @@ impl TryFrom<&AnyActerModel> for NotificationItemParent {
             | AnyActerModel::AttachmentUpdate(_)
             | AnyActerModel::Rsvp(_)
             | AnyActerModel::Reaction(_)
+            | AnyActerModel::RoomStatus(_)
             | AnyActerModel::ReadReceipt(_) => {
                 tracing::trace!("Received Notification on an unsupported parent");
                 Err(())

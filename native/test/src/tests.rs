@@ -1,3 +1,4 @@
+mod activities;
 mod auth;
 mod blurhash;
 mod bookmarks;

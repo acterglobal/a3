@@ -33,21 +33,35 @@ class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
     return Card(
       child: Form(
         key: _formKey,
-        child: ListTile(
-          title: TextFormField(
-            key: RedeemToken.redeemTokenField,
-            decoration: InputDecoration(
-              icon: const Icon(Atlas.plus_ticket_thin),
-              hintText: lang.anInviteCodeYouWantToRedeem,
-              labelText: lang.inviteCode,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Text(
+                lang.redeemInviteCode,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
             ),
-            controller: _tokenController,
-          ),
-          trailing: ActerPrimaryActionButton(
-            key: RedeemToken.redeemTokenSubmit,
-            onPressed: _submit,
-            child: Text(lang.redeem),
-          ),
+            SizedBox(height: 14),
+            ListTile(
+              title: TextFormField(
+                key: RedeemToken.redeemTokenField,
+                decoration: InputDecoration(
+                  icon: const Icon(Atlas.plus_ticket_thin),
+                  hintText: lang.anInviteCodeYouWantToRedeem,
+                  labelText: lang.inviteCode,
+                ),
+                controller: _tokenController,
+              ),
+            ),
+            SizedBox(height: 14),
+            ActerPrimaryActionButton(
+              key: RedeemToken.redeemTokenSubmit,
+              onPressed: _submit,
+              child: Text(lang.redeem),
+            ),
+          ],
         ),
       ),
     );

@@ -1,6 +1,5 @@
 import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
-import 'package:acter/features/super_invites/pages/create.dart';
-import 'package:acter/features/super_invites/pages/super_invites.dart';
+import 'package:acter/features/super_invites/pages/create_super_invite_page.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -73,7 +72,7 @@ void superInvitesTests() {
       [spaceId],
       onCreateForm: (t) async {
         // activate create-dm
-        final spacesKey = find.byKey(CreateSuperInviteTokenPage.createDmKey);
+        final spacesKey = find.byKey(CreateSuperInvitePage.createDmKey);
         await spacesKey.should(findsOneWidget);
         await spacesKey.tap();
       },
@@ -105,7 +104,7 @@ void superInvitesTests() {
 
     // add the new space
 
-    final addSpaceBtn = find.byKey(CreateSuperInviteTokenPage.addSpaceKey);
+    final addSpaceBtn = find.byKey(CreateSuperInvitePage.addSpaceKey);
     await addSpaceBtn.should(findsOneWidget);
     await addSpaceBtn.tap();
 
@@ -114,7 +113,7 @@ void superInvitesTests() {
     await select.tap();
 
     // submit with the new list
-    final submitBtn = find.byKey(CreateSuperInviteTokenPage.submitBtn);
+    final submitBtn = find.byKey(CreateSuperInvitePage.submitBtn);
     await t.tester.ensureVisible(submitBtn);
     await submitBtn.should(findsOneWidget);
     await submitBtn.tap();
@@ -136,13 +135,13 @@ void superInvitesTests() {
     await tokenKey.should(findsOneWidget);
     await tokenKey.tap();
 
-    final deleteToken = find.byKey(CreateSuperInviteTokenPage.deleteBtn);
+    final deleteToken = find.byKey(CreateSuperInvitePage.deleteBtn);
     await deleteToken.should(findsOneWidget);
     await deleteToken.tap();
 
     // confirm...
 
-    final deleteConfirm = find.byKey(CreateSuperInviteTokenPage.deleteConfirm);
+    final deleteConfirm = find.byKey(CreateSuperInvitePage.deleteConfirm);
     await deleteConfirm.should(findsOneWidget);
     await deleteConfirm.tap();
 
@@ -151,21 +150,17 @@ void superInvitesTests() {
 
     // let's try to create the same token again
 
-    final createBtn = find.byKey(SuperInvitesPage.createNewToken);
-    await createBtn.should(findsOneWidget);
-    await createBtn.tap();
-
-    final tokenTxt = find.byKey(CreateSuperInviteTokenPage.tokenFieldKey);
+    final tokenTxt = find.byKey(CreateSuperInvitePage.tokenFieldKey);
     await tokenTxt.should(findsOneWidget);
     await tokenTxt.enterTextWithoutReplace(token);
 
-    final submitBtn = find.byKey(CreateSuperInviteTokenPage.submitBtn);
+    final submitBtn = find.byKey(CreateSuperInvitePage.submitBtn);
     await t.tester.ensureVisible(submitBtn);
     await submitBtn.should(findsOneWidget);
     await submitBtn.tap();
 
     // we are staying on the create screen.
-    final tokenTxtField = find.byKey(CreateSuperInviteTokenPage.tokenFieldKey);
+    final tokenTxtField = find.byKey(CreateSuperInvitePage.tokenFieldKey);
     await tokenTxtField.should(findsOneWidget);
     // not added
     await editTokenKey.should(findsNothing);

@@ -12,7 +12,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 class SyncNotifier extends Notifier<SyncState> {
   late ffi.Client client;
 
-  late ffi.SyncState syncState;
+  ffi.SyncState? syncState;
   Stream<bool>? _syncListener;
   StreamSubscription<bool>? _syncPoller;
   Stream<String>? _errorListener;
@@ -28,6 +28,7 @@ class SyncNotifier extends Notifier<SyncState> {
         final newClient = newVal.valueOrNull;
         if (newClient == null) {
           // we don't care for not having a proper client yet
+          syncState?.cancel();
           return;
         }
         // on release we have a really weird behavior, where, if we schedule
@@ -61,15 +62,16 @@ class SyncNotifier extends Notifier<SyncState> {
   }
 
   void _restartSync() {
-    syncState = client.startSync();
-
     // reset states
+    syncState?.cancel();
     _retryTimer?.cancel();
     _retryTimer = null;
     _syncPoller?.cancel();
     _errorPoller?.cancel();
 
-    _syncListener = syncState.firstSyncedRx(); // keep it resident in memory
+    final sync = syncState = client.startSync();
+
+    _syncListener = sync.firstSyncedRx(); // keep it resident in memory
     _syncPoller = _syncListener?.listen((synced) {
       if (synced) {
         state = const SyncState(initialSync: false);
@@ -77,7 +79,7 @@ class SyncNotifier extends Notifier<SyncState> {
     });
     ref.onDispose(() => _syncPoller?.cancel());
 
-    _errorListener = syncState.syncErrorRx(); // keep it resident in memory
+    _errorListener = sync.syncErrorRx(); // keep it resident in memory
     _errorPoller = _errorListener?.listen((msg) {
       Sentry.captureMessage('Sync failure: $msg', level: SentryLevel.error);
       if (msg == 'SoftLogout' || msg == 'Unauthorized') {
