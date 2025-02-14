@@ -375,7 +375,7 @@ class SidebarWidget extends ConsumerWidget {
           softWrap: false,
         ),
         onTap: () => goToBranch(ShellBranch.searchShell),
-        tutorialGlobalKey: jumpToKey,
+        tutorialGlobalKey: sidebarJumpToKey,
         indicator: const _SidebarItemIndicator(routes: [Routes.search]),
       ),
       _SidebarItem(
@@ -390,7 +390,7 @@ class SidebarWidget extends ConsumerWidget {
           softWrap: false,
         ),
         onTap: () => goToBranch(ShellBranch.homeShell),
-        tutorialGlobalKey: dashboardKey,
+        tutorialGlobalKey: sidebarDashboardKey,
         indicator: const _SidebarItemIndicator(
           reversed: true,
           routes: [
@@ -409,7 +409,7 @@ class SidebarWidget extends ConsumerWidget {
         ),
         onTap: () => goToBranch(ShellBranch.chatsShell),
         indicator: const _SidebarItemIndicator(routes: [Routes.chat]),
-        tutorialGlobalKey: chatsKey,
+        tutorialGlobalKey: sidebarChatsKey,
       ),
       _SidebarItem(
         icon: const ActivitiesIcon(),
@@ -429,7 +429,7 @@ class SidebarWidget extends ConsumerWidget {
         ),
         onTap: () => goToBranch(ShellBranch.activitiesShell),
         indicator: const _SidebarItemIndicator(routes: [Routes.activities]),
-        tutorialGlobalKey: activityKey,
+        tutorialGlobalKey: sidebarActivityKey,
       ),
     ];
   }
@@ -445,6 +445,7 @@ class SidebarWidget extends ConsumerWidget {
           ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
 
       return _SidebarItem(
+        tutorialGlobalKey: ValueKey('space-sidebar-$roomId'),
         icon: ActerAvatar(
           options: AvatarOptions(
             AvatarInfo(

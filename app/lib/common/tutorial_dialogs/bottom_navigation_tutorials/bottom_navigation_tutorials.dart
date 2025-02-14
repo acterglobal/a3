@@ -7,11 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
-final dashboardKey = GlobalKey(debugLabel: 'dashboard');
-final updateKey = GlobalKey(debugLabel: 'updae');
-final chatsKey = GlobalKey(debugLabel: 'chats');
-final activityKey = GlobalKey(debugLabel: 'activities');
-final jumpToKey = GlobalKey(debugLabel: 'jump to key');
+// Keys for Sidebar navigation
+final sidebarDashboardKey = GlobalKey(debugLabel: 'sidebar-dashboard');
+final sidebarUpdateKey = GlobalKey(debugLabel: 'sidebar-update');
+final sidebarChatsKey = GlobalKey(debugLabel: 'sidebar-chats');
+final sidebarActivityKey = GlobalKey(debugLabel: 'sidebar-activities');
+final sidebarJumpToKey = GlobalKey(debugLabel: 'sidebar-jump-to');
+
+// Keys for Bottom navigation
+final bottomDashboardKey = GlobalKey(debugLabel: 'bottom-dashboard');
+final bottomUpdateKey = GlobalKey(debugLabel: 'bottom-update');
+final bottomChatsKey = GlobalKey(debugLabel: 'bottom-chats');
+final bottomActivityKey = GlobalKey(debugLabel: 'bottom-activities');
+final bottomJumpToKey = GlobalKey(debugLabel: 'bottom-jump-to');
 
 const bottomNavigationPrefKey = 'bottomNavigationPrefKey';
 
@@ -47,7 +55,7 @@ void bottomNavigationTutorials({required BuildContext context}) async {
       targets: [
         targetFocus(
           identify: 'dashboardKey',
-          keyTarget: dashboardKey,
+          keyTarget: bottomDashboardKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_home.svg',
           contentTitle: lang.homeTabTutorialTitle,
@@ -57,7 +65,7 @@ void bottomNavigationTutorials({required BuildContext context}) async {
         if (!isDesktop)
           targetFocus(
             identify: 'updateKey',
-            keyTarget: updateKey,
+            keyTarget: bottomUpdateKey,
             contentAlign: ContentAlign.top,
             contentImageUrl: 'assets/images/empty_updates.svg',
             contentTitle: lang.updatesTabTutorialTitle,
@@ -65,7 +73,7 @@ void bottomNavigationTutorials({required BuildContext context}) async {
           ),
         targetFocus(
           identify: 'chatsKey',
-          keyTarget: chatsKey,
+          keyTarget: bottomChatsKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_chat.svg',
           contentTitle: lang.chatsTabTutorialTitle,
@@ -73,7 +81,7 @@ void bottomNavigationTutorials({required BuildContext context}) async {
         ),
         targetFocus(
           identify: 'activityKey',
-          keyTarget: activityKey,
+          keyTarget: bottomActivityKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_activity.svg',
           contentTitle: lang.activityTabTutorialTitle,
@@ -81,7 +89,7 @@ void bottomNavigationTutorials({required BuildContext context}) async {
         ),
         targetFocus(
           identify: 'jumpToKey',
-          keyTarget: jumpToKey,
+          keyTarget: bottomJumpToKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           iconData: Icons.search,
           contentTitle: lang.jumpToTabTutorialTitle,
