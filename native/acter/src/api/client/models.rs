@@ -7,8 +7,8 @@ use acter_core::{
     models::{ActerModel, AnyActerModel},
     referencing::IndexKey,
 };
+use matrix_sdk::ruma::{OwnedEventId, OwnedRoomId, RoomId};
 use matrix_sdk::{Room, RoomState};
-use ruma::{OwnedEventId, OwnedRoomId, RoomId};
 use tracing::{trace, warn};
 
 use crate::RUNTIME;

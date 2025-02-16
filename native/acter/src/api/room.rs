@@ -569,7 +569,7 @@ impl SpaceRelations {
                 let mut rooms = Vec::new();
                 while next.is_some() {
                     let request = assign!(get_hierarchy::v1::Request::new(room_id.clone()), { from: next.clone(), max_depth: Some(1u32.into()) });
-                    let resp = c.client().send(request, None).await?;
+                    let resp = c.client().send(request).await?;
                     if (resp.rooms.is_empty()) {
                         break; // we are done
                     }
@@ -619,7 +619,7 @@ impl Room {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let result = room.compute_display_name().await?;
+                let result = room.display_name().await?;
                 match result {
                     RoomDisplayName::Named(name) => Ok(OptionString::new(Some(name))),
                     RoomDisplayName::Aliased(name) => Ok(OptionString::new(Some(name))),
@@ -1206,6 +1206,7 @@ impl Room {
             RoomState::Left => "left".to_string(),
             RoomState::Invited => "invited".to_string(),
             RoomState::Knocked => "knocked".to_string(),
+            RoomState::Banned => "banned".to_string(),
         }
     }
 
@@ -1730,7 +1731,7 @@ impl Room {
             .spawn(async move {
                 let request =
                     report_content::v3::Request::new(room_id, event_id, int_score, reason);
-                client.send(request, None).await?;
+                client.send(request).await?;
                 Ok(true)
             })
             .await?

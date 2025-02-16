@@ -8,6 +8,11 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::StreamExt;
+use matrix_sdk::ruma::{
+    api::client::push::PushRule,
+    events::policy::rule,
+    push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
+};
 use matrix_sdk::{
     notification_settings::{
         IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings,
@@ -36,11 +41,6 @@ use matrix_sdk_base::{
 use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup, RawNotificationEvent,
-};
-use ruma::{
-    api::client::push::PushRule,
-    events::policy::rule,
-    push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
 };
 use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -94,7 +94,7 @@ impl Pusher {
             .spawn(async move {
                 // FIXME: how to set `append = true` for single-device-multi-user-support...?!?
                 let request = set_pusher::v3::Request::delete(PusherIds::new(pushkey, app_id));
-                client.send(request, None).await?;
+                client.send(request).await?;
                 Ok(false)
             })
             .await?

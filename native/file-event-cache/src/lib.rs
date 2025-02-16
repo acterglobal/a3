@@ -1,12 +1,16 @@
 use async_trait::async_trait;
 use base64ct::{Base64UrlUnpadded, Encoding};
 use core::fmt::Debug;
+use matrix_sdk::{deserialized_responses::TimelineEvent, ruma::OwnedEventId};
 use matrix_sdk_base::{
     event_cache::{
-        store::{EventCacheStore, EventCacheStoreError, DEFAULT_CHUNK_CAPACITY},
+        store::{
+            media::{IgnoreMediaRetentionPolicy, MediaRetentionPolicy},
+            EventCacheStore, EventCacheStoreError,
+        },
         Event, Gap,
     },
-    linked_chunk::{LinkedChunk, Update},
+    linked_chunk::{RawChunk, Update},
     media::{MediaRequestParameters, UniqueKey},
     ruma::{MxcUri, RoomId},
     StateStore,
@@ -108,7 +112,7 @@ where
     async fn reload_linked_chunk(
         &self,
         room_id: &RoomId,
-    ) -> Result<Option<LinkedChunk<DEFAULT_CHUNK_CAPACITY, Event, Gap>>, Self::Error> {
+    ) -> Result<Vec<RawChunk<TimelineEvent, Gap>>, Self::Error> {
         self.inner
             .reload_linked_chunk(room_id)
             .await
@@ -120,7 +124,11 @@ where
         &self,
         request: &MediaRequestParameters,
         content: Vec<u8>,
+        ignore_policy: IgnoreMediaRetentionPolicy,
     ) -> Result<(), Self::Error> {
+        if ignore_policy.is_yes() {
+            return Ok(());
+        }
         let base_filename = self.encode_key(request.source.unique_key());
         let data = self
             .encode_value(content)
@@ -183,6 +191,49 @@ where
         fs::rename(from_filename, to_filename)
             .map_err(|e| EventCacheStoreError::Backend(Box::new(e)))?;
         Ok(())
+    }
+
+    fn media_retention_policy(&self) -> MediaRetentionPolicy {
+        self.inner.media_retention_policy()
+    }
+
+    async fn set_media_retention_policy(
+        &self,
+        policy: MediaRetentionPolicy,
+    ) -> Result<(), Self::Error> {
+        self.inner
+            .set_media_retention_policy(policy)
+            .await
+            .map_err(|e| e.into())
+    }
+    async fn set_ignore_media_retention_policy(
+        &self,
+        request: &MediaRequestParameters,
+        ignore_policy: IgnoreMediaRetentionPolicy,
+    ) -> Result<(), Self::Error> {
+        self.inner
+            .set_ignore_media_retention_policy(request, ignore_policy)
+            .await
+            .map_err(|e| e.into())
+    }
+
+    async fn clear_all_rooms_chunks(&self) -> Result<(), Self::Error> {
+        Ok(())
+    }
+
+    async fn clean_up_media_cache(&self) -> Result<(), Self::Error> {
+        Ok(())
+    }
+
+    async fn filter_duplicated_events(
+        &self,
+        room_id: &RoomId,
+        events: Vec<OwnedEventId>,
+    ) -> Result<Vec<OwnedEventId>, Self::Error> {
+        self.inner
+            .filter_duplicated_events(room_id, events)
+            .await
+            .map_err(|e| e.into())
     }
 }
 
@@ -278,8 +329,12 @@ mod tests {
         let cache = SqliteEventCacheStore::open(cache_dir.path(), None).await?;
         let fmc = FileEventCacheStore::with_store_cipher(cache_dir.into_path(), cipher, cache);
         let some_content = "this is some content";
-        fmc.add_media_content(&fake_mr("my_id"), some_content.into())
-            .await?;
+        fmc.add_media_content(
+            &fake_mr("my_id"),
+            some_content.into(),
+            IgnoreMediaRetentionPolicy::No,
+        )
+        .await?;
         assert_eq!(
             fmc.get_media_content(&fake_mr("my_id")).await?,
             Some(some_content.into())
@@ -304,8 +359,12 @@ mod tests {
                 cipher,
                 cache,
             );
-            fmc.add_media_content(&fake_mr(my_item_id), some_content.into())
-                .await?;
+            fmc.add_media_content(
+                &fake_mr(my_item_id),
+                some_content.into(),
+                IgnoreMediaRetentionPolicy::No,
+            )
+            .await?;
             assert_eq!(
                 fmc.get_media_content(&fake_mr(my_item_id)).await?,
                 Some(some_content.into())
@@ -342,7 +401,11 @@ mod tests {
                     .await?;
             // first media cache
             outer
-                .add_media_content(&fake_mr(my_item_id), some_content.into())
+                .add_media_content(
+                    &fake_mr(my_item_id),
+                    some_content.into(),
+                    IgnoreMediaRetentionPolicy::No,
+                )
                 .await?;
             assert_eq!(
                 outer.get_media_content(&fake_mr(my_item_id)).await?,
@@ -358,7 +421,11 @@ mod tests {
             wrap_with_file_cache(&db, cache, cache_dir.path().to_path_buf(), &passphrase).await?;
         // first media cache
         outer
-            .add_media_content(&fake_mr(my_item_id), some_content.into())
+            .add_media_content(
+                &fake_mr(my_item_id),
+                some_content.into(),
+                IgnoreMediaRetentionPolicy::No,
+            )
             .await?;
         assert_eq!(
             outer.get_media_content(&fake_mr(my_item_id)).await?,

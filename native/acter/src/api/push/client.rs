@@ -8,6 +8,12 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::StreamExt;
+use matrix_sdk::ruma::{
+    api::client::push::PushRule,
+    events::policy::rule,
+    push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
+    serde::JsonObject,
+};
 use matrix_sdk::{
     notification_settings::{
         IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings,
@@ -36,11 +42,6 @@ use matrix_sdk_base::{
 use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup, RawNotificationEvent,
-};
-use ruma::{
-    api::client::push::PushRule,
-    events::policy::rule,
-    push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
 };
 use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -106,7 +107,7 @@ impl Client {
             .spawn(async move {
                 // FIXME: how to set `append = true` for single-device-multi-user-support...?!?
                 let request = set_pusher::v3::Request::post(pusher_data.into());
-                client.send(request, None).await?;
+                client.send(request).await?;
                 Ok(false)
             })
             .await?
@@ -125,6 +126,32 @@ impl Client {
     ) -> Result<bool> {
         let client = self.core.client().clone();
         let device_id = self.device_id()?;
+        let mut data = JsonObject::default();
+        data.insert(
+            "default_payload".to_owned(),
+            serde_json::json!({
+                "aps": {
+                    // specific tags to ensure the iOS notifications work as expected
+                    //
+                    // allows us to change the content in the extension:
+                    "mutable-content": 1,
+                    // make sure this goes to the foreground process, too:
+                    "content-available": 1,
+                    // the fallback message if the extension fails to load:
+                    "alert": {
+                        "title": "Acter",
+                        "body": "New messages available",
+                    },
+
+                    // Further information: by sending only the event-id and including the `alert`
+                    // text in the aps payload, apple will regard this as _important_ messages
+                    // that have to be delivered and processed by the background services
+                },
+                // include the device-id allowing us to identify _which_ client we
+                // need to process that with
+                "device_id": device_id,
+            }),
+        );
         let push_data = if with_ios_defaults {
             assign!(HttpPusherData::new(server_url), {
                 // we only send over the event id & room id, preventing the service from
@@ -132,34 +159,18 @@ impl Client {
                 // additionally this prevents sygnal (the push relayer) from adding
                 // further information in the json that will then be displayed as fallback
                 format: Some(PushFormat::EventIdOnly),
-                default_payload: serde_json::json!({
-                    "aps": {
-                        // specific tags to ensure the iOS notifications work as expected
-                        //
-                        // allows us to change the content in the extension:
-                        "mutable-content": 1,
-                        // make sure this goes to the foreground process, too:
-                        "content-available": 1,
-                        // the fallback message if the extension fails to load:
-                        "alert": {
-                            "title": "Acter",
-                            "body": "New messages available",
-                        },
-
-                        // Further information: by sending only the event-id and including the `alert`
-                        // text in the aps payload, apple will regard this as _important_ messages
-                        // that have to be delivered and processed by the background services
-                    },
-                    // include the device-id allowing us to identify _which_ client we
-                    // need to process that with
-                    "device_id": device_id,
-                })
+                data: data
             })
         } else {
-            assign!(HttpPusherData::new(server_url), {
-                default_payload: serde_json::json!({
+            let mut data = JsonObject::default();
+            data.insert(
+                "default_payload".to_owned(),
+                serde_json::json!({
                     "device_id": device_id,
-                })
+                }),
+            );
+            assign!(HttpPusherData::new(server_url), {
+                data: data
             })
         };
         let pusher_data = PusherInit {
@@ -174,7 +185,7 @@ impl Client {
             .spawn(async move {
                 // FIXME: how to set `append = true` for single-device-multi-user-support...?!?
                 let request = set_pusher::v3::Request::post(pusher_data.into());
-                client.send(request, None).await?;
+                client.send(request).await?;
                 Ok(false)
             })
             .await?
@@ -187,7 +198,7 @@ impl Client {
                 let resp = me
                     .core
                     .client()
-                    .send(get_pushers::v3::Request::new(), None)
+                    .send(get_pushers::v3::Request::new())
                     .await?;
                 let items = resp
                     .pushers
@@ -204,9 +215,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 for rule in default_rules() {
-                    let resp = client
-                        .send(set_pushrule::v3::Request::new(rule), None)
-                        .await?;
+                    let resp = client.send(set_pushrule::v3::Request::new(rule)).await?;
                 }
                 Ok(true)
             })
@@ -217,9 +226,7 @@ impl Client {
         let client = self.core.client().clone();
         RUNTIME
             .spawn(async move {
-                let resp = client
-                    .send(get_pushrules_all::v3::Request::new(), None)
-                    .await?;
+                let resp = client.send(get_pushrules_all::v3::Request::new()).await?;
                 Ok(resp.global)
             })
             .await?

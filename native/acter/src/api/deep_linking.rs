@@ -5,8 +5,8 @@ use crate::{Client, RUNTIME};
 use acter_core::events::{ObjRef as CoreObjRef, RefDetails as CoreRefDetails};
 use acter_core::share_link::api;
 use anyhow::{bail, Result};
+use matrix_sdk::ruma::{OwnedEventId, OwnedRoomId, OwnedServerName};
 use matrix_sdk::Client as SdkClient;
-use ruma::{OwnedEventId, OwnedRoomId, OwnedServerName};
 use urlencoding::encode;
 
 #[derive(Clone)]
@@ -268,7 +268,7 @@ impl RefDetails {
         RUNTIME
             .spawn(async move {
                 let req = api::create::Request::new(inner);
-                let resp = c.send(req, None).await?;
+                let resp = c.send(req).await?;
                 Ok(resp.url)
             })
             .await?

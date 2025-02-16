@@ -281,7 +281,7 @@ impl Space {
                 }
 
                 for request in requests {
-                    client.send(request, None).await?;
+                    client.send(request).await?;
                 }
 
                 Ok(true)

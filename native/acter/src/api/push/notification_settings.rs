@@ -8,6 +8,11 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::StreamExt;
+use matrix_sdk::ruma::{
+    api::client::push::PushRule,
+    events::policy::rule,
+    push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
+};
 use matrix_sdk::{
     notification_settings::{
         IsEncrypted, IsOneToOne, NotificationSettings as SdkNotificationSettings,
@@ -36,11 +41,6 @@ use matrix_sdk_base::{
 use matrix_sdk_ui::notification_client::{
     NotificationClient, NotificationEvent, NotificationItem as SdkNotificationItem,
     NotificationProcessSetup, RawNotificationEvent,
-};
-use ruma::{
-    api::client::push::PushRule,
-    events::policy::rule,
-    push::{Action, NewConditionalPushRule, NewPushRule, PushCondition},
 };
 use std::{ops::Deref, sync::Arc};
 use strum::{Display, EnumString};
@@ -214,12 +214,9 @@ impl NotificationSettings {
                         let new_push_rule = make_push_rule(&object_id, sub_type.as_ref());
 
                         let resp = client
-                            .send(
-                                set_pushrule::v3::Request::new(NewPushRule::Override(
-                                    new_push_rule,
-                                )),
-                                None,
-                            )
+                            .send(set_pushrule::v3::Request::new(NewPushRule::Override(
+                                new_push_rule,
+                            )))
                             .await?;
 
                         Ok(true)
