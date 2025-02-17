@@ -54,6 +54,7 @@ class ReferenceAttachmentItem extends ConsumerWidget {
           cardMargin: EdgeInsets.zero,
         ),
       'space' => RoomCard(roomId: roomId,refDetails: refDetails,),
+      'chat' => RoomCard(roomId: roomId,refDetails: refDetails,),
       _ => defaultWidget,
     };
     return Container(

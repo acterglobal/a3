@@ -42,6 +42,7 @@ class ItemPreviewCard extends StatelessWidget {
         ObjectType.comment => Atlas.chat_dots_thin,
         ObjectType.attachment => Atlas.paperclip_thin,
         ObjectType.space => Atlas.team_group,
+        ObjectType.chat => Atlas.chats,
       };
 
   String subtitleForType(BuildContext context, ObjectType? refType) =>
@@ -55,5 +56,6 @@ class ItemPreviewCard extends StatelessWidget {
         ObjectType.comment => L10n.of(context).comment,
         ObjectType.attachment => L10n.of(context).attachments,
         ObjectType.space => L10n.of(context).space,
+        ObjectType.chat => L10n.of(context).chat,
       };
 }

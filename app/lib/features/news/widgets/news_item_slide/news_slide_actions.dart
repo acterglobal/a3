@@ -4,6 +4,7 @@ import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class NewsSlideActions extends ConsumerWidget {
     final referenceDetails = newsReferencesList.first.refDetails();
     final evtType = NewsReferencesType.fromStr(referenceDetails.typeStr());
     final id = referenceDetails.targetIdStr() ?? '';
+    final roomId = referenceDetails.roomIdStr() ?? '';
     return switch (evtType) {
       NewsReferencesType.calendarEvent => EventItem(
           eventId: id,
@@ -44,7 +46,17 @@ class NewsSlideActions extends ConsumerWidget {
         ),
       NewsReferencesType.link =>
         renderLinkActionButton(context, ref, referenceDetails),
-      NewsReferencesType.space => RoomCard(roomId: referenceDetails.roomIdStr() ?? '', refDetails: referenceDetails,),
+      NewsReferencesType.space => RoomCard(
+          roomId: roomId,
+          refDetails: referenceDetails,
+        ),
+      NewsReferencesType.chat => RoomCard(
+          roomId: roomId,
+          refDetails: referenceDetails,
+          onTap: () {
+            goToChat(context, roomId);
+          },
+        ),
       _ => renderNotSupportedAction(context),
     };
   }

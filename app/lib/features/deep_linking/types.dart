@@ -14,6 +14,7 @@ enum ObjectType {
   task,
   boost,
   space,
+  chat,
   // reference types
   comment,
   attachment,
