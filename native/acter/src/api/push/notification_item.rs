@@ -1,9 +1,10 @@
 use acter_core::{
+    activities::{object::ActivityObject, Activity, ActivityContent},
     events::{
         attachments::{AttachmentContent, FallbackAttachmentContent},
         news::{FallbackNewsContent, NewsContent},
         rsvp::RsvpStatus,
-        AnyActerEvent, RefDetails, SyncAnyActerEvent, UtcDateTime,
+        AnyActerEvent, RefDetails, RefPreview, SyncAnyActerEvent, UtcDateTime,
     },
     models::{ActerModel, AnyActerModel, Attachment},
     push::default_rules,
@@ -50,6 +51,7 @@ use ruma::{
 };
 use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
+use tracing::warn;
 use urlencoding::encode;
 
 use crate::{Client, Rsvp};
@@ -158,138 +160,6 @@ impl NotificationRoom {
     }
 }
 #[derive(Clone, Debug)]
-pub enum NotificationItemParent {
-    News {
-        parent_id: OwnedEventId,
-    },
-    Pin {
-        parent_id: OwnedEventId,
-        title: String,
-    },
-    CalendarEvent {
-        parent_id: OwnedEventId,
-        title: String,
-    },
-    TaskList {
-        parent_id: OwnedEventId,
-        title: String,
-    },
-    Task {
-        tl_id: OwnedEventId,
-        parent_id: OwnedEventId,
-        title: String,
-    },
-}
-
-impl NotificationItemParent {
-    pub fn object_type_str(&self) -> String {
-        match self {
-            NotificationItemParent::News { .. } => "news",
-            NotificationItemParent::Pin { .. } => "pin",
-            NotificationItemParent::CalendarEvent { .. } => "event",
-            NotificationItemParent::TaskList { .. } => "task-list",
-            NotificationItemParent::Task { .. } => "task",
-        }
-        .to_owned()
-    }
-    pub fn object_id_str(&self) -> String {
-        match self {
-            NotificationItemParent::News { parent_id }
-            | NotificationItemParent::Pin { parent_id, .. }
-            | NotificationItemParent::TaskList { parent_id, .. }
-            | NotificationItemParent::Task { parent_id, .. }
-            | NotificationItemParent::CalendarEvent { parent_id, .. } => parent_id.to_string(),
-        }
-    }
-    pub fn title(&self) -> Option<String> {
-        match self {
-            NotificationItemParent::News { parent_id } => None,
-            NotificationItemParent::Pin { title, .. }
-            | NotificationItemParent::TaskList { title, .. }
-            | NotificationItemParent::Task { title, .. }
-            | NotificationItemParent::CalendarEvent { title, .. } => Some(title.clone()),
-        }
-    }
-
-    pub fn target_url(&self) -> String {
-        match self {
-            NotificationItemParent::News { parent_id } => format!("/updates/{}", parent_id),
-            NotificationItemParent::Pin { parent_id, .. } => format!("/pins/{}", parent_id),
-            NotificationItemParent::TaskList { parent_id, .. } => format!("/tasks/{}", parent_id),
-            NotificationItemParent::Task {
-                parent_id, tl_id, ..
-            } => format!("/tasks/{tl_id}/{parent_id}"),
-            NotificationItemParent::CalendarEvent { parent_id, .. } => {
-                format!("/events/{}", parent_id)
-            } //
-        }
-    }
-
-    pub fn emoji(&self) -> String {
-        match self {
-            NotificationItemParent::News { .. } => "🚀", // boost rocket
-            NotificationItemParent::Pin { .. } => "📌",  // pin
-            NotificationItemParent::TaskList { .. } => "📋", // tasklist-> clipboard
-            NotificationItemParent::CalendarEvent { .. } => "🗓️", // calendar
-            NotificationItemParent::Task { .. } => "☑️", // task -> checkoff
-        }
-        .to_owned()
-    }
-}
-
-impl TryFrom<&AnyActerModel> for NotificationItemParent {
-    type Error = ();
-
-    fn try_from(value: &AnyActerModel) -> std::result::Result<Self, Self::Error> {
-        match value {
-            AnyActerModel::NewsEntry(e) => Ok(NotificationItemParent::News {
-                parent_id: e.event_id().to_owned(),
-            }),
-            AnyActerModel::CalendarEvent(e) => Ok(NotificationItemParent::CalendarEvent {
-                parent_id: e.event_id().to_owned(),
-                title: e.title().clone(),
-            }),
-            AnyActerModel::Pin(e) => Ok(NotificationItemParent::Pin {
-                parent_id: e.event_id().to_owned(),
-                title: e.title().clone(),
-            }),
-            AnyActerModel::TaskList(e) => Ok(NotificationItemParent::TaskList {
-                parent_id: e.event_id().to_owned(),
-                title: e.name().clone(),
-            }),
-            AnyActerModel::Task(e) => Ok(NotificationItemParent::Task {
-                parent_id: e.event_id().to_owned(),
-                tl_id: e.task_list_id.event_id.clone(),
-                title: e.title().clone(),
-            }),
-            AnyActerModel::RedactedActerModel(..)
-            | AnyActerModel::CalendarEventUpdate(_)
-            | AnyActerModel::TaskListUpdate(_)
-            | AnyActerModel::TaskUpdate(_)
-            | AnyActerModel::TaskSelfAssign(_)
-            | AnyActerModel::TaskSelfUnassign(_)
-            | AnyActerModel::PinUpdate(_)
-            | AnyActerModel::NewsEntryUpdate(_)
-            | AnyActerModel::Story(_)
-            | AnyActerModel::StoryUpdate(_)
-            | AnyActerModel::Comment(_)
-            | AnyActerModel::CommentUpdate(_)
-            | AnyActerModel::Attachment(_)
-            | AnyActerModel::AttachmentUpdate(_)
-            | AnyActerModel::Rsvp(_)
-            | AnyActerModel::Reaction(_)
-            | AnyActerModel::RoomStatus(_)
-            | AnyActerModel::ReadReceipt(_) => {
-                tracing::trace!("Received Notification on an unsupported parent");
-                Err(())
-            }
-            #[cfg(any(test, feature = "testing"))]
-            AnyActerModel::TestModel(test_model) => todo!(),
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
 pub enum NotificationItemInner {
     Fallback {
         device_id: OwnedDeviceId,
@@ -303,122 +173,15 @@ pub enum NotificationItemInner {
         content: MessageType,
         room_id: OwnedRoomId,
     },
-    Boost {
-        first_slide: Option<NewsContent>,
-        event_id: OwnedEventId,
-    },
-    Attachment {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-        content: Option<MsgContent>,
-    },
-    Reference {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-    },
-    Comment {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-        content: TextMessageEventContent,
-    },
-    Reaction {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-        key: String,
-    },
-    Creation {
-        parent_obj: NotificationItemParent,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-    },
-    TitleChange {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-    },
-    DescriptionChange {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-        content: Option<TextMessageEventContent>,
-    },
-    // event specific
-    EventDateChange {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-        new_date: UtcDateTime,
-    },
-    // event specific
-    Rsvp {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-        rsvp: RsvpStatus,
-    },
-    // tasks and task list specific
-    TaskAdd {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-    },
-    TaskProgress {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-        done: bool,
-    },
-    TaskDueDateChange {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-        new_due_date: Option<NaiveDate>,
-    },
-    TaskAccept {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-    },
-    TaskDecline {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-    },
-    // catch-all for other object changes
-    OtherChanges {
-        parent_obj: Option<NotificationItemParent>,
-        parent_id: OwnedEventId,
-        room_id: OwnedRoomId,
-        event_id: OwnedEventId,
-    },
+    Activity(Activity),
 }
 
 impl NotificationItemInner {
     pub fn key(&self) -> String {
         match &self {
-            NotificationItemInner::Fallback { .. } => "fallback",
-            NotificationItemInner::Invite { .. } => "invite",
-            NotificationItemInner::Comment { .. } => "comment",
-            NotificationItemInner::Reaction { .. } => "reaction",
-            NotificationItemInner::Attachment { .. } => "attachment",
-            NotificationItemInner::Reference { .. } => "references",
+            NotificationItemInner::Fallback { .. } => "fallback".to_owned(),
+            NotificationItemInner::Invite { .. } => "invite".to_owned(),
+            NotificationItemInner::Activity(a) => a.type_str(),
             NotificationItemInner::ChatMessage { is_dm, .. } => {
                 if *is_dm {
                     "dm"
@@ -426,31 +189,8 @@ impl NotificationItemInner {
                     "chat"
                 }
             }
-            NotificationItemInner::TaskProgress { done, .. } => {
-                if *done {
-                    "taskComplete"
-                } else {
-                    "taskReOpen"
-                }
-            }
-            NotificationItemInner::TaskDueDateChange { .. } => "taskDueDateChange",
-            NotificationItemInner::TaskAccept { .. } => "taskAccept",
-            NotificationItemInner::TaskDecline { .. } => "taskDecline",
-            NotificationItemInner::Boost { .. } => "news",
-            NotificationItemInner::Creation { .. } => "creation",
-            NotificationItemInner::TitleChange { .. } => "titleChange",
-            NotificationItemInner::DescriptionChange { .. } => "descriptionChange",
-            NotificationItemInner::EventDateChange { .. } => "eventDateChange",
-
-            NotificationItemInner::Rsvp { rsvp, .. } => match rsvp {
-                RsvpStatus::Yes => "rsvpYes",
-                RsvpStatus::Maybe => "rsvpMaybe",
-                RsvpStatus::No => "rsvpNo",
-            },
-            NotificationItemInner::TaskAdd { .. } => "taskAdd",
-            NotificationItemInner::OtherChanges { .. } => "otherChanges",
+            .to_owned(),
         }
-        .to_owned()
     }
     pub fn target_url(&self) -> String {
         match &self {
@@ -461,173 +201,7 @@ impl NotificationItemInner {
             ),
             NotificationItemInner::Invite { room_id } => "/activities/invites".to_string(),
             NotificationItemInner::ChatMessage { room_id, .. } => format!("/chat/{room_id}"),
-            NotificationItemInner::Boost { event_id, .. } => format!("/updates/{event_id}"),
-            NotificationItemInner::TitleChange {
-                parent_obj: Some(parent_obj),
-                ..
-            }
-            | NotificationItemInner::DescriptionChange {
-                parent_obj: Some(parent_obj),
-                ..
-            }
-            | NotificationItemInner::DescriptionChange {
-                parent_obj: Some(parent_obj),
-                ..
-            }
-            | NotificationItemInner::EventDateChange {
-                parent_obj: Some(parent_obj),
-                ..
-            }
-            | NotificationItemInner::Rsvp {
-                parent_obj: Some(parent_obj),
-                ..
-            }
-            | NotificationItemInner::TaskProgress {
-                parent_obj: Some(parent_obj),
-                ..
-            }
-            | NotificationItemInner::TaskDueDateChange {
-                parent_obj: Some(parent_obj),
-                ..
-            }
-            | NotificationItemInner::TaskAccept {
-                parent_obj: Some(parent_obj),
-                ..
-            }
-            | NotificationItemInner::TaskDecline {
-                parent_obj: Some(parent_obj),
-                ..
-            }
-            | NotificationItemInner::Creation { parent_obj, .. } => parent_obj.target_url(),
-            NotificationItemInner::Attachment {
-                parent_obj: Some(parent),
-                event_id,
-                ..
-            } => format!(
-                "{}?section=attachments&attachmentId={}",
-                parent.target_url(),
-                encode(event_id.as_str()),
-            ),
-            NotificationItemInner::Reference {
-                parent_obj: Some(parent),
-                event_id,
-                ..
-            } => format!(
-                "{}?section=references&referenceId={}",
-                parent.target_url(),
-                encode(event_id.as_str()),
-            ),
-            NotificationItemInner::Comment {
-                parent_obj: Some(parent),
-                event_id,
-                ..
-            } => format!(
-                "{}?section=comments&commentId={}",
-                parent.target_url(),
-                encode(event_id.as_str()),
-            ),
-            NotificationItemInner::Reaction {
-                parent_obj: Some(parent),
-                event_id,
-                ..
-            } => format!(
-                "{}?section=reactions&reactionId={}",
-                parent.target_url(),
-                encode(event_id.as_str()),
-            ),
-            // -- fallback when the parent isn't there.
-            NotificationItemInner::TitleChange {
-                parent_id,
-                room_id,
-                event_id,
-                ..
-            }
-            | NotificationItemInner::DescriptionChange {
-                parent_id,
-                room_id,
-                event_id,
-                ..
-            }
-            | NotificationItemInner::EventDateChange {
-                parent_id,
-                room_id,
-                event_id,
-                ..
-            }
-            | NotificationItemInner::Rsvp {
-                parent_id,
-                room_id,
-                event_id,
-                ..
-            }
-            | NotificationItemInner::TaskProgress {
-                parent_id,
-                room_id,
-                event_id,
-                ..
-            }
-            | NotificationItemInner::TaskDueDateChange {
-                parent_id,
-                room_id,
-                event_id,
-                ..
-            }
-            | NotificationItemInner::TaskAccept {
-                parent_id,
-                room_id,
-                event_id,
-                ..
-            }
-            | NotificationItemInner::TaskDecline {
-                parent_id,
-                room_id,
-                event_id,
-                ..
-            }
-            | NotificationItemInner::OtherChanges {
-                parent_id,
-                room_id,
-                event_id,
-                ..
-            }
-            | NotificationItemInner::Comment {
-                event_id,
-                room_id,
-                parent_id,
-                ..
-            }
-            | NotificationItemInner::Attachment {
-                event_id,
-                room_id,
-                parent_id,
-                ..
-            }
-            | NotificationItemInner::Reference {
-                event_id,
-                room_id,
-                parent_id,
-                ..
-            }
-            | NotificationItemInner::Reaction {
-                parent_id,
-                room_id,
-                event_id,
-                ..
-            } => {
-                format!(
-                    "/forward?eventId={}&roomId={}&parentId={}",
-                    encode(event_id.as_str()),
-                    encode(room_id.as_str()),
-                    encode(parent_id.as_str())
-                )
-            }
-            NotificationItemInner::TaskAdd {
-                parent_id,
-                event_id,
-                ..
-            } => {
-                format!("/tasks/{parent_id}/{event_id}")
-            }
+            NotificationItemInner::Activity(a) => a.target_url(),
         }
     }
 
@@ -639,69 +213,32 @@ impl NotificationItemInner {
         }
     }
 
-    pub fn parent(&self) -> Option<NotificationItemParent> {
-        match self {
-            NotificationItemInner::Creation { parent_obj, .. } => Some(parent_obj.clone()),
-            NotificationItemInner::TitleChange { parent_obj, .. }
-            | NotificationItemInner::DescriptionChange { parent_obj, .. }
-            | NotificationItemInner::EventDateChange { parent_obj, .. }
-            | NotificationItemInner::Rsvp { parent_obj, .. }
-            | NotificationItemInner::TaskAdd { parent_obj, .. }
-            | NotificationItemInner::TaskProgress { parent_obj, .. }
-            | NotificationItemInner::TaskDueDateChange { parent_obj, .. }
-            | NotificationItemInner::TaskAccept { parent_obj, .. }
-            | NotificationItemInner::TaskDecline { parent_obj, .. }
-            | NotificationItemInner::OtherChanges { parent_obj, .. }
-            | NotificationItemInner::Attachment { parent_obj, .. }
-            | NotificationItemInner::Reference { parent_obj, .. }
-            | NotificationItemInner::Comment { parent_obj, .. }
-            | NotificationItemInner::Reaction { parent_obj, .. } => parent_obj.clone(),
-            _ => None,
-        }
+    pub fn parent(&self) -> Option<ActivityObject> {
+        let NotificationItemInner::Activity(a) = &self else {
+            return None;
+        };
+
+        a.object()
     }
     pub fn parent_id_str(&self) -> Option<String> {
-        match self {
-            NotificationItemInner::Creation { parent_obj, .. } => Some(parent_obj.object_id_str()),
-            NotificationItemInner::TitleChange { parent_id, .. }
-            | NotificationItemInner::DescriptionChange { parent_id, .. }
-            | NotificationItemInner::EventDateChange { parent_id, .. }
-            | NotificationItemInner::Rsvp { parent_id, .. }
-            | NotificationItemInner::TaskAdd { parent_id, .. }
-            | NotificationItemInner::TaskProgress { parent_id, .. }
-            | NotificationItemInner::TaskDueDateChange { parent_id, .. }
-            | NotificationItemInner::TaskAccept { parent_id, .. }
-            | NotificationItemInner::TaskDecline { parent_id, .. }
-            | NotificationItemInner::Attachment { parent_id, .. }
-            | NotificationItemInner::OtherChanges { parent_id, .. }
-            | NotificationItemInner::Comment { parent_id, .. }
-            | NotificationItemInner::Attachment { parent_id, .. }
-            | NotificationItemInner::Reference { parent_id, .. }
-            | NotificationItemInner::Reaction { parent_id, .. } => Some(parent_id.to_string()),
-            _ => None,
-        }
+        let NotificationItemInner::Activity(a) = &self else {
+            return None;
+        };
+        a.object().map(|a| a.object_id_str())
     }
 
     pub fn reaction_key(&self) -> Option<String> {
-        match &self {
-            NotificationItemInner::Reaction { key, .. } => Some(key.clone()),
-            _ => None,
-        }
+        let NotificationItemInner::Activity(a) = &self else {
+            return None;
+        };
+        a.reaction_key()
     }
 
     pub fn new_date(&self) -> Option<UtcDateTime> {
-        match &self {
-            NotificationItemInner::EventDateChange { new_date, .. } => Some(*new_date),
-            NotificationItemInner::TaskDueDateChange {
-                new_due_date: Some(new_due_date),
-                ..
-            } => Some(UtcDateTime::from_naive_utc_and_offset(
-                new_due_date.and_time(
-                    NaiveTime::from_num_seconds_from_midnight_opt(0, 0).expect("midnight exists"),
-                ),
-                Utc,
-            )),
-            _ => None,
-        }
+        let NotificationItemInner::Activity(a) = &self else {
+            return None;
+        };
+        a.new_date()
     }
 
     pub fn body(&self) -> Option<MsgContent> {
@@ -721,54 +258,33 @@ impl NotificationItemInner {
                 }
                 _ => None,
             },
-            NotificationItemInner::Attachment { content, .. } => content.clone(),
-            NotificationItemInner::Comment { content, .. } => Some(MsgContent::from(content)),
-            NotificationItemInner::Boost {
-                first_slide: Some(first_slide),
-                ..
-            } => match &first_slide {
-                // everything else we have to fallback to the body-text thing ...
-                NewsContent::Fallback(FallbackNewsContent::Text(msg_content))
-                | NewsContent::Text(msg_content) => Some(MsgContent::from(msg_content)),
-                NewsContent::Fallback(FallbackNewsContent::Video(msg_content))
-                | NewsContent::Video(msg_content) => Some(MsgContent::from(msg_content)),
-                NewsContent::Fallback(FallbackNewsContent::Audio(msg_content))
-                | NewsContent::Audio(msg_content) => Some(MsgContent::from(msg_content)),
-                NewsContent::Fallback(FallbackNewsContent::File(msg_content))
-                | NewsContent::File(msg_content) => Some(MsgContent::from(msg_content)),
-                NewsContent::Fallback(FallbackNewsContent::Location(msg_content))
-                | NewsContent::Location(msg_content) => Some(MsgContent::from(msg_content)),
+            NotificationItemInner::Activity(activity) => match activity.content() {
+                ActivityContent::DescriptionChange { content, .. } => {
+                    content.as_ref().map(|e| MsgContent::from(e.clone()))
+                }
+                ActivityContent::Comment { content, .. } => Some(MsgContent::from(content)),
+                ActivityContent::Boost {
+                    first_slide: Some(first_slide),
+                    ..
+                } => match &first_slide {
+                    // everything else we have to fallback to the body-text thing ...
+                    NewsContent::Fallback(FallbackNewsContent::Text(msg_content))
+                    | NewsContent::Text(msg_content) => Some(MsgContent::from(msg_content)),
+                    NewsContent::Fallback(FallbackNewsContent::Video(msg_content))
+                    | NewsContent::Video(msg_content) => Some(MsgContent::from(msg_content)),
+                    NewsContent::Fallback(FallbackNewsContent::Audio(msg_content))
+                    | NewsContent::Audio(msg_content) => Some(MsgContent::from(msg_content)),
+                    NewsContent::Fallback(FallbackNewsContent::File(msg_content))
+                    | NewsContent::File(msg_content) => Some(MsgContent::from(msg_content)),
+                    NewsContent::Fallback(FallbackNewsContent::Location(msg_content))
+                    | NewsContent::Location(msg_content) => Some(MsgContent::from(msg_content)),
+                    _ => None,
+                },
                 _ => None,
             },
-            NotificationItemInner::DescriptionChange { content, .. } => {
-                content.as_ref().map(|e| MsgContent::from(e.clone()))
-            }
 
             _ => None,
         }
-    }
-
-    pub fn image_source(&self) -> Option<MediaSource> {
-        match &self {
-            NotificationItemInner::Boost {
-                first_slide: Some(NewsContent::Fallback(FallbackNewsContent::Image(msg_content))),
-                ..
-            }
-            | NotificationItemInner::Boost {
-                first_slide: Some(NewsContent::Image(msg_content)),
-                ..
-            } => return Some(msg_content.source.clone()),
-            NotificationItemInner::Boost {
-                first_slide: Some(NewsContent::Fallback(FallbackNewsContent::Image(msg_content))),
-                ..
-            }
-            | NotificationItemInner::Boost {
-                first_slide: Some(NewsContent::Image(msg_content)),
-                ..
-            } => return Some(msg_content.source.clone()),
-            _ => {}
-        };
-        None
     }
 }
 
@@ -785,6 +301,8 @@ pub struct NotificationItem {
     #[builder(setter(into, strip_option), default)]
     pub(crate) thread_id: Option<String>,
     pub(crate) inner: NotificationItemInner,
+    #[builder(setter(into, strip_option), default)]
+    pub(crate) msg_content: Option<MsgContent>,
 }
 
 impl Deref for NotificationItem {
@@ -821,27 +339,27 @@ impl NotificationItem {
         self.inner.room_invite().map(|r| r.to_string())
     }
     pub fn has_image(&self) -> bool {
-        self.inner.image_source().is_some()
+        self.msg_content.as_ref().and_then(|a| a.source()).is_some()
     }
     pub async fn image(&self) -> Result<FfiBuffer<u8>> {
         #[allow(clippy::diverging_sub_expression)]
-        let Some(source) = self.inner.image_source() else {
+        let Some(Some(source)) = self.msg_content.clone().map(|a| a.source()) else {
             bail!("No media found in item")
         };
         let client = self.client.clone();
 
         RUNTIME
-            .spawn(async move { client.source_binary(source, None).await })
+            .spawn(async move { client.source_binary(source.inner, None).await })
             .await?
     }
 
     pub async fn image_path(&self, tmp_dir: String) -> Result<String> {
         #[allow(clippy::diverging_sub_expression)]
-        let Some(source) = self.inner.image_source() else {
+        let Some(Some(source)) = self.msg_content.clone().map(|a| a.source()) else {
             bail!("No media found in item")
         };
         self.client
-            .source_binary_tmp_path(source, None, tmp_dir, "png")
+            .source_binary_tmp_path(source.inner, None, tmp_dir, "png")
             .await
     }
 
@@ -900,12 +418,14 @@ impl NotificationItem {
         // acter specific items:
         if let RawNotificationEvent::Timeline(raw_tl) = &inner.raw_event {
             if let Ok(event) = raw_tl.deserialize_as::<SyncAnyActerEvent>() {
-                return NotificationItem::for_acter_object(
-                    client,
-                    builder,
-                    event.into_full_any_acter_event(room_id),
-                )
-                .await;
+                if !matches!(
+                    event,
+                    SyncAnyActerEvent::RegularTimelineEvent(AnySyncTimelineEvent::MessageLike(_))
+                ) {
+                    return builder
+                        .build_for_acter_object(client, event.into_full_any_acter_event(room_id))
+                        .await;
+                }
             }
         }
 
@@ -926,553 +446,128 @@ impl NotificationItem {
 
         Ok(builder.build()?)
     }
+}
 
-    async fn for_acter_object(
+async fn convert_acter_model(client: Client, event: AnyActerEvent) -> Result<Activity> {
+    Ok(Activity::for_acter_model(client.store(), AnyActerModel::try_from(event)?).await?)
+}
+
+impl NotificationItemBuilder {
+    async fn build_for_acter_object(
+        mut self: NotificationItemBuilder,
         client: Client,
-        mut builder: NotificationItemBuilder,
         event: AnyActerEvent,
-    ) -> Result<Self> {
-        match event {
-            AnyActerEvent::NewsEntry(MessageLikeEvent::Original(e)) => {
-                let first_slide = e.content.slides.first().map(|a| a.content().clone());
-                Ok(builder
-                    .inner(NotificationItemInner::Boost {
-                        first_slide,
-                        event_id: e.event_id,
-                    })
-                    .build()?)
+    ) -> Result<NotificationItem> {
+        let activity = match convert_acter_model(client, event).await {
+            Err(error) => {
+                warn!(?error, "Could not convert acter activity");
+                return Ok(self.build()?);
             }
-            AnyActerEvent::Comment(MessageLikeEvent::Original(e)) => {
-                let parent_obj = client
-                    .store()
-                    .get(&e.content.on.event_id)
-                    .await
-                    .map_err(|error| {
-                        tracing::error!(?error, "Error loading parent of comment");
+            Ok(a) => a,
+        };
+
+        let mut builder = self;
+
+        // a few special cases we want to deal with
+        let builder = match activity.content() {
+            ActivityContent::Attachment { content, .. } => match content {
+                AttachmentContent::Image(i)
+                | AttachmentContent::Fallback(FallbackAttachmentContent::Image(i)) => builder
+                    .title(
+                        i.filename
+                            .as_ref()
+                            .map(|f| format!("🖼️ \"{f}\""))
+                            .unwrap_or("🖼️ Image".to_owned()),
+                    ),
+
+                AttachmentContent::Audio(i)
+                | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(i)) => builder
+                    .title(
+                        i.filename
+                            .as_ref()
+                            .map(|f| format!("🎵 \"{f}\""))
+                            .unwrap_or("Audio".to_owned()),
+                    ),
+
+                AttachmentContent::Video(i)
+                | AttachmentContent::Fallback(FallbackAttachmentContent::Video(i)) => builder
+                    .title(
+                        i.filename
+                            .as_ref()
+                            .map(|f| format!("🎥 \"{f}\""))
+                            .unwrap_or("Video".to_owned()),
+                    ),
+                AttachmentContent::Location(i)
+                | AttachmentContent::Fallback(FallbackAttachmentContent::Location(i)) => builder
+                    .title(
+                        i.location
+                            .as_ref()
+                            .and_then(|l| l.description.as_ref().map(|f| format!("📍 \"{f}\"")))
+                            .unwrap_or("📍 Location".to_owned()),
+                    ),
+
+                AttachmentContent::File(i)
+                | AttachmentContent::Fallback(FallbackAttachmentContent::File(i)) => builder.title(
+                    i.filename
+                        .as_ref()
+                        .map(|f| format!("📄 \"{f}\""))
+                        .unwrap_or("📄 File".to_owned()),
+                ),
+                AttachmentContent::Link(i) => builder.title(
+                    i.name
+                        .as_ref()
+                        .map(|f| format!("🔗 \"{f}\""))
+                        .unwrap_or("Link".to_owned()),
+                ),
+                _ => &mut builder,
+            },
+            ActivityContent::Reference { object, details } => {
+                if let RefDetails::Room {
+                    preview:
+                        RefPreview {
+                            room_display_name: Some(room_name),
+                            ..
+                        },
+                    ..
+                } = details
+                {
+                    builder.title(room_name.clone())
+                } else if let Some(title) = details.title() {
+                    builder.title(match details {
+                        RefDetails::CalendarEvent { .. } => format!("🗓️ {title}"),
+                        RefDetails::Pin { .. } => format!("📌 {title}"),
+                        RefDetails::News { .. } => "🚀 boost".to_string(),
+                        RefDetails::Task { .. } => format!("☑️ {title}"),
+                        RefDetails::TaskList { .. } => format!("📋 {title}"),
+                        RefDetails::Link { .. } => format!("🔗 {title}"),
+                        RefDetails::Room { .. } => title,
+                        RefDetails::SuperInviteToken { .. } => title,
                     })
-                    .ok()
-                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
-                let content = e.content.content;
-                Ok(builder
-                    .inner(NotificationItemInner::Comment {
-                        parent_obj,
-                        parent_id: e.content.on.event_id,
-                        room_id: e.room_id,
-                        event_id: e.event_id,
-                        content,
-                    })
-                    .build()?)
-            }
-            AnyActerEvent::Attachment(MessageLikeEvent::Original(e)) => {
-                let parent_obj = client
-                    .store()
-                    .get(&e.content.on.event_id)
-                    .await
-                    .map_err(|error| {
-                        tracing::error!(?error, "Error loading parent of comment");
-                    })
-                    .ok()
-                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
-
-                Ok(match e.content.content {
-                    AttachmentContent::Image(i)
-                    | AttachmentContent::Fallback(FallbackAttachmentContent::Image(i)) => builder
-                        .inner(NotificationItemInner::Attachment {
-                            parent_obj,
-                            parent_id: e.content.on.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            content: Some(MsgContent::from(&i)),
-                        })
-                        .title(
-                            i.filename
-                                .map(|f| format!("🖼️ \"{f}\""))
-                                .unwrap_or("🖼️ Image".to_owned()),
-                        )
-                        .build()?,
-
-                    AttachmentContent::Audio(i)
-                    | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(i)) => builder
-                        .inner(NotificationItemInner::Attachment {
-                            parent_obj,
-                            parent_id: e.content.on.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            content: Some(MsgContent::from(&i)),
-                        })
-                        .title(
-                            i.filename
-                                .map(|f| format!("🎵 \"{f}\""))
-                                .unwrap_or("Audio".to_owned()),
-                        )
-                        .build()?,
-
-                    AttachmentContent::Video(i)
-                    | AttachmentContent::Fallback(FallbackAttachmentContent::Video(i)) => builder
-                        .inner(NotificationItemInner::Attachment {
-                            parent_obj,
-                            parent_id: e.content.on.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            content: Some(MsgContent::from(&i)),
-                        })
-                        .title(
-                            i.filename
-                                .map(|f| format!("🎥 \"{f}\""))
-                                .unwrap_or("Video".to_owned()),
-                        )
-                        .build()?,
-                    AttachmentContent::Location(i)
-                    | AttachmentContent::Fallback(FallbackAttachmentContent::Location(i)) => {
-                        builder
-                            .inner(NotificationItemInner::Attachment {
-                                parent_obj,
-                                parent_id: e.content.on.event_id,
-                                room_id: e.room_id,
-                                event_id: e.event_id,
-                                content: None,
-                            })
-                            .title(
-                                i.location
-                                    .and_then(|l| l.description)
-                                    .map(|f| format!("📍 \"{f}\""))
-                                    .unwrap_or("📍 Location".to_owned()),
-                            )
-                            .build()?
-                    }
-
-                    AttachmentContent::File(i)
-                    | AttachmentContent::Fallback(FallbackAttachmentContent::File(i)) => builder
-                        .inner(NotificationItemInner::Attachment {
-                            parent_obj,
-                            parent_id: e.content.on.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            content: None,
-                        })
-                        .title(
-                            i.filename
-                                .map(|f| format!("📄 \"{f}\""))
-                                .unwrap_or("📄 File".to_owned()),
-                        )
-                        .build()?,
-                    AttachmentContent::Link(i) => builder
-                        .inner(NotificationItemInner::Attachment {
-                            parent_obj,
-                            parent_id: e.content.on.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            content: None,
-                        })
-                        .title(
-                            i.name
-                                .map(|f| format!("🔗 \"{f}\""))
-                                .unwrap_or("Link".to_owned()),
-                        )
-                        .build()?,
-                    AttachmentContent::Reference(r) => {
-                        let title = r.title().unwrap_or("Reference".to_owned());
-                        builder
-                            .inner(NotificationItemInner::Reference {
-                                parent_obj,
-                                parent_id: e.content.on.event_id,
-                                room_id: e.room_id,
-                                event_id: e.event_id,
-                            })
-                            .title(match r {
-                                RefDetails::CalendarEvent { .. } => format!("🗓️ {title}"),
-                                RefDetails::Pin { .. } => format!("📌 {title}"),
-                                RefDetails::News { .. } => "🚀 boost".to_string(),
-                                RefDetails::Task { .. } => format!("☑️ {title}"),
-                                RefDetails::TaskList { .. } => format!("📋 {title}"),
-                                RefDetails::Link { .. } => format!("🔗 {title}"),
-                                RefDetails::SuperInviteToken { .. } => title,
-                            })
-                            .build()?
-                    }
-                })
-            }
-
-            AnyActerEvent::Reaction(MessageLikeEvent::Original(e)) => {
-                let parent_obj = client
-                    .store()
-                    .get(&e.content.relates_to.event_id)
-                    .await
-                    .map_err(|error| {
-                        tracing::error!(?error, "Error loading parent of reaction");
-                    })
-                    .ok()
-                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
-                Ok(builder
-                    .inner(NotificationItemInner::Reaction {
-                        parent_obj,
-                        parent_id: e.content.relates_to.event_id,
-                        room_id: e.room_id,
-                        event_id: e.event_id,
-                        key: e.content.relates_to.key,
-                    })
-                    .build()?)
-            }
-
-            // -- Pin
-            AnyActerEvent::Pin(MessageLikeEvent::Original(e)) => {
-                let parent_obj = NotificationItemParent::Pin {
-                    parent_id: e.event_id.clone(),
-                    title: e.content.title,
-                };
-                Ok(builder
-                    .inner(NotificationItemInner::Creation {
-                        parent_obj,
-                        room_id: e.room_id,
-                        event_id: e.event_id,
-                    })
-                    .build()?)
-            }
-
-            AnyActerEvent::PinUpdate(MessageLikeEvent::Original(e)) => {
-                let parent_obj = client
-                    .store()
-                    .get(&e.content.pin.event_id)
-                    .await
-                    .map_err(|error| {
-                        tracing::error!(?error, "Error loading parent of comment");
-                    })
-                    .ok()
-                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
-
-                if let Some(new_title) = e.content.title {
-                    Ok(builder
-                        .title(new_title)
-                        .inner(NotificationItemInner::TitleChange {
-                            parent_obj,
-                            parent_id: e.content.pin.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                        })
-                        .build()?)
-                } else if let Some(Some(new_content)) = e.content.content {
-                    return Ok(builder
-                        .inner(NotificationItemInner::DescriptionChange {
-                            parent_obj,
-                            parent_id: e.content.pin.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            content: Some(new_content),
-                        })
-                        .build()?);
                 } else {
-                    // fallback: other changes
-                    return Ok(builder
-                        .inner(NotificationItemInner::OtherChanges {
-                            parent_obj,
-                            parent_id: e.content.pin.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                        })
-                        .build()?);
+                    builder.title("Reference".to_owned())
                 }
             }
-
-            // ---- Event
-            AnyActerEvent::CalendarEvent(MessageLikeEvent::Original(e)) => {
-                let parent_obj = NotificationItemParent::CalendarEvent {
-                    parent_id: e.event_id.clone(),
-                    title: e.content.title,
-                };
-                Ok(builder
-                    .inner(NotificationItemInner::Creation {
-                        parent_obj,
-                        room_id: e.room_id,
-                        event_id: e.event_id,
-                    })
-                    .build()?)
+            ActivityContent::TitleChange { new_title, .. } => builder.title(new_title.clone()),
+            ActivityContent::EventDateChange { new_date, .. } => {
+                builder.title(new_date.to_rfc3339())
             }
-
-            AnyActerEvent::CalendarEventUpdate(MessageLikeEvent::Original(e)) => {
-                let parent_obj = client
-                    .store()
-                    .get(&e.content.calendar_event.event_id)
-                    .await
-                    .map_err(|error| {
-                        tracing::error!(?error, "Error loading parent of comment");
-                    })
-                    .ok()
-                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
-
-                if let Some(new_title) = e.content.title {
-                    Ok(builder
-                        .title(new_title)
-                        .inner(NotificationItemInner::TitleChange {
-                            parent_obj,
-                            parent_id: e.content.calendar_event.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                        })
-                        .build()?)
-                } else if let Some(Some(new_content)) = e.content.description {
-                    return Ok(builder
-                        .inner(NotificationItemInner::DescriptionChange {
-                            parent_obj,
-                            parent_id: e.content.calendar_event.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            content: Some(new_content),
-                        })
-                        .build()?);
-                } else if let Some(new_date) = e.content.utc_start {
-                    return Ok(builder
-                        .inner(NotificationItemInner::EventDateChange {
-                            parent_obj,
-                            parent_id: e.content.calendar_event.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            new_date,
-                        })
-                        .title(new_date.to_rfc3339())
-                        .build()?);
-                } else if let Some(new_date) = e.content.utc_end {
-                    return Ok(builder
-                        .inner(NotificationItemInner::EventDateChange {
-                            parent_obj,
-                            parent_id: e.content.calendar_event.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            new_date,
-                        })
-                        .title(new_date.to_rfc3339())
-                        .build()?);
-                } else {
-                    // fallback: other changes
-                    return Ok(builder
-                        .inner(NotificationItemInner::OtherChanges {
-                            parent_obj,
-                            parent_id: e.content.calendar_event.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                        })
-                        .build()?);
-                }
+            ActivityContent::TaskDueDateChange {
+                new_due_date: Some(new_due_date),
+                ..
+            } => builder.title(new_due_date.format("%Y-%m-%d").to_string()),
+            ActivityContent::TaskDueDateChange { new_due_date, .. } => {
+                builder.title("removed due date".to_owned())
             }
+            ActivityContent::TaskAdd { task, .. } => builder.title(task.title().clone()),
+            ActivityContent::DescriptionChange {
+                object,
+                content: Some(content),
+            } => builder.msg_content(MsgContent::from(content)),
+            _ => &mut builder,
+        };
 
-            // ---- Event
-            AnyActerEvent::Rsvp(MessageLikeEvent::Original(e)) => {
-                let parent_obj = client
-                    .store()
-                    .get(&e.content.to.event_id)
-                    .await
-                    .map_err(|error| {
-                        tracing::error!(?error, "Error loading parent of comment");
-                    })
-                    .ok()
-                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
-
-                Ok(builder
-                    .inner(NotificationItemInner::Rsvp {
-                        parent_obj,
-                        parent_id: e.content.to.event_id,
-                        room_id: e.room_id,
-                        event_id: e.event_id,
-                        rsvp: e.content.status,
-                    })
-                    .build()?)
-            }
-
-            // --- Task lists
-            AnyActerEvent::TaskList(MessageLikeEvent::Original(e)) => {
-                let parent_obj = NotificationItemParent::TaskList {
-                    parent_id: e.event_id.clone(),
-                    title: e.content.name,
-                };
-                Ok(builder
-                    .inner(NotificationItemInner::Creation {
-                        parent_obj,
-                        room_id: e.room_id,
-                        event_id: e.event_id,
-                    })
-                    .build()?)
-            }
-
-            AnyActerEvent::TaskListUpdate(MessageLikeEvent::Original(e)) => {
-                let parent_obj = client
-                    .store()
-                    .get(&e.content.task_list.event_id)
-                    .await
-                    .map_err(|error| {
-                        tracing::error!(?error, "Error loading parent of comment");
-                    })
-                    .ok()
-                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
-
-                if let Some(new_title) = e.content.name {
-                    Ok(builder
-                        .title(new_title)
-                        .inner(NotificationItemInner::TitleChange {
-                            parent_obj,
-                            parent_id: e.content.task_list.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                        })
-                        .build()?)
-                } else if let Some(Some(new_content)) = e.content.description {
-                    return Ok(builder
-                        .inner(NotificationItemInner::DescriptionChange {
-                            parent_obj,
-                            parent_id: e.content.task_list.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            content: Some(new_content),
-                        })
-                        .build()?);
-                } else {
-                    // fallback: other changes
-                    return Ok(builder
-                        .inner(NotificationItemInner::OtherChanges {
-                            parent_obj,
-                            parent_id: e.content.task_list.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                        })
-                        .build()?);
-                }
-            }
-            // -- Task Specific
-            AnyActerEvent::Task(MessageLikeEvent::Original(e)) => {
-                let parent_obj = client
-                    .store()
-                    .get(&e.content.task_list_id.event_id)
-                    .await
-                    .map_err(|error| {
-                        tracing::error!(?error, "Error loading parent of comment");
-                    })
-                    .ok()
-                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
-
-                Ok(builder
-                    .inner(NotificationItemInner::TaskAdd {
-                        parent_obj,
-                        parent_id: e.content.task_list_id.event_id,
-                        room_id: e.room_id,
-                        event_id: e.event_id,
-                    })
-                    .title(e.content.title)
-                    .build()?)
-            }
-            AnyActerEvent::TaskUpdate(MessageLikeEvent::Original(e)) => {
-                let parent_obj = client
-                    .store()
-                    .get(&e.content.task.event_id)
-                    .await
-                    .map_err(|error| {
-                        tracing::error!(?error, "Error loading parent of comment");
-                    })
-                    .ok()
-                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
-
-                if let Some(new_percent) = e.content.progress_percent {
-                    Ok(builder
-                        .inner(NotificationItemInner::TaskProgress {
-                            parent_obj,
-                            parent_id: e.content.task.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            done: new_percent
-                                .map(|percent| percent >= 100)
-                                .unwrap_or_default(),
-                        })
-                        .build()?)
-                } else if let Some(due_date) = e.content.due_date {
-                    Ok(builder
-                        .inner(NotificationItemInner::TaskDueDateChange {
-                            parent_obj,
-                            parent_id: e.content.task.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            new_due_date: due_date,
-                        })
-                        .title(if let Some(due_date) = due_date {
-                            due_date.format("%Y-%m-%d").to_string()
-                        } else {
-                            "removed due date".to_owned()
-                        })
-                        .build()?)
-                } else if let Some(new_title) = e.content.title {
-                    Ok(builder
-                        .title(new_title)
-                        .inner(NotificationItemInner::TitleChange {
-                            parent_obj,
-                            parent_id: e.content.task.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                        })
-                        .build()?)
-                } else if let Some(Some(new_content)) = e.content.description {
-                    return Ok(builder
-                        .inner(NotificationItemInner::DescriptionChange {
-                            parent_obj,
-                            parent_id: e.content.task.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                            content: Some(new_content),
-                        })
-                        .build()?);
-                } else {
-                    // fallback: other changes
-                    return Ok(builder
-                        .inner(NotificationItemInner::OtherChanges {
-                            parent_obj,
-                            parent_id: e.content.task.event_id,
-                            room_id: e.room_id,
-                            event_id: e.event_id,
-                        })
-                        .build()?);
-                }
-            }
-            AnyActerEvent::TaskSelfAssign(MessageLikeEvent::Original(e)) => {
-                let parent_obj = client
-                    .store()
-                    .get(&e.content.task.event_id)
-                    .await
-                    .map_err(|error| {
-                        tracing::error!(?error, "Error loading parent of comment");
-                    })
-                    .ok()
-                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
-
-                Ok(builder
-                    .inner(NotificationItemInner::TaskAccept {
-                        parent_obj,
-                        parent_id: e.content.task.event_id,
-                        room_id: e.room_id,
-                        event_id: e.event_id,
-                    })
-                    .build()?)
-            }
-
-            AnyActerEvent::TaskSelfUnassign(MessageLikeEvent::Original(e)) => {
-                let parent_obj = client
-                    .store()
-                    .get(&e.content.task.event_id)
-                    .await
-                    .map_err(|error| {
-                        tracing::error!(?error, "Error loading parent of comment");
-                    })
-                    .ok()
-                    .and_then(|o| NotificationItemParent::try_from(&o).ok());
-
-                Ok(builder
-                    .inner(NotificationItemInner::TaskDecline {
-                        parent_obj,
-                        parent_id: e.content.task.event_id,
-                        room_id: e.room_id,
-                        event_id: e.event_id,
-                    })
-                    .build()?)
-            }
-
-            _ => {
-                tracing::warn!(?event, "Notification not support");
-                Ok(builder.build()?)
-            }
-        }
+        Ok(builder
+            .inner(NotificationItemInner::Activity(activity))
+            .build()?)
     }
 }

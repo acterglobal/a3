@@ -240,7 +240,7 @@ impl NewsSlide {
         self.inner
             .references()
             .iter()
-            .map(|inner| ObjRef::new(self.client.clone(), inner.clone()))
+            .map(|inner| ObjRef::new(self.client.deref().clone(), inner.clone()))
             .collect()
     }
 }
@@ -447,7 +447,7 @@ impl NewsEntry {
 
     pub async fn ref_details(&self) -> Result<RefDetails> {
         let room = self.room.clone();
-        let client = self.client.clone();
+        let client = self.client.deref().clone();
         let target_id = self.content.event_id().to_owned();
         let room_id = self.room.room_id().to_owned();
 

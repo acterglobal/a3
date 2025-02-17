@@ -19,6 +19,7 @@ use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
 pub enum ActerSupportedRoomStatusEvents {
     RoomCreate(RoomCreateEventContent),
     MembershipChange(MembershipChange),
+    RoomName(String),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -53,6 +54,10 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
         match &event {
             AnyStateEvent::RoomCreate(StateEvent::Original(inner)) => Ok(RoomStatus {
                 inner: ActerSupportedRoomStatusEvents::RoomCreate(inner.content.clone()),
+                meta,
+            }),
+            AnyStateEvent::RoomName(StateEvent::Original(inner)) => Ok(RoomStatus {
+                inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.name.clone()),
                 meta,
             }),
             AnyStateEvent::RoomMember(StateEvent::Original(inner)) => inner

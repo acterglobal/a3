@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+pub use acter_core::activities::object::ActivityObject;
 use acter_core::{
     activities::Activity as CoreActivity,
     models::{status::membership::MembershipChange as CoreMembershipChange, ActerModel},
@@ -12,6 +13,7 @@ use tokio_stream::wrappers::BroadcastStream;
 
 use super::{Client, RUNTIME};
 
+use acter_core::activities::ActivityContent;
 #[derive(Clone, Debug)]
 pub struct MembershipChange(CoreMembershipChange);
 
@@ -37,13 +39,28 @@ pub struct Activity {
 }
 
 impl Activity {
-    #[cfg(any(test, feature = "testing"))]
-    pub fn inner(&self) -> CoreActivity {
-        self.inner.clone()
+    pub fn content(&self) -> &ActivityContent {
+        self.inner.content()
     }
 
     pub fn membership_change(&self) -> Option<MembershipChange> {
         self.inner.membership_change().map(MembershipChange)
+    }
+
+    pub fn sender_id_str(&self) -> String {
+        self.inner.event_meta().sender.to_string()
+    }
+
+    pub fn origin_server_ts(&self) -> u64 {
+        self.inner.event_meta().origin_server_ts.get().into()
+    }
+
+    pub fn room_id_str(&self) -> String {
+        self.inner.event_meta().room_id.to_string()
+    }
+
+    pub fn event_id_str(&self) -> String {
+        self.inner.event_meta().event_id.to_string()
     }
 }
 
@@ -67,22 +84,24 @@ impl Activities {
         RUNTIME
             .spawn(async move {
                 anyhow::Ok(
-                    me.client
-                        .store()
-                        .get_list(&me.index)
+                    me.iter()
                         .await?
-                        .filter_map(|a| {
-                            // potential optimization: do the check without conversation and
-                            // return the event id if feasible
-                            let event_id = a.event_id().to_string();
-                            CoreActivity::try_from(a).map(|_| event_id).ok()
-                        })
+                        .map(|e| e.event_meta().event_id.to_string())
                         .skip(offset as usize)
                         .take(limit as usize)
-                        .collect(),
+                        .collect()
+                        .await,
                 )
             })
             .await?
+    }
+
+    pub async fn iter(&self) -> anyhow::Result<impl Stream<Item = CoreActivity> + '_> {
+        let store = self.client.store();
+        Ok(
+            futures::stream::iter(self.client.store().get_list(&self.index).await?)
+                .filter_map(|a| async { CoreActivity::for_acter_model(store, a).await.ok() }),
+        )
     }
 
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {

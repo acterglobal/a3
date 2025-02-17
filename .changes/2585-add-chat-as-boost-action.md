@@ -1,0 +1,1 @@
+- [New] - Implemented "Chat" as a boost action, providing functionality of share chat.

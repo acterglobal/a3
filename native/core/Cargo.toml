@@ -41,6 +41,7 @@ strum = { workspace = true }
 thiserror = "1.0"
 tracing = { version = "0.1.40", features = ["log"] }
 url = { workspace = true }
+urlencoding = { workspace = true }
 uuid = { version = "1.6.1", features = ["v4"], optional = true }
 
 # templates

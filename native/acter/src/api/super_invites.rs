@@ -5,6 +5,7 @@ use acter_core::{
     super_invites::{api, CreateToken, Token, TokenInfo, UpdateToken},
 };
 use anyhow::{Context, Result};
+use std::ops::Deref;
 
 use super::deep_linking::RefDetails;
 
@@ -85,7 +86,7 @@ impl SuperInviteToken {
     }
 
     pub fn ref_details(&self) -> RefDetails {
-        let client = self.client.clone();
+        let client = self.client.deref().clone();
         RefDetails::new(
             client,
             CoreRefDetails::SuperInviteToken {

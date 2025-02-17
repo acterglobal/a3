@@ -96,7 +96,7 @@ impl OptionComposeDraft {
 }
 
 pub struct MediaSource {
-    inner: SdkMediaSource,
+    pub(crate) inner: SdkMediaSource,
 }
 
 impl MediaSource {
