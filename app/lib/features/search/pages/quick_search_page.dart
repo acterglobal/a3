@@ -1,5 +1,7 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
+import 'package:acter/features/chat/widgets/chat_list_widget.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_list_widget.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
@@ -96,6 +98,13 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
             ),
             const SizedBox(width: 10),
             FilterChip(
+              selected: quickSearchFilters.value == QuickSearchFilters.chats,
+              label: Text(lang.chats),
+              onSelected: (value) =>
+                  quickSearchFilters.value = QuickSearchFilters.chats,
+            ),
+            const SizedBox(width: 10),
+            FilterChip(
               selected: quickSearchFilters.value == QuickSearchFilters.pins,
               label: Text(lang.pins),
               onSelected: (value) =>
@@ -136,6 +145,14 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
                 Routes.spaces.name,
                 queryParameters: {'searchQuery': searchValue},
               ),
+            ),
+          if (quickSearchFilters.value == QuickSearchFilters.all ||
+              quickSearchFilters.value == QuickSearchFilters.chats)
+            ChatListWidget(
+              chatListProvider: chatListQuickSearchedProvider,
+              limit: 3,
+              showSectionHeader: true,
+              onClickSectionHeader: () => context.goNamed(Routes.chat.name),
             ),
           if (quickSearchFilters.value == QuickSearchFilters.all ||
               quickSearchFilters.value == QuickSearchFilters.pins)
