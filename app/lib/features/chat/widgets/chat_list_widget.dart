@@ -65,6 +65,7 @@ class ChatListWidget extends ConsumerWidget {
       itemBuilder: (context, index) {
         final roomId = chatList[index].getRoomIdStr();
         return ConvoCard(
+          showSelectedIndication: false,
           roomId: roomId,
           onTap: () => goToChat(context, roomId),
         );
