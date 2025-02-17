@@ -524,7 +524,10 @@ class TaskItemDetailPage extends ConsumerWidget {
   }
 
   Future<void> onUnAssign(
-      BuildContext context, WidgetRef ref, Task task) async {
+    BuildContext context,
+    WidgetRef ref,
+    Task task,
+  ) async {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.unassigningSelf);
     try {

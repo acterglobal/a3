@@ -1,5 +1,3 @@
-import 'package:acter/features/labs/model/labs_features.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/notifications/actions/subscribe_object_push.dart';
 import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:acter/features/notifications/providers/object_notifications_settings_provider.dart';

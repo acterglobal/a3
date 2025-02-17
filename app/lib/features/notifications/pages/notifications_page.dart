@@ -5,8 +5,6 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/labs/model/labs_features.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/notifications/actions/update_autosubscribe.dart';
 import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';

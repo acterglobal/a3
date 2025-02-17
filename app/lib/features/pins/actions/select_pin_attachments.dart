@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/files/actions/pick_image.dart';
-import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/pins/models/create_pin_state/pin_attachment_model.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:file_picker/file_picker.dart';

@@ -11,7 +11,6 @@ import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
-import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/notifications/types.dart';
 import 'package:acter/features/notifications/widgets/object_notification_status.dart';
 import 'package:acter/features/read_receipts/widgets/read_counter.dart';
