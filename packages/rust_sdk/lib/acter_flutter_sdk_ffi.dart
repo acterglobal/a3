@@ -55,17 +55,21 @@ class _Box {
   final Object? _context;
 
   _Box(this._api, this._ptr, this._dropSymbol, {Object? context})
-      : _dropped = false,
-        _moved = false,
-        _context = context;
+    : _dropped = false,
+      _moved = false,
+      _context = context;
 
   late final _dropPtr = _api._lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)>>(_dropSymbol);
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+    >
+  >(_dropSymbol);
 
-  late final _drop = _dropPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)>();
+  late final _drop =
+      _dropPtr
+          .asFunction<
+            void Function(ffi.Pointer<ffi.Void>, ffi.Pointer<ffi.Void>)
+          >();
 
   int borrow() {
     if (_dropped) {
@@ -469,7 +473,7 @@ class _EnumWrapper extends ffi.Struct {
 class Api {
   /// Holds the symbol lookup function.
   final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
-      _lookup;
+  _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
   Api(ffi.DynamicLibrary dynamicLibrary) : _lookup = dynamicLibrary.lookup;
@@ -508,30 +512,34 @@ class Api {
   }
 
   late final _registerPtr = _lookupDartSymbol<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Void> Function(
-            ffi.Handle,
-            ffi.Pointer<ffi.Void>,
-            ffi.IntPtr,
-            ffi.Pointer<ffi.Void>,
-          )>>("Dart_NewFinalizableHandle");
-
-  late final _register = _registerPtr.asFunction<
+    ffi.NativeFunction<
       ffi.Pointer<ffi.Void> Function(
-        Object,
+        ffi.Handle,
         ffi.Pointer<ffi.Void>,
-        int,
+        ffi.IntPtr,
         ffi.Pointer<ffi.Void>,
-      )>();
+      )
+    >
+  >("Dart_NewFinalizableHandle");
+
+  late final _register =
+      _registerPtr
+          .asFunction<
+            ffi.Pointer<ffi.Void> Function(
+              Object,
+              ffi.Pointer<ffi.Void>,
+              int,
+              ffi.Pointer<ffi.Void>,
+            )
+          >();
 
   ffi.Pointer<ffi.Void> _registerFinalizer(_Box boxed) {
     return _register(boxed, boxed._ptr, 42, boxed._dropPtr.cast());
   }
 
   late final _unregisterPtr = _lookupDartSymbol<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Void>,
-              ffi.Handle)>>("Dart_DeleteFinalizableHandle");
+    ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Handle)>
+  >("Dart_DeleteFinalizableHandle");
 
   late final _unregister =
       _unregisterPtr.asFunction<void Function(ffi.Pointer<ffi.Void>, _Box)>();
@@ -1831,39 +1839,41 @@ class Api {
   }
 
   late final _allocatePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Uint8> Function(ffi.IntPtr, ffi.IntPtr)>>("allocate");
+    ffi.NativeFunction<ffi.Pointer<ffi.Uint8> Function(ffi.IntPtr, ffi.IntPtr)>
+  >("allocate");
 
   late final _allocate =
       _allocatePtr.asFunction<ffi.Pointer<ffi.Uint8> Function(int, int)>();
 
   late final _deallocatePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Uint8>, ffi.IntPtr, ffi.IntPtr)>>("deallocate");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.Pointer<ffi.Uint8>, ffi.IntPtr, ffi.IntPtr)
+    >
+  >("deallocate");
 
-  late final _deallocate = _deallocatePtr
-      .asFunction<void Function(ffi.Pointer<ffi.Uint8>, int, int)>();
+  late final _deallocate =
+      _deallocatePtr
+          .asFunction<void Function(ffi.Pointer<ffi.Uint8>, int, int)>();
 
   late final _ffiBufferAddressPtr =
       _lookup<ffi.NativeFunction<ffi.UintPtr Function(ffi.IntPtr)>>(
-    "__ffi_buffer_address",
-  );
+        "__ffi_buffer_address",
+      );
 
   late final _ffiBufferAddress =
       _ffiBufferAddressPtr.asFunction<int Function(int)>();
 
   late final _ffiBufferSizePtr =
       _lookup<ffi.NativeFunction<ffi.UintPtr Function(ffi.IntPtr)>>(
-    "__ffi_buffer_size",
-  );
+        "__ffi_buffer_size",
+      );
 
   late final _ffiBufferSize = _ffiBufferSizePtr.asFunction<int Function(int)>();
 
   late final _ffiStringIntoPartsPtr =
       _lookup<ffi.NativeFunction<_FfiStringParts Function(ffi.IntPtr)>>(
-    "__ffi_string_into_parts",
-  );
+        "__ffi_string_into_parts",
+      );
 
   late final _ffiStringIntoParts =
       _ffiStringIntoPartsPtr.asFunction<_FfiStringParts Function(int)>();
@@ -2033,7 +2043,7 @@ class Api {
   }
 
   RegistrationTokenViaEmailResponse?
-      __requestRegistrationTokenViaEmailFuturePoll(
+  __requestRegistrationTokenViaEmailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2083,7 +2093,7 @@ class Api {
   }
 
   PasswordChangeEmailTokenResponse?
-      __requestPasswordChangeTokenViaEmailFuturePoll(
+  __requestPasswordChangeTokenViaEmailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -11009,7 +11019,7 @@ class Api {
   }
 
   ThreePidEmailTokenResponse?
-      __accountRequest3pidManagementTokenViaEmailFuturePoll(
+  __accountRequest3pidManagementTokenViaEmailFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -14549,10 +14559,10 @@ class Api {
     tmp5 = tmp4;
     final tmp6 =
         _verificationEventAcceptVerificationRequestWithMethodFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
+          tmp1,
+          tmp3,
+          tmp5,
+        );
     final tmp8 = tmp6.arg0;
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
@@ -16297,12644 +16307,14692 @@ class Api {
   }
 
   late final _initLoggingPtr = _lookup<
-      ffi.NativeFunction<
-          _InitLoggingReturn Function(
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__init_logging");
+    ffi.NativeFunction<
+      _InitLoggingReturn Function(
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__init_logging");
 
-  late final _initLogging = _initLoggingPtr
-      .asFunction<_InitLoggingReturn Function(int, int, int, int, int, int)>();
+  late final _initLogging =
+      _initLoggingPtr
+          .asFunction<
+            _InitLoggingReturn Function(int, int, int, int, int, int)
+          >();
   late final _setProxyPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Uint8, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)>>("__set_proxy");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.Uint8, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__set_proxy");
 
   late final _setProxy =
       _setProxyPtr.asFunction<void Function(int, int, int, int)>();
   late final _rotateLogFilePtr =
       _lookup<ffi.NativeFunction<_RotateLogFileReturn Function()>>(
-    "__rotate_log_file",
-  );
+        "__rotate_log_file",
+      );
 
   late final _rotateLogFile =
       _rotateLogFilePtr.asFunction<_RotateLogFileReturn Function()>();
   late final _wouldLogPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint8 Function(
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__would_log");
+    ffi.NativeFunction<
+      ffi.Uint8 Function(
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__would_log");
 
   late final _wouldLog =
       _wouldLogPtr.asFunction<int Function(int, int, int, int, int, int)>();
   late final _writeLogPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__write_log");
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint32,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__write_log");
 
-  late final _writeLog = _writeLogPtr.asFunction<
-      void Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _writeLog =
+      _writeLogPtr
+          .asFunction<
+            void Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _loginNewClientPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__login_new_client");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__login_new_client");
 
-  late final _loginNewClient = _loginNewClientPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _loginNewClient =
+      _loginNewClientPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _loginWithTokenPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__login_with_token");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__login_with_token");
 
-  late final _loginWithToken = _loginWithTokenPtr
-      .asFunction<int Function(int, int, int, int, int, int, int, int, int)>();
+  late final _loginWithToken =
+      _loginWithTokenPtr
+          .asFunction<
+            int Function(int, int, int, int, int, int, int, int, int)
+          >();
   late final _guestClientPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__guest_client");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__guest_client");
 
-  late final _guestClient = _guestClientPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _guestClient =
+      _guestClientPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _registerWithTokenPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__register_with_token");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__register_with_token");
 
-  late final _registerWithToken = _registerWithTokenPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _registerWithToken =
+      _registerWithTokenPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _requestRegistrationTokenViaEmailPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__request_registration_token_via_email");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__request_registration_token_via_email");
 
   late final _requestRegistrationTokenViaEmail =
-      _requestRegistrationTokenViaEmailPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _requestRegistrationTokenViaEmailPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _requestPasswordChangeTokenViaEmailPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__request_password_change_token_via_email");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__request_password_change_token_via_email");
 
   late final _requestPasswordChangeTokenViaEmail =
       _requestPasswordChangeTokenViaEmailPtr
           .asFunction<int Function(int, int, int, int, int, int)>();
   late final _resetPasswordPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__reset_password");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__reset_password");
 
-  late final _resetPassword = _resetPasswordPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _resetPassword =
+      _resetPasswordPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _destroyLocalDataPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__destroy_local_data");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__destroy_local_data");
 
-  late final _destroyLocalData = _destroyLocalDataPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _destroyLocalData =
+      _destroyLocalDataPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _durationFromSecsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.Uint64)>>(
-    "__duration_from_secs",
-  );
+        "__duration_from_secs",
+      );
 
   late final _durationFromSecs =
       _durationFromSecsPtr.asFunction<int Function(int)>();
   late final _parseMarkdownPtr = _lookup<
-      ffi.NativeFunction<
-          _ParseMarkdownReturn Function(
-              ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)>>("__parse_markdown");
+    ffi.NativeFunction<
+      _ParseMarkdownReturn Function(ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__parse_markdown");
 
-  late final _parseMarkdown = _parseMarkdownPtr
-      .asFunction<_ParseMarkdownReturn Function(int, int, int)>();
+  late final _parseMarkdown =
+      _parseMarkdownPtr
+          .asFunction<_ParseMarkdownReturn Function(int, int, int)>();
   late final _newThumbSizePtr = _lookup<
-      ffi.NativeFunction<
-          _NewThumbSizeReturn Function(
-              ffi.Uint64, ffi.Uint64)>>("__new_thumb_size");
+    ffi.NativeFunction<_NewThumbSizeReturn Function(ffi.Uint64, ffi.Uint64)>
+  >("__new_thumb_size");
 
   late final _newThumbSize =
       _newThumbSizePtr.asFunction<_NewThumbSizeReturn Function(int, int)>();
   late final _newColorizeBuilderPtr = _lookup<
-      ffi.NativeFunction<
-          _NewColorizeBuilderReturn Function(
-            ffi.Uint8,
-            ffi.Uint32,
-            ffi.Uint8,
-            ffi.Uint32,
-          )>>("__new_colorize_builder");
+    ffi.NativeFunction<
+      _NewColorizeBuilderReturn Function(
+        ffi.Uint8,
+        ffi.Uint32,
+        ffi.Uint8,
+        ffi.Uint32,
+      )
+    >
+  >("__new_colorize_builder");
 
-  late final _newColorizeBuilder = _newColorizeBuilderPtr
-      .asFunction<_NewColorizeBuilderReturn Function(int, int, int, int)>();
+  late final _newColorizeBuilder =
+      _newColorizeBuilderPtr
+          .asFunction<_NewColorizeBuilderReturn Function(int, int, int, int)>();
   late final _newDisplayBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__new_display_builder",
-  );
+        "__new_display_builder",
+      );
 
   late final _newDisplayBuilder =
       _newDisplayBuilderPtr.asFunction<int Function()>();
   late final _newObjRefBuilderPtr = _lookup<
-      ffi.NativeFunction<
-          _NewObjRefBuilderReturn Function(
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-          )>>("__new_obj_ref_builder");
+    ffi.NativeFunction<
+      _NewObjRefBuilderReturn Function(
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+      )
+    >
+  >("__new_obj_ref_builder");
 
-  late final _newObjRefBuilder = _newObjRefBuilderPtr
-      .asFunction<_NewObjRefBuilderReturn Function(int, int, int, int, int)>();
+  late final _newObjRefBuilder =
+      _newObjRefBuilderPtr
+          .asFunction<
+            _NewObjRefBuilderReturn Function(int, int, int, int, int)
+          >();
   late final _newVecStringBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__new_vec_string_builder",
-  );
+        "__new_vec_string_builder",
+      );
 
   late final _newVecStringBuilder =
       _newVecStringBuilderPtr.asFunction<int Function()>();
   late final _newJoinRuleBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__new_join_rule_builder",
-  );
+        "__new_join_rule_builder",
+      );
 
   late final _newJoinRuleBuilder =
       _newJoinRuleBuilderPtr.asFunction<int Function()>();
   late final _newConvoSettingsBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__new_convo_settings_builder",
-  );
+        "__new_convo_settings_builder",
+      );
 
   late final _newConvoSettingsBuilder =
       _newConvoSettingsBuilderPtr.asFunction<int Function()>();
   late final _newSpaceSettingsBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__new_space_settings_builder",
-  );
+        "__new_space_settings_builder",
+      );
 
   late final _newSpaceSettingsBuilder =
       _newSpaceSettingsBuilderPtr.asFunction<int Function()>();
   late final _utcDateTimeTimestampPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
-    "__UtcDateTime_timestamp",
-  );
+        "__UtcDateTime_timestamp",
+      );
 
   late final _utcDateTimeTimestamp =
       _utcDateTimeTimestampPtr.asFunction<int Function(int)>();
   late final _utcDateTimeToRfc2822Ptr = _lookup<
-          ffi.NativeFunction<_UtcDateTimeToRfc2822Return Function(ffi.IntPtr)>>(
-      "__UtcDateTime_to_rfc2822");
+    ffi.NativeFunction<_UtcDateTimeToRfc2822Return Function(ffi.IntPtr)>
+  >("__UtcDateTime_to_rfc2822");
 
-  late final _utcDateTimeToRfc2822 = _utcDateTimeToRfc2822Ptr
-      .asFunction<_UtcDateTimeToRfc2822Return Function(int)>();
+  late final _utcDateTimeToRfc2822 =
+      _utcDateTimeToRfc2822Ptr
+          .asFunction<_UtcDateTimeToRfc2822Return Function(int)>();
   late final _utcDateTimeToRfc3339Ptr = _lookup<
-          ffi.NativeFunction<_UtcDateTimeToRfc3339Return Function(ffi.IntPtr)>>(
-      "__UtcDateTime_to_rfc3339");
+    ffi.NativeFunction<_UtcDateTimeToRfc3339Return Function(ffi.IntPtr)>
+  >("__UtcDateTime_to_rfc3339");
 
-  late final _utcDateTimeToRfc3339 = _utcDateTimeToRfc3339Ptr
-      .asFunction<_UtcDateTimeToRfc3339Return Function(int)>();
+  late final _utcDateTimeToRfc3339 =
+      _utcDateTimeToRfc3339Ptr
+          .asFunction<_UtcDateTimeToRfc3339Return Function(int)>();
   late final _utcDateTimeTimestampMillisPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
-    "__UtcDateTime_timestamp_millis",
-  );
+        "__UtcDateTime_timestamp_millis",
+      );
 
   late final _utcDateTimeTimestampMillis =
       _utcDateTimeTimestampMillisPtr.asFunction<int Function(int)>();
   late final _refDetailsTargetIdStrPtr = _lookup<
-          ffi
-          .NativeFunction<_RefDetailsTargetIdStrReturn Function(ffi.IntPtr)>>(
-      "__RefDetails_target_id_str");
+    ffi.NativeFunction<_RefDetailsTargetIdStrReturn Function(ffi.IntPtr)>
+  >("__RefDetails_target_id_str");
 
-  late final _refDetailsTargetIdStr = _refDetailsTargetIdStrPtr
-      .asFunction<_RefDetailsTargetIdStrReturn Function(int)>();
+  late final _refDetailsTargetIdStr =
+      _refDetailsTargetIdStrPtr
+          .asFunction<_RefDetailsTargetIdStrReturn Function(int)>();
   late final _refDetailsRoomIdStrPtr = _lookup<
-          ffi.NativeFunction<_RefDetailsRoomIdStrReturn Function(ffi.IntPtr)>>(
-      "__RefDetails_room_id_str");
+    ffi.NativeFunction<_RefDetailsRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__RefDetails_room_id_str");
 
-  late final _refDetailsRoomIdStr = _refDetailsRoomIdStrPtr
-      .asFunction<_RefDetailsRoomIdStrReturn Function(int)>();
+  late final _refDetailsRoomIdStr =
+      _refDetailsRoomIdStrPtr
+          .asFunction<_RefDetailsRoomIdStrReturn Function(int)>();
   late final _refDetailsTypeStrPtr = _lookup<
-          ffi.NativeFunction<_RefDetailsTypeStrReturn Function(ffi.IntPtr)>>(
-      "__RefDetails_type_str");
+    ffi.NativeFunction<_RefDetailsTypeStrReturn Function(ffi.IntPtr)>
+  >("__RefDetails_type_str");
 
-  late final _refDetailsTypeStr = _refDetailsTypeStrPtr
-      .asFunction<_RefDetailsTypeStrReturn Function(int)>();
+  late final _refDetailsTypeStr =
+      _refDetailsTypeStrPtr
+          .asFunction<_RefDetailsTypeStrReturn Function(int)>();
   late final _refDetailsEmbedActionStrPtr = _lookup<
-      ffi.NativeFunction<
-          _RefDetailsEmbedActionStrReturn Function(
-              ffi.IntPtr)>>("__RefDetails_embed_action_str");
+    ffi.NativeFunction<_RefDetailsEmbedActionStrReturn Function(ffi.IntPtr)>
+  >("__RefDetails_embed_action_str");
 
-  late final _refDetailsEmbedActionStr = _refDetailsEmbedActionStrPtr
-      .asFunction<_RefDetailsEmbedActionStrReturn Function(int)>();
+  late final _refDetailsEmbedActionStr =
+      _refDetailsEmbedActionStrPtr
+          .asFunction<_RefDetailsEmbedActionStrReturn Function(int)>();
   late final _refDetailsTaskListIdStrPtr = _lookup<
-          ffi
-          .NativeFunction<_RefDetailsTaskListIdStrReturn Function(ffi.IntPtr)>>(
-      "__RefDetails_task_list_id_str");
+    ffi.NativeFunction<_RefDetailsTaskListIdStrReturn Function(ffi.IntPtr)>
+  >("__RefDetails_task_list_id_str");
 
-  late final _refDetailsTaskListIdStr = _refDetailsTaskListIdStrPtr
-      .asFunction<_RefDetailsTaskListIdStrReturn Function(int)>();
+  late final _refDetailsTaskListIdStr =
+      _refDetailsTaskListIdStrPtr
+          .asFunction<_RefDetailsTaskListIdStrReturn Function(int)>();
   late final _refDetailsTitlePtr =
       _lookup<ffi.NativeFunction<_RefDetailsTitleReturn Function(ffi.IntPtr)>>(
-    "__RefDetails_title",
-  );
+        "__RefDetails_title",
+      );
 
   late final _refDetailsTitle =
       _refDetailsTitlePtr.asFunction<_RefDetailsTitleReturn Function(int)>();
   late final _refDetailsRoomDisplayNamePtr = _lookup<
-      ffi.NativeFunction<
-          _RefDetailsRoomDisplayNameReturn Function(
-              ffi.IntPtr)>>("__RefDetails_room_display_name");
+    ffi.NativeFunction<_RefDetailsRoomDisplayNameReturn Function(ffi.IntPtr)>
+  >("__RefDetails_room_display_name");
 
-  late final _refDetailsRoomDisplayName = _refDetailsRoomDisplayNamePtr
-      .asFunction<_RefDetailsRoomDisplayNameReturn Function(int)>();
+  late final _refDetailsRoomDisplayName =
+      _refDetailsRoomDisplayNamePtr
+          .asFunction<_RefDetailsRoomDisplayNameReturn Function(int)>();
   late final _refDetailsParticipantsPtr = _lookup<
-          ffi
-          .NativeFunction<_RefDetailsParticipantsReturn Function(ffi.IntPtr)>>(
-      "__RefDetails_participants");
+    ffi.NativeFunction<_RefDetailsParticipantsReturn Function(ffi.IntPtr)>
+  >("__RefDetails_participants");
 
-  late final _refDetailsParticipants = _refDetailsParticipantsPtr
-      .asFunction<_RefDetailsParticipantsReturn Function(int)>();
+  late final _refDetailsParticipants =
+      _refDetailsParticipantsPtr
+          .asFunction<_RefDetailsParticipantsReturn Function(int)>();
   late final _refDetailsUtcStartPtr = _lookup<
-          ffi.NativeFunction<_RefDetailsUtcStartReturn Function(ffi.IntPtr)>>(
-      "__RefDetails_utc_start");
+    ffi.NativeFunction<_RefDetailsUtcStartReturn Function(ffi.IntPtr)>
+  >("__RefDetails_utc_start");
 
-  late final _refDetailsUtcStart = _refDetailsUtcStartPtr
-      .asFunction<_RefDetailsUtcStartReturn Function(int)>();
+  late final _refDetailsUtcStart =
+      _refDetailsUtcStartPtr
+          .asFunction<_RefDetailsUtcStartReturn Function(int)>();
   late final _refDetailsUriPtr =
       _lookup<ffi.NativeFunction<_RefDetailsUriReturn Function(ffi.IntPtr)>>(
-    "__RefDetails_uri",
-  );
+        "__RefDetails_uri",
+      );
 
   late final _refDetailsUri =
       _refDetailsUriPtr.asFunction<_RefDetailsUriReturn Function(int)>();
   late final _refDetailsViaServersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__RefDetails_via_servers",
-  );
+        "__RefDetails_via_servers",
+      );
 
   late final _refDetailsViaServers =
       _refDetailsViaServersPtr.asFunction<int Function(int)>();
   late final _refDetailsGenerateInternalLinkPtr = _lookup<
-      ffi.NativeFunction<
-          _RefDetailsGenerateInternalLinkReturn Function(
-              ffi.IntPtr, ffi.Uint8)>>("__RefDetails_generate_internal_link");
+    ffi.NativeFunction<
+      _RefDetailsGenerateInternalLinkReturn Function(ffi.IntPtr, ffi.Uint8)
+    >
+  >("__RefDetails_generate_internal_link");
 
   late final _refDetailsGenerateInternalLink =
-      _refDetailsGenerateInternalLinkPtr.asFunction<
-          _RefDetailsGenerateInternalLinkReturn Function(int, int)>();
+      _refDetailsGenerateInternalLinkPtr
+          .asFunction<
+            _RefDetailsGenerateInternalLinkReturn Function(int, int)
+          >();
   late final _refDetailsGenerateExternalLinkPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__RefDetails_generate_external_link",
-  );
+        "__RefDetails_generate_external_link",
+      );
 
   late final _refDetailsGenerateExternalLink =
       _refDetailsGenerateExternalLinkPtr.asFunction<int Function(int)>();
   late final _objRefPositionStrPtr = _lookup<
-          ffi.NativeFunction<_ObjRefPositionStrReturn Function(ffi.IntPtr)>>(
-      "__ObjRef_position_str");
+    ffi.NativeFunction<_ObjRefPositionStrReturn Function(ffi.IntPtr)>
+  >("__ObjRef_position_str");
 
-  late final _objRefPositionStr = _objRefPositionStrPtr
-      .asFunction<_ObjRefPositionStrReturn Function(int)>();
+  late final _objRefPositionStr =
+      _objRefPositionStrPtr
+          .asFunction<_ObjRefPositionStrReturn Function(int)>();
   late final _objRefRefDetailsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ObjRef_ref_details",
-  );
+        "__ObjRef_ref_details",
+      );
 
   late final _objRefRefDetails =
       _objRefRefDetailsPtr.asFunction<int Function(int)>();
   late final _objRefBuilderPositionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__ObjRefBuilder_position");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__ObjRefBuilder_position");
 
   late final _objRefBuilderPosition =
       _objRefBuilderPositionPtr.asFunction<void Function(int, int, int, int)>();
   late final _objRefBuilderUnsetPositionPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__ObjRefBuilder_unset_position",
-  );
+        "__ObjRefBuilder_unset_position",
+      );
 
   late final _objRefBuilderUnsetPosition =
       _objRefBuilderUnsetPositionPtr.asFunction<void Function(int)>();
   late final _objRefBuilderBuildPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ObjRefBuilder_build",
-  );
+        "__ObjRefBuilder_build",
+      );
 
   late final _objRefBuilderBuild =
       _objRefBuilderBuildPtr.asFunction<int Function(int)>();
   late final _colorizeColorPtr =
       _lookup<ffi.NativeFunction<_ColorizeColorReturn Function(ffi.IntPtr)>>(
-    "__Colorize_color",
-  );
+        "__Colorize_color",
+      );
 
   late final _colorizeColor =
       _colorizeColorPtr.asFunction<_ColorizeColorReturn Function(int)>();
   late final _colorizeBackgroundPtr = _lookup<
-          ffi.NativeFunction<_ColorizeBackgroundReturn Function(ffi.IntPtr)>>(
-      "__Colorize_background");
+    ffi.NativeFunction<_ColorizeBackgroundReturn Function(ffi.IntPtr)>
+  >("__Colorize_background");
 
-  late final _colorizeBackground = _colorizeBackgroundPtr
-      .asFunction<_ColorizeBackgroundReturn Function(int)>();
+  late final _colorizeBackground =
+      _colorizeBackgroundPtr
+          .asFunction<_ColorizeBackgroundReturn Function(int)>();
   late final _colorizeBuilderColorPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__ColorizeBuilder_color",
-  );
+        "__ColorizeBuilder_color",
+      );
 
   late final _colorizeBuilderColor =
       _colorizeBuilderColorPtr.asFunction<void Function(int, int)>();
   late final _colorizeBuilderUnsetColorPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__ColorizeBuilder_unset_color",
-  );
+        "__ColorizeBuilder_unset_color",
+      );
 
   late final _colorizeBuilderUnsetColor =
       _colorizeBuilderUnsetColorPtr.asFunction<void Function(int)>();
   late final _colorizeBuilderBackgroundPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__ColorizeBuilder_background",
-  );
+        "__ColorizeBuilder_background",
+      );
 
   late final _colorizeBuilderBackground =
       _colorizeBuilderBackgroundPtr.asFunction<void Function(int, int)>();
   late final _colorizeBuilderUnsetBackgroundPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__ColorizeBuilder_unset_background",
-  );
+        "__ColorizeBuilder_unset_background",
+      );
 
   late final _colorizeBuilderUnsetBackground =
       _colorizeBuilderUnsetBackgroundPtr.asFunction<void Function(int)>();
   late final _vecStringBuilderAddPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__VecStringBuilder_add");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__VecStringBuilder_add");
 
   late final _vecStringBuilderAdd =
       _vecStringBuilderAddPtr.asFunction<void Function(int, int, int, int)>();
   late final _optionStringTextPtr =
       _lookup<ffi.NativeFunction<_OptionStringTextReturn Function(ffi.IntPtr)>>(
-    "__OptionString_text",
-  );
+        "__OptionString_text",
+      );
 
   late final _optionStringText =
       _optionStringTextPtr.asFunction<_OptionStringTextReturn Function(int)>();
   late final _optionBufferDataPtr =
       _lookup<ffi.NativeFunction<_OptionBufferDataReturn Function(ffi.IntPtr)>>(
-    "__OptionBuffer_data",
-  );
+        "__OptionBuffer_data",
+      );
 
   late final _optionBufferData =
       _optionBufferDataPtr.asFunction<_OptionBufferDataReturn Function(int)>();
   late final _optionRsvpStatusStatusPtr = _lookup<
-          ffi
-          .NativeFunction<_OptionRsvpStatusStatusReturn Function(ffi.IntPtr)>>(
-      "__OptionRsvpStatus_status");
+    ffi.NativeFunction<_OptionRsvpStatusStatusReturn Function(ffi.IntPtr)>
+  >("__OptionRsvpStatus_status");
 
-  late final _optionRsvpStatusStatus = _optionRsvpStatusStatusPtr
-      .asFunction<_OptionRsvpStatusStatusReturn Function(int)>();
+  late final _optionRsvpStatusStatus =
+      _optionRsvpStatusStatusPtr
+          .asFunction<_OptionRsvpStatusStatusReturn Function(int)>();
   late final _optionRsvpStatusStatusStrPtr = _lookup<
-      ffi.NativeFunction<
-          _OptionRsvpStatusStatusStrReturn Function(
-              ffi.IntPtr)>>("__OptionRsvpStatus_status_str");
+    ffi.NativeFunction<_OptionRsvpStatusStatusStrReturn Function(ffi.IntPtr)>
+  >("__OptionRsvpStatus_status_str");
 
-  late final _optionRsvpStatusStatusStr = _optionRsvpStatusStatusStrPtr
-      .asFunction<_OptionRsvpStatusStatusStrReturn Function(int)>();
+  late final _optionRsvpStatusStatusStr =
+      _optionRsvpStatusStatusStrPtr
+          .asFunction<_OptionRsvpStatusStatusStrReturn Function(int)>();
   late final _optionComposeDraftDraftPtr = _lookup<
-          ffi
-          .NativeFunction<_OptionComposeDraftDraftReturn Function(ffi.IntPtr)>>(
-      "__OptionComposeDraft_draft");
+    ffi.NativeFunction<_OptionComposeDraftDraftReturn Function(ffi.IntPtr)>
+  >("__OptionComposeDraft_draft");
 
-  late final _optionComposeDraftDraft = _optionComposeDraftDraftPtr
-      .asFunction<_OptionComposeDraftDraftReturn Function(int)>();
+  late final _optionComposeDraftDraft =
+      _optionComposeDraftDraftPtr
+          .asFunction<_OptionComposeDraftDraftReturn Function(int)>();
   late final _userProfileUserIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__UserProfile_user_id",
-  );
+        "__UserProfile_user_id",
+      );
 
   late final _userProfileUserId =
       _userProfileUserIdPtr.asFunction<int Function(int)>();
   late final _userProfileHasAvatarPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__UserProfile_has_avatar",
-  );
+        "__UserProfile_has_avatar",
+      );
 
   late final _userProfileHasAvatar =
       _userProfileHasAvatarPtr.asFunction<int Function(int)>();
   late final _userProfileGetAvatarPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-              ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>>("__UserProfile_get_avatar");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>
+  >("__UserProfile_get_avatar");
 
   late final _userProfileGetAvatar =
       _userProfileGetAvatarPtr.asFunction<int Function(int, int, int)>();
   late final _userProfileDisplayNamePtr = _lookup<
-          ffi
-          .NativeFunction<_UserProfileDisplayNameReturn Function(ffi.IntPtr)>>(
-      "__UserProfile_display_name");
+    ffi.NativeFunction<_UserProfileDisplayNameReturn Function(ffi.IntPtr)>
+  >("__UserProfile_display_name");
 
-  late final _userProfileDisplayName = _userProfileDisplayNamePtr
-      .asFunction<_UserProfileDisplayNameReturn Function(int)>();
+  late final _userProfileDisplayName =
+      _userProfileDisplayNamePtr
+          .asFunction<_UserProfileDisplayNameReturn Function(int)>();
   late final _userProfileSharedRoomsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__UserProfile_shared_rooms",
-  );
+        "__UserProfile_shared_rooms",
+      );
 
   late final _userProfileSharedRooms =
       _userProfileSharedRoomsPtr.asFunction<int Function(int)>();
   late final _typingEventUserIdsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TypingEvent_user_ids",
-  );
+        "__TypingEvent_user_ids",
+      );
 
   late final _typingEventUserIds =
       _typingEventUserIdsPtr.asFunction<int Function(int)>();
   late final _textMessageContentBodyPtr = _lookup<
-          ffi
-          .NativeFunction<_TextMessageContentBodyReturn Function(ffi.IntPtr)>>(
-      "__TextMessageContent_body");
+    ffi.NativeFunction<_TextMessageContentBodyReturn Function(ffi.IntPtr)>
+  >("__TextMessageContent_body");
 
-  late final _textMessageContentBody = _textMessageContentBodyPtr
-      .asFunction<_TextMessageContentBodyReturn Function(int)>();
+  late final _textMessageContentBody =
+      _textMessageContentBodyPtr
+          .asFunction<_TextMessageContentBodyReturn Function(int)>();
   late final _textMessageContentFormattedPtr = _lookup<
-      ffi.NativeFunction<
-          _TextMessageContentFormattedReturn Function(
-              ffi.IntPtr)>>("__TextMessageContent_formatted");
+    ffi.NativeFunction<_TextMessageContentFormattedReturn Function(ffi.IntPtr)>
+  >("__TextMessageContent_formatted");
 
-  late final _textMessageContentFormatted = _textMessageContentFormattedPtr
-      .asFunction<_TextMessageContentFormattedReturn Function(int)>();
+  late final _textMessageContentFormatted =
+      _textMessageContentFormattedPtr
+          .asFunction<_TextMessageContentFormattedReturn Function(int)>();
   late final _mediaSourceUrlPtr =
       _lookup<ffi.NativeFunction<_MediaSourceUrlReturn Function(ffi.IntPtr)>>(
-    "__MediaSource_url",
-  );
+        "__MediaSource_url",
+      );
 
   late final _mediaSourceUrl =
       _mediaSourceUrlPtr.asFunction<_MediaSourceUrlReturn Function(int)>();
   late final _thumbnailInfoMimetypePtr = _lookup<
-          ffi
-          .NativeFunction<_ThumbnailInfoMimetypeReturn Function(ffi.IntPtr)>>(
-      "__ThumbnailInfo_mimetype");
+    ffi.NativeFunction<_ThumbnailInfoMimetypeReturn Function(ffi.IntPtr)>
+  >("__ThumbnailInfo_mimetype");
 
-  late final _thumbnailInfoMimetype = _thumbnailInfoMimetypePtr
-      .asFunction<_ThumbnailInfoMimetypeReturn Function(int)>();
+  late final _thumbnailInfoMimetype =
+      _thumbnailInfoMimetypePtr
+          .asFunction<_ThumbnailInfoMimetypeReturn Function(int)>();
   late final _thumbnailInfoSizePtr = _lookup<
-          ffi.NativeFunction<_ThumbnailInfoSizeReturn Function(ffi.IntPtr)>>(
-      "__ThumbnailInfo_size");
+    ffi.NativeFunction<_ThumbnailInfoSizeReturn Function(ffi.IntPtr)>
+  >("__ThumbnailInfo_size");
 
-  late final _thumbnailInfoSize = _thumbnailInfoSizePtr
-      .asFunction<_ThumbnailInfoSizeReturn Function(int)>();
+  late final _thumbnailInfoSize =
+      _thumbnailInfoSizePtr
+          .asFunction<_ThumbnailInfoSizeReturn Function(int)>();
   late final _thumbnailInfoWidthPtr = _lookup<
-          ffi.NativeFunction<_ThumbnailInfoWidthReturn Function(ffi.IntPtr)>>(
-      "__ThumbnailInfo_width");
+    ffi.NativeFunction<_ThumbnailInfoWidthReturn Function(ffi.IntPtr)>
+  >("__ThumbnailInfo_width");
 
-  late final _thumbnailInfoWidth = _thumbnailInfoWidthPtr
-      .asFunction<_ThumbnailInfoWidthReturn Function(int)>();
+  late final _thumbnailInfoWidth =
+      _thumbnailInfoWidthPtr
+          .asFunction<_ThumbnailInfoWidthReturn Function(int)>();
   late final _thumbnailInfoHeightPtr = _lookup<
-          ffi.NativeFunction<_ThumbnailInfoHeightReturn Function(ffi.IntPtr)>>(
-      "__ThumbnailInfo_height");
+    ffi.NativeFunction<_ThumbnailInfoHeightReturn Function(ffi.IntPtr)>
+  >("__ThumbnailInfo_height");
 
-  late final _thumbnailInfoHeight = _thumbnailInfoHeightPtr
-      .asFunction<_ThumbnailInfoHeightReturn Function(int)>();
+  late final _thumbnailInfoHeight =
+      _thumbnailInfoHeightPtr
+          .asFunction<_ThumbnailInfoHeightReturn Function(int)>();
   late final _deviceIdToStringPtr =
       _lookup<ffi.NativeFunction<_DeviceIdToStringReturn Function(ffi.IntPtr)>>(
-    "__DeviceId_to_string",
-  );
+        "__DeviceId_to_string",
+      );
 
   late final _deviceIdToString =
       _deviceIdToStringPtr.asFunction<_DeviceIdToStringReturn Function(int)>();
   late final _eventIdToStringPtr =
       _lookup<ffi.NativeFunction<_EventIdToStringReturn Function(ffi.IntPtr)>>(
-    "__EventId_to_string",
-  );
+        "__EventId_to_string",
+      );
 
   late final _eventIdToString =
       _eventIdToStringPtr.asFunction<_EventIdToStringReturn Function(int)>();
   late final _mxcUriToStringPtr =
       _lookup<ffi.NativeFunction<_MxcUriToStringReturn Function(ffi.IntPtr)>>(
-    "__MxcUri_to_string",
-  );
+        "__MxcUri_to_string",
+      );
 
   late final _mxcUriToString =
       _mxcUriToStringPtr.asFunction<_MxcUriToStringReturn Function(int)>();
   late final _composeDraftPlainTextPtr = _lookup<
-          ffi
-          .NativeFunction<_ComposeDraftPlainTextReturn Function(ffi.IntPtr)>>(
-      "__ComposeDraft_plain_text");
+    ffi.NativeFunction<_ComposeDraftPlainTextReturn Function(ffi.IntPtr)>
+  >("__ComposeDraft_plain_text");
 
-  late final _composeDraftPlainText = _composeDraftPlainTextPtr
-      .asFunction<_ComposeDraftPlainTextReturn Function(int)>();
+  late final _composeDraftPlainText =
+      _composeDraftPlainTextPtr
+          .asFunction<_ComposeDraftPlainTextReturn Function(int)>();
   late final _composeDraftHtmlTextPtr = _lookup<
-          ffi.NativeFunction<_ComposeDraftHtmlTextReturn Function(ffi.IntPtr)>>(
-      "__ComposeDraft_html_text");
+    ffi.NativeFunction<_ComposeDraftHtmlTextReturn Function(ffi.IntPtr)>
+  >("__ComposeDraft_html_text");
 
-  late final _composeDraftHtmlText = _composeDraftHtmlTextPtr
-      .asFunction<_ComposeDraftHtmlTextReturn Function(int)>();
+  late final _composeDraftHtmlText =
+      _composeDraftHtmlTextPtr
+          .asFunction<_ComposeDraftHtmlTextReturn Function(int)>();
   late final _composeDraftEventIdPtr = _lookup<
-          ffi.NativeFunction<_ComposeDraftEventIdReturn Function(ffi.IntPtr)>>(
-      "__ComposeDraft_event_id");
+    ffi.NativeFunction<_ComposeDraftEventIdReturn Function(ffi.IntPtr)>
+  >("__ComposeDraft_event_id");
 
-  late final _composeDraftEventId = _composeDraftEventIdPtr
-      .asFunction<_ComposeDraftEventIdReturn Function(int)>();
+  late final _composeDraftEventId =
+      _composeDraftEventIdPtr
+          .asFunction<_ComposeDraftEventIdReturn Function(int)>();
   late final _composeDraftDraftTypePtr = _lookup<
-          ffi
-          .NativeFunction<_ComposeDraftDraftTypeReturn Function(ffi.IntPtr)>>(
-      "__ComposeDraft_draft_type");
+    ffi.NativeFunction<_ComposeDraftDraftTypeReturn Function(ffi.IntPtr)>
+  >("__ComposeDraft_draft_type");
 
-  late final _composeDraftDraftType = _composeDraftDraftTypePtr
-      .asFunction<_ComposeDraftDraftTypeReturn Function(int)>();
+  late final _composeDraftDraftType =
+      _composeDraftDraftTypePtr
+          .asFunction<_ComposeDraftDraftTypeReturn Function(int)>();
   late final _roomIdToStringPtr =
       _lookup<ffi.NativeFunction<_RoomIdToStringReturn Function(ffi.IntPtr)>>(
-    "__RoomId_to_string",
-  );
+        "__RoomId_to_string",
+      );
 
   late final _roomIdToString =
       _roomIdToStringPtr.asFunction<_RoomIdToStringReturn Function(int)>();
   late final _userIdToStringPtr =
       _lookup<ffi.NativeFunction<_UserIdToStringReturn Function(ffi.IntPtr)>>(
-    "__UserId_to_string",
-  );
+        "__UserId_to_string",
+      );
 
   late final _userIdToString =
       _userIdToStringPtr.asFunction<_UserIdToStringReturn Function(int)>();
   late final _registrationTokenViaEmailResponseSidPtr = _lookup<
-      ffi.NativeFunction<
-          _RegistrationTokenViaEmailResponseSidReturn Function(
-              ffi.IntPtr)>>("__RegistrationTokenViaEmailResponse_sid");
+    ffi.NativeFunction<
+      _RegistrationTokenViaEmailResponseSidReturn Function(ffi.IntPtr)
+    >
+  >("__RegistrationTokenViaEmailResponse_sid");
 
   late final _registrationTokenViaEmailResponseSid =
-      _registrationTokenViaEmailResponseSidPtr.asFunction<
-          _RegistrationTokenViaEmailResponseSidReturn Function(int)>();
+      _registrationTokenViaEmailResponseSidPtr
+          .asFunction<
+            _RegistrationTokenViaEmailResponseSidReturn Function(int)
+          >();
   late final _registrationTokenViaEmailResponseSubmitUrlPtr = _lookup<
-      ffi.NativeFunction<
-          _RegistrationTokenViaEmailResponseSubmitUrlReturn Function(
-              ffi.IntPtr)>>("__RegistrationTokenViaEmailResponse_submit_url");
+    ffi.NativeFunction<
+      _RegistrationTokenViaEmailResponseSubmitUrlReturn Function(ffi.IntPtr)
+    >
+  >("__RegistrationTokenViaEmailResponse_submit_url");
 
   late final _registrationTokenViaEmailResponseSubmitUrl =
-      _registrationTokenViaEmailResponseSubmitUrlPtr.asFunction<
-          _RegistrationTokenViaEmailResponseSubmitUrlReturn Function(int)>();
+      _registrationTokenViaEmailResponseSubmitUrlPtr
+          .asFunction<
+            _RegistrationTokenViaEmailResponseSubmitUrlReturn Function(int)
+          >();
   late final _passwordChangeEmailTokenResponseClientSecretPtr = _lookup<
-      ffi.NativeFunction<
-          _PasswordChangeEmailTokenResponseClientSecretReturn Function(
-              ffi.IntPtr)>>("__PasswordChangeEmailTokenResponse_client_secret");
+    ffi.NativeFunction<
+      _PasswordChangeEmailTokenResponseClientSecretReturn Function(ffi.IntPtr)
+    >
+  >("__PasswordChangeEmailTokenResponse_client_secret");
 
   late final _passwordChangeEmailTokenResponseClientSecret =
-      _passwordChangeEmailTokenResponseClientSecretPtr.asFunction<
-          _PasswordChangeEmailTokenResponseClientSecretReturn Function(int)>();
+      _passwordChangeEmailTokenResponseClientSecretPtr
+          .asFunction<
+            _PasswordChangeEmailTokenResponseClientSecretReturn Function(int)
+          >();
   late final _passwordChangeEmailTokenResponseSidPtr = _lookup<
-      ffi.NativeFunction<
-          _PasswordChangeEmailTokenResponseSidReturn Function(
-              ffi.IntPtr)>>("__PasswordChangeEmailTokenResponse_sid");
+    ffi.NativeFunction<
+      _PasswordChangeEmailTokenResponseSidReturn Function(ffi.IntPtr)
+    >
+  >("__PasswordChangeEmailTokenResponse_sid");
 
   late final _passwordChangeEmailTokenResponseSid =
-      _passwordChangeEmailTokenResponseSidPtr.asFunction<
-          _PasswordChangeEmailTokenResponseSidReturn Function(int)>();
+      _passwordChangeEmailTokenResponseSidPtr
+          .asFunction<
+            _PasswordChangeEmailTokenResponseSidReturn Function(int)
+          >();
   late final _passwordChangeEmailTokenResponseSubmitUrlPtr = _lookup<
-      ffi.NativeFunction<
-          _PasswordChangeEmailTokenResponseSubmitUrlReturn Function(
-              ffi.IntPtr)>>("__PasswordChangeEmailTokenResponse_submit_url");
+    ffi.NativeFunction<
+      _PasswordChangeEmailTokenResponseSubmitUrlReturn Function(ffi.IntPtr)
+    >
+  >("__PasswordChangeEmailTokenResponse_submit_url");
 
   late final _passwordChangeEmailTokenResponseSubmitUrl =
-      _passwordChangeEmailTokenResponseSubmitUrlPtr.asFunction<
-          _PasswordChangeEmailTokenResponseSubmitUrlReturn Function(int)>();
+      _passwordChangeEmailTokenResponseSubmitUrlPtr
+          .asFunction<
+            _PasswordChangeEmailTokenResponseSubmitUrlReturn Function(int)
+          >();
   late final _newsSlideTypeStrPtr =
       _lookup<ffi.NativeFunction<_NewsSlideTypeStrReturn Function(ffi.IntPtr)>>(
-    "__NewsSlide_type_str",
-  );
+        "__NewsSlide_type_str",
+      );
 
   late final _newsSlideTypeStr =
       _newsSlideTypeStrPtr.asFunction<_NewsSlideTypeStrReturn Function(int)>();
   late final _newsSlideUniqueIdPtr = _lookup<
-          ffi.NativeFunction<_NewsSlideUniqueIdReturn Function(ffi.IntPtr)>>(
-      "__NewsSlide_unique_id");
+    ffi.NativeFunction<_NewsSlideUniqueIdReturn Function(ffi.IntPtr)>
+  >("__NewsSlide_unique_id");
 
-  late final _newsSlideUniqueId = _newsSlideUniqueIdPtr
-      .asFunction<_NewsSlideUniqueIdReturn Function(int)>();
+  late final _newsSlideUniqueId =
+      _newsSlideUniqueIdPtr
+          .asFunction<_NewsSlideUniqueIdReturn Function(int)>();
   late final _newsSlideReferencesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsSlide_references",
-  );
+        "__NewsSlide_references",
+      );
 
   late final _newsSlideReferences =
       _newsSlideReferencesPtr.asFunction<int Function(int)>();
   late final _newsSlideColorsPtr =
       _lookup<ffi.NativeFunction<_NewsSlideColorsReturn Function(ffi.IntPtr)>>(
-    "__NewsSlide_colors",
-  );
+        "__NewsSlide_colors",
+      );
 
   late final _newsSlideColors =
       _newsSlideColorsPtr.asFunction<_NewsSlideColorsReturn Function(int)>();
   late final _newsSlideMsgContentPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsSlide_msg_content",
-  );
+        "__NewsSlide_msg_content",
+      );
 
   late final _newsSlideMsgContent =
       _newsSlideMsgContentPtr.asFunction<int Function(int)>();
   late final _newsSlideSourceBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-              ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>>("__NewsSlide_source_binary");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>
+  >("__NewsSlide_source_binary");
 
   late final _newsSlideSourceBinary =
       _newsSlideSourceBinaryPtr.asFunction<int Function(int, int, int)>();
   late final _newsSlideDraftAddReferencePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__NewsSlideDraft_add_reference",
-  );
+        "__NewsSlideDraft_add_reference",
+      );
 
   late final _newsSlideDraftAddReference =
       _newsSlideDraftAddReferencePtr.asFunction<void Function(int, int)>();
   late final _newsSlideDraftColorPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__NewsSlideDraft_color",
-  );
+        "__NewsSlideDraft_color",
+      );
 
   late final _newsSlideDraftColor =
       _newsSlideDraftColorPtr.asFunction<void Function(int, int)>();
   late final _newsSlideDraftUnsetReferencesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__NewsSlideDraft_unset_references",
-  );
+        "__NewsSlideDraft_unset_references",
+      );
 
   late final _newsSlideDraftUnsetReferences =
       _newsSlideDraftUnsetReferencesPtr.asFunction<void Function(int)>();
   late final _newsEntrySlidesCountPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__NewsEntry_slides_count",
-  );
+        "__NewsEntry_slides_count",
+      );
 
   late final _newsEntrySlidesCount =
       _newsEntrySlidesCountPtr.asFunction<int Function(int)>();
   late final _newsEntryGetSlidePtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryGetSlideReturn Function(
-              ffi.IntPtr, ffi.Uint8)>>("__NewsEntry_get_slide");
+    ffi.NativeFunction<_NewsEntryGetSlideReturn Function(ffi.IntPtr, ffi.Uint8)>
+  >("__NewsEntry_get_slide");
 
-  late final _newsEntryGetSlide = _newsEntryGetSlidePtr
-      .asFunction<_NewsEntryGetSlideReturn Function(int, int)>();
+  late final _newsEntryGetSlide =
+      _newsEntryGetSlidePtr
+          .asFunction<_NewsEntryGetSlideReturn Function(int, int)>();
   late final _newsEntrySlidesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsEntry_slides",
-  );
+        "__NewsEntry_slides",
+      );
 
   late final _newsEntrySlides =
       _newsEntrySlidesPtr.asFunction<int Function(int)>();
   late final _newsEntryRoomIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsEntry_room_id",
-  );
+        "__NewsEntry_room_id",
+      );
 
   late final _newsEntryRoomId =
       _newsEntryRoomIdPtr.asFunction<int Function(int)>();
   late final _newsEntrySenderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsEntry_sender",
-  );
+        "__NewsEntry_sender",
+      );
 
   late final _newsEntrySender =
       _newsEntrySenderPtr.asFunction<int Function(int)>();
   late final _newsEntryEventIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsEntry_event_id",
-  );
+        "__NewsEntry_event_id",
+      );
 
   late final _newsEntryEventId =
       _newsEntryEventIdPtr.asFunction<int Function(int)>();
   late final _newsEntryOriginServerTsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__NewsEntry_origin_server_ts",
-  );
+        "__NewsEntry_origin_server_ts",
+      );
 
   late final _newsEntryOriginServerTs =
       _newsEntryOriginServerTsPtr.asFunction<int Function(int)>();
   late final _newsEntryCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsEntry_can_redact",
-  );
+        "__NewsEntry_can_redact",
+      );
 
   late final _newsEntryCanRedact =
       _newsEntryCanRedactPtr.asFunction<int Function(int)>();
   late final _newsEntryReactionsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsEntry_reactions",
-  );
+        "__NewsEntry_reactions",
+      );
 
   late final _newsEntryReactions =
       _newsEntryReactionsPtr.asFunction<int Function(int)>();
   late final _newsEntryReadReceiptsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsEntry_read_receipts",
-  );
+        "__NewsEntry_read_receipts",
+      );
 
   late final _newsEntryReadReceipts =
       _newsEntryReadReceiptsPtr.asFunction<int Function(int)>();
   late final _newsEntryCommentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsEntry_comments",
-  );
+        "__NewsEntry_comments",
+      );
 
   late final _newsEntryComments =
       _newsEntryCommentsPtr.asFunction<int Function(int)>();
   late final _newsEntryRefDetailsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsEntry_ref_details",
-  );
+        "__NewsEntry_ref_details",
+      );
 
   late final _newsEntryRefDetails =
       _newsEntryRefDetailsPtr.asFunction<int Function(int)>();
   late final _newsEntryDraftAddSlidePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__NewsEntryDraft_add_slide",
-  );
+        "__NewsEntryDraft_add_slide",
+      );
 
   late final _newsEntryDraftAddSlide =
       _newsEntryDraftAddSlidePtr.asFunction<int Function(int, int)>();
   late final _newsEntryDraftSwapSlidesPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>>(
-      "__NewsEntryDraft_swap_slides");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+  >("__NewsEntryDraft_swap_slides");
 
   late final _newsEntryDraftSwapSlides =
       _newsEntryDraftSwapSlidesPtr.asFunction<void Function(int, int, int)>();
   late final _newsEntryDraftSlidesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsEntryDraft_slides",
-  );
+        "__NewsEntryDraft_slides",
+      );
 
   late final _newsEntryDraftSlides =
       _newsEntryDraftSlidesPtr.asFunction<int Function(int)>();
   late final _newsEntryDraftUnsetSlidesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__NewsEntryDraft_unset_slides",
-  );
+        "__NewsEntryDraft_unset_slides",
+      );
 
   late final _newsEntryDraftUnsetSlides =
       _newsEntryDraftUnsetSlidesPtr.asFunction<void Function(int)>();
   late final _newsEntryDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsEntryDraft_send",
-  );
+        "__NewsEntryDraft_send",
+      );
 
   late final _newsEntryDraftSend =
       _newsEntryDraftSendPtr.asFunction<int Function(int)>();
   late final _newsEntryUpdateBuilderAddSlidePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__NewsEntryUpdateBuilder_add_slide",
-  );
+        "__NewsEntryUpdateBuilder_add_slide",
+      );
 
   late final _newsEntryUpdateBuilderAddSlide =
       _newsEntryUpdateBuilderAddSlidePtr.asFunction<int Function(int, int)>();
   late final _newsEntryUpdateBuilderUnsetSlidesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__NewsEntryUpdateBuilder_unset_slides",
-  );
+        "__NewsEntryUpdateBuilder_unset_slides",
+      );
 
   late final _newsEntryUpdateBuilderUnsetSlides =
       _newsEntryUpdateBuilderUnsetSlidesPtr.asFunction<void Function(int)>();
   late final _newsEntryUpdateBuilderUnsetSlidesUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__NewsEntryUpdateBuilder_unset_slides_update",
-  );
+        "__NewsEntryUpdateBuilder_unset_slides_update",
+      );
 
   late final _newsEntryUpdateBuilderUnsetSlidesUpdate =
       _newsEntryUpdateBuilderUnsetSlidesUpdatePtr
           .asFunction<void Function(int)>();
   late final _newsEntryUpdateBuilderSwapSlidesPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>>(
-      "__NewsEntryUpdateBuilder_swap_slides");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+  >("__NewsEntryUpdateBuilder_swap_slides");
 
   late final _newsEntryUpdateBuilderSwapSlides =
       _newsEntryUpdateBuilderSwapSlidesPtr
           .asFunction<void Function(int, int, int)>();
   late final _newsEntryUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsEntryUpdateBuilder_send",
-  );
+        "__NewsEntryUpdateBuilder_send",
+      );
 
   late final _newsEntryUpdateBuilderSend =
       _newsEntryUpdateBuilderSendPtr.asFunction<int Function(int)>();
   late final _storySlideTypeStrPtr = _lookup<
-          ffi.NativeFunction<_StorySlideTypeStrReturn Function(ffi.IntPtr)>>(
-      "__StorySlide_type_str");
+    ffi.NativeFunction<_StorySlideTypeStrReturn Function(ffi.IntPtr)>
+  >("__StorySlide_type_str");
 
-  late final _storySlideTypeStr = _storySlideTypeStrPtr
-      .asFunction<_StorySlideTypeStrReturn Function(int)>();
+  late final _storySlideTypeStr =
+      _storySlideTypeStrPtr
+          .asFunction<_StorySlideTypeStrReturn Function(int)>();
   late final _storySlideUniqueIdPtr = _lookup<
-          ffi.NativeFunction<_StorySlideUniqueIdReturn Function(ffi.IntPtr)>>(
-      "__StorySlide_unique_id");
+    ffi.NativeFunction<_StorySlideUniqueIdReturn Function(ffi.IntPtr)>
+  >("__StorySlide_unique_id");
 
-  late final _storySlideUniqueId = _storySlideUniqueIdPtr
-      .asFunction<_StorySlideUniqueIdReturn Function(int)>();
+  late final _storySlideUniqueId =
+      _storySlideUniqueIdPtr
+          .asFunction<_StorySlideUniqueIdReturn Function(int)>();
   late final _storySlideReferencesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__StorySlide_references",
-  );
+        "__StorySlide_references",
+      );
 
   late final _storySlideReferences =
       _storySlideReferencesPtr.asFunction<int Function(int)>();
   late final _storySlideColorsPtr =
       _lookup<ffi.NativeFunction<_StorySlideColorsReturn Function(ffi.IntPtr)>>(
-    "__StorySlide_colors",
-  );
+        "__StorySlide_colors",
+      );
 
   late final _storySlideColors =
       _storySlideColorsPtr.asFunction<_StorySlideColorsReturn Function(int)>();
   late final _storySlideMsgContentPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__StorySlide_msg_content",
-  );
+        "__StorySlide_msg_content",
+      );
 
   late final _storySlideMsgContent =
       _storySlideMsgContentPtr.asFunction<int Function(int)>();
   late final _storySlideSourceBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8,
-              ffi.IntPtr)>>("__StorySlide_source_binary");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>
+  >("__StorySlide_source_binary");
 
   late final _storySlideSourceBinary =
       _storySlideSourceBinaryPtr.asFunction<int Function(int, int, int)>();
   late final _storySlideDraftAddReferencePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__StorySlideDraft_add_reference",
-  );
+        "__StorySlideDraft_add_reference",
+      );
 
   late final _storySlideDraftAddReference =
       _storySlideDraftAddReferencePtr.asFunction<void Function(int, int)>();
   late final _storySlideDraftColorPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__StorySlideDraft_color",
-  );
+        "__StorySlideDraft_color",
+      );
 
   late final _storySlideDraftColor =
       _storySlideDraftColorPtr.asFunction<void Function(int, int)>();
   late final _storySlideDraftUnsetReferencesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__StorySlideDraft_unset_references",
-  );
+        "__StorySlideDraft_unset_references",
+      );
 
   late final _storySlideDraftUnsetReferences =
       _storySlideDraftUnsetReferencesPtr.asFunction<void Function(int)>();
   late final _storySlidesCountPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Story_slides_count",
-  );
+        "__Story_slides_count",
+      );
 
   late final _storySlidesCount =
       _storySlidesCountPtr.asFunction<int Function(int)>();
   late final _storyGetSlidePtr = _lookup<
-      ffi.NativeFunction<
-          _StoryGetSlideReturn Function(
-              ffi.IntPtr, ffi.Uint8)>>("__Story_get_slide");
+    ffi.NativeFunction<_StoryGetSlideReturn Function(ffi.IntPtr, ffi.Uint8)>
+  >("__Story_get_slide");
 
   late final _storyGetSlide =
       _storyGetSlidePtr.asFunction<_StoryGetSlideReturn Function(int, int)>();
   late final _storySlidesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Story_slides",
-  );
+        "__Story_slides",
+      );
 
   late final _storySlides = _storySlidesPtr.asFunction<int Function(int)>();
   late final _storyRoomIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Story_room_id",
-  );
+        "__Story_room_id",
+      );
 
   late final _storyRoomId = _storyRoomIdPtr.asFunction<int Function(int)>();
   late final _storySenderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Story_sender",
-  );
+        "__Story_sender",
+      );
 
   late final _storySender = _storySenderPtr.asFunction<int Function(int)>();
   late final _storyEventIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Story_event_id",
-  );
+        "__Story_event_id",
+      );
 
   late final _storyEventId = _storyEventIdPtr.asFunction<int Function(int)>();
   late final _storyOriginServerTsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__Story_origin_server_ts",
-  );
+        "__Story_origin_server_ts",
+      );
 
   late final _storyOriginServerTs =
       _storyOriginServerTsPtr.asFunction<int Function(int)>();
   late final _storyCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Story_can_redact",
-  );
+        "__Story_can_redact",
+      );
 
   late final _storyCanRedact =
       _storyCanRedactPtr.asFunction<int Function(int)>();
   late final _storyReactionsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Story_reactions",
-  );
+        "__Story_reactions",
+      );
 
   late final _storyReactions =
       _storyReactionsPtr.asFunction<int Function(int)>();
   late final _storyReadReceiptsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Story_read_receipts",
-  );
+        "__Story_read_receipts",
+      );
 
   late final _storyReadReceipts =
       _storyReadReceiptsPtr.asFunction<int Function(int)>();
   late final _storyCommentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Story_comments",
-  );
+        "__Story_comments",
+      );
 
   late final _storyComments = _storyCommentsPtr.asFunction<int Function(int)>();
   late final _storyDraftAddSlidePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__StoryDraft_add_slide",
-  );
+        "__StoryDraft_add_slide",
+      );
 
   late final _storyDraftAddSlide =
       _storyDraftAddSlidePtr.asFunction<int Function(int, int)>();
   late final _storyDraftSwapSlidesPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>>(
-      "__StoryDraft_swap_slides");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+  >("__StoryDraft_swap_slides");
 
   late final _storyDraftSwapSlides =
       _storyDraftSwapSlidesPtr.asFunction<void Function(int, int, int)>();
   late final _storyDraftSlidesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__StoryDraft_slides",
-  );
+        "__StoryDraft_slides",
+      );
 
   late final _storyDraftSlides =
       _storyDraftSlidesPtr.asFunction<int Function(int)>();
   late final _storyDraftUnsetSlidesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__StoryDraft_unset_slides",
-  );
+        "__StoryDraft_unset_slides",
+      );
 
   late final _storyDraftUnsetSlides =
       _storyDraftUnsetSlidesPtr.asFunction<void Function(int)>();
   late final _storyDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__StoryDraft_send",
-  );
+        "__StoryDraft_send",
+      );
 
   late final _storyDraftSend =
       _storyDraftSendPtr.asFunction<int Function(int)>();
   late final _storyUpdateBuilderAddSlidePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__StoryUpdateBuilder_add_slide",
-  );
+        "__StoryUpdateBuilder_add_slide",
+      );
 
   late final _storyUpdateBuilderAddSlide =
       _storyUpdateBuilderAddSlidePtr.asFunction<int Function(int, int)>();
   late final _storyUpdateBuilderUnsetSlidesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__StoryUpdateBuilder_unset_slides",
-  );
+        "__StoryUpdateBuilder_unset_slides",
+      );
 
   late final _storyUpdateBuilderUnsetSlides =
       _storyUpdateBuilderUnsetSlidesPtr.asFunction<void Function(int)>();
   late final _storyUpdateBuilderUnsetSlidesUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__StoryUpdateBuilder_unset_slides_update",
-  );
+        "__StoryUpdateBuilder_unset_slides_update",
+      );
 
   late final _storyUpdateBuilderUnsetSlidesUpdate =
       _storyUpdateBuilderUnsetSlidesUpdatePtr.asFunction<void Function(int)>();
   late final _storyUpdateBuilderSwapSlidesPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>>(
-      "__StoryUpdateBuilder_swap_slides");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+  >("__StoryUpdateBuilder_swap_slides");
 
-  late final _storyUpdateBuilderSwapSlides = _storyUpdateBuilderSwapSlidesPtr
-      .asFunction<void Function(int, int, int)>();
+  late final _storyUpdateBuilderSwapSlides =
+      _storyUpdateBuilderSwapSlidesPtr
+          .asFunction<void Function(int, int, int)>();
   late final _storyUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__StoryUpdateBuilder_send",
-  );
+        "__StoryUpdateBuilder_send",
+      );
 
   late final _storyUpdateBuilderSend =
       _storyUpdateBuilderSendPtr.asFunction<int Function(int)>();
   late final _pinDraftTitlePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__PinDraft_title");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__PinDraft_title");
 
   late final _pinDraftTitle =
       _pinDraftTitlePtr.asFunction<void Function(int, int, int, int)>();
   late final _pinDraftContentTextPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__PinDraft_content_text");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__PinDraft_content_text");
 
   late final _pinDraftContentText =
       _pinDraftContentTextPtr.asFunction<void Function(int, int, int, int)>();
   late final _pinDraftContentMarkdownPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__PinDraft_content_markdown");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__PinDraft_content_markdown");
 
-  late final _pinDraftContentMarkdown = _pinDraftContentMarkdownPtr
-      .asFunction<void Function(int, int, int, int)>();
+  late final _pinDraftContentMarkdown =
+      _pinDraftContentMarkdownPtr
+          .asFunction<void Function(int, int, int, int)>();
   late final _pinDraftContentHtmlPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__PinDraft_content_html");
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__PinDraft_content_html");
 
-  late final _pinDraftContentHtml = _pinDraftContentHtmlPtr
-      .asFunction<void Function(int, int, int, int, int, int, int)>();
+  late final _pinDraftContentHtml =
+      _pinDraftContentHtmlPtr
+          .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _pinDraftUnsetContentPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__PinDraft_unset_content",
-  );
+        "__PinDraft_unset_content",
+      );
 
   late final _pinDraftUnsetContent =
       _pinDraftUnsetContentPtr.asFunction<void Function(int)>();
   late final _pinDraftUrlPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__PinDraft_url");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__PinDraft_url");
 
   late final _pinDraftUrl =
       _pinDraftUrlPtr.asFunction<void Function(int, int, int, int)>();
   late final _pinDraftUnsetUrlPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__PinDraft_unset_url",
-  );
+        "__PinDraft_unset_url",
+      );
 
   late final _pinDraftUnsetUrl =
       _pinDraftUnsetUrlPtr.asFunction<void Function(int)>();
   late final _pinDraftDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__PinDraft_display",
-  );
+        "__PinDraft_display",
+      );
 
   late final _pinDraftDisplay =
       _pinDraftDisplayPtr.asFunction<void Function(int, int)>();
   late final _pinDraftUnsetDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__PinDraft_unset_display",
-  );
+        "__PinDraft_unset_display",
+      );
 
   late final _pinDraftUnsetDisplay =
       _pinDraftUnsetDisplayPtr.asFunction<void Function(int)>();
   late final _pinDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__PinDraft_send",
-  );
+        "__PinDraft_send",
+      );
 
   late final _pinDraftSend = _pinDraftSendPtr.asFunction<int Function(int)>();
   late final _acterPinTitlePtr =
       _lookup<ffi.NativeFunction<_ActerPinTitleReturn Function(ffi.IntPtr)>>(
-    "__ActerPin_title",
-  );
+        "__ActerPin_title",
+      );
 
   late final _acterPinTitle =
       _acterPinTitlePtr.asFunction<_ActerPinTitleReturn Function(int)>();
   late final _acterPinContentPtr =
       _lookup<ffi.NativeFunction<_ActerPinContentReturn Function(ffi.IntPtr)>>(
-    "__ActerPin_content",
-  );
+        "__ActerPin_content",
+      );
 
   late final _acterPinContent =
       _acterPinContentPtr.asFunction<_ActerPinContentReturn Function(int)>();
   late final _acterPinContentFormattedPtr = _lookup<
-      ffi.NativeFunction<
-          _ActerPinContentFormattedReturn Function(
-              ffi.IntPtr)>>("__ActerPin_content_formatted");
+    ffi.NativeFunction<_ActerPinContentFormattedReturn Function(ffi.IntPtr)>
+  >("__ActerPin_content_formatted");
 
-  late final _acterPinContentFormatted = _acterPinContentFormattedPtr
-      .asFunction<_ActerPinContentFormattedReturn Function(int)>();
+  late final _acterPinContentFormatted =
+      _acterPinContentFormattedPtr
+          .asFunction<_ActerPinContentFormattedReturn Function(int)>();
   late final _acterPinHasFormattedTextPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__ActerPin_has_formatted_text",
-  );
+        "__ActerPin_has_formatted_text",
+      );
 
   late final _acterPinHasFormattedText =
       _acterPinHasFormattedTextPtr.asFunction<int Function(int)>();
   late final _acterPinIsLinkPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__ActerPin_is_link",
-  );
+        "__ActerPin_is_link",
+      );
 
   late final _acterPinIsLink =
       _acterPinIsLinkPtr.asFunction<int Function(int)>();
   late final _acterPinUrlPtr =
       _lookup<ffi.NativeFunction<_ActerPinUrlReturn Function(ffi.IntPtr)>>(
-    "__ActerPin_url",
-  );
+        "__ActerPin_url",
+      );
 
   late final _acterPinUrl =
       _acterPinUrlPtr.asFunction<_ActerPinUrlReturn Function(int)>();
   late final _acterPinDisplayPtr =
       _lookup<ffi.NativeFunction<_ActerPinDisplayReturn Function(ffi.IntPtr)>>(
-    "__ActerPin_display",
-  );
+        "__ActerPin_display",
+      );
 
   late final _acterPinDisplay =
       _acterPinDisplayPtr.asFunction<_ActerPinDisplayReturn Function(int)>();
   late final _acterPinEventIdStrPtr = _lookup<
-          ffi.NativeFunction<_ActerPinEventIdStrReturn Function(ffi.IntPtr)>>(
-      "__ActerPin_event_id_str");
+    ffi.NativeFunction<_ActerPinEventIdStrReturn Function(ffi.IntPtr)>
+  >("__ActerPin_event_id_str");
 
-  late final _acterPinEventIdStr = _acterPinEventIdStrPtr
-      .asFunction<_ActerPinEventIdStrReturn Function(int)>();
+  late final _acterPinEventIdStr =
+      _acterPinEventIdStrPtr
+          .asFunction<_ActerPinEventIdStrReturn Function(int)>();
   late final _acterPinRoomIdStrPtr = _lookup<
-          ffi.NativeFunction<_ActerPinRoomIdStrReturn Function(ffi.IntPtr)>>(
-      "__ActerPin_room_id_str");
+    ffi.NativeFunction<_ActerPinRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__ActerPin_room_id_str");
 
-  late final _acterPinRoomIdStr = _acterPinRoomIdStrPtr
-      .asFunction<_ActerPinRoomIdStrReturn Function(int)>();
+  late final _acterPinRoomIdStr =
+      _acterPinRoomIdStrPtr
+          .asFunction<_ActerPinRoomIdStrReturn Function(int)>();
   late final _acterPinRefDetailsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerPin_ref_details",
-  );
+        "__ActerPin_ref_details",
+      );
 
   late final _acterPinRefDetails =
       _acterPinRefDetailsPtr.asFunction<int Function(int)>();
   late final _acterPinSenderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerPin_sender",
-  );
+        "__ActerPin_sender",
+      );
 
   late final _acterPinSender =
       _acterPinSenderPtr.asFunction<int Function(int)>();
   late final _acterPinUpdateBuilderPtr = _lookup<
-          ffi
-          .NativeFunction<_ActerPinUpdateBuilderReturn Function(ffi.IntPtr)>>(
-      "__ActerPin_update_builder");
+    ffi.NativeFunction<_ActerPinUpdateBuilderReturn Function(ffi.IntPtr)>
+  >("__ActerPin_update_builder");
 
-  late final _acterPinUpdateBuilder = _acterPinUpdateBuilderPtr
-      .asFunction<_ActerPinUpdateBuilderReturn Function(int)>();
+  late final _acterPinUpdateBuilder =
+      _acterPinUpdateBuilderPtr
+          .asFunction<_ActerPinUpdateBuilderReturn Function(int)>();
   late final _acterPinSubscribeStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerPin_subscribe_stream",
-  );
+        "__ActerPin_subscribe_stream",
+      );
 
   late final _acterPinSubscribeStream =
       _acterPinSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _acterPinRefreshPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerPin_refresh",
-  );
+        "__ActerPin_refresh",
+      );
 
   late final _acterPinRefresh =
       _acterPinRefreshPtr.asFunction<int Function(int)>();
   late final _acterPinCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerPin_can_redact",
-  );
+        "__ActerPin_can_redact",
+      );
 
   late final _acterPinCanRedact =
       _acterPinCanRedactPtr.asFunction<int Function(int)>();
   late final _acterPinCommentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerPin_comments",
-  );
+        "__ActerPin_comments",
+      );
 
   late final _acterPinComments =
       _acterPinCommentsPtr.asFunction<int Function(int)>();
   late final _acterPinAttachmentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerPin_attachments",
-  );
+        "__ActerPin_attachments",
+      );
 
   late final _acterPinAttachments =
       _acterPinAttachmentsPtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderTitlePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__PinUpdateBuilder_title");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__PinUpdateBuilder_title");
 
   late final _pinUpdateBuilderTitle =
       _pinUpdateBuilderTitlePtr.asFunction<void Function(int, int, int, int)>();
   late final _pinUpdateBuilderUnsetTitleUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__PinUpdateBuilder_unset_title_update",
-  );
+        "__PinUpdateBuilder_unset_title_update",
+      );
 
   late final _pinUpdateBuilderUnsetTitleUpdate =
       _pinUpdateBuilderUnsetTitleUpdatePtr.asFunction<void Function(int)>();
   late final _pinUpdateBuilderContentTextPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__PinUpdateBuilder_content_text");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__PinUpdateBuilder_content_text");
 
-  late final _pinUpdateBuilderContentText = _pinUpdateBuilderContentTextPtr
-      .asFunction<void Function(int, int, int, int)>();
+  late final _pinUpdateBuilderContentText =
+      _pinUpdateBuilderContentTextPtr
+          .asFunction<void Function(int, int, int, int)>();
   late final _pinUpdateBuilderContentMarkdownPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__PinUpdateBuilder_content_markdown");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__PinUpdateBuilder_content_markdown");
 
   late final _pinUpdateBuilderContentMarkdown =
       _pinUpdateBuilderContentMarkdownPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _pinUpdateBuilderContentHtmlPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__PinUpdateBuilder_content_html");
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__PinUpdateBuilder_content_html");
 
-  late final _pinUpdateBuilderContentHtml = _pinUpdateBuilderContentHtmlPtr
-      .asFunction<void Function(int, int, int, int, int, int, int)>();
+  late final _pinUpdateBuilderContentHtml =
+      _pinUpdateBuilderContentHtmlPtr
+          .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _pinUpdateBuilderUnsetContentPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__PinUpdateBuilder_unset_content",
-  );
+        "__PinUpdateBuilder_unset_content",
+      );
 
   late final _pinUpdateBuilderUnsetContent =
       _pinUpdateBuilderUnsetContentPtr.asFunction<void Function(int)>();
   late final _pinUpdateBuilderUnsetContentUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__PinUpdateBuilder_unset_content_update",
-  );
+        "__PinUpdateBuilder_unset_content_update",
+      );
 
   late final _pinUpdateBuilderUnsetContentUpdate =
       _pinUpdateBuilderUnsetContentUpdatePtr.asFunction<void Function(int)>();
   late final _pinUpdateBuilderUrlPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__PinUpdateBuilder_url");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__PinUpdateBuilder_url");
 
   late final _pinUpdateBuilderUrl =
       _pinUpdateBuilderUrlPtr.asFunction<void Function(int, int, int, int)>();
   late final _pinUpdateBuilderUnsetUrlPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__PinUpdateBuilder_unset_url",
-  );
+        "__PinUpdateBuilder_unset_url",
+      );
 
   late final _pinUpdateBuilderUnsetUrl =
       _pinUpdateBuilderUnsetUrlPtr.asFunction<void Function(int)>();
   late final _pinUpdateBuilderUnsetUrlUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__PinUpdateBuilder_unset_url_update",
-  );
+        "__PinUpdateBuilder_unset_url_update",
+      );
 
   late final _pinUpdateBuilderUnsetUrlUpdate =
       _pinUpdateBuilderUnsetUrlUpdatePtr.asFunction<void Function(int)>();
   late final _pinUpdateBuilderDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__PinUpdateBuilder_display",
-  );
+        "__PinUpdateBuilder_display",
+      );
 
   late final _pinUpdateBuilderDisplay =
       _pinUpdateBuilderDisplayPtr.asFunction<void Function(int, int)>();
   late final _pinUpdateBuilderUnsetDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__PinUpdateBuilder_unset_display",
-  );
+        "__PinUpdateBuilder_unset_display",
+      );
 
   late final _pinUpdateBuilderUnsetDisplay =
       _pinUpdateBuilderUnsetDisplayPtr.asFunction<void Function(int)>();
   late final _pinUpdateBuilderUnsetDisplayUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__PinUpdateBuilder_unset_display_update",
-  );
+        "__PinUpdateBuilder_unset_display_update",
+      );
 
   late final _pinUpdateBuilderUnsetDisplayUpdate =
       _pinUpdateBuilderUnsetDisplayUpdatePtr.asFunction<void Function(int)>();
   late final _pinUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__PinUpdateBuilder_send",
-  );
+        "__PinUpdateBuilder_send",
+      );
 
   late final _pinUpdateBuilderSend =
       _pinUpdateBuilderSendPtr.asFunction<int Function(int)>();
   late final _calendarEventTitlePtr = _lookup<
-          ffi.NativeFunction<_CalendarEventTitleReturn Function(ffi.IntPtr)>>(
-      "__CalendarEvent_title");
+    ffi.NativeFunction<_CalendarEventTitleReturn Function(ffi.IntPtr)>
+  >("__CalendarEvent_title");
 
-  late final _calendarEventTitle = _calendarEventTitlePtr
-      .asFunction<_CalendarEventTitleReturn Function(int)>();
+  late final _calendarEventTitle =
+      _calendarEventTitlePtr
+          .asFunction<_CalendarEventTitleReturn Function(int)>();
   late final _calendarEventDescriptionPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventDescriptionReturn Function(
-              ffi.IntPtr)>>("__CalendarEvent_description");
+    ffi.NativeFunction<_CalendarEventDescriptionReturn Function(ffi.IntPtr)>
+  >("__CalendarEvent_description");
 
-  late final _calendarEventDescription = _calendarEventDescriptionPtr
-      .asFunction<_CalendarEventDescriptionReturn Function(int)>();
+  late final _calendarEventDescription =
+      _calendarEventDescriptionPtr
+          .asFunction<_CalendarEventDescriptionReturn Function(int)>();
   late final _calendarEventUtcStartPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_utc_start",
-  );
+        "__CalendarEvent_utc_start",
+      );
 
   late final _calendarEventUtcStart =
       _calendarEventUtcStartPtr.asFunction<int Function(int)>();
   late final _calendarEventUtcEndPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_utc_end",
-  );
+        "__CalendarEvent_utc_end",
+      );
 
   late final _calendarEventUtcEnd =
       _calendarEventUtcEndPtr.asFunction<int Function(int)>();
   late final _calendarEventShowWithoutTimePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__CalendarEvent_show_without_time",
-  );
+        "__CalendarEvent_show_without_time",
+      );
 
   late final _calendarEventShowWithoutTime =
       _calendarEventShowWithoutTimePtr.asFunction<int Function(int)>();
   late final _calendarEventEventIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_event_id",
-  );
+        "__CalendarEvent_event_id",
+      );
 
   late final _calendarEventEventId =
       _calendarEventEventIdPtr.asFunction<int Function(int)>();
   late final _calendarEventRoomIdStrPtr = _lookup<
-          ffi
-          .NativeFunction<_CalendarEventRoomIdStrReturn Function(ffi.IntPtr)>>(
-      "__CalendarEvent_room_id_str");
+    ffi.NativeFunction<_CalendarEventRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__CalendarEvent_room_id_str");
 
-  late final _calendarEventRoomIdStr = _calendarEventRoomIdStrPtr
-      .asFunction<_CalendarEventRoomIdStrReturn Function(int)>();
+  late final _calendarEventRoomIdStr =
+      _calendarEventRoomIdStrPtr
+          .asFunction<_CalendarEventRoomIdStrReturn Function(int)>();
   late final _calendarEventSenderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_sender",
-  );
+        "__CalendarEvent_sender",
+      );
 
   late final _calendarEventSender =
       _calendarEventSenderPtr.asFunction<int Function(int)>();
   late final _calendarEventUpdateBuilderPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventUpdateBuilderReturn Function(
-              ffi.IntPtr)>>("__CalendarEvent_update_builder");
+    ffi.NativeFunction<_CalendarEventUpdateBuilderReturn Function(ffi.IntPtr)>
+  >("__CalendarEvent_update_builder");
 
-  late final _calendarEventUpdateBuilder = _calendarEventUpdateBuilderPtr
-      .asFunction<_CalendarEventUpdateBuilderReturn Function(int)>();
+  late final _calendarEventUpdateBuilder =
+      _calendarEventUpdateBuilderPtr
+          .asFunction<_CalendarEventUpdateBuilderReturn Function(int)>();
   late final _calendarEventRsvpsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_rsvps",
-  );
+        "__CalendarEvent_rsvps",
+      );
 
   late final _calendarEventRsvps =
       _calendarEventRsvpsPtr.asFunction<int Function(int)>();
   late final _calendarEventReactionsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_reactions",
-  );
+        "__CalendarEvent_reactions",
+      );
 
   late final _calendarEventReactions =
       _calendarEventReactionsPtr.asFunction<int Function(int)>();
   late final _calendarEventRespondedByMePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_responded_by_me",
-  );
+        "__CalendarEvent_responded_by_me",
+      );
 
   late final _calendarEventRespondedByMe =
       _calendarEventRespondedByMePtr.asFunction<int Function(int)>();
   late final _calendarEventParticipantsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_participants",
-  );
+        "__CalendarEvent_participants",
+      );
 
   late final _calendarEventParticipants =
       _calendarEventParticipantsPtr.asFunction<int Function(int)>();
   late final _calendarEventCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_can_redact",
-  );
+        "__CalendarEvent_can_redact",
+      );
 
   late final _calendarEventCanRedact =
       _calendarEventCanRedactPtr.asFunction<int Function(int)>();
   late final _calendarEventCommentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_comments",
-  );
+        "__CalendarEvent_comments",
+      );
 
   late final _calendarEventComments =
       _calendarEventCommentsPtr.asFunction<int Function(int)>();
   late final _calendarEventAttachmentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_attachments",
-  );
+        "__CalendarEvent_attachments",
+      );
 
   late final _calendarEventAttachments =
       _calendarEventAttachmentsPtr.asFunction<int Function(int)>();
   late final _calendarEventIcalForSharingPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventIcalForSharingReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEvent_ical_for_sharing");
+    ffi.NativeFunction<
+      _CalendarEventIcalForSharingReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEvent_ical_for_sharing");
 
   late final _calendarEventIcalForSharing =
-      _calendarEventIcalForSharingPtr.asFunction<
-          _CalendarEventIcalForSharingReturn Function(int, int, int, int)>();
+      _calendarEventIcalForSharingPtr
+          .asFunction<
+            _CalendarEventIcalForSharingReturn Function(int, int, int, int)
+          >();
   late final _calendarEventPhysicalLocationsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_physical_locations",
-  );
+        "__CalendarEvent_physical_locations",
+      );
 
   late final _calendarEventPhysicalLocations =
       _calendarEventPhysicalLocationsPtr.asFunction<int Function(int)>();
   late final _calendarEventVirtualLocationsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_virtual_locations",
-  );
+        "__CalendarEvent_virtual_locations",
+      );
 
   late final _calendarEventVirtualLocations =
       _calendarEventVirtualLocationsPtr.asFunction<int Function(int)>();
   late final _calendarEventLocationsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_locations",
-  );
+        "__CalendarEvent_locations",
+      );
 
   late final _calendarEventLocations =
       _calendarEventLocationsPtr.asFunction<int Function(int)>();
   late final _calendarEventRefDetailsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEvent_ref_details",
-  );
+        "__CalendarEvent_ref_details",
+      );
 
   late final _calendarEventRefDetails =
       _calendarEventRefDetailsPtr.asFunction<int Function(int)>();
   late final _calendarEventUpdateBuilderTitlePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CalendarEventUpdateBuilder_title");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CalendarEventUpdateBuilder_title");
 
   late final _calendarEventUpdateBuilderTitle =
       _calendarEventUpdateBuilderTitlePtr
           .asFunction<void Function(int, int, int, int)>();
   late final _calendarEventUpdateBuilderDescriptionTextPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CalendarEventUpdateBuilder_description_text");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CalendarEventUpdateBuilder_description_text");
 
   late final _calendarEventUpdateBuilderDescriptionText =
       _calendarEventUpdateBuilderDescriptionTextPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _calendarEventUpdateBuilderDescriptionHtmlPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventUpdateBuilder_description_html");
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventUpdateBuilder_description_html");
 
   late final _calendarEventUpdateBuilderDescriptionHtml =
       _calendarEventUpdateBuilderDescriptionHtmlPtr
           .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _calendarEventUpdateBuilderUtcStartFromRfc3339Ptr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventUpdateBuilderUtcStartFromRfc3339Return Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventUpdateBuilder_utc_start_from_rfc3339");
+    ffi.NativeFunction<
+      _CalendarEventUpdateBuilderUtcStartFromRfc3339Return Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventUpdateBuilder_utc_start_from_rfc3339");
 
   late final _calendarEventUpdateBuilderUtcStartFromRfc3339 =
-      _calendarEventUpdateBuilderUtcStartFromRfc3339Ptr.asFunction<
-          _CalendarEventUpdateBuilderUtcStartFromRfc3339Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventUpdateBuilderUtcStartFromRfc3339Ptr
+          .asFunction<
+            _CalendarEventUpdateBuilderUtcStartFromRfc3339Return Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventUpdateBuilderUtcStartFromRfc2822Ptr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventUpdateBuilderUtcStartFromRfc2822Return Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventUpdateBuilder_utc_start_from_rfc2822");
+    ffi.NativeFunction<
+      _CalendarEventUpdateBuilderUtcStartFromRfc2822Return Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventUpdateBuilder_utc_start_from_rfc2822");
 
   late final _calendarEventUpdateBuilderUtcStartFromRfc2822 =
-      _calendarEventUpdateBuilderUtcStartFromRfc2822Ptr.asFunction<
-          _CalendarEventUpdateBuilderUtcStartFromRfc2822Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventUpdateBuilderUtcStartFromRfc2822Ptr
+          .asFunction<
+            _CalendarEventUpdateBuilderUtcStartFromRfc2822Return Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventUpdateBuilderUtcStartFromFormatPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventUpdateBuilderUtcStartFromFormatReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventUpdateBuilder_utc_start_from_format");
+    ffi.NativeFunction<
+      _CalendarEventUpdateBuilderUtcStartFromFormatReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventUpdateBuilder_utc_start_from_format");
 
   late final _calendarEventUpdateBuilderUtcStartFromFormat =
-      _calendarEventUpdateBuilderUtcStartFromFormatPtr.asFunction<
-          _CalendarEventUpdateBuilderUtcStartFromFormatReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventUpdateBuilderUtcStartFromFormatPtr
+          .asFunction<
+            _CalendarEventUpdateBuilderUtcStartFromFormatReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventUpdateBuilderUtcEndFromRfc3339Ptr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventUpdateBuilderUtcEndFromRfc3339Return Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventUpdateBuilder_utc_end_from_rfc3339");
+    ffi.NativeFunction<
+      _CalendarEventUpdateBuilderUtcEndFromRfc3339Return Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventUpdateBuilder_utc_end_from_rfc3339");
 
   late final _calendarEventUpdateBuilderUtcEndFromRfc3339 =
-      _calendarEventUpdateBuilderUtcEndFromRfc3339Ptr.asFunction<
-          _CalendarEventUpdateBuilderUtcEndFromRfc3339Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventUpdateBuilderUtcEndFromRfc3339Ptr
+          .asFunction<
+            _CalendarEventUpdateBuilderUtcEndFromRfc3339Return Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventUpdateBuilderUtcEndFromRfc2822Ptr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventUpdateBuilderUtcEndFromRfc2822Return Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventUpdateBuilder_utc_end_from_rfc2822");
+    ffi.NativeFunction<
+      _CalendarEventUpdateBuilderUtcEndFromRfc2822Return Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventUpdateBuilder_utc_end_from_rfc2822");
 
   late final _calendarEventUpdateBuilderUtcEndFromRfc2822 =
-      _calendarEventUpdateBuilderUtcEndFromRfc2822Ptr.asFunction<
-          _CalendarEventUpdateBuilderUtcEndFromRfc2822Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventUpdateBuilderUtcEndFromRfc2822Ptr
+          .asFunction<
+            _CalendarEventUpdateBuilderUtcEndFromRfc2822Return Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventUpdateBuilderUtcEndFromFormatPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventUpdateBuilderUtcEndFromFormatReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventUpdateBuilder_utc_end_from_format");
+    ffi.NativeFunction<
+      _CalendarEventUpdateBuilderUtcEndFromFormatReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventUpdateBuilder_utc_end_from_format");
 
   late final _calendarEventUpdateBuilderUtcEndFromFormat =
-      _calendarEventUpdateBuilderUtcEndFromFormatPtr.asFunction<
-          _CalendarEventUpdateBuilderUtcEndFromFormatReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventUpdateBuilderUtcEndFromFormatPtr
+          .asFunction<
+            _CalendarEventUpdateBuilderUtcEndFromFormatReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventUpdateBuilderUnsetLocationsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__CalendarEventUpdateBuilder_unset_locations",
-  );
+        "__CalendarEventUpdateBuilder_unset_locations",
+      );
 
   late final _calendarEventUpdateBuilderUnsetLocations =
       _calendarEventUpdateBuilderUnsetLocationsPtr
           .asFunction<void Function(int)>();
   late final _calendarEventUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEventUpdateBuilder_send",
-  );
+        "__CalendarEventUpdateBuilder_send",
+      );
 
   late final _calendarEventUpdateBuilderSend =
       _calendarEventUpdateBuilderSendPtr.asFunction<int Function(int)>();
   late final _calendarEventDraftTitlePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CalendarEventDraft_title");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CalendarEventDraft_title");
 
-  late final _calendarEventDraftTitle = _calendarEventDraftTitlePtr
-      .asFunction<void Function(int, int, int, int)>();
+  late final _calendarEventDraftTitle =
+      _calendarEventDraftTitlePtr
+          .asFunction<void Function(int, int, int, int)>();
   late final _calendarEventDraftDescriptionTextPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CalendarEventDraft_description_text");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CalendarEventDraft_description_text");
 
   late final _calendarEventDraftDescriptionText =
       _calendarEventDraftDescriptionTextPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _calendarEventDraftDescriptionHtmlPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventDraft_description_html");
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventDraft_description_html");
 
   late final _calendarEventDraftDescriptionHtml =
       _calendarEventDraftDescriptionHtmlPtr
           .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _calendarEventDraftUnsetDescriptionPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__CalendarEventDraft_unset_description",
-  );
+        "__CalendarEventDraft_unset_description",
+      );
 
   late final _calendarEventDraftUnsetDescription =
       _calendarEventDraftUnsetDescriptionPtr.asFunction<void Function(int)>();
   late final _calendarEventDraftUtcStartFromRfc3339Ptr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventDraftUtcStartFromRfc3339Return Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventDraft_utc_start_from_rfc3339");
+    ffi.NativeFunction<
+      _CalendarEventDraftUtcStartFromRfc3339Return Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventDraft_utc_start_from_rfc3339");
 
   late final _calendarEventDraftUtcStartFromRfc3339 =
-      _calendarEventDraftUtcStartFromRfc3339Ptr.asFunction<
-          _CalendarEventDraftUtcStartFromRfc3339Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventDraftUtcStartFromRfc3339Ptr
+          .asFunction<
+            _CalendarEventDraftUtcStartFromRfc3339Return Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventDraftUtcStartFromRfc2822Ptr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventDraftUtcStartFromRfc2822Return Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventDraft_utc_start_from_rfc2822");
+    ffi.NativeFunction<
+      _CalendarEventDraftUtcStartFromRfc2822Return Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventDraft_utc_start_from_rfc2822");
 
   late final _calendarEventDraftUtcStartFromRfc2822 =
-      _calendarEventDraftUtcStartFromRfc2822Ptr.asFunction<
-          _CalendarEventDraftUtcStartFromRfc2822Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventDraftUtcStartFromRfc2822Ptr
+          .asFunction<
+            _CalendarEventDraftUtcStartFromRfc2822Return Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventDraftUtcStartFromFormatPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventDraftUtcStartFromFormatReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventDraft_utc_start_from_format");
+    ffi.NativeFunction<
+      _CalendarEventDraftUtcStartFromFormatReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventDraft_utc_start_from_format");
 
   late final _calendarEventDraftUtcStartFromFormat =
-      _calendarEventDraftUtcStartFromFormatPtr.asFunction<
-          _CalendarEventDraftUtcStartFromFormatReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventDraftUtcStartFromFormatPtr
+          .asFunction<
+            _CalendarEventDraftUtcStartFromFormatReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventDraftUtcEndFromRfc3339Ptr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventDraftUtcEndFromRfc3339Return Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventDraft_utc_end_from_rfc3339");
+    ffi.NativeFunction<
+      _CalendarEventDraftUtcEndFromRfc3339Return Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventDraft_utc_end_from_rfc3339");
 
   late final _calendarEventDraftUtcEndFromRfc3339 =
-      _calendarEventDraftUtcEndFromRfc3339Ptr.asFunction<
-          _CalendarEventDraftUtcEndFromRfc3339Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventDraftUtcEndFromRfc3339Ptr
+          .asFunction<
+            _CalendarEventDraftUtcEndFromRfc3339Return Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventDraftUtcEndFromRfc2822Ptr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventDraftUtcEndFromRfc2822Return Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventDraft_utc_end_from_rfc2822");
+    ffi.NativeFunction<
+      _CalendarEventDraftUtcEndFromRfc2822Return Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventDraft_utc_end_from_rfc2822");
 
   late final _calendarEventDraftUtcEndFromRfc2822 =
-      _calendarEventDraftUtcEndFromRfc2822Ptr.asFunction<
-          _CalendarEventDraftUtcEndFromRfc2822Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventDraftUtcEndFromRfc2822Ptr
+          .asFunction<
+            _CalendarEventDraftUtcEndFromRfc2822Return Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventDraftUtcEndFromFormatPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventDraftUtcEndFromFormatReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventDraft_utc_end_from_format");
+    ffi.NativeFunction<
+      _CalendarEventDraftUtcEndFromFormatReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventDraft_utc_end_from_format");
 
   late final _calendarEventDraftUtcEndFromFormat =
-      _calendarEventDraftUtcEndFromFormatPtr.asFunction<
-          _CalendarEventDraftUtcEndFromFormatReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventDraftUtcEndFromFormatPtr
+          .asFunction<
+            _CalendarEventDraftUtcEndFromFormatReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventDraftPhysicalLocationPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventDraftPhysicalLocationReturn Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventDraft_physical_location");
+    ffi.NativeFunction<
+      _CalendarEventDraftPhysicalLocationReturn Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventDraft_physical_location");
 
   late final _calendarEventDraftPhysicalLocation =
-      _calendarEventDraftPhysicalLocationPtr.asFunction<
-          _CalendarEventDraftPhysicalLocationReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventDraftPhysicalLocationPtr
+          .asFunction<
+            _CalendarEventDraftPhysicalLocationReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventDraftVirtualLocationPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventDraftVirtualLocationReturn Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CalendarEventDraft_virtual_location");
+    ffi.NativeFunction<
+      _CalendarEventDraftVirtualLocationReturn Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventDraft_virtual_location");
 
   late final _calendarEventDraftVirtualLocation =
-      _calendarEventDraftVirtualLocationPtr.asFunction<
-          _CalendarEventDraftVirtualLocationReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventDraftVirtualLocationPtr
+          .asFunction<
+            _CalendarEventDraftVirtualLocationReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CalendarEventDraft_send",
-  );
+        "__CalendarEventDraft_send",
+      );
 
   late final _calendarEventDraftSend =
       _calendarEventDraftSendPtr.asFunction<int Function(int)>();
   late final _eventLocationInfoLocationTypePtr = _lookup<
-      ffi.NativeFunction<
-          _EventLocationInfoLocationTypeReturn Function(
-              ffi.IntPtr)>>("__EventLocationInfo_location_type");
+    ffi.NativeFunction<
+      _EventLocationInfoLocationTypeReturn Function(ffi.IntPtr)
+    >
+  >("__EventLocationInfo_location_type");
 
-  late final _eventLocationInfoLocationType = _eventLocationInfoLocationTypePtr
-      .asFunction<_EventLocationInfoLocationTypeReturn Function(int)>();
+  late final _eventLocationInfoLocationType =
+      _eventLocationInfoLocationTypePtr
+          .asFunction<_EventLocationInfoLocationTypeReturn Function(int)>();
   late final _eventLocationInfoNamePtr = _lookup<
-          ffi
-          .NativeFunction<_EventLocationInfoNameReturn Function(ffi.IntPtr)>>(
-      "__EventLocationInfo_name");
+    ffi.NativeFunction<_EventLocationInfoNameReturn Function(ffi.IntPtr)>
+  >("__EventLocationInfo_name");
 
-  late final _eventLocationInfoName = _eventLocationInfoNamePtr
-      .asFunction<_EventLocationInfoNameReturn Function(int)>();
+  late final _eventLocationInfoName =
+      _eventLocationInfoNamePtr
+          .asFunction<_EventLocationInfoNameReturn Function(int)>();
   late final _eventLocationInfoDescriptionPtr = _lookup<
-      ffi.NativeFunction<
-          _EventLocationInfoDescriptionReturn Function(
-              ffi.IntPtr)>>("__EventLocationInfo_description");
+    ffi.NativeFunction<_EventLocationInfoDescriptionReturn Function(ffi.IntPtr)>
+  >("__EventLocationInfo_description");
 
-  late final _eventLocationInfoDescription = _eventLocationInfoDescriptionPtr
-      .asFunction<_EventLocationInfoDescriptionReturn Function(int)>();
+  late final _eventLocationInfoDescription =
+      _eventLocationInfoDescriptionPtr
+          .asFunction<_EventLocationInfoDescriptionReturn Function(int)>();
   late final _eventLocationInfoCoordinatesPtr = _lookup<
-      ffi.NativeFunction<
-          _EventLocationInfoCoordinatesReturn Function(
-              ffi.IntPtr)>>("__EventLocationInfo_coordinates");
+    ffi.NativeFunction<_EventLocationInfoCoordinatesReturn Function(ffi.IntPtr)>
+  >("__EventLocationInfo_coordinates");
 
-  late final _eventLocationInfoCoordinates = _eventLocationInfoCoordinatesPtr
-      .asFunction<_EventLocationInfoCoordinatesReturn Function(int)>();
+  late final _eventLocationInfoCoordinates =
+      _eventLocationInfoCoordinatesPtr
+          .asFunction<_EventLocationInfoCoordinatesReturn Function(int)>();
   late final _eventLocationInfoUriPtr = _lookup<
-          ffi.NativeFunction<_EventLocationInfoUriReturn Function(ffi.IntPtr)>>(
-      "__EventLocationInfo_uri");
+    ffi.NativeFunction<_EventLocationInfoUriReturn Function(ffi.IntPtr)>
+  >("__EventLocationInfo_uri");
 
-  late final _eventLocationInfoUri = _eventLocationInfoUriPtr
-      .asFunction<_EventLocationInfoUriReturn Function(int)>();
+  late final _eventLocationInfoUri =
+      _eventLocationInfoUriPtr
+          .asFunction<_EventLocationInfoUriReturn Function(int)>();
   late final _rsvpManagerHasRsvpEntriesPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__RsvpManager_has_rsvp_entries",
-  );
+        "__RsvpManager_has_rsvp_entries",
+      );
 
   late final _rsvpManagerHasRsvpEntries =
       _rsvpManagerHasRsvpEntriesPtr.asFunction<int Function(int)>();
   late final _rsvpManagerTotalRsvpCountPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__RsvpManager_total_rsvp_count",
-  );
+        "__RsvpManager_total_rsvp_count",
+      );
 
   late final _rsvpManagerTotalRsvpCount =
       _rsvpManagerTotalRsvpCountPtr.asFunction<int Function(int)>();
   late final _rsvpManagerRsvpEntriesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__RsvpManager_rsvp_entries",
-  );
+        "__RsvpManager_rsvp_entries",
+      );
 
   late final _rsvpManagerRsvpEntries =
       _rsvpManagerRsvpEntriesPtr.asFunction<int Function(int)>();
   late final _rsvpManagerRespondedByMePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__RsvpManager_responded_by_me",
-  );
+        "__RsvpManager_responded_by_me",
+      );
 
   late final _rsvpManagerRespondedByMe =
       _rsvpManagerRespondedByMePtr.asFunction<int Function(int)>();
   late final _rsvpManagerCountAtStatusPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__RsvpManager_count_at_status");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__RsvpManager_count_at_status");
 
-  late final _rsvpManagerCountAtStatus = _rsvpManagerCountAtStatusPtr
-      .asFunction<int Function(int, int, int, int)>();
+  late final _rsvpManagerCountAtStatus =
+      _rsvpManagerCountAtStatusPtr
+          .asFunction<int Function(int, int, int, int)>();
   late final _rsvpManagerUsersAtStatusPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__RsvpManager_users_at_status");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__RsvpManager_users_at_status");
 
-  late final _rsvpManagerUsersAtStatus = _rsvpManagerUsersAtStatusPtr
-      .asFunction<int Function(int, int, int, int)>();
+  late final _rsvpManagerUsersAtStatus =
+      _rsvpManagerUsersAtStatusPtr
+          .asFunction<int Function(int, int, int, int)>();
   late final _rsvpManagerRsvpDraftPtr = _lookup<
-          ffi.NativeFunction<_RsvpManagerRsvpDraftReturn Function(ffi.IntPtr)>>(
-      "__RsvpManager_rsvp_draft");
+    ffi.NativeFunction<_RsvpManagerRsvpDraftReturn Function(ffi.IntPtr)>
+  >("__RsvpManager_rsvp_draft");
 
-  late final _rsvpManagerRsvpDraft = _rsvpManagerRsvpDraftPtr
-      .asFunction<_RsvpManagerRsvpDraftReturn Function(int)>();
+  late final _rsvpManagerRsvpDraft =
+      _rsvpManagerRsvpDraftPtr
+          .asFunction<_RsvpManagerRsvpDraftReturn Function(int)>();
   late final _rsvpManagerSubscribeStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__RsvpManager_subscribe_stream",
-  );
+        "__RsvpManager_subscribe_stream",
+      );
 
   late final _rsvpManagerSubscribeStream =
       _rsvpManagerSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _rsvpDraftStatusPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__RsvpDraft_status");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__RsvpDraft_status");
 
   late final _rsvpDraftStatus =
       _rsvpDraftStatusPtr.asFunction<void Function(int, int, int, int)>();
   late final _rsvpDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__RsvpDraft_send",
-  );
+        "__RsvpDraft_send",
+      );
 
   late final _rsvpDraftSend = _rsvpDraftSendPtr.asFunction<int Function(int)>();
   late final _rsvpSenderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Rsvp_sender",
-  );
+        "__Rsvp_sender",
+      );
 
   late final _rsvpSender = _rsvpSenderPtr.asFunction<int Function(int)>();
   late final _rsvpOriginServerTsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__Rsvp_origin_server_ts",
-  );
+        "__Rsvp_origin_server_ts",
+      );
 
   late final _rsvpOriginServerTs =
       _rsvpOriginServerTsPtr.asFunction<int Function(int)>();
   late final _rsvpStatusPtr =
       _lookup<ffi.NativeFunction<_RsvpStatusReturn Function(ffi.IntPtr)>>(
-    "__Rsvp_status",
-  );
+        "__Rsvp_status",
+      );
 
   late final _rsvpStatus =
       _rsvpStatusPtr.asFunction<_RsvpStatusReturn Function(int)>();
   late final _reactionManagerLikesCountPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__ReactionManager_likes_count",
-  );
+        "__ReactionManager_likes_count",
+      );
 
   late final _reactionManagerLikesCount =
       _reactionManagerLikesCountPtr.asFunction<int Function(int)>();
   late final _reactionManagerLikedByMePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__ReactionManager_liked_by_me",
-  );
+        "__ReactionManager_liked_by_me",
+      );
 
   late final _reactionManagerLikedByMe =
       _reactionManagerLikedByMePtr.asFunction<int Function(int)>();
   late final _reactionManagerReactedByMePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__ReactionManager_reacted_by_me",
-  );
+        "__ReactionManager_reacted_by_me",
+      );
 
   late final _reactionManagerReactedByMe =
       _reactionManagerReactedByMePtr.asFunction<int Function(int)>();
   late final _reactionManagerHasReactionEntriesPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__ReactionManager_has_reaction_entries",
-  );
+        "__ReactionManager_has_reaction_entries",
+      );
 
   late final _reactionManagerHasReactionEntries =
       _reactionManagerHasReactionEntriesPtr.asFunction<int Function(int)>();
   late final _reactionManagerTotalReactionCountPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__ReactionManager_total_reaction_count",
-  );
+        "__ReactionManager_total_reaction_count",
+      );
 
   late final _reactionManagerTotalReactionCount =
       _reactionManagerTotalReactionCountPtr.asFunction<int Function(int)>();
   late final _reactionManagerReactionEntriesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ReactionManager_reaction_entries",
-  );
+        "__ReactionManager_reaction_entries",
+      );
 
   late final _reactionManagerReactionEntries =
       _reactionManagerReactionEntriesPtr.asFunction<int Function(int)>();
   late final _reactionManagerSendLikePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ReactionManager_send_like",
-  );
+        "__ReactionManager_send_like",
+      );
 
   late final _reactionManagerSendLike =
       _reactionManagerSendLikePtr.asFunction<int Function(int)>();
   late final _reactionManagerSendReactionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__ReactionManager_send_reaction");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__ReactionManager_send_reaction");
 
-  late final _reactionManagerSendReaction = _reactionManagerSendReactionPtr
-      .asFunction<int Function(int, int, int, int)>();
+  late final _reactionManagerSendReaction =
+      _reactionManagerSendReactionPtr
+          .asFunction<int Function(int, int, int, int)>();
   late final _reactionManagerRedactLikePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__ReactionManager_redact_like");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__ReactionManager_redact_like");
 
-  late final _reactionManagerRedactLike = _reactionManagerRedactLikePtr
-      .asFunction<int Function(int, int, int, int, int, int, int, int, int)>();
+  late final _reactionManagerRedactLike =
+      _reactionManagerRedactLikePtr
+          .asFunction<
+            int Function(int, int, int, int, int, int, int, int, int)
+          >();
   late final _reactionManagerRedactReactionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__ReactionManager_redact_reaction");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__ReactionManager_redact_reaction");
 
   late final _reactionManagerRedactReaction =
-      _reactionManagerRedactReactionPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _reactionManagerRedactReactionPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _reactionManagerSubscribeStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ReactionManager_subscribe_stream",
-  );
+        "__ReactionManager_subscribe_stream",
+      );
 
   late final _reactionManagerSubscribeStream =
       _reactionManagerSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _reactionManagerReloadPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ReactionManager_reload",
-  );
+        "__ReactionManager_reload",
+      );
 
   late final _reactionManagerReload =
       _reactionManagerReloadPtr.asFunction<int Function(int)>();
   late final _reactionEventIdStrPtr = _lookup<
-          ffi.NativeFunction<_ReactionEventIdStrReturn Function(ffi.IntPtr)>>(
-      "__Reaction_event_id_str");
+    ffi.NativeFunction<_ReactionEventIdStrReturn Function(ffi.IntPtr)>
+  >("__Reaction_event_id_str");
 
-  late final _reactionEventIdStr = _reactionEventIdStrPtr
-      .asFunction<_ReactionEventIdStrReturn Function(int)>();
+  late final _reactionEventIdStr =
+      _reactionEventIdStrPtr
+          .asFunction<_ReactionEventIdStrReturn Function(int)>();
   late final _reactionSenderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Reaction_sender",
-  );
+        "__Reaction_sender",
+      );
 
   late final _reactionSender =
       _reactionSenderPtr.asFunction<int Function(int)>();
   late final _reactionOriginServerTsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__Reaction_origin_server_ts",
-  );
+        "__Reaction_origin_server_ts",
+      );
 
   late final _reactionOriginServerTs =
       _reactionOriginServerTsPtr.asFunction<int Function(int)>();
   late final _reactionRelatesToPtr = _lookup<
-          ffi.NativeFunction<_ReactionRelatesToReturn Function(ffi.IntPtr)>>(
-      "__Reaction_relates_to");
+    ffi.NativeFunction<_ReactionRelatesToReturn Function(ffi.IntPtr)>
+  >("__Reaction_relates_to");
 
-  late final _reactionRelatesTo = _reactionRelatesToPtr
-      .asFunction<_ReactionRelatesToReturn Function(int)>();
+  late final _reactionRelatesTo =
+      _reactionRelatesToPtr
+          .asFunction<_ReactionRelatesToReturn Function(int)>();
   late final _readReceiptsManagerAnnounceReadPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ReadReceiptsManager_announce_read",
-  );
+        "__ReadReceiptsManager_announce_read",
+      );
 
   late final _readReceiptsManagerAnnounceRead =
       _readReceiptsManagerAnnounceReadPtr.asFunction<int Function(int)>();
   late final _readReceiptsManagerReadCountPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__ReadReceiptsManager_read_count",
-  );
+        "__ReadReceiptsManager_read_count",
+      );
 
   late final _readReceiptsManagerReadCount =
       _readReceiptsManagerReadCountPtr.asFunction<int Function(int)>();
   late final _readReceiptsManagerReadByMePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__ReadReceiptsManager_read_by_me",
-  );
+        "__ReadReceiptsManager_read_by_me",
+      );
 
   late final _readReceiptsManagerReadByMe =
       _readReceiptsManagerReadByMePtr.asFunction<int Function(int)>();
   late final _readReceiptsManagerSubscribeStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ReadReceiptsManager_subscribe_stream",
-  );
+        "__ReadReceiptsManager_subscribe_stream",
+      );
 
   late final _readReceiptsManagerSubscribeStream =
       _readReceiptsManagerSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _readReceiptsManagerReloadPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ReadReceiptsManager_reload",
-  );
+        "__ReadReceiptsManager_reload",
+      );
 
   late final _readReceiptsManagerReload =
       _readReceiptsManagerReloadPtr.asFunction<int Function(int)>();
   late final _eventSendStateStatePtr = _lookup<
-          ffi.NativeFunction<_EventSendStateStateReturn Function(ffi.IntPtr)>>(
-      "__EventSendState_state");
+    ffi.NativeFunction<_EventSendStateStateReturn Function(ffi.IntPtr)>
+  >("__EventSendState_state");
 
-  late final _eventSendStateState = _eventSendStateStatePtr
-      .asFunction<_EventSendStateStateReturn Function(int)>();
+  late final _eventSendStateState =
+      _eventSendStateStatePtr
+          .asFunction<_EventSendStateStateReturn Function(int)>();
   late final _eventSendStateErrorPtr = _lookup<
-          ffi.NativeFunction<_EventSendStateErrorReturn Function(ffi.IntPtr)>>(
-      "__EventSendState_error");
+    ffi.NativeFunction<_EventSendStateErrorReturn Function(ffi.IntPtr)>
+  >("__EventSendState_error");
 
-  late final _eventSendStateError = _eventSendStateErrorPtr
-      .asFunction<_EventSendStateErrorReturn Function(int)>();
+  late final _eventSendStateError =
+      _eventSendStateErrorPtr
+          .asFunction<_EventSendStateErrorReturn Function(int)>();
   late final _eventSendStateEventIdPtr = _lookup<
-          ffi
-          .NativeFunction<_EventSendStateEventIdReturn Function(ffi.IntPtr)>>(
-      "__EventSendState_event_id");
+    ffi.NativeFunction<_EventSendStateEventIdReturn Function(ffi.IntPtr)>
+  >("__EventSendState_event_id");
 
-  late final _eventSendStateEventId = _eventSendStateEventIdPtr
-      .asFunction<_EventSendStateEventIdReturn Function(int)>();
+  late final _eventSendStateEventId =
+      _eventSendStateEventIdPtr
+          .asFunction<_EventSendStateEventIdReturn Function(int)>();
   late final _eventSendStateAbortPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__EventSendState_abort",
-  );
+        "__EventSendState_abort",
+      );
 
   late final _eventSendStateAbort =
       _eventSendStateAbortPtr.asFunction<int Function(int)>();
   late final _roomEventItemSenderPtr = _lookup<
-          ffi.NativeFunction<_RoomEventItemSenderReturn Function(ffi.IntPtr)>>(
-      "__RoomEventItem_sender");
+    ffi.NativeFunction<_RoomEventItemSenderReturn Function(ffi.IntPtr)>
+  >("__RoomEventItem_sender");
 
-  late final _roomEventItemSender = _roomEventItemSenderPtr
-      .asFunction<_RoomEventItemSenderReturn Function(int)>();
+  late final _roomEventItemSender =
+      _roomEventItemSenderPtr
+          .asFunction<_RoomEventItemSenderReturn Function(int)>();
   late final _roomEventItemSendStatePtr = _lookup<
-          ffi
-          .NativeFunction<_RoomEventItemSendStateReturn Function(ffi.IntPtr)>>(
-      "__RoomEventItem_send_state");
+    ffi.NativeFunction<_RoomEventItemSendStateReturn Function(ffi.IntPtr)>
+  >("__RoomEventItem_send_state");
 
-  late final _roomEventItemSendState = _roomEventItemSendStatePtr
-      .asFunction<_RoomEventItemSendStateReturn Function(int)>();
+  late final _roomEventItemSendState =
+      _roomEventItemSendStatePtr
+          .asFunction<_RoomEventItemSendStateReturn Function(int)>();
   late final _roomEventItemOriginServerTsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__RoomEventItem_origin_server_ts",
-  );
+        "__RoomEventItem_origin_server_ts",
+      );
 
   late final _roomEventItemOriginServerTs =
       _roomEventItemOriginServerTsPtr.asFunction<int Function(int)>();
   late final _roomEventItemEventTypePtr = _lookup<
-          ffi
-          .NativeFunction<_RoomEventItemEventTypeReturn Function(ffi.IntPtr)>>(
-      "__RoomEventItem_event_type");
+    ffi.NativeFunction<_RoomEventItemEventTypeReturn Function(ffi.IntPtr)>
+  >("__RoomEventItem_event_type");
 
-  late final _roomEventItemEventType = _roomEventItemEventTypePtr
-      .asFunction<_RoomEventItemEventTypeReturn Function(int)>();
+  late final _roomEventItemEventType =
+      _roomEventItemEventTypePtr
+          .asFunction<_RoomEventItemEventTypeReturn Function(int)>();
   late final _roomEventItemEventIdPtr = _lookup<
-          ffi.NativeFunction<_RoomEventItemEventIdReturn Function(ffi.IntPtr)>>(
-      "__RoomEventItem_event_id");
+    ffi.NativeFunction<_RoomEventItemEventIdReturn Function(ffi.IntPtr)>
+  >("__RoomEventItem_event_id");
 
-  late final _roomEventItemEventId = _roomEventItemEventIdPtr
-      .asFunction<_RoomEventItemEventIdReturn Function(int)>();
+  late final _roomEventItemEventId =
+      _roomEventItemEventIdPtr
+          .asFunction<_RoomEventItemEventIdReturn Function(int)>();
   late final _roomEventItemMsgTypePtr = _lookup<
-          ffi.NativeFunction<_RoomEventItemMsgTypeReturn Function(ffi.IntPtr)>>(
-      "__RoomEventItem_msg_type");
+    ffi.NativeFunction<_RoomEventItemMsgTypeReturn Function(ffi.IntPtr)>
+  >("__RoomEventItem_msg_type");
 
-  late final _roomEventItemMsgType = _roomEventItemMsgTypePtr
-      .asFunction<_RoomEventItemMsgTypeReturn Function(int)>();
+  late final _roomEventItemMsgType =
+      _roomEventItemMsgTypePtr
+          .asFunction<_RoomEventItemMsgTypeReturn Function(int)>();
   late final _roomEventItemMsgContentPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomEventItemMsgContentReturn Function(ffi.IntPtr)>>(
-      "__RoomEventItem_msg_content");
+    ffi.NativeFunction<_RoomEventItemMsgContentReturn Function(ffi.IntPtr)>
+  >("__RoomEventItem_msg_content");
 
-  late final _roomEventItemMsgContent = _roomEventItemMsgContentPtr
-      .asFunction<_RoomEventItemMsgContentReturn Function(int)>();
+  late final _roomEventItemMsgContent =
+      _roomEventItemMsgContentPtr
+          .asFunction<_RoomEventItemMsgContentReturn Function(int)>();
   late final _roomEventItemInReplyToPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomEventItemInReplyToReturn Function(ffi.IntPtr)>>(
-      "__RoomEventItem_in_reply_to");
+    ffi.NativeFunction<_RoomEventItemInReplyToReturn Function(ffi.IntPtr)>
+  >("__RoomEventItem_in_reply_to");
 
-  late final _roomEventItemInReplyTo = _roomEventItemInReplyToPtr
-      .asFunction<_RoomEventItemInReplyToReturn Function(int)>();
+  late final _roomEventItemInReplyTo =
+      _roomEventItemInReplyToPtr
+          .asFunction<_RoomEventItemInReplyToReturn Function(int)>();
   late final _roomEventItemReadUsersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__RoomEventItem_read_users",
-  );
+        "__RoomEventItem_read_users",
+      );
 
   late final _roomEventItemReadUsers =
       _roomEventItemReadUsersPtr.asFunction<int Function(int)>();
   late final _roomEventItemReceiptTsPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomEventItemReceiptTsReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__RoomEventItem_receipt_ts");
+    ffi.NativeFunction<
+      _RoomEventItemReceiptTsReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__RoomEventItem_receipt_ts");
 
-  late final _roomEventItemReceiptTs = _roomEventItemReceiptTsPtr
-      .asFunction<_RoomEventItemReceiptTsReturn Function(int, int, int, int)>();
+  late final _roomEventItemReceiptTs =
+      _roomEventItemReceiptTsPtr
+          .asFunction<
+            _RoomEventItemReceiptTsReturn Function(int, int, int, int)
+          >();
   late final _roomEventItemReactionKeysPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__RoomEventItem_reaction_keys",
-  );
+        "__RoomEventItem_reaction_keys",
+      );
 
   late final _roomEventItemReactionKeys =
       _roomEventItemReactionKeysPtr.asFunction<int Function(int)>();
   late final _roomEventItemReactionRecordsPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomEventItemReactionRecordsReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__RoomEventItem_reaction_records");
+    ffi.NativeFunction<
+      _RoomEventItemReactionRecordsReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__RoomEventItem_reaction_records");
 
   late final _roomEventItemReactionRecords =
-      _roomEventItemReactionRecordsPtr.asFunction<
-          _RoomEventItemReactionRecordsReturn Function(int, int, int, int)>();
+      _roomEventItemReactionRecordsPtr
+          .asFunction<
+            _RoomEventItemReactionRecordsReturn Function(int, int, int, int)
+          >();
   late final _roomEventItemIsEditablePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__RoomEventItem_is_editable",
-  );
+        "__RoomEventItem_is_editable",
+      );
 
   late final _roomEventItemIsEditable =
       _roomEventItemIsEditablePtr.asFunction<int Function(int)>();
   late final _roomEventItemWasEditedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__RoomEventItem_was_edited",
-  );
+        "__RoomEventItem_was_edited",
+      );
 
   late final _roomEventItemWasEdited =
       _roomEventItemWasEditedPtr.asFunction<int Function(int)>();
   late final _roomVirtualItemEventTypePtr = _lookup<
-      ffi.NativeFunction<
-          _RoomVirtualItemEventTypeReturn Function(
-              ffi.IntPtr)>>("__RoomVirtualItem_event_type");
+    ffi.NativeFunction<_RoomVirtualItemEventTypeReturn Function(ffi.IntPtr)>
+  >("__RoomVirtualItem_event_type");
 
-  late final _roomVirtualItemEventType = _roomVirtualItemEventTypePtr
-      .asFunction<_RoomVirtualItemEventTypeReturn Function(int)>();
+  late final _roomVirtualItemEventType =
+      _roomVirtualItemEventTypePtr
+          .asFunction<_RoomVirtualItemEventTypeReturn Function(int)>();
   late final _roomVirtualItemDescPtr = _lookup<
-          ffi.NativeFunction<_RoomVirtualItemDescReturn Function(ffi.IntPtr)>>(
-      "__RoomVirtualItem_desc");
+    ffi.NativeFunction<_RoomVirtualItemDescReturn Function(ffi.IntPtr)>
+  >("__RoomVirtualItem_desc");
 
-  late final _roomVirtualItemDesc = _roomVirtualItemDescPtr
-      .asFunction<_RoomVirtualItemDescReturn Function(int)>();
+  late final _roomVirtualItemDesc =
+      _roomVirtualItemDescPtr
+          .asFunction<_RoomVirtualItemDescReturn Function(int)>();
   late final _roomMessageItemTypePtr = _lookup<
-          ffi.NativeFunction<_RoomMessageItemTypeReturn Function(ffi.IntPtr)>>(
-      "__RoomMessage_item_type");
+    ffi.NativeFunction<_RoomMessageItemTypeReturn Function(ffi.IntPtr)>
+  >("__RoomMessage_item_type");
 
-  late final _roomMessageItemType = _roomMessageItemTypePtr
-      .asFunction<_RoomMessageItemTypeReturn Function(int)>();
+  late final _roomMessageItemType =
+      _roomMessageItemTypePtr
+          .asFunction<_RoomMessageItemTypeReturn Function(int)>();
   late final _roomMessageUniqueIdPtr = _lookup<
-          ffi.NativeFunction<_RoomMessageUniqueIdReturn Function(ffi.IntPtr)>>(
-      "__RoomMessage_unique_id");
+    ffi.NativeFunction<_RoomMessageUniqueIdReturn Function(ffi.IntPtr)>
+  >("__RoomMessage_unique_id");
 
-  late final _roomMessageUniqueId = _roomMessageUniqueIdPtr
-      .asFunction<_RoomMessageUniqueIdReturn Function(int)>();
+  late final _roomMessageUniqueId =
+      _roomMessageUniqueIdPtr
+          .asFunction<_RoomMessageUniqueIdReturn Function(int)>();
   late final _roomMessageEventItemPtr = _lookup<
-          ffi.NativeFunction<_RoomMessageEventItemReturn Function(ffi.IntPtr)>>(
-      "__RoomMessage_event_item");
+    ffi.NativeFunction<_RoomMessageEventItemReturn Function(ffi.IntPtr)>
+  >("__RoomMessage_event_item");
 
-  late final _roomMessageEventItem = _roomMessageEventItemPtr
-      .asFunction<_RoomMessageEventItemReturn Function(int)>();
+  late final _roomMessageEventItem =
+      _roomMessageEventItemPtr
+          .asFunction<_RoomMessageEventItemReturn Function(int)>();
   late final _roomMessageVirtualItemPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomMessageVirtualItemReturn Function(ffi.IntPtr)>>(
-      "__RoomMessage_virtual_item");
+    ffi.NativeFunction<_RoomMessageVirtualItemReturn Function(ffi.IntPtr)>
+  >("__RoomMessage_virtual_item");
 
-  late final _roomMessageVirtualItem = _roomMessageVirtualItemPtr
-      .asFunction<_RoomMessageVirtualItemReturn Function(int)>();
+  late final _roomMessageVirtualItem =
+      _roomMessageVirtualItemPtr
+          .asFunction<_RoomMessageVirtualItemReturn Function(int)>();
   late final _msgContentBodyPtr =
       _lookup<ffi.NativeFunction<_MsgContentBodyReturn Function(ffi.IntPtr)>>(
-    "__MsgContent_body",
-  );
+        "__MsgContent_body",
+      );
 
   late final _msgContentBody =
       _msgContentBodyPtr.asFunction<_MsgContentBodyReturn Function(int)>();
   late final _msgContentFormattedBodyPtr = _lookup<
-          ffi
-          .NativeFunction<_MsgContentFormattedBodyReturn Function(ffi.IntPtr)>>(
-      "__MsgContent_formatted_body");
+    ffi.NativeFunction<_MsgContentFormattedBodyReturn Function(ffi.IntPtr)>
+  >("__MsgContent_formatted_body");
 
-  late final _msgContentFormattedBody = _msgContentFormattedBodyPtr
-      .asFunction<_MsgContentFormattedBodyReturn Function(int)>();
+  late final _msgContentFormattedBody =
+      _msgContentFormattedBodyPtr
+          .asFunction<_MsgContentFormattedBodyReturn Function(int)>();
   late final _msgContentSourcePtr =
       _lookup<ffi.NativeFunction<_MsgContentSourceReturn Function(ffi.IntPtr)>>(
-    "__MsgContent_source",
-  );
+        "__MsgContent_source",
+      );
 
   late final _msgContentSource =
       _msgContentSourcePtr.asFunction<_MsgContentSourceReturn Function(int)>();
   late final _msgContentMimetypePtr = _lookup<
-          ffi.NativeFunction<_MsgContentMimetypeReturn Function(ffi.IntPtr)>>(
-      "__MsgContent_mimetype");
+    ffi.NativeFunction<_MsgContentMimetypeReturn Function(ffi.IntPtr)>
+  >("__MsgContent_mimetype");
 
-  late final _msgContentMimetype = _msgContentMimetypePtr
-      .asFunction<_MsgContentMimetypeReturn Function(int)>();
+  late final _msgContentMimetype =
+      _msgContentMimetypePtr
+          .asFunction<_MsgContentMimetypeReturn Function(int)>();
   late final _msgContentSizePtr =
       _lookup<ffi.NativeFunction<_MsgContentSizeReturn Function(ffi.IntPtr)>>(
-    "__MsgContent_size",
-  );
+        "__MsgContent_size",
+      );
 
   late final _msgContentSize =
       _msgContentSizePtr.asFunction<_MsgContentSizeReturn Function(int)>();
   late final _msgContentWidthPtr =
       _lookup<ffi.NativeFunction<_MsgContentWidthReturn Function(ffi.IntPtr)>>(
-    "__MsgContent_width",
-  );
+        "__MsgContent_width",
+      );
 
   late final _msgContentWidth =
       _msgContentWidthPtr.asFunction<_MsgContentWidthReturn Function(int)>();
   late final _msgContentHeightPtr =
       _lookup<ffi.NativeFunction<_MsgContentHeightReturn Function(ffi.IntPtr)>>(
-    "__MsgContent_height",
-  );
+        "__MsgContent_height",
+      );
 
   late final _msgContentHeight =
       _msgContentHeightPtr.asFunction<_MsgContentHeightReturn Function(int)>();
   late final _msgContentThumbnailSourcePtr = _lookup<
-      ffi.NativeFunction<
-          _MsgContentThumbnailSourceReturn Function(
-              ffi.IntPtr)>>("__MsgContent_thumbnail_source");
+    ffi.NativeFunction<_MsgContentThumbnailSourceReturn Function(ffi.IntPtr)>
+  >("__MsgContent_thumbnail_source");
 
-  late final _msgContentThumbnailSource = _msgContentThumbnailSourcePtr
-      .asFunction<_MsgContentThumbnailSourceReturn Function(int)>();
+  late final _msgContentThumbnailSource =
+      _msgContentThumbnailSourcePtr
+          .asFunction<_MsgContentThumbnailSourceReturn Function(int)>();
   late final _msgContentThumbnailInfoPtr = _lookup<
-          ffi
-          .NativeFunction<_MsgContentThumbnailInfoReturn Function(ffi.IntPtr)>>(
-      "__MsgContent_thumbnail_info");
+    ffi.NativeFunction<_MsgContentThumbnailInfoReturn Function(ffi.IntPtr)>
+  >("__MsgContent_thumbnail_info");
 
-  late final _msgContentThumbnailInfo = _msgContentThumbnailInfoPtr
-      .asFunction<_MsgContentThumbnailInfoReturn Function(int)>();
+  late final _msgContentThumbnailInfo =
+      _msgContentThumbnailInfoPtr
+          .asFunction<_MsgContentThumbnailInfoReturn Function(int)>();
   late final _msgContentDurationPtr = _lookup<
-          ffi.NativeFunction<_MsgContentDurationReturn Function(ffi.IntPtr)>>(
-      "__MsgContent_duration");
+    ffi.NativeFunction<_MsgContentDurationReturn Function(ffi.IntPtr)>
+  >("__MsgContent_duration");
 
-  late final _msgContentDuration = _msgContentDurationPtr
-      .asFunction<_MsgContentDurationReturn Function(int)>();
+  late final _msgContentDuration =
+      _msgContentDurationPtr
+          .asFunction<_MsgContentDurationReturn Function(int)>();
   late final _msgContentBlurhashPtr = _lookup<
-          ffi.NativeFunction<_MsgContentBlurhashReturn Function(ffi.IntPtr)>>(
-      "__MsgContent_blurhash");
+    ffi.NativeFunction<_MsgContentBlurhashReturn Function(ffi.IntPtr)>
+  >("__MsgContent_blurhash");
 
-  late final _msgContentBlurhash = _msgContentBlurhashPtr
-      .asFunction<_MsgContentBlurhashReturn Function(int)>();
+  late final _msgContentBlurhash =
+      _msgContentBlurhashPtr
+          .asFunction<_MsgContentBlurhashReturn Function(int)>();
   late final _msgContentFilenamePtr = _lookup<
-          ffi.NativeFunction<_MsgContentFilenameReturn Function(ffi.IntPtr)>>(
-      "__MsgContent_filename");
+    ffi.NativeFunction<_MsgContentFilenameReturn Function(ffi.IntPtr)>
+  >("__MsgContent_filename");
 
-  late final _msgContentFilename = _msgContentFilenamePtr
-      .asFunction<_MsgContentFilenameReturn Function(int)>();
+  late final _msgContentFilename =
+      _msgContentFilenamePtr
+          .asFunction<_MsgContentFilenameReturn Function(int)>();
   late final _msgContentGeoUriPtr =
       _lookup<ffi.NativeFunction<_MsgContentGeoUriReturn Function(ffi.IntPtr)>>(
-    "__MsgContent_geo_uri",
-  );
+        "__MsgContent_geo_uri",
+      );
 
   late final _msgContentGeoUri =
       _msgContentGeoUriPtr.asFunction<_MsgContentGeoUriReturn Function(int)>();
   late final _reactionRecordSenderIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ReactionRecord_sender_id",
-  );
+        "__ReactionRecord_sender_id",
+      );
 
   late final _reactionRecordSenderId =
       _reactionRecordSenderIdPtr.asFunction<int Function(int)>();
   late final _reactionRecordTimestampPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__ReactionRecord_timestamp",
-  );
+        "__ReactionRecord_timestamp",
+      );
 
   late final _reactionRecordTimestamp =
       _reactionRecordTimestampPtr.asFunction<int Function(int)>();
   late final _reactionRecordSentByMePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__ReactionRecord_sent_by_me",
-  );
+        "__ReactionRecord_sent_by_me",
+      );
 
   late final _reactionRecordSentByMe =
       _reactionRecordSentByMePtr.asFunction<int Function(int)>();
   late final _roomMessageDiffActionPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomMessageDiffActionReturn Function(ffi.IntPtr)>>(
-      "__RoomMessageDiff_action");
+    ffi.NativeFunction<_RoomMessageDiffActionReturn Function(ffi.IntPtr)>
+  >("__RoomMessageDiff_action");
 
-  late final _roomMessageDiffAction = _roomMessageDiffActionPtr
-      .asFunction<_RoomMessageDiffActionReturn Function(int)>();
+  late final _roomMessageDiffAction =
+      _roomMessageDiffActionPtr
+          .asFunction<_RoomMessageDiffActionReturn Function(int)>();
   late final _roomMessageDiffValuesPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomMessageDiffValuesReturn Function(ffi.IntPtr)>>(
-      "__RoomMessageDiff_values");
+    ffi.NativeFunction<_RoomMessageDiffValuesReturn Function(ffi.IntPtr)>
+  >("__RoomMessageDiff_values");
 
-  late final _roomMessageDiffValues = _roomMessageDiffValuesPtr
-      .asFunction<_RoomMessageDiffValuesReturn Function(int)>();
+  late final _roomMessageDiffValues =
+      _roomMessageDiffValuesPtr
+          .asFunction<_RoomMessageDiffValuesReturn Function(int)>();
   late final _roomMessageDiffIndexPtr = _lookup<
-          ffi.NativeFunction<_RoomMessageDiffIndexReturn Function(ffi.IntPtr)>>(
-      "__RoomMessageDiff_index");
+    ffi.NativeFunction<_RoomMessageDiffIndexReturn Function(ffi.IntPtr)>
+  >("__RoomMessageDiff_index");
 
-  late final _roomMessageDiffIndex = _roomMessageDiffIndexPtr
-      .asFunction<_RoomMessageDiffIndexReturn Function(int)>();
+  late final _roomMessageDiffIndex =
+      _roomMessageDiffIndexPtr
+          .asFunction<_RoomMessageDiffIndexReturn Function(int)>();
   late final _roomMessageDiffValuePtr = _lookup<
-          ffi.NativeFunction<_RoomMessageDiffValueReturn Function(ffi.IntPtr)>>(
-      "__RoomMessageDiff_value");
+    ffi.NativeFunction<_RoomMessageDiffValueReturn Function(ffi.IntPtr)>
+  >("__RoomMessageDiff_value");
 
-  late final _roomMessageDiffValue = _roomMessageDiffValuePtr
-      .asFunction<_RoomMessageDiffValueReturn Function(int)>();
+  late final _roomMessageDiffValue =
+      _roomMessageDiffValuePtr
+          .asFunction<_RoomMessageDiffValueReturn Function(int)>();
   late final _joinRuleBuilderJoinRulePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__JoinRuleBuilder_join_rule");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__JoinRuleBuilder_join_rule");
 
-  late final _joinRuleBuilderJoinRule = _joinRuleBuilderJoinRulePtr
-      .asFunction<void Function(int, int, int, int)>();
+  late final _joinRuleBuilderJoinRule =
+      _joinRuleBuilderJoinRulePtr
+          .asFunction<void Function(int, int, int, int)>();
   late final _joinRuleBuilderAddRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__JoinRuleBuilder_add_room");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__JoinRuleBuilder_add_room");
 
-  late final _joinRuleBuilderAddRoom = _joinRuleBuilderAddRoomPtr
-      .asFunction<void Function(int, int, int, int)>();
+  late final _joinRuleBuilderAddRoom =
+      _joinRuleBuilderAddRoomPtr
+          .asFunction<void Function(int, int, int, int)>();
   late final _roomRoomIdStrPtr =
       _lookup<ffi.NativeFunction<_RoomRoomIdStrReturn Function(ffi.IntPtr)>>(
-    "__Room_room_id_str",
-  );
+        "__Room_room_id_str",
+      );
 
   late final _roomRoomIdStr =
       _roomRoomIdStrPtr.asFunction<_RoomRoomIdStrReturn Function(int)>();
   late final _roomHasAvatarPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Room_has_avatar",
-  );
+        "__Room_has_avatar",
+      );
 
   late final _roomHasAvatar = _roomHasAvatarPtr.asFunction<int Function(int)>();
   late final _roomAvatarPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-              ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>>("__Room_avatar");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>
+  >("__Room_avatar");
 
   late final _roomAvatar =
       _roomAvatarPtr.asFunction<int Function(int, int, int)>();
   late final _roomDisplayNamePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_display_name",
-  );
+        "__Room_display_name",
+      );
 
   late final _roomDisplayName =
       _roomDisplayNamePtr.asFunction<int Function(int)>();
   late final _roomSubscribeToUpdatesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_subscribe_to_updates",
-  );
+        "__Room_subscribe_to_updates",
+      );
 
   late final _roomSubscribeToUpdates =
       _roomSubscribeToUpdatesPtr.asFunction<int Function(int)>();
   late final _roomIsSpacePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Room_is_space",
-  );
+        "__Room_is_space",
+      );
 
   late final _roomIsSpace = _roomIsSpacePtr.asFunction<int Function(int)>();
   late final _roomJoinRuleStrPtr =
       _lookup<ffi.NativeFunction<_RoomJoinRuleStrReturn Function(ffi.IntPtr)>>(
-    "__Room_join_rule_str",
-  );
+        "__Room_join_rule_str",
+      );
 
   late final _roomJoinRuleStr =
       _roomJoinRuleStrPtr.asFunction<_RoomJoinRuleStrReturn Function(int)>();
   late final _roomRestrictedRoomIdsStrPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_restricted_room_ids_str",
-  );
+        "__Room_restricted_room_ids_str",
+      );
 
   late final _roomRestrictedRoomIdsStr =
       _roomRestrictedRoomIdsStrPtr.asFunction<int Function(int)>();
   late final _roomSetJoinRulePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__Room_set_join_rule",
-  );
+        "__Room_set_join_rule",
+      );
 
   late final _roomSetJoinRule =
       _roomSetJoinRulePtr.asFunction<int Function(int, int)>();
   late final _roomIsJoinedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Room_is_joined",
-  );
+        "__Room_is_joined",
+      );
 
   late final _roomIsJoined = _roomIsJoinedPtr.asFunction<int Function(int)>();
   late final _roomSpaceRelationsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_space_relations",
-  );
+        "__Room_space_relations",
+      );
 
   late final _roomSpaceRelations =
       _roomSpaceRelationsPtr.asFunction<int Function(int)>();
   late final _roomIsDirectPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_is_direct",
-  );
+        "__Room_is_direct",
+      );
 
   late final _roomIsDirect = _roomIsDirectPtr.asFunction<int Function(int)>();
   late final _roomAddParentRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-          )>>("__Room_add_parent_room");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+      )
+    >
+  >("__Room_add_parent_room");
 
   late final _roomAddParentRoom =
       _roomAddParentRoomPtr.asFunction<int Function(int, int, int, int, int)>();
   late final _roomRemoveParentRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Room_remove_parent_room");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Room_remove_parent_room");
 
-  late final _roomRemoveParentRoom = _roomRemoveParentRoomPtr
-      .asFunction<int Function(int, int, int, int, int, int, int, int)>();
+  late final _roomRemoveParentRoom =
+      _roomRemoveParentRoomPtr
+          .asFunction<int Function(int, int, int, int, int, int, int, int)>();
   late final _roomGetMyMembershipPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_get_my_membership",
-  );
+        "__Room_get_my_membership",
+      );
 
   late final _roomGetMyMembership =
       _roomGetMyMembershipPtr.asFunction<int Function(int)>();
   late final _roomActiveMembersIdsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_active_members_ids",
-  );
+        "__Room_active_members_ids",
+      );
 
   late final _roomActiveMembersIds =
       _roomActiveMembersIdsPtr.asFunction<int Function(int)>();
   late final _roomActiveMembersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_active_members",
-  );
+        "__Room_active_members",
+      );
 
   late final _roomActiveMembers =
       _roomActiveMembersPtr.asFunction<int Function(int)>();
   late final _roomInvitedMembersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_invited_members",
-  );
+        "__Room_invited_members",
+      );
 
   late final _roomInvitedMembers =
       _roomInvitedMembersPtr.asFunction<int Function(int)>();
   late final _roomGetMemberPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Room_get_member");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Room_get_member");
 
   late final _roomGetMember =
       _roomGetMemberPtr.asFunction<int Function(int, int, int, int)>();
   late final _roomInviteUserPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Room_invite_user");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Room_invite_user");
 
   late final _roomInviteUser =
       _roomInviteUserPtr.asFunction<int Function(int, int, int, int)>();
   late final _roomNotificationModePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_notification_mode",
-  );
+        "__Room_notification_mode",
+      );
 
   late final _roomNotificationMode =
       _roomNotificationModePtr.asFunction<int Function(int)>();
   late final _roomDefaultNotificationModePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_default_notification_mode",
-  );
+        "__Room_default_notification_mode",
+      );
 
   late final _roomDefaultNotificationMode =
       _roomDefaultNotificationModePtr.asFunction<int Function(int)>();
   late final _roomUnmutePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_unmute",
-  );
+        "__Room_unmute",
+      );
 
   late final _roomUnmute = _roomUnmutePtr.asFunction<int Function(int)>();
   late final _roomSetNotificationModePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Room_set_notification_mode");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Room_set_notification_mode");
 
-  late final _roomSetNotificationMode = _roomSetNotificationModePtr
-      .asFunction<int Function(int, int, int, int, int)>();
+  late final _roomSetNotificationMode =
+      _roomSetNotificationModePtr
+          .asFunction<int Function(int, int, int, int, int)>();
   late final _roomUpdatePowerLevelPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Int32,
-          )>>("__Room_update_power_level");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Int32,
+      )
+    >
+  >("__Room_update_power_level");
 
-  late final _roomUpdatePowerLevel = _roomUpdatePowerLevelPtr
-      .asFunction<int Function(int, int, int, int, int)>();
+  late final _roomUpdatePowerLevel =
+      _roomUpdatePowerLevelPtr
+          .asFunction<int Function(int, int, int, int, int)>();
   late final _roomUploadAvatarPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Room_upload_avatar");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Room_upload_avatar");
 
   late final _roomUploadAvatar =
       _roomUploadAvatarPtr.asFunction<int Function(int, int, int, int)>();
   late final _roomRemoveAvatarPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_remove_avatar",
-  );
+        "__Room_remove_avatar",
+      );
 
   late final _roomRemoveAvatar =
       _roomRemoveAvatarPtr.asFunction<int Function(int)>();
   late final _roomTopicPtr =
       _lookup<ffi.NativeFunction<_RoomTopicReturn Function(ffi.IntPtr)>>(
-    "__Room_topic",
-  );
+        "__Room_topic",
+      );
 
   late final _roomTopic =
       _roomTopicPtr.asFunction<_RoomTopicReturn Function(int)>();
   late final _roomSetTopicPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Room_set_topic");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Room_set_topic");
 
   late final _roomSetTopic =
       _roomSetTopicPtr.asFunction<int Function(int, int, int, int)>();
   late final _roomSetNamePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Room_set_name");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Room_set_name");
 
   late final _roomSetName =
       _roomSetNamePtr.asFunction<int Function(int, int, int, int)>();
   late final _roomLeavePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_leave",
-  );
+        "__Room_leave",
+      );
 
   late final _roomLeave = _roomLeavePtr.asFunction<int Function(int)>();
   late final _roomUserSettingsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Room_user_settings",
-  );
+        "__Room_user_settings",
+      );
 
   late final _roomUserSettings =
       _roomUserSettingsPtr.asFunction<int Function(int)>();
   late final _userRoomSettingsHasSeenSuggestedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__UserRoomSettings_has_seen_suggested",
-  );
+        "__UserRoomSettings_has_seen_suggested",
+      );
 
   late final _userRoomSettingsHasSeenSuggested =
       _userRoomSettingsHasSeenSuggestedPtr.asFunction<int Function(int)>();
   late final _userRoomSettingsSetHasSeenSuggestedPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__UserRoomSettings_set_has_seen_suggested",
-  );
+        "__UserRoomSettings_set_has_seen_suggested",
+      );
 
   late final _userRoomSettingsSetHasSeenSuggested =
       _userRoomSettingsSetHasSeenSuggestedPtr
           .asFunction<int Function(int, int)>();
   late final _userRoomSettingsIncludeCalSyncPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__UserRoomSettings_include_cal_sync",
-  );
+        "__UserRoomSettings_include_cal_sync",
+      );
 
   late final _userRoomSettingsIncludeCalSync =
       _userRoomSettingsIncludeCalSyncPtr.asFunction<int Function(int)>();
   late final _userRoomSettingsSetIncludeCalSyncPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__UserRoomSettings_set_include_cal_sync",
-  );
+        "__UserRoomSettings_set_include_cal_sync",
+      );
 
   late final _userRoomSettingsSetIncludeCalSync =
       _userRoomSettingsSetIncludeCalSyncPtr
           .asFunction<int Function(int, int)>();
   late final _userRoomSettingsSubscribeStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__UserRoomSettings_subscribe_stream",
-  );
+        "__UserRoomSettings_subscribe_stream",
+      );
 
   late final _userRoomSettingsSubscribeStream =
       _userRoomSettingsSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _convoDiffActionPtr =
       _lookup<ffi.NativeFunction<_ConvoDiffActionReturn Function(ffi.IntPtr)>>(
-    "__ConvoDiff_action",
-  );
+        "__ConvoDiff_action",
+      );
 
   late final _convoDiffAction =
       _convoDiffActionPtr.asFunction<_ConvoDiffActionReturn Function(int)>();
   late final _convoDiffValuesPtr =
       _lookup<ffi.NativeFunction<_ConvoDiffValuesReturn Function(ffi.IntPtr)>>(
-    "__ConvoDiff_values",
-  );
+        "__ConvoDiff_values",
+      );
 
   late final _convoDiffValues =
       _convoDiffValuesPtr.asFunction<_ConvoDiffValuesReturn Function(int)>();
   late final _convoDiffIndexPtr =
       _lookup<ffi.NativeFunction<_ConvoDiffIndexReturn Function(ffi.IntPtr)>>(
-    "__ConvoDiff_index",
-  );
+        "__ConvoDiff_index",
+      );
 
   late final _convoDiffIndex =
       _convoDiffIndexPtr.asFunction<_ConvoDiffIndexReturn Function(int)>();
   late final _convoDiffValuePtr =
       _lookup<ffi.NativeFunction<_ConvoDiffValueReturn Function(ffi.IntPtr)>>(
-    "__ConvoDiff_value",
-  );
+        "__ConvoDiff_value",
+      );
 
   late final _convoDiffValue =
       _convoDiffValuePtr.asFunction<_ConvoDiffValueReturn Function(int)>();
   late final _spaceDiffActionPtr =
       _lookup<ffi.NativeFunction<_SpaceDiffActionReturn Function(ffi.IntPtr)>>(
-    "__SpaceDiff_action",
-  );
+        "__SpaceDiff_action",
+      );
 
   late final _spaceDiffAction =
       _spaceDiffActionPtr.asFunction<_SpaceDiffActionReturn Function(int)>();
   late final _spaceDiffValuesPtr =
       _lookup<ffi.NativeFunction<_SpaceDiffValuesReturn Function(ffi.IntPtr)>>(
-    "__SpaceDiff_values",
-  );
+        "__SpaceDiff_values",
+      );
 
   late final _spaceDiffValues =
       _spaceDiffValuesPtr.asFunction<_SpaceDiffValuesReturn Function(int)>();
   late final _spaceDiffIndexPtr =
       _lookup<ffi.NativeFunction<_SpaceDiffIndexReturn Function(ffi.IntPtr)>>(
-    "__SpaceDiff_index",
-  );
+        "__SpaceDiff_index",
+      );
 
   late final _spaceDiffIndex =
       _spaceDiffIndexPtr.asFunction<_SpaceDiffIndexReturn Function(int)>();
   late final _spaceDiffValuePtr =
       _lookup<ffi.NativeFunction<_SpaceDiffValueReturn Function(ffi.IntPtr)>>(
-    "__SpaceDiff_value",
-  );
+        "__SpaceDiff_value",
+      );
 
   late final _spaceDiffValue =
       _spaceDiffValuePtr.asFunction<_SpaceDiffValueReturn Function(int)>();
   late final _msgDraftAddMentionPtr = _lookup<
-      ffi.NativeFunction<
-          _MsgDraftAddMentionReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__MsgDraft_add_mention");
+    ffi.NativeFunction<
+      _MsgDraftAddMentionReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__MsgDraft_add_mention");
 
-  late final _msgDraftAddMention = _msgDraftAddMentionPtr
-      .asFunction<_MsgDraftAddMentionReturn Function(int, int, int, int)>();
+  late final _msgDraftAddMention =
+      _msgDraftAddMentionPtr
+          .asFunction<_MsgDraftAddMentionReturn Function(int, int, int, int)>();
   late final _msgDraftAddRoomMentionPtr = _lookup<
-      ffi.NativeFunction<
-          _MsgDraftAddRoomMentionReturn Function(
-              ffi.IntPtr, ffi.Uint8)>>("__MsgDraft_add_room_mention");
+    ffi.NativeFunction<
+      _MsgDraftAddRoomMentionReturn Function(ffi.IntPtr, ffi.Uint8)
+    >
+  >("__MsgDraft_add_room_mention");
 
-  late final _msgDraftAddRoomMention = _msgDraftAddRoomMentionPtr
-      .asFunction<_MsgDraftAddRoomMentionReturn Function(int, int)>();
+  late final _msgDraftAddRoomMention =
+      _msgDraftAddRoomMentionPtr
+          .asFunction<_MsgDraftAddRoomMentionReturn Function(int, int)>();
   late final _msgDraftMimetypePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__MsgDraft_mimetype");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__MsgDraft_mimetype");
 
   late final _msgDraftMimetype =
       _msgDraftMimetypePtr.asFunction<int Function(int, int, int, int)>();
   late final _msgDraftSizePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint64)>>(
-    "__MsgDraft_size",
-  );
+        "__MsgDraft_size",
+      );
 
   late final _msgDraftSize =
       _msgDraftSizePtr.asFunction<int Function(int, int)>();
   late final _msgDraftWidthPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint64)>>(
-    "__MsgDraft_width",
-  );
+        "__MsgDraft_width",
+      );
 
   late final _msgDraftWidth =
       _msgDraftWidthPtr.asFunction<int Function(int, int)>();
   late final _msgDraftHeightPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint64)>>(
-    "__MsgDraft_height",
-  );
+        "__MsgDraft_height",
+      );
 
   late final _msgDraftHeight =
       _msgDraftHeightPtr.asFunction<int Function(int, int)>();
   late final _msgDraftDurationPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint64)>>(
-    "__MsgDraft_duration",
-  );
+        "__MsgDraft_duration",
+      );
 
   late final _msgDraftDuration =
       _msgDraftDurationPtr.asFunction<int Function(int, int)>();
   late final _msgDraftBlurhashPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__MsgDraft_blurhash");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__MsgDraft_blurhash");
 
   late final _msgDraftBlurhash =
       _msgDraftBlurhashPtr.asFunction<int Function(int, int, int, int)>();
   late final _msgDraftThumbnailFilePathPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__MsgDraft_thumbnail_file_path");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__MsgDraft_thumbnail_file_path");
 
-  late final _msgDraftThumbnailFilePath = _msgDraftThumbnailFilePathPtr
-      .asFunction<int Function(int, int, int, int)>();
+  late final _msgDraftThumbnailFilePath =
+      _msgDraftThumbnailFilePathPtr
+          .asFunction<int Function(int, int, int, int)>();
   late final _msgDraftThumbnailInfoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.Uint64,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint64,
-          )>>("__MsgDraft_thumbnail_info");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.Uint64,
+        ffi.Uint8,
+        ffi.Uint64,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint64,
+      )
+    >
+  >("__MsgDraft_thumbnail_info");
 
-  late final _msgDraftThumbnailInfo = _msgDraftThumbnailInfoPtr.asFunction<
-      int Function(int, int, int, int, int, int, int, int, int, int, int)>();
+  late final _msgDraftThumbnailInfo =
+      _msgDraftThumbnailInfoPtr
+          .asFunction<
+            int Function(int, int, int, int, int, int, int, int, int, int, int)
+          >();
   late final _msgDraftFilenamePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__MsgDraft_filename");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__MsgDraft_filename");
 
   late final _msgDraftFilename =
       _msgDraftFilenamePtr.asFunction<int Function(int, int, int, int)>();
   late final _msgDraftGeoUriPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__MsgDraft_geo_uri");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__MsgDraft_geo_uri");
 
   late final _msgDraftGeoUri =
       _msgDraftGeoUriPtr.asFunction<int Function(int, int, int, int)>();
   late final _msgDraftIntoNewsSlideDraftPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__MsgDraft_into_news_slide_draft",
-  );
+        "__MsgDraft_into_news_slide_draft",
+      );
 
   late final _msgDraftIntoNewsSlideDraft =
       _msgDraftIntoNewsSlideDraftPtr.asFunction<int Function(int)>();
   late final _msgDraftIntoStorySlideDraftPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__MsgDraft_into_story_slide_draft",
-  );
+        "__MsgDraft_into_story_slide_draft",
+      );
 
   late final _msgDraftIntoStorySlideDraft =
       _msgDraftIntoStorySlideDraftPtr.asFunction<int Function(int)>();
   late final _timelineStreamMessagesStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TimelineStream_messages_stream",
-  );
+        "__TimelineStream_messages_stream",
+      );
 
   late final _timelineStreamMessagesStream =
       _timelineStreamMessagesStreamPtr.asFunction<int Function(int)>();
   late final _timelineStreamGetMessagePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__TimelineStream_get_message");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__TimelineStream_get_message");
 
-  late final _timelineStreamGetMessage = _timelineStreamGetMessagePtr
-      .asFunction<int Function(int, int, int, int)>();
+  late final _timelineStreamGetMessage =
+      _timelineStreamGetMessagePtr
+          .asFunction<int Function(int, int, int, int)>();
   late final _timelineStreamPaginateBackwardsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint16)>>(
-    "__TimelineStream_paginate_backwards",
-  );
+        "__TimelineStream_paginate_backwards",
+      );
 
   late final _timelineStreamPaginateBackwards =
       _timelineStreamPaginateBackwardsPtr.asFunction<int Function(int, int)>();
   late final _timelineStreamSendMessagePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TimelineStream_send_message",
-  );
+        "__TimelineStream_send_message",
+      );
 
   late final _timelineStreamSendMessage =
       _timelineStreamSendMessagePtr.asFunction<int Function(int, int)>();
   late final _timelineStreamEditMessagePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-          )>>("__TimelineStream_edit_message");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+      )
+    >
+  >("__TimelineStream_edit_message");
 
-  late final _timelineStreamEditMessage = _timelineStreamEditMessagePtr
-      .asFunction<int Function(int, int, int, int, int)>();
+  late final _timelineStreamEditMessage =
+      _timelineStreamEditMessagePtr
+          .asFunction<int Function(int, int, int, int, int)>();
   late final _timelineStreamReplyMessagePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-          )>>("__TimelineStream_reply_message");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+      )
+    >
+  >("__TimelineStream_reply_message");
 
-  late final _timelineStreamReplyMessage = _timelineStreamReplyMessagePtr
-      .asFunction<int Function(int, int, int, int, int)>();
+  late final _timelineStreamReplyMessage =
+      _timelineStreamReplyMessagePtr
+          .asFunction<int Function(int, int, int, int, int)>();
   late final _timelineStreamSendSingleReceiptPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TimelineStream_send_single_receipt");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TimelineStream_send_single_receipt");
 
   late final _timelineStreamSendSingleReceipt =
-      _timelineStreamSendSingleReceiptPtr.asFunction<
-          int Function(int, int, int, int, int, int, int, int, int, int)>();
+      _timelineStreamSendSingleReceiptPtr
+          .asFunction<
+            int Function(int, int, int, int, int, int, int, int, int, int)
+          >();
   late final _timelineStreamSendMultipleReceiptsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TimelineStream_send_multiple_receipts");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TimelineStream_send_multiple_receipts");
 
   late final _timelineStreamSendMultipleReceipts =
-      _timelineStreamSendMultipleReceiptsPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _timelineStreamSendMultipleReceiptsPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _timelineStreamMarkAsReadPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__TimelineStream_mark_as_read",
-  );
+        "__TimelineStream_mark_as_read",
+      );
 
   late final _timelineStreamMarkAsRead =
       _timelineStreamMarkAsReadPtr.asFunction<int Function(int, int)>();
   late final _timelineStreamToggleReactionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TimelineStream_toggle_reaction");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TimelineStream_toggle_reaction");
 
-  late final _timelineStreamToggleReaction = _timelineStreamToggleReactionPtr
-      .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _timelineStreamToggleReaction =
+      _timelineStreamToggleReactionPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _convoSpaceRelationsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_space_relations",
-  );
+        "__Convo_space_relations",
+      );
 
   late final _convoSpaceRelations =
       _convoSpaceRelationsPtr.asFunction<int Function(int)>();
   late final _convoUploadAvatarPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Convo_upload_avatar");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Convo_upload_avatar");
 
   late final _convoUploadAvatar =
       _convoUploadAvatarPtr.asFunction<int Function(int, int, int, int)>();
   late final _convoRemoveAvatarPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_remove_avatar",
-  );
+        "__Convo_remove_avatar",
+      );
 
   late final _convoRemoveAvatar =
       _convoRemoveAvatarPtr.asFunction<int Function(int)>();
   late final _convoTopicPtr =
       _lookup<ffi.NativeFunction<_ConvoTopicReturn Function(ffi.IntPtr)>>(
-    "__Convo_topic",
-  );
+        "__Convo_topic",
+      );
 
   late final _convoTopic =
       _convoTopicPtr.asFunction<_ConvoTopicReturn Function(int)>();
   late final _convoSetNamePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Convo_set_name");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Convo_set_name");
 
   late final _convoSetName =
       _convoSetNamePtr.asFunction<int Function(int, int, int, int)>();
   late final _convoSetTopicPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Convo_set_topic");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Convo_set_topic");
 
   late final _convoSetTopic =
       _convoSetTopicPtr.asFunction<int Function(int, int, int, int)>();
   late final _convoActiveMembersIdsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_active_members_ids",
-  );
+        "__Convo_active_members_ids",
+      );
 
   late final _convoActiveMembersIds =
       _convoActiveMembersIdsPtr.asFunction<int Function(int)>();
   late final _convoActiveMembersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_active_members",
-  );
+        "__Convo_active_members",
+      );
 
   late final _convoActiveMembers =
       _convoActiveMembersPtr.asFunction<int Function(int)>();
   late final _convoInvitedMembersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_invited_members",
-  );
+        "__Convo_invited_members",
+      );
 
   late final _convoInvitedMembers =
       _convoInvitedMembersPtr.asFunction<int Function(int)>();
   late final _convoGetMemberPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Convo_get_member");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Convo_get_member");
 
   late final _convoGetMember =
       _convoGetMemberPtr.asFunction<int Function(int, int, int, int)>();
   late final _convoTimelineStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_timeline_stream",
-  );
+        "__Convo_timeline_stream",
+      );
 
   late final _convoTimelineStream =
       _convoTimelineStreamPtr.asFunction<int Function(int)>();
   late final _convoNumUnreadNotificationCountPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__Convo_num_unread_notification_count",
-  );
+        "__Convo_num_unread_notification_count",
+      );
 
   late final _convoNumUnreadNotificationCount =
       _convoNumUnreadNotificationCountPtr.asFunction<int Function(int)>();
   late final _convoNumUnreadMessagesPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__Convo_num_unread_messages",
-  );
+        "__Convo_num_unread_messages",
+      );
 
   late final _convoNumUnreadMessages =
       _convoNumUnreadMessagesPtr.asFunction<int Function(int)>();
   late final _convoNumUnreadMentionsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__Convo_num_unread_mentions",
-  );
+        "__Convo_num_unread_mentions",
+      );
 
   late final _convoNumUnreadMentions =
       _convoNumUnreadMentionsPtr.asFunction<int Function(int)>();
   late final _convoLatestMessagePtr = _lookup<
-          ffi.NativeFunction<_ConvoLatestMessageReturn Function(ffi.IntPtr)>>(
-      "__Convo_latest_message");
+    ffi.NativeFunction<_ConvoLatestMessageReturn Function(ffi.IntPtr)>
+  >("__Convo_latest_message");
 
-  late final _convoLatestMessage = _convoLatestMessagePtr
-      .asFunction<_ConvoLatestMessageReturn Function(int)>();
+  late final _convoLatestMessage =
+      _convoLatestMessagePtr
+          .asFunction<_ConvoLatestMessageReturn Function(int)>();
   late final _convoLatestMessageTsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__Convo_latest_message_ts",
-  );
+        "__Convo_latest_message_ts",
+      );
 
   late final _convoLatestMessageTs =
       _convoLatestMessageTsPtr.asFunction<int Function(int)>();
   late final _convoGetMyMembershipPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_get_my_membership",
-  );
+        "__Convo_get_my_membership",
+      );
 
   late final _convoGetMyMembership =
       _convoGetMyMembershipPtr.asFunction<int Function(int)>();
   late final _convoGetRoomIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_get_room_id",
-  );
+        "__Convo_get_room_id",
+      );
 
   late final _convoGetRoomId =
       _convoGetRoomIdPtr.asFunction<int Function(int)>();
   late final _convoGetRoomIdStrPtr = _lookup<
-          ffi.NativeFunction<_ConvoGetRoomIdStrReturn Function(ffi.IntPtr)>>(
-      "__Convo_get_room_id_str");
+    ffi.NativeFunction<_ConvoGetRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__Convo_get_room_id_str");
 
-  late final _convoGetRoomIdStr = _convoGetRoomIdStrPtr
-      .asFunction<_ConvoGetRoomIdStrReturn Function(int)>();
+  late final _convoGetRoomIdStr =
+      _convoGetRoomIdStrPtr
+          .asFunction<_ConvoGetRoomIdStrReturn Function(int)>();
   late final _convoTypingNoticePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__Convo_typing_notice",
-  );
+        "__Convo_typing_notice",
+      );
 
   late final _convoTypingNotice =
       _convoTypingNoticePtr.asFunction<int Function(int, int)>();
   late final _convoMediaBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-          )>>("__Convo_media_binary");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+      )
+    >
+  >("__Convo_media_binary");
 
-  late final _convoMediaBinary = _convoMediaBinaryPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _convoMediaBinary =
+      _convoMediaBinaryPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _convoRoomTypePtr =
       _lookup<ffi.NativeFunction<_ConvoRoomTypeReturn Function(ffi.IntPtr)>>(
-    "__Convo_room_type",
-  );
+        "__Convo_room_type",
+      );
 
   late final _convoRoomType =
       _convoRoomTypePtr.asFunction<_ConvoRoomTypeReturn Function(int)>();
   late final _convoIsDmPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Convo_is_dm",
-  );
+        "__Convo_is_dm",
+      );
 
   late final _convoIsDm = _convoIsDmPtr.asFunction<int Function(int)>();
   late final _convoIsBookmarkedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Convo_is_bookmarked",
-  );
+        "__Convo_is_bookmarked",
+      );
 
   late final _convoIsBookmarked =
       _convoIsBookmarkedPtr.asFunction<int Function(int)>();
   late final _convoSetBookmarkedPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__Convo_set_bookmarked",
-  );
+        "__Convo_set_bookmarked",
+      );
 
   late final _convoSetBookmarked =
       _convoSetBookmarkedPtr.asFunction<int Function(int, int)>();
   late final _convoIsLowPriorityPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Convo_is_low_priority",
-  );
+        "__Convo_is_low_priority",
+      );
 
   late final _convoIsLowPriority =
       _convoIsLowPriorityPtr.asFunction<int Function(int)>();
   late final _convoDmUsersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_dm_users",
-  );
+        "__Convo_dm_users",
+      );
 
   late final _convoDmUsers = _convoDmUsersPtr.asFunction<int Function(int)>();
   late final _convoInviteUserPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Convo_invite_user");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Convo_invite_user");
 
   late final _convoInviteUser =
       _convoInviteUserPtr.asFunction<int Function(int, int, int, int)>();
   late final _convoPermalinkPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_permalink",
-  );
+        "__Convo_permalink",
+      );
 
   late final _convoPermalink =
       _convoPermalinkPtr.asFunction<int Function(int)>();
   late final _convoJoinPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_join",
-  );
+        "__Convo_join",
+      );
 
   late final _convoJoin = _convoJoinPtr.asFunction<int Function(int)>();
   late final _convoLeavePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_leave",
-  );
+        "__Convo_leave",
+      );
 
   late final _convoLeave = _convoLeavePtr.asFunction<int Function(int)>();
   late final _convoGetInviteesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_get_invitees",
-  );
+        "__Convo_get_invitees",
+      );
 
   late final _convoGetInvitees =
       _convoGetInviteesPtr.asFunction<int Function(int)>();
   late final _convoDownloadMediaPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Convo_download_media");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Convo_download_media");
 
-  late final _convoDownloadMedia = _convoDownloadMediaPtr
-      .asFunction<int Function(int, int, int, int, int, int, int, int, int)>();
+  late final _convoDownloadMedia =
+      _convoDownloadMediaPtr
+          .asFunction<
+            int Function(int, int, int, int, int, int, int, int, int)
+          >();
   late final _convoMediaPathPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-          )>>("__Convo_media_path");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+      )
+    >
+  >("__Convo_media_path");
 
   late final _convoMediaPath =
       _convoMediaPathPtr.asFunction<int Function(int, int, int, int, int)>();
   late final _convoIsEncryptedPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_is_encrypted",
-  );
+        "__Convo_is_encrypted",
+      );
 
   late final _convoIsEncrypted =
       _convoIsEncryptedPtr.asFunction<int Function(int)>();
   late final _convoRedactMessagePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Convo_redact_message");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Convo_redact_message");
 
-  late final _convoRedactMessage = _convoRedactMessagePtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _convoRedactMessage =
+      _convoRedactMessagePtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _convoUpdatePowerLevelPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Int32,
-          )>>("__Convo_update_power_level");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Int32,
+      )
+    >
+  >("__Convo_update_power_level");
 
-  late final _convoUpdatePowerLevel = _convoUpdatePowerLevelPtr
-      .asFunction<int Function(int, int, int, int, int)>();
+  late final _convoUpdatePowerLevel =
+      _convoUpdatePowerLevelPtr
+          .asFunction<int Function(int, int, int, int, int)>();
   late final _convoReportContentPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Int32,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Convo_report_content");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Int32,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Convo_report_content");
 
-  late final _convoReportContent = _convoReportContentPtr.asFunction<
-      int Function(int, int, int, int, int, int, int, int, int, int)>();
+  late final _convoReportContent =
+      _convoReportContentPtr
+          .asFunction<
+            int Function(int, int, int, int, int, int, int, int, int, int)
+          >();
   late final _convoRedactContentPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Convo_redact_content");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Convo_redact_content");
 
-  late final _convoRedactContent = _convoRedactContentPtr
-      .asFunction<int Function(int, int, int, int, int, int, int, int)>();
+  late final _convoRedactContent =
+      _convoRedactContentPtr
+          .asFunction<int Function(int, int, int, int, int, int, int, int)>();
   late final _convoIsJoinedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Convo_is_joined",
-  );
+        "__Convo_is_joined",
+      );
 
   late final _convoIsJoined = _convoIsJoinedPtr.asFunction<int Function(int)>();
   late final _convoMsgDraftPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_msg_draft",
-  );
+        "__Convo_msg_draft",
+      );
 
   late final _convoMsgDraft = _convoMsgDraftPtr.asFunction<int Function(int)>();
   late final _convoSaveMsgDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Convo_save_msg_draft");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Convo_save_msg_draft");
 
-  late final _convoSaveMsgDraft = _convoSaveMsgDraftPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _convoSaveMsgDraft =
+      _convoSaveMsgDraftPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _convoClearMsgDraftPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_clear_msg_draft",
-  );
+        "__Convo_clear_msg_draft",
+      );
 
   late final _convoClearMsgDraft =
       _convoClearMsgDraftPtr.asFunction<int Function(int)>();
   late final _convoRefDetailsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Convo_ref_details",
-  );
+        "__Convo_ref_details",
+      );
 
   late final _convoRefDetails =
       _convoRefDetailsPtr.asFunction<int Function(int)>();
   late final _commentDraftContentTextPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CommentDraft_content_text");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CommentDraft_content_text");
 
-  late final _commentDraftContentText = _commentDraftContentTextPtr
-      .asFunction<void Function(int, int, int, int)>();
+  late final _commentDraftContentText =
+      _commentDraftContentTextPtr
+          .asFunction<void Function(int, int, int, int)>();
   late final _commentDraftContentFormattedPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CommentDraft_content_formatted");
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CommentDraft_content_formatted");
 
-  late final _commentDraftContentFormatted = _commentDraftContentFormattedPtr
-      .asFunction<void Function(int, int, int, int, int, int, int)>();
+  late final _commentDraftContentFormatted =
+      _commentDraftContentFormattedPtr
+          .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _commentDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CommentDraft_send",
-  );
+        "__CommentDraft_send",
+      );
 
   late final _commentDraftSend =
       _commentDraftSendPtr.asFunction<int Function(int)>();
   late final _commentSenderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Comment_sender",
-  );
+        "__Comment_sender",
+      );
 
   late final _commentSender = _commentSenderPtr.asFunction<int Function(int)>();
   late final _commentOriginServerTsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__Comment_origin_server_ts",
-  );
+        "__Comment_origin_server_ts",
+      );
 
   late final _commentOriginServerTs =
       _commentOriginServerTsPtr.asFunction<int Function(int)>();
   late final _commentMsgContentPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Comment_msg_content",
-  );
+        "__Comment_msg_content",
+      );
 
   late final _commentMsgContent =
       _commentMsgContentPtr.asFunction<int Function(int)>();
   late final _commentReplyBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Comment_reply_builder",
-  );
+        "__Comment_reply_builder",
+      );
 
   late final _commentReplyBuilder =
       _commentReplyBuilderPtr.asFunction<int Function(int)>();
   late final _commentCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Comment_can_redact",
-  );
+        "__Comment_can_redact",
+      );
 
   late final _commentCanRedact =
       _commentCanRedactPtr.asFunction<int Function(int)>();
   late final _commentsManagerCommentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CommentsManager_comments",
-  );
+        "__CommentsManager_comments",
+      );
 
   late final _commentsManagerComments =
       _commentsManagerCommentsPtr.asFunction<int Function(int)>();
   late final _commentsManagerRoomIdStrPtr = _lookup<
-      ffi.NativeFunction<
-          _CommentsManagerRoomIdStrReturn Function(
-              ffi.IntPtr)>>("__CommentsManager_room_id_str");
+    ffi.NativeFunction<_CommentsManagerRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__CommentsManager_room_id_str");
 
-  late final _commentsManagerRoomIdStr = _commentsManagerRoomIdStrPtr
-      .asFunction<_CommentsManagerRoomIdStrReturn Function(int)>();
+  late final _commentsManagerRoomIdStr =
+      _commentsManagerRoomIdStrPtr
+          .asFunction<_CommentsManagerRoomIdStrReturn Function(int)>();
   late final _commentsManagerHasCommentsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__CommentsManager_has_comments",
-  );
+        "__CommentsManager_has_comments",
+      );
 
   late final _commentsManagerHasComments =
       _commentsManagerHasCommentsPtr.asFunction<int Function(int)>();
   late final _commentsManagerCommentsCountPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__CommentsManager_comments_count",
-  );
+        "__CommentsManager_comments_count",
+      );
 
   late final _commentsManagerCommentsCount =
       _commentsManagerCommentsCountPtr.asFunction<int Function(int)>();
   late final _commentsManagerCommentDraftPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CommentsManager_comment_draft",
-  );
+        "__CommentsManager_comment_draft",
+      );
 
   late final _commentsManagerCommentDraft =
       _commentsManagerCommentDraftPtr.asFunction<int Function(int)>();
   late final _commentsManagerSubscribeStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CommentsManager_subscribe_stream",
-  );
+        "__CommentsManager_subscribe_stream",
+      );
 
   late final _commentsManagerSubscribeStream =
       _commentsManagerSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _commentsManagerReloadPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CommentsManager_reload",
-  );
+        "__CommentsManager_reload",
+      );
 
   late final _commentsManagerReload =
       _commentsManagerReloadPtr.asFunction<int Function(int)>();
   late final _attachmentDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__AttachmentDraft_send",
-  );
+        "__AttachmentDraft_send",
+      );
 
   late final _attachmentDraftSend =
       _attachmentDraftSendPtr.asFunction<int Function(int)>();
   late final _attachmentNamePtr =
       _lookup<ffi.NativeFunction<_AttachmentNameReturn Function(ffi.IntPtr)>>(
-    "__Attachment_name",
-  );
+        "__Attachment_name",
+      );
 
   late final _attachmentName =
       _attachmentNamePtr.asFunction<_AttachmentNameReturn Function(int)>();
   late final _attachmentSenderPtr =
       _lookup<ffi.NativeFunction<_AttachmentSenderReturn Function(ffi.IntPtr)>>(
-    "__Attachment_sender",
-  );
+        "__Attachment_sender",
+      );
 
   late final _attachmentSender =
       _attachmentSenderPtr.asFunction<_AttachmentSenderReturn Function(int)>();
   late final _attachmentOriginServerTsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__Attachment_origin_server_ts",
-  );
+        "__Attachment_origin_server_ts",
+      );
 
   late final _attachmentOriginServerTs =
       _attachmentOriginServerTsPtr.asFunction<int Function(int)>();
   late final _attachmentAttachmentIdStrPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentAttachmentIdStrReturn Function(
-              ffi.IntPtr)>>("__Attachment_attachment_id_str");
+    ffi.NativeFunction<_AttachmentAttachmentIdStrReturn Function(ffi.IntPtr)>
+  >("__Attachment_attachment_id_str");
 
-  late final _attachmentAttachmentIdStr = _attachmentAttachmentIdStrPtr
-      .asFunction<_AttachmentAttachmentIdStrReturn Function(int)>();
+  late final _attachmentAttachmentIdStr =
+      _attachmentAttachmentIdStrPtr
+          .asFunction<_AttachmentAttachmentIdStrReturn Function(int)>();
   late final _attachmentRoomIdStrPtr = _lookup<
-          ffi.NativeFunction<_AttachmentRoomIdStrReturn Function(ffi.IntPtr)>>(
-      "__Attachment_room_id_str");
+    ffi.NativeFunction<_AttachmentRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__Attachment_room_id_str");
 
-  late final _attachmentRoomIdStr = _attachmentRoomIdStrPtr
-      .asFunction<_AttachmentRoomIdStrReturn Function(int)>();
+  late final _attachmentRoomIdStr =
+      _attachmentRoomIdStrPtr
+          .asFunction<_AttachmentRoomIdStrReturn Function(int)>();
   late final _attachmentTypeStrPtr = _lookup<
-          ffi.NativeFunction<_AttachmentTypeStrReturn Function(ffi.IntPtr)>>(
-      "__Attachment_type_str");
+    ffi.NativeFunction<_AttachmentTypeStrReturn Function(ffi.IntPtr)>
+  >("__Attachment_type_str");
 
-  late final _attachmentTypeStr = _attachmentTypeStrPtr
-      .asFunction<_AttachmentTypeStrReturn Function(int)>();
+  late final _attachmentTypeStr =
+      _attachmentTypeStrPtr
+          .asFunction<_AttachmentTypeStrReturn Function(int)>();
   late final _attachmentMsgContentPtr = _lookup<
-          ffi.NativeFunction<_AttachmentMsgContentReturn Function(ffi.IntPtr)>>(
-      "__Attachment_msg_content");
+    ffi.NativeFunction<_AttachmentMsgContentReturn Function(ffi.IntPtr)>
+  >("__Attachment_msg_content");
 
-  late final _attachmentMsgContent = _attachmentMsgContentPtr
-      .asFunction<_AttachmentMsgContentReturn Function(int)>();
+  late final _attachmentMsgContent =
+      _attachmentMsgContentPtr
+          .asFunction<_AttachmentMsgContentReturn Function(int)>();
   late final _attachmentRefDetailsPtr = _lookup<
-          ffi.NativeFunction<_AttachmentRefDetailsReturn Function(ffi.IntPtr)>>(
-      "__Attachment_ref_details");
+    ffi.NativeFunction<_AttachmentRefDetailsReturn Function(ffi.IntPtr)>
+  >("__Attachment_ref_details");
 
-  late final _attachmentRefDetails = _attachmentRefDetailsPtr
-      .asFunction<_AttachmentRefDetailsReturn Function(int)>();
+  late final _attachmentRefDetails =
+      _attachmentRefDetailsPtr
+          .asFunction<_AttachmentRefDetailsReturn Function(int)>();
   late final _attachmentLinkPtr =
       _lookup<ffi.NativeFunction<_AttachmentLinkReturn Function(ffi.IntPtr)>>(
-    "__Attachment_link",
-  );
+        "__Attachment_link",
+      );
 
   late final _attachmentLink =
       _attachmentLinkPtr.asFunction<_AttachmentLinkReturn Function(int)>();
   late final _attachmentDownloadMediaPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Attachment_download_media");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Attachment_download_media");
 
-  late final _attachmentDownloadMedia = _attachmentDownloadMediaPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _attachmentDownloadMedia =
+      _attachmentDownloadMediaPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _attachmentMediaPathPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__Attachment_media_path",
-  );
+        "__Attachment_media_path",
+      );
 
   late final _attachmentMediaPath =
       _attachmentMediaPathPtr.asFunction<int Function(int, int)>();
   late final _attachmentCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Attachment_can_redact",
-  );
+        "__Attachment_can_redact",
+      );
 
   late final _attachmentCanRedact =
       _attachmentCanRedactPtr.asFunction<int Function(int)>();
   late final _attachmentsManagerRoomIdStrPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentsManagerRoomIdStrReturn Function(
-              ffi.IntPtr)>>("__AttachmentsManager_room_id_str");
+    ffi.NativeFunction<_AttachmentsManagerRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__AttachmentsManager_room_id_str");
 
-  late final _attachmentsManagerRoomIdStr = _attachmentsManagerRoomIdStrPtr
-      .asFunction<_AttachmentsManagerRoomIdStrReturn Function(int)>();
+  late final _attachmentsManagerRoomIdStr =
+      _attachmentsManagerRoomIdStrPtr
+          .asFunction<_AttachmentsManagerRoomIdStrReturn Function(int)>();
   late final _attachmentsManagerCanEditAttachmentsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__AttachmentsManager_can_edit_attachments",
-  );
+        "__AttachmentsManager_can_edit_attachments",
+      );
 
   late final _attachmentsManagerCanEditAttachments =
       _attachmentsManagerCanEditAttachmentsPtr.asFunction<int Function(int)>();
   late final _attachmentsManagerAttachmentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__AttachmentsManager_attachments",
-  );
+        "__AttachmentsManager_attachments",
+      );
 
   late final _attachmentsManagerAttachments =
       _attachmentsManagerAttachmentsPtr.asFunction<int Function(int)>();
   late final _attachmentsManagerHasAttachmentsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__AttachmentsManager_has_attachments",
-  );
+        "__AttachmentsManager_has_attachments",
+      );
 
   late final _attachmentsManagerHasAttachments =
       _attachmentsManagerHasAttachmentsPtr.asFunction<int Function(int)>();
   late final _attachmentsManagerAttachmentsCountPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__AttachmentsManager_attachments_count",
-  );
+        "__AttachmentsManager_attachments_count",
+      );
 
   late final _attachmentsManagerAttachmentsCount =
       _attachmentsManagerAttachmentsCountPtr.asFunction<int Function(int)>();
   late final _attachmentsManagerContentDraftPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__AttachmentsManager_content_draft",
-  );
+        "__AttachmentsManager_content_draft",
+      );
 
   late final _attachmentsManagerContentDraft =
       _attachmentsManagerContentDraftPtr.asFunction<int Function(int, int)>();
   late final _attachmentsManagerLinkDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__AttachmentsManager_link_draft");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__AttachmentsManager_link_draft");
 
-  late final _attachmentsManagerLinkDraft = _attachmentsManagerLinkDraftPtr
-      .asFunction<int Function(int, int, int, int, int, int, int, int)>();
+  late final _attachmentsManagerLinkDraft =
+      _attachmentsManagerLinkDraftPtr
+          .asFunction<int Function(int, int, int, int, int, int, int, int)>();
   late final _attachmentsManagerReferenceDraftPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__AttachmentsManager_reference_draft",
-  );
+        "__AttachmentsManager_reference_draft",
+      );
 
   late final _attachmentsManagerReferenceDraft =
       _attachmentsManagerReferenceDraftPtr.asFunction<int Function(int, int)>();
   late final _attachmentsManagerReloadPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__AttachmentsManager_reload",
-  );
+        "__AttachmentsManager_reload",
+      );
 
   late final _attachmentsManagerReload =
       _attachmentsManagerReloadPtr.asFunction<int Function(int)>();
   late final _attachmentsManagerRedactPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__AttachmentsManager_redact");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__AttachmentsManager_redact");
 
   late final _attachmentsManagerRedact =
-      _attachmentsManagerRedactPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _attachmentsManagerRedactPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _attachmentsManagerSubscribeStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__AttachmentsManager_subscribe_stream",
-  );
+        "__AttachmentsManager_subscribe_stream",
+      );
 
   late final _attachmentsManagerSubscribeStream =
       _attachmentsManagerSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _taskTitlePtr =
       _lookup<ffi.NativeFunction<_TaskTitleReturn Function(ffi.IntPtr)>>(
-    "__Task_title",
-  );
+        "__Task_title",
+      );
 
   late final _taskTitle =
       _taskTitlePtr.asFunction<_TaskTitleReturn Function(int)>();
   late final _taskEventIdStrPtr =
       _lookup<ffi.NativeFunction<_TaskEventIdStrReturn Function(ffi.IntPtr)>>(
-    "__Task_event_id_str",
-  );
+        "__Task_event_id_str",
+      );
 
   late final _taskEventIdStr =
       _taskEventIdStrPtr.asFunction<_TaskEventIdStrReturn Function(int)>();
   late final _taskRoomIdStrPtr =
       _lookup<ffi.NativeFunction<_TaskRoomIdStrReturn Function(ffi.IntPtr)>>(
-    "__Task_room_id_str",
-  );
+        "__Task_room_id_str",
+      );
 
   late final _taskRoomIdStr =
       _taskRoomIdStrPtr.asFunction<_TaskRoomIdStrReturn Function(int)>();
   late final _taskTaskListIdStrPtr = _lookup<
-          ffi.NativeFunction<_TaskTaskListIdStrReturn Function(ffi.IntPtr)>>(
-      "__Task_task_list_id_str");
+    ffi.NativeFunction<_TaskTaskListIdStrReturn Function(ffi.IntPtr)>
+  >("__Task_task_list_id_str");
 
-  late final _taskTaskListIdStr = _taskTaskListIdStrPtr
-      .asFunction<_TaskTaskListIdStrReturn Function(int)>();
+  late final _taskTaskListIdStr =
+      _taskTaskListIdStrPtr
+          .asFunction<_TaskTaskListIdStrReturn Function(int)>();
   late final _taskDescriptionPtr =
       _lookup<ffi.NativeFunction<_TaskDescriptionReturn Function(ffi.IntPtr)>>(
-    "__Task_description",
-  );
+        "__Task_description",
+      );
 
   late final _taskDescription =
       _taskDescriptionPtr.asFunction<_TaskDescriptionReturn Function(int)>();
   late final _taskAuthorStrPtr =
       _lookup<ffi.NativeFunction<_TaskAuthorStrReturn Function(ffi.IntPtr)>>(
-    "__Task_author_str",
-  );
+        "__Task_author_str",
+      );
 
   late final _taskAuthorStr =
       _taskAuthorStrPtr.asFunction<_TaskAuthorStrReturn Function(int)>();
   late final _taskAssigneesStrPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Task_assignees_str",
-  );
+        "__Task_assignees_str",
+      );
 
   late final _taskAssigneesStr =
       _taskAssigneesStrPtr.asFunction<int Function(int)>();
   late final _taskSortOrderPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__Task_sort_order",
-  );
+        "__Task_sort_order",
+      );
 
   late final _taskSortOrder = _taskSortOrderPtr.asFunction<int Function(int)>();
   late final _taskPriorityPtr =
       _lookup<ffi.NativeFunction<_TaskPriorityReturn Function(ffi.IntPtr)>>(
-    "__Task_priority",
-  );
+        "__Task_priority",
+      );
 
   late final _taskPriority =
       _taskPriorityPtr.asFunction<_TaskPriorityReturn Function(int)>();
   late final _taskDueDatePtr =
       _lookup<ffi.NativeFunction<_TaskDueDateReturn Function(ffi.IntPtr)>>(
-    "__Task_due_date",
-  );
+        "__Task_due_date",
+      );
 
   late final _taskDueDate =
       _taskDueDatePtr.asFunction<_TaskDueDateReturn Function(int)>();
   late final _taskUtcDueTimeOfDayPtr = _lookup<
-          ffi.NativeFunction<_TaskUtcDueTimeOfDayReturn Function(ffi.IntPtr)>>(
-      "__Task_utc_due_time_of_day");
+    ffi.NativeFunction<_TaskUtcDueTimeOfDayReturn Function(ffi.IntPtr)>
+  >("__Task_utc_due_time_of_day");
 
-  late final _taskUtcDueTimeOfDay = _taskUtcDueTimeOfDayPtr
-      .asFunction<_TaskUtcDueTimeOfDayReturn Function(int)>();
+  late final _taskUtcDueTimeOfDay =
+      _taskUtcDueTimeOfDayPtr
+          .asFunction<_TaskUtcDueTimeOfDayReturn Function(int)>();
   late final _taskUtcStartRfc3339Ptr = _lookup<
-          ffi.NativeFunction<_TaskUtcStartRfc3339Return Function(ffi.IntPtr)>>(
-      "__Task_utc_start_rfc3339");
+    ffi.NativeFunction<_TaskUtcStartRfc3339Return Function(ffi.IntPtr)>
+  >("__Task_utc_start_rfc3339");
 
-  late final _taskUtcStartRfc3339 = _taskUtcStartRfc3339Ptr
-      .asFunction<_TaskUtcStartRfc3339Return Function(int)>();
+  late final _taskUtcStartRfc3339 =
+      _taskUtcStartRfc3339Ptr
+          .asFunction<_TaskUtcStartRfc3339Return Function(int)>();
   late final _taskDisplayPtr =
       _lookup<ffi.NativeFunction<_TaskDisplayReturn Function(ffi.IntPtr)>>(
-    "__Task_display",
-  );
+        "__Task_display",
+      );
 
   late final _taskDisplay =
       _taskDisplayPtr.asFunction<_TaskDisplayReturn Function(int)>();
   late final _taskIsDonePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Task_is_done",
-  );
+        "__Task_is_done",
+      );
 
   late final _taskIsDone = _taskIsDonePtr.asFunction<int Function(int)>();
   late final _taskProgressPercentPtr = _lookup<
-          ffi.NativeFunction<_TaskProgressPercentReturn Function(ffi.IntPtr)>>(
-      "__Task_progress_percent");
+    ffi.NativeFunction<_TaskProgressPercentReturn Function(ffi.IntPtr)>
+  >("__Task_progress_percent");
 
-  late final _taskProgressPercent = _taskProgressPercentPtr
-      .asFunction<_TaskProgressPercentReturn Function(int)>();
+  late final _taskProgressPercent =
+      _taskProgressPercentPtr
+          .asFunction<_TaskProgressPercentReturn Function(int)>();
   late final _taskKeywordsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Task_keywords",
-  );
+        "__Task_keywords",
+      );
 
   late final _taskKeywords = _taskKeywordsPtr.asFunction<int Function(int)>();
   late final _taskCategoriesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Task_categories",
-  );
+        "__Task_categories",
+      );
 
   late final _taskCategories =
       _taskCategoriesPtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderPtr = _lookup<
-          ffi.NativeFunction<_TaskUpdateBuilderReturn Function(ffi.IntPtr)>>(
-      "__Task_update_builder");
+    ffi.NativeFunction<_TaskUpdateBuilderReturn Function(ffi.IntPtr)>
+  >("__Task_update_builder");
 
-  late final _taskUpdateBuilder = _taskUpdateBuilderPtr
-      .asFunction<_TaskUpdateBuilderReturn Function(int)>();
+  late final _taskUpdateBuilder =
+      _taskUpdateBuilderPtr
+          .asFunction<_TaskUpdateBuilderReturn Function(int)>();
   late final _taskIsAssignedToMePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Task_is_assigned_to_me",
-  );
+        "__Task_is_assigned_to_me",
+      );
 
   late final _taskIsAssignedToMe =
       _taskIsAssignedToMePtr.asFunction<int Function(int)>();
   late final _taskAssignSelfPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Task_assign_self",
-  );
+        "__Task_assign_self",
+      );
 
   late final _taskAssignSelf =
       _taskAssignSelfPtr.asFunction<int Function(int)>();
   late final _taskUnassignSelfPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Task_unassign_self",
-  );
+        "__Task_unassign_self",
+      );
 
   late final _taskUnassignSelf =
       _taskUnassignSelfPtr.asFunction<int Function(int)>();
   late final _taskSubscribeStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Task_subscribe_stream",
-  );
+        "__Task_subscribe_stream",
+      );
 
   late final _taskSubscribeStream =
       _taskSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _taskRefreshPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Task_refresh",
-  );
+        "__Task_refresh",
+      );
 
   late final _taskRefresh = _taskRefreshPtr.asFunction<int Function(int)>();
   late final _taskCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Task_can_redact",
-  );
+        "__Task_can_redact",
+      );
 
   late final _taskCanRedact = _taskCanRedactPtr.asFunction<int Function(int)>();
   late final _taskCommentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Task_comments",
-  );
+        "__Task_comments",
+      );
 
   late final _taskComments = _taskCommentsPtr.asFunction<int Function(int)>();
   late final _taskAttachmentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Task_attachments",
-  );
+        "__Task_attachments",
+      );
 
   late final _taskAttachments =
       _taskAttachmentsPtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderTitlePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__TaskUpdateBuilder_title");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__TaskUpdateBuilder_title");
 
-  late final _taskUpdateBuilderTitle = _taskUpdateBuilderTitlePtr
-      .asFunction<void Function(int, int, int, int)>();
+  late final _taskUpdateBuilderTitle =
+      _taskUpdateBuilderTitlePtr
+          .asFunction<void Function(int, int, int, int)>();
   late final _taskUpdateBuilderUnsetTitleUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_title_update",
-  );
+        "__TaskUpdateBuilder_unset_title_update",
+      );
 
   late final _taskUpdateBuilderUnsetTitleUpdate =
       _taskUpdateBuilderUnsetTitleUpdatePtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderDescriptionTextPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__TaskUpdateBuilder_description_text");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__TaskUpdateBuilder_description_text");
 
   late final _taskUpdateBuilderDescriptionText =
       _taskUpdateBuilderDescriptionTextPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _taskUpdateBuilderDescriptionHtmlPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TaskUpdateBuilder_description_html");
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TaskUpdateBuilder_description_html");
 
   late final _taskUpdateBuilderDescriptionHtml =
       _taskUpdateBuilderDescriptionHtmlPtr
           .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _taskUpdateBuilderUnsetDescriptionPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_description",
-  );
+        "__TaskUpdateBuilder_unset_description",
+      );
 
   late final _taskUpdateBuilderUnsetDescription =
       _taskUpdateBuilderUnsetDescriptionPtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderUnsetDescriptionUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_description_update",
-  );
+        "__TaskUpdateBuilder_unset_description_update",
+      );
 
   late final _taskUpdateBuilderUnsetDescriptionUpdate =
       _taskUpdateBuilderUnsetDescriptionUpdatePtr
           .asFunction<void Function(int)>();
   late final _taskUpdateBuilderSortOrderPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__TaskUpdateBuilder_sort_order",
-  );
+        "__TaskUpdateBuilder_sort_order",
+      );
 
   late final _taskUpdateBuilderSortOrder =
       _taskUpdateBuilderSortOrderPtr.asFunction<void Function(int, int)>();
   late final _taskUpdateBuilderUnsetSortOrderUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_sort_order_update",
-  );
+        "__TaskUpdateBuilder_unset_sort_order_update",
+      );
 
   late final _taskUpdateBuilderUnsetSortOrderUpdate =
       _taskUpdateBuilderUnsetSortOrderUpdatePtr
           .asFunction<void Function(int)>();
   late final _taskUpdateBuilderDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_display",
-  );
+        "__TaskUpdateBuilder_display",
+      );
 
   late final _taskUpdateBuilderDisplay =
       _taskUpdateBuilderDisplayPtr.asFunction<void Function(int, int)>();
   late final _taskUpdateBuilderUnsetDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_display",
-  );
+        "__TaskUpdateBuilder_unset_display",
+      );
 
   late final _taskUpdateBuilderUnsetDisplay =
       _taskUpdateBuilderUnsetDisplayPtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderUnsetDisplayUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_display_update",
-  );
+        "__TaskUpdateBuilder_unset_display_update",
+      );
 
   late final _taskUpdateBuilderUnsetDisplayUpdate =
       _taskUpdateBuilderUnsetDisplayUpdatePtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderDueDatePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Int32, ffi.Uint32,
-              ffi.Uint32)>>("__TaskUpdateBuilder_due_date");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.Int32, ffi.Uint32, ffi.Uint32)
+    >
+  >("__TaskUpdateBuilder_due_date");
 
-  late final _taskUpdateBuilderDueDate = _taskUpdateBuilderDueDatePtr
-      .asFunction<void Function(int, int, int, int)>();
+  late final _taskUpdateBuilderDueDate =
+      _taskUpdateBuilderDueDatePtr
+          .asFunction<void Function(int, int, int, int)>();
   late final _taskUpdateBuilderUnsetDueDatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_due_date",
-  );
+        "__TaskUpdateBuilder_unset_due_date",
+      );
 
   late final _taskUpdateBuilderUnsetDueDate =
       _taskUpdateBuilderUnsetDueDatePtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderUnsetDueDateUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_due_date_update",
-  );
+        "__TaskUpdateBuilder_unset_due_date_update",
+      );
 
   late final _taskUpdateBuilderUnsetDueDateUpdate =
       _taskUpdateBuilderUnsetDueDateUpdatePtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderUtcDueTimeOfDayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Int32)>>(
-    "__TaskUpdateBuilder_utc_due_time_of_day",
-  );
+        "__TaskUpdateBuilder_utc_due_time_of_day",
+      );
 
   late final _taskUpdateBuilderUtcDueTimeOfDay =
       _taskUpdateBuilderUtcDueTimeOfDayPtr
           .asFunction<void Function(int, int)>();
   late final _taskUpdateBuilderUnsetUtcDueTimeOfDayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_utc_due_time_of_day",
-  );
+        "__TaskUpdateBuilder_unset_utc_due_time_of_day",
+      );
 
   late final _taskUpdateBuilderUnsetUtcDueTimeOfDay =
       _taskUpdateBuilderUnsetUtcDueTimeOfDayPtr
           .asFunction<void Function(int)>();
   late final _taskUpdateBuilderUnsetUtcDueTimeOfDayUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_utc_due_time_of_day_update",
-  );
+        "__TaskUpdateBuilder_unset_utc_due_time_of_day_update",
+      );
 
   late final _taskUpdateBuilderUnsetUtcDueTimeOfDayUpdate =
       _taskUpdateBuilderUnsetUtcDueTimeOfDayUpdatePtr
           .asFunction<void Function(int)>();
   late final _taskUpdateBuilderUtcStartFromRfc3339Ptr = _lookup<
-      ffi.NativeFunction<
-          _TaskUpdateBuilderUtcStartFromRfc3339Return Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TaskUpdateBuilder_utc_start_from_rfc3339");
+    ffi.NativeFunction<
+      _TaskUpdateBuilderUtcStartFromRfc3339Return Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TaskUpdateBuilder_utc_start_from_rfc3339");
 
   late final _taskUpdateBuilderUtcStartFromRfc3339 =
-      _taskUpdateBuilderUtcStartFromRfc3339Ptr.asFunction<
-          _TaskUpdateBuilderUtcStartFromRfc3339Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _taskUpdateBuilderUtcStartFromRfc3339Ptr
+          .asFunction<
+            _TaskUpdateBuilderUtcStartFromRfc3339Return Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _taskUpdateBuilderUtcStartFromRfc2822Ptr = _lookup<
-      ffi.NativeFunction<
-          _TaskUpdateBuilderUtcStartFromRfc2822Return Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TaskUpdateBuilder_utc_start_from_rfc2822");
+    ffi.NativeFunction<
+      _TaskUpdateBuilderUtcStartFromRfc2822Return Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TaskUpdateBuilder_utc_start_from_rfc2822");
 
   late final _taskUpdateBuilderUtcStartFromRfc2822 =
-      _taskUpdateBuilderUtcStartFromRfc2822Ptr.asFunction<
-          _TaskUpdateBuilderUtcStartFromRfc2822Return Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _taskUpdateBuilderUtcStartFromRfc2822Ptr
+          .asFunction<
+            _TaskUpdateBuilderUtcStartFromRfc2822Return Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _taskUpdateBuilderUtcStartFromFormatPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskUpdateBuilderUtcStartFromFormatReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TaskUpdateBuilder_utc_start_from_format");
+    ffi.NativeFunction<
+      _TaskUpdateBuilderUtcStartFromFormatReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TaskUpdateBuilder_utc_start_from_format");
 
   late final _taskUpdateBuilderUtcStartFromFormat =
-      _taskUpdateBuilderUtcStartFromFormatPtr.asFunction<
-          _TaskUpdateBuilderUtcStartFromFormatReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _taskUpdateBuilderUtcStartFromFormatPtr
+          .asFunction<
+            _TaskUpdateBuilderUtcStartFromFormatReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _taskUpdateBuilderUnsetUtcStartPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_utc_start",
-  );
+        "__TaskUpdateBuilder_unset_utc_start",
+      );
 
   late final _taskUpdateBuilderUnsetUtcStart =
       _taskUpdateBuilderUnsetUtcStartPtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderUnsetUtcStartUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_utc_start_update",
-  );
+        "__TaskUpdateBuilder_unset_utc_start_update",
+      );
 
   late final _taskUpdateBuilderUnsetUtcStartUpdate =
       _taskUpdateBuilderUnsetUtcStartUpdatePtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderProgressPercentPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__TaskUpdateBuilder_progress_percent",
-  );
+        "__TaskUpdateBuilder_progress_percent",
+      );
 
   late final _taskUpdateBuilderProgressPercent =
       _taskUpdateBuilderProgressPercentPtr
           .asFunction<void Function(int, int)>();
   late final _taskUpdateBuilderUnsetProgressPercentPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_progress_percent",
-  );
+        "__TaskUpdateBuilder_unset_progress_percent",
+      );
 
   late final _taskUpdateBuilderUnsetProgressPercent =
       _taskUpdateBuilderUnsetProgressPercentPtr
           .asFunction<void Function(int)>();
   late final _taskUpdateBuilderUnsetProgressPercentUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_progress_percent_update",
-  );
+        "__TaskUpdateBuilder_unset_progress_percent_update",
+      );
 
   late final _taskUpdateBuilderUnsetProgressPercentUpdate =
       _taskUpdateBuilderUnsetProgressPercentUpdatePtr
           .asFunction<void Function(int)>();
   late final _taskUpdateBuilderKeywordsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_keywords",
-  );
+        "__TaskUpdateBuilder_keywords",
+      );
 
   late final _taskUpdateBuilderKeywords =
       _taskUpdateBuilderKeywordsPtr.asFunction<void Function(int, int)>();
   late final _taskUpdateBuilderUnsetKeywordsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_keywords",
-  );
+        "__TaskUpdateBuilder_unset_keywords",
+      );
 
   late final _taskUpdateBuilderUnsetKeywords =
       _taskUpdateBuilderUnsetKeywordsPtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderUnsetKeywordsUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_keywords_update",
-  );
+        "__TaskUpdateBuilder_unset_keywords_update",
+      );
 
   late final _taskUpdateBuilderUnsetKeywordsUpdate =
       _taskUpdateBuilderUnsetKeywordsUpdatePtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderCategoriesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_categories",
-  );
+        "__TaskUpdateBuilder_categories",
+      );
 
   late final _taskUpdateBuilderCategories =
       _taskUpdateBuilderCategoriesPtr.asFunction<void Function(int, int)>();
   late final _taskUpdateBuilderUnsetCategoriesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_categories",
-  );
+        "__TaskUpdateBuilder_unset_categories",
+      );
 
   late final _taskUpdateBuilderUnsetCategories =
       _taskUpdateBuilderUnsetCategoriesPtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderUnsetCategoriesUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_unset_categories_update",
-  );
+        "__TaskUpdateBuilder_unset_categories_update",
+      );
 
   late final _taskUpdateBuilderUnsetCategoriesUpdate =
       _taskUpdateBuilderUnsetCategoriesUpdatePtr
           .asFunction<void Function(int)>();
   late final _taskUpdateBuilderMarkDonePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_mark_done",
-  );
+        "__TaskUpdateBuilder_mark_done",
+      );
 
   late final _taskUpdateBuilderMarkDone =
       _taskUpdateBuilderMarkDonePtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderMarkUndonePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_mark_undone",
-  );
+        "__TaskUpdateBuilder_mark_undone",
+      );
 
   late final _taskUpdateBuilderMarkUndone =
       _taskUpdateBuilderMarkUndonePtr.asFunction<void Function(int)>();
   late final _taskUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskUpdateBuilder_send",
-  );
+        "__TaskUpdateBuilder_send",
+      );
 
   late final _taskUpdateBuilderSend =
       _taskUpdateBuilderSendPtr.asFunction<int Function(int)>();
   late final _taskDraftTitlePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__TaskDraft_title");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__TaskDraft_title");
 
   late final _taskDraftTitle =
       _taskDraftTitlePtr.asFunction<void Function(int, int, int, int)>();
   late final _taskDraftDescriptionTextPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__TaskDraft_description_text");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__TaskDraft_description_text");
 
-  late final _taskDraftDescriptionText = _taskDraftDescriptionTextPtr
-      .asFunction<void Function(int, int, int, int)>();
+  late final _taskDraftDescriptionText =
+      _taskDraftDescriptionTextPtr
+          .asFunction<void Function(int, int, int, int)>();
   late final _taskDraftDescriptionHtmlPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TaskDraft_description_html");
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TaskDraft_description_html");
 
-  late final _taskDraftDescriptionHtml = _taskDraftDescriptionHtmlPtr
-      .asFunction<void Function(int, int, int, int, int, int, int)>();
+  late final _taskDraftDescriptionHtml =
+      _taskDraftDescriptionHtmlPtr
+          .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _taskDraftUnsetDescriptionPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskDraft_unset_description",
-  );
+        "__TaskDraft_unset_description",
+      );
 
   late final _taskDraftUnsetDescription =
       _taskDraftUnsetDescriptionPtr.asFunction<void Function(int)>();
   late final _taskDraftSortOrderPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__TaskDraft_sort_order",
-  );
+        "__TaskDraft_sort_order",
+      );
 
   late final _taskDraftSortOrder =
       _taskDraftSortOrderPtr.asFunction<void Function(int, int)>();
   late final _taskDraftDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TaskDraft_display",
-  );
+        "__TaskDraft_display",
+      );
 
   late final _taskDraftDisplay =
       _taskDraftDisplayPtr.asFunction<void Function(int, int)>();
   late final _taskDraftUnsetDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskDraft_unset_display",
-  );
+        "__TaskDraft_unset_display",
+      );
 
   late final _taskDraftUnsetDisplay =
       _taskDraftUnsetDisplayPtr.asFunction<void Function(int)>();
   late final _taskDraftDueDatePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Int32, ffi.Uint32,
-              ffi.Uint32)>>("__TaskDraft_due_date");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.Int32, ffi.Uint32, ffi.Uint32)
+    >
+  >("__TaskDraft_due_date");
 
   late final _taskDraftDueDate =
       _taskDraftDueDatePtr.asFunction<void Function(int, int, int, int)>();
   late final _taskDraftUnsetDueDatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskDraft_unset_due_date",
-  );
+        "__TaskDraft_unset_due_date",
+      );
 
   late final _taskDraftUnsetDueDate =
       _taskDraftUnsetDueDatePtr.asFunction<void Function(int)>();
   late final _taskDraftUtcDueTimeOfDayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Int32)>>(
-    "__TaskDraft_utc_due_time_of_day",
-  );
+        "__TaskDraft_utc_due_time_of_day",
+      );
 
   late final _taskDraftUtcDueTimeOfDay =
       _taskDraftUtcDueTimeOfDayPtr.asFunction<void Function(int, int)>();
   late final _taskDraftUnsetUtcDueTimeOfDayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskDraft_unset_utc_due_time_of_day",
-  );
+        "__TaskDraft_unset_utc_due_time_of_day",
+      );
 
   late final _taskDraftUnsetUtcDueTimeOfDay =
       _taskDraftUnsetUtcDueTimeOfDayPtr.asFunction<void Function(int)>();
   late final _taskDraftUtcStartFromRfc3339Ptr = _lookup<
-      ffi.NativeFunction<
-          _TaskDraftUtcStartFromRfc3339Return Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TaskDraft_utc_start_from_rfc3339");
+    ffi.NativeFunction<
+      _TaskDraftUtcStartFromRfc3339Return Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TaskDraft_utc_start_from_rfc3339");
 
   late final _taskDraftUtcStartFromRfc3339 =
-      _taskDraftUtcStartFromRfc3339Ptr.asFunction<
-          _TaskDraftUtcStartFromRfc3339Return Function(int, int, int, int)>();
+      _taskDraftUtcStartFromRfc3339Ptr
+          .asFunction<
+            _TaskDraftUtcStartFromRfc3339Return Function(int, int, int, int)
+          >();
   late final _taskDraftUtcStartFromRfc2822Ptr = _lookup<
-      ffi.NativeFunction<
-          _TaskDraftUtcStartFromRfc2822Return Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TaskDraft_utc_start_from_rfc2822");
+    ffi.NativeFunction<
+      _TaskDraftUtcStartFromRfc2822Return Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TaskDraft_utc_start_from_rfc2822");
 
   late final _taskDraftUtcStartFromRfc2822 =
-      _taskDraftUtcStartFromRfc2822Ptr.asFunction<
-          _TaskDraftUtcStartFromRfc2822Return Function(int, int, int, int)>();
+      _taskDraftUtcStartFromRfc2822Ptr
+          .asFunction<
+            _TaskDraftUtcStartFromRfc2822Return Function(int, int, int, int)
+          >();
   late final _taskDraftUtcStartFromFormatPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskDraftUtcStartFromFormatReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TaskDraft_utc_start_from_format");
+    ffi.NativeFunction<
+      _TaskDraftUtcStartFromFormatReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TaskDraft_utc_start_from_format");
 
   late final _taskDraftUtcStartFromFormat =
-      _taskDraftUtcStartFromFormatPtr.asFunction<
-          _TaskDraftUtcStartFromFormatReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _taskDraftUtcStartFromFormatPtr
+          .asFunction<
+            _TaskDraftUtcStartFromFormatReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _taskDraftUnsetUtcStartPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskDraft_unset_utc_start",
-  );
+        "__TaskDraft_unset_utc_start",
+      );
 
   late final _taskDraftUnsetUtcStart =
       _taskDraftUnsetUtcStartPtr.asFunction<void Function(int)>();
   late final _taskDraftProgressPercentPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__TaskDraft_progress_percent",
-  );
+        "__TaskDraft_progress_percent",
+      );
 
   late final _taskDraftProgressPercent =
       _taskDraftProgressPercentPtr.asFunction<void Function(int, int)>();
   late final _taskDraftUnsetProgressPercentPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskDraft_unset_progress_percent",
-  );
+        "__TaskDraft_unset_progress_percent",
+      );
 
   late final _taskDraftUnsetProgressPercent =
       _taskDraftUnsetProgressPercentPtr.asFunction<void Function(int)>();
   late final _taskDraftKeywordsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TaskDraft_keywords",
-  );
+        "__TaskDraft_keywords",
+      );
 
   late final _taskDraftKeywords =
       _taskDraftKeywordsPtr.asFunction<void Function(int, int)>();
   late final _taskDraftUnsetKeywordsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskDraft_unset_keywords",
-  );
+        "__TaskDraft_unset_keywords",
+      );
 
   late final _taskDraftUnsetKeywords =
       _taskDraftUnsetKeywordsPtr.asFunction<void Function(int)>();
   late final _taskDraftCategoriesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TaskDraft_categories",
-  );
+        "__TaskDraft_categories",
+      );
 
   late final _taskDraftCategories =
       _taskDraftCategoriesPtr.asFunction<void Function(int, int)>();
   late final _taskDraftUnsetCategoriesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskDraft_unset_categories",
-  );
+        "__TaskDraft_unset_categories",
+      );
 
   late final _taskDraftUnsetCategories =
       _taskDraftUnsetCategoriesPtr.asFunction<void Function(int)>();
   late final _taskDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskDraft_send",
-  );
+        "__TaskDraft_send",
+      );
 
   late final _taskDraftSend = _taskDraftSendPtr.asFunction<int Function(int)>();
   late final _taskListNamePtr =
       _lookup<ffi.NativeFunction<_TaskListNameReturn Function(ffi.IntPtr)>>(
-    "__TaskList_name",
-  );
+        "__TaskList_name",
+      );
 
   late final _taskListName =
       _taskListNamePtr.asFunction<_TaskListNameReturn Function(int)>();
   late final _taskListEventIdStrPtr = _lookup<
-          ffi.NativeFunction<_TaskListEventIdStrReturn Function(ffi.IntPtr)>>(
-      "__TaskList_event_id_str");
+    ffi.NativeFunction<_TaskListEventIdStrReturn Function(ffi.IntPtr)>
+  >("__TaskList_event_id_str");
 
-  late final _taskListEventIdStr = _taskListEventIdStrPtr
-      .asFunction<_TaskListEventIdStrReturn Function(int)>();
+  late final _taskListEventIdStr =
+      _taskListEventIdStrPtr
+          .asFunction<_TaskListEventIdStrReturn Function(int)>();
   late final _taskListDescriptionPtr = _lookup<
-          ffi.NativeFunction<_TaskListDescriptionReturn Function(ffi.IntPtr)>>(
-      "__TaskList_description");
+    ffi.NativeFunction<_TaskListDescriptionReturn Function(ffi.IntPtr)>
+  >("__TaskList_description");
 
-  late final _taskListDescription = _taskListDescriptionPtr
-      .asFunction<_TaskListDescriptionReturn Function(int)>();
+  late final _taskListDescription =
+      _taskListDescriptionPtr
+          .asFunction<_TaskListDescriptionReturn Function(int)>();
   late final _taskListRolePtr =
       _lookup<ffi.NativeFunction<_TaskListRoleReturn Function(ffi.IntPtr)>>(
-    "__TaskList_role",
-  );
+        "__TaskList_role",
+      );
 
   late final _taskListRole =
       _taskListRolePtr.asFunction<_TaskListRoleReturn Function(int)>();
   late final _taskListSortOrderPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__TaskList_sort_order",
-  );
+        "__TaskList_sort_order",
+      );
 
   late final _taskListSortOrder =
       _taskListSortOrderPtr.asFunction<int Function(int)>();
   late final _taskListDisplayPtr =
       _lookup<ffi.NativeFunction<_TaskListDisplayReturn Function(ffi.IntPtr)>>(
-    "__TaskList_display",
-  );
+        "__TaskList_display",
+      );
 
   late final _taskListDisplay =
       _taskListDisplayPtr.asFunction<_TaskListDisplayReturn Function(int)>();
   late final _taskListTimeZonePtr =
       _lookup<ffi.NativeFunction<_TaskListTimeZoneReturn Function(ffi.IntPtr)>>(
-    "__TaskList_time_zone",
-  );
+        "__TaskList_time_zone",
+      );
 
   late final _taskListTimeZone =
       _taskListTimeZonePtr.asFunction<_TaskListTimeZoneReturn Function(int)>();
   late final _taskListKeywordsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskList_keywords",
-  );
+        "__TaskList_keywords",
+      );
 
   late final _taskListKeywords =
       _taskListKeywordsPtr.asFunction<int Function(int)>();
   late final _taskListCategoriesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskList_categories",
-  );
+        "__TaskList_categories",
+      );
 
   late final _taskListCategories =
       _taskListCategoriesPtr.asFunction<int Function(int)>();
   late final _taskListTasksPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskList_tasks",
-  );
+        "__TaskList_tasks",
+      );
 
   late final _taskListTasks = _taskListTasksPtr.asFunction<int Function(int)>();
   late final _taskListTaskPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__TaskList_task");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__TaskList_task");
 
   late final _taskListTask =
       _taskListTaskPtr.asFunction<int Function(int, int, int, int)>();
   late final _taskListTaskBuilderPtr = _lookup<
-          ffi.NativeFunction<_TaskListTaskBuilderReturn Function(ffi.IntPtr)>>(
-      "__TaskList_task_builder");
+    ffi.NativeFunction<_TaskListTaskBuilderReturn Function(ffi.IntPtr)>
+  >("__TaskList_task_builder");
 
-  late final _taskListTaskBuilder = _taskListTaskBuilderPtr
-      .asFunction<_TaskListTaskBuilderReturn Function(int)>();
+  late final _taskListTaskBuilder =
+      _taskListTaskBuilderPtr
+          .asFunction<_TaskListTaskBuilderReturn Function(int)>();
   late final _taskListUpdateBuilderPtr = _lookup<
-          ffi
-          .NativeFunction<_TaskListUpdateBuilderReturn Function(ffi.IntPtr)>>(
-      "__TaskList_update_builder");
+    ffi.NativeFunction<_TaskListUpdateBuilderReturn Function(ffi.IntPtr)>
+  >("__TaskList_update_builder");
 
-  late final _taskListUpdateBuilder = _taskListUpdateBuilderPtr
-      .asFunction<_TaskListUpdateBuilderReturn Function(int)>();
+  late final _taskListUpdateBuilder =
+      _taskListUpdateBuilderPtr
+          .asFunction<_TaskListUpdateBuilderReturn Function(int)>();
   late final _taskListSubscribeStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskList_subscribe_stream",
-  );
+        "__TaskList_subscribe_stream",
+      );
 
   late final _taskListSubscribeStream =
       _taskListSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _taskListRefreshPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskList_refresh",
-  );
+        "__TaskList_refresh",
+      );
 
   late final _taskListRefresh =
       _taskListRefreshPtr.asFunction<int Function(int)>();
   late final _taskListCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskList_can_redact",
-  );
+        "__TaskList_can_redact",
+      );
 
   late final _taskListCanRedact =
       _taskListCanRedactPtr.asFunction<int Function(int)>();
   late final _taskListSpacePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskList_space",
-  );
+        "__TaskList_space",
+      );
 
   late final _taskListSpace = _taskListSpacePtr.asFunction<int Function(int)>();
   late final _taskListSpaceIdStrPtr = _lookup<
-          ffi.NativeFunction<_TaskListSpaceIdStrReturn Function(ffi.IntPtr)>>(
-      "__TaskList_space_id_str");
+    ffi.NativeFunction<_TaskListSpaceIdStrReturn Function(ffi.IntPtr)>
+  >("__TaskList_space_id_str");
 
-  late final _taskListSpaceIdStr = _taskListSpaceIdStrPtr
-      .asFunction<_TaskListSpaceIdStrReturn Function(int)>();
+  late final _taskListSpaceIdStr =
+      _taskListSpaceIdStrPtr
+          .asFunction<_TaskListSpaceIdStrReturn Function(int)>();
   late final _taskListRefDetailsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskList_ref_details",
-  );
+        "__TaskList_ref_details",
+      );
 
   late final _taskListRefDetails =
       _taskListRefDetailsPtr.asFunction<int Function(int)>();
   late final _taskListCommentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskList_comments",
-  );
+        "__TaskList_comments",
+      );
 
   late final _taskListComments =
       _taskListCommentsPtr.asFunction<int Function(int)>();
   late final _taskListAttachmentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskList_attachments",
-  );
+        "__TaskList_attachments",
+      );
 
   late final _taskListAttachments =
       _taskListAttachmentsPtr.asFunction<int Function(int)>();
   late final _taskListDraftNamePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__TaskListDraft_name");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__TaskListDraft_name");
 
   late final _taskListDraftName =
       _taskListDraftNamePtr.asFunction<void Function(int, int, int, int)>();
   late final _taskListDraftDescriptionTextPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__TaskListDraft_description_text");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__TaskListDraft_description_text");
 
-  late final _taskListDraftDescriptionText = _taskListDraftDescriptionTextPtr
-      .asFunction<void Function(int, int, int, int)>();
+  late final _taskListDraftDescriptionText =
+      _taskListDraftDescriptionTextPtr
+          .asFunction<void Function(int, int, int, int)>();
   late final _taskListDraftDescriptionMarkdownPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__TaskListDraft_description_markdown");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__TaskListDraft_description_markdown");
 
   late final _taskListDraftDescriptionMarkdown =
       _taskListDraftDescriptionMarkdownPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _taskListDraftDescriptionHtmlPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TaskListDraft_description_html");
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TaskListDraft_description_html");
 
-  late final _taskListDraftDescriptionHtml = _taskListDraftDescriptionHtmlPtr
-      .asFunction<void Function(int, int, int, int, int, int, int)>();
+  late final _taskListDraftDescriptionHtml =
+      _taskListDraftDescriptionHtmlPtr
+          .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _taskListDraftUnsetDescriptionPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskListDraft_unset_description",
-  );
+        "__TaskListDraft_unset_description",
+      );
 
   late final _taskListDraftUnsetDescription =
       _taskListDraftUnsetDescriptionPtr.asFunction<void Function(int)>();
   late final _taskListDraftSortOrderPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__TaskListDraft_sort_order",
-  );
+        "__TaskListDraft_sort_order",
+      );
 
   late final _taskListDraftSortOrder =
       _taskListDraftSortOrderPtr.asFunction<void Function(int, int)>();
   late final _taskListDraftDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TaskListDraft_display",
-  );
+        "__TaskListDraft_display",
+      );
 
   late final _taskListDraftDisplay =
       _taskListDraftDisplayPtr.asFunction<void Function(int, int)>();
   late final _taskListDraftUnsetDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskListDraft_unset_display",
-  );
+        "__TaskListDraft_unset_display",
+      );
 
   late final _taskListDraftUnsetDisplay =
       _taskListDraftUnsetDisplayPtr.asFunction<void Function(int)>();
   late final _taskListDraftKeywordsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TaskListDraft_keywords",
-  );
+        "__TaskListDraft_keywords",
+      );
 
   late final _taskListDraftKeywords =
       _taskListDraftKeywordsPtr.asFunction<void Function(int, int)>();
   late final _taskListDraftUnsetKeywordsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskListDraft_unset_keywords",
-  );
+        "__TaskListDraft_unset_keywords",
+      );
 
   late final _taskListDraftUnsetKeywords =
       _taskListDraftUnsetKeywordsPtr.asFunction<void Function(int)>();
   late final _taskListDraftCategoriesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TaskListDraft_categories",
-  );
+        "__TaskListDraft_categories",
+      );
 
   late final _taskListDraftCategories =
       _taskListDraftCategoriesPtr.asFunction<void Function(int, int)>();
   late final _taskListDraftUnsetCategoriesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskListDraft_unset_categories",
-  );
+        "__TaskListDraft_unset_categories",
+      );
 
   late final _taskListDraftUnsetCategories =
       _taskListDraftUnsetCategoriesPtr.asFunction<void Function(int)>();
   late final _taskListDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskListDraft_send",
-  );
+        "__TaskListDraft_send",
+      );
 
   late final _taskListDraftSend =
       _taskListDraftSendPtr.asFunction<int Function(int)>();
   late final _taskListUpdateBuilderNamePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__TaskListUpdateBuilder_name");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__TaskListUpdateBuilder_name");
 
-  late final _taskListUpdateBuilderName = _taskListUpdateBuilderNamePtr
-      .asFunction<void Function(int, int, int, int)>();
+  late final _taskListUpdateBuilderName =
+      _taskListUpdateBuilderNamePtr
+          .asFunction<void Function(int, int, int, int)>();
   late final _taskListUpdateBuilderDescriptionTextPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__TaskListUpdateBuilder_description_text");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__TaskListUpdateBuilder_description_text");
 
   late final _taskListUpdateBuilderDescriptionText =
       _taskListUpdateBuilderDescriptionTextPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _taskListUpdateBuilderDescriptionHtmlPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TaskListUpdateBuilder_description_html");
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__TaskListUpdateBuilder_description_html");
 
   late final _taskListUpdateBuilderDescriptionHtml =
       _taskListUpdateBuilderDescriptionHtmlPtr
           .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _taskListUpdateBuilderUnsetDescriptionPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskListUpdateBuilder_unset_description",
-  );
+        "__TaskListUpdateBuilder_unset_description",
+      );
 
   late final _taskListUpdateBuilderUnsetDescription =
       _taskListUpdateBuilderUnsetDescriptionPtr
           .asFunction<void Function(int)>();
   late final _taskListUpdateBuilderUnsetDescriptionUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskListUpdateBuilder_unset_description_update",
-  );
+        "__TaskListUpdateBuilder_unset_description_update",
+      );
 
   late final _taskListUpdateBuilderUnsetDescriptionUpdate =
       _taskListUpdateBuilderUnsetDescriptionUpdatePtr
           .asFunction<void Function(int)>();
   late final _taskListUpdateBuilderSortOrderPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__TaskListUpdateBuilder_sort_order",
-  );
+        "__TaskListUpdateBuilder_sort_order",
+      );
 
   late final _taskListUpdateBuilderSortOrder =
       _taskListUpdateBuilderSortOrderPtr.asFunction<void Function(int, int)>();
   late final _taskListUpdateBuilderDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TaskListUpdateBuilder_display",
-  );
+        "__TaskListUpdateBuilder_display",
+      );
 
   late final _taskListUpdateBuilderDisplay =
       _taskListUpdateBuilderDisplayPtr.asFunction<void Function(int, int)>();
   late final _taskListUpdateBuilderUnsetDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskListUpdateBuilder_unset_display",
-  );
+        "__TaskListUpdateBuilder_unset_display",
+      );
 
   late final _taskListUpdateBuilderUnsetDisplay =
       _taskListUpdateBuilderUnsetDisplayPtr.asFunction<void Function(int)>();
   late final _taskListUpdateBuilderUnsetDisplayUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskListUpdateBuilder_unset_display_update",
-  );
+        "__TaskListUpdateBuilder_unset_display_update",
+      );
 
   late final _taskListUpdateBuilderUnsetDisplayUpdate =
       _taskListUpdateBuilderUnsetDisplayUpdatePtr
           .asFunction<void Function(int)>();
   late final _taskListUpdateBuilderKeywordsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TaskListUpdateBuilder_keywords",
-  );
+        "__TaskListUpdateBuilder_keywords",
+      );
 
   late final _taskListUpdateBuilderKeywords =
       _taskListUpdateBuilderKeywordsPtr.asFunction<void Function(int, int)>();
   late final _taskListUpdateBuilderUnsetKeywordsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskListUpdateBuilder_unset_keywords",
-  );
+        "__TaskListUpdateBuilder_unset_keywords",
+      );
 
   late final _taskListUpdateBuilderUnsetKeywords =
       _taskListUpdateBuilderUnsetKeywordsPtr.asFunction<void Function(int)>();
   late final _taskListUpdateBuilderUnsetKeywordsUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskListUpdateBuilder_unset_keywords_update",
-  );
+        "__TaskListUpdateBuilder_unset_keywords_update",
+      );
 
   late final _taskListUpdateBuilderUnsetKeywordsUpdate =
       _taskListUpdateBuilderUnsetKeywordsUpdatePtr
           .asFunction<void Function(int)>();
   late final _taskListUpdateBuilderCategoriesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__TaskListUpdateBuilder_categories",
-  );
+        "__TaskListUpdateBuilder_categories",
+      );
 
   late final _taskListUpdateBuilderCategories =
       _taskListUpdateBuilderCategoriesPtr.asFunction<void Function(int, int)>();
   late final _taskListUpdateBuilderUnsetCategoriesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskListUpdateBuilder_unset_categories",
-  );
+        "__TaskListUpdateBuilder_unset_categories",
+      );
 
   late final _taskListUpdateBuilderUnsetCategories =
       _taskListUpdateBuilderUnsetCategoriesPtr.asFunction<void Function(int)>();
   late final _taskListUpdateBuilderUnsetCategoriesUpdatePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__TaskListUpdateBuilder_unset_categories_update",
-  );
+        "__TaskListUpdateBuilder_unset_categories_update",
+      );
 
   late final _taskListUpdateBuilderUnsetCategoriesUpdate =
       _taskListUpdateBuilderUnsetCategoriesUpdatePtr
           .asFunction<void Function(int)>();
   late final _taskListUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TaskListUpdateBuilder_send",
-  );
+        "__TaskListUpdateBuilder_send",
+      );
 
   late final _taskListUpdateBuilderSend =
       _taskListUpdateBuilderSendPtr.asFunction<int Function(int)>();
   late final _spaceHierarchyRoomInfoNamePtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceHierarchyRoomInfoNameReturn Function(
-              ffi.IntPtr)>>("__SpaceHierarchyRoomInfo_name");
+    ffi.NativeFunction<_SpaceHierarchyRoomInfoNameReturn Function(ffi.IntPtr)>
+  >("__SpaceHierarchyRoomInfo_name");
 
-  late final _spaceHierarchyRoomInfoName = _spaceHierarchyRoomInfoNamePtr
-      .asFunction<_SpaceHierarchyRoomInfoNameReturn Function(int)>();
+  late final _spaceHierarchyRoomInfoName =
+      _spaceHierarchyRoomInfoNamePtr
+          .asFunction<_SpaceHierarchyRoomInfoNameReturn Function(int)>();
   late final _spaceHierarchyRoomInfoRoomIdStrPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceHierarchyRoomInfoRoomIdStrReturn Function(
-              ffi.IntPtr)>>("__SpaceHierarchyRoomInfo_room_id_str");
+    ffi.NativeFunction<
+      _SpaceHierarchyRoomInfoRoomIdStrReturn Function(ffi.IntPtr)
+    >
+  >("__SpaceHierarchyRoomInfo_room_id_str");
 
   late final _spaceHierarchyRoomInfoRoomIdStr =
       _spaceHierarchyRoomInfoRoomIdStrPtr
           .asFunction<_SpaceHierarchyRoomInfoRoomIdStrReturn Function(int)>();
   late final _spaceHierarchyRoomInfoTopicPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceHierarchyRoomInfoTopicReturn Function(
-              ffi.IntPtr)>>("__SpaceHierarchyRoomInfo_topic");
+    ffi.NativeFunction<_SpaceHierarchyRoomInfoTopicReturn Function(ffi.IntPtr)>
+  >("__SpaceHierarchyRoomInfo_topic");
 
-  late final _spaceHierarchyRoomInfoTopic = _spaceHierarchyRoomInfoTopicPtr
-      .asFunction<_SpaceHierarchyRoomInfoTopicReturn Function(int)>();
+  late final _spaceHierarchyRoomInfoTopic =
+      _spaceHierarchyRoomInfoTopicPtr
+          .asFunction<_SpaceHierarchyRoomInfoTopicReturn Function(int)>();
   late final _spaceHierarchyRoomInfoNumJoinedMembersPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__SpaceHierarchyRoomInfo_num_joined_members",
-  );
+        "__SpaceHierarchyRoomInfo_num_joined_members",
+      );
 
   late final _spaceHierarchyRoomInfoNumJoinedMembers =
       _spaceHierarchyRoomInfoNumJoinedMembersPtr
           .asFunction<int Function(int)>();
   late final _spaceHierarchyRoomInfoWorldReadablePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__SpaceHierarchyRoomInfo_world_readable",
-  );
+        "__SpaceHierarchyRoomInfo_world_readable",
+      );
 
   late final _spaceHierarchyRoomInfoWorldReadable =
       _spaceHierarchyRoomInfoWorldReadablePtr.asFunction<int Function(int)>();
   late final _spaceHierarchyRoomInfoGuestCanJoinPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__SpaceHierarchyRoomInfo_guest_can_join",
-  );
+        "__SpaceHierarchyRoomInfo_guest_can_join",
+      );
 
   late final _spaceHierarchyRoomInfoGuestCanJoin =
       _spaceHierarchyRoomInfoGuestCanJoinPtr.asFunction<int Function(int)>();
   late final _spaceHierarchyRoomInfoIsSpacePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__SpaceHierarchyRoomInfo_is_space",
-  );
+        "__SpaceHierarchyRoomInfo_is_space",
+      );
 
   late final _spaceHierarchyRoomInfoIsSpace =
       _spaceHierarchyRoomInfoIsSpacePtr.asFunction<int Function(int)>();
   late final _spaceHierarchyRoomInfoAvatarUrlStrPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceHierarchyRoomInfoAvatarUrlStrReturn Function(
-              ffi.IntPtr)>>("__SpaceHierarchyRoomInfo_avatar_url_str");
+    ffi.NativeFunction<
+      _SpaceHierarchyRoomInfoAvatarUrlStrReturn Function(ffi.IntPtr)
+    >
+  >("__SpaceHierarchyRoomInfo_avatar_url_str");
 
   late final _spaceHierarchyRoomInfoAvatarUrlStr =
-      _spaceHierarchyRoomInfoAvatarUrlStrPtr.asFunction<
-          _SpaceHierarchyRoomInfoAvatarUrlStrReturn Function(int)>();
+      _spaceHierarchyRoomInfoAvatarUrlStrPtr
+          .asFunction<
+            _SpaceHierarchyRoomInfoAvatarUrlStrReturn Function(int)
+          >();
   late final _spaceHierarchyRoomInfoJoinRuleStrPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceHierarchyRoomInfoJoinRuleStrReturn Function(
-              ffi.IntPtr)>>("__SpaceHierarchyRoomInfo_join_rule_str");
+    ffi.NativeFunction<
+      _SpaceHierarchyRoomInfoJoinRuleStrReturn Function(ffi.IntPtr)
+    >
+  >("__SpaceHierarchyRoomInfo_join_rule_str");
 
   late final _spaceHierarchyRoomInfoJoinRuleStr =
       _spaceHierarchyRoomInfoJoinRuleStrPtr
           .asFunction<_SpaceHierarchyRoomInfoJoinRuleStrReturn Function(int)>();
   late final _spaceHierarchyRoomInfoHasAvatarPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__SpaceHierarchyRoomInfo_has_avatar",
-  );
+        "__SpaceHierarchyRoomInfo_has_avatar",
+      );
 
   late final _spaceHierarchyRoomInfoHasAvatar =
       _spaceHierarchyRoomInfoHasAvatarPtr.asFunction<int Function(int)>();
   late final _spaceHierarchyRoomInfoSuggestedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__SpaceHierarchyRoomInfo_suggested",
-  );
+        "__SpaceHierarchyRoomInfo_suggested",
+      );
 
   late final _spaceHierarchyRoomInfoSuggested =
       _spaceHierarchyRoomInfoSuggestedPtr.asFunction<int Function(int)>();
   late final _spaceHierarchyRoomInfoGetAvatarPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8,
-              ffi.IntPtr)>>("__SpaceHierarchyRoomInfo_get_avatar");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>
+  >("__SpaceHierarchyRoomInfo_get_avatar");
 
   late final _spaceHierarchyRoomInfoGetAvatar =
       _spaceHierarchyRoomInfoGetAvatarPtr
           .asFunction<int Function(int, int, int)>();
   late final _spaceHierarchyRoomInfoViaServerNamesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SpaceHierarchyRoomInfo_via_server_names",
-  );
+        "__SpaceHierarchyRoomInfo_via_server_names",
+      );
 
   late final _spaceHierarchyRoomInfoViaServerNames =
       _spaceHierarchyRoomInfoViaServerNamesPtr.asFunction<int Function(int)>();
   late final _spaceRelationRoomIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SpaceRelation_room_id",
-  );
+        "__SpaceRelation_room_id",
+      );
 
   late final _spaceRelationRoomId =
       _spaceRelationRoomIdPtr.asFunction<int Function(int)>();
   late final _spaceRelationSuggestedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__SpaceRelation_suggested",
-  );
+        "__SpaceRelation_suggested",
+      );
 
   late final _spaceRelationSuggested =
       _spaceRelationSuggestedPtr.asFunction<int Function(int)>();
   late final _spaceRelationViaPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SpaceRelation_via",
-  );
+        "__SpaceRelation_via",
+      );
 
   late final _spaceRelationVia =
       _spaceRelationViaPtr.asFunction<int Function(int)>();
   late final _spaceRelationTargetTypePtr = _lookup<
-          ffi
-          .NativeFunction<_SpaceRelationTargetTypeReturn Function(ffi.IntPtr)>>(
-      "__SpaceRelation_target_type");
+    ffi.NativeFunction<_SpaceRelationTargetTypeReturn Function(ffi.IntPtr)>
+  >("__SpaceRelation_target_type");
 
-  late final _spaceRelationTargetType = _spaceRelationTargetTypePtr
-      .asFunction<_SpaceRelationTargetTypeReturn Function(int)>();
+  late final _spaceRelationTargetType =
+      _spaceRelationTargetTypePtr
+          .asFunction<_SpaceRelationTargetTypeReturn Function(int)>();
   late final _spaceRelationsRoomIdStrPtr = _lookup<
-          ffi
-          .NativeFunction<_SpaceRelationsRoomIdStrReturn Function(ffi.IntPtr)>>(
-      "__SpaceRelations_room_id_str");
+    ffi.NativeFunction<_SpaceRelationsRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__SpaceRelations_room_id_str");
 
-  late final _spaceRelationsRoomIdStr = _spaceRelationsRoomIdStrPtr
-      .asFunction<_SpaceRelationsRoomIdStrReturn Function(int)>();
+  late final _spaceRelationsRoomIdStr =
+      _spaceRelationsRoomIdStrPtr
+          .asFunction<_SpaceRelationsRoomIdStrReturn Function(int)>();
   late final _spaceRelationsMainParentPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceRelationsMainParentReturn Function(
-              ffi.IntPtr)>>("__SpaceRelations_main_parent");
+    ffi.NativeFunction<_SpaceRelationsMainParentReturn Function(ffi.IntPtr)>
+  >("__SpaceRelations_main_parent");
 
-  late final _spaceRelationsMainParent = _spaceRelationsMainParentPtr
-      .asFunction<_SpaceRelationsMainParentReturn Function(int)>();
+  late final _spaceRelationsMainParent =
+      _spaceRelationsMainParentPtr
+          .asFunction<_SpaceRelationsMainParentReturn Function(int)>();
   late final _spaceRelationsOtherParentsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SpaceRelations_other_parents",
-  );
+        "__SpaceRelations_other_parents",
+      );
 
   late final _spaceRelationsOtherParents =
       _spaceRelationsOtherParentsPtr.asFunction<int Function(int)>();
   late final _spaceRelationsChildrenPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SpaceRelations_children",
-  );
+        "__SpaceRelations_children",
+      );
 
   late final _spaceRelationsChildren =
       _spaceRelationsChildrenPtr.asFunction<int Function(int)>();
   late final _spaceRelationsQueryHierarchyPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SpaceRelations_query_hierarchy",
-  );
+        "__SpaceRelations_query_hierarchy",
+      );
 
   late final _spaceRelationsQueryHierarchy =
       _spaceRelationsQueryHierarchyPtr.asFunction<int Function(int)>();
   late final _roomPowerLevelsNewsPtr = _lookup<
-          ffi.NativeFunction<_RoomPowerLevelsNewsReturn Function(ffi.IntPtr)>>(
-      "__RoomPowerLevels_news");
+    ffi.NativeFunction<_RoomPowerLevelsNewsReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_news");
 
-  late final _roomPowerLevelsNews = _roomPowerLevelsNewsPtr
-      .asFunction<_RoomPowerLevelsNewsReturn Function(int)>();
+  late final _roomPowerLevelsNews =
+      _roomPowerLevelsNewsPtr
+          .asFunction<_RoomPowerLevelsNewsReturn Function(int)>();
   late final _roomPowerLevelsNewsKeyPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomPowerLevelsNewsKeyReturn Function(ffi.IntPtr)>>(
-      "__RoomPowerLevels_news_key");
+    ffi.NativeFunction<_RoomPowerLevelsNewsKeyReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_news_key");
 
-  late final _roomPowerLevelsNewsKey = _roomPowerLevelsNewsKeyPtr
-      .asFunction<_RoomPowerLevelsNewsKeyReturn Function(int)>();
+  late final _roomPowerLevelsNewsKey =
+      _roomPowerLevelsNewsKeyPtr
+          .asFunction<_RoomPowerLevelsNewsKeyReturn Function(int)>();
   late final _roomPowerLevelsEventsPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomPowerLevelsEventsReturn Function(ffi.IntPtr)>>(
-      "__RoomPowerLevels_events");
+    ffi.NativeFunction<_RoomPowerLevelsEventsReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_events");
 
-  late final _roomPowerLevelsEvents = _roomPowerLevelsEventsPtr
-      .asFunction<_RoomPowerLevelsEventsReturn Function(int)>();
+  late final _roomPowerLevelsEvents =
+      _roomPowerLevelsEventsPtr
+          .asFunction<_RoomPowerLevelsEventsReturn Function(int)>();
   late final _roomPowerLevelsEventsKeyPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomPowerLevelsEventsKeyReturn Function(
-              ffi.IntPtr)>>("__RoomPowerLevels_events_key");
+    ffi.NativeFunction<_RoomPowerLevelsEventsKeyReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_events_key");
 
-  late final _roomPowerLevelsEventsKey = _roomPowerLevelsEventsKeyPtr
-      .asFunction<_RoomPowerLevelsEventsKeyReturn Function(int)>();
+  late final _roomPowerLevelsEventsKey =
+      _roomPowerLevelsEventsKeyPtr
+          .asFunction<_RoomPowerLevelsEventsKeyReturn Function(int)>();
   late final _roomPowerLevelsPinsPtr = _lookup<
-          ffi.NativeFunction<_RoomPowerLevelsPinsReturn Function(ffi.IntPtr)>>(
-      "__RoomPowerLevels_pins");
+    ffi.NativeFunction<_RoomPowerLevelsPinsReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_pins");
 
-  late final _roomPowerLevelsPins = _roomPowerLevelsPinsPtr
-      .asFunction<_RoomPowerLevelsPinsReturn Function(int)>();
+  late final _roomPowerLevelsPins =
+      _roomPowerLevelsPinsPtr
+          .asFunction<_RoomPowerLevelsPinsReturn Function(int)>();
   late final _roomPowerLevelsPinsKeyPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomPowerLevelsPinsKeyReturn Function(ffi.IntPtr)>>(
-      "__RoomPowerLevels_pins_key");
+    ffi.NativeFunction<_RoomPowerLevelsPinsKeyReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_pins_key");
 
-  late final _roomPowerLevelsPinsKey = _roomPowerLevelsPinsKeyPtr
-      .asFunction<_RoomPowerLevelsPinsKeyReturn Function(int)>();
+  late final _roomPowerLevelsPinsKey =
+      _roomPowerLevelsPinsKeyPtr
+          .asFunction<_RoomPowerLevelsPinsKeyReturn Function(int)>();
   late final _roomPowerLevelsTasksPtr = _lookup<
-          ffi.NativeFunction<_RoomPowerLevelsTasksReturn Function(ffi.IntPtr)>>(
-      "__RoomPowerLevels_tasks");
+    ffi.NativeFunction<_RoomPowerLevelsTasksReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_tasks");
 
-  late final _roomPowerLevelsTasks = _roomPowerLevelsTasksPtr
-      .asFunction<_RoomPowerLevelsTasksReturn Function(int)>();
+  late final _roomPowerLevelsTasks =
+      _roomPowerLevelsTasksPtr
+          .asFunction<_RoomPowerLevelsTasksReturn Function(int)>();
   late final _roomPowerLevelsTasksKeyPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomPowerLevelsTasksKeyReturn Function(ffi.IntPtr)>>(
-      "__RoomPowerLevels_tasks_key");
+    ffi.NativeFunction<_RoomPowerLevelsTasksKeyReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_tasks_key");
 
-  late final _roomPowerLevelsTasksKey = _roomPowerLevelsTasksKeyPtr
-      .asFunction<_RoomPowerLevelsTasksKeyReturn Function(int)>();
+  late final _roomPowerLevelsTasksKey =
+      _roomPowerLevelsTasksKeyPtr
+          .asFunction<_RoomPowerLevelsTasksKeyReturn Function(int)>();
   late final _roomPowerLevelsTaskListsPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomPowerLevelsTaskListsReturn Function(
-              ffi.IntPtr)>>("__RoomPowerLevels_task_lists");
+    ffi.NativeFunction<_RoomPowerLevelsTaskListsReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_task_lists");
 
-  late final _roomPowerLevelsTaskLists = _roomPowerLevelsTaskListsPtr
-      .asFunction<_RoomPowerLevelsTaskListsReturn Function(int)>();
+  late final _roomPowerLevelsTaskLists =
+      _roomPowerLevelsTaskListsPtr
+          .asFunction<_RoomPowerLevelsTaskListsReturn Function(int)>();
   late final _roomPowerLevelsTaskListsKeyPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomPowerLevelsTaskListsKeyReturn Function(
-              ffi.IntPtr)>>("__RoomPowerLevels_task_lists_key");
+    ffi.NativeFunction<_RoomPowerLevelsTaskListsKeyReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_task_lists_key");
 
-  late final _roomPowerLevelsTaskListsKey = _roomPowerLevelsTaskListsKeyPtr
-      .asFunction<_RoomPowerLevelsTaskListsKeyReturn Function(int)>();
+  late final _roomPowerLevelsTaskListsKey =
+      _roomPowerLevelsTaskListsKeyPtr
+          .asFunction<_RoomPowerLevelsTaskListsKeyReturn Function(int)>();
   late final _roomPowerLevelsRsvpPtr = _lookup<
-          ffi.NativeFunction<_RoomPowerLevelsRsvpReturn Function(ffi.IntPtr)>>(
-      "__RoomPowerLevels_rsvp");
+    ffi.NativeFunction<_RoomPowerLevelsRsvpReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_rsvp");
 
-  late final _roomPowerLevelsRsvp = _roomPowerLevelsRsvpPtr
-      .asFunction<_RoomPowerLevelsRsvpReturn Function(int)>();
+  late final _roomPowerLevelsRsvp =
+      _roomPowerLevelsRsvpPtr
+          .asFunction<_RoomPowerLevelsRsvpReturn Function(int)>();
   late final _roomPowerLevelsRsvpKeyPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomPowerLevelsRsvpKeyReturn Function(ffi.IntPtr)>>(
-      "__RoomPowerLevels_rsvp_key");
+    ffi.NativeFunction<_RoomPowerLevelsRsvpKeyReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_rsvp_key");
 
-  late final _roomPowerLevelsRsvpKey = _roomPowerLevelsRsvpKeyPtr
-      .asFunction<_RoomPowerLevelsRsvpKeyReturn Function(int)>();
+  late final _roomPowerLevelsRsvpKey =
+      _roomPowerLevelsRsvpKeyPtr
+          .asFunction<_RoomPowerLevelsRsvpKeyReturn Function(int)>();
   late final _roomPowerLevelsCommentsPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomPowerLevelsCommentsReturn Function(ffi.IntPtr)>>(
-      "__RoomPowerLevels_comments");
+    ffi.NativeFunction<_RoomPowerLevelsCommentsReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_comments");
 
-  late final _roomPowerLevelsComments = _roomPowerLevelsCommentsPtr
-      .asFunction<_RoomPowerLevelsCommentsReturn Function(int)>();
+  late final _roomPowerLevelsComments =
+      _roomPowerLevelsCommentsPtr
+          .asFunction<_RoomPowerLevelsCommentsReturn Function(int)>();
   late final _roomPowerLevelsCommentsKeyPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomPowerLevelsCommentsKeyReturn Function(
-              ffi.IntPtr)>>("__RoomPowerLevels_comments_key");
+    ffi.NativeFunction<_RoomPowerLevelsCommentsKeyReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_comments_key");
 
-  late final _roomPowerLevelsCommentsKey = _roomPowerLevelsCommentsKeyPtr
-      .asFunction<_RoomPowerLevelsCommentsKeyReturn Function(int)>();
+  late final _roomPowerLevelsCommentsKey =
+      _roomPowerLevelsCommentsKeyPtr
+          .asFunction<_RoomPowerLevelsCommentsKeyReturn Function(int)>();
   late final _roomPowerLevelsAttachmentsPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomPowerLevelsAttachmentsReturn Function(
-              ffi.IntPtr)>>("__RoomPowerLevels_attachments");
+    ffi.NativeFunction<_RoomPowerLevelsAttachmentsReturn Function(ffi.IntPtr)>
+  >("__RoomPowerLevels_attachments");
 
-  late final _roomPowerLevelsAttachments = _roomPowerLevelsAttachmentsPtr
-      .asFunction<_RoomPowerLevelsAttachmentsReturn Function(int)>();
+  late final _roomPowerLevelsAttachments =
+      _roomPowerLevelsAttachmentsPtr
+          .asFunction<_RoomPowerLevelsAttachmentsReturn Function(int)>();
   late final _roomPowerLevelsAttachmentsKeyPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomPowerLevelsAttachmentsKeyReturn Function(
-              ffi.IntPtr)>>("__RoomPowerLevels_attachments_key");
+    ffi.NativeFunction<
+      _RoomPowerLevelsAttachmentsKeyReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevels_attachments_key");
 
-  late final _roomPowerLevelsAttachmentsKey = _roomPowerLevelsAttachmentsKeyPtr
-      .asFunction<_RoomPowerLevelsAttachmentsKeyReturn Function(int)>();
+  late final _roomPowerLevelsAttachmentsKey =
+      _roomPowerLevelsAttachmentsKeyPtr
+          .asFunction<_RoomPowerLevelsAttachmentsKeyReturn Function(int)>();
   late final _roomPowerLevelsEventsDefaultPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
-    "__RoomPowerLevels_events_default",
-  );
+        "__RoomPowerLevels_events_default",
+      );
 
   late final _roomPowerLevelsEventsDefault =
       _roomPowerLevelsEventsDefaultPtr.asFunction<int Function(int)>();
   late final _roomPowerLevelsUsersDefaultPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
-    "__RoomPowerLevels_users_default",
-  );
+        "__RoomPowerLevels_users_default",
+      );
 
   late final _roomPowerLevelsUsersDefault =
       _roomPowerLevelsUsersDefaultPtr.asFunction<int Function(int)>();
   late final _roomPowerLevelsMaxPowerLevelPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
-    "__RoomPowerLevels_max_power_level",
-  );
+        "__RoomPowerLevels_max_power_level",
+      );
 
   late final _roomPowerLevelsMaxPowerLevel =
       _roomPowerLevelsMaxPowerLevelPtr.asFunction<int Function(int)>();
   late final _roomPowerLevelsKickPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
-    "__RoomPowerLevels_kick",
-  );
+        "__RoomPowerLevels_kick",
+      );
 
   late final _roomPowerLevelsKick =
       _roomPowerLevelsKickPtr.asFunction<int Function(int)>();
   late final _roomPowerLevelsBanPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
-    "__RoomPowerLevels_ban",
-  );
+        "__RoomPowerLevels_ban",
+      );
 
   late final _roomPowerLevelsBan =
       _roomPowerLevelsBanPtr.asFunction<int Function(int)>();
   late final _roomPowerLevelsRedactPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
-    "__RoomPowerLevels_redact",
-  );
+        "__RoomPowerLevels_redact",
+      );
 
   late final _roomPowerLevelsRedact =
       _roomPowerLevelsRedactPtr.asFunction<int Function(int)>();
   late final _roomPowerLevelsInvitePtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
-    "__RoomPowerLevels_invite",
-  );
+        "__RoomPowerLevels_invite",
+      );
 
   late final _roomPowerLevelsInvite =
       _roomPowerLevelsInvitePtr.asFunction<int Function(int)>();
   late final _simpleOnOffSettingActivePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__SimpleOnOffSetting_active",
-  );
+        "__SimpleOnOffSetting_active",
+      );
 
   late final _simpleOnOffSettingActive =
       _simpleOnOffSettingActivePtr.asFunction<int Function(int)>();
   late final _simpleOnOffSettingBuilderActivePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__SimpleOnOffSettingBuilder_active",
-  );
+        "__SimpleOnOffSettingBuilder_active",
+      );
 
   late final _simpleOnOffSettingBuilderActive =
       _simpleOnOffSettingBuilderActivePtr.asFunction<void Function(int, int)>();
   late final _simpleOnOffSettingBuilderBuildPtr = _lookup<
-      ffi.NativeFunction<
-          _SimpleOnOffSettingBuilderBuildReturn Function(
-              ffi.IntPtr)>>("__SimpleOnOffSettingBuilder_build");
+    ffi.NativeFunction<
+      _SimpleOnOffSettingBuilderBuildReturn Function(ffi.IntPtr)
+    >
+  >("__SimpleOnOffSettingBuilder_build");
 
   late final _simpleOnOffSettingBuilderBuild =
       _simpleOnOffSettingBuilderBuildPtr
           .asFunction<_SimpleOnOffSettingBuilderBuildReturn Function(int)>();
   late final _simpleSettingWithTurnOffActivePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__SimpleSettingWithTurnOff_active",
-  );
+        "__SimpleSettingWithTurnOff_active",
+      );
 
   late final _simpleSettingWithTurnOffActive =
       _simpleSettingWithTurnOffActivePtr.asFunction<int Function(int)>();
   late final _simpleSettingWithTurnOffBuilderActivePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__SimpleSettingWithTurnOffBuilder_active",
-  );
+        "__SimpleSettingWithTurnOffBuilder_active",
+      );
 
   late final _simpleSettingWithTurnOffBuilderActive =
       _simpleSettingWithTurnOffBuilderActivePtr
           .asFunction<void Function(int, int)>();
   late final _simpleSettingWithTurnOffBuilderBuildPtr = _lookup<
-      ffi.NativeFunction<
-          _SimpleSettingWithTurnOffBuilderBuildReturn Function(
-              ffi.IntPtr)>>("__SimpleSettingWithTurnOffBuilder_build");
+    ffi.NativeFunction<
+      _SimpleSettingWithTurnOffBuilderBuildReturn Function(ffi.IntPtr)
+    >
+  >("__SimpleSettingWithTurnOffBuilder_build");
 
   late final _simpleSettingWithTurnOffBuilderBuild =
-      _simpleSettingWithTurnOffBuilderBuildPtr.asFunction<
-          _SimpleSettingWithTurnOffBuilderBuildReturn Function(int)>();
+      _simpleSettingWithTurnOffBuilderBuildPtr
+          .asFunction<
+            _SimpleSettingWithTurnOffBuilderBuildReturn Function(int)
+          >();
   late final _newsSettingsActivePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__NewsSettings_active",
-  );
+        "__NewsSettings_active",
+      );
 
   late final _newsSettingsActive =
       _newsSettingsActivePtr.asFunction<int Function(int)>();
   late final _newsSettingsUpdaterPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NewsSettings_updater",
-  );
+        "__NewsSettings_updater",
+      );
 
   late final _newsSettingsUpdater =
       _newsSettingsUpdaterPtr.asFunction<int Function(int)>();
   late final _tasksSettingsActivePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__TasksSettings_active",
-  );
+        "__TasksSettings_active",
+      );
 
   late final _tasksSettingsActive =
       _tasksSettingsActivePtr.asFunction<int Function(int)>();
   late final _tasksSettingsUpdaterPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__TasksSettings_updater",
-  );
+        "__TasksSettings_updater",
+      );
 
   late final _tasksSettingsUpdater =
       _tasksSettingsUpdaterPtr.asFunction<int Function(int)>();
   late final _eventsSettingsActivePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__EventsSettings_active",
-  );
+        "__EventsSettings_active",
+      );
 
   late final _eventsSettingsActive =
       _eventsSettingsActivePtr.asFunction<int Function(int)>();
   late final _eventsSettingsUpdaterPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__EventsSettings_updater",
-  );
+        "__EventsSettings_updater",
+      );
 
   late final _eventsSettingsUpdater =
       _eventsSettingsUpdaterPtr.asFunction<int Function(int)>();
   late final _pinsSettingsActivePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__PinsSettings_active",
-  );
+        "__PinsSettings_active",
+      );
 
   late final _pinsSettingsActive =
       _pinsSettingsActivePtr.asFunction<int Function(int)>();
   late final _pinsSettingsUpdaterPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__PinsSettings_updater",
-  );
+        "__PinsSettings_updater",
+      );
 
   late final _pinsSettingsUpdater =
       _pinsSettingsUpdaterPtr.asFunction<int Function(int)>();
   late final _acterAppSettingsNewsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerAppSettings_news",
-  );
+        "__ActerAppSettings_news",
+      );
 
   late final _acterAppSettingsNews =
       _acterAppSettingsNewsPtr.asFunction<int Function(int)>();
   late final _acterAppSettingsPinsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerAppSettings_pins",
-  );
+        "__ActerAppSettings_pins",
+      );
 
   late final _acterAppSettingsPins =
       _acterAppSettingsPinsPtr.asFunction<int Function(int)>();
   late final _acterAppSettingsEventsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerAppSettings_events",
-  );
+        "__ActerAppSettings_events",
+      );
 
   late final _acterAppSettingsEvents =
       _acterAppSettingsEventsPtr.asFunction<int Function(int)>();
   late final _acterAppSettingsTasksPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerAppSettings_tasks",
-  );
+        "__ActerAppSettings_tasks",
+      );
 
   late final _acterAppSettingsTasks =
       _acterAppSettingsTasksPtr.asFunction<int Function(int)>();
   late final _acterAppSettingsUpdateBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerAppSettings_update_builder",
-  );
+        "__ActerAppSettings_update_builder",
+      );
 
   late final _acterAppSettingsUpdateBuilder =
       _acterAppSettingsUpdateBuilderPtr.asFunction<int Function(int)>();
   late final _acterAppSettingsBuilderNewsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint8,
-              ffi.IntPtr)>>("__ActerAppSettingsBuilder_news");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>
+  >("__ActerAppSettingsBuilder_news");
 
-  late final _acterAppSettingsBuilderNews = _acterAppSettingsBuilderNewsPtr
-      .asFunction<void Function(int, int, int)>();
+  late final _acterAppSettingsBuilderNews =
+      _acterAppSettingsBuilderNewsPtr
+          .asFunction<void Function(int, int, int)>();
   late final _acterAppSettingsBuilderPinsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint8,
-              ffi.IntPtr)>>("__ActerAppSettingsBuilder_pins");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>
+  >("__ActerAppSettingsBuilder_pins");
 
-  late final _acterAppSettingsBuilderPins = _acterAppSettingsBuilderPinsPtr
-      .asFunction<void Function(int, int, int)>();
+  late final _acterAppSettingsBuilderPins =
+      _acterAppSettingsBuilderPinsPtr
+          .asFunction<void Function(int, int, int)>();
   late final _acterAppSettingsBuilderEventsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint8,
-              ffi.IntPtr)>>("__ActerAppSettingsBuilder_events");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>
+  >("__ActerAppSettingsBuilder_events");
 
-  late final _acterAppSettingsBuilderEvents = _acterAppSettingsBuilderEventsPtr
-      .asFunction<void Function(int, int, int)>();
+  late final _acterAppSettingsBuilderEvents =
+      _acterAppSettingsBuilderEventsPtr
+          .asFunction<void Function(int, int, int)>();
   late final _acterAppSettingsBuilderTasksPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint8,
-              ffi.IntPtr)>>("__ActerAppSettingsBuilder_tasks");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>
+  >("__ActerAppSettingsBuilder_tasks");
 
-  late final _acterAppSettingsBuilderTasks = _acterAppSettingsBuilderTasksPtr
-      .asFunction<void Function(int, int, int)>();
+  late final _acterAppSettingsBuilderTasks =
+      _acterAppSettingsBuilderTasksPtr
+          .asFunction<void Function(int, int, int)>();
   late final _membershipChangeUserIdStrPtr = _lookup<
-      ffi.NativeFunction<
-          _MembershipChangeUserIdStrReturn Function(
-              ffi.IntPtr)>>("__MembershipChange_user_id_str");
+    ffi.NativeFunction<_MembershipChangeUserIdStrReturn Function(ffi.IntPtr)>
+  >("__MembershipChange_user_id_str");
 
-  late final _membershipChangeUserIdStr = _membershipChangeUserIdStrPtr
-      .asFunction<_MembershipChangeUserIdStrReturn Function(int)>();
+  late final _membershipChangeUserIdStr =
+      _membershipChangeUserIdStrPtr
+          .asFunction<_MembershipChangeUserIdStrReturn Function(int)>();
   late final _membershipChangeAvatarUrlPtr = _lookup<
-      ffi.NativeFunction<
-          _MembershipChangeAvatarUrlReturn Function(
-              ffi.IntPtr)>>("__MembershipChange_avatar_url");
+    ffi.NativeFunction<_MembershipChangeAvatarUrlReturn Function(ffi.IntPtr)>
+  >("__MembershipChange_avatar_url");
 
-  late final _membershipChangeAvatarUrl = _membershipChangeAvatarUrlPtr
-      .asFunction<_MembershipChangeAvatarUrlReturn Function(int)>();
+  late final _membershipChangeAvatarUrl =
+      _membershipChangeAvatarUrlPtr
+          .asFunction<_MembershipChangeAvatarUrlReturn Function(int)>();
   late final _membershipChangeDisplayNamePtr = _lookup<
-      ffi.NativeFunction<
-          _MembershipChangeDisplayNameReturn Function(
-              ffi.IntPtr)>>("__MembershipChange_display_name");
+    ffi.NativeFunction<_MembershipChangeDisplayNameReturn Function(ffi.IntPtr)>
+  >("__MembershipChange_display_name");
 
-  late final _membershipChangeDisplayName = _membershipChangeDisplayNamePtr
-      .asFunction<_MembershipChangeDisplayNameReturn Function(int)>();
+  late final _membershipChangeDisplayName =
+      _membershipChangeDisplayNamePtr
+          .asFunction<_MembershipChangeDisplayNameReturn Function(int)>();
   late final _membershipChangeReasonPtr = _lookup<
-          ffi
-          .NativeFunction<_MembershipChangeReasonReturn Function(ffi.IntPtr)>>(
-      "__MembershipChange_reason");
+    ffi.NativeFunction<_MembershipChangeReasonReturn Function(ffi.IntPtr)>
+  >("__MembershipChange_reason");
 
-  late final _membershipChangeReason = _membershipChangeReasonPtr
-      .asFunction<_MembershipChangeReasonReturn Function(int)>();
+  late final _membershipChangeReason =
+      _membershipChangeReasonPtr
+          .asFunction<_MembershipChangeReasonReturn Function(int)>();
   late final _activityObjectTypeStrPtr = _lookup<
-          ffi
-          .NativeFunction<_ActivityObjectTypeStrReturn Function(ffi.IntPtr)>>(
-      "__ActivityObject_type_str");
+    ffi.NativeFunction<_ActivityObjectTypeStrReturn Function(ffi.IntPtr)>
+  >("__ActivityObject_type_str");
 
-  late final _activityObjectTypeStr = _activityObjectTypeStrPtr
-      .asFunction<_ActivityObjectTypeStrReturn Function(int)>();
+  late final _activityObjectTypeStr =
+      _activityObjectTypeStrPtr
+          .asFunction<_ActivityObjectTypeStrReturn Function(int)>();
   late final _activityObjectObjectIdStrPtr = _lookup<
-      ffi.NativeFunction<
-          _ActivityObjectObjectIdStrReturn Function(
-              ffi.IntPtr)>>("__ActivityObject_object_id_str");
+    ffi.NativeFunction<_ActivityObjectObjectIdStrReturn Function(ffi.IntPtr)>
+  >("__ActivityObject_object_id_str");
 
-  late final _activityObjectObjectIdStr = _activityObjectObjectIdStrPtr
-      .asFunction<_ActivityObjectObjectIdStrReturn Function(int)>();
+  late final _activityObjectObjectIdStr =
+      _activityObjectObjectIdStrPtr
+          .asFunction<_ActivityObjectObjectIdStrReturn Function(int)>();
   late final _activityObjectTitlePtr = _lookup<
-          ffi.NativeFunction<_ActivityObjectTitleReturn Function(ffi.IntPtr)>>(
-      "__ActivityObject_title");
+    ffi.NativeFunction<_ActivityObjectTitleReturn Function(ffi.IntPtr)>
+  >("__ActivityObject_title");
 
-  late final _activityObjectTitle = _activityObjectTitlePtr
-      .asFunction<_ActivityObjectTitleReturn Function(int)>();
+  late final _activityObjectTitle =
+      _activityObjectTitlePtr
+          .asFunction<_ActivityObjectTitleReturn Function(int)>();
   late final _activityObjectEmojiPtr = _lookup<
-          ffi.NativeFunction<_ActivityObjectEmojiReturn Function(ffi.IntPtr)>>(
-      "__ActivityObject_emoji");
+    ffi.NativeFunction<_ActivityObjectEmojiReturn Function(ffi.IntPtr)>
+  >("__ActivityObject_emoji");
 
-  late final _activityObjectEmoji = _activityObjectEmojiPtr
-      .asFunction<_ActivityObjectEmojiReturn Function(int)>();
+  late final _activityObjectEmoji =
+      _activityObjectEmojiPtr
+          .asFunction<_ActivityObjectEmojiReturn Function(int)>();
   late final _activityEventIdStrPtr = _lookup<
-          ffi.NativeFunction<_ActivityEventIdStrReturn Function(ffi.IntPtr)>>(
-      "__Activity_event_id_str");
+    ffi.NativeFunction<_ActivityEventIdStrReturn Function(ffi.IntPtr)>
+  >("__Activity_event_id_str");
 
-  late final _activityEventIdStr = _activityEventIdStrPtr
-      .asFunction<_ActivityEventIdStrReturn Function(int)>();
+  late final _activityEventIdStr =
+      _activityEventIdStrPtr
+          .asFunction<_ActivityEventIdStrReturn Function(int)>();
   late final _activitySenderIdStrPtr = _lookup<
-          ffi.NativeFunction<_ActivitySenderIdStrReturn Function(ffi.IntPtr)>>(
-      "__Activity_sender_id_str");
+    ffi.NativeFunction<_ActivitySenderIdStrReturn Function(ffi.IntPtr)>
+  >("__Activity_sender_id_str");
 
-  late final _activitySenderIdStr = _activitySenderIdStrPtr
-      .asFunction<_ActivitySenderIdStrReturn Function(int)>();
+  late final _activitySenderIdStr =
+      _activitySenderIdStrPtr
+          .asFunction<_ActivitySenderIdStrReturn Function(int)>();
   late final _activityOriginServerTsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__Activity_origin_server_ts",
-  );
+        "__Activity_origin_server_ts",
+      );
 
   late final _activityOriginServerTs =
       _activityOriginServerTsPtr.asFunction<int Function(int)>();
   late final _activityRoomIdStrPtr = _lookup<
-          ffi.NativeFunction<_ActivityRoomIdStrReturn Function(ffi.IntPtr)>>(
-      "__Activity_room_id_str");
+    ffi.NativeFunction<_ActivityRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__Activity_room_id_str");
 
-  late final _activityRoomIdStr = _activityRoomIdStrPtr
-      .asFunction<_ActivityRoomIdStrReturn Function(int)>();
+  late final _activityRoomIdStr =
+      _activityRoomIdStrPtr
+          .asFunction<_ActivityRoomIdStrReturn Function(int)>();
   late final _activityTypeStrPtr =
       _lookup<ffi.NativeFunction<_ActivityTypeStrReturn Function(ffi.IntPtr)>>(
-    "__Activity_type_str",
-  );
+        "__Activity_type_str",
+      );
 
   late final _activityTypeStr =
       _activityTypeStrPtr.asFunction<_ActivityTypeStrReturn Function(int)>();
   late final _activityMembershipChangePtr = _lookup<
-      ffi.NativeFunction<
-          _ActivityMembershipChangeReturn Function(
-              ffi.IntPtr)>>("__Activity_membership_change");
+    ffi.NativeFunction<_ActivityMembershipChangeReturn Function(ffi.IntPtr)>
+  >("__Activity_membership_change");
 
-  late final _activityMembershipChange = _activityMembershipChangePtr
-      .asFunction<_ActivityMembershipChangeReturn Function(int)>();
+  late final _activityMembershipChange =
+      _activityMembershipChangePtr
+          .asFunction<_ActivityMembershipChangeReturn Function(int)>();
   late final _activitiesGetIdsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-              ffi.IntPtr, ffi.Uint32, ffi.Uint32)>>("__Activities_get_ids");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32, ffi.Uint32)>
+  >("__Activities_get_ids");
 
   late final _activitiesGetIds =
       _activitiesGetIdsPtr.asFunction<int Function(int, int, int)>();
   late final _activitiesSubscribeStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Activities_subscribe_stream",
-  );
+        "__Activities_subscribe_stream",
+      );
 
   late final _activitiesSubscribeStream =
       _activitiesSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _roomPreviewRoomIdStrPtr = _lookup<
-          ffi.NativeFunction<_RoomPreviewRoomIdStrReturn Function(ffi.IntPtr)>>(
-      "__RoomPreview_room_id_str");
+    ffi.NativeFunction<_RoomPreviewRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__RoomPreview_room_id_str");
 
-  late final _roomPreviewRoomIdStr = _roomPreviewRoomIdStrPtr
-      .asFunction<_RoomPreviewRoomIdStrReturn Function(int)>();
+  late final _roomPreviewRoomIdStr =
+      _roomPreviewRoomIdStrPtr
+          .asFunction<_RoomPreviewRoomIdStrReturn Function(int)>();
   late final _roomPreviewNamePtr =
       _lookup<ffi.NativeFunction<_RoomPreviewNameReturn Function(ffi.IntPtr)>>(
-    "__RoomPreview_name",
-  );
+        "__RoomPreview_name",
+      );
 
   late final _roomPreviewName =
       _roomPreviewNamePtr.asFunction<_RoomPreviewNameReturn Function(int)>();
   late final _roomPreviewTopicPtr =
       _lookup<ffi.NativeFunction<_RoomPreviewTopicReturn Function(ffi.IntPtr)>>(
-    "__RoomPreview_topic",
-  );
+        "__RoomPreview_topic",
+      );
 
   late final _roomPreviewTopic =
       _roomPreviewTopicPtr.asFunction<_RoomPreviewTopicReturn Function(int)>();
   late final _roomPreviewAvatarUrlStrPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomPreviewAvatarUrlStrReturn Function(ffi.IntPtr)>>(
-      "__RoomPreview_avatar_url_str");
+    ffi.NativeFunction<_RoomPreviewAvatarUrlStrReturn Function(ffi.IntPtr)>
+  >("__RoomPreview_avatar_url_str");
 
-  late final _roomPreviewAvatarUrlStr = _roomPreviewAvatarUrlStrPtr
-      .asFunction<_RoomPreviewAvatarUrlStrReturn Function(int)>();
+  late final _roomPreviewAvatarUrlStr =
+      _roomPreviewAvatarUrlStrPtr
+          .asFunction<_RoomPreviewAvatarUrlStrReturn Function(int)>();
   late final _roomPreviewCanonicalAliasStrPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomPreviewCanonicalAliasStrReturn Function(
-              ffi.IntPtr)>>("__RoomPreview_canonical_alias_str");
+    ffi.NativeFunction<_RoomPreviewCanonicalAliasStrReturn Function(ffi.IntPtr)>
+  >("__RoomPreview_canonical_alias_str");
 
-  late final _roomPreviewCanonicalAliasStr = _roomPreviewCanonicalAliasStrPtr
-      .asFunction<_RoomPreviewCanonicalAliasStrReturn Function(int)>();
+  late final _roomPreviewCanonicalAliasStr =
+      _roomPreviewCanonicalAliasStrPtr
+          .asFunction<_RoomPreviewCanonicalAliasStrReturn Function(int)>();
   late final _roomPreviewRoomTypeStrPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomPreviewRoomTypeStrReturn Function(ffi.IntPtr)>>(
-      "__RoomPreview_room_type_str");
+    ffi.NativeFunction<_RoomPreviewRoomTypeStrReturn Function(ffi.IntPtr)>
+  >("__RoomPreview_room_type_str");
 
-  late final _roomPreviewRoomTypeStr = _roomPreviewRoomTypeStrPtr
-      .asFunction<_RoomPreviewRoomTypeStrReturn Function(int)>();
+  late final _roomPreviewRoomTypeStr =
+      _roomPreviewRoomTypeStrPtr
+          .asFunction<_RoomPreviewRoomTypeStrReturn Function(int)>();
   late final _roomPreviewJoinRuleStrPtr = _lookup<
-          ffi
-          .NativeFunction<_RoomPreviewJoinRuleStrReturn Function(ffi.IntPtr)>>(
-      "__RoomPreview_join_rule_str");
+    ffi.NativeFunction<_RoomPreviewJoinRuleStrReturn Function(ffi.IntPtr)>
+  >("__RoomPreview_join_rule_str");
 
-  late final _roomPreviewJoinRuleStr = _roomPreviewJoinRuleStrPtr
-      .asFunction<_RoomPreviewJoinRuleStrReturn Function(int)>();
+  late final _roomPreviewJoinRuleStr =
+      _roomPreviewJoinRuleStrPtr
+          .asFunction<_RoomPreviewJoinRuleStrReturn Function(int)>();
   late final _roomPreviewStateStrPtr = _lookup<
-          ffi.NativeFunction<_RoomPreviewStateStrReturn Function(ffi.IntPtr)>>(
-      "__RoomPreview_state_str");
+    ffi.NativeFunction<_RoomPreviewStateStrReturn Function(ffi.IntPtr)>
+  >("__RoomPreview_state_str");
 
-  late final _roomPreviewStateStr = _roomPreviewStateStrPtr
-      .asFunction<_RoomPreviewStateStrReturn Function(int)>();
+  late final _roomPreviewStateStr =
+      _roomPreviewStateStrPtr
+          .asFunction<_RoomPreviewStateStrReturn Function(int)>();
   late final _roomPreviewIsDirectPtr = _lookup<
-          ffi.NativeFunction<_RoomPreviewIsDirectReturn Function(ffi.IntPtr)>>(
-      "__RoomPreview_is_direct");
+    ffi.NativeFunction<_RoomPreviewIsDirectReturn Function(ffi.IntPtr)>
+  >("__RoomPreview_is_direct");
 
-  late final _roomPreviewIsDirect = _roomPreviewIsDirectPtr
-      .asFunction<_RoomPreviewIsDirectReturn Function(int)>();
+  late final _roomPreviewIsDirect =
+      _roomPreviewIsDirectPtr
+          .asFunction<_RoomPreviewIsDirectReturn Function(int)>();
   late final _roomPreviewIsWorldReadablePtr = _lookup<
-      ffi.NativeFunction<
-          _RoomPreviewIsWorldReadableReturn Function(
-              ffi.IntPtr)>>("__RoomPreview_is_world_readable");
+    ffi.NativeFunction<_RoomPreviewIsWorldReadableReturn Function(ffi.IntPtr)>
+  >("__RoomPreview_is_world_readable");
 
-  late final _roomPreviewIsWorldReadable = _roomPreviewIsWorldReadablePtr
-      .asFunction<_RoomPreviewIsWorldReadableReturn Function(int)>();
+  late final _roomPreviewIsWorldReadable =
+      _roomPreviewIsWorldReadablePtr
+          .asFunction<_RoomPreviewIsWorldReadableReturn Function(int)>();
   late final _roomPreviewHasAvatarPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__RoomPreview_has_avatar",
-  );
+        "__RoomPreview_has_avatar",
+      );
 
   late final _roomPreviewHasAvatar =
       _roomPreviewHasAvatarPtr.asFunction<int Function(int)>();
   late final _roomPreviewAvatarPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-              ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>>("__RoomPreview_avatar");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>
+  >("__RoomPreview_avatar");
 
   late final _roomPreviewAvatar =
       _roomPreviewAvatarPtr.asFunction<int Function(int, int, int)>();
   late final _categoryTitlePtr =
       _lookup<ffi.NativeFunction<_CategoryTitleReturn Function(ffi.IntPtr)>>(
-    "__Category_title",
-  );
+        "__Category_title",
+      );
 
   late final _categoryTitle =
       _categoryTitlePtr.asFunction<_CategoryTitleReturn Function(int)>();
   late final _categoryEntriesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Category_entries",
-  );
+        "__Category_entries",
+      );
 
   late final _categoryEntries =
       _categoryEntriesPtr.asFunction<int Function(int)>();
   late final _categoryDisplayPtr =
       _lookup<ffi.NativeFunction<_CategoryDisplayReturn Function(ffi.IntPtr)>>(
-    "__Category_display",
-  );
+        "__Category_display",
+      );
 
   late final _categoryDisplay =
       _categoryDisplayPtr.asFunction<_CategoryDisplayReturn Function(int)>();
   late final _categoryUpdateBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Category_update_builder",
-  );
+        "__Category_update_builder",
+      );
 
   late final _categoryUpdateBuilder =
       _categoryUpdateBuilderPtr.asFunction<int Function(int)>();
   late final _categoryBuilderTitlePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CategoryBuilder_title");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CategoryBuilder_title");
 
   late final _categoryBuilderTitle =
       _categoryBuilderTitlePtr.asFunction<void Function(int, int, int, int)>();
   late final _categoryBuilderClearEntriesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__CategoryBuilder_clear_entries",
-  );
+        "__CategoryBuilder_clear_entries",
+      );
 
   late final _categoryBuilderClearEntries =
       _categoryBuilderClearEntriesPtr.asFunction<void Function(int)>();
   late final _categoryBuilderAddEntryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CategoryBuilder_add_entry");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CategoryBuilder_add_entry");
 
-  late final _categoryBuilderAddEntry = _categoryBuilderAddEntryPtr
-      .asFunction<void Function(int, int, int, int)>();
+  late final _categoryBuilderAddEntry =
+      _categoryBuilderAddEntryPtr
+          .asFunction<void Function(int, int, int, int)>();
   late final _categoryBuilderDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__CategoryBuilder_display",
-  );
+        "__CategoryBuilder_display",
+      );
 
   late final _categoryBuilderDisplay =
       _categoryBuilderDisplayPtr.asFunction<void Function(int, int)>();
   late final _categoryBuilderUnsetDisplayPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__CategoryBuilder_unset_display",
-  );
+        "__CategoryBuilder_unset_display",
+      );
 
   late final _categoryBuilderUnsetDisplay =
       _categoryBuilderUnsetDisplayPtr.asFunction<void Function(int)>();
   late final _categoryBuilderBuildPtr = _lookup<
-          ffi.NativeFunction<_CategoryBuilderBuildReturn Function(ffi.IntPtr)>>(
-      "__CategoryBuilder_build");
+    ffi.NativeFunction<_CategoryBuilderBuildReturn Function(ffi.IntPtr)>
+  >("__CategoryBuilder_build");
 
-  late final _categoryBuilderBuild = _categoryBuilderBuildPtr
-      .asFunction<_CategoryBuilderBuildReturn Function(int)>();
+  late final _categoryBuilderBuild =
+      _categoryBuilderBuildPtr
+          .asFunction<_CategoryBuilderBuildReturn Function(int)>();
   late final _categoriesCategoriesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Categories_categories",
-  );
+        "__Categories_categories",
+      );
 
   late final _categoriesCategories =
       _categoriesCategoriesPtr.asFunction<int Function(int)>();
   late final _categoriesNewCategoryBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Categories_new_category_builder",
-  );
+        "__Categories_new_category_builder",
+      );
 
   late final _categoriesNewCategoryBuilder =
       _categoriesNewCategoryBuilderPtr.asFunction<int Function(int)>();
   late final _categoriesUpdateBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Categories_update_builder",
-  );
+        "__Categories_update_builder",
+      );
 
   late final _categoriesUpdateBuilder =
       _categoriesUpdateBuilderPtr.asFunction<int Function(int)>();
   late final _categoriesBuilderAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__CategoriesBuilder_add",
-  );
+        "__CategoriesBuilder_add",
+      );
 
   late final _categoriesBuilderAdd =
       _categoriesBuilderAddPtr.asFunction<void Function(int, int)>();
   late final _categoriesBuilderClearPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__CategoriesBuilder_clear",
-  );
+        "__CategoriesBuilder_clear",
+      );
 
   late final _categoriesBuilderClear =
       _categoriesBuilderClearPtr.asFunction<void Function(int)>();
   late final _displayIconTypeStrPtr = _lookup<
-          ffi.NativeFunction<_DisplayIconTypeStrReturn Function(ffi.IntPtr)>>(
-      "__Display_icon_type_str");
+    ffi.NativeFunction<_DisplayIconTypeStrReturn Function(ffi.IntPtr)>
+  >("__Display_icon_type_str");
 
-  late final _displayIconTypeStr = _displayIconTypeStrPtr
-      .asFunction<_DisplayIconTypeStrReturn Function(int)>();
+  late final _displayIconTypeStr =
+      _displayIconTypeStrPtr
+          .asFunction<_DisplayIconTypeStrReturn Function(int)>();
   late final _displayIconStrPtr =
       _lookup<ffi.NativeFunction<_DisplayIconStrReturn Function(ffi.IntPtr)>>(
-    "__Display_icon_str",
-  );
+        "__Display_icon_str",
+      );
 
   late final _displayIconStr =
       _displayIconStrPtr.asFunction<_DisplayIconStrReturn Function(int)>();
   late final _displayColorPtr =
       _lookup<ffi.NativeFunction<_DisplayColorReturn Function(ffi.IntPtr)>>(
-    "__Display_color",
-  );
+        "__Display_color",
+      );
 
   late final _displayColor =
       _displayColorPtr.asFunction<_DisplayColorReturn Function(int)>();
   late final _displayUpdateBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Display_update_builder",
-  );
+        "__Display_update_builder",
+      );
 
   late final _displayUpdateBuilder =
       _displayUpdateBuilderPtr.asFunction<int Function(int)>();
   late final _displayBuilderIconPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__DisplayBuilder_icon");
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__DisplayBuilder_icon");
 
-  late final _displayBuilderIcon = _displayBuilderIconPtr
-      .asFunction<void Function(int, int, int, int, int, int, int)>();
+  late final _displayBuilderIcon =
+      _displayBuilderIconPtr
+          .asFunction<void Function(int, int, int, int, int, int, int)>();
   late final _displayBuilderUnsetIconPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__DisplayBuilder_unset_icon",
-  );
+        "__DisplayBuilder_unset_icon",
+      );
 
   late final _displayBuilderUnsetIcon =
       _displayBuilderUnsetIconPtr.asFunction<void Function(int)>();
   late final _displayBuilderColorPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__DisplayBuilder_color",
-  );
+        "__DisplayBuilder_color",
+      );
 
   late final _displayBuilderColor =
       _displayBuilderColorPtr.asFunction<void Function(int, int)>();
   late final _displayBuilderUnsetColorPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__DisplayBuilder_unset_color",
-  );
+        "__DisplayBuilder_unset_color",
+      );
 
   late final _displayBuilderUnsetColor =
       _displayBuilderUnsetColorPtr.asFunction<void Function(int)>();
   late final _displayBuilderBuildPtr = _lookup<
-          ffi.NativeFunction<_DisplayBuilderBuildReturn Function(ffi.IntPtr)>>(
-      "__DisplayBuilder_build");
+    ffi.NativeFunction<_DisplayBuilderBuildReturn Function(ffi.IntPtr)>
+  >("__DisplayBuilder_build");
 
-  late final _displayBuilderBuild = _displayBuilderBuildPtr
-      .asFunction<_DisplayBuilderBuildReturn Function(int)>();
+  late final _displayBuilderBuild =
+      _displayBuilderBuildPtr
+          .asFunction<_DisplayBuilderBuildReturn Function(int)>();
   late final _spaceSpaceRelationsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_space_relations",
-  );
+        "__Space_space_relations",
+      );
 
   late final _spaceSpaceRelations =
       _spaceSpaceRelationsPtr.asFunction<int Function(int)>();
   late final _spaceIsChildSpaceOfPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Space_is_child_space_of");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Space_is_child_space_of");
 
   late final _spaceIsChildSpaceOf =
       _spaceIsChildSpaceOfPtr.asFunction<int Function(int, int, int, int)>();
   late final _spaceAddChildRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-          )>>("__Space_add_child_room");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+      )
+    >
+  >("__Space_add_child_room");
 
   late final _spaceAddChildRoom =
       _spaceAddChildRoomPtr.asFunction<int Function(int, int, int, int, int)>();
   late final _spaceRemoveChildRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Space_remove_child_room");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Space_remove_child_room");
 
-  late final _spaceRemoveChildRoom = _spaceRemoveChildRoomPtr
-      .asFunction<int Function(int, int, int, int, int, int, int, int)>();
+  late final _spaceRemoveChildRoom =
+      _spaceRemoveChildRoomPtr
+          .asFunction<int Function(int, int, int, int, int, int, int, int)>();
   late final _spaceUploadAvatarPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Space_upload_avatar");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Space_upload_avatar");
 
   late final _spaceUploadAvatar =
       _spaceUploadAvatarPtr.asFunction<int Function(int, int, int, int)>();
   late final _spaceSetActerSpaceStatesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_set_acter_space_states",
-  );
+        "__Space_set_acter_space_states",
+      );
 
   late final _spaceSetActerSpaceStates =
       _spaceSetActerSpaceStatesPtr.asFunction<int Function(int)>();
   late final _spaceRemoveAvatarPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_remove_avatar",
-  );
+        "__Space_remove_avatar",
+      );
 
   late final _spaceRemoveAvatar =
       _spaceRemoveAvatarPtr.asFunction<int Function(int)>();
   late final _spaceTopicPtr =
       _lookup<ffi.NativeFunction<_SpaceTopicReturn Function(ffi.IntPtr)>>(
-    "__Space_topic",
-  );
+        "__Space_topic",
+      );
 
   late final _spaceTopic =
       _spaceTopicPtr.asFunction<_SpaceTopicReturn Function(int)>();
   late final _spaceIsJoinedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Space_is_joined",
-  );
+        "__Space_is_joined",
+      );
 
   late final _spaceIsJoined = _spaceIsJoinedPtr.asFunction<int Function(int)>();
   late final _spaceSetTopicPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Space_set_topic");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Space_set_topic");
 
   late final _spaceSetTopic =
       _spaceSetTopicPtr.asFunction<int Function(int, int, int, int)>();
   late final _spaceSetNamePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Space_set_name");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Space_set_name");
 
   late final _spaceSetName =
       _spaceSetNamePtr.asFunction<int Function(int, int, int, int)>();
   late final _spaceIsBookmarkedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Space_is_bookmarked",
-  );
+        "__Space_is_bookmarked",
+      );
 
   late final _spaceIsBookmarked =
       _spaceIsBookmarkedPtr.asFunction<int Function(int)>();
   late final _spaceSetBookmarkedPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__Space_set_bookmarked",
-  );
+        "__Space_set_bookmarked",
+      );
 
   late final _spaceSetBookmarked =
       _spaceSetBookmarkedPtr.asFunction<int Function(int, int)>();
   late final _spaceActiveMembersIdsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_active_members_ids",
-  );
+        "__Space_active_members_ids",
+      );
 
   late final _spaceActiveMembersIds =
       _spaceActiveMembersIdsPtr.asFunction<int Function(int)>();
   late final _spaceActiveMembersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_active_members",
-  );
+        "__Space_active_members",
+      );
 
   late final _spaceActiveMembers =
       _spaceActiveMembersPtr.asFunction<int Function(int)>();
   late final _spaceInvitedMembersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_invited_members",
-  );
+        "__Space_invited_members",
+      );
 
   late final _spaceInvitedMembers =
       _spaceInvitedMembersPtr.asFunction<int Function(int)>();
   late final _spaceGetRoomIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_get_room_id",
-  );
+        "__Space_get_room_id",
+      );
 
   late final _spaceGetRoomId =
       _spaceGetRoomIdPtr.asFunction<int Function(int)>();
   late final _spaceInviteUserPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Space_invite_user");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Space_invite_user");
 
   late final _spaceInviteUser =
       _spaceInviteUserPtr.asFunction<int Function(int, int, int, int)>();
   late final _spaceGetRoomIdStrPtr = _lookup<
-          ffi.NativeFunction<_SpaceGetRoomIdStrReturn Function(ffi.IntPtr)>>(
-      "__Space_get_room_id_str");
+    ffi.NativeFunction<_SpaceGetRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__Space_get_room_id_str");
 
-  late final _spaceGetRoomIdStr = _spaceGetRoomIdStrPtr
-      .asFunction<_SpaceGetRoomIdStrReturn Function(int)>();
+  late final _spaceGetRoomIdStr =
+      _spaceGetRoomIdStrPtr
+          .asFunction<_SpaceGetRoomIdStrReturn Function(int)>();
   late final _spaceGetMemberPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Space_get_member");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Space_get_member");
 
   late final _spaceGetMember =
       _spaceGetMemberPtr.asFunction<int Function(int, int, int, int)>();
   late final _spaceGetMyMembershipPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_get_my_membership",
-  );
+        "__Space_get_my_membership",
+      );
 
   late final _spaceGetMyMembership =
       _spaceGetMyMembershipPtr.asFunction<int Function(int)>();
   late final _spaceIsEncryptedPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_is_encrypted",
-  );
+        "__Space_is_encrypted",
+      );
 
   late final _spaceIsEncrypted =
       _spaceIsEncryptedPtr.asFunction<int Function(int)>();
   late final _spaceIsPublicPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Space_is_public",
-  );
+        "__Space_is_public",
+      );
 
   late final _spaceIsPublic = _spaceIsPublicPtr.asFunction<int Function(int)>();
   late final _spaceJoinRuleStrPtr =
       _lookup<ffi.NativeFunction<_SpaceJoinRuleStrReturn Function(ffi.IntPtr)>>(
-    "__Space_join_rule_str",
-  );
+        "__Space_join_rule_str",
+      );
 
   late final _spaceJoinRuleStr =
       _spaceJoinRuleStrPtr.asFunction<_SpaceJoinRuleStrReturn Function(int)>();
   late final _spaceRestrictedRoomIdsStrPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_restricted_room_ids_str",
-  );
+        "__Space_restricted_room_ids_str",
+      );
 
   late final _spaceRestrictedRoomIdsStr =
       _spaceRestrictedRoomIdsStrPtr.asFunction<int Function(int)>();
   late final _spaceIsActerSpacePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_is_acter_space",
-  );
+        "__Space_is_acter_space",
+      );
 
   late final _spaceIsActerSpace =
       _spaceIsActerSpacePtr.asFunction<int Function(int)>();
   late final _spaceTaskListsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_task_lists",
-  );
+        "__Space_task_lists",
+      );
 
   late final _spaceTaskLists =
       _spaceTaskListsPtr.asFunction<int Function(int)>();
   late final _spaceTaskListDraftPtr = _lookup<
-          ffi.NativeFunction<_SpaceTaskListDraftReturn Function(ffi.IntPtr)>>(
-      "__Space_task_list_draft");
+    ffi.NativeFunction<_SpaceTaskListDraftReturn Function(ffi.IntPtr)>
+  >("__Space_task_list_draft");
 
-  late final _spaceTaskListDraft = _spaceTaskListDraftPtr
-      .asFunction<_SpaceTaskListDraftReturn Function(int)>();
+  late final _spaceTaskListDraft =
+      _spaceTaskListDraftPtr
+          .asFunction<_SpaceTaskListDraftReturn Function(int)>();
   late final _spaceLatestNewsEntriesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__Space_latest_news_entries",
-  );
+        "__Space_latest_news_entries",
+      );
 
   late final _spaceLatestNewsEntries =
       _spaceLatestNewsEntriesPtr.asFunction<int Function(int, int)>();
   late final _spaceLatestStoriesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__Space_latest_stories",
-  );
+        "__Space_latest_stories",
+      );
 
   late final _spaceLatestStories =
       _spaceLatestStoriesPtr.asFunction<int Function(int, int)>();
   late final _spaceCalendarEventsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_calendar_events",
-  );
+        "__Space_calendar_events",
+      );
 
   late final _spaceCalendarEvents =
       _spaceCalendarEventsPtr.asFunction<int Function(int)>();
   late final _spaceCalendarEventDraftPtr = _lookup<
-          ffi
-          .NativeFunction<_SpaceCalendarEventDraftReturn Function(ffi.IntPtr)>>(
-      "__Space_calendar_event_draft");
+    ffi.NativeFunction<_SpaceCalendarEventDraftReturn Function(ffi.IntPtr)>
+  >("__Space_calendar_event_draft");
 
-  late final _spaceCalendarEventDraft = _spaceCalendarEventDraftPtr
-      .asFunction<_SpaceCalendarEventDraftReturn Function(int)>();
+  late final _spaceCalendarEventDraft =
+      _spaceCalendarEventDraftPtr
+          .asFunction<_SpaceCalendarEventDraftReturn Function(int)>();
   late final _spaceNewsDraftPtr =
       _lookup<ffi.NativeFunction<_SpaceNewsDraftReturn Function(ffi.IntPtr)>>(
-    "__Space_news_draft",
-  );
+        "__Space_news_draft",
+      );
 
   late final _spaceNewsDraft =
       _spaceNewsDraftPtr.asFunction<_SpaceNewsDraftReturn Function(int)>();
   late final _spaceStoryDraftPtr =
       _lookup<ffi.NativeFunction<_SpaceStoryDraftReturn Function(ffi.IntPtr)>>(
-    "__Space_story_draft",
-  );
+        "__Space_story_draft",
+      );
 
   late final _spaceStoryDraft =
       _spaceStoryDraftPtr.asFunction<_SpaceStoryDraftReturn Function(int)>();
   late final _spacePinsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_pins",
-  );
+        "__Space_pins",
+      );
 
   late final _spacePins = _spacePinsPtr.asFunction<int Function(int)>();
   late final _spacePinDraftPtr =
       _lookup<ffi.NativeFunction<_SpacePinDraftReturn Function(ffi.IntPtr)>>(
-    "__Space_pin_draft",
-  );
+        "__Space_pin_draft",
+      );
 
   late final _spacePinDraft =
       _spacePinDraftPtr.asFunction<_SpacePinDraftReturn Function(int)>();
   late final _spaceJoinPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_join",
-  );
+        "__Space_join",
+      );
 
   late final _spaceJoin = _spaceJoinPtr.asFunction<int Function(int)>();
   late final _spaceLeavePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_leave",
-  );
+        "__Space_leave",
+      );
 
   late final _spaceLeave = _spaceLeavePtr.asFunction<int Function(int)>();
   late final _spacePowerLevelsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_power_levels",
-  );
+        "__Space_power_levels",
+      );
 
   late final _spacePowerLevels =
       _spacePowerLevelsPtr.asFunction<int Function(int)>();
   late final _spaceAppSettingsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_app_settings",
-  );
+        "__Space_app_settings",
+      );
 
   late final _spaceAppSettings =
       _spaceAppSettingsPtr.asFunction<int Function(int)>();
   late final _spaceUpdateAppSettingsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__Space_update_app_settings",
-  );
+        "__Space_update_app_settings",
+      );
 
   late final _spaceUpdateAppSettings =
       _spaceUpdateAppSettingsPtr.asFunction<int Function(int, int)>();
   late final _spaceUpdateFeaturePowerLevelsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Int32,
-          )>>("__Space_update_feature_power_levels");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Int32,
+      )
+    >
+  >("__Space_update_feature_power_levels");
 
-  late final _spaceUpdateFeaturePowerLevels = _spaceUpdateFeaturePowerLevelsPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _spaceUpdateFeaturePowerLevels =
+      _spaceUpdateFeaturePowerLevelsPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _spaceUpdateRegularPowerLevelsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Int32,
-          )>>("__Space_update_regular_power_levels");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Int32,
+      )
+    >
+  >("__Space_update_regular_power_levels");
 
-  late final _spaceUpdateRegularPowerLevels = _spaceUpdateRegularPowerLevelsPtr
-      .asFunction<int Function(int, int, int, int, int)>();
+  late final _spaceUpdateRegularPowerLevels =
+      _spaceUpdateRegularPowerLevelsPtr
+          .asFunction<int Function(int, int, int, int, int)>();
   late final _spaceReportContentPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Int32,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Space_report_content");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Int32,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Space_report_content");
 
-  late final _spaceReportContent = _spaceReportContentPtr.asFunction<
-      int Function(int, int, int, int, int, int, int, int, int, int)>();
+  late final _spaceReportContent =
+      _spaceReportContentPtr
+          .asFunction<
+            int Function(int, int, int, int, int, int, int, int, int, int)
+          >();
   late final _spaceRedactContentPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Space_redact_content");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Space_redact_content");
 
-  late final _spaceRedactContent = _spaceRedactContentPtr
-      .asFunction<int Function(int, int, int, int, int, int, int, int)>();
+  late final _spaceRedactContent =
+      _spaceRedactContentPtr
+          .asFunction<int Function(int, int, int, int, int, int, int, int)>();
   late final _spaceCategoriesPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Space_categories");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Space_categories");
 
   late final _spaceCategories =
       _spaceCategoriesPtr.asFunction<int Function(int, int, int, int)>();
   late final _spaceSetCategoriesPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-          )>>("__Space_set_categories");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+      )
+    >
+  >("__Space_set_categories");
 
-  late final _spaceSetCategories = _spaceSetCategoriesPtr
-      .asFunction<int Function(int, int, int, int, int)>();
+  late final _spaceSetCategories =
+      _spaceSetCategoriesPtr
+          .asFunction<int Function(int, int, int, int, int)>();
   late final _spaceRefDetailsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Space_ref_details",
-  );
+        "__Space_ref_details",
+      );
 
   late final _spaceRefDetails =
       _spaceRefDetailsPtr.asFunction<int Function(int)>();
   late final _memberGetProfilePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Member_get_profile",
-  );
+        "__Member_get_profile",
+      );
 
   late final _memberGetProfile =
       _memberGetProfilePtr.asFunction<int Function(int)>();
   late final _memberUserIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Member_user_id",
-  );
+        "__Member_user_id",
+      );
 
   late final _memberUserId = _memberUserIdPtr.asFunction<int Function(int)>();
   late final _memberRoomIdStrPtr =
       _lookup<ffi.NativeFunction<_MemberRoomIdStrReturn Function(ffi.IntPtr)>>(
-    "__Member_room_id_str",
-  );
+        "__Member_room_id_str",
+      );
 
   late final _memberRoomIdStr =
       _memberRoomIdStrPtr.asFunction<_MemberRoomIdStrReturn Function(int)>();
   late final _memberMembershipStatusStrPtr = _lookup<
-      ffi.NativeFunction<
-          _MemberMembershipStatusStrReturn Function(
-              ffi.IntPtr)>>("__Member_membership_status_str");
+    ffi.NativeFunction<_MemberMembershipStatusStrReturn Function(ffi.IntPtr)>
+  >("__Member_membership_status_str");
 
-  late final _memberMembershipStatusStr = _memberMembershipStatusStrPtr
-      .asFunction<_MemberMembershipStatusStrReturn Function(int)>();
+  late final _memberMembershipStatusStr =
+      _memberMembershipStatusStrPtr
+          .asFunction<_MemberMembershipStatusStrReturn Function(int)>();
   late final _memberPowerLevelPtr =
       _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
-    "__Member_power_level",
-  );
+        "__Member_power_level",
+      );
 
   late final _memberPowerLevel =
       _memberPowerLevelPtr.asFunction<int Function(int)>();
   late final _memberCanStringPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint8 Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Member_can_string");
+    ffi.NativeFunction<
+      ffi.Uint8 Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Member_can_string");
 
   late final _memberCanString =
       _memberCanStringPtr.asFunction<int Function(int, int, int, int)>();
   late final _memberIsIgnoredPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Member_is_ignored",
-  );
+        "__Member_is_ignored",
+      );
 
   late final _memberIsIgnored =
       _memberIsIgnoredPtr.asFunction<int Function(int)>();
   late final _memberIgnorePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Member_ignore",
-  );
+        "__Member_ignore",
+      );
 
   late final _memberIgnore = _memberIgnorePtr.asFunction<int Function(int)>();
   late final _memberUnignorePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Member_unignore",
-  );
+        "__Member_unignore",
+      );
 
   late final _memberUnignore =
       _memberUnignorePtr.asFunction<int Function(int)>();
   late final _memberKickPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Member_kick");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Member_kick");
 
   late final _memberKick =
       _memberKickPtr.asFunction<int Function(int, int, int, int, int)>();
   late final _memberBanPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Member_ban");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Member_ban");
 
   late final _memberBan =
       _memberBanPtr.asFunction<int Function(int, int, int, int, int)>();
   late final _memberUnbanPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Member_unban");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Member_unban");
 
   late final _memberUnban =
       _memberUnbanPtr.asFunction<int Function(int, int, int, int, int)>();
   late final _acterUserAppSettingsAutoDownloadChatPtr = _lookup<
-      ffi.NativeFunction<
-          _ActerUserAppSettingsAutoDownloadChatReturn Function(
-              ffi.IntPtr)>>("__ActerUserAppSettings_auto_download_chat");
+    ffi.NativeFunction<
+      _ActerUserAppSettingsAutoDownloadChatReturn Function(ffi.IntPtr)
+    >
+  >("__ActerUserAppSettings_auto_download_chat");
 
   late final _acterUserAppSettingsAutoDownloadChat =
-      _acterUserAppSettingsAutoDownloadChatPtr.asFunction<
-          _ActerUserAppSettingsAutoDownloadChatReturn Function(int)>();
+      _acterUserAppSettingsAutoDownloadChatPtr
+          .asFunction<
+            _ActerUserAppSettingsAutoDownloadChatReturn Function(int)
+          >();
   late final _acterUserAppSettingsTypingNoticePtr = _lookup<
-      ffi.NativeFunction<
-          _ActerUserAppSettingsTypingNoticeReturn Function(
-              ffi.IntPtr)>>("__ActerUserAppSettings_typing_notice");
+    ffi.NativeFunction<
+      _ActerUserAppSettingsTypingNoticeReturn Function(ffi.IntPtr)
+    >
+  >("__ActerUserAppSettings_typing_notice");
 
   late final _acterUserAppSettingsTypingNotice =
       _acterUserAppSettingsTypingNoticePtr
           .asFunction<_ActerUserAppSettingsTypingNoticeReturn Function(int)>();
   late final _acterUserAppSettingsAutoSubscribeOnActivityPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__ActerUserAppSettings_auto_subscribe_on_activity",
-  );
+        "__ActerUserAppSettings_auto_subscribe_on_activity",
+      );
 
   late final _acterUserAppSettingsAutoSubscribeOnActivity =
       _acterUserAppSettingsAutoSubscribeOnActivityPtr
           .asFunction<int Function(int)>();
   late final _acterUserAppSettingsUpdateBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerUserAppSettings_update_builder",
-  );
+        "__ActerUserAppSettings_update_builder",
+      );
 
   late final _acterUserAppSettingsUpdateBuilder =
       _acterUserAppSettingsUpdateBuilderPtr.asFunction<int Function(int)>();
   late final _acterUserAppSettingsBuilderAutoDownloadChatPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(
-                  ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)>>(
-      "__ActerUserAppSettingsBuilder_auto_download_chat");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__ActerUserAppSettingsBuilder_auto_download_chat");
 
   late final _acterUserAppSettingsBuilderAutoDownloadChat =
       _acterUserAppSettingsBuilderAutoDownloadChatPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _acterUserAppSettingsBuilderTypingNoticePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__ActerUserAppSettingsBuilder_typing_notice",
-  );
+        "__ActerUserAppSettingsBuilder_typing_notice",
+      );
 
   late final _acterUserAppSettingsBuilderTypingNotice =
       _acterUserAppSettingsBuilderTypingNoticePtr
           .asFunction<void Function(int, int)>();
   late final _acterUserAppSettingsBuilderAutoSubscribeOnActivityPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__ActerUserAppSettingsBuilder_auto_subscribe_on_activity",
-  );
+        "__ActerUserAppSettingsBuilder_auto_subscribe_on_activity",
+      );
 
   late final _acterUserAppSettingsBuilderAutoSubscribeOnActivity =
       _acterUserAppSettingsBuilderAutoSubscribeOnActivityPtr
           .asFunction<void Function(int, int)>();
   late final _acterUserAppSettingsBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__ActerUserAppSettingsBuilder_send",
-  );
+        "__ActerUserAppSettingsBuilder_send",
+      );
 
   late final _acterUserAppSettingsBuilderSend =
       _acterUserAppSettingsBuilderSendPtr.asFunction<int Function(int)>();
   late final _accountUserIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Account_user_id",
-  );
+        "__Account_user_id",
+      );
 
   late final _accountUserId = _accountUserIdPtr.asFunction<int Function(int)>();
   late final _accountDisplayNamePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Account_display_name",
-  );
+        "__Account_display_name",
+      );
 
   late final _accountDisplayName =
       _accountDisplayNamePtr.asFunction<int Function(int)>();
   late final _accountSetDisplayNamePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Account_set_display_name");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Account_set_display_name");
 
   late final _accountSetDisplayName =
       _accountSetDisplayNamePtr.asFunction<int Function(int, int, int, int)>();
   late final _accountAvatarPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-              ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>>("__Account_avatar");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>
+  >("__Account_avatar");
 
   late final _accountAvatar =
       _accountAvatarPtr.asFunction<int Function(int, int, int)>();
   late final _accountUploadAvatarPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Account_upload_avatar");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Account_upload_avatar");
 
   late final _accountUploadAvatar =
       _accountUploadAvatarPtr.asFunction<int Function(int, int, int, int)>();
   late final _accountIgnoredUsersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Account_ignored_users",
-  );
+        "__Account_ignored_users",
+      );
 
   late final _accountIgnoredUsers =
       _accountIgnoredUsersPtr.asFunction<int Function(int)>();
   late final _accountIgnoreUserPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Account_ignore_user");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Account_ignore_user");
 
   late final _accountIgnoreUser =
       _accountIgnoreUserPtr.asFunction<int Function(int, int, int, int)>();
   late final _accountUnignoreUserPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Account_unignore_user");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Account_unignore_user");
 
   late final _accountUnignoreUser =
       _accountUnignoreUserPtr.asFunction<int Function(int, int, int, int)>();
   late final _accountActerAppSettingsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Account_acter_app_settings",
-  );
+        "__Account_acter_app_settings",
+      );
 
   late final _accountActerAppSettings =
       _accountActerAppSettingsPtr.asFunction<int Function(int)>();
   late final _accountSubscribeAppSettingsStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Account_subscribe_app_settings_stream",
-  );
+        "__Account_subscribe_app_settings_stream",
+      );
 
   late final _accountSubscribeAppSettingsStream =
       _accountSubscribeAppSettingsStreamPtr.asFunction<int Function(int)>();
   late final _accountDeactivatePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Account_deactivate");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Account_deactivate");
 
   late final _accountDeactivate =
       _accountDeactivatePtr.asFunction<int Function(int, int, int, int)>();
   late final _accountChangePasswordPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Account_change_password");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Account_change_password");
 
-  late final _accountChangePassword = _accountChangePasswordPtr
-      .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _accountChangePassword =
+      _accountChangePasswordPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _accountConfirmedEmailAddressesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Account_confirmed_email_addresses",
-  );
+        "__Account_confirmed_email_addresses",
+      );
 
   late final _accountConfirmedEmailAddresses =
       _accountConfirmedEmailAddressesPtr.asFunction<int Function(int)>();
   late final _accountRequestedEmailAddressesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Account_requested_email_addresses",
-  );
+        "__Account_requested_email_addresses",
+      );
 
   late final _accountRequestedEmailAddresses =
       _accountRequestedEmailAddressesPtr.asFunction<int Function(int)>();
   late final _accountRequest3pidManagementTokenViaEmailPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.IntPtr Function(
-                  ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)>>(
-      "__Account_request_3pid_management_token_via_email");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Account_request_3pid_management_token_via_email");
 
   late final _accountRequest3pidManagementTokenViaEmail =
       _accountRequest3pidManagementTokenViaEmailPtr
           .asFunction<int Function(int, int, int, int)>();
   late final _accountExternalIdsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Account_external_ids",
-  );
+        "__Account_external_ids",
+      );
 
   late final _accountExternalIds =
       _accountExternalIdsPtr.asFunction<int Function(int)>();
   late final _accountTryConfirmEmailStatusPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Account_try_confirm_email_status");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Account_try_confirm_email_status");
 
-  late final _accountTryConfirmEmailStatus = _accountTryConfirmEmailStatusPtr
-      .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _accountTryConfirmEmailStatus =
+      _accountTryConfirmEmailStatusPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _accountSubmitTokenFromEmailPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Account_submit_token_from_email");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Account_submit_token_from_email");
 
   late final _accountSubmitTokenFromEmail =
-      _accountSubmitTokenFromEmailPtr.asFunction<
-          int Function(int, int, int, int, int, int, int, int, int, int)>();
+      _accountSubmitTokenFromEmailPtr
+          .asFunction<
+            int Function(int, int, int, int, int, int, int, int, int, int)
+          >();
   late final _accountRemoveEmailAddressPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Account_remove_email_address");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Account_remove_email_address");
 
-  late final _accountRemoveEmailAddress = _accountRemoveEmailAddressPtr
-      .asFunction<int Function(int, int, int, int)>();
+  late final _accountRemoveEmailAddress =
+      _accountRemoveEmailAddressPtr
+          .asFunction<int Function(int, int, int, int)>();
   late final _accountBookmarksPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Account_bookmarks",
-  );
+        "__Account_bookmarks",
+      );
 
   late final _accountBookmarks =
       _accountBookmarksPtr.asFunction<int Function(int)>();
   late final _externalIdAddressPtr = _lookup<
-          ffi.NativeFunction<_ExternalIdAddressReturn Function(ffi.IntPtr)>>(
-      "__ExternalId_address");
+    ffi.NativeFunction<_ExternalIdAddressReturn Function(ffi.IntPtr)>
+  >("__ExternalId_address");
 
-  late final _externalIdAddress = _externalIdAddressPtr
-      .asFunction<_ExternalIdAddressReturn Function(int)>();
+  late final _externalIdAddress =
+      _externalIdAddressPtr
+          .asFunction<_ExternalIdAddressReturn Function(int)>();
   late final _externalIdMediumPtr =
       _lookup<ffi.NativeFunction<_ExternalIdMediumReturn Function(ffi.IntPtr)>>(
-    "__ExternalId_medium",
-  );
+        "__ExternalId_medium",
+      );
 
   late final _externalIdMedium =
       _externalIdMediumPtr.asFunction<_ExternalIdMediumReturn Function(int)>();
   late final _externalIdAddedAtPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__ExternalId_added_at",
-  );
+        "__ExternalId_added_at",
+      );
 
   late final _externalIdAddedAt =
       _externalIdAddedAtPtr.asFunction<int Function(int)>();
   late final _externalIdValidatedAtPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__ExternalId_validated_at",
-  );
+        "__ExternalId_validated_at",
+      );
 
   late final _externalIdValidatedAt =
       _externalIdValidatedAtPtr.asFunction<int Function(int)>();
   late final _threePidEmailTokenResponseSidPtr = _lookup<
-      ffi.NativeFunction<
-          _ThreePidEmailTokenResponseSidReturn Function(
-              ffi.IntPtr)>>("__ThreePidEmailTokenResponse_sid");
+    ffi.NativeFunction<
+      _ThreePidEmailTokenResponseSidReturn Function(ffi.IntPtr)
+    >
+  >("__ThreePidEmailTokenResponse_sid");
 
-  late final _threePidEmailTokenResponseSid = _threePidEmailTokenResponseSidPtr
-      .asFunction<_ThreePidEmailTokenResponseSidReturn Function(int)>();
+  late final _threePidEmailTokenResponseSid =
+      _threePidEmailTokenResponseSidPtr
+          .asFunction<_ThreePidEmailTokenResponseSidReturn Function(int)>();
   late final _threePidEmailTokenResponseSubmitUrlPtr = _lookup<
-      ffi.NativeFunction<
-          _ThreePidEmailTokenResponseSubmitUrlReturn Function(
-              ffi.IntPtr)>>("__ThreePidEmailTokenResponse_submit_url");
+    ffi.NativeFunction<
+      _ThreePidEmailTokenResponseSubmitUrlReturn Function(ffi.IntPtr)
+    >
+  >("__ThreePidEmailTokenResponse_submit_url");
 
   late final _threePidEmailTokenResponseSubmitUrl =
-      _threePidEmailTokenResponseSubmitUrlPtr.asFunction<
-          _ThreePidEmailTokenResponseSubmitUrlReturn Function(int)>();
+      _threePidEmailTokenResponseSubmitUrlPtr
+          .asFunction<
+            _ThreePidEmailTokenResponseSubmitUrlReturn Function(int)
+          >();
   late final _threePidEmailTokenResponseClientSecretPtr = _lookup<
-      ffi.NativeFunction<
-          _ThreePidEmailTokenResponseClientSecretReturn Function(
-              ffi.IntPtr)>>("__ThreePidEmailTokenResponse_client_secret");
+    ffi.NativeFunction<
+      _ThreePidEmailTokenResponseClientSecretReturn Function(ffi.IntPtr)
+    >
+  >("__ThreePidEmailTokenResponse_client_secret");
 
   late final _threePidEmailTokenResponseClientSecret =
-      _threePidEmailTokenResponseClientSecretPtr.asFunction<
-          _ThreePidEmailTokenResponseClientSecretReturn Function(int)>();
+      _threePidEmailTokenResponseClientSecretPtr
+          .asFunction<
+            _ThreePidEmailTokenResponseClientSecretReturn Function(int)
+          >();
   late final _bookmarksEntriesPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Bookmarks_entries");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Bookmarks_entries");
 
   late final _bookmarksEntries =
       _bookmarksEntriesPtr.asFunction<int Function(int, int, int, int)>();
   late final _bookmarksAddPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Bookmarks_add");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Bookmarks_add");
 
-  late final _bookmarksAdd = _bookmarksAddPtr
-      .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _bookmarksAdd =
+      _bookmarksAddPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _bookmarksRemovePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Bookmarks_remove");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Bookmarks_remove");
 
-  late final _bookmarksRemove = _bookmarksRemovePtr
-      .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _bookmarksRemove =
+      _bookmarksRemovePtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _syncStateFirstSyncedRxPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SyncState_first_synced_rx",
-  );
+        "__SyncState_first_synced_rx",
+      );
 
   late final _syncStateFirstSyncedRx =
       _syncStateFirstSyncedRxPtr.asFunction<int Function(int)>();
   late final _syncStateSyncErrorRxPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SyncState_sync_error_rx",
-  );
+        "__SyncState_sync_error_rx",
+      );
 
   late final _syncStateSyncErrorRx =
       _syncStateSyncErrorRxPtr.asFunction<int Function(int)>();
   late final _syncStateCancelPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
-    "__SyncState_cancel",
-  );
+        "__SyncState_cancel",
+      );
 
   late final _syncStateCancel =
       _syncStateCancelPtr.asFunction<void Function(int)>();
   late final _publicSearchResultItemNamePtr = _lookup<
-      ffi.NativeFunction<
-          _PublicSearchResultItemNameReturn Function(
-              ffi.IntPtr)>>("__PublicSearchResultItem_name");
+    ffi.NativeFunction<_PublicSearchResultItemNameReturn Function(ffi.IntPtr)>
+  >("__PublicSearchResultItem_name");
 
-  late final _publicSearchResultItemName = _publicSearchResultItemNamePtr
-      .asFunction<_PublicSearchResultItemNameReturn Function(int)>();
+  late final _publicSearchResultItemName =
+      _publicSearchResultItemNamePtr
+          .asFunction<_PublicSearchResultItemNameReturn Function(int)>();
   late final _publicSearchResultItemTopicPtr = _lookup<
-      ffi.NativeFunction<
-          _PublicSearchResultItemTopicReturn Function(
-              ffi.IntPtr)>>("__PublicSearchResultItem_topic");
+    ffi.NativeFunction<_PublicSearchResultItemTopicReturn Function(ffi.IntPtr)>
+  >("__PublicSearchResultItem_topic");
 
-  late final _publicSearchResultItemTopic = _publicSearchResultItemTopicPtr
-      .asFunction<_PublicSearchResultItemTopicReturn Function(int)>();
+  late final _publicSearchResultItemTopic =
+      _publicSearchResultItemTopicPtr
+          .asFunction<_PublicSearchResultItemTopicReturn Function(int)>();
   late final _publicSearchResultItemWorldReadablePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__PublicSearchResultItem_world_readable",
-  );
+        "__PublicSearchResultItem_world_readable",
+      );
 
   late final _publicSearchResultItemWorldReadable =
       _publicSearchResultItemWorldReadablePtr.asFunction<int Function(int)>();
   late final _publicSearchResultItemGuestCanJoinPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__PublicSearchResultItem_guest_can_join",
-  );
+        "__PublicSearchResultItem_guest_can_join",
+      );
 
   late final _publicSearchResultItemGuestCanJoin =
       _publicSearchResultItemGuestCanJoinPtr.asFunction<int Function(int)>();
   late final _publicSearchResultItemCanonicalAliasStrPtr = _lookup<
-      ffi.NativeFunction<
-          _PublicSearchResultItemCanonicalAliasStrReturn Function(
-              ffi.IntPtr)>>("__PublicSearchResultItem_canonical_alias_str");
+    ffi.NativeFunction<
+      _PublicSearchResultItemCanonicalAliasStrReturn Function(ffi.IntPtr)
+    >
+  >("__PublicSearchResultItem_canonical_alias_str");
 
   late final _publicSearchResultItemCanonicalAliasStr =
-      _publicSearchResultItemCanonicalAliasStrPtr.asFunction<
-          _PublicSearchResultItemCanonicalAliasStrReturn Function(int)>();
+      _publicSearchResultItemCanonicalAliasStrPtr
+          .asFunction<
+            _PublicSearchResultItemCanonicalAliasStrReturn Function(int)
+          >();
   late final _publicSearchResultItemNumJoinedMembersPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-    "__PublicSearchResultItem_num_joined_members",
-  );
+        "__PublicSearchResultItem_num_joined_members",
+      );
 
   late final _publicSearchResultItemNumJoinedMembers =
       _publicSearchResultItemNumJoinedMembersPtr
           .asFunction<int Function(int)>();
   late final _publicSearchResultItemRoomIdStrPtr = _lookup<
-      ffi.NativeFunction<
-          _PublicSearchResultItemRoomIdStrReturn Function(
-              ffi.IntPtr)>>("__PublicSearchResultItem_room_id_str");
+    ffi.NativeFunction<
+      _PublicSearchResultItemRoomIdStrReturn Function(ffi.IntPtr)
+    >
+  >("__PublicSearchResultItem_room_id_str");
 
   late final _publicSearchResultItemRoomIdStr =
       _publicSearchResultItemRoomIdStrPtr
           .asFunction<_PublicSearchResultItemRoomIdStrReturn Function(int)>();
   late final _publicSearchResultItemAvatarUrlStrPtr = _lookup<
-      ffi.NativeFunction<
-          _PublicSearchResultItemAvatarUrlStrReturn Function(
-              ffi.IntPtr)>>("__PublicSearchResultItem_avatar_url_str");
+    ffi.NativeFunction<
+      _PublicSearchResultItemAvatarUrlStrReturn Function(ffi.IntPtr)
+    >
+  >("__PublicSearchResultItem_avatar_url_str");
 
   late final _publicSearchResultItemAvatarUrlStr =
-      _publicSearchResultItemAvatarUrlStrPtr.asFunction<
-          _PublicSearchResultItemAvatarUrlStrReturn Function(int)>();
+      _publicSearchResultItemAvatarUrlStrPtr
+          .asFunction<
+            _PublicSearchResultItemAvatarUrlStrReturn Function(int)
+          >();
   late final _publicSearchResultItemJoinRuleStrPtr = _lookup<
-      ffi.NativeFunction<
-          _PublicSearchResultItemJoinRuleStrReturn Function(
-              ffi.IntPtr)>>("__PublicSearchResultItem_join_rule_str");
+    ffi.NativeFunction<
+      _PublicSearchResultItemJoinRuleStrReturn Function(ffi.IntPtr)
+    >
+  >("__PublicSearchResultItem_join_rule_str");
 
   late final _publicSearchResultItemJoinRuleStr =
       _publicSearchResultItemJoinRuleStrPtr
           .asFunction<_PublicSearchResultItemJoinRuleStrReturn Function(int)>();
   late final _publicSearchResultItemRoomTypeStrPtr = _lookup<
-      ffi.NativeFunction<
-          _PublicSearchResultItemRoomTypeStrReturn Function(
-              ffi.IntPtr)>>("__PublicSearchResultItem_room_type_str");
+    ffi.NativeFunction<
+      _PublicSearchResultItemRoomTypeStrReturn Function(ffi.IntPtr)
+    >
+  >("__PublicSearchResultItem_room_type_str");
 
   late final _publicSearchResultItemRoomTypeStr =
       _publicSearchResultItemRoomTypeStrPtr
           .asFunction<_PublicSearchResultItemRoomTypeStrReturn Function(int)>();
   late final _publicSearchResultItemHasAvatarPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__PublicSearchResultItem_has_avatar",
-  );
+        "__PublicSearchResultItem_has_avatar",
+      );
 
   late final _publicSearchResultItemHasAvatar =
       _publicSearchResultItemHasAvatarPtr.asFunction<int Function(int)>();
   late final _publicSearchResultItemGetAvatarPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8,
-              ffi.IntPtr)>>("__PublicSearchResultItem_get_avatar");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8, ffi.IntPtr)>
+  >("__PublicSearchResultItem_get_avatar");
 
   late final _publicSearchResultItemGetAvatar =
       _publicSearchResultItemGetAvatarPtr
           .asFunction<int Function(int, int, int)>();
   late final _publicSearchResultNextBatchPtr = _lookup<
-      ffi.NativeFunction<
-          _PublicSearchResultNextBatchReturn Function(
-              ffi.IntPtr)>>("__PublicSearchResult_next_batch");
+    ffi.NativeFunction<_PublicSearchResultNextBatchReturn Function(ffi.IntPtr)>
+  >("__PublicSearchResult_next_batch");
 
-  late final _publicSearchResultNextBatch = _publicSearchResultNextBatchPtr
-      .asFunction<_PublicSearchResultNextBatchReturn Function(int)>();
+  late final _publicSearchResultNextBatch =
+      _publicSearchResultNextBatchPtr
+          .asFunction<_PublicSearchResultNextBatchReturn Function(int)>();
   late final _publicSearchResultPrevBatchPtr = _lookup<
-      ffi.NativeFunction<
-          _PublicSearchResultPrevBatchReturn Function(
-              ffi.IntPtr)>>("__PublicSearchResult_prev_batch");
+    ffi.NativeFunction<_PublicSearchResultPrevBatchReturn Function(ffi.IntPtr)>
+  >("__PublicSearchResult_prev_batch");
 
-  late final _publicSearchResultPrevBatch = _publicSearchResultPrevBatchPtr
-      .asFunction<_PublicSearchResultPrevBatchReturn Function(int)>();
+  late final _publicSearchResultPrevBatch =
+      _publicSearchResultPrevBatchPtr
+          .asFunction<_PublicSearchResultPrevBatchReturn Function(int)>();
   late final _publicSearchResultTotalRoomCountEstimatePtr = _lookup<
-      ffi.NativeFunction<
-          _PublicSearchResultTotalRoomCountEstimateReturn Function(
-              ffi.IntPtr)>>("__PublicSearchResult_total_room_count_estimate");
+    ffi.NativeFunction<
+      _PublicSearchResultTotalRoomCountEstimateReturn Function(ffi.IntPtr)
+    >
+  >("__PublicSearchResult_total_room_count_estimate");
 
   late final _publicSearchResultTotalRoomCountEstimate =
-      _publicSearchResultTotalRoomCountEstimatePtr.asFunction<
-          _PublicSearchResultTotalRoomCountEstimateReturn Function(int)>();
+      _publicSearchResultTotalRoomCountEstimatePtr
+          .asFunction<
+            _PublicSearchResultTotalRoomCountEstimateReturn Function(int)
+          >();
   late final _publicSearchResultChunksPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__PublicSearchResult_chunks",
-  );
+        "__PublicSearchResult_chunks",
+      );
 
   late final _publicSearchResultChunks =
       _publicSearchResultChunksPtr.asFunction<int Function(int)>();
   late final _notificationSenderUserIdPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationSenderUserIdReturn Function(
-              ffi.IntPtr)>>("__NotificationSender_user_id");
+    ffi.NativeFunction<_NotificationSenderUserIdReturn Function(ffi.IntPtr)>
+  >("__NotificationSender_user_id");
 
-  late final _notificationSenderUserId = _notificationSenderUserIdPtr
-      .asFunction<_NotificationSenderUserIdReturn Function(int)>();
+  late final _notificationSenderUserId =
+      _notificationSenderUserIdPtr
+          .asFunction<_NotificationSenderUserIdReturn Function(int)>();
   late final _notificationSenderDisplayNamePtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationSenderDisplayNameReturn Function(
-              ffi.IntPtr)>>("__NotificationSender_display_name");
+    ffi.NativeFunction<
+      _NotificationSenderDisplayNameReturn Function(ffi.IntPtr)
+    >
+  >("__NotificationSender_display_name");
 
-  late final _notificationSenderDisplayName = _notificationSenderDisplayNamePtr
-      .asFunction<_NotificationSenderDisplayNameReturn Function(int)>();
+  late final _notificationSenderDisplayName =
+      _notificationSenderDisplayNamePtr
+          .asFunction<_NotificationSenderDisplayNameReturn Function(int)>();
   late final _notificationSenderHasImagePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__NotificationSender_has_image",
-  );
+        "__NotificationSender_has_image",
+      );
 
   late final _notificationSenderHasImage =
       _notificationSenderHasImagePtr.asFunction<int Function(int)>();
   late final _notificationSenderImagePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NotificationSender_image",
-  );
+        "__NotificationSender_image",
+      );
 
   late final _notificationSenderImage =
       _notificationSenderImagePtr.asFunction<int Function(int)>();
   late final _notificationRoomRoomIdPtr = _lookup<
-          ffi
-          .NativeFunction<_NotificationRoomRoomIdReturn Function(ffi.IntPtr)>>(
-      "__NotificationRoom_room_id");
+    ffi.NativeFunction<_NotificationRoomRoomIdReturn Function(ffi.IntPtr)>
+  >("__NotificationRoom_room_id");
 
-  late final _notificationRoomRoomId = _notificationRoomRoomIdPtr
-      .asFunction<_NotificationRoomRoomIdReturn Function(int)>();
+  late final _notificationRoomRoomId =
+      _notificationRoomRoomIdPtr
+          .asFunction<_NotificationRoomRoomIdReturn Function(int)>();
   late final _notificationRoomDisplayNamePtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationRoomDisplayNameReturn Function(
-              ffi.IntPtr)>>("__NotificationRoom_display_name");
+    ffi.NativeFunction<_NotificationRoomDisplayNameReturn Function(ffi.IntPtr)>
+  >("__NotificationRoom_display_name");
 
-  late final _notificationRoomDisplayName = _notificationRoomDisplayNamePtr
-      .asFunction<_NotificationRoomDisplayNameReturn Function(int)>();
+  late final _notificationRoomDisplayName =
+      _notificationRoomDisplayNamePtr
+          .asFunction<_NotificationRoomDisplayNameReturn Function(int)>();
   late final _notificationRoomHasImagePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__NotificationRoom_has_image",
-  );
+        "__NotificationRoom_has_image",
+      );
 
   late final _notificationRoomHasImage =
       _notificationRoomHasImagePtr.asFunction<int Function(int)>();
   late final _notificationRoomImagePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NotificationRoom_image",
-  );
+        "__NotificationRoom_image",
+      );
 
   late final _notificationRoomImage =
       _notificationRoomImagePtr.asFunction<int Function(int)>();
   late final _notificationItemPushStylePtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemPushStyleReturn Function(
-              ffi.IntPtr)>>("__NotificationItem_push_style");
+    ffi.NativeFunction<_NotificationItemPushStyleReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_push_style");
 
-  late final _notificationItemPushStyle = _notificationItemPushStylePtr
-      .asFunction<_NotificationItemPushStyleReturn Function(int)>();
+  late final _notificationItemPushStyle =
+      _notificationItemPushStylePtr
+          .asFunction<_NotificationItemPushStyleReturn Function(int)>();
   late final _notificationItemTitlePtr = _lookup<
-          ffi
-          .NativeFunction<_NotificationItemTitleReturn Function(ffi.IntPtr)>>(
-      "__NotificationItem_title");
+    ffi.NativeFunction<_NotificationItemTitleReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_title");
 
-  late final _notificationItemTitle = _notificationItemTitlePtr
-      .asFunction<_NotificationItemTitleReturn Function(int)>();
+  late final _notificationItemTitle =
+      _notificationItemTitlePtr
+          .asFunction<_NotificationItemTitleReturn Function(int)>();
   late final _notificationItemSenderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NotificationItem_sender",
-  );
+        "__NotificationItem_sender",
+      );
 
   late final _notificationItemSender =
       _notificationItemSenderPtr.asFunction<int Function(int)>();
   late final _notificationItemParentPtr = _lookup<
-          ffi
-          .NativeFunction<_NotificationItemParentReturn Function(ffi.IntPtr)>>(
-      "__NotificationItem_parent");
+    ffi.NativeFunction<_NotificationItemParentReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_parent");
 
-  late final _notificationItemParent = _notificationItemParentPtr
-      .asFunction<_NotificationItemParentReturn Function(int)>();
+  late final _notificationItemParent =
+      _notificationItemParentPtr
+          .asFunction<_NotificationItemParentReturn Function(int)>();
   late final _notificationItemParentIdStrPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemParentIdStrReturn Function(
-              ffi.IntPtr)>>("__NotificationItem_parent_id_str");
+    ffi.NativeFunction<_NotificationItemParentIdStrReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_parent_id_str");
 
-  late final _notificationItemParentIdStr = _notificationItemParentIdStrPtr
-      .asFunction<_NotificationItemParentIdStrReturn Function(int)>();
+  late final _notificationItemParentIdStr =
+      _notificationItemParentIdStrPtr
+          .asFunction<_NotificationItemParentIdStrReturn Function(int)>();
   late final _notificationItemRoomPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NotificationItem_room",
-  );
+        "__NotificationItem_room",
+      );
 
   late final _notificationItemRoom =
       _notificationItemRoomPtr.asFunction<int Function(int)>();
   late final _notificationItemTargetUrlPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemTargetUrlReturn Function(
-              ffi.IntPtr)>>("__NotificationItem_target_url");
+    ffi.NativeFunction<_NotificationItemTargetUrlReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_target_url");
 
-  late final _notificationItemTargetUrl = _notificationItemTargetUrlPtr
-      .asFunction<_NotificationItemTargetUrlReturn Function(int)>();
+  late final _notificationItemTargetUrl =
+      _notificationItemTargetUrlPtr
+          .asFunction<_NotificationItemTargetUrlReturn Function(int)>();
   late final _notificationItemBodyPtr = _lookup<
-          ffi.NativeFunction<_NotificationItemBodyReturn Function(ffi.IntPtr)>>(
-      "__NotificationItem_body");
+    ffi.NativeFunction<_NotificationItemBodyReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_body");
 
-  late final _notificationItemBody = _notificationItemBodyPtr
-      .asFunction<_NotificationItemBodyReturn Function(int)>();
+  late final _notificationItemBody =
+      _notificationItemBodyPtr
+          .asFunction<_NotificationItemBodyReturn Function(int)>();
   late final _notificationItemIconUrlPtr = _lookup<
-          ffi
-          .NativeFunction<_NotificationItemIconUrlReturn Function(ffi.IntPtr)>>(
-      "__NotificationItem_icon_url");
+    ffi.NativeFunction<_NotificationItemIconUrlReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_icon_url");
 
-  late final _notificationItemIconUrl = _notificationItemIconUrlPtr
-      .asFunction<_NotificationItemIconUrlReturn Function(int)>();
+  late final _notificationItemIconUrl =
+      _notificationItemIconUrlPtr
+          .asFunction<_NotificationItemIconUrlReturn Function(int)>();
   late final _notificationItemThreadIdPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemThreadIdReturn Function(
-              ffi.IntPtr)>>("__NotificationItem_thread_id");
+    ffi.NativeFunction<_NotificationItemThreadIdReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_thread_id");
 
-  late final _notificationItemThreadId = _notificationItemThreadIdPtr
-      .asFunction<_NotificationItemThreadIdReturn Function(int)>();
+  late final _notificationItemThreadId =
+      _notificationItemThreadIdPtr
+          .asFunction<_NotificationItemThreadIdReturn Function(int)>();
   late final _notificationItemNoisyPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__NotificationItem_noisy",
-  );
+        "__NotificationItem_noisy",
+      );
 
   late final _notificationItemNoisy =
       _notificationItemNoisyPtr.asFunction<int Function(int)>();
   late final _notificationItemHasImagePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__NotificationItem_has_image",
-  );
+        "__NotificationItem_has_image",
+      );
 
   late final _notificationItemHasImage =
       _notificationItemHasImagePtr.asFunction<int Function(int)>();
   late final _notificationItemImagePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NotificationItem_image",
-  );
+        "__NotificationItem_image",
+      );
 
   late final _notificationItemImage =
       _notificationItemImagePtr.asFunction<int Function(int)>();
   late final _notificationItemImagePathPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__NotificationItem_image_path");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__NotificationItem_image_path");
 
-  late final _notificationItemImagePath = _notificationItemImagePathPtr
-      .asFunction<int Function(int, int, int, int)>();
+  late final _notificationItemImagePath =
+      _notificationItemImagePathPtr
+          .asFunction<int Function(int, int, int, int)>();
   late final _notificationItemRoomInviteStrPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemRoomInviteStrReturn Function(
-              ffi.IntPtr)>>("__NotificationItem_room_invite_str");
+    ffi.NativeFunction<
+      _NotificationItemRoomInviteStrReturn Function(ffi.IntPtr)
+    >
+  >("__NotificationItem_room_invite_str");
 
-  late final _notificationItemRoomInviteStr = _notificationItemRoomInviteStrPtr
-      .asFunction<_NotificationItemRoomInviteStrReturn Function(int)>();
+  late final _notificationItemRoomInviteStr =
+      _notificationItemRoomInviteStrPtr
+          .asFunction<_NotificationItemRoomInviteStrReturn Function(int)>();
   late final _notificationItemReactionKeyPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemReactionKeyReturn Function(
-              ffi.IntPtr)>>("__NotificationItem_reaction_key");
+    ffi.NativeFunction<_NotificationItemReactionKeyReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_reaction_key");
 
-  late final _notificationItemReactionKey = _notificationItemReactionKeyPtr
-      .asFunction<_NotificationItemReactionKeyReturn Function(int)>();
+  late final _notificationItemReactionKey =
+      _notificationItemReactionKeyPtr
+          .asFunction<_NotificationItemReactionKeyReturn Function(int)>();
   late final _notificationItemNewDatePtr = _lookup<
-          ffi
-          .NativeFunction<_NotificationItemNewDateReturn Function(ffi.IntPtr)>>(
-      "__NotificationItem_new_date");
+    ffi.NativeFunction<_NotificationItemNewDateReturn Function(ffi.IntPtr)>
+  >("__NotificationItem_new_date");
 
-  late final _notificationItemNewDate = _notificationItemNewDatePtr
-      .asFunction<_NotificationItemNewDateReturn Function(int)>();
+  late final _notificationItemNewDate =
+      _notificationItemNewDatePtr
+          .asFunction<_NotificationItemNewDateReturn Function(int)>();
   late final _pusherIsEmailPusherPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Pusher_is_email_pusher",
-  );
+        "__Pusher_is_email_pusher",
+      );
 
   late final _pusherIsEmailPusher =
       _pusherIsEmailPusherPtr.asFunction<int Function(int)>();
   late final _pusherPushkeyPtr =
       _lookup<ffi.NativeFunction<_PusherPushkeyReturn Function(ffi.IntPtr)>>(
-    "__Pusher_pushkey",
-  );
+        "__Pusher_pushkey",
+      );
 
   late final _pusherPushkey =
       _pusherPushkeyPtr.asFunction<_PusherPushkeyReturn Function(int)>();
   late final _pusherAppIdPtr =
       _lookup<ffi.NativeFunction<_PusherAppIdReturn Function(ffi.IntPtr)>>(
-    "__Pusher_app_id",
-  );
+        "__Pusher_app_id",
+      );
 
   late final _pusherAppId =
       _pusherAppIdPtr.asFunction<_PusherAppIdReturn Function(int)>();
   late final _pusherAppDisplayNamePtr = _lookup<
-          ffi.NativeFunction<_PusherAppDisplayNameReturn Function(ffi.IntPtr)>>(
-      "__Pusher_app_display_name");
+    ffi.NativeFunction<_PusherAppDisplayNameReturn Function(ffi.IntPtr)>
+  >("__Pusher_app_display_name");
 
-  late final _pusherAppDisplayName = _pusherAppDisplayNamePtr
-      .asFunction<_PusherAppDisplayNameReturn Function(int)>();
+  late final _pusherAppDisplayName =
+      _pusherAppDisplayNamePtr
+          .asFunction<_PusherAppDisplayNameReturn Function(int)>();
   late final _pusherDeviceDisplayNamePtr = _lookup<
-          ffi
-          .NativeFunction<_PusherDeviceDisplayNameReturn Function(ffi.IntPtr)>>(
-      "__Pusher_device_display_name");
+    ffi.NativeFunction<_PusherDeviceDisplayNameReturn Function(ffi.IntPtr)>
+  >("__Pusher_device_display_name");
 
-  late final _pusherDeviceDisplayName = _pusherDeviceDisplayNamePtr
-      .asFunction<_PusherDeviceDisplayNameReturn Function(int)>();
+  late final _pusherDeviceDisplayName =
+      _pusherDeviceDisplayNamePtr
+          .asFunction<_PusherDeviceDisplayNameReturn Function(int)>();
   late final _pusherLangPtr =
       _lookup<ffi.NativeFunction<_PusherLangReturn Function(ffi.IntPtr)>>(
-    "__Pusher_lang",
-  );
+        "__Pusher_lang",
+      );
 
   late final _pusherLang =
       _pusherLangPtr.asFunction<_PusherLangReturn Function(int)>();
   late final _pusherProfileTagPtr =
       _lookup<ffi.NativeFunction<_PusherProfileTagReturn Function(ffi.IntPtr)>>(
-    "__Pusher_profile_tag",
-  );
+        "__Pusher_profile_tag",
+      );
 
   late final _pusherProfileTag =
       _pusherProfileTagPtr.asFunction<_PusherProfileTagReturn Function(int)>();
   late final _pusherDeletePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Pusher_delete",
-  );
+        "__Pusher_delete",
+      );
 
   late final _pusherDelete = _pusherDeletePtr.asFunction<int Function(int)>();
   late final _createConvoSettingsBuilderSetNamePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CreateConvoSettingsBuilder_set_name");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CreateConvoSettingsBuilder_set_name");
 
   late final _createConvoSettingsBuilderSetName =
       _createConvoSettingsBuilderSetNamePtr
           .asFunction<void Function(int, int, int, int)>();
   late final _createConvoSettingsBuilderSetAliasPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CreateConvoSettingsBuilder_set_alias");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CreateConvoSettingsBuilder_set_alias");
 
   late final _createConvoSettingsBuilderSetAlias =
       _createConvoSettingsBuilderSetAliasPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _createConvoSettingsBuilderAddInviteePtr = _lookup<
-      ffi.NativeFunction<
-          _CreateConvoSettingsBuilderAddInviteeReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CreateConvoSettingsBuilder_add_invitee");
+    ffi.NativeFunction<
+      _CreateConvoSettingsBuilderAddInviteeReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CreateConvoSettingsBuilder_add_invitee");
 
   late final _createConvoSettingsBuilderAddInvitee =
-      _createConvoSettingsBuilderAddInviteePtr.asFunction<
-          _CreateConvoSettingsBuilderAddInviteeReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _createConvoSettingsBuilderAddInviteePtr
+          .asFunction<
+            _CreateConvoSettingsBuilderAddInviteeReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _createConvoSettingsBuilderSetTopicPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CreateConvoSettingsBuilder_set_topic");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CreateConvoSettingsBuilder_set_topic");
 
   late final _createConvoSettingsBuilderSetTopic =
       _createConvoSettingsBuilderSetTopicPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _createConvoSettingsBuilderSetAvatarUriPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CreateConvoSettingsBuilder_set_avatar_uri");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CreateConvoSettingsBuilder_set_avatar_uri");
 
   late final _createConvoSettingsBuilderSetAvatarUri =
       _createConvoSettingsBuilderSetAvatarUriPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _createConvoSettingsBuilderSetParentPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CreateConvoSettingsBuilder_set_parent");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CreateConvoSettingsBuilder_set_parent");
 
   late final _createConvoSettingsBuilderSetParent =
       _createConvoSettingsBuilderSetParentPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _createConvoSettingsBuilderBuildPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CreateConvoSettingsBuilder_build",
-  );
+        "__CreateConvoSettingsBuilder_build",
+      );
 
   late final _createConvoSettingsBuilderBuild =
       _createConvoSettingsBuilderBuildPtr.asFunction<int Function(int)>();
   late final _createSpaceSettingsBuilderSetNamePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CreateSpaceSettingsBuilder_set_name");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CreateSpaceSettingsBuilder_set_name");
 
   late final _createSpaceSettingsBuilderSetName =
       _createSpaceSettingsBuilderSetNamePtr
           .asFunction<void Function(int, int, int, int)>();
   late final _createSpaceSettingsBuilderSetVisibilityPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CreateSpaceSettingsBuilder_set_visibility");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CreateSpaceSettingsBuilder_set_visibility");
 
   late final _createSpaceSettingsBuilderSetVisibility =
       _createSpaceSettingsBuilderSetVisibilityPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _createSpaceSettingsBuilderAddInviteePtr = _lookup<
-      ffi.NativeFunction<
-          _CreateSpaceSettingsBuilderAddInviteeReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__CreateSpaceSettingsBuilder_add_invitee");
+    ffi.NativeFunction<
+      _CreateSpaceSettingsBuilderAddInviteeReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CreateSpaceSettingsBuilder_add_invitee");
 
   late final _createSpaceSettingsBuilderAddInvitee =
-      _createSpaceSettingsBuilderAddInviteePtr.asFunction<
-          _CreateSpaceSettingsBuilderAddInviteeReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _createSpaceSettingsBuilderAddInviteePtr
+          .asFunction<
+            _CreateSpaceSettingsBuilderAddInviteeReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _createSpaceSettingsBuilderSetAliasPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CreateSpaceSettingsBuilder_set_alias");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CreateSpaceSettingsBuilder_set_alias");
 
   late final _createSpaceSettingsBuilderSetAlias =
       _createSpaceSettingsBuilderSetAliasPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _createSpaceSettingsBuilderSetTopicPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CreateSpaceSettingsBuilder_set_topic");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CreateSpaceSettingsBuilder_set_topic");
 
   late final _createSpaceSettingsBuilderSetTopic =
       _createSpaceSettingsBuilderSetTopicPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _createSpaceSettingsBuilderSetAvatarUriPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CreateSpaceSettingsBuilder_set_avatar_uri");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CreateSpaceSettingsBuilder_set_avatar_uri");
 
   late final _createSpaceSettingsBuilderSetAvatarUri =
       _createSpaceSettingsBuilderSetAvatarUriPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _createSpaceSettingsBuilderSetParentPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__CreateSpaceSettingsBuilder_set_parent");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__CreateSpaceSettingsBuilder_set_parent");
 
   late final _createSpaceSettingsBuilderSetParent =
       _createSpaceSettingsBuilderSetParentPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _createSpaceSettingsBuilderBuildPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__CreateSpaceSettingsBuilder_build",
-  );
+        "__CreateSpaceSettingsBuilder_build",
+      );
 
   late final _createSpaceSettingsBuilderBuild =
       _createSpaceSettingsBuilderBuildPtr.asFunction<int Function(int)>();
   late final _clientStartSyncPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_start_sync",
-  );
+        "__Client_start_sync",
+      );
 
   late final _clientStartSync =
       _clientStartSyncPtr.asFunction<int Function(int)>();
   late final _clientRestoreTokenPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_restore_token",
-  );
+        "__Client_restore_token",
+      );
 
   late final _clientRestoreToken =
       _clientRestoreTokenPtr.asFunction<int Function(int)>();
   late final _clientIsGuestPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Client_is_guest",
-  );
+        "__Client_is_guest",
+      );
 
   late final _clientIsGuest = _clientIsGuestPtr.asFunction<int Function(int)>();
   late final _clientHasFirstSyncedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Client_has_first_synced",
-  );
+        "__Client_has_first_synced",
+      );
 
   late final _clientHasFirstSynced =
       _clientHasFirstSyncedPtr.asFunction<int Function(int)>();
   late final _clientIsSyncingPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Client_is_syncing",
-  );
+        "__Client_is_syncing",
+      );
 
   late final _clientIsSyncing =
       _clientIsSyncingPtr.asFunction<int Function(int)>();
   late final _clientLoggedInPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Client_logged_in",
-  );
+        "__Client_logged_in",
+      );
 
   late final _clientLoggedIn =
       _clientLoggedInPtr.asFunction<int Function(int)>();
   late final _clientAccountPtr =
       _lookup<ffi.NativeFunction<_ClientAccountReturn Function(ffi.IntPtr)>>(
-    "__Client_account",
-  );
+        "__Client_account",
+      );
 
   late final _clientAccount =
       _clientAccountPtr.asFunction<_ClientAccountReturn Function(int)>();
   late final _clientDeviceIdPtr =
       _lookup<ffi.NativeFunction<_ClientDeviceIdReturn Function(ffi.IntPtr)>>(
-    "__Client_device_id",
-  );
+        "__Client_device_id",
+      );
 
   late final _clientDeviceId =
       _clientDeviceIdPtr.asFunction<_ClientDeviceIdReturn Function(int)>();
   late final _clientUserIdPtr =
       _lookup<ffi.NativeFunction<_ClientUserIdReturn Function(ffi.IntPtr)>>(
-    "__Client_user_id",
-  );
+        "__Client_user_id",
+      );
 
   late final _clientUserId =
       _clientUserIdPtr.asFunction<_ClientUserIdReturn Function(int)>();
   late final _clientRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_room");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_room");
 
   late final _clientRoom =
       _clientRoomPtr.asFunction<int Function(int, int, int, int)>();
   late final _clientConvoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_convo");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_convo");
 
   late final _clientConvo =
       _clientConvoPtr.asFunction<int Function(int, int, int, int)>();
   late final _clientHasConvoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_has_convo");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_has_convo");
 
   late final _clientHasConvo =
       _clientHasConvoPtr.asFunction<int Function(int, int, int, int)>();
   late final _clientConvoWithRetryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-          )>>("__Client_convo_with_retry");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+      )
+    >
+  >("__Client_convo_with_retry");
 
-  late final _clientConvoWithRetry = _clientConvoWithRetryPtr
-      .asFunction<int Function(int, int, int, int, int)>();
+  late final _clientConvoWithRetry =
+      _clientConvoWithRetryPtr
+          .asFunction<int Function(int, int, int, int, int)>();
   late final _clientDmWithUserPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientDmWithUserReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_dm_with_user");
+    ffi.NativeFunction<
+      _ClientDmWithUserReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_dm_with_user");
 
-  late final _clientDmWithUser = _clientDmWithUserPtr
-      .asFunction<_ClientDmWithUserReturn Function(int, int, int, int)>();
+  late final _clientDmWithUser =
+      _clientDmWithUserPtr
+          .asFunction<_ClientDmWithUserReturn Function(int, int, int, int)>();
   late final _clientUploadMediaPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_upload_media");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_upload_media");
 
   late final _clientUploadMedia =
       _clientUploadMediaPtr.asFunction<int Function(int, int, int, int)>();
   late final _clientConvosStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_convos_stream",
-  );
+        "__Client_convos_stream",
+      );
 
   late final _clientConvosStream =
       _clientConvosStreamPtr.asFunction<int Function(int)>();
   late final _clientSpacesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_spaces",
-  );
+        "__Client_spaces",
+      );
 
   late final _clientSpaces = _clientSpacesPtr.asFunction<int Function(int)>();
   late final _clientSpacesStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_spaces_stream",
-  );
+        "__Client_spaces_stream",
+      );
 
   late final _clientSpacesStream =
       _clientSpacesStreamPtr.asFunction<int Function(int)>();
   late final _clientJoinRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-          )>>("__Client_join_room");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+      )
+    >
+  >("__Client_join_room");
 
   late final _clientJoinRoom =
       _clientJoinRoomPtr.asFunction<int Function(int, int, int, int, int)>();
   late final _clientSpacePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_space");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_space");
 
   late final _clientSpace =
       _clientSpacePtr.asFunction<int Function(int, int, int, int)>();
   late final _clientInvitationsRxPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_invitations_rx",
-  );
+        "__Client_invitations_rx",
+      );
 
   late final _clientInvitationsRx =
       _clientInvitationsRxPtr.asFunction<int Function(int)>();
   late final _clientSuggestedUsersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_suggested_users");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_suggested_users");
 
-  late final _clientSuggestedUsers = _clientSuggestedUsersPtr
-      .asFunction<int Function(int, int, int, int, int)>();
+  late final _clientSuggestedUsers =
+      _clientSuggestedUsersPtr
+          .asFunction<int Function(int, int, int, int, int)>();
   late final _clientSearchUsersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_search_users");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_search_users");
 
   late final _clientSearchUsers =
       _clientSearchUsersPtr.asFunction<int Function(int, int, int, int)>();
   late final _clientSearchPublicRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_search_public_room");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_search_public_room");
 
-  late final _clientSearchPublicRoom = _clientSearchPublicRoomPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _clientSearchPublicRoom =
+      _clientSearchPublicRoomPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientVerifiedDevicePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_verified_device");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_verified_device");
 
   late final _clientVerifiedDevice =
       _clientVerifiedDevicePtr.asFunction<int Function(int, int, int, int)>();
   late final _clientLogoutPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_logout",
-  );
+        "__Client_logout",
+      );
 
   late final _clientLogout = _clientLogoutPtr.asFunction<int Function(int)>();
   late final _clientVerificationEventRxPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_verification_event_rx",
-  );
+        "__Client_verification_event_rx",
+      );
 
   late final _clientVerificationEventRx =
       _clientVerificationEventRxPtr.asFunction<int Function(int)>();
   late final _clientSessionManagerPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_session_manager",
-  );
+        "__Client_session_manager",
+      );
 
   late final _clientSessionManager =
       _clientSessionManagerPtr.asFunction<int Function(int)>();
   late final _clientRequestVerificationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_request_verification");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_request_verification");
 
-  late final _clientRequestVerification = _clientRequestVerificationPtr
-      .asFunction<int Function(int, int, int, int)>();
+  late final _clientRequestVerification =
+      _clientRequestVerificationPtr
+          .asFunction<int Function(int, int, int, int)>();
   late final _clientInstallRequestEventHandlerPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_install_request_event_handler");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_install_request_event_handler");
 
   late final _clientInstallRequestEventHandler =
       _clientInstallRequestEventHandlerPtr
           .asFunction<int Function(int, int, int, int)>();
   late final _clientInstallSasEventHandlerPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_install_sas_event_handler");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_install_sas_event_handler");
 
-  late final _clientInstallSasEventHandler = _clientInstallSasEventHandlerPtr
-      .asFunction<int Function(int, int, int, int)>();
+  late final _clientInstallSasEventHandler =
+      _clientInstallSasEventHandlerPtr
+          .asFunction<int Function(int, int, int, int)>();
   late final _clientDeviceEventRxPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_device_event_rx",
-  );
+        "__Client_device_event_rx",
+      );
 
   late final _clientDeviceEventRx =
       _clientDeviceEventRxPtr.asFunction<int Function(int)>();
   late final _clientSubscribeToTypingEventStreamPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_subscribe_to_typing_event_stream");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_subscribe_to_typing_event_stream");
 
   late final _clientSubscribeToTypingEventStream =
       _clientSubscribeToTypingEventStreamPtr
           .asFunction<int Function(int, int, int, int)>();
   late final _clientCreateConvoPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__Client_create_convo",
-  );
+        "__Client_create_convo",
+      );
 
   late final _clientCreateConvo =
       _clientCreateConvoPtr.asFunction<int Function(int, int)>();
   late final _clientCreateActerSpacePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__Client_create_acter_space",
-  );
+        "__Client_create_acter_space",
+      );
 
   late final _clientCreateActerSpace =
       _clientCreateActerSpacePtr.asFunction<int Function(int, int)>();
   late final _clientSubscribeSectionStreamPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeSectionStreamReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_subscribe_section_stream");
+    ffi.NativeFunction<
+      _ClientSubscribeSectionStreamReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_subscribe_section_stream");
 
   late final _clientSubscribeSectionStream =
-      _clientSubscribeSectionStreamPtr.asFunction<
-          _ClientSubscribeSectionStreamReturn Function(int, int, int, int)>();
+      _clientSubscribeSectionStreamPtr
+          .asFunction<
+            _ClientSubscribeSectionStreamReturn Function(int, int, int, int)
+          >();
   late final _clientSubscribeModelStreamPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeModelStreamReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_subscribe_model_stream");
+    ffi.NativeFunction<
+      _ClientSubscribeModelStreamReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_subscribe_model_stream");
 
   late final _clientSubscribeModelStream =
-      _clientSubscribeModelStreamPtr.asFunction<
-          _ClientSubscribeModelStreamReturn Function(int, int, int, int)>();
+      _clientSubscribeModelStreamPtr
+          .asFunction<
+            _ClientSubscribeModelStreamReturn Function(int, int, int, int)
+          >();
   late final _clientSubscribeModelObjectsStreamPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeModelObjectsStreamReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_subscribe_model_objects_stream");
+    ffi.NativeFunction<
+      _ClientSubscribeModelObjectsStreamReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_subscribe_model_objects_stream");
 
   late final _clientSubscribeModelObjectsStream =
-      _clientSubscribeModelObjectsStreamPtr.asFunction<
-          _ClientSubscribeModelObjectsStreamReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeModelObjectsStreamPtr
+          .asFunction<
+            _ClientSubscribeModelObjectsStreamReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeModelParamStreamPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeModelParamStreamReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_subscribe_model_param_stream");
+    ffi.NativeFunction<
+      _ClientSubscribeModelParamStreamReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_subscribe_model_param_stream");
 
   late final _clientSubscribeModelParamStream =
-      _clientSubscribeModelParamStreamPtr.asFunction<
-          _ClientSubscribeModelParamStreamReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeModelParamStreamPtr
+          .asFunction<
+            _ClientSubscribeModelParamStreamReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeRoomStreamPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeRoomStreamReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_subscribe_room_stream");
+    ffi.NativeFunction<
+      _ClientSubscribeRoomStreamReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_subscribe_room_stream");
 
   late final _clientSubscribeRoomStream =
-      _clientSubscribeRoomStreamPtr.asFunction<
-          _ClientSubscribeRoomStreamReturn Function(int, int, int, int)>();
+      _clientSubscribeRoomStreamPtr
+          .asFunction<
+            _ClientSubscribeRoomStreamReturn Function(int, int, int, int)
+          >();
   late final _clientSubscribeRoomParamStreamPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeRoomParamStreamReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_subscribe_room_param_stream");
+    ffi.NativeFunction<
+      _ClientSubscribeRoomParamStreamReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_subscribe_room_param_stream");
 
   late final _clientSubscribeRoomParamStream =
-      _clientSubscribeRoomParamStreamPtr.asFunction<
-          _ClientSubscribeRoomParamStreamReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeRoomParamStreamPtr
+          .asFunction<
+            _ClientSubscribeRoomParamStreamReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeRoomSectionStreamPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeRoomSectionStreamReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_subscribe_room_section_stream");
+    ffi.NativeFunction<
+      _ClientSubscribeRoomSectionStreamReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_subscribe_room_section_stream");
 
   late final _clientSubscribeRoomSectionStream =
-      _clientSubscribeRoomSectionStreamPtr.asFunction<
-          _ClientSubscribeRoomSectionStreamReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeRoomSectionStreamPtr
+          .asFunction<
+            _ClientSubscribeRoomSectionStreamReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeEventTypeStreamPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeEventTypeStreamReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_subscribe_event_type_stream");
+    ffi.NativeFunction<
+      _ClientSubscribeEventTypeStreamReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_subscribe_event_type_stream");
 
   late final _clientSubscribeEventTypeStream =
-      _clientSubscribeEventTypeStreamPtr.asFunction<
-          _ClientSubscribeEventTypeStreamReturn Function(int, int, int, int)>();
+      _clientSubscribeEventTypeStreamPtr
+          .asFunction<
+            _ClientSubscribeEventTypeStreamReturn Function(int, int, int, int)
+          >();
   late final _clientSubscribeAccountDataStreamPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeAccountDataStreamReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_subscribe_account_data_stream");
+    ffi.NativeFunction<
+      _ClientSubscribeAccountDataStreamReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_subscribe_account_data_stream");
 
   late final _clientSubscribeAccountDataStream =
-      _clientSubscribeAccountDataStreamPtr.asFunction<
-          _ClientSubscribeAccountDataStreamReturn Function(
-              int, int, int, int)>();
+      _clientSubscribeAccountDataStreamPtr
+          .asFunction<
+            _ClientSubscribeAccountDataStreamReturn Function(int, int, int, int)
+          >();
   late final _clientSubscribeRoomAccountDataStreamPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeRoomAccountDataStreamReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_subscribe_room_account_data_stream");
+    ffi.NativeFunction<
+      _ClientSubscribeRoomAccountDataStreamReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_subscribe_room_account_data_stream");
 
   late final _clientSubscribeRoomAccountDataStream =
-      _clientSubscribeRoomAccountDataStreamPtr.asFunction<
-          _ClientSubscribeRoomAccountDataStreamReturn Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeRoomAccountDataStreamPtr
+          .asFunction<
+            _ClientSubscribeRoomAccountDataStreamReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientWaitForRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint8,
-          )>>("__Client_wait_for_room");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
+  >("__Client_wait_for_room");
 
-  late final _clientWaitForRoom = _clientWaitForRoomPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _clientWaitForRoom =
+      _clientWaitForRoomPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _clientWaitForCommentPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint8,
-          )>>("__Client_wait_for_comment");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
+  >("__Client_wait_for_comment");
 
-  late final _clientWaitForComment = _clientWaitForCommentPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _clientWaitForComment =
+      _clientWaitForCommentPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _clientWaitForNewsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint8,
-          )>>("__Client_wait_for_news");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
+  >("__Client_wait_for_news");
 
-  late final _clientWaitForNews = _clientWaitForNewsPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _clientWaitForNews =
+      _clientWaitForNewsPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _clientLatestNewsEntriesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__Client_latest_news_entries",
-  );
+        "__Client_latest_news_entries",
+      );
 
   late final _clientLatestNewsEntries =
       _clientLatestNewsEntriesPtr.asFunction<int Function(int, int)>();
   late final _clientWaitForStoryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint8,
-          )>>("__Client_wait_for_story");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
+  >("__Client_wait_for_story");
 
-  late final _clientWaitForStory = _clientWaitForStoryPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _clientWaitForStory =
+      _clientWaitForStoryPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _clientLatestStoriesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__Client_latest_stories",
-  );
+        "__Client_latest_stories",
+      );
 
   late final _clientLatestStories =
       _clientLatestStoriesPtr.asFunction<int Function(int, int)>();
   late final _clientWaitForPinPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint8,
-          )>>("__Client_wait_for_pin");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
+  >("__Client_wait_for_pin");
 
-  late final _clientWaitForPin = _clientWaitForPinPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _clientWaitForPin =
+      _clientWaitForPinPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _clientPinsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_pins",
-  );
+        "__Client_pins",
+      );
 
   late final _clientPins = _clientPinsPtr.asFunction<int Function(int)>();
   late final _clientPinPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_pin");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_pin");
 
   late final _clientPin =
       _clientPinPtr.asFunction<int Function(int, int, int, int)>();
   late final _clientTaskListPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint8,
-          )>>("__Client_task_list");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
+  >("__Client_task_list");
 
-  late final _clientTaskList = _clientTaskListPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _clientTaskList =
+      _clientTaskListPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _clientTaskListsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_task_lists",
-  );
+        "__Client_task_lists",
+      );
 
   late final _clientTaskLists =
       _clientTaskListsPtr.asFunction<int Function(int)>();
   late final _clientWaitForTaskPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint8,
-          )>>("__Client_wait_for_task");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
+  >("__Client_wait_for_task");
 
-  late final _clientWaitForTask = _clientWaitForTaskPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _clientWaitForTask =
+      _clientWaitForTaskPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _clientMyOpenTasksPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_my_open_tasks",
-  );
+        "__Client_my_open_tasks",
+      );
 
   late final _clientMyOpenTasks =
       _clientMyOpenTasksPtr.asFunction<int Function(int)>();
   late final _clientSubscribeMyOpenTasksStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_subscribe_my_open_tasks_stream",
-  );
+        "__Client_subscribe_my_open_tasks_stream",
+      );
 
   late final _clientSubscribeMyOpenTasksStream =
       _clientSubscribeMyOpenTasksStreamPtr.asFunction<int Function(int)>();
   late final _clientCalendarEventsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_calendar_events",
-  );
+        "__Client_calendar_events",
+      );
 
   late final _clientCalendarEvents =
       _clientCalendarEventsPtr.asFunction<int Function(int)>();
   late final _clientCalendarEventPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_calendar_event");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_calendar_event");
 
   late final _clientCalendarEvent =
       _clientCalendarEventPtr.asFunction<int Function(int, int, int, int)>();
   late final _clientWaitForCalendarEventPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint8,
-          )>>("__Client_wait_for_calendar_event");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
+  >("__Client_wait_for_calendar_event");
 
-  late final _clientWaitForCalendarEvent = _clientWaitForCalendarEventPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _clientWaitForCalendarEvent =
+      _clientWaitForCalendarEventPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _clientWaitForReactionPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint8,
-          )>>("__Client_wait_for_reaction");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
+  >("__Client_wait_for_reaction");
 
-  late final _clientWaitForReaction = _clientWaitForReactionPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _clientWaitForReaction =
+      _clientWaitForReactionPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _clientWaitForRsvpPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint8,
-          )>>("__Client_wait_for_rsvp");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
+  >("__Client_wait_for_rsvp");
 
-  late final _clientWaitForRsvp = _clientWaitForRsvpPtr
-      .asFunction<int Function(int, int, int, int, int, int)>();
+  late final _clientWaitForRsvp =
+      _clientWaitForRsvpPtr
+          .asFunction<int Function(int, int, int, int, int, int)>();
   late final _clientInstallDefaultActerPushRulesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_install_default_acter_push_rules",
-  );
+        "__Client_install_default_acter_push_rules",
+      );
 
   late final _clientInstallDefaultActerPushRules =
       _clientInstallDefaultActerPushRulesPtr.asFunction<int Function(int)>();
   late final _clientPushersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_pushers",
-  );
+        "__Client_pushers",
+      );
 
   late final _clientPushers = _clientPushersPtr.asFunction<int Function(int)>();
   late final _clientAddPusherPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_add_pusher");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_add_pusher");
 
-  late final _clientAddPusher = _clientAddPusherPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _clientAddPusher =
+      _clientAddPusherPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientAddEmailPusherPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_add_email_pusher");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_add_email_pusher");
 
-  late final _clientAddEmailPusher = _clientAddEmailPusherPtr.asFunction<
-      int Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
+  late final _clientAddEmailPusher =
+      _clientAddEmailPusherPtr
+          .asFunction<
+            int Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientGetNotificationItemPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_get_notification_item");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_get_notification_item");
 
-  late final _clientGetNotificationItem = _clientGetNotificationItemPtr
-      .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _clientGetNotificationItem =
+      _clientGetNotificationItemPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _clientAllUpcomingEventsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8,
-              ffi.Uint32)>>("__Client_all_upcoming_events");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8, ffi.Uint32)>
+  >("__Client_all_upcoming_events");
 
   late final _clientAllUpcomingEvents =
       _clientAllUpcomingEventsPtr.asFunction<int Function(int, int, int)>();
   late final _clientMyUpcomingEventsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8,
-              ffi.Uint32)>>("__Client_my_upcoming_events");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8, ffi.Uint32)>
+  >("__Client_my_upcoming_events");
 
   late final _clientMyUpcomingEvents =
       _clientMyUpcomingEventsPtr.asFunction<int Function(int, int, int)>();
   late final _clientMyPastEventsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-              ffi.IntPtr, ffi.Uint8, ffi.Uint32)>>("__Client_my_past_events");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8, ffi.Uint32)>
+  >("__Client_my_past_events");
 
   late final _clientMyPastEvents =
       _clientMyPastEventsPtr.asFunction<int Function(int, int, int)>();
   late final _clientSuperInvitesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_super_invites",
-  );
+        "__Client_super_invites",
+      );
 
   late final _clientSuperInvites =
       _clientSuperInvitesPtr.asFunction<int Function(int)>();
   late final _clientNotificationSettingsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_notification_settings",
-  );
+        "__Client_notification_settings",
+      );
 
   late final _clientNotificationSettings =
       _clientNotificationSettingsPtr.asFunction<int Function(int)>();
   late final _clientDeviceRecordsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__Client_device_records",
-  );
+        "__Client_device_records",
+      );
 
   late final _clientDeviceRecords =
       _clientDeviceRecordsPtr.asFunction<int Function(int, int)>();
   late final _clientTextPlainDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_text_plain_draft");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_text_plain_draft");
 
   late final _clientTextPlainDraft =
       _clientTextPlainDraftPtr.asFunction<int Function(int, int, int, int)>();
   late final _clientTextMarkdownDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_text_markdown_draft");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_text_markdown_draft");
 
-  late final _clientTextMarkdownDraft = _clientTextMarkdownDraftPtr
-      .asFunction<int Function(int, int, int, int)>();
+  late final _clientTextMarkdownDraft =
+      _clientTextMarkdownDraftPtr
+          .asFunction<int Function(int, int, int, int)>();
   late final _clientTextHtmlDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_text_html_draft");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_text_html_draft");
 
-  late final _clientTextHtmlDraft = _clientTextHtmlDraftPtr
-      .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _clientTextHtmlDraft =
+      _clientTextHtmlDraftPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _clientImageDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_image_draft");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_image_draft");
 
-  late final _clientImageDraft = _clientImageDraftPtr
-      .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _clientImageDraft =
+      _clientImageDraftPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _clientAudioDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_audio_draft");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_audio_draft");
 
-  late final _clientAudioDraft = _clientAudioDraftPtr
-      .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _clientAudioDraft =
+      _clientAudioDraftPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _clientVideoDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_video_draft");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_video_draft");
 
-  late final _clientVideoDraft = _clientVideoDraftPtr
-      .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _clientVideoDraft =
+      _clientVideoDraftPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _clientFileDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_file_draft");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_file_draft");
 
-  late final _clientFileDraft = _clientFileDraftPtr
-      .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _clientFileDraft =
+      _clientFileDraftPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _clientLocationDraftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_location_draft");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_location_draft");
 
-  late final _clientLocationDraft = _clientLocationDraftPtr
-      .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _clientLocationDraft =
+      _clientLocationDraftPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _clientBackupManagerPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Client_backup_manager",
-  );
+        "__Client_backup_manager",
+      );
 
   late final _clientBackupManager =
       _clientBackupManagerPtr.asFunction<int Function(int)>();
   late final _clientRoomPreviewPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-          )>>("__Client_room_preview");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+      )
+    >
+  >("__Client_room_preview");
 
   late final _clientRoomPreview =
       _clientRoomPreviewPtr.asFunction<int Function(int, int, int, int, int)>();
   late final _clientNewLinkRefDetailsPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientNewLinkRefDetailsReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_new_link_ref_details");
-
-  late final _clientNewLinkRefDetails = _clientNewLinkRefDetailsPtr.asFunction<
+    ffi.NativeFunction<
       _ClientNewLinkRefDetailsReturn Function(
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-        int,
-      )>();
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_new_link_ref_details");
+
+  late final _clientNewLinkRefDetails =
+      _clientNewLinkRefDetailsPtr
+          .asFunction<
+            _ClientNewLinkRefDetailsReturn Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientActivityPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__Client_activity");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Client_activity");
 
   late final _clientActivity =
       _clientActivityPtr.asFunction<int Function(int, int, int, int)>();
   late final _clientActivitiesForRoomPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientActivitiesForRoomReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_activities_for_room");
+    ffi.NativeFunction<
+      _ClientActivitiesForRoomReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_activities_for_room");
 
-  late final _clientActivitiesForRoom = _clientActivitiesForRoomPtr.asFunction<
-      _ClientActivitiesForRoomReturn Function(int, int, int, int)>();
+  late final _clientActivitiesForRoom =
+      _clientActivitiesForRoomPtr
+          .asFunction<
+            _ClientActivitiesForRoomReturn Function(int, int, int, int)
+          >();
   late final _clientActivitiesForObjPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientActivitiesForObjReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__Client_activities_for_obj");
+    ffi.NativeFunction<
+      _ClientActivitiesForObjReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Client_activities_for_obj");
 
-  late final _clientActivitiesForObj = _clientActivitiesForObjPtr
-      .asFunction<_ClientActivitiesForObjReturn Function(int, int, int, int)>();
+  late final _clientActivitiesForObj =
+      _clientActivitiesForObjPtr
+          .asFunction<
+            _ClientActivitiesForObjReturn Function(int, int, int, int)
+          >();
   late final _notificationSettingsChangesStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__NotificationSettings_changes_stream",
-  );
+        "__NotificationSettings_changes_stream",
+      );
 
   late final _notificationSettingsChangesStream =
       _notificationSettingsChangesStreamPtr.asFunction<int Function(int)>();
   late final _notificationSettingsDefaultNotificationModePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8,
-              ffi.Uint8)>>("__NotificationSettings_default_notification_mode");
+    ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+  >("__NotificationSettings_default_notification_mode");
 
   late final _notificationSettingsDefaultNotificationMode =
       _notificationSettingsDefaultNotificationModePtr
           .asFunction<int Function(int, int, int)>();
   late final _notificationSettingsSetDefaultNotificationModePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__NotificationSettings_set_default_notification_mode");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__NotificationSettings_set_default_notification_mode");
 
   late final _notificationSettingsSetDefaultNotificationMode =
       _notificationSettingsSetDefaultNotificationModePtr
           .asFunction<int Function(int, int, int, int, int, int)>();
   late final _notificationSettingsGlobalContentSettingPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__NotificationSettings_global_content_setting");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__NotificationSettings_global_content_setting");
 
   late final _notificationSettingsGlobalContentSetting =
       _notificationSettingsGlobalContentSettingPtr
           .asFunction<int Function(int, int, int, int)>();
   late final _notificationSettingsSetGlobalContentSettingPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-          )>>("__NotificationSettings_set_global_content_setting");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+      )
+    >
+  >("__NotificationSettings_set_global_content_setting");
 
   late final _notificationSettingsSetGlobalContentSetting =
       _notificationSettingsSetGlobalContentSettingPtr
           .asFunction<int Function(int, int, int, int, int)>();
   late final _notificationSettingsObjectPushSubscriptionStatusStrPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__NotificationSettings_object_push_subscription_status_str");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__NotificationSettings_object_push_subscription_status_str");
 
   late final _notificationSettingsObjectPushSubscriptionStatusStr =
       _notificationSettingsObjectPushSubscriptionStatusStrPtr
           .asFunction<int Function(int, int, int, int, int, int, int, int)>();
   late final _notificationSettingsSubscribeObjectPushPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__NotificationSettings_subscribe_object_push");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__NotificationSettings_subscribe_object_push");
 
   late final _notificationSettingsSubscribeObjectPush =
       _notificationSettingsSubscribeObjectPushPtr
           .asFunction<int Function(int, int, int, int, int, int, int, int)>();
   late final _notificationSettingsUnsubscribeObjectPushPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__NotificationSettings_unsubscribe_object_push");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__NotificationSettings_unsubscribe_object_push");
 
   late final _notificationSettingsUnsubscribeObjectPush =
       _notificationSettingsUnsubscribeObjectPushPtr
           .asFunction<int Function(int, int, int, int, int, int, int, int)>();
   late final _invitationOriginServerTsPtr = _lookup<
-      ffi.NativeFunction<
-          _InvitationOriginServerTsReturn Function(
-              ffi.IntPtr)>>("__Invitation_origin_server_ts");
+    ffi.NativeFunction<_InvitationOriginServerTsReturn Function(ffi.IntPtr)>
+  >("__Invitation_origin_server_ts");
 
-  late final _invitationOriginServerTs = _invitationOriginServerTsPtr
-      .asFunction<_InvitationOriginServerTsReturn Function(int)>();
+  late final _invitationOriginServerTs =
+      _invitationOriginServerTsPtr
+          .asFunction<_InvitationOriginServerTsReturn Function(int)>();
   late final _invitationIsDmPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__Invitation_is_dm",
-  );
+        "__Invitation_is_dm",
+      );
 
   late final _invitationIsDm =
       _invitationIsDmPtr.asFunction<int Function(int)>();
   late final _invitationRoomIdStrPtr = _lookup<
-          ffi.NativeFunction<_InvitationRoomIdStrReturn Function(ffi.IntPtr)>>(
-      "__Invitation_room_id_str");
+    ffi.NativeFunction<_InvitationRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__Invitation_room_id_str");
 
-  late final _invitationRoomIdStr = _invitationRoomIdStrPtr
-      .asFunction<_InvitationRoomIdStrReturn Function(int)>();
+  late final _invitationRoomIdStr =
+      _invitationRoomIdStrPtr
+          .asFunction<_InvitationRoomIdStrReturn Function(int)>();
   late final _invitationRoomPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Invitation_room",
-  );
+        "__Invitation_room",
+      );
 
   late final _invitationRoom =
       _invitationRoomPtr.asFunction<int Function(int)>();
   late final _invitationSenderIdStrPtr = _lookup<
-          ffi
-          .NativeFunction<_InvitationSenderIdStrReturn Function(ffi.IntPtr)>>(
-      "__Invitation_sender_id_str");
+    ffi.NativeFunction<_InvitationSenderIdStrReturn Function(ffi.IntPtr)>
+  >("__Invitation_sender_id_str");
 
-  late final _invitationSenderIdStr = _invitationSenderIdStrPtr
-      .asFunction<_InvitationSenderIdStrReturn Function(int)>();
+  late final _invitationSenderIdStr =
+      _invitationSenderIdStrPtr
+          .asFunction<_InvitationSenderIdStrReturn Function(int)>();
   late final _invitationSenderProfilePtr = _lookup<
-          ffi
-          .NativeFunction<_InvitationSenderProfileReturn Function(ffi.IntPtr)>>(
-      "__Invitation_sender_profile");
+    ffi.NativeFunction<_InvitationSenderProfileReturn Function(ffi.IntPtr)>
+  >("__Invitation_sender_profile");
 
-  late final _invitationSenderProfile = _invitationSenderProfilePtr
-      .asFunction<_InvitationSenderProfileReturn Function(int)>();
+  late final _invitationSenderProfile =
+      _invitationSenderProfilePtr
+          .asFunction<_InvitationSenderProfileReturn Function(int)>();
   late final _invitationAcceptPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Invitation_accept",
-  );
+        "__Invitation_accept",
+      );
 
   late final _invitationAccept =
       _invitationAcceptPtr.asFunction<int Function(int)>();
   late final _invitationRejectPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__Invitation_reject",
-  );
+        "__Invitation_reject",
+      );
 
   late final _invitationReject =
       _invitationRejectPtr.asFunction<int Function(int)>();
   late final _superInvitesTokensPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SuperInvites_tokens",
-  );
+        "__SuperInvites_tokens",
+      );
 
   late final _superInvitesTokens =
       _superInvitesTokensPtr.asFunction<int Function(int)>();
   late final _superInvitesNewTokenUpdaterPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SuperInvites_new_token_updater",
-  );
+        "__SuperInvites_new_token_updater",
+      );
 
   late final _superInvitesNewTokenUpdater =
       _superInvitesNewTokenUpdaterPtr.asFunction<int Function(int)>();
   late final _superInvitesCreateOrUpdateTokenPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__SuperInvites_create_or_update_token",
-  );
+        "__SuperInvites_create_or_update_token",
+      );
 
   late final _superInvitesCreateOrUpdateToken =
       _superInvitesCreateOrUpdateTokenPtr.asFunction<int Function(int, int)>();
   late final _superInvitesDeletePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__SuperInvites_delete");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__SuperInvites_delete");
 
   late final _superInvitesDelete =
       _superInvitesDeletePtr.asFunction<int Function(int, int, int, int)>();
   late final _superInvitesRedeemPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__SuperInvites_redeem");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__SuperInvites_redeem");
 
   late final _superInvitesRedeem =
       _superInvitesRedeemPtr.asFunction<int Function(int, int, int, int)>();
   late final _superInvitesInfoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__SuperInvites_info");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__SuperInvites_info");
 
   late final _superInvitesInfo =
       _superInvitesInfoPtr.asFunction<int Function(int, int, int, int)>();
   late final _superInviteInfoCreateDmPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__SuperInviteInfo_create_dm",
-  );
+        "__SuperInviteInfo_create_dm",
+      );
 
   late final _superInviteInfoCreateDm =
       _superInviteInfoCreateDmPtr.asFunction<int Function(int)>();
   late final _superInviteInfoHasRedeemedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__SuperInviteInfo_has_redeemed",
-  );
+        "__SuperInviteInfo_has_redeemed",
+      );
 
   late final _superInviteInfoHasRedeemed =
       _superInviteInfoHasRedeemedPtr.asFunction<int Function(int)>();
   late final _superInviteInfoRoomsCountPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__SuperInviteInfo_rooms_count",
-  );
+        "__SuperInviteInfo_rooms_count",
+      );
 
   late final _superInviteInfoRoomsCount =
       _superInviteInfoRoomsCountPtr.asFunction<int Function(int)>();
   late final _superInviteInfoInviterUserIdStrPtr = _lookup<
-      ffi.NativeFunction<
-          _SuperInviteInfoInviterUserIdStrReturn Function(
-              ffi.IntPtr)>>("__SuperInviteInfo_inviter_user_id_str");
+    ffi.NativeFunction<
+      _SuperInviteInfoInviterUserIdStrReturn Function(ffi.IntPtr)
+    >
+  >("__SuperInviteInfo_inviter_user_id_str");
 
   late final _superInviteInfoInviterUserIdStr =
       _superInviteInfoInviterUserIdStrPtr
           .asFunction<_SuperInviteInfoInviterUserIdStrReturn Function(int)>();
   late final _superInviteInfoInviterDisplayNameStrPtr = _lookup<
-      ffi.NativeFunction<
-          _SuperInviteInfoInviterDisplayNameStrReturn Function(
-              ffi.IntPtr)>>("__SuperInviteInfo_inviter_display_name_str");
+    ffi.NativeFunction<
+      _SuperInviteInfoInviterDisplayNameStrReturn Function(ffi.IntPtr)
+    >
+  >("__SuperInviteInfo_inviter_display_name_str");
 
   late final _superInviteInfoInviterDisplayNameStr =
-      _superInviteInfoInviterDisplayNameStrPtr.asFunction<
-          _SuperInviteInfoInviterDisplayNameStrReturn Function(int)>();
+      _superInviteInfoInviterDisplayNameStrPtr
+          .asFunction<
+            _SuperInviteInfoInviterDisplayNameStrReturn Function(int)
+          >();
   late final _superInviteInfoInviterAvatarUrlStrPtr = _lookup<
-      ffi.NativeFunction<
-          _SuperInviteInfoInviterAvatarUrlStrReturn Function(
-              ffi.IntPtr)>>("__SuperInviteInfo_inviter_avatar_url_str");
+    ffi.NativeFunction<
+      _SuperInviteInfoInviterAvatarUrlStrReturn Function(ffi.IntPtr)
+    >
+  >("__SuperInviteInfo_inviter_avatar_url_str");
 
   late final _superInviteInfoInviterAvatarUrlStr =
-      _superInviteInfoInviterAvatarUrlStrPtr.asFunction<
-          _SuperInviteInfoInviterAvatarUrlStrReturn Function(int)>();
+      _superInviteInfoInviterAvatarUrlStrPtr
+          .asFunction<
+            _SuperInviteInfoInviterAvatarUrlStrReturn Function(int)
+          >();
   late final _superInviteTokenTokenPtr = _lookup<
-          ffi
-          .NativeFunction<_SuperInviteTokenTokenReturn Function(ffi.IntPtr)>>(
-      "__SuperInviteToken_token");
+    ffi.NativeFunction<_SuperInviteTokenTokenReturn Function(ffi.IntPtr)>
+  >("__SuperInviteToken_token");
 
-  late final _superInviteTokenToken = _superInviteTokenTokenPtr
-      .asFunction<_SuperInviteTokenTokenReturn Function(int)>();
+  late final _superInviteTokenToken =
+      _superInviteTokenTokenPtr
+          .asFunction<_SuperInviteTokenTokenReturn Function(int)>();
   late final _superInviteTokenCreateDmPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__SuperInviteToken_create_dm",
-  );
+        "__SuperInviteToken_create_dm",
+      );
 
   late final _superInviteTokenCreateDm =
       _superInviteTokenCreateDmPtr.asFunction<int Function(int)>();
   late final _superInviteTokenRoomsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SuperInviteToken_rooms",
-  );
+        "__SuperInviteToken_rooms",
+      );
 
   late final _superInviteTokenRooms =
       _superInviteTokenRoomsPtr.asFunction<int Function(int)>();
   late final _superInviteTokenAcceptedCountPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__SuperInviteToken_accepted_count",
-  );
+        "__SuperInviteToken_accepted_count",
+      );
 
   late final _superInviteTokenAcceptedCount =
       _superInviteTokenAcceptedCountPtr.asFunction<int Function(int)>();
   late final _superInviteTokenUpdateBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SuperInviteToken_update_builder",
-  );
+        "__SuperInviteToken_update_builder",
+      );
 
   late final _superInviteTokenUpdateBuilder =
       _superInviteTokenUpdateBuilderPtr.asFunction<int Function(int)>();
   late final _superInviteTokenRefDetailsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SuperInviteToken_ref_details",
-  );
+        "__SuperInviteToken_ref_details",
+      );
 
   late final _superInviteTokenRefDetails =
       _superInviteTokenRefDetailsPtr.asFunction<int Function(int)>();
   late final _superInvitesTokenUpdateBuilderTokenPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__SuperInvitesTokenUpdateBuilder_token");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__SuperInvitesTokenUpdateBuilder_token");
 
   late final _superInvitesTokenUpdateBuilderToken =
       _superInvitesTokenUpdateBuilderTokenPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _superInvitesTokenUpdateBuilderAddRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__SuperInvitesTokenUpdateBuilder_add_room");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__SuperInvitesTokenUpdateBuilder_add_room");
 
   late final _superInvitesTokenUpdateBuilderAddRoom =
       _superInvitesTokenUpdateBuilderAddRoomPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _superInvitesTokenUpdateBuilderRemoveRoomPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__SuperInvitesTokenUpdateBuilder_remove_room");
+    ffi.NativeFunction<
+      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__SuperInvitesTokenUpdateBuilder_remove_room");
 
   late final _superInvitesTokenUpdateBuilderRemoveRoom =
       _superInvitesTokenUpdateBuilderRemoveRoomPtr
           .asFunction<void Function(int, int, int, int)>();
   late final _superInvitesTokenUpdateBuilderCreateDmPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
-    "__SuperInvitesTokenUpdateBuilder_create_dm",
-  );
+        "__SuperInvitesTokenUpdateBuilder_create_dm",
+      );
 
   late final _superInvitesTokenUpdateBuilderCreateDm =
       _superInvitesTokenUpdateBuilderCreateDmPtr
           .asFunction<void Function(int, int)>();
   late final _verificationEventEventTypePtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventEventTypeReturn Function(
-              ffi.IntPtr)>>("__VerificationEvent_event_type");
+    ffi.NativeFunction<_VerificationEventEventTypeReturn Function(ffi.IntPtr)>
+  >("__VerificationEvent_event_type");
 
-  late final _verificationEventEventType = _verificationEventEventTypePtr
-      .asFunction<_VerificationEventEventTypeReturn Function(int)>();
+  late final _verificationEventEventType =
+      _verificationEventEventTypePtr
+          .asFunction<_VerificationEventEventTypeReturn Function(int)>();
   late final _verificationEventFlowIdPtr = _lookup<
-          ffi
-          .NativeFunction<_VerificationEventFlowIdReturn Function(ffi.IntPtr)>>(
-      "__VerificationEvent_flow_id");
+    ffi.NativeFunction<_VerificationEventFlowIdReturn Function(ffi.IntPtr)>
+  >("__VerificationEvent_flow_id");
 
-  late final _verificationEventFlowId = _verificationEventFlowIdPtr
-      .asFunction<_VerificationEventFlowIdReturn Function(int)>();
+  late final _verificationEventFlowId =
+      _verificationEventFlowIdPtr
+          .asFunction<_VerificationEventFlowIdReturn Function(int)>();
   late final _verificationEventSenderPtr = _lookup<
-          ffi
-          .NativeFunction<_VerificationEventSenderReturn Function(ffi.IntPtr)>>(
-      "__VerificationEvent_sender");
+    ffi.NativeFunction<_VerificationEventSenderReturn Function(ffi.IntPtr)>
+  >("__VerificationEvent_sender");
 
-  late final _verificationEventSender = _verificationEventSenderPtr
-      .asFunction<_VerificationEventSenderReturn Function(int)>();
+  late final _verificationEventSender =
+      _verificationEventSenderPtr
+          .asFunction<_VerificationEventSenderReturn Function(int)>();
   late final _verificationEventGetContentPtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventGetContentReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__VerificationEvent_get_content");
+    ffi.NativeFunction<
+      _VerificationEventGetContentReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__VerificationEvent_get_content");
 
   late final _verificationEventGetContent =
-      _verificationEventGetContentPtr.asFunction<
-          _VerificationEventGetContentReturn Function(int, int, int, int)>();
+      _verificationEventGetContentPtr
+          .asFunction<
+            _VerificationEventGetContentReturn Function(int, int, int, int)
+          >();
   late final _verificationEventEmojisPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__VerificationEvent_emojis",
-  );
+        "__VerificationEvent_emojis",
+      );
 
   late final _verificationEventEmojis =
       _verificationEventEmojisPtr.asFunction<int Function(int)>();
   late final _verificationEventGetEmojisPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__VerificationEvent_get_emojis",
-  );
+        "__VerificationEvent_get_emojis",
+      );
 
   late final _verificationEventGetEmojis =
       _verificationEventGetEmojisPtr.asFunction<int Function(int)>();
   late final _verificationEventAcceptVerificationRequestPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__VerificationEvent_accept_verification_request",
-  );
+        "__VerificationEvent_accept_verification_request",
+      );
 
   late final _verificationEventAcceptVerificationRequest =
       _verificationEventAcceptVerificationRequestPtr
           .asFunction<int Function(int)>();
   late final _verificationEventCancelVerificationRequestPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__VerificationEvent_cancel_verification_request",
-  );
+        "__VerificationEvent_cancel_verification_request",
+      );
 
   late final _verificationEventCancelVerificationRequest =
       _verificationEventCancelVerificationRequestPtr
           .asFunction<int Function(int)>();
   late final _verificationEventAcceptVerificationRequestWithMethodPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.IntPtr Function(
-                  ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)>>(
-      "__VerificationEvent_accept_verification_request_with_method");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__VerificationEvent_accept_verification_request_with_method");
 
   late final _verificationEventAcceptVerificationRequestWithMethod =
       _verificationEventAcceptVerificationRequestWithMethodPtr
           .asFunction<int Function(int, int, int, int)>();
   late final _verificationEventStartSasVerificationPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__VerificationEvent_start_sas_verification",
-  );
+        "__VerificationEvent_start_sas_verification",
+      );
 
   late final _verificationEventStartSasVerification =
       _verificationEventStartSasVerificationPtr.asFunction<int Function(int)>();
   late final _verificationEventAcceptSasVerificationPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__VerificationEvent_accept_sas_verification",
-  );
+        "__VerificationEvent_accept_sas_verification",
+      );
 
   late final _verificationEventAcceptSasVerification =
       _verificationEventAcceptSasVerificationPtr
           .asFunction<int Function(int)>();
   late final _verificationEventCancelSasVerificationPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__VerificationEvent_cancel_sas_verification",
-  );
+        "__VerificationEvent_cancel_sas_verification",
+      );
 
   late final _verificationEventCancelSasVerification =
       _verificationEventCancelSasVerificationPtr
           .asFunction<int Function(int)>();
   late final _verificationEventConfirmSasVerificationPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__VerificationEvent_confirm_sas_verification",
-  );
+        "__VerificationEvent_confirm_sas_verification",
+      );
 
   late final _verificationEventConfirmSasVerification =
       _verificationEventConfirmSasVerificationPtr
           .asFunction<int Function(int)>();
   late final _verificationEventMismatchSasVerificationPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__VerificationEvent_mismatch_sas_verification",
-  );
+        "__VerificationEvent_mismatch_sas_verification",
+      );
 
   late final _verificationEventMismatchSasVerification =
       _verificationEventMismatchSasVerificationPtr
           .asFunction<int Function(int)>();
   late final _verificationEmojiSymbolPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__VerificationEmoji_symbol",
-  );
+        "__VerificationEmoji_symbol",
+      );
 
   late final _verificationEmojiSymbol =
       _verificationEmojiSymbolPtr.asFunction<int Function(int)>();
   late final _verificationEmojiDescriptionPtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEmojiDescriptionReturn Function(
-              ffi.IntPtr)>>("__VerificationEmoji_description");
+    ffi.NativeFunction<_VerificationEmojiDescriptionReturn Function(ffi.IntPtr)>
+  >("__VerificationEmoji_description");
 
-  late final _verificationEmojiDescription = _verificationEmojiDescriptionPtr
-      .asFunction<_VerificationEmojiDescriptionReturn Function(int)>();
+  late final _verificationEmojiDescription =
+      _verificationEmojiDescriptionPtr
+          .asFunction<_VerificationEmojiDescriptionReturn Function(int)>();
   late final _sessionManagerAllSessionsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__SessionManager_all_sessions",
-  );
+        "__SessionManager_all_sessions",
+      );
 
   late final _sessionManagerAllSessions =
       _sessionManagerAllSessionsPtr.asFunction<int Function(int)>();
   late final _sessionManagerDeleteDevicePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__SessionManager_delete_device");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__SessionManager_delete_device");
 
   late final _sessionManagerDeleteDevice =
-      _sessionManagerDeleteDevicePtr.asFunction<
-          int Function(int, int, int, int, int, int, int, int, int, int)>();
+      _sessionManagerDeleteDevicePtr
+          .asFunction<
+            int Function(int, int, int, int, int, int, int, int, int, int)
+          >();
   late final _sessionManagerRequestVerificationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__SessionManager_request_verification");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__SessionManager_request_verification");
 
   late final _sessionManagerRequestVerification =
       _sessionManagerRequestVerificationPtr
           .asFunction<int Function(int, int, int, int)>();
   late final _sessionManagerTerminateVerificationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__SessionManager_terminate_verification");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__SessionManager_terminate_verification");
 
   late final _sessionManagerTerminateVerification =
       _sessionManagerTerminateVerificationPtr
           .asFunction<int Function(int, int, int, int)>();
   late final _deviceEventNewDevicesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__DeviceEvent_new_devices",
-  );
+        "__DeviceEvent_new_devices",
+      );
 
   late final _deviceEventNewDevices =
       _deviceEventNewDevicesPtr.asFunction<int Function(int)>();
   late final _deviceEventChangedDevicesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__DeviceEvent_changed_devices",
-  );
+        "__DeviceEvent_changed_devices",
+      );
 
   late final _deviceEventChangedDevices =
       _deviceEventChangedDevicesPtr.asFunction<int Function(int)>();
   late final _deviceRecordDeviceIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__DeviceRecord_device_id",
-  );
+        "__DeviceRecord_device_id",
+      );
 
   late final _deviceRecordDeviceId =
       _deviceRecordDeviceIdPtr.asFunction<int Function(int)>();
   late final _deviceRecordDisplayNamePtr = _lookup<
-          ffi
-          .NativeFunction<_DeviceRecordDisplayNameReturn Function(ffi.IntPtr)>>(
-      "__DeviceRecord_display_name");
+    ffi.NativeFunction<_DeviceRecordDisplayNameReturn Function(ffi.IntPtr)>
+  >("__DeviceRecord_display_name");
 
-  late final _deviceRecordDisplayName = _deviceRecordDisplayNamePtr
-      .asFunction<_DeviceRecordDisplayNameReturn Function(int)>();
+  late final _deviceRecordDisplayName =
+      _deviceRecordDisplayNamePtr
+          .asFunction<_DeviceRecordDisplayNameReturn Function(int)>();
   late final _deviceRecordLastSeenIpPtr = _lookup<
-          ffi
-          .NativeFunction<_DeviceRecordLastSeenIpReturn Function(ffi.IntPtr)>>(
-      "__DeviceRecord_last_seen_ip");
+    ffi.NativeFunction<_DeviceRecordLastSeenIpReturn Function(ffi.IntPtr)>
+  >("__DeviceRecord_last_seen_ip");
 
-  late final _deviceRecordLastSeenIp = _deviceRecordLastSeenIpPtr
-      .asFunction<_DeviceRecordLastSeenIpReturn Function(int)>();
+  late final _deviceRecordLastSeenIp =
+      _deviceRecordLastSeenIpPtr
+          .asFunction<_DeviceRecordLastSeenIpReturn Function(int)>();
   late final _deviceRecordLastSeenTsPtr = _lookup<
-          ffi
-          .NativeFunction<_DeviceRecordLastSeenTsReturn Function(ffi.IntPtr)>>(
-      "__DeviceRecord_last_seen_ts");
+    ffi.NativeFunction<_DeviceRecordLastSeenTsReturn Function(ffi.IntPtr)>
+  >("__DeviceRecord_last_seen_ts");
 
-  late final _deviceRecordLastSeenTs = _deviceRecordLastSeenTsPtr
-      .asFunction<_DeviceRecordLastSeenTsReturn Function(int)>();
+  late final _deviceRecordLastSeenTs =
+      _deviceRecordLastSeenTsPtr
+          .asFunction<_DeviceRecordLastSeenTsReturn Function(int)>();
   late final _deviceRecordIsVerifiedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__DeviceRecord_is_verified",
-  );
+        "__DeviceRecord_is_verified",
+      );
 
   late final _deviceRecordIsVerified =
       _deviceRecordIsVerifiedPtr.asFunction<int Function(int)>();
   late final _deviceRecordIsActivePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__DeviceRecord_is_active",
-  );
+        "__DeviceRecord_is_active",
+      );
 
   late final _deviceRecordIsActive =
       _deviceRecordIsActivePtr.asFunction<int Function(int)>();
   late final _deviceRecordIsMePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-    "__DeviceRecord_is_me",
-  );
+        "__DeviceRecord_is_me",
+      );
 
   late final _deviceRecordIsMe =
       _deviceRecordIsMePtr.asFunction<int Function(int)>();
   late final _backupManagerEnablePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__BackupManager_enable",
-  );
+        "__BackupManager_enable",
+      );
 
   late final _backupManagerEnable =
       _backupManagerEnablePtr.asFunction<int Function(int)>();
   late final _backupManagerResetPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__BackupManager_reset",
-  );
+        "__BackupManager_reset",
+      );
 
   late final _backupManagerReset =
       _backupManagerResetPtr.asFunction<int Function(int)>();
   late final _backupManagerDisablePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__BackupManager_disable",
-  );
+        "__BackupManager_disable",
+      );
 
   late final _backupManagerDisable =
       _backupManagerDisablePtr.asFunction<int Function(int)>();
   late final _backupManagerStateStrPtr = _lookup<
-          ffi
-          .NativeFunction<_BackupManagerStateStrReturn Function(ffi.IntPtr)>>(
-      "__BackupManager_state_str");
+    ffi.NativeFunction<_BackupManagerStateStrReturn Function(ffi.IntPtr)>
+  >("__BackupManager_state_str");
 
-  late final _backupManagerStateStr = _backupManagerStateStrPtr
-      .asFunction<_BackupManagerStateStrReturn Function(int)>();
+  late final _backupManagerStateStr =
+      _backupManagerStateStrPtr
+          .asFunction<_BackupManagerStateStrReturn Function(int)>();
   late final _backupManagerStateStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-    "__BackupManager_state_stream",
-  );
+        "__BackupManager_state_stream",
+      );
 
   late final _backupManagerStateStream =
       _backupManagerStateStreamPtr.asFunction<int Function(int)>();
   late final _backupManagerRecoverPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr,
-              ffi.UintPtr)>>("__BackupManager_recover");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__BackupManager_recover");
 
   late final _backupManagerRecover =
       _backupManagerRecoverPtr.asFunction<int Function(int, int, int, int)>();
   late final _loginNewClientFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _LoginNewClientFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__login_new_client_future_poll");
+    ffi.NativeFunction<
+      _LoginNewClientFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__login_new_client_future_poll");
 
-  late final _loginNewClientFuturePoll = _loginNewClientFuturePollPtr
-      .asFunction<_LoginNewClientFuturePollReturn Function(int, int, int)>();
+  late final _loginNewClientFuturePoll =
+      _loginNewClientFuturePollPtr
+          .asFunction<
+            _LoginNewClientFuturePollReturn Function(int, int, int)
+          >();
   late final _loginWithTokenFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _LoginWithTokenFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__login_with_token_future_poll");
+    ffi.NativeFunction<
+      _LoginWithTokenFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__login_with_token_future_poll");
 
-  late final _loginWithTokenFuturePoll = _loginWithTokenFuturePollPtr
-      .asFunction<_LoginWithTokenFuturePollReturn Function(int, int, int)>();
+  late final _loginWithTokenFuturePoll =
+      _loginWithTokenFuturePollPtr
+          .asFunction<
+            _LoginWithTokenFuturePollReturn Function(int, int, int)
+          >();
   late final _guestClientFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _GuestClientFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__guest_client_future_poll");
+    ffi.NativeFunction<
+      _GuestClientFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__guest_client_future_poll");
 
-  late final _guestClientFuturePoll = _guestClientFuturePollPtr
-      .asFunction<_GuestClientFuturePollReturn Function(int, int, int)>();
+  late final _guestClientFuturePoll =
+      _guestClientFuturePollPtr
+          .asFunction<_GuestClientFuturePollReturn Function(int, int, int)>();
   late final _registerWithTokenFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RegisterWithTokenFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__register_with_token_future_poll");
+    ffi.NativeFunction<
+      _RegisterWithTokenFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__register_with_token_future_poll");
 
-  late final _registerWithTokenFuturePoll = _registerWithTokenFuturePollPtr
-      .asFunction<_RegisterWithTokenFuturePollReturn Function(int, int, int)>();
+  late final _registerWithTokenFuturePoll =
+      _registerWithTokenFuturePollPtr
+          .asFunction<
+            _RegisterWithTokenFuturePollReturn Function(int, int, int)
+          >();
   late final _requestRegistrationTokenViaEmailFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RequestRegistrationTokenViaEmailFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__request_registration_token_via_email_future_poll");
+    ffi.NativeFunction<
+      _RequestRegistrationTokenViaEmailFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__request_registration_token_via_email_future_poll");
 
   late final _requestRegistrationTokenViaEmailFuturePoll =
-      _requestRegistrationTokenViaEmailFuturePollPtr.asFunction<
-          _RequestRegistrationTokenViaEmailFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _requestRegistrationTokenViaEmailFuturePollPtr
+          .asFunction<
+            _RequestRegistrationTokenViaEmailFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _requestPasswordChangeTokenViaEmailFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RequestPasswordChangeTokenViaEmailFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__request_password_change_token_via_email_future_poll");
+    ffi.NativeFunction<
+      _RequestPasswordChangeTokenViaEmailFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__request_password_change_token_via_email_future_poll");
 
   late final _requestPasswordChangeTokenViaEmailFuturePoll =
-      _requestPasswordChangeTokenViaEmailFuturePollPtr.asFunction<
-          _RequestPasswordChangeTokenViaEmailFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _requestPasswordChangeTokenViaEmailFuturePollPtr
+          .asFunction<
+            _RequestPasswordChangeTokenViaEmailFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _resetPasswordFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ResetPasswordFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__reset_password_future_poll");
+    ffi.NativeFunction<
+      _ResetPasswordFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__reset_password_future_poll");
 
-  late final _resetPasswordFuturePoll = _resetPasswordFuturePollPtr
-      .asFunction<_ResetPasswordFuturePollReturn Function(int, int, int)>();
+  late final _resetPasswordFuturePoll =
+      _resetPasswordFuturePollPtr
+          .asFunction<_ResetPasswordFuturePollReturn Function(int, int, int)>();
   late final _destroyLocalDataFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _DestroyLocalDataFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__destroy_local_data_future_poll");
+    ffi.NativeFunction<
+      _DestroyLocalDataFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__destroy_local_data_future_poll");
 
-  late final _destroyLocalDataFuturePoll = _destroyLocalDataFuturePollPtr
-      .asFunction<_DestroyLocalDataFuturePollReturn Function(int, int, int)>();
+  late final _destroyLocalDataFuturePoll =
+      _destroyLocalDataFuturePollPtr
+          .asFunction<
+            _DestroyLocalDataFuturePollReturn Function(int, int, int)
+          >();
   late final _refDetailsGenerateExternalLinkFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RefDetailsGenerateExternalLinkFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__RefDetails_generate_external_link_future_poll");
+    ffi.NativeFunction<
+      _RefDetailsGenerateExternalLinkFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__RefDetails_generate_external_link_future_poll");
 
   late final _refDetailsGenerateExternalLinkFuturePoll =
-      _refDetailsGenerateExternalLinkFuturePollPtr.asFunction<
-          _RefDetailsGenerateExternalLinkFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _refDetailsGenerateExternalLinkFuturePollPtr
+          .asFunction<
+            _RefDetailsGenerateExternalLinkFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _userProfileGetAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _UserProfileGetAvatarFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__UserProfile_get_avatar_future_poll");
+    ffi.NativeFunction<
+      _UserProfileGetAvatarFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__UserProfile_get_avatar_future_poll");
 
   late final _userProfileGetAvatarFuturePoll =
-      _userProfileGetAvatarFuturePollPtr.asFunction<
-          _UserProfileGetAvatarFuturePollReturn Function(int, int, int)>();
+      _userProfileGetAvatarFuturePollPtr
+          .asFunction<
+            _UserProfileGetAvatarFuturePollReturn Function(int, int, int)
+          >();
   late final _newsSlideSourceBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsSlideSourceBinaryFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NewsSlide_source_binary_future_poll");
+    ffi.NativeFunction<
+      _NewsSlideSourceBinaryFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NewsSlide_source_binary_future_poll");
 
   late final _newsSlideSourceBinaryFuturePoll =
-      _newsSlideSourceBinaryFuturePollPtr.asFunction<
-          _NewsSlideSourceBinaryFuturePollReturn Function(int, int, int)>();
+      _newsSlideSourceBinaryFuturePollPtr
+          .asFunction<
+            _NewsSlideSourceBinaryFuturePollReturn Function(int, int, int)
+          >();
   late final _newsEntryCanRedactFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryCanRedactFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NewsEntry_can_redact_future_poll");
+    ffi.NativeFunction<
+      _NewsEntryCanRedactFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NewsEntry_can_redact_future_poll");
 
   late final _newsEntryCanRedactFuturePoll =
-      _newsEntryCanRedactFuturePollPtr.asFunction<
-          _NewsEntryCanRedactFuturePollReturn Function(int, int, int)>();
+      _newsEntryCanRedactFuturePollPtr
+          .asFunction<
+            _NewsEntryCanRedactFuturePollReturn Function(int, int, int)
+          >();
   late final _newsEntryReactionsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryReactionsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NewsEntry_reactions_future_poll");
+    ffi.NativeFunction<
+      _NewsEntryReactionsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NewsEntry_reactions_future_poll");
 
   late final _newsEntryReactionsFuturePoll =
-      _newsEntryReactionsFuturePollPtr.asFunction<
-          _NewsEntryReactionsFuturePollReturn Function(int, int, int)>();
+      _newsEntryReactionsFuturePollPtr
+          .asFunction<
+            _NewsEntryReactionsFuturePollReturn Function(int, int, int)
+          >();
   late final _newsEntryReadReceiptsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryReadReceiptsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NewsEntry_read_receipts_future_poll");
+    ffi.NativeFunction<
+      _NewsEntryReadReceiptsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NewsEntry_read_receipts_future_poll");
 
   late final _newsEntryReadReceiptsFuturePoll =
-      _newsEntryReadReceiptsFuturePollPtr.asFunction<
-          _NewsEntryReadReceiptsFuturePollReturn Function(int, int, int)>();
+      _newsEntryReadReceiptsFuturePollPtr
+          .asFunction<
+            _NewsEntryReadReceiptsFuturePollReturn Function(int, int, int)
+          >();
   late final _newsEntryCommentsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryCommentsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NewsEntry_comments_future_poll");
+    ffi.NativeFunction<
+      _NewsEntryCommentsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NewsEntry_comments_future_poll");
 
-  late final _newsEntryCommentsFuturePoll = _newsEntryCommentsFuturePollPtr
-      .asFunction<_NewsEntryCommentsFuturePollReturn Function(int, int, int)>();
+  late final _newsEntryCommentsFuturePoll =
+      _newsEntryCommentsFuturePollPtr
+          .asFunction<
+            _NewsEntryCommentsFuturePollReturn Function(int, int, int)
+          >();
   late final _newsEntryRefDetailsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryRefDetailsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NewsEntry_ref_details_future_poll");
+    ffi.NativeFunction<
+      _NewsEntryRefDetailsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NewsEntry_ref_details_future_poll");
 
   late final _newsEntryRefDetailsFuturePoll =
-      _newsEntryRefDetailsFuturePollPtr.asFunction<
-          _NewsEntryRefDetailsFuturePollReturn Function(int, int, int)>();
+      _newsEntryRefDetailsFuturePollPtr
+          .asFunction<
+            _NewsEntryRefDetailsFuturePollReturn Function(int, int, int)
+          >();
   late final _newsEntryDraftAddSlideFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryDraftAddSlideFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NewsEntryDraft_add_slide_future_poll");
+    ffi.NativeFunction<
+      _NewsEntryDraftAddSlideFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NewsEntryDraft_add_slide_future_poll");
 
   late final _newsEntryDraftAddSlideFuturePoll =
-      _newsEntryDraftAddSlideFuturePollPtr.asFunction<
-          _NewsEntryDraftAddSlideFuturePollReturn Function(int, int, int)>();
+      _newsEntryDraftAddSlideFuturePollPtr
+          .asFunction<
+            _NewsEntryDraftAddSlideFuturePollReturn Function(int, int, int)
+          >();
   late final _newsEntryDraftSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryDraftSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NewsEntryDraft_send_future_poll");
+    ffi.NativeFunction<
+      _NewsEntryDraftSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NewsEntryDraft_send_future_poll");
 
   late final _newsEntryDraftSendFuturePoll =
-      _newsEntryDraftSendFuturePollPtr.asFunction<
-          _NewsEntryDraftSendFuturePollReturn Function(int, int, int)>();
+      _newsEntryDraftSendFuturePollPtr
+          .asFunction<
+            _NewsEntryDraftSendFuturePollReturn Function(int, int, int)
+          >();
   late final _newsEntryUpdateBuilderAddSlideFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryUpdateBuilderAddSlideFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NewsEntryUpdateBuilder_add_slide_future_poll");
+    ffi.NativeFunction<
+      _NewsEntryUpdateBuilderAddSlideFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NewsEntryUpdateBuilder_add_slide_future_poll");
 
   late final _newsEntryUpdateBuilderAddSlideFuturePoll =
-      _newsEntryUpdateBuilderAddSlideFuturePollPtr.asFunction<
-          _NewsEntryUpdateBuilderAddSlideFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _newsEntryUpdateBuilderAddSlideFuturePollPtr
+          .asFunction<
+            _NewsEntryUpdateBuilderAddSlideFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _newsEntryUpdateBuilderSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NewsEntryUpdateBuilderSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NewsEntryUpdateBuilder_send_future_poll");
+    ffi.NativeFunction<
+      _NewsEntryUpdateBuilderSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NewsEntryUpdateBuilder_send_future_poll");
 
   late final _newsEntryUpdateBuilderSendFuturePoll =
-      _newsEntryUpdateBuilderSendFuturePollPtr.asFunction<
-          _NewsEntryUpdateBuilderSendFuturePollReturn Function(
-              int, int, int)>();
+      _newsEntryUpdateBuilderSendFuturePollPtr
+          .asFunction<
+            _NewsEntryUpdateBuilderSendFuturePollReturn Function(int, int, int)
+          >();
   late final _storySlideSourceBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _StorySlideSourceBinaryFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__StorySlide_source_binary_future_poll");
+    ffi.NativeFunction<
+      _StorySlideSourceBinaryFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__StorySlide_source_binary_future_poll");
 
   late final _storySlideSourceBinaryFuturePoll =
-      _storySlideSourceBinaryFuturePollPtr.asFunction<
-          _StorySlideSourceBinaryFuturePollReturn Function(int, int, int)>();
+      _storySlideSourceBinaryFuturePollPtr
+          .asFunction<
+            _StorySlideSourceBinaryFuturePollReturn Function(int, int, int)
+          >();
   late final _storyCanRedactFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _StoryCanRedactFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Story_can_redact_future_poll");
+    ffi.NativeFunction<
+      _StoryCanRedactFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Story_can_redact_future_poll");
 
-  late final _storyCanRedactFuturePoll = _storyCanRedactFuturePollPtr
-      .asFunction<_StoryCanRedactFuturePollReturn Function(int, int, int)>();
+  late final _storyCanRedactFuturePoll =
+      _storyCanRedactFuturePollPtr
+          .asFunction<
+            _StoryCanRedactFuturePollReturn Function(int, int, int)
+          >();
   late final _storyReactionsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _StoryReactionsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Story_reactions_future_poll");
+    ffi.NativeFunction<
+      _StoryReactionsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Story_reactions_future_poll");
 
-  late final _storyReactionsFuturePoll = _storyReactionsFuturePollPtr
-      .asFunction<_StoryReactionsFuturePollReturn Function(int, int, int)>();
+  late final _storyReactionsFuturePoll =
+      _storyReactionsFuturePollPtr
+          .asFunction<
+            _StoryReactionsFuturePollReturn Function(int, int, int)
+          >();
   late final _storyReadReceiptsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _StoryReadReceiptsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Story_read_receipts_future_poll");
+    ffi.NativeFunction<
+      _StoryReadReceiptsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Story_read_receipts_future_poll");
 
-  late final _storyReadReceiptsFuturePoll = _storyReadReceiptsFuturePollPtr
-      .asFunction<_StoryReadReceiptsFuturePollReturn Function(int, int, int)>();
+  late final _storyReadReceiptsFuturePoll =
+      _storyReadReceiptsFuturePollPtr
+          .asFunction<
+            _StoryReadReceiptsFuturePollReturn Function(int, int, int)
+          >();
   late final _storyCommentsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _StoryCommentsFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Story_comments_future_poll");
+    ffi.NativeFunction<
+      _StoryCommentsFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Story_comments_future_poll");
 
-  late final _storyCommentsFuturePoll = _storyCommentsFuturePollPtr
-      .asFunction<_StoryCommentsFuturePollReturn Function(int, int, int)>();
+  late final _storyCommentsFuturePoll =
+      _storyCommentsFuturePollPtr
+          .asFunction<_StoryCommentsFuturePollReturn Function(int, int, int)>();
   late final _storyDraftAddSlideFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _StoryDraftAddSlideFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__StoryDraft_add_slide_future_poll");
+    ffi.NativeFunction<
+      _StoryDraftAddSlideFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__StoryDraft_add_slide_future_poll");
 
   late final _storyDraftAddSlideFuturePoll =
-      _storyDraftAddSlideFuturePollPtr.asFunction<
-          _StoryDraftAddSlideFuturePollReturn Function(int, int, int)>();
+      _storyDraftAddSlideFuturePollPtr
+          .asFunction<
+            _StoryDraftAddSlideFuturePollReturn Function(int, int, int)
+          >();
   late final _storyDraftSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _StoryDraftSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__StoryDraft_send_future_poll");
+    ffi.NativeFunction<
+      _StoryDraftSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__StoryDraft_send_future_poll");
 
-  late final _storyDraftSendFuturePoll = _storyDraftSendFuturePollPtr
-      .asFunction<_StoryDraftSendFuturePollReturn Function(int, int, int)>();
+  late final _storyDraftSendFuturePoll =
+      _storyDraftSendFuturePollPtr
+          .asFunction<
+            _StoryDraftSendFuturePollReturn Function(int, int, int)
+          >();
   late final _storyUpdateBuilderAddSlideFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _StoryUpdateBuilderAddSlideFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__StoryUpdateBuilder_add_slide_future_poll");
+    ffi.NativeFunction<
+      _StoryUpdateBuilderAddSlideFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__StoryUpdateBuilder_add_slide_future_poll");
 
   late final _storyUpdateBuilderAddSlideFuturePoll =
-      _storyUpdateBuilderAddSlideFuturePollPtr.asFunction<
-          _StoryUpdateBuilderAddSlideFuturePollReturn Function(
-              int, int, int)>();
+      _storyUpdateBuilderAddSlideFuturePollPtr
+          .asFunction<
+            _StoryUpdateBuilderAddSlideFuturePollReturn Function(int, int, int)
+          >();
   late final _storyUpdateBuilderSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _StoryUpdateBuilderSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__StoryUpdateBuilder_send_future_poll");
+    ffi.NativeFunction<
+      _StoryUpdateBuilderSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__StoryUpdateBuilder_send_future_poll");
 
   late final _storyUpdateBuilderSendFuturePoll =
-      _storyUpdateBuilderSendFuturePollPtr.asFunction<
-          _StoryUpdateBuilderSendFuturePollReturn Function(int, int, int)>();
+      _storyUpdateBuilderSendFuturePollPtr
+          .asFunction<
+            _StoryUpdateBuilderSendFuturePollReturn Function(int, int, int)
+          >();
   late final _pinDraftSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _PinDraftSendFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__PinDraft_send_future_poll");
+    ffi.NativeFunction<
+      _PinDraftSendFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__PinDraft_send_future_poll");
 
-  late final _pinDraftSendFuturePoll = _pinDraftSendFuturePollPtr
-      .asFunction<_PinDraftSendFuturePollReturn Function(int, int, int)>();
+  late final _pinDraftSendFuturePoll =
+      _pinDraftSendFuturePollPtr
+          .asFunction<_PinDraftSendFuturePollReturn Function(int, int, int)>();
   late final _acterPinRefDetailsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ActerPinRefDetailsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ActerPin_ref_details_future_poll");
+    ffi.NativeFunction<
+      _ActerPinRefDetailsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ActerPin_ref_details_future_poll");
 
   late final _acterPinRefDetailsFuturePoll =
-      _acterPinRefDetailsFuturePollPtr.asFunction<
-          _ActerPinRefDetailsFuturePollReturn Function(int, int, int)>();
+      _acterPinRefDetailsFuturePollPtr
+          .asFunction<
+            _ActerPinRefDetailsFuturePollReturn Function(int, int, int)
+          >();
   late final _acterPinRefreshFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ActerPinRefreshFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ActerPin_refresh_future_poll");
+    ffi.NativeFunction<
+      _ActerPinRefreshFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ActerPin_refresh_future_poll");
 
-  late final _acterPinRefreshFuturePoll = _acterPinRefreshFuturePollPtr
-      .asFunction<_ActerPinRefreshFuturePollReturn Function(int, int, int)>();
+  late final _acterPinRefreshFuturePoll =
+      _acterPinRefreshFuturePollPtr
+          .asFunction<
+            _ActerPinRefreshFuturePollReturn Function(int, int, int)
+          >();
   late final _acterPinCanRedactFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ActerPinCanRedactFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ActerPin_can_redact_future_poll");
+    ffi.NativeFunction<
+      _ActerPinCanRedactFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ActerPin_can_redact_future_poll");
 
-  late final _acterPinCanRedactFuturePoll = _acterPinCanRedactFuturePollPtr
-      .asFunction<_ActerPinCanRedactFuturePollReturn Function(int, int, int)>();
+  late final _acterPinCanRedactFuturePoll =
+      _acterPinCanRedactFuturePollPtr
+          .asFunction<
+            _ActerPinCanRedactFuturePollReturn Function(int, int, int)
+          >();
   late final _acterPinCommentsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ActerPinCommentsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ActerPin_comments_future_poll");
+    ffi.NativeFunction<
+      _ActerPinCommentsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ActerPin_comments_future_poll");
 
-  late final _acterPinCommentsFuturePoll = _acterPinCommentsFuturePollPtr
-      .asFunction<_ActerPinCommentsFuturePollReturn Function(int, int, int)>();
+  late final _acterPinCommentsFuturePoll =
+      _acterPinCommentsFuturePollPtr
+          .asFunction<
+            _ActerPinCommentsFuturePollReturn Function(int, int, int)
+          >();
   late final _acterPinAttachmentsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ActerPinAttachmentsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ActerPin_attachments_future_poll");
+    ffi.NativeFunction<
+      _ActerPinAttachmentsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ActerPin_attachments_future_poll");
 
   late final _acterPinAttachmentsFuturePoll =
-      _acterPinAttachmentsFuturePollPtr.asFunction<
-          _ActerPinAttachmentsFuturePollReturn Function(int, int, int)>();
+      _acterPinAttachmentsFuturePollPtr
+          .asFunction<
+            _ActerPinAttachmentsFuturePollReturn Function(int, int, int)
+          >();
   late final _pinUpdateBuilderSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _PinUpdateBuilderSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__PinUpdateBuilder_send_future_poll");
+    ffi.NativeFunction<
+      _PinUpdateBuilderSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__PinUpdateBuilder_send_future_poll");
 
   late final _pinUpdateBuilderSendFuturePoll =
-      _pinUpdateBuilderSendFuturePollPtr.asFunction<
-          _PinUpdateBuilderSendFuturePollReturn Function(int, int, int)>();
+      _pinUpdateBuilderSendFuturePollPtr
+          .asFunction<
+            _PinUpdateBuilderSendFuturePollReturn Function(int, int, int)
+          >();
   late final _calendarEventRsvpsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventRsvpsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CalendarEvent_rsvps_future_poll");
+    ffi.NativeFunction<
+      _CalendarEventRsvpsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CalendarEvent_rsvps_future_poll");
 
   late final _calendarEventRsvpsFuturePoll =
-      _calendarEventRsvpsFuturePollPtr.asFunction<
-          _CalendarEventRsvpsFuturePollReturn Function(int, int, int)>();
+      _calendarEventRsvpsFuturePollPtr
+          .asFunction<
+            _CalendarEventRsvpsFuturePollReturn Function(int, int, int)
+          >();
   late final _calendarEventReactionsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventReactionsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CalendarEvent_reactions_future_poll");
+    ffi.NativeFunction<
+      _CalendarEventReactionsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CalendarEvent_reactions_future_poll");
 
   late final _calendarEventReactionsFuturePoll =
-      _calendarEventReactionsFuturePollPtr.asFunction<
-          _CalendarEventReactionsFuturePollReturn Function(int, int, int)>();
+      _calendarEventReactionsFuturePollPtr
+          .asFunction<
+            _CalendarEventReactionsFuturePollReturn Function(int, int, int)
+          >();
   late final _calendarEventRespondedByMeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventRespondedByMeFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CalendarEvent_responded_by_me_future_poll");
+    ffi.NativeFunction<
+      _CalendarEventRespondedByMeFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CalendarEvent_responded_by_me_future_poll");
 
   late final _calendarEventRespondedByMeFuturePoll =
-      _calendarEventRespondedByMeFuturePollPtr.asFunction<
-          _CalendarEventRespondedByMeFuturePollReturn Function(
-              int, int, int)>();
+      _calendarEventRespondedByMeFuturePollPtr
+          .asFunction<
+            _CalendarEventRespondedByMeFuturePollReturn Function(int, int, int)
+          >();
   late final _calendarEventParticipantsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventParticipantsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CalendarEvent_participants_future_poll");
+    ffi.NativeFunction<
+      _CalendarEventParticipantsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CalendarEvent_participants_future_poll");
 
   late final _calendarEventParticipantsFuturePoll =
-      _calendarEventParticipantsFuturePollPtr.asFunction<
-          _CalendarEventParticipantsFuturePollReturn Function(int, int, int)>();
+      _calendarEventParticipantsFuturePollPtr
+          .asFunction<
+            _CalendarEventParticipantsFuturePollReturn Function(int, int, int)
+          >();
   late final _calendarEventCanRedactFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventCanRedactFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CalendarEvent_can_redact_future_poll");
+    ffi.NativeFunction<
+      _CalendarEventCanRedactFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CalendarEvent_can_redact_future_poll");
 
   late final _calendarEventCanRedactFuturePoll =
-      _calendarEventCanRedactFuturePollPtr.asFunction<
-          _CalendarEventCanRedactFuturePollReturn Function(int, int, int)>();
+      _calendarEventCanRedactFuturePollPtr
+          .asFunction<
+            _CalendarEventCanRedactFuturePollReturn Function(int, int, int)
+          >();
   late final _calendarEventCommentsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventCommentsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CalendarEvent_comments_future_poll");
+    ffi.NativeFunction<
+      _CalendarEventCommentsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CalendarEvent_comments_future_poll");
 
   late final _calendarEventCommentsFuturePoll =
-      _calendarEventCommentsFuturePollPtr.asFunction<
-          _CalendarEventCommentsFuturePollReturn Function(int, int, int)>();
+      _calendarEventCommentsFuturePollPtr
+          .asFunction<
+            _CalendarEventCommentsFuturePollReturn Function(int, int, int)
+          >();
   late final _calendarEventAttachmentsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventAttachmentsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CalendarEvent_attachments_future_poll");
+    ffi.NativeFunction<
+      _CalendarEventAttachmentsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CalendarEvent_attachments_future_poll");
 
   late final _calendarEventAttachmentsFuturePoll =
-      _calendarEventAttachmentsFuturePollPtr.asFunction<
-          _CalendarEventAttachmentsFuturePollReturn Function(int, int, int)>();
+      _calendarEventAttachmentsFuturePollPtr
+          .asFunction<
+            _CalendarEventAttachmentsFuturePollReturn Function(int, int, int)
+          >();
   late final _calendarEventRefDetailsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventRefDetailsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CalendarEvent_ref_details_future_poll");
+    ffi.NativeFunction<
+      _CalendarEventRefDetailsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CalendarEvent_ref_details_future_poll");
 
   late final _calendarEventRefDetailsFuturePoll =
-      _calendarEventRefDetailsFuturePollPtr.asFunction<
-          _CalendarEventRefDetailsFuturePollReturn Function(int, int, int)>();
+      _calendarEventRefDetailsFuturePollPtr
+          .asFunction<
+            _CalendarEventRefDetailsFuturePollReturn Function(int, int, int)
+          >();
   late final _calendarEventUpdateBuilderSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventUpdateBuilderSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CalendarEventUpdateBuilder_send_future_poll");
+    ffi.NativeFunction<
+      _CalendarEventUpdateBuilderSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CalendarEventUpdateBuilder_send_future_poll");
 
   late final _calendarEventUpdateBuilderSendFuturePoll =
-      _calendarEventUpdateBuilderSendFuturePollPtr.asFunction<
-          _CalendarEventUpdateBuilderSendFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _calendarEventUpdateBuilderSendFuturePollPtr
+          .asFunction<
+            _CalendarEventUpdateBuilderSendFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventDraftSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CalendarEventDraftSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CalendarEventDraft_send_future_poll");
+    ffi.NativeFunction<
+      _CalendarEventDraftSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CalendarEventDraft_send_future_poll");
 
   late final _calendarEventDraftSendFuturePoll =
-      _calendarEventDraftSendFuturePollPtr.asFunction<
-          _CalendarEventDraftSendFuturePollReturn Function(int, int, int)>();
+      _calendarEventDraftSendFuturePollPtr
+          .asFunction<
+            _CalendarEventDraftSendFuturePollReturn Function(int, int, int)
+          >();
   late final _rsvpManagerRsvpEntriesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RsvpManagerRsvpEntriesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__RsvpManager_rsvp_entries_future_poll");
+    ffi.NativeFunction<
+      _RsvpManagerRsvpEntriesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__RsvpManager_rsvp_entries_future_poll");
 
   late final _rsvpManagerRsvpEntriesFuturePoll =
-      _rsvpManagerRsvpEntriesFuturePollPtr.asFunction<
-          _RsvpManagerRsvpEntriesFuturePollReturn Function(int, int, int)>();
+      _rsvpManagerRsvpEntriesFuturePollPtr
+          .asFunction<
+            _RsvpManagerRsvpEntriesFuturePollReturn Function(int, int, int)
+          >();
   late final _rsvpManagerRespondedByMeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RsvpManagerRespondedByMeFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__RsvpManager_responded_by_me_future_poll");
+    ffi.NativeFunction<
+      _RsvpManagerRespondedByMeFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__RsvpManager_responded_by_me_future_poll");
 
   late final _rsvpManagerRespondedByMeFuturePoll =
-      _rsvpManagerRespondedByMeFuturePollPtr.asFunction<
-          _RsvpManagerRespondedByMeFuturePollReturn Function(int, int, int)>();
+      _rsvpManagerRespondedByMeFuturePollPtr
+          .asFunction<
+            _RsvpManagerRespondedByMeFuturePollReturn Function(int, int, int)
+          >();
   late final _rsvpManagerCountAtStatusFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RsvpManagerCountAtStatusFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__RsvpManager_count_at_status_future_poll");
+    ffi.NativeFunction<
+      _RsvpManagerCountAtStatusFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__RsvpManager_count_at_status_future_poll");
 
   late final _rsvpManagerCountAtStatusFuturePoll =
-      _rsvpManagerCountAtStatusFuturePollPtr.asFunction<
-          _RsvpManagerCountAtStatusFuturePollReturn Function(int, int, int)>();
+      _rsvpManagerCountAtStatusFuturePollPtr
+          .asFunction<
+            _RsvpManagerCountAtStatusFuturePollReturn Function(int, int, int)
+          >();
   late final _rsvpManagerUsersAtStatusFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RsvpManagerUsersAtStatusFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__RsvpManager_users_at_status_future_poll");
+    ffi.NativeFunction<
+      _RsvpManagerUsersAtStatusFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__RsvpManager_users_at_status_future_poll");
 
   late final _rsvpManagerUsersAtStatusFuturePoll =
-      _rsvpManagerUsersAtStatusFuturePollPtr.asFunction<
-          _RsvpManagerUsersAtStatusFuturePollReturn Function(int, int, int)>();
+      _rsvpManagerUsersAtStatusFuturePollPtr
+          .asFunction<
+            _RsvpManagerUsersAtStatusFuturePollReturn Function(int, int, int)
+          >();
   late final _rsvpDraftSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RsvpDraftSendFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__RsvpDraft_send_future_poll");
+    ffi.NativeFunction<
+      _RsvpDraftSendFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__RsvpDraft_send_future_poll");
 
-  late final _rsvpDraftSendFuturePoll = _rsvpDraftSendFuturePollPtr
-      .asFunction<_RsvpDraftSendFuturePollReturn Function(int, int, int)>();
+  late final _rsvpDraftSendFuturePoll =
+      _rsvpDraftSendFuturePollPtr
+          .asFunction<_RsvpDraftSendFuturePollReturn Function(int, int, int)>();
   late final _reactionManagerReactionEntriesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerReactionEntriesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ReactionManager_reaction_entries_future_poll");
+    ffi.NativeFunction<
+      _ReactionManagerReactionEntriesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ReactionManager_reaction_entries_future_poll");
 
   late final _reactionManagerReactionEntriesFuturePoll =
-      _reactionManagerReactionEntriesFuturePollPtr.asFunction<
-          _ReactionManagerReactionEntriesFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _reactionManagerReactionEntriesFuturePollPtr
+          .asFunction<
+            _ReactionManagerReactionEntriesFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _reactionManagerSendLikeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerSendLikeFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ReactionManager_send_like_future_poll");
+    ffi.NativeFunction<
+      _ReactionManagerSendLikeFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ReactionManager_send_like_future_poll");
 
   late final _reactionManagerSendLikeFuturePoll =
-      _reactionManagerSendLikeFuturePollPtr.asFunction<
-          _ReactionManagerSendLikeFuturePollReturn Function(int, int, int)>();
+      _reactionManagerSendLikeFuturePollPtr
+          .asFunction<
+            _ReactionManagerSendLikeFuturePollReturn Function(int, int, int)
+          >();
   late final _reactionManagerSendReactionFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerSendReactionFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ReactionManager_send_reaction_future_poll");
+    ffi.NativeFunction<
+      _ReactionManagerSendReactionFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ReactionManager_send_reaction_future_poll");
 
   late final _reactionManagerSendReactionFuturePoll =
-      _reactionManagerSendReactionFuturePollPtr.asFunction<
-          _ReactionManagerSendReactionFuturePollReturn Function(
-              int, int, int)>();
+      _reactionManagerSendReactionFuturePollPtr
+          .asFunction<
+            _ReactionManagerSendReactionFuturePollReturn Function(int, int, int)
+          >();
   late final _reactionManagerRedactLikeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerRedactLikeFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ReactionManager_redact_like_future_poll");
+    ffi.NativeFunction<
+      _ReactionManagerRedactLikeFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ReactionManager_redact_like_future_poll");
 
   late final _reactionManagerRedactLikeFuturePoll =
-      _reactionManagerRedactLikeFuturePollPtr.asFunction<
-          _ReactionManagerRedactLikeFuturePollReturn Function(int, int, int)>();
+      _reactionManagerRedactLikeFuturePollPtr
+          .asFunction<
+            _ReactionManagerRedactLikeFuturePollReturn Function(int, int, int)
+          >();
   late final _reactionManagerRedactReactionFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerRedactReactionFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ReactionManager_redact_reaction_future_poll");
+    ffi.NativeFunction<
+      _ReactionManagerRedactReactionFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ReactionManager_redact_reaction_future_poll");
 
   late final _reactionManagerRedactReactionFuturePoll =
-      _reactionManagerRedactReactionFuturePollPtr.asFunction<
-          _ReactionManagerRedactReactionFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _reactionManagerRedactReactionFuturePollPtr
+          .asFunction<
+            _ReactionManagerRedactReactionFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _reactionManagerReloadFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerReloadFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ReactionManager_reload_future_poll");
+    ffi.NativeFunction<
+      _ReactionManagerReloadFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ReactionManager_reload_future_poll");
 
   late final _reactionManagerReloadFuturePoll =
-      _reactionManagerReloadFuturePollPtr.asFunction<
-          _ReactionManagerReloadFuturePollReturn Function(int, int, int)>();
+      _reactionManagerReloadFuturePollPtr
+          .asFunction<
+            _ReactionManagerReloadFuturePollReturn Function(int, int, int)
+          >();
   late final _readReceiptsManagerAnnounceReadFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReadReceiptsManagerAnnounceReadFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ReadReceiptsManager_announce_read_future_poll");
+    ffi.NativeFunction<
+      _ReadReceiptsManagerAnnounceReadFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ReadReceiptsManager_announce_read_future_poll");
 
   late final _readReceiptsManagerAnnounceReadFuturePoll =
-      _readReceiptsManagerAnnounceReadFuturePollPtr.asFunction<
-          _ReadReceiptsManagerAnnounceReadFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _readReceiptsManagerAnnounceReadFuturePollPtr
+          .asFunction<
+            _ReadReceiptsManagerAnnounceReadFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _readReceiptsManagerReloadFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReadReceiptsManagerReloadFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ReadReceiptsManager_reload_future_poll");
+    ffi.NativeFunction<
+      _ReadReceiptsManagerReloadFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ReadReceiptsManager_reload_future_poll");
 
   late final _readReceiptsManagerReloadFuturePoll =
-      _readReceiptsManagerReloadFuturePollPtr.asFunction<
-          _ReadReceiptsManagerReloadFuturePollReturn Function(int, int, int)>();
+      _readReceiptsManagerReloadFuturePollPtr
+          .asFunction<
+            _ReadReceiptsManagerReloadFuturePollReturn Function(int, int, int)
+          >();
   late final _eventSendStateAbortFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _EventSendStateAbortFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__EventSendState_abort_future_poll");
+    ffi.NativeFunction<
+      _EventSendStateAbortFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__EventSendState_abort_future_poll");
 
   late final _eventSendStateAbortFuturePoll =
-      _eventSendStateAbortFuturePollPtr.asFunction<
-          _EventSendStateAbortFuturePollReturn Function(int, int, int)>();
+      _eventSendStateAbortFuturePollPtr
+          .asFunction<
+            _EventSendStateAbortFuturePollReturn Function(int, int, int)
+          >();
   late final _roomAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomAvatarFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Room_avatar_future_poll");
+    ffi.NativeFunction<
+      _RoomAvatarFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Room_avatar_future_poll");
 
-  late final _roomAvatarFuturePoll = _roomAvatarFuturePollPtr
-      .asFunction<_RoomAvatarFuturePollReturn Function(int, int, int)>();
+  late final _roomAvatarFuturePoll =
+      _roomAvatarFuturePollPtr
+          .asFunction<_RoomAvatarFuturePollReturn Function(int, int, int)>();
   late final _roomDisplayNameFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomDisplayNameFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_display_name_future_poll");
+    ffi.NativeFunction<
+      _RoomDisplayNameFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_display_name_future_poll");
 
-  late final _roomDisplayNameFuturePoll = _roomDisplayNameFuturePollPtr
-      .asFunction<_RoomDisplayNameFuturePollReturn Function(int, int, int)>();
+  late final _roomDisplayNameFuturePoll =
+      _roomDisplayNameFuturePollPtr
+          .asFunction<
+            _RoomDisplayNameFuturePollReturn Function(int, int, int)
+          >();
   late final _roomSetJoinRuleFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomSetJoinRuleFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_set_join_rule_future_poll");
+    ffi.NativeFunction<
+      _RoomSetJoinRuleFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_set_join_rule_future_poll");
 
-  late final _roomSetJoinRuleFuturePoll = _roomSetJoinRuleFuturePollPtr
-      .asFunction<_RoomSetJoinRuleFuturePollReturn Function(int, int, int)>();
+  late final _roomSetJoinRuleFuturePoll =
+      _roomSetJoinRuleFuturePollPtr
+          .asFunction<
+            _RoomSetJoinRuleFuturePollReturn Function(int, int, int)
+          >();
   late final _roomSpaceRelationsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomSpaceRelationsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_space_relations_future_poll");
+    ffi.NativeFunction<
+      _RoomSpaceRelationsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_space_relations_future_poll");
 
   late final _roomSpaceRelationsFuturePoll =
-      _roomSpaceRelationsFuturePollPtr.asFunction<
-          _RoomSpaceRelationsFuturePollReturn Function(int, int, int)>();
+      _roomSpaceRelationsFuturePollPtr
+          .asFunction<
+            _RoomSpaceRelationsFuturePollReturn Function(int, int, int)
+          >();
   late final _roomIsDirectFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomIsDirectFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Room_is_direct_future_poll");
+    ffi.NativeFunction<
+      _RoomIsDirectFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Room_is_direct_future_poll");
 
-  late final _roomIsDirectFuturePoll = _roomIsDirectFuturePollPtr
-      .asFunction<_RoomIsDirectFuturePollReturn Function(int, int, int)>();
+  late final _roomIsDirectFuturePoll =
+      _roomIsDirectFuturePollPtr
+          .asFunction<_RoomIsDirectFuturePollReturn Function(int, int, int)>();
   late final _roomAddParentRoomFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomAddParentRoomFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_add_parent_room_future_poll");
+    ffi.NativeFunction<
+      _RoomAddParentRoomFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_add_parent_room_future_poll");
 
-  late final _roomAddParentRoomFuturePoll = _roomAddParentRoomFuturePollPtr
-      .asFunction<_RoomAddParentRoomFuturePollReturn Function(int, int, int)>();
+  late final _roomAddParentRoomFuturePoll =
+      _roomAddParentRoomFuturePollPtr
+          .asFunction<
+            _RoomAddParentRoomFuturePollReturn Function(int, int, int)
+          >();
   late final _roomRemoveParentRoomFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomRemoveParentRoomFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_remove_parent_room_future_poll");
+    ffi.NativeFunction<
+      _RoomRemoveParentRoomFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_remove_parent_room_future_poll");
 
   late final _roomRemoveParentRoomFuturePoll =
-      _roomRemoveParentRoomFuturePollPtr.asFunction<
-          _RoomRemoveParentRoomFuturePollReturn Function(int, int, int)>();
+      _roomRemoveParentRoomFuturePollPtr
+          .asFunction<
+            _RoomRemoveParentRoomFuturePollReturn Function(int, int, int)
+          >();
   late final _roomGetMyMembershipFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomGetMyMembershipFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_get_my_membership_future_poll");
+    ffi.NativeFunction<
+      _RoomGetMyMembershipFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_get_my_membership_future_poll");
 
   late final _roomGetMyMembershipFuturePoll =
-      _roomGetMyMembershipFuturePollPtr.asFunction<
-          _RoomGetMyMembershipFuturePollReturn Function(int, int, int)>();
+      _roomGetMyMembershipFuturePollPtr
+          .asFunction<
+            _RoomGetMyMembershipFuturePollReturn Function(int, int, int)
+          >();
   late final _roomActiveMembersIdsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomActiveMembersIdsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_active_members_ids_future_poll");
+    ffi.NativeFunction<
+      _RoomActiveMembersIdsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_active_members_ids_future_poll");
 
   late final _roomActiveMembersIdsFuturePoll =
-      _roomActiveMembersIdsFuturePollPtr.asFunction<
-          _RoomActiveMembersIdsFuturePollReturn Function(int, int, int)>();
+      _roomActiveMembersIdsFuturePollPtr
+          .asFunction<
+            _RoomActiveMembersIdsFuturePollReturn Function(int, int, int)
+          >();
   late final _roomActiveMembersFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomActiveMembersFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_active_members_future_poll");
+    ffi.NativeFunction<
+      _RoomActiveMembersFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_active_members_future_poll");
 
-  late final _roomActiveMembersFuturePoll = _roomActiveMembersFuturePollPtr
-      .asFunction<_RoomActiveMembersFuturePollReturn Function(int, int, int)>();
+  late final _roomActiveMembersFuturePoll =
+      _roomActiveMembersFuturePollPtr
+          .asFunction<
+            _RoomActiveMembersFuturePollReturn Function(int, int, int)
+          >();
   late final _roomInvitedMembersFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomInvitedMembersFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_invited_members_future_poll");
+    ffi.NativeFunction<
+      _RoomInvitedMembersFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_invited_members_future_poll");
 
   late final _roomInvitedMembersFuturePoll =
-      _roomInvitedMembersFuturePollPtr.asFunction<
-          _RoomInvitedMembersFuturePollReturn Function(int, int, int)>();
+      _roomInvitedMembersFuturePollPtr
+          .asFunction<
+            _RoomInvitedMembersFuturePollReturn Function(int, int, int)
+          >();
   late final _roomGetMemberFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomGetMemberFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Room_get_member_future_poll");
+    ffi.NativeFunction<
+      _RoomGetMemberFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Room_get_member_future_poll");
 
-  late final _roomGetMemberFuturePoll = _roomGetMemberFuturePollPtr
-      .asFunction<_RoomGetMemberFuturePollReturn Function(int, int, int)>();
+  late final _roomGetMemberFuturePoll =
+      _roomGetMemberFuturePollPtr
+          .asFunction<_RoomGetMemberFuturePollReturn Function(int, int, int)>();
   late final _roomInviteUserFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomInviteUserFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_invite_user_future_poll");
+    ffi.NativeFunction<
+      _RoomInviteUserFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_invite_user_future_poll");
 
-  late final _roomInviteUserFuturePoll = _roomInviteUserFuturePollPtr
-      .asFunction<_RoomInviteUserFuturePollReturn Function(int, int, int)>();
+  late final _roomInviteUserFuturePoll =
+      _roomInviteUserFuturePollPtr
+          .asFunction<
+            _RoomInviteUserFuturePollReturn Function(int, int, int)
+          >();
   late final _roomNotificationModeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomNotificationModeFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_notification_mode_future_poll");
+    ffi.NativeFunction<
+      _RoomNotificationModeFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_notification_mode_future_poll");
 
   late final _roomNotificationModeFuturePoll =
-      _roomNotificationModeFuturePollPtr.asFunction<
-          _RoomNotificationModeFuturePollReturn Function(int, int, int)>();
+      _roomNotificationModeFuturePollPtr
+          .asFunction<
+            _RoomNotificationModeFuturePollReturn Function(int, int, int)
+          >();
   late final _roomDefaultNotificationModeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomDefaultNotificationModeFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_default_notification_mode_future_poll");
+    ffi.NativeFunction<
+      _RoomDefaultNotificationModeFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_default_notification_mode_future_poll");
 
   late final _roomDefaultNotificationModeFuturePoll =
-      _roomDefaultNotificationModeFuturePollPtr.asFunction<
-          _RoomDefaultNotificationModeFuturePollReturn Function(
-              int, int, int)>();
+      _roomDefaultNotificationModeFuturePollPtr
+          .asFunction<
+            _RoomDefaultNotificationModeFuturePollReturn Function(int, int, int)
+          >();
   late final _roomUnmuteFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomUnmuteFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Room_unmute_future_poll");
+    ffi.NativeFunction<
+      _RoomUnmuteFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Room_unmute_future_poll");
 
-  late final _roomUnmuteFuturePoll = _roomUnmuteFuturePollPtr
-      .asFunction<_RoomUnmuteFuturePollReturn Function(int, int, int)>();
+  late final _roomUnmuteFuturePoll =
+      _roomUnmuteFuturePollPtr
+          .asFunction<_RoomUnmuteFuturePollReturn Function(int, int, int)>();
   late final _roomSetNotificationModeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomSetNotificationModeFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_set_notification_mode_future_poll");
+    ffi.NativeFunction<
+      _RoomSetNotificationModeFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_set_notification_mode_future_poll");
 
   late final _roomSetNotificationModeFuturePoll =
-      _roomSetNotificationModeFuturePollPtr.asFunction<
-          _RoomSetNotificationModeFuturePollReturn Function(int, int, int)>();
+      _roomSetNotificationModeFuturePollPtr
+          .asFunction<
+            _RoomSetNotificationModeFuturePollReturn Function(int, int, int)
+          >();
   late final _roomUpdatePowerLevelFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomUpdatePowerLevelFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_update_power_level_future_poll");
+    ffi.NativeFunction<
+      _RoomUpdatePowerLevelFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_update_power_level_future_poll");
 
   late final _roomUpdatePowerLevelFuturePoll =
-      _roomUpdatePowerLevelFuturePollPtr.asFunction<
-          _RoomUpdatePowerLevelFuturePollReturn Function(int, int, int)>();
+      _roomUpdatePowerLevelFuturePollPtr
+          .asFunction<
+            _RoomUpdatePowerLevelFuturePollReturn Function(int, int, int)
+          >();
   late final _roomUploadAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomUploadAvatarFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_upload_avatar_future_poll");
+    ffi.NativeFunction<
+      _RoomUploadAvatarFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_upload_avatar_future_poll");
 
-  late final _roomUploadAvatarFuturePoll = _roomUploadAvatarFuturePollPtr
-      .asFunction<_RoomUploadAvatarFuturePollReturn Function(int, int, int)>();
+  late final _roomUploadAvatarFuturePoll =
+      _roomUploadAvatarFuturePollPtr
+          .asFunction<
+            _RoomUploadAvatarFuturePollReturn Function(int, int, int)
+          >();
   late final _roomRemoveAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomRemoveAvatarFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_remove_avatar_future_poll");
+    ffi.NativeFunction<
+      _RoomRemoveAvatarFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_remove_avatar_future_poll");
 
-  late final _roomRemoveAvatarFuturePoll = _roomRemoveAvatarFuturePollPtr
-      .asFunction<_RoomRemoveAvatarFuturePollReturn Function(int, int, int)>();
+  late final _roomRemoveAvatarFuturePoll =
+      _roomRemoveAvatarFuturePollPtr
+          .asFunction<
+            _RoomRemoveAvatarFuturePollReturn Function(int, int, int)
+          >();
   late final _roomSetTopicFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomSetTopicFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Room_set_topic_future_poll");
+    ffi.NativeFunction<
+      _RoomSetTopicFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Room_set_topic_future_poll");
 
-  late final _roomSetTopicFuturePoll = _roomSetTopicFuturePollPtr
-      .asFunction<_RoomSetTopicFuturePollReturn Function(int, int, int)>();
+  late final _roomSetTopicFuturePoll =
+      _roomSetTopicFuturePollPtr
+          .asFunction<_RoomSetTopicFuturePollReturn Function(int, int, int)>();
   late final _roomSetNameFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomSetNameFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Room_set_name_future_poll");
+    ffi.NativeFunction<
+      _RoomSetNameFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Room_set_name_future_poll");
 
-  late final _roomSetNameFuturePoll = _roomSetNameFuturePollPtr
-      .asFunction<_RoomSetNameFuturePollReturn Function(int, int, int)>();
+  late final _roomSetNameFuturePoll =
+      _roomSetNameFuturePollPtr
+          .asFunction<_RoomSetNameFuturePollReturn Function(int, int, int)>();
   late final _roomLeaveFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomLeaveFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Room_leave_future_poll");
+    ffi.NativeFunction<
+      _RoomLeaveFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Room_leave_future_poll");
 
-  late final _roomLeaveFuturePoll = _roomLeaveFuturePollPtr
-      .asFunction<_RoomLeaveFuturePollReturn Function(int, int, int)>();
+  late final _roomLeaveFuturePoll =
+      _roomLeaveFuturePollPtr
+          .asFunction<_RoomLeaveFuturePollReturn Function(int, int, int)>();
   late final _roomUserSettingsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomUserSettingsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Room_user_settings_future_poll");
+    ffi.NativeFunction<
+      _RoomUserSettingsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Room_user_settings_future_poll");
 
-  late final _roomUserSettingsFuturePoll = _roomUserSettingsFuturePollPtr
-      .asFunction<_RoomUserSettingsFuturePollReturn Function(int, int, int)>();
+  late final _roomUserSettingsFuturePoll =
+      _roomUserSettingsFuturePollPtr
+          .asFunction<
+            _RoomUserSettingsFuturePollReturn Function(int, int, int)
+          >();
   late final _userRoomSettingsSetHasSeenSuggestedFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _UserRoomSettingsSetHasSeenSuggestedFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__UserRoomSettings_set_has_seen_suggested_future_poll");
+    ffi.NativeFunction<
+      _UserRoomSettingsSetHasSeenSuggestedFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__UserRoomSettings_set_has_seen_suggested_future_poll");
 
   late final _userRoomSettingsSetHasSeenSuggestedFuturePoll =
-      _userRoomSettingsSetHasSeenSuggestedFuturePollPtr.asFunction<
-          _UserRoomSettingsSetHasSeenSuggestedFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _userRoomSettingsSetHasSeenSuggestedFuturePollPtr
+          .asFunction<
+            _UserRoomSettingsSetHasSeenSuggestedFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _userRoomSettingsSetIncludeCalSyncFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _UserRoomSettingsSetIncludeCalSyncFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__UserRoomSettings_set_include_cal_sync_future_poll");
+    ffi.NativeFunction<
+      _UserRoomSettingsSetIncludeCalSyncFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__UserRoomSettings_set_include_cal_sync_future_poll");
 
   late final _userRoomSettingsSetIncludeCalSyncFuturePoll =
-      _userRoomSettingsSetIncludeCalSyncFuturePollPtr.asFunction<
-          _UserRoomSettingsSetIncludeCalSyncFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _userRoomSettingsSetIncludeCalSyncFuturePollPtr
+          .asFunction<
+            _UserRoomSettingsSetIncludeCalSyncFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _timelineStreamGetMessageFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamGetMessageFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TimelineStream_get_message_future_poll");
+    ffi.NativeFunction<
+      _TimelineStreamGetMessageFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TimelineStream_get_message_future_poll");
 
   late final _timelineStreamGetMessageFuturePoll =
-      _timelineStreamGetMessageFuturePollPtr.asFunction<
-          _TimelineStreamGetMessageFuturePollReturn Function(int, int, int)>();
+      _timelineStreamGetMessageFuturePollPtr
+          .asFunction<
+            _TimelineStreamGetMessageFuturePollReturn Function(int, int, int)
+          >();
   late final _timelineStreamPaginateBackwardsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamPaginateBackwardsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TimelineStream_paginate_backwards_future_poll");
+    ffi.NativeFunction<
+      _TimelineStreamPaginateBackwardsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TimelineStream_paginate_backwards_future_poll");
 
   late final _timelineStreamPaginateBackwardsFuturePoll =
-      _timelineStreamPaginateBackwardsFuturePollPtr.asFunction<
-          _TimelineStreamPaginateBackwardsFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _timelineStreamPaginateBackwardsFuturePollPtr
+          .asFunction<
+            _TimelineStreamPaginateBackwardsFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _timelineStreamSendMessageFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamSendMessageFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TimelineStream_send_message_future_poll");
+    ffi.NativeFunction<
+      _TimelineStreamSendMessageFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TimelineStream_send_message_future_poll");
 
   late final _timelineStreamSendMessageFuturePoll =
-      _timelineStreamSendMessageFuturePollPtr.asFunction<
-          _TimelineStreamSendMessageFuturePollReturn Function(int, int, int)>();
+      _timelineStreamSendMessageFuturePollPtr
+          .asFunction<
+            _TimelineStreamSendMessageFuturePollReturn Function(int, int, int)
+          >();
   late final _timelineStreamEditMessageFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamEditMessageFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TimelineStream_edit_message_future_poll");
+    ffi.NativeFunction<
+      _TimelineStreamEditMessageFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TimelineStream_edit_message_future_poll");
 
   late final _timelineStreamEditMessageFuturePoll =
-      _timelineStreamEditMessageFuturePollPtr.asFunction<
-          _TimelineStreamEditMessageFuturePollReturn Function(int, int, int)>();
+      _timelineStreamEditMessageFuturePollPtr
+          .asFunction<
+            _TimelineStreamEditMessageFuturePollReturn Function(int, int, int)
+          >();
   late final _timelineStreamReplyMessageFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamReplyMessageFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TimelineStream_reply_message_future_poll");
+    ffi.NativeFunction<
+      _TimelineStreamReplyMessageFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TimelineStream_reply_message_future_poll");
 
   late final _timelineStreamReplyMessageFuturePoll =
-      _timelineStreamReplyMessageFuturePollPtr.asFunction<
-          _TimelineStreamReplyMessageFuturePollReturn Function(
-              int, int, int)>();
+      _timelineStreamReplyMessageFuturePollPtr
+          .asFunction<
+            _TimelineStreamReplyMessageFuturePollReturn Function(int, int, int)
+          >();
   late final _timelineStreamSendSingleReceiptFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamSendSingleReceiptFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TimelineStream_send_single_receipt_future_poll");
+    ffi.NativeFunction<
+      _TimelineStreamSendSingleReceiptFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TimelineStream_send_single_receipt_future_poll");
 
   late final _timelineStreamSendSingleReceiptFuturePoll =
-      _timelineStreamSendSingleReceiptFuturePollPtr.asFunction<
-          _TimelineStreamSendSingleReceiptFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _timelineStreamSendSingleReceiptFuturePollPtr
+          .asFunction<
+            _TimelineStreamSendSingleReceiptFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _timelineStreamSendMultipleReceiptsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamSendMultipleReceiptsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TimelineStream_send_multiple_receipts_future_poll");
+    ffi.NativeFunction<
+      _TimelineStreamSendMultipleReceiptsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TimelineStream_send_multiple_receipts_future_poll");
 
   late final _timelineStreamSendMultipleReceiptsFuturePoll =
-      _timelineStreamSendMultipleReceiptsFuturePollPtr.asFunction<
-          _TimelineStreamSendMultipleReceiptsFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _timelineStreamSendMultipleReceiptsFuturePollPtr
+          .asFunction<
+            _TimelineStreamSendMultipleReceiptsFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _timelineStreamMarkAsReadFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamMarkAsReadFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TimelineStream_mark_as_read_future_poll");
+    ffi.NativeFunction<
+      _TimelineStreamMarkAsReadFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TimelineStream_mark_as_read_future_poll");
 
   late final _timelineStreamMarkAsReadFuturePoll =
-      _timelineStreamMarkAsReadFuturePollPtr.asFunction<
-          _TimelineStreamMarkAsReadFuturePollReturn Function(int, int, int)>();
+      _timelineStreamMarkAsReadFuturePollPtr
+          .asFunction<
+            _TimelineStreamMarkAsReadFuturePollReturn Function(int, int, int)
+          >();
   late final _timelineStreamToggleReactionFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamToggleReactionFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TimelineStream_toggle_reaction_future_poll");
+    ffi.NativeFunction<
+      _TimelineStreamToggleReactionFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TimelineStream_toggle_reaction_future_poll");
 
   late final _timelineStreamToggleReactionFuturePoll =
-      _timelineStreamToggleReactionFuturePollPtr.asFunction<
-          _TimelineStreamToggleReactionFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _timelineStreamToggleReactionFuturePollPtr
+          .asFunction<
+            _TimelineStreamToggleReactionFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _convoSpaceRelationsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoSpaceRelationsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_space_relations_future_poll");
+    ffi.NativeFunction<
+      _ConvoSpaceRelationsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_space_relations_future_poll");
 
   late final _convoSpaceRelationsFuturePoll =
-      _convoSpaceRelationsFuturePollPtr.asFunction<
-          _ConvoSpaceRelationsFuturePollReturn Function(int, int, int)>();
+      _convoSpaceRelationsFuturePollPtr
+          .asFunction<
+            _ConvoSpaceRelationsFuturePollReturn Function(int, int, int)
+          >();
   late final _convoUploadAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoUploadAvatarFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_upload_avatar_future_poll");
+    ffi.NativeFunction<
+      _ConvoUploadAvatarFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_upload_avatar_future_poll");
 
-  late final _convoUploadAvatarFuturePoll = _convoUploadAvatarFuturePollPtr
-      .asFunction<_ConvoUploadAvatarFuturePollReturn Function(int, int, int)>();
+  late final _convoUploadAvatarFuturePoll =
+      _convoUploadAvatarFuturePollPtr
+          .asFunction<
+            _ConvoUploadAvatarFuturePollReturn Function(int, int, int)
+          >();
   late final _convoRemoveAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoRemoveAvatarFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_remove_avatar_future_poll");
+    ffi.NativeFunction<
+      _ConvoRemoveAvatarFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_remove_avatar_future_poll");
 
-  late final _convoRemoveAvatarFuturePoll = _convoRemoveAvatarFuturePollPtr
-      .asFunction<_ConvoRemoveAvatarFuturePollReturn Function(int, int, int)>();
+  late final _convoRemoveAvatarFuturePoll =
+      _convoRemoveAvatarFuturePollPtr
+          .asFunction<
+            _ConvoRemoveAvatarFuturePollReturn Function(int, int, int)
+          >();
   late final _convoSetNameFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoSetNameFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Convo_set_name_future_poll");
+    ffi.NativeFunction<
+      _ConvoSetNameFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Convo_set_name_future_poll");
 
-  late final _convoSetNameFuturePoll = _convoSetNameFuturePollPtr
-      .asFunction<_ConvoSetNameFuturePollReturn Function(int, int, int)>();
+  late final _convoSetNameFuturePoll =
+      _convoSetNameFuturePollPtr
+          .asFunction<_ConvoSetNameFuturePollReturn Function(int, int, int)>();
   late final _convoSetTopicFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoSetTopicFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Convo_set_topic_future_poll");
+    ffi.NativeFunction<
+      _ConvoSetTopicFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Convo_set_topic_future_poll");
 
-  late final _convoSetTopicFuturePoll = _convoSetTopicFuturePollPtr
-      .asFunction<_ConvoSetTopicFuturePollReturn Function(int, int, int)>();
+  late final _convoSetTopicFuturePoll =
+      _convoSetTopicFuturePollPtr
+          .asFunction<_ConvoSetTopicFuturePollReturn Function(int, int, int)>();
   late final _convoActiveMembersIdsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoActiveMembersIdsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_active_members_ids_future_poll");
+    ffi.NativeFunction<
+      _ConvoActiveMembersIdsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_active_members_ids_future_poll");
 
   late final _convoActiveMembersIdsFuturePoll =
-      _convoActiveMembersIdsFuturePollPtr.asFunction<
-          _ConvoActiveMembersIdsFuturePollReturn Function(int, int, int)>();
+      _convoActiveMembersIdsFuturePollPtr
+          .asFunction<
+            _ConvoActiveMembersIdsFuturePollReturn Function(int, int, int)
+          >();
   late final _convoActiveMembersFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoActiveMembersFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_active_members_future_poll");
+    ffi.NativeFunction<
+      _ConvoActiveMembersFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_active_members_future_poll");
 
   late final _convoActiveMembersFuturePoll =
-      _convoActiveMembersFuturePollPtr.asFunction<
-          _ConvoActiveMembersFuturePollReturn Function(int, int, int)>();
+      _convoActiveMembersFuturePollPtr
+          .asFunction<
+            _ConvoActiveMembersFuturePollReturn Function(int, int, int)
+          >();
   late final _convoInvitedMembersFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoInvitedMembersFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_invited_members_future_poll");
+    ffi.NativeFunction<
+      _ConvoInvitedMembersFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_invited_members_future_poll");
 
   late final _convoInvitedMembersFuturePoll =
-      _convoInvitedMembersFuturePollPtr.asFunction<
-          _ConvoInvitedMembersFuturePollReturn Function(int, int, int)>();
+      _convoInvitedMembersFuturePollPtr
+          .asFunction<
+            _ConvoInvitedMembersFuturePollReturn Function(int, int, int)
+          >();
   late final _convoGetMemberFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoGetMemberFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_get_member_future_poll");
+    ffi.NativeFunction<
+      _ConvoGetMemberFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_get_member_future_poll");
 
-  late final _convoGetMemberFuturePoll = _convoGetMemberFuturePollPtr
-      .asFunction<_ConvoGetMemberFuturePollReturn Function(int, int, int)>();
+  late final _convoGetMemberFuturePoll =
+      _convoGetMemberFuturePollPtr
+          .asFunction<
+            _ConvoGetMemberFuturePollReturn Function(int, int, int)
+          >();
   late final _convoGetMyMembershipFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoGetMyMembershipFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_get_my_membership_future_poll");
+    ffi.NativeFunction<
+      _ConvoGetMyMembershipFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_get_my_membership_future_poll");
 
   late final _convoGetMyMembershipFuturePoll =
-      _convoGetMyMembershipFuturePollPtr.asFunction<
-          _ConvoGetMyMembershipFuturePollReturn Function(int, int, int)>();
+      _convoGetMyMembershipFuturePollPtr
+          .asFunction<
+            _ConvoGetMyMembershipFuturePollReturn Function(int, int, int)
+          >();
   late final _convoTypingNoticeFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoTypingNoticeFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_typing_notice_future_poll");
+    ffi.NativeFunction<
+      _ConvoTypingNoticeFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_typing_notice_future_poll");
 
-  late final _convoTypingNoticeFuturePoll = _convoTypingNoticeFuturePollPtr
-      .asFunction<_ConvoTypingNoticeFuturePollReturn Function(int, int, int)>();
+  late final _convoTypingNoticeFuturePoll =
+      _convoTypingNoticeFuturePollPtr
+          .asFunction<
+            _ConvoTypingNoticeFuturePollReturn Function(int, int, int)
+          >();
   late final _convoMediaBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoMediaBinaryFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_media_binary_future_poll");
+    ffi.NativeFunction<
+      _ConvoMediaBinaryFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_media_binary_future_poll");
 
-  late final _convoMediaBinaryFuturePoll = _convoMediaBinaryFuturePollPtr
-      .asFunction<_ConvoMediaBinaryFuturePollReturn Function(int, int, int)>();
+  late final _convoMediaBinaryFuturePoll =
+      _convoMediaBinaryFuturePollPtr
+          .asFunction<
+            _ConvoMediaBinaryFuturePollReturn Function(int, int, int)
+          >();
   late final _convoSetBookmarkedFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoSetBookmarkedFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_set_bookmarked_future_poll");
+    ffi.NativeFunction<
+      _ConvoSetBookmarkedFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_bookmarked_future_poll");
 
   late final _convoSetBookmarkedFuturePoll =
-      _convoSetBookmarkedFuturePollPtr.asFunction<
-          _ConvoSetBookmarkedFuturePollReturn Function(int, int, int)>();
+      _convoSetBookmarkedFuturePollPtr
+          .asFunction<
+            _ConvoSetBookmarkedFuturePollReturn Function(int, int, int)
+          >();
   late final _convoInviteUserFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoInviteUserFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_invite_user_future_poll");
+    ffi.NativeFunction<
+      _ConvoInviteUserFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_invite_user_future_poll");
 
-  late final _convoInviteUserFuturePoll = _convoInviteUserFuturePollPtr
-      .asFunction<_ConvoInviteUserFuturePollReturn Function(int, int, int)>();
+  late final _convoInviteUserFuturePoll =
+      _convoInviteUserFuturePollPtr
+          .asFunction<
+            _ConvoInviteUserFuturePollReturn Function(int, int, int)
+          >();
   late final _convoPermalinkFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoPermalinkFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_permalink_future_poll");
+    ffi.NativeFunction<
+      _ConvoPermalinkFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_permalink_future_poll");
 
-  late final _convoPermalinkFuturePoll = _convoPermalinkFuturePollPtr
-      .asFunction<_ConvoPermalinkFuturePollReturn Function(int, int, int)>();
+  late final _convoPermalinkFuturePoll =
+      _convoPermalinkFuturePollPtr
+          .asFunction<
+            _ConvoPermalinkFuturePollReturn Function(int, int, int)
+          >();
   late final _convoJoinFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoJoinFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Convo_join_future_poll");
+    ffi.NativeFunction<
+      _ConvoJoinFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Convo_join_future_poll");
 
-  late final _convoJoinFuturePoll = _convoJoinFuturePollPtr
-      .asFunction<_ConvoJoinFuturePollReturn Function(int, int, int)>();
+  late final _convoJoinFuturePoll =
+      _convoJoinFuturePollPtr
+          .asFunction<_ConvoJoinFuturePollReturn Function(int, int, int)>();
   late final _convoLeaveFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoLeaveFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Convo_leave_future_poll");
+    ffi.NativeFunction<
+      _ConvoLeaveFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Convo_leave_future_poll");
 
-  late final _convoLeaveFuturePoll = _convoLeaveFuturePollPtr
-      .asFunction<_ConvoLeaveFuturePollReturn Function(int, int, int)>();
+  late final _convoLeaveFuturePoll =
+      _convoLeaveFuturePollPtr
+          .asFunction<_ConvoLeaveFuturePollReturn Function(int, int, int)>();
   late final _convoGetInviteesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoGetInviteesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_get_invitees_future_poll");
+    ffi.NativeFunction<
+      _ConvoGetInviteesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_get_invitees_future_poll");
 
-  late final _convoGetInviteesFuturePoll = _convoGetInviteesFuturePollPtr
-      .asFunction<_ConvoGetInviteesFuturePollReturn Function(int, int, int)>();
+  late final _convoGetInviteesFuturePoll =
+      _convoGetInviteesFuturePollPtr
+          .asFunction<
+            _ConvoGetInviteesFuturePollReturn Function(int, int, int)
+          >();
   late final _convoDownloadMediaFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoDownloadMediaFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_download_media_future_poll");
+    ffi.NativeFunction<
+      _ConvoDownloadMediaFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_download_media_future_poll");
 
   late final _convoDownloadMediaFuturePoll =
-      _convoDownloadMediaFuturePollPtr.asFunction<
-          _ConvoDownloadMediaFuturePollReturn Function(int, int, int)>();
+      _convoDownloadMediaFuturePollPtr
+          .asFunction<
+            _ConvoDownloadMediaFuturePollReturn Function(int, int, int)
+          >();
   late final _convoMediaPathFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoMediaPathFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_media_path_future_poll");
+    ffi.NativeFunction<
+      _ConvoMediaPathFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_media_path_future_poll");
 
-  late final _convoMediaPathFuturePoll = _convoMediaPathFuturePollPtr
-      .asFunction<_ConvoMediaPathFuturePollReturn Function(int, int, int)>();
+  late final _convoMediaPathFuturePoll =
+      _convoMediaPathFuturePollPtr
+          .asFunction<
+            _ConvoMediaPathFuturePollReturn Function(int, int, int)
+          >();
   late final _convoIsEncryptedFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoIsEncryptedFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_is_encrypted_future_poll");
+    ffi.NativeFunction<
+      _ConvoIsEncryptedFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_is_encrypted_future_poll");
 
-  late final _convoIsEncryptedFuturePoll = _convoIsEncryptedFuturePollPtr
-      .asFunction<_ConvoIsEncryptedFuturePollReturn Function(int, int, int)>();
+  late final _convoIsEncryptedFuturePoll =
+      _convoIsEncryptedFuturePollPtr
+          .asFunction<
+            _ConvoIsEncryptedFuturePollReturn Function(int, int, int)
+          >();
   late final _convoRedactMessageFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoRedactMessageFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_redact_message_future_poll");
+    ffi.NativeFunction<
+      _ConvoRedactMessageFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_redact_message_future_poll");
 
   late final _convoRedactMessageFuturePoll =
-      _convoRedactMessageFuturePollPtr.asFunction<
-          _ConvoRedactMessageFuturePollReturn Function(int, int, int)>();
+      _convoRedactMessageFuturePollPtr
+          .asFunction<
+            _ConvoRedactMessageFuturePollReturn Function(int, int, int)
+          >();
   late final _convoUpdatePowerLevelFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoUpdatePowerLevelFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_update_power_level_future_poll");
+    ffi.NativeFunction<
+      _ConvoUpdatePowerLevelFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_update_power_level_future_poll");
 
   late final _convoUpdatePowerLevelFuturePoll =
-      _convoUpdatePowerLevelFuturePollPtr.asFunction<
-          _ConvoUpdatePowerLevelFuturePollReturn Function(int, int, int)>();
+      _convoUpdatePowerLevelFuturePollPtr
+          .asFunction<
+            _ConvoUpdatePowerLevelFuturePollReturn Function(int, int, int)
+          >();
   late final _convoReportContentFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoReportContentFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_report_content_future_poll");
+    ffi.NativeFunction<
+      _ConvoReportContentFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_report_content_future_poll");
 
   late final _convoReportContentFuturePoll =
-      _convoReportContentFuturePollPtr.asFunction<
-          _ConvoReportContentFuturePollReturn Function(int, int, int)>();
+      _convoReportContentFuturePollPtr
+          .asFunction<
+            _ConvoReportContentFuturePollReturn Function(int, int, int)
+          >();
   late final _convoRedactContentFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoRedactContentFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_redact_content_future_poll");
+    ffi.NativeFunction<
+      _ConvoRedactContentFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_redact_content_future_poll");
 
   late final _convoRedactContentFuturePoll =
-      _convoRedactContentFuturePollPtr.asFunction<
-          _ConvoRedactContentFuturePollReturn Function(int, int, int)>();
+      _convoRedactContentFuturePollPtr
+          .asFunction<
+            _ConvoRedactContentFuturePollReturn Function(int, int, int)
+          >();
   late final _convoMsgDraftFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoMsgDraftFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Convo_msg_draft_future_poll");
+    ffi.NativeFunction<
+      _ConvoMsgDraftFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Convo_msg_draft_future_poll");
 
-  late final _convoMsgDraftFuturePoll = _convoMsgDraftFuturePollPtr
-      .asFunction<_ConvoMsgDraftFuturePollReturn Function(int, int, int)>();
+  late final _convoMsgDraftFuturePoll =
+      _convoMsgDraftFuturePollPtr
+          .asFunction<_ConvoMsgDraftFuturePollReturn Function(int, int, int)>();
   late final _convoSaveMsgDraftFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoSaveMsgDraftFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_save_msg_draft_future_poll");
+    ffi.NativeFunction<
+      _ConvoSaveMsgDraftFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_save_msg_draft_future_poll");
 
-  late final _convoSaveMsgDraftFuturePoll = _convoSaveMsgDraftFuturePollPtr
-      .asFunction<_ConvoSaveMsgDraftFuturePollReturn Function(int, int, int)>();
+  late final _convoSaveMsgDraftFuturePoll =
+      _convoSaveMsgDraftFuturePollPtr
+          .asFunction<
+            _ConvoSaveMsgDraftFuturePollReturn Function(int, int, int)
+          >();
   late final _convoClearMsgDraftFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoClearMsgDraftFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_clear_msg_draft_future_poll");
+    ffi.NativeFunction<
+      _ConvoClearMsgDraftFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_clear_msg_draft_future_poll");
 
   late final _convoClearMsgDraftFuturePoll =
-      _convoClearMsgDraftFuturePollPtr.asFunction<
-          _ConvoClearMsgDraftFuturePollReturn Function(int, int, int)>();
+      _convoClearMsgDraftFuturePollPtr
+          .asFunction<
+            _ConvoClearMsgDraftFuturePollReturn Function(int, int, int)
+          >();
   late final _convoRefDetailsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoRefDetailsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Convo_ref_details_future_poll");
+    ffi.NativeFunction<
+      _ConvoRefDetailsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_ref_details_future_poll");
 
-  late final _convoRefDetailsFuturePoll = _convoRefDetailsFuturePollPtr
-      .asFunction<_ConvoRefDetailsFuturePollReturn Function(int, int, int)>();
+  late final _convoRefDetailsFuturePoll =
+      _convoRefDetailsFuturePollPtr
+          .asFunction<
+            _ConvoRefDetailsFuturePollReturn Function(int, int, int)
+          >();
   late final _commentDraftSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CommentDraftSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CommentDraft_send_future_poll");
+    ffi.NativeFunction<
+      _CommentDraftSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CommentDraft_send_future_poll");
 
-  late final _commentDraftSendFuturePoll = _commentDraftSendFuturePollPtr
-      .asFunction<_CommentDraftSendFuturePollReturn Function(int, int, int)>();
+  late final _commentDraftSendFuturePoll =
+      _commentDraftSendFuturePollPtr
+          .asFunction<
+            _CommentDraftSendFuturePollReturn Function(int, int, int)
+          >();
   late final _commentCanRedactFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CommentCanRedactFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Comment_can_redact_future_poll");
+    ffi.NativeFunction<
+      _CommentCanRedactFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Comment_can_redact_future_poll");
 
-  late final _commentCanRedactFuturePoll = _commentCanRedactFuturePollPtr
-      .asFunction<_CommentCanRedactFuturePollReturn Function(int, int, int)>();
+  late final _commentCanRedactFuturePoll =
+      _commentCanRedactFuturePollPtr
+          .asFunction<
+            _CommentCanRedactFuturePollReturn Function(int, int, int)
+          >();
   late final _commentsManagerCommentsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CommentsManagerCommentsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CommentsManager_comments_future_poll");
+    ffi.NativeFunction<
+      _CommentsManagerCommentsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CommentsManager_comments_future_poll");
 
   late final _commentsManagerCommentsFuturePoll =
-      _commentsManagerCommentsFuturePollPtr.asFunction<
-          _CommentsManagerCommentsFuturePollReturn Function(int, int, int)>();
+      _commentsManagerCommentsFuturePollPtr
+          .asFunction<
+            _CommentsManagerCommentsFuturePollReturn Function(int, int, int)
+          >();
   late final _commentsManagerReloadFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _CommentsManagerReloadFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__CommentsManager_reload_future_poll");
+    ffi.NativeFunction<
+      _CommentsManagerReloadFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__CommentsManager_reload_future_poll");
 
   late final _commentsManagerReloadFuturePoll =
-      _commentsManagerReloadFuturePollPtr.asFunction<
-          _CommentsManagerReloadFuturePollReturn Function(int, int, int)>();
+      _commentsManagerReloadFuturePollPtr
+          .asFunction<
+            _CommentsManagerReloadFuturePollReturn Function(int, int, int)
+          >();
   late final _attachmentDraftSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentDraftSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__AttachmentDraft_send_future_poll");
+    ffi.NativeFunction<
+      _AttachmentDraftSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__AttachmentDraft_send_future_poll");
 
   late final _attachmentDraftSendFuturePoll =
-      _attachmentDraftSendFuturePollPtr.asFunction<
-          _AttachmentDraftSendFuturePollReturn Function(int, int, int)>();
+      _attachmentDraftSendFuturePollPtr
+          .asFunction<
+            _AttachmentDraftSendFuturePollReturn Function(int, int, int)
+          >();
   late final _attachmentDownloadMediaFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentDownloadMediaFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Attachment_download_media_future_poll");
+    ffi.NativeFunction<
+      _AttachmentDownloadMediaFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Attachment_download_media_future_poll");
 
   late final _attachmentDownloadMediaFuturePoll =
-      _attachmentDownloadMediaFuturePollPtr.asFunction<
-          _AttachmentDownloadMediaFuturePollReturn Function(int, int, int)>();
+      _attachmentDownloadMediaFuturePollPtr
+          .asFunction<
+            _AttachmentDownloadMediaFuturePollReturn Function(int, int, int)
+          >();
   late final _attachmentMediaPathFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentMediaPathFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Attachment_media_path_future_poll");
+    ffi.NativeFunction<
+      _AttachmentMediaPathFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Attachment_media_path_future_poll");
 
   late final _attachmentMediaPathFuturePoll =
-      _attachmentMediaPathFuturePollPtr.asFunction<
-          _AttachmentMediaPathFuturePollReturn Function(int, int, int)>();
+      _attachmentMediaPathFuturePollPtr
+          .asFunction<
+            _AttachmentMediaPathFuturePollReturn Function(int, int, int)
+          >();
   late final _attachmentCanRedactFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentCanRedactFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Attachment_can_redact_future_poll");
+    ffi.NativeFunction<
+      _AttachmentCanRedactFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Attachment_can_redact_future_poll");
 
   late final _attachmentCanRedactFuturePoll =
-      _attachmentCanRedactFuturePollPtr.asFunction<
-          _AttachmentCanRedactFuturePollReturn Function(int, int, int)>();
+      _attachmentCanRedactFuturePollPtr
+          .asFunction<
+            _AttachmentCanRedactFuturePollReturn Function(int, int, int)
+          >();
   late final _attachmentsManagerAttachmentsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentsManagerAttachmentsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__AttachmentsManager_attachments_future_poll");
+    ffi.NativeFunction<
+      _AttachmentsManagerAttachmentsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__AttachmentsManager_attachments_future_poll");
 
   late final _attachmentsManagerAttachmentsFuturePoll =
-      _attachmentsManagerAttachmentsFuturePollPtr.asFunction<
-          _AttachmentsManagerAttachmentsFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _attachmentsManagerAttachmentsFuturePollPtr
+          .asFunction<
+            _AttachmentsManagerAttachmentsFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _attachmentsManagerContentDraftFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentsManagerContentDraftFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__AttachmentsManager_content_draft_future_poll");
+    ffi.NativeFunction<
+      _AttachmentsManagerContentDraftFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__AttachmentsManager_content_draft_future_poll");
 
   late final _attachmentsManagerContentDraftFuturePoll =
-      _attachmentsManagerContentDraftFuturePollPtr.asFunction<
-          _AttachmentsManagerContentDraftFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _attachmentsManagerContentDraftFuturePollPtr
+          .asFunction<
+            _AttachmentsManagerContentDraftFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _attachmentsManagerLinkDraftFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentsManagerLinkDraftFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__AttachmentsManager_link_draft_future_poll");
+    ffi.NativeFunction<
+      _AttachmentsManagerLinkDraftFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__AttachmentsManager_link_draft_future_poll");
 
   late final _attachmentsManagerLinkDraftFuturePoll =
-      _attachmentsManagerLinkDraftFuturePollPtr.asFunction<
-          _AttachmentsManagerLinkDraftFuturePollReturn Function(
-              int, int, int)>();
+      _attachmentsManagerLinkDraftFuturePollPtr
+          .asFunction<
+            _AttachmentsManagerLinkDraftFuturePollReturn Function(int, int, int)
+          >();
   late final _attachmentsManagerReferenceDraftFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentsManagerReferenceDraftFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__AttachmentsManager_reference_draft_future_poll");
+    ffi.NativeFunction<
+      _AttachmentsManagerReferenceDraftFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__AttachmentsManager_reference_draft_future_poll");
 
   late final _attachmentsManagerReferenceDraftFuturePoll =
-      _attachmentsManagerReferenceDraftFuturePollPtr.asFunction<
-          _AttachmentsManagerReferenceDraftFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _attachmentsManagerReferenceDraftFuturePollPtr
+          .asFunction<
+            _AttachmentsManagerReferenceDraftFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _attachmentsManagerReloadFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentsManagerReloadFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__AttachmentsManager_reload_future_poll");
+    ffi.NativeFunction<
+      _AttachmentsManagerReloadFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__AttachmentsManager_reload_future_poll");
 
   late final _attachmentsManagerReloadFuturePoll =
-      _attachmentsManagerReloadFuturePollPtr.asFunction<
-          _AttachmentsManagerReloadFuturePollReturn Function(int, int, int)>();
+      _attachmentsManagerReloadFuturePollPtr
+          .asFunction<
+            _AttachmentsManagerReloadFuturePollReturn Function(int, int, int)
+          >();
   late final _attachmentsManagerRedactFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentsManagerRedactFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__AttachmentsManager_redact_future_poll");
+    ffi.NativeFunction<
+      _AttachmentsManagerRedactFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__AttachmentsManager_redact_future_poll");
 
   late final _attachmentsManagerRedactFuturePoll =
-      _attachmentsManagerRedactFuturePollPtr.asFunction<
-          _AttachmentsManagerRedactFuturePollReturn Function(int, int, int)>();
+      _attachmentsManagerRedactFuturePollPtr
+          .asFunction<
+            _AttachmentsManagerRedactFuturePollReturn Function(int, int, int)
+          >();
   late final _taskAssignSelfFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskAssignSelfFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Task_assign_self_future_poll");
+    ffi.NativeFunction<
+      _TaskAssignSelfFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Task_assign_self_future_poll");
 
-  late final _taskAssignSelfFuturePoll = _taskAssignSelfFuturePollPtr
-      .asFunction<_TaskAssignSelfFuturePollReturn Function(int, int, int)>();
+  late final _taskAssignSelfFuturePoll =
+      _taskAssignSelfFuturePollPtr
+          .asFunction<
+            _TaskAssignSelfFuturePollReturn Function(int, int, int)
+          >();
   late final _taskUnassignSelfFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskUnassignSelfFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Task_unassign_self_future_poll");
+    ffi.NativeFunction<
+      _TaskUnassignSelfFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Task_unassign_self_future_poll");
 
-  late final _taskUnassignSelfFuturePoll = _taskUnassignSelfFuturePollPtr
-      .asFunction<_TaskUnassignSelfFuturePollReturn Function(int, int, int)>();
+  late final _taskUnassignSelfFuturePoll =
+      _taskUnassignSelfFuturePollPtr
+          .asFunction<
+            _TaskUnassignSelfFuturePollReturn Function(int, int, int)
+          >();
   late final _taskRefreshFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskRefreshFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Task_refresh_future_poll");
+    ffi.NativeFunction<
+      _TaskRefreshFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Task_refresh_future_poll");
 
-  late final _taskRefreshFuturePoll = _taskRefreshFuturePollPtr
-      .asFunction<_TaskRefreshFuturePollReturn Function(int, int, int)>();
+  late final _taskRefreshFuturePoll =
+      _taskRefreshFuturePollPtr
+          .asFunction<_TaskRefreshFuturePollReturn Function(int, int, int)>();
   late final _taskCanRedactFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskCanRedactFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Task_can_redact_future_poll");
+    ffi.NativeFunction<
+      _TaskCanRedactFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Task_can_redact_future_poll");
 
-  late final _taskCanRedactFuturePoll = _taskCanRedactFuturePollPtr
-      .asFunction<_TaskCanRedactFuturePollReturn Function(int, int, int)>();
+  late final _taskCanRedactFuturePoll =
+      _taskCanRedactFuturePollPtr
+          .asFunction<_TaskCanRedactFuturePollReturn Function(int, int, int)>();
   late final _taskCommentsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskCommentsFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Task_comments_future_poll");
+    ffi.NativeFunction<
+      _TaskCommentsFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Task_comments_future_poll");
 
-  late final _taskCommentsFuturePoll = _taskCommentsFuturePollPtr
-      .asFunction<_TaskCommentsFuturePollReturn Function(int, int, int)>();
+  late final _taskCommentsFuturePoll =
+      _taskCommentsFuturePollPtr
+          .asFunction<_TaskCommentsFuturePollReturn Function(int, int, int)>();
   late final _taskAttachmentsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskAttachmentsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Task_attachments_future_poll");
+    ffi.NativeFunction<
+      _TaskAttachmentsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Task_attachments_future_poll");
 
-  late final _taskAttachmentsFuturePoll = _taskAttachmentsFuturePollPtr
-      .asFunction<_TaskAttachmentsFuturePollReturn Function(int, int, int)>();
+  late final _taskAttachmentsFuturePoll =
+      _taskAttachmentsFuturePollPtr
+          .asFunction<
+            _TaskAttachmentsFuturePollReturn Function(int, int, int)
+          >();
   late final _taskUpdateBuilderSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskUpdateBuilderSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TaskUpdateBuilder_send_future_poll");
+    ffi.NativeFunction<
+      _TaskUpdateBuilderSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TaskUpdateBuilder_send_future_poll");
 
   late final _taskUpdateBuilderSendFuturePoll =
-      _taskUpdateBuilderSendFuturePollPtr.asFunction<
-          _TaskUpdateBuilderSendFuturePollReturn Function(int, int, int)>();
+      _taskUpdateBuilderSendFuturePollPtr
+          .asFunction<
+            _TaskUpdateBuilderSendFuturePollReturn Function(int, int, int)
+          >();
   late final _taskDraftSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskDraftSendFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__TaskDraft_send_future_poll");
+    ffi.NativeFunction<
+      _TaskDraftSendFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__TaskDraft_send_future_poll");
 
-  late final _taskDraftSendFuturePoll = _taskDraftSendFuturePollPtr
-      .asFunction<_TaskDraftSendFuturePollReturn Function(int, int, int)>();
+  late final _taskDraftSendFuturePoll =
+      _taskDraftSendFuturePollPtr
+          .asFunction<_TaskDraftSendFuturePollReturn Function(int, int, int)>();
   late final _taskListTasksFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskListTasksFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__TaskList_tasks_future_poll");
+    ffi.NativeFunction<
+      _TaskListTasksFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__TaskList_tasks_future_poll");
 
-  late final _taskListTasksFuturePoll = _taskListTasksFuturePollPtr
-      .asFunction<_TaskListTasksFuturePollReturn Function(int, int, int)>();
+  late final _taskListTasksFuturePoll =
+      _taskListTasksFuturePollPtr
+          .asFunction<_TaskListTasksFuturePollReturn Function(int, int, int)>();
   late final _taskListTaskFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskListTaskFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__TaskList_task_future_poll");
+    ffi.NativeFunction<
+      _TaskListTaskFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__TaskList_task_future_poll");
 
-  late final _taskListTaskFuturePoll = _taskListTaskFuturePollPtr
-      .asFunction<_TaskListTaskFuturePollReturn Function(int, int, int)>();
+  late final _taskListTaskFuturePoll =
+      _taskListTaskFuturePollPtr
+          .asFunction<_TaskListTaskFuturePollReturn Function(int, int, int)>();
   late final _taskListRefreshFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskListRefreshFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TaskList_refresh_future_poll");
+    ffi.NativeFunction<
+      _TaskListRefreshFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TaskList_refresh_future_poll");
 
-  late final _taskListRefreshFuturePoll = _taskListRefreshFuturePollPtr
-      .asFunction<_TaskListRefreshFuturePollReturn Function(int, int, int)>();
+  late final _taskListRefreshFuturePoll =
+      _taskListRefreshFuturePollPtr
+          .asFunction<
+            _TaskListRefreshFuturePollReturn Function(int, int, int)
+          >();
   late final _taskListCanRedactFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskListCanRedactFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TaskList_can_redact_future_poll");
+    ffi.NativeFunction<
+      _TaskListCanRedactFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TaskList_can_redact_future_poll");
 
-  late final _taskListCanRedactFuturePoll = _taskListCanRedactFuturePollPtr
-      .asFunction<_TaskListCanRedactFuturePollReturn Function(int, int, int)>();
+  late final _taskListCanRedactFuturePoll =
+      _taskListCanRedactFuturePollPtr
+          .asFunction<
+            _TaskListCanRedactFuturePollReturn Function(int, int, int)
+          >();
   late final _taskListRefDetailsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskListRefDetailsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TaskList_ref_details_future_poll");
+    ffi.NativeFunction<
+      _TaskListRefDetailsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TaskList_ref_details_future_poll");
 
   late final _taskListRefDetailsFuturePoll =
-      _taskListRefDetailsFuturePollPtr.asFunction<
-          _TaskListRefDetailsFuturePollReturn Function(int, int, int)>();
+      _taskListRefDetailsFuturePollPtr
+          .asFunction<
+            _TaskListRefDetailsFuturePollReturn Function(int, int, int)
+          >();
   late final _taskListCommentsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskListCommentsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TaskList_comments_future_poll");
+    ffi.NativeFunction<
+      _TaskListCommentsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TaskList_comments_future_poll");
 
-  late final _taskListCommentsFuturePoll = _taskListCommentsFuturePollPtr
-      .asFunction<_TaskListCommentsFuturePollReturn Function(int, int, int)>();
+  late final _taskListCommentsFuturePoll =
+      _taskListCommentsFuturePollPtr
+          .asFunction<
+            _TaskListCommentsFuturePollReturn Function(int, int, int)
+          >();
   late final _taskListAttachmentsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskListAttachmentsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TaskList_attachments_future_poll");
+    ffi.NativeFunction<
+      _TaskListAttachmentsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TaskList_attachments_future_poll");
 
   late final _taskListAttachmentsFuturePoll =
-      _taskListAttachmentsFuturePollPtr.asFunction<
-          _TaskListAttachmentsFuturePollReturn Function(int, int, int)>();
+      _taskListAttachmentsFuturePollPtr
+          .asFunction<
+            _TaskListAttachmentsFuturePollReturn Function(int, int, int)
+          >();
   late final _taskListDraftSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskListDraftSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TaskListDraft_send_future_poll");
+    ffi.NativeFunction<
+      _TaskListDraftSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TaskListDraft_send_future_poll");
 
-  late final _taskListDraftSendFuturePoll = _taskListDraftSendFuturePollPtr
-      .asFunction<_TaskListDraftSendFuturePollReturn Function(int, int, int)>();
+  late final _taskListDraftSendFuturePoll =
+      _taskListDraftSendFuturePollPtr
+          .asFunction<
+            _TaskListDraftSendFuturePollReturn Function(int, int, int)
+          >();
   late final _taskListUpdateBuilderSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskListUpdateBuilderSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TaskListUpdateBuilder_send_future_poll");
+    ffi.NativeFunction<
+      _TaskListUpdateBuilderSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TaskListUpdateBuilder_send_future_poll");
 
   late final _taskListUpdateBuilderSendFuturePoll =
-      _taskListUpdateBuilderSendFuturePollPtr.asFunction<
-          _TaskListUpdateBuilderSendFuturePollReturn Function(int, int, int)>();
+      _taskListUpdateBuilderSendFuturePollPtr
+          .asFunction<
+            _TaskListUpdateBuilderSendFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceHierarchyRoomInfoGetAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceHierarchyRoomInfoGetAvatarFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__SpaceHierarchyRoomInfo_get_avatar_future_poll");
+    ffi.NativeFunction<
+      _SpaceHierarchyRoomInfoGetAvatarFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__SpaceHierarchyRoomInfo_get_avatar_future_poll");
 
   late final _spaceHierarchyRoomInfoGetAvatarFuturePoll =
-      _spaceHierarchyRoomInfoGetAvatarFuturePollPtr.asFunction<
-          _SpaceHierarchyRoomInfoGetAvatarFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _spaceHierarchyRoomInfoGetAvatarFuturePollPtr
+          .asFunction<
+            _SpaceHierarchyRoomInfoGetAvatarFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _spaceRelationsQueryHierarchyFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceRelationsQueryHierarchyFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__SpaceRelations_query_hierarchy_future_poll");
+    ffi.NativeFunction<
+      _SpaceRelationsQueryHierarchyFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__SpaceRelations_query_hierarchy_future_poll");
 
   late final _spaceRelationsQueryHierarchyFuturePoll =
-      _spaceRelationsQueryHierarchyFuturePollPtr.asFunction<
-          _SpaceRelationsQueryHierarchyFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _spaceRelationsQueryHierarchyFuturePollPtr
+          .asFunction<
+            _SpaceRelationsQueryHierarchyFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _activitiesGetIdsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ActivitiesGetIdsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Activities_get_ids_future_poll");
+    ffi.NativeFunction<
+      _ActivitiesGetIdsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Activities_get_ids_future_poll");
 
-  late final _activitiesGetIdsFuturePoll = _activitiesGetIdsFuturePollPtr
-      .asFunction<_ActivitiesGetIdsFuturePollReturn Function(int, int, int)>();
+  late final _activitiesGetIdsFuturePoll =
+      _activitiesGetIdsFuturePollPtr
+          .asFunction<
+            _ActivitiesGetIdsFuturePollReturn Function(int, int, int)
+          >();
   late final _roomPreviewAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomPreviewAvatarFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__RoomPreview_avatar_future_poll");
+    ffi.NativeFunction<
+      _RoomPreviewAvatarFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__RoomPreview_avatar_future_poll");
 
-  late final _roomPreviewAvatarFuturePoll = _roomPreviewAvatarFuturePollPtr
-      .asFunction<_RoomPreviewAvatarFuturePollReturn Function(int, int, int)>();
+  late final _roomPreviewAvatarFuturePoll =
+      _roomPreviewAvatarFuturePollPtr
+          .asFunction<
+            _RoomPreviewAvatarFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceSpaceRelationsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceSpaceRelationsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_space_relations_future_poll");
+    ffi.NativeFunction<
+      _SpaceSpaceRelationsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_space_relations_future_poll");
 
   late final _spaceSpaceRelationsFuturePoll =
-      _spaceSpaceRelationsFuturePollPtr.asFunction<
-          _SpaceSpaceRelationsFuturePollReturn Function(int, int, int)>();
+      _spaceSpaceRelationsFuturePollPtr
+          .asFunction<
+            _SpaceSpaceRelationsFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceIsChildSpaceOfFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceIsChildSpaceOfFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_is_child_space_of_future_poll");
+    ffi.NativeFunction<
+      _SpaceIsChildSpaceOfFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_is_child_space_of_future_poll");
 
   late final _spaceIsChildSpaceOfFuturePoll =
-      _spaceIsChildSpaceOfFuturePollPtr.asFunction<
-          _SpaceIsChildSpaceOfFuturePollReturn Function(int, int, int)>();
+      _spaceIsChildSpaceOfFuturePollPtr
+          .asFunction<
+            _SpaceIsChildSpaceOfFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceAddChildRoomFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceAddChildRoomFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_add_child_room_future_poll");
+    ffi.NativeFunction<
+      _SpaceAddChildRoomFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_add_child_room_future_poll");
 
-  late final _spaceAddChildRoomFuturePoll = _spaceAddChildRoomFuturePollPtr
-      .asFunction<_SpaceAddChildRoomFuturePollReturn Function(int, int, int)>();
+  late final _spaceAddChildRoomFuturePoll =
+      _spaceAddChildRoomFuturePollPtr
+          .asFunction<
+            _SpaceAddChildRoomFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceRemoveChildRoomFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceRemoveChildRoomFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_remove_child_room_future_poll");
+    ffi.NativeFunction<
+      _SpaceRemoveChildRoomFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_remove_child_room_future_poll");
 
   late final _spaceRemoveChildRoomFuturePoll =
-      _spaceRemoveChildRoomFuturePollPtr.asFunction<
-          _SpaceRemoveChildRoomFuturePollReturn Function(int, int, int)>();
+      _spaceRemoveChildRoomFuturePollPtr
+          .asFunction<
+            _SpaceRemoveChildRoomFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceUploadAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceUploadAvatarFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_upload_avatar_future_poll");
+    ffi.NativeFunction<
+      _SpaceUploadAvatarFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_upload_avatar_future_poll");
 
-  late final _spaceUploadAvatarFuturePoll = _spaceUploadAvatarFuturePollPtr
-      .asFunction<_SpaceUploadAvatarFuturePollReturn Function(int, int, int)>();
+  late final _spaceUploadAvatarFuturePoll =
+      _spaceUploadAvatarFuturePollPtr
+          .asFunction<
+            _SpaceUploadAvatarFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceSetActerSpaceStatesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceSetActerSpaceStatesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_set_acter_space_states_future_poll");
+    ffi.NativeFunction<
+      _SpaceSetActerSpaceStatesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_acter_space_states_future_poll");
 
   late final _spaceSetActerSpaceStatesFuturePoll =
-      _spaceSetActerSpaceStatesFuturePollPtr.asFunction<
-          _SpaceSetActerSpaceStatesFuturePollReturn Function(int, int, int)>();
+      _spaceSetActerSpaceStatesFuturePollPtr
+          .asFunction<
+            _SpaceSetActerSpaceStatesFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceRemoveAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceRemoveAvatarFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_remove_avatar_future_poll");
+    ffi.NativeFunction<
+      _SpaceRemoveAvatarFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_remove_avatar_future_poll");
 
-  late final _spaceRemoveAvatarFuturePoll = _spaceRemoveAvatarFuturePollPtr
-      .asFunction<_SpaceRemoveAvatarFuturePollReturn Function(int, int, int)>();
+  late final _spaceRemoveAvatarFuturePoll =
+      _spaceRemoveAvatarFuturePollPtr
+          .asFunction<
+            _SpaceRemoveAvatarFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceSetTopicFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceSetTopicFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Space_set_topic_future_poll");
+    ffi.NativeFunction<
+      _SpaceSetTopicFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Space_set_topic_future_poll");
 
-  late final _spaceSetTopicFuturePoll = _spaceSetTopicFuturePollPtr
-      .asFunction<_SpaceSetTopicFuturePollReturn Function(int, int, int)>();
+  late final _spaceSetTopicFuturePoll =
+      _spaceSetTopicFuturePollPtr
+          .asFunction<_SpaceSetTopicFuturePollReturn Function(int, int, int)>();
   late final _spaceSetNameFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceSetNameFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Space_set_name_future_poll");
+    ffi.NativeFunction<
+      _SpaceSetNameFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Space_set_name_future_poll");
 
-  late final _spaceSetNameFuturePoll = _spaceSetNameFuturePollPtr
-      .asFunction<_SpaceSetNameFuturePollReturn Function(int, int, int)>();
+  late final _spaceSetNameFuturePoll =
+      _spaceSetNameFuturePollPtr
+          .asFunction<_SpaceSetNameFuturePollReturn Function(int, int, int)>();
   late final _spaceSetBookmarkedFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceSetBookmarkedFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_set_bookmarked_future_poll");
+    ffi.NativeFunction<
+      _SpaceSetBookmarkedFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_bookmarked_future_poll");
 
   late final _spaceSetBookmarkedFuturePoll =
-      _spaceSetBookmarkedFuturePollPtr.asFunction<
-          _SpaceSetBookmarkedFuturePollReturn Function(int, int, int)>();
+      _spaceSetBookmarkedFuturePollPtr
+          .asFunction<
+            _SpaceSetBookmarkedFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceActiveMembersIdsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceActiveMembersIdsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_active_members_ids_future_poll");
+    ffi.NativeFunction<
+      _SpaceActiveMembersIdsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_active_members_ids_future_poll");
 
   late final _spaceActiveMembersIdsFuturePoll =
-      _spaceActiveMembersIdsFuturePollPtr.asFunction<
-          _SpaceActiveMembersIdsFuturePollReturn Function(int, int, int)>();
+      _spaceActiveMembersIdsFuturePollPtr
+          .asFunction<
+            _SpaceActiveMembersIdsFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceActiveMembersFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceActiveMembersFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_active_members_future_poll");
+    ffi.NativeFunction<
+      _SpaceActiveMembersFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_active_members_future_poll");
 
   late final _spaceActiveMembersFuturePoll =
-      _spaceActiveMembersFuturePollPtr.asFunction<
-          _SpaceActiveMembersFuturePollReturn Function(int, int, int)>();
+      _spaceActiveMembersFuturePollPtr
+          .asFunction<
+            _SpaceActiveMembersFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceInvitedMembersFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceInvitedMembersFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_invited_members_future_poll");
+    ffi.NativeFunction<
+      _SpaceInvitedMembersFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_invited_members_future_poll");
 
   late final _spaceInvitedMembersFuturePoll =
-      _spaceInvitedMembersFuturePollPtr.asFunction<
-          _SpaceInvitedMembersFuturePollReturn Function(int, int, int)>();
+      _spaceInvitedMembersFuturePollPtr
+          .asFunction<
+            _SpaceInvitedMembersFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceInviteUserFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceInviteUserFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_invite_user_future_poll");
+    ffi.NativeFunction<
+      _SpaceInviteUserFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_invite_user_future_poll");
 
-  late final _spaceInviteUserFuturePoll = _spaceInviteUserFuturePollPtr
-      .asFunction<_SpaceInviteUserFuturePollReturn Function(int, int, int)>();
+  late final _spaceInviteUserFuturePoll =
+      _spaceInviteUserFuturePollPtr
+          .asFunction<
+            _SpaceInviteUserFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceGetMemberFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceGetMemberFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_get_member_future_poll");
+    ffi.NativeFunction<
+      _SpaceGetMemberFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_get_member_future_poll");
 
-  late final _spaceGetMemberFuturePoll = _spaceGetMemberFuturePollPtr
-      .asFunction<_SpaceGetMemberFuturePollReturn Function(int, int, int)>();
+  late final _spaceGetMemberFuturePoll =
+      _spaceGetMemberFuturePollPtr
+          .asFunction<
+            _SpaceGetMemberFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceGetMyMembershipFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceGetMyMembershipFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_get_my_membership_future_poll");
+    ffi.NativeFunction<
+      _SpaceGetMyMembershipFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_get_my_membership_future_poll");
 
   late final _spaceGetMyMembershipFuturePoll =
-      _spaceGetMyMembershipFuturePollPtr.asFunction<
-          _SpaceGetMyMembershipFuturePollReturn Function(int, int, int)>();
+      _spaceGetMyMembershipFuturePollPtr
+          .asFunction<
+            _SpaceGetMyMembershipFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceIsEncryptedFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceIsEncryptedFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_is_encrypted_future_poll");
+    ffi.NativeFunction<
+      _SpaceIsEncryptedFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_is_encrypted_future_poll");
 
-  late final _spaceIsEncryptedFuturePoll = _spaceIsEncryptedFuturePollPtr
-      .asFunction<_SpaceIsEncryptedFuturePollReturn Function(int, int, int)>();
+  late final _spaceIsEncryptedFuturePoll =
+      _spaceIsEncryptedFuturePollPtr
+          .asFunction<
+            _SpaceIsEncryptedFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceIsActerSpaceFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceIsActerSpaceFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_is_acter_space_future_poll");
+    ffi.NativeFunction<
+      _SpaceIsActerSpaceFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_is_acter_space_future_poll");
 
-  late final _spaceIsActerSpaceFuturePoll = _spaceIsActerSpaceFuturePollPtr
-      .asFunction<_SpaceIsActerSpaceFuturePollReturn Function(int, int, int)>();
+  late final _spaceIsActerSpaceFuturePoll =
+      _spaceIsActerSpaceFuturePollPtr
+          .asFunction<
+            _SpaceIsActerSpaceFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceTaskListsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceTaskListsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_task_lists_future_poll");
+    ffi.NativeFunction<
+      _SpaceTaskListsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_task_lists_future_poll");
 
-  late final _spaceTaskListsFuturePoll = _spaceTaskListsFuturePollPtr
-      .asFunction<_SpaceTaskListsFuturePollReturn Function(int, int, int)>();
+  late final _spaceTaskListsFuturePoll =
+      _spaceTaskListsFuturePollPtr
+          .asFunction<
+            _SpaceTaskListsFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceLatestNewsEntriesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceLatestNewsEntriesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_latest_news_entries_future_poll");
+    ffi.NativeFunction<
+      _SpaceLatestNewsEntriesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_latest_news_entries_future_poll");
 
   late final _spaceLatestNewsEntriesFuturePoll =
-      _spaceLatestNewsEntriesFuturePollPtr.asFunction<
-          _SpaceLatestNewsEntriesFuturePollReturn Function(int, int, int)>();
+      _spaceLatestNewsEntriesFuturePollPtr
+          .asFunction<
+            _SpaceLatestNewsEntriesFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceLatestStoriesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceLatestStoriesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_latest_stories_future_poll");
+    ffi.NativeFunction<
+      _SpaceLatestStoriesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_latest_stories_future_poll");
 
   late final _spaceLatestStoriesFuturePoll =
-      _spaceLatestStoriesFuturePollPtr.asFunction<
-          _SpaceLatestStoriesFuturePollReturn Function(int, int, int)>();
+      _spaceLatestStoriesFuturePollPtr
+          .asFunction<
+            _SpaceLatestStoriesFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceCalendarEventsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceCalendarEventsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_calendar_events_future_poll");
+    ffi.NativeFunction<
+      _SpaceCalendarEventsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_calendar_events_future_poll");
 
   late final _spaceCalendarEventsFuturePoll =
-      _spaceCalendarEventsFuturePollPtr.asFunction<
-          _SpaceCalendarEventsFuturePollReturn Function(int, int, int)>();
+      _spaceCalendarEventsFuturePollPtr
+          .asFunction<
+            _SpaceCalendarEventsFuturePollReturn Function(int, int, int)
+          >();
   late final _spacePinsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpacePinsFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Space_pins_future_poll");
+    ffi.NativeFunction<
+      _SpacePinsFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Space_pins_future_poll");
 
-  late final _spacePinsFuturePoll = _spacePinsFuturePollPtr
-      .asFunction<_SpacePinsFuturePollReturn Function(int, int, int)>();
+  late final _spacePinsFuturePoll =
+      _spacePinsFuturePollPtr
+          .asFunction<_SpacePinsFuturePollReturn Function(int, int, int)>();
   late final _spaceJoinFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceJoinFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Space_join_future_poll");
+    ffi.NativeFunction<
+      _SpaceJoinFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Space_join_future_poll");
 
-  late final _spaceJoinFuturePoll = _spaceJoinFuturePollPtr
-      .asFunction<_SpaceJoinFuturePollReturn Function(int, int, int)>();
+  late final _spaceJoinFuturePoll =
+      _spaceJoinFuturePollPtr
+          .asFunction<_SpaceJoinFuturePollReturn Function(int, int, int)>();
   late final _spaceLeaveFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceLeaveFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Space_leave_future_poll");
+    ffi.NativeFunction<
+      _SpaceLeaveFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Space_leave_future_poll");
 
-  late final _spaceLeaveFuturePoll = _spaceLeaveFuturePollPtr
-      .asFunction<_SpaceLeaveFuturePollReturn Function(int, int, int)>();
+  late final _spaceLeaveFuturePoll =
+      _spaceLeaveFuturePollPtr
+          .asFunction<_SpaceLeaveFuturePollReturn Function(int, int, int)>();
   late final _spacePowerLevelsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpacePowerLevelsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_power_levels_future_poll");
+    ffi.NativeFunction<
+      _SpacePowerLevelsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_power_levels_future_poll");
 
-  late final _spacePowerLevelsFuturePoll = _spacePowerLevelsFuturePollPtr
-      .asFunction<_SpacePowerLevelsFuturePollReturn Function(int, int, int)>();
+  late final _spacePowerLevelsFuturePoll =
+      _spacePowerLevelsFuturePollPtr
+          .asFunction<
+            _SpacePowerLevelsFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceAppSettingsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceAppSettingsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_app_settings_future_poll");
+    ffi.NativeFunction<
+      _SpaceAppSettingsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_app_settings_future_poll");
 
-  late final _spaceAppSettingsFuturePoll = _spaceAppSettingsFuturePollPtr
-      .asFunction<_SpaceAppSettingsFuturePollReturn Function(int, int, int)>();
+  late final _spaceAppSettingsFuturePoll =
+      _spaceAppSettingsFuturePollPtr
+          .asFunction<
+            _SpaceAppSettingsFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceUpdateAppSettingsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceUpdateAppSettingsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_update_app_settings_future_poll");
+    ffi.NativeFunction<
+      _SpaceUpdateAppSettingsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_update_app_settings_future_poll");
 
   late final _spaceUpdateAppSettingsFuturePoll =
-      _spaceUpdateAppSettingsFuturePollPtr.asFunction<
-          _SpaceUpdateAppSettingsFuturePollReturn Function(int, int, int)>();
+      _spaceUpdateAppSettingsFuturePollPtr
+          .asFunction<
+            _SpaceUpdateAppSettingsFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceUpdateFeaturePowerLevelsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceUpdateFeaturePowerLevelsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_update_feature_power_levels_future_poll");
+    ffi.NativeFunction<
+      _SpaceUpdateFeaturePowerLevelsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_update_feature_power_levels_future_poll");
 
   late final _spaceUpdateFeaturePowerLevelsFuturePoll =
-      _spaceUpdateFeaturePowerLevelsFuturePollPtr.asFunction<
-          _SpaceUpdateFeaturePowerLevelsFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _spaceUpdateFeaturePowerLevelsFuturePollPtr
+          .asFunction<
+            _SpaceUpdateFeaturePowerLevelsFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _spaceUpdateRegularPowerLevelsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceUpdateRegularPowerLevelsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_update_regular_power_levels_future_poll");
+    ffi.NativeFunction<
+      _SpaceUpdateRegularPowerLevelsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_update_regular_power_levels_future_poll");
 
   late final _spaceUpdateRegularPowerLevelsFuturePoll =
-      _spaceUpdateRegularPowerLevelsFuturePollPtr.asFunction<
-          _SpaceUpdateRegularPowerLevelsFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _spaceUpdateRegularPowerLevelsFuturePollPtr
+          .asFunction<
+            _SpaceUpdateRegularPowerLevelsFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _spaceReportContentFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceReportContentFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_report_content_future_poll");
+    ffi.NativeFunction<
+      _SpaceReportContentFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_report_content_future_poll");
 
   late final _spaceReportContentFuturePoll =
-      _spaceReportContentFuturePollPtr.asFunction<
-          _SpaceReportContentFuturePollReturn Function(int, int, int)>();
+      _spaceReportContentFuturePollPtr
+          .asFunction<
+            _SpaceReportContentFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceRedactContentFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceRedactContentFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_redact_content_future_poll");
+    ffi.NativeFunction<
+      _SpaceRedactContentFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_redact_content_future_poll");
 
   late final _spaceRedactContentFuturePoll =
-      _spaceRedactContentFuturePollPtr.asFunction<
-          _SpaceRedactContentFuturePollReturn Function(int, int, int)>();
+      _spaceRedactContentFuturePollPtr
+          .asFunction<
+            _SpaceRedactContentFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceCategoriesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceCategoriesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_categories_future_poll");
+    ffi.NativeFunction<
+      _SpaceCategoriesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_categories_future_poll");
 
-  late final _spaceCategoriesFuturePoll = _spaceCategoriesFuturePollPtr
-      .asFunction<_SpaceCategoriesFuturePollReturn Function(int, int, int)>();
+  late final _spaceCategoriesFuturePoll =
+      _spaceCategoriesFuturePollPtr
+          .asFunction<
+            _SpaceCategoriesFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceSetCategoriesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceSetCategoriesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_set_categories_future_poll");
+    ffi.NativeFunction<
+      _SpaceSetCategoriesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_categories_future_poll");
 
   late final _spaceSetCategoriesFuturePoll =
-      _spaceSetCategoriesFuturePollPtr.asFunction<
-          _SpaceSetCategoriesFuturePollReturn Function(int, int, int)>();
+      _spaceSetCategoriesFuturePollPtr
+          .asFunction<
+            _SpaceSetCategoriesFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceRefDetailsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceRefDetailsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_ref_details_future_poll");
+    ffi.NativeFunction<
+      _SpaceRefDetailsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_ref_details_future_poll");
 
-  late final _spaceRefDetailsFuturePoll = _spaceRefDetailsFuturePollPtr
-      .asFunction<_SpaceRefDetailsFuturePollReturn Function(int, int, int)>();
+  late final _spaceRefDetailsFuturePoll =
+      _spaceRefDetailsFuturePollPtr
+          .asFunction<
+            _SpaceRefDetailsFuturePollReturn Function(int, int, int)
+          >();
   late final _memberIgnoreFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _MemberIgnoreFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Member_ignore_future_poll");
+    ffi.NativeFunction<
+      _MemberIgnoreFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Member_ignore_future_poll");
 
-  late final _memberIgnoreFuturePoll = _memberIgnoreFuturePollPtr
-      .asFunction<_MemberIgnoreFuturePollReturn Function(int, int, int)>();
+  late final _memberIgnoreFuturePoll =
+      _memberIgnoreFuturePollPtr
+          .asFunction<_MemberIgnoreFuturePollReturn Function(int, int, int)>();
   late final _memberUnignoreFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _MemberUnignoreFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Member_unignore_future_poll");
+    ffi.NativeFunction<
+      _MemberUnignoreFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Member_unignore_future_poll");
 
-  late final _memberUnignoreFuturePoll = _memberUnignoreFuturePollPtr
-      .asFunction<_MemberUnignoreFuturePollReturn Function(int, int, int)>();
+  late final _memberUnignoreFuturePoll =
+      _memberUnignoreFuturePollPtr
+          .asFunction<
+            _MemberUnignoreFuturePollReturn Function(int, int, int)
+          >();
   late final _memberKickFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _MemberKickFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Member_kick_future_poll");
+    ffi.NativeFunction<
+      _MemberKickFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Member_kick_future_poll");
 
-  late final _memberKickFuturePoll = _memberKickFuturePollPtr
-      .asFunction<_MemberKickFuturePollReturn Function(int, int, int)>();
+  late final _memberKickFuturePoll =
+      _memberKickFuturePollPtr
+          .asFunction<_MemberKickFuturePollReturn Function(int, int, int)>();
   late final _memberBanFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _MemberBanFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Member_ban_future_poll");
+    ffi.NativeFunction<
+      _MemberBanFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Member_ban_future_poll");
 
-  late final _memberBanFuturePoll = _memberBanFuturePollPtr
-      .asFunction<_MemberBanFuturePollReturn Function(int, int, int)>();
+  late final _memberBanFuturePoll =
+      _memberBanFuturePollPtr
+          .asFunction<_MemberBanFuturePollReturn Function(int, int, int)>();
   late final _memberUnbanFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _MemberUnbanFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Member_unban_future_poll");
+    ffi.NativeFunction<
+      _MemberUnbanFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Member_unban_future_poll");
 
-  late final _memberUnbanFuturePoll = _memberUnbanFuturePollPtr
-      .asFunction<_MemberUnbanFuturePollReturn Function(int, int, int)>();
+  late final _memberUnbanFuturePoll =
+      _memberUnbanFuturePollPtr
+          .asFunction<_MemberUnbanFuturePollReturn Function(int, int, int)>();
   late final _acterUserAppSettingsBuilderSendFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ActerUserAppSettingsBuilderSendFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__ActerUserAppSettingsBuilder_send_future_poll");
+    ffi.NativeFunction<
+      _ActerUserAppSettingsBuilderSendFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__ActerUserAppSettingsBuilder_send_future_poll");
 
   late final _acterUserAppSettingsBuilderSendFuturePoll =
-      _acterUserAppSettingsBuilderSendFuturePollPtr.asFunction<
-          _ActerUserAppSettingsBuilderSendFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _acterUserAppSettingsBuilderSendFuturePollPtr
+          .asFunction<
+            _ActerUserAppSettingsBuilderSendFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _accountDisplayNameFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountDisplayNameFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_display_name_future_poll");
+    ffi.NativeFunction<
+      _AccountDisplayNameFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_display_name_future_poll");
 
   late final _accountDisplayNameFuturePoll =
-      _accountDisplayNameFuturePollPtr.asFunction<
-          _AccountDisplayNameFuturePollReturn Function(int, int, int)>();
+      _accountDisplayNameFuturePollPtr
+          .asFunction<
+            _AccountDisplayNameFuturePollReturn Function(int, int, int)
+          >();
   late final _accountSetDisplayNameFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountSetDisplayNameFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_set_display_name_future_poll");
+    ffi.NativeFunction<
+      _AccountSetDisplayNameFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_set_display_name_future_poll");
 
   late final _accountSetDisplayNameFuturePoll =
-      _accountSetDisplayNameFuturePollPtr.asFunction<
-          _AccountSetDisplayNameFuturePollReturn Function(int, int, int)>();
+      _accountSetDisplayNameFuturePollPtr
+          .asFunction<
+            _AccountSetDisplayNameFuturePollReturn Function(int, int, int)
+          >();
   late final _accountAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountAvatarFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Account_avatar_future_poll");
+    ffi.NativeFunction<
+      _AccountAvatarFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Account_avatar_future_poll");
 
-  late final _accountAvatarFuturePoll = _accountAvatarFuturePollPtr
-      .asFunction<_AccountAvatarFuturePollReturn Function(int, int, int)>();
+  late final _accountAvatarFuturePoll =
+      _accountAvatarFuturePollPtr
+          .asFunction<_AccountAvatarFuturePollReturn Function(int, int, int)>();
   late final _accountUploadAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountUploadAvatarFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_upload_avatar_future_poll");
+    ffi.NativeFunction<
+      _AccountUploadAvatarFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_upload_avatar_future_poll");
 
   late final _accountUploadAvatarFuturePoll =
-      _accountUploadAvatarFuturePollPtr.asFunction<
-          _AccountUploadAvatarFuturePollReturn Function(int, int, int)>();
+      _accountUploadAvatarFuturePollPtr
+          .asFunction<
+            _AccountUploadAvatarFuturePollReturn Function(int, int, int)
+          >();
   late final _accountIgnoredUsersFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountIgnoredUsersFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_ignored_users_future_poll");
+    ffi.NativeFunction<
+      _AccountIgnoredUsersFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_ignored_users_future_poll");
 
   late final _accountIgnoredUsersFuturePoll =
-      _accountIgnoredUsersFuturePollPtr.asFunction<
-          _AccountIgnoredUsersFuturePollReturn Function(int, int, int)>();
+      _accountIgnoredUsersFuturePollPtr
+          .asFunction<
+            _AccountIgnoredUsersFuturePollReturn Function(int, int, int)
+          >();
   late final _accountIgnoreUserFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountIgnoreUserFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_ignore_user_future_poll");
+    ffi.NativeFunction<
+      _AccountIgnoreUserFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_ignore_user_future_poll");
 
-  late final _accountIgnoreUserFuturePoll = _accountIgnoreUserFuturePollPtr
-      .asFunction<_AccountIgnoreUserFuturePollReturn Function(int, int, int)>();
+  late final _accountIgnoreUserFuturePoll =
+      _accountIgnoreUserFuturePollPtr
+          .asFunction<
+            _AccountIgnoreUserFuturePollReturn Function(int, int, int)
+          >();
   late final _accountUnignoreUserFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountUnignoreUserFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_unignore_user_future_poll");
+    ffi.NativeFunction<
+      _AccountUnignoreUserFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_unignore_user_future_poll");
 
   late final _accountUnignoreUserFuturePoll =
-      _accountUnignoreUserFuturePollPtr.asFunction<
-          _AccountUnignoreUserFuturePollReturn Function(int, int, int)>();
+      _accountUnignoreUserFuturePollPtr
+          .asFunction<
+            _AccountUnignoreUserFuturePollReturn Function(int, int, int)
+          >();
   late final _accountActerAppSettingsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountActerAppSettingsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_acter_app_settings_future_poll");
+    ffi.NativeFunction<
+      _AccountActerAppSettingsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_acter_app_settings_future_poll");
 
   late final _accountActerAppSettingsFuturePoll =
-      _accountActerAppSettingsFuturePollPtr.asFunction<
-          _AccountActerAppSettingsFuturePollReturn Function(int, int, int)>();
+      _accountActerAppSettingsFuturePollPtr
+          .asFunction<
+            _AccountActerAppSettingsFuturePollReturn Function(int, int, int)
+          >();
   late final _accountDeactivateFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountDeactivateFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_deactivate_future_poll");
+    ffi.NativeFunction<
+      _AccountDeactivateFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_deactivate_future_poll");
 
-  late final _accountDeactivateFuturePoll = _accountDeactivateFuturePollPtr
-      .asFunction<_AccountDeactivateFuturePollReturn Function(int, int, int)>();
+  late final _accountDeactivateFuturePoll =
+      _accountDeactivateFuturePollPtr
+          .asFunction<
+            _AccountDeactivateFuturePollReturn Function(int, int, int)
+          >();
   late final _accountChangePasswordFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountChangePasswordFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_change_password_future_poll");
+    ffi.NativeFunction<
+      _AccountChangePasswordFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_change_password_future_poll");
 
   late final _accountChangePasswordFuturePoll =
-      _accountChangePasswordFuturePollPtr.asFunction<
-          _AccountChangePasswordFuturePollReturn Function(int, int, int)>();
+      _accountChangePasswordFuturePollPtr
+          .asFunction<
+            _AccountChangePasswordFuturePollReturn Function(int, int, int)
+          >();
   late final _accountConfirmedEmailAddressesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountConfirmedEmailAddressesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_confirmed_email_addresses_future_poll");
+    ffi.NativeFunction<
+      _AccountConfirmedEmailAddressesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_confirmed_email_addresses_future_poll");
 
   late final _accountConfirmedEmailAddressesFuturePoll =
-      _accountConfirmedEmailAddressesFuturePollPtr.asFunction<
-          _AccountConfirmedEmailAddressesFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _accountConfirmedEmailAddressesFuturePollPtr
+          .asFunction<
+            _AccountConfirmedEmailAddressesFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _accountRequestedEmailAddressesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountRequestedEmailAddressesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_requested_email_addresses_future_poll");
+    ffi.NativeFunction<
+      _AccountRequestedEmailAddressesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_requested_email_addresses_future_poll");
 
   late final _accountRequestedEmailAddressesFuturePoll =
-      _accountRequestedEmailAddressesFuturePollPtr.asFunction<
-          _AccountRequestedEmailAddressesFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _accountRequestedEmailAddressesFuturePollPtr
+          .asFunction<
+            _AccountRequestedEmailAddressesFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _accountRequest3pidManagementTokenViaEmailFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountRequest3pidManagementTokenViaEmailFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_request_3pid_management_token_via_email_future_poll");
+    ffi.NativeFunction<
+      _AccountRequest3pidManagementTokenViaEmailFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_request_3pid_management_token_via_email_future_poll");
 
   late final _accountRequest3pidManagementTokenViaEmailFuturePoll =
-      _accountRequest3pidManagementTokenViaEmailFuturePollPtr.asFunction<
-          _AccountRequest3pidManagementTokenViaEmailFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _accountRequest3pidManagementTokenViaEmailFuturePollPtr
+          .asFunction<
+            _AccountRequest3pidManagementTokenViaEmailFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _accountExternalIdsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountExternalIdsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_external_ids_future_poll");
+    ffi.NativeFunction<
+      _AccountExternalIdsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_external_ids_future_poll");
 
   late final _accountExternalIdsFuturePoll =
-      _accountExternalIdsFuturePollPtr.asFunction<
-          _AccountExternalIdsFuturePollReturn Function(int, int, int)>();
+      _accountExternalIdsFuturePollPtr
+          .asFunction<
+            _AccountExternalIdsFuturePollReturn Function(int, int, int)
+          >();
   late final _accountTryConfirmEmailStatusFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountTryConfirmEmailStatusFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_try_confirm_email_status_future_poll");
+    ffi.NativeFunction<
+      _AccountTryConfirmEmailStatusFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_try_confirm_email_status_future_poll");
 
   late final _accountTryConfirmEmailStatusFuturePoll =
-      _accountTryConfirmEmailStatusFuturePollPtr.asFunction<
-          _AccountTryConfirmEmailStatusFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _accountTryConfirmEmailStatusFuturePollPtr
+          .asFunction<
+            _AccountTryConfirmEmailStatusFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _accountSubmitTokenFromEmailFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountSubmitTokenFromEmailFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_submit_token_from_email_future_poll");
+    ffi.NativeFunction<
+      _AccountSubmitTokenFromEmailFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_submit_token_from_email_future_poll");
 
   late final _accountSubmitTokenFromEmailFuturePoll =
-      _accountSubmitTokenFromEmailFuturePollPtr.asFunction<
-          _AccountSubmitTokenFromEmailFuturePollReturn Function(
-              int, int, int)>();
+      _accountSubmitTokenFromEmailFuturePollPtr
+          .asFunction<
+            _AccountSubmitTokenFromEmailFuturePollReturn Function(int, int, int)
+          >();
   late final _accountRemoveEmailAddressFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountRemoveEmailAddressFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_remove_email_address_future_poll");
+    ffi.NativeFunction<
+      _AccountRemoveEmailAddressFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_remove_email_address_future_poll");
 
   late final _accountRemoveEmailAddressFuturePoll =
-      _accountRemoveEmailAddressFuturePollPtr.asFunction<
-          _AccountRemoveEmailAddressFuturePollReturn Function(int, int, int)>();
+      _accountRemoveEmailAddressFuturePollPtr
+          .asFunction<
+            _AccountRemoveEmailAddressFuturePollReturn Function(int, int, int)
+          >();
   late final _accountBookmarksFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountBookmarksFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Account_bookmarks_future_poll");
+    ffi.NativeFunction<
+      _AccountBookmarksFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Account_bookmarks_future_poll");
 
-  late final _accountBookmarksFuturePoll = _accountBookmarksFuturePollPtr
-      .asFunction<_AccountBookmarksFuturePollReturn Function(int, int, int)>();
+  late final _accountBookmarksFuturePoll =
+      _accountBookmarksFuturePollPtr
+          .asFunction<
+            _AccountBookmarksFuturePollReturn Function(int, int, int)
+          >();
   late final _bookmarksAddFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _BookmarksAddFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Bookmarks_add_future_poll");
+    ffi.NativeFunction<
+      _BookmarksAddFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Bookmarks_add_future_poll");
 
-  late final _bookmarksAddFuturePoll = _bookmarksAddFuturePollPtr
-      .asFunction<_BookmarksAddFuturePollReturn Function(int, int, int)>();
+  late final _bookmarksAddFuturePoll =
+      _bookmarksAddFuturePollPtr
+          .asFunction<_BookmarksAddFuturePollReturn Function(int, int, int)>();
   late final _bookmarksRemoveFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _BookmarksRemoveFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Bookmarks_remove_future_poll");
+    ffi.NativeFunction<
+      _BookmarksRemoveFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Bookmarks_remove_future_poll");
 
-  late final _bookmarksRemoveFuturePoll = _bookmarksRemoveFuturePollPtr
-      .asFunction<_BookmarksRemoveFuturePollReturn Function(int, int, int)>();
+  late final _bookmarksRemoveFuturePoll =
+      _bookmarksRemoveFuturePollPtr
+          .asFunction<
+            _BookmarksRemoveFuturePollReturn Function(int, int, int)
+          >();
   late final _publicSearchResultItemGetAvatarFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _PublicSearchResultItemGetAvatarFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__PublicSearchResultItem_get_avatar_future_poll");
+    ffi.NativeFunction<
+      _PublicSearchResultItemGetAvatarFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__PublicSearchResultItem_get_avatar_future_poll");
 
   late final _publicSearchResultItemGetAvatarFuturePoll =
-      _publicSearchResultItemGetAvatarFuturePollPtr.asFunction<
-          _PublicSearchResultItemGetAvatarFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _publicSearchResultItemGetAvatarFuturePollPtr
+          .asFunction<
+            _PublicSearchResultItemGetAvatarFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _notificationSenderImageFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationSenderImageFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NotificationSender_image_future_poll");
+    ffi.NativeFunction<
+      _NotificationSenderImageFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NotificationSender_image_future_poll");
 
   late final _notificationSenderImageFuturePoll =
-      _notificationSenderImageFuturePollPtr.asFunction<
-          _NotificationSenderImageFuturePollReturn Function(int, int, int)>();
+      _notificationSenderImageFuturePollPtr
+          .asFunction<
+            _NotificationSenderImageFuturePollReturn Function(int, int, int)
+          >();
   late final _notificationRoomImageFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationRoomImageFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NotificationRoom_image_future_poll");
+    ffi.NativeFunction<
+      _NotificationRoomImageFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NotificationRoom_image_future_poll");
 
   late final _notificationRoomImageFuturePoll =
-      _notificationRoomImageFuturePollPtr.asFunction<
-          _NotificationRoomImageFuturePollReturn Function(int, int, int)>();
+      _notificationRoomImageFuturePollPtr
+          .asFunction<
+            _NotificationRoomImageFuturePollReturn Function(int, int, int)
+          >();
   late final _notificationItemImageFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemImageFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NotificationItem_image_future_poll");
+    ffi.NativeFunction<
+      _NotificationItemImageFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NotificationItem_image_future_poll");
 
   late final _notificationItemImageFuturePoll =
-      _notificationItemImageFuturePollPtr.asFunction<
-          _NotificationItemImageFuturePollReturn Function(int, int, int)>();
+      _notificationItemImageFuturePollPtr
+          .asFunction<
+            _NotificationItemImageFuturePollReturn Function(int, int, int)
+          >();
   late final _notificationItemImagePathFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationItemImagePathFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NotificationItem_image_path_future_poll");
+    ffi.NativeFunction<
+      _NotificationItemImagePathFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NotificationItem_image_path_future_poll");
 
   late final _notificationItemImagePathFuturePoll =
-      _notificationItemImagePathFuturePollPtr.asFunction<
-          _NotificationItemImagePathFuturePollReturn Function(int, int, int)>();
+      _notificationItemImagePathFuturePollPtr
+          .asFunction<
+            _NotificationItemImagePathFuturePollReturn Function(int, int, int)
+          >();
   late final _pusherDeleteFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _PusherDeleteFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Pusher_delete_future_poll");
+    ffi.NativeFunction<
+      _PusherDeleteFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Pusher_delete_future_poll");
 
-  late final _pusherDeleteFuturePoll = _pusherDeleteFuturePollPtr
-      .asFunction<_PusherDeleteFuturePollReturn Function(int, int, int)>();
+  late final _pusherDeleteFuturePoll =
+      _pusherDeleteFuturePollPtr
+          .asFunction<_PusherDeleteFuturePollReturn Function(int, int, int)>();
   late final _clientRestoreTokenFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientRestoreTokenFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_restore_token_future_poll");
+    ffi.NativeFunction<
+      _ClientRestoreTokenFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_restore_token_future_poll");
 
   late final _clientRestoreTokenFuturePoll =
-      _clientRestoreTokenFuturePollPtr.asFunction<
-          _ClientRestoreTokenFuturePollReturn Function(int, int, int)>();
+      _clientRestoreTokenFuturePollPtr
+          .asFunction<
+            _ClientRestoreTokenFuturePollReturn Function(int, int, int)
+          >();
   late final _clientRoomFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientRoomFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Client_room_future_poll");
+    ffi.NativeFunction<
+      _ClientRoomFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Client_room_future_poll");
 
-  late final _clientRoomFuturePoll = _clientRoomFuturePollPtr
-      .asFunction<_ClientRoomFuturePollReturn Function(int, int, int)>();
+  late final _clientRoomFuturePoll =
+      _clientRoomFuturePollPtr
+          .asFunction<_ClientRoomFuturePollReturn Function(int, int, int)>();
   late final _clientConvoFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientConvoFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Client_convo_future_poll");
+    ffi.NativeFunction<
+      _ClientConvoFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Client_convo_future_poll");
 
-  late final _clientConvoFuturePoll = _clientConvoFuturePollPtr
-      .asFunction<_ClientConvoFuturePollReturn Function(int, int, int)>();
+  late final _clientConvoFuturePoll =
+      _clientConvoFuturePollPtr
+          .asFunction<_ClientConvoFuturePollReturn Function(int, int, int)>();
   late final _clientHasConvoFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientHasConvoFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_has_convo_future_poll");
+    ffi.NativeFunction<
+      _ClientHasConvoFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_has_convo_future_poll");
 
-  late final _clientHasConvoFuturePoll = _clientHasConvoFuturePollPtr
-      .asFunction<_ClientHasConvoFuturePollReturn Function(int, int, int)>();
+  late final _clientHasConvoFuturePoll =
+      _clientHasConvoFuturePollPtr
+          .asFunction<
+            _ClientHasConvoFuturePollReturn Function(int, int, int)
+          >();
   late final _clientConvoWithRetryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientConvoWithRetryFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_convo_with_retry_future_poll");
+    ffi.NativeFunction<
+      _ClientConvoWithRetryFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_convo_with_retry_future_poll");
 
   late final _clientConvoWithRetryFuturePoll =
-      _clientConvoWithRetryFuturePollPtr.asFunction<
-          _ClientConvoWithRetryFuturePollReturn Function(int, int, int)>();
+      _clientConvoWithRetryFuturePollPtr
+          .asFunction<
+            _ClientConvoWithRetryFuturePollReturn Function(int, int, int)
+          >();
   late final _clientUploadMediaFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientUploadMediaFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_upload_media_future_poll");
+    ffi.NativeFunction<
+      _ClientUploadMediaFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_upload_media_future_poll");
 
-  late final _clientUploadMediaFuturePoll = _clientUploadMediaFuturePollPtr
-      .asFunction<_ClientUploadMediaFuturePollReturn Function(int, int, int)>();
+  late final _clientUploadMediaFuturePoll =
+      _clientUploadMediaFuturePollPtr
+          .asFunction<
+            _ClientUploadMediaFuturePollReturn Function(int, int, int)
+          >();
   late final _clientSpacesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSpacesFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Client_spaces_future_poll");
+    ffi.NativeFunction<
+      _ClientSpacesFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Client_spaces_future_poll");
 
-  late final _clientSpacesFuturePoll = _clientSpacesFuturePollPtr
-      .asFunction<_ClientSpacesFuturePollReturn Function(int, int, int)>();
+  late final _clientSpacesFuturePoll =
+      _clientSpacesFuturePollPtr
+          .asFunction<_ClientSpacesFuturePollReturn Function(int, int, int)>();
   late final _clientJoinRoomFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientJoinRoomFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_join_room_future_poll");
+    ffi.NativeFunction<
+      _ClientJoinRoomFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_join_room_future_poll");
 
-  late final _clientJoinRoomFuturePoll = _clientJoinRoomFuturePollPtr
-      .asFunction<_ClientJoinRoomFuturePollReturn Function(int, int, int)>();
+  late final _clientJoinRoomFuturePoll =
+      _clientJoinRoomFuturePollPtr
+          .asFunction<
+            _ClientJoinRoomFuturePollReturn Function(int, int, int)
+          >();
   late final _clientSpaceFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSpaceFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Client_space_future_poll");
+    ffi.NativeFunction<
+      _ClientSpaceFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Client_space_future_poll");
 
-  late final _clientSpaceFuturePoll = _clientSpaceFuturePollPtr
-      .asFunction<_ClientSpaceFuturePollReturn Function(int, int, int)>();
+  late final _clientSpaceFuturePoll =
+      _clientSpaceFuturePollPtr
+          .asFunction<_ClientSpaceFuturePollReturn Function(int, int, int)>();
   late final _clientSuggestedUsersFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSuggestedUsersFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_suggested_users_future_poll");
+    ffi.NativeFunction<
+      _ClientSuggestedUsersFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_suggested_users_future_poll");
 
   late final _clientSuggestedUsersFuturePoll =
-      _clientSuggestedUsersFuturePollPtr.asFunction<
-          _ClientSuggestedUsersFuturePollReturn Function(int, int, int)>();
+      _clientSuggestedUsersFuturePollPtr
+          .asFunction<
+            _ClientSuggestedUsersFuturePollReturn Function(int, int, int)
+          >();
   late final _clientSearchUsersFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSearchUsersFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_search_users_future_poll");
+    ffi.NativeFunction<
+      _ClientSearchUsersFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_search_users_future_poll");
 
-  late final _clientSearchUsersFuturePoll = _clientSearchUsersFuturePollPtr
-      .asFunction<_ClientSearchUsersFuturePollReturn Function(int, int, int)>();
+  late final _clientSearchUsersFuturePoll =
+      _clientSearchUsersFuturePollPtr
+          .asFunction<
+            _ClientSearchUsersFuturePollReturn Function(int, int, int)
+          >();
   late final _clientSearchPublicRoomFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSearchPublicRoomFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_search_public_room_future_poll");
+    ffi.NativeFunction<
+      _ClientSearchPublicRoomFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_search_public_room_future_poll");
 
   late final _clientSearchPublicRoomFuturePoll =
-      _clientSearchPublicRoomFuturePollPtr.asFunction<
-          _ClientSearchPublicRoomFuturePollReturn Function(int, int, int)>();
+      _clientSearchPublicRoomFuturePollPtr
+          .asFunction<
+            _ClientSearchPublicRoomFuturePollReturn Function(int, int, int)
+          >();
   late final _clientVerifiedDeviceFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientVerifiedDeviceFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_verified_device_future_poll");
+    ffi.NativeFunction<
+      _ClientVerifiedDeviceFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_verified_device_future_poll");
 
   late final _clientVerifiedDeviceFuturePoll =
-      _clientVerifiedDeviceFuturePollPtr.asFunction<
-          _ClientVerifiedDeviceFuturePollReturn Function(int, int, int)>();
+      _clientVerifiedDeviceFuturePollPtr
+          .asFunction<
+            _ClientVerifiedDeviceFuturePollReturn Function(int, int, int)
+          >();
   late final _clientLogoutFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientLogoutFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Client_logout_future_poll");
+    ffi.NativeFunction<
+      _ClientLogoutFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Client_logout_future_poll");
 
-  late final _clientLogoutFuturePoll = _clientLogoutFuturePollPtr
-      .asFunction<_ClientLogoutFuturePollReturn Function(int, int, int)>();
+  late final _clientLogoutFuturePoll =
+      _clientLogoutFuturePollPtr
+          .asFunction<_ClientLogoutFuturePollReturn Function(int, int, int)>();
   late final _clientRequestVerificationFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientRequestVerificationFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_request_verification_future_poll");
+    ffi.NativeFunction<
+      _ClientRequestVerificationFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_request_verification_future_poll");
 
   late final _clientRequestVerificationFuturePoll =
-      _clientRequestVerificationFuturePollPtr.asFunction<
-          _ClientRequestVerificationFuturePollReturn Function(int, int, int)>();
+      _clientRequestVerificationFuturePollPtr
+          .asFunction<
+            _ClientRequestVerificationFuturePollReturn Function(int, int, int)
+          >();
   late final _clientInstallRequestEventHandlerFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientInstallRequestEventHandlerFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_install_request_event_handler_future_poll");
+    ffi.NativeFunction<
+      _ClientInstallRequestEventHandlerFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_install_request_event_handler_future_poll");
 
   late final _clientInstallRequestEventHandlerFuturePoll =
-      _clientInstallRequestEventHandlerFuturePollPtr.asFunction<
-          _ClientInstallRequestEventHandlerFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _clientInstallRequestEventHandlerFuturePollPtr
+          .asFunction<
+            _ClientInstallRequestEventHandlerFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientInstallSasEventHandlerFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientInstallSasEventHandlerFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_install_sas_event_handler_future_poll");
+    ffi.NativeFunction<
+      _ClientInstallSasEventHandlerFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_install_sas_event_handler_future_poll");
 
   late final _clientInstallSasEventHandlerFuturePoll =
-      _clientInstallSasEventHandlerFuturePollPtr.asFunction<
-          _ClientInstallSasEventHandlerFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _clientInstallSasEventHandlerFuturePollPtr
+          .asFunction<
+            _ClientInstallSasEventHandlerFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientCreateConvoFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientCreateConvoFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_create_convo_future_poll");
+    ffi.NativeFunction<
+      _ClientCreateConvoFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_create_convo_future_poll");
 
-  late final _clientCreateConvoFuturePoll = _clientCreateConvoFuturePollPtr
-      .asFunction<_ClientCreateConvoFuturePollReturn Function(int, int, int)>();
+  late final _clientCreateConvoFuturePoll =
+      _clientCreateConvoFuturePollPtr
+          .asFunction<
+            _ClientCreateConvoFuturePollReturn Function(int, int, int)
+          >();
   late final _clientCreateActerSpaceFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientCreateActerSpaceFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_create_acter_space_future_poll");
+    ffi.NativeFunction<
+      _ClientCreateActerSpaceFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_create_acter_space_future_poll");
 
   late final _clientCreateActerSpaceFuturePoll =
-      _clientCreateActerSpaceFuturePollPtr.asFunction<
-          _ClientCreateActerSpaceFuturePollReturn Function(int, int, int)>();
+      _clientCreateActerSpaceFuturePollPtr
+          .asFunction<
+            _ClientCreateActerSpaceFuturePollReturn Function(int, int, int)
+          >();
   late final _clientWaitForRoomFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientWaitForRoomFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_wait_for_room_future_poll");
+    ffi.NativeFunction<
+      _ClientWaitForRoomFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_wait_for_room_future_poll");
 
-  late final _clientWaitForRoomFuturePoll = _clientWaitForRoomFuturePollPtr
-      .asFunction<_ClientWaitForRoomFuturePollReturn Function(int, int, int)>();
+  late final _clientWaitForRoomFuturePoll =
+      _clientWaitForRoomFuturePollPtr
+          .asFunction<
+            _ClientWaitForRoomFuturePollReturn Function(int, int, int)
+          >();
   late final _clientWaitForCommentFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientWaitForCommentFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_wait_for_comment_future_poll");
+    ffi.NativeFunction<
+      _ClientWaitForCommentFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_wait_for_comment_future_poll");
 
   late final _clientWaitForCommentFuturePoll =
-      _clientWaitForCommentFuturePollPtr.asFunction<
-          _ClientWaitForCommentFuturePollReturn Function(int, int, int)>();
+      _clientWaitForCommentFuturePollPtr
+          .asFunction<
+            _ClientWaitForCommentFuturePollReturn Function(int, int, int)
+          >();
   late final _clientWaitForNewsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientWaitForNewsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_wait_for_news_future_poll");
+    ffi.NativeFunction<
+      _ClientWaitForNewsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_wait_for_news_future_poll");
 
-  late final _clientWaitForNewsFuturePoll = _clientWaitForNewsFuturePollPtr
-      .asFunction<_ClientWaitForNewsFuturePollReturn Function(int, int, int)>();
+  late final _clientWaitForNewsFuturePoll =
+      _clientWaitForNewsFuturePollPtr
+          .asFunction<
+            _ClientWaitForNewsFuturePollReturn Function(int, int, int)
+          >();
   late final _clientLatestNewsEntriesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientLatestNewsEntriesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_latest_news_entries_future_poll");
+    ffi.NativeFunction<
+      _ClientLatestNewsEntriesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_latest_news_entries_future_poll");
 
   late final _clientLatestNewsEntriesFuturePoll =
-      _clientLatestNewsEntriesFuturePollPtr.asFunction<
-          _ClientLatestNewsEntriesFuturePollReturn Function(int, int, int)>();
+      _clientLatestNewsEntriesFuturePollPtr
+          .asFunction<
+            _ClientLatestNewsEntriesFuturePollReturn Function(int, int, int)
+          >();
   late final _clientWaitForStoryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientWaitForStoryFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_wait_for_story_future_poll");
+    ffi.NativeFunction<
+      _ClientWaitForStoryFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_wait_for_story_future_poll");
 
   late final _clientWaitForStoryFuturePoll =
-      _clientWaitForStoryFuturePollPtr.asFunction<
-          _ClientWaitForStoryFuturePollReturn Function(int, int, int)>();
+      _clientWaitForStoryFuturePollPtr
+          .asFunction<
+            _ClientWaitForStoryFuturePollReturn Function(int, int, int)
+          >();
   late final _clientLatestStoriesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientLatestStoriesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_latest_stories_future_poll");
+    ffi.NativeFunction<
+      _ClientLatestStoriesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_latest_stories_future_poll");
 
   late final _clientLatestStoriesFuturePoll =
-      _clientLatestStoriesFuturePollPtr.asFunction<
-          _ClientLatestStoriesFuturePollReturn Function(int, int, int)>();
+      _clientLatestStoriesFuturePollPtr
+          .asFunction<
+            _ClientLatestStoriesFuturePollReturn Function(int, int, int)
+          >();
   late final _clientWaitForPinFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientWaitForPinFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_wait_for_pin_future_poll");
+    ffi.NativeFunction<
+      _ClientWaitForPinFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_wait_for_pin_future_poll");
 
-  late final _clientWaitForPinFuturePoll = _clientWaitForPinFuturePollPtr
-      .asFunction<_ClientWaitForPinFuturePollReturn Function(int, int, int)>();
+  late final _clientWaitForPinFuturePoll =
+      _clientWaitForPinFuturePollPtr
+          .asFunction<
+            _ClientWaitForPinFuturePollReturn Function(int, int, int)
+          >();
   late final _clientPinsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientPinsFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Client_pins_future_poll");
+    ffi.NativeFunction<
+      _ClientPinsFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Client_pins_future_poll");
 
-  late final _clientPinsFuturePoll = _clientPinsFuturePollPtr
-      .asFunction<_ClientPinsFuturePollReturn Function(int, int, int)>();
+  late final _clientPinsFuturePoll =
+      _clientPinsFuturePollPtr
+          .asFunction<_ClientPinsFuturePollReturn Function(int, int, int)>();
   late final _clientPinFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientPinFuturePollReturn Function(
-              ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>("__Client_pin_future_poll");
+    ffi.NativeFunction<
+      _ClientPinFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Client_pin_future_poll");
 
-  late final _clientPinFuturePoll = _clientPinFuturePollPtr
-      .asFunction<_ClientPinFuturePollReturn Function(int, int, int)>();
+  late final _clientPinFuturePoll =
+      _clientPinFuturePollPtr
+          .asFunction<_ClientPinFuturePollReturn Function(int, int, int)>();
   late final _clientTaskListFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientTaskListFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_task_list_future_poll");
+    ffi.NativeFunction<
+      _ClientTaskListFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_task_list_future_poll");
 
-  late final _clientTaskListFuturePoll = _clientTaskListFuturePollPtr
-      .asFunction<_ClientTaskListFuturePollReturn Function(int, int, int)>();
+  late final _clientTaskListFuturePoll =
+      _clientTaskListFuturePollPtr
+          .asFunction<
+            _ClientTaskListFuturePollReturn Function(int, int, int)
+          >();
   late final _clientTaskListsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientTaskListsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_task_lists_future_poll");
+    ffi.NativeFunction<
+      _ClientTaskListsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_task_lists_future_poll");
 
-  late final _clientTaskListsFuturePoll = _clientTaskListsFuturePollPtr
-      .asFunction<_ClientTaskListsFuturePollReturn Function(int, int, int)>();
+  late final _clientTaskListsFuturePoll =
+      _clientTaskListsFuturePollPtr
+          .asFunction<
+            _ClientTaskListsFuturePollReturn Function(int, int, int)
+          >();
   late final _clientWaitForTaskFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientWaitForTaskFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_wait_for_task_future_poll");
+    ffi.NativeFunction<
+      _ClientWaitForTaskFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_wait_for_task_future_poll");
 
-  late final _clientWaitForTaskFuturePoll = _clientWaitForTaskFuturePollPtr
-      .asFunction<_ClientWaitForTaskFuturePollReturn Function(int, int, int)>();
+  late final _clientWaitForTaskFuturePoll =
+      _clientWaitForTaskFuturePollPtr
+          .asFunction<
+            _ClientWaitForTaskFuturePollReturn Function(int, int, int)
+          >();
   late final _clientMyOpenTasksFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientMyOpenTasksFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_my_open_tasks_future_poll");
+    ffi.NativeFunction<
+      _ClientMyOpenTasksFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_my_open_tasks_future_poll");
 
-  late final _clientMyOpenTasksFuturePoll = _clientMyOpenTasksFuturePollPtr
-      .asFunction<_ClientMyOpenTasksFuturePollReturn Function(int, int, int)>();
+  late final _clientMyOpenTasksFuturePoll =
+      _clientMyOpenTasksFuturePollPtr
+          .asFunction<
+            _ClientMyOpenTasksFuturePollReturn Function(int, int, int)
+          >();
   late final _clientCalendarEventsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientCalendarEventsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_calendar_events_future_poll");
+    ffi.NativeFunction<
+      _ClientCalendarEventsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_calendar_events_future_poll");
 
   late final _clientCalendarEventsFuturePoll =
-      _clientCalendarEventsFuturePollPtr.asFunction<
-          _ClientCalendarEventsFuturePollReturn Function(int, int, int)>();
+      _clientCalendarEventsFuturePollPtr
+          .asFunction<
+            _ClientCalendarEventsFuturePollReturn Function(int, int, int)
+          >();
   late final _clientCalendarEventFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientCalendarEventFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_calendar_event_future_poll");
+    ffi.NativeFunction<
+      _ClientCalendarEventFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_calendar_event_future_poll");
 
   late final _clientCalendarEventFuturePoll =
-      _clientCalendarEventFuturePollPtr.asFunction<
-          _ClientCalendarEventFuturePollReturn Function(int, int, int)>();
+      _clientCalendarEventFuturePollPtr
+          .asFunction<
+            _ClientCalendarEventFuturePollReturn Function(int, int, int)
+          >();
   late final _clientWaitForCalendarEventFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientWaitForCalendarEventFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_wait_for_calendar_event_future_poll");
+    ffi.NativeFunction<
+      _ClientWaitForCalendarEventFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_wait_for_calendar_event_future_poll");
 
   late final _clientWaitForCalendarEventFuturePoll =
-      _clientWaitForCalendarEventFuturePollPtr.asFunction<
-          _ClientWaitForCalendarEventFuturePollReturn Function(
-              int, int, int)>();
+      _clientWaitForCalendarEventFuturePollPtr
+          .asFunction<
+            _ClientWaitForCalendarEventFuturePollReturn Function(int, int, int)
+          >();
   late final _clientWaitForReactionFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientWaitForReactionFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_wait_for_reaction_future_poll");
+    ffi.NativeFunction<
+      _ClientWaitForReactionFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_wait_for_reaction_future_poll");
 
   late final _clientWaitForReactionFuturePoll =
-      _clientWaitForReactionFuturePollPtr.asFunction<
-          _ClientWaitForReactionFuturePollReturn Function(int, int, int)>();
+      _clientWaitForReactionFuturePollPtr
+          .asFunction<
+            _ClientWaitForReactionFuturePollReturn Function(int, int, int)
+          >();
   late final _clientWaitForRsvpFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientWaitForRsvpFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_wait_for_rsvp_future_poll");
+    ffi.NativeFunction<
+      _ClientWaitForRsvpFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_wait_for_rsvp_future_poll");
 
-  late final _clientWaitForRsvpFuturePoll = _clientWaitForRsvpFuturePollPtr
-      .asFunction<_ClientWaitForRsvpFuturePollReturn Function(int, int, int)>();
+  late final _clientWaitForRsvpFuturePoll =
+      _clientWaitForRsvpFuturePollPtr
+          .asFunction<
+            _ClientWaitForRsvpFuturePollReturn Function(int, int, int)
+          >();
   late final _clientInstallDefaultActerPushRulesFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientInstallDefaultActerPushRulesFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_install_default_acter_push_rules_future_poll");
+    ffi.NativeFunction<
+      _ClientInstallDefaultActerPushRulesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_install_default_acter_push_rules_future_poll");
 
   late final _clientInstallDefaultActerPushRulesFuturePoll =
-      _clientInstallDefaultActerPushRulesFuturePollPtr.asFunction<
-          _ClientInstallDefaultActerPushRulesFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _clientInstallDefaultActerPushRulesFuturePollPtr
+          .asFunction<
+            _ClientInstallDefaultActerPushRulesFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientPushersFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientPushersFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr,
-              ffi.Int64)>>("__Client_pushers_future_poll");
+    ffi.NativeFunction<
+      _ClientPushersFuturePollReturn Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+    >
+  >("__Client_pushers_future_poll");
 
-  late final _clientPushersFuturePoll = _clientPushersFuturePollPtr
-      .asFunction<_ClientPushersFuturePollReturn Function(int, int, int)>();
+  late final _clientPushersFuturePoll =
+      _clientPushersFuturePollPtr
+          .asFunction<_ClientPushersFuturePollReturn Function(int, int, int)>();
   late final _clientAddPusherFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientAddPusherFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_add_pusher_future_poll");
+    ffi.NativeFunction<
+      _ClientAddPusherFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_add_pusher_future_poll");
 
-  late final _clientAddPusherFuturePoll = _clientAddPusherFuturePollPtr
-      .asFunction<_ClientAddPusherFuturePollReturn Function(int, int, int)>();
+  late final _clientAddPusherFuturePoll =
+      _clientAddPusherFuturePollPtr
+          .asFunction<
+            _ClientAddPusherFuturePollReturn Function(int, int, int)
+          >();
   late final _clientAddEmailPusherFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientAddEmailPusherFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_add_email_pusher_future_poll");
+    ffi.NativeFunction<
+      _ClientAddEmailPusherFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_add_email_pusher_future_poll");
 
   late final _clientAddEmailPusherFuturePoll =
-      _clientAddEmailPusherFuturePollPtr.asFunction<
-          _ClientAddEmailPusherFuturePollReturn Function(int, int, int)>();
+      _clientAddEmailPusherFuturePollPtr
+          .asFunction<
+            _ClientAddEmailPusherFuturePollReturn Function(int, int, int)
+          >();
   late final _clientGetNotificationItemFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientGetNotificationItemFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_get_notification_item_future_poll");
+    ffi.NativeFunction<
+      _ClientGetNotificationItemFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_get_notification_item_future_poll");
 
   late final _clientGetNotificationItemFuturePoll =
-      _clientGetNotificationItemFuturePollPtr.asFunction<
-          _ClientGetNotificationItemFuturePollReturn Function(int, int, int)>();
+      _clientGetNotificationItemFuturePollPtr
+          .asFunction<
+            _ClientGetNotificationItemFuturePollReturn Function(int, int, int)
+          >();
   late final _clientAllUpcomingEventsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientAllUpcomingEventsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_all_upcoming_events_future_poll");
+    ffi.NativeFunction<
+      _ClientAllUpcomingEventsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_all_upcoming_events_future_poll");
 
   late final _clientAllUpcomingEventsFuturePoll =
-      _clientAllUpcomingEventsFuturePollPtr.asFunction<
-          _ClientAllUpcomingEventsFuturePollReturn Function(int, int, int)>();
+      _clientAllUpcomingEventsFuturePollPtr
+          .asFunction<
+            _ClientAllUpcomingEventsFuturePollReturn Function(int, int, int)
+          >();
   late final _clientMyUpcomingEventsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientMyUpcomingEventsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_my_upcoming_events_future_poll");
+    ffi.NativeFunction<
+      _ClientMyUpcomingEventsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_my_upcoming_events_future_poll");
 
   late final _clientMyUpcomingEventsFuturePoll =
-      _clientMyUpcomingEventsFuturePollPtr.asFunction<
-          _ClientMyUpcomingEventsFuturePollReturn Function(int, int, int)>();
+      _clientMyUpcomingEventsFuturePollPtr
+          .asFunction<
+            _ClientMyUpcomingEventsFuturePollReturn Function(int, int, int)
+          >();
   late final _clientMyPastEventsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientMyPastEventsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_my_past_events_future_poll");
+    ffi.NativeFunction<
+      _ClientMyPastEventsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_my_past_events_future_poll");
 
   late final _clientMyPastEventsFuturePoll =
-      _clientMyPastEventsFuturePollPtr.asFunction<
-          _ClientMyPastEventsFuturePollReturn Function(int, int, int)>();
+      _clientMyPastEventsFuturePollPtr
+          .asFunction<
+            _ClientMyPastEventsFuturePollReturn Function(int, int, int)
+          >();
   late final _clientNotificationSettingsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientNotificationSettingsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_notification_settings_future_poll");
+    ffi.NativeFunction<
+      _ClientNotificationSettingsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_notification_settings_future_poll");
 
   late final _clientNotificationSettingsFuturePoll =
-      _clientNotificationSettingsFuturePollPtr.asFunction<
-          _ClientNotificationSettingsFuturePollReturn Function(
-              int, int, int)>();
+      _clientNotificationSettingsFuturePollPtr
+          .asFunction<
+            _ClientNotificationSettingsFuturePollReturn Function(int, int, int)
+          >();
   late final _clientDeviceRecordsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientDeviceRecordsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_device_records_future_poll");
+    ffi.NativeFunction<
+      _ClientDeviceRecordsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_device_records_future_poll");
 
   late final _clientDeviceRecordsFuturePoll =
-      _clientDeviceRecordsFuturePollPtr.asFunction<
-          _ClientDeviceRecordsFuturePollReturn Function(int, int, int)>();
+      _clientDeviceRecordsFuturePollPtr
+          .asFunction<
+            _ClientDeviceRecordsFuturePollReturn Function(int, int, int)
+          >();
   late final _clientRoomPreviewFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientRoomPreviewFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_room_preview_future_poll");
+    ffi.NativeFunction<
+      _ClientRoomPreviewFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_room_preview_future_poll");
 
-  late final _clientRoomPreviewFuturePoll = _clientRoomPreviewFuturePollPtr
-      .asFunction<_ClientRoomPreviewFuturePollReturn Function(int, int, int)>();
+  late final _clientRoomPreviewFuturePoll =
+      _clientRoomPreviewFuturePollPtr
+          .asFunction<
+            _ClientRoomPreviewFuturePollReturn Function(int, int, int)
+          >();
   late final _clientActivityFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientActivityFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Client_activity_future_poll");
+    ffi.NativeFunction<
+      _ClientActivityFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_activity_future_poll");
 
-  late final _clientActivityFuturePoll = _clientActivityFuturePollPtr
-      .asFunction<_ClientActivityFuturePollReturn Function(int, int, int)>();
+  late final _clientActivityFuturePoll =
+      _clientActivityFuturePollPtr
+          .asFunction<
+            _ClientActivityFuturePollReturn Function(int, int, int)
+          >();
   late final _notificationSettingsDefaultNotificationModeFuturePollPtr =
       _lookup<
-              ffi.NativeFunction<
-                  _NotificationSettingsDefaultNotificationModeFuturePollReturn
-                      Function(
-                    ffi.IntPtr,
-                    ffi.IntPtr,
-                    ffi.Int64,
-                  )>>(
-          "__NotificationSettings_default_notification_mode_future_poll");
-
-  late final _notificationSettingsDefaultNotificationModeFuturePoll =
-      _notificationSettingsDefaultNotificationModeFuturePollPtr.asFunction<
+        ffi.NativeFunction<
           _NotificationSettingsDefaultNotificationModeFuturePollReturn Function(
-              int, int, int)>();
-  late final _notificationSettingsSetDefaultNotificationModeFuturePollPtr =
-      _lookup<
-              ffi.NativeFunction<
-                  _NotificationSettingsSetDefaultNotificationModeFuturePollReturn
-                      Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>(
-          "__NotificationSettings_set_default_notification_mode_future_poll");
-
-  late final _notificationSettingsSetDefaultNotificationModeFuturePoll =
-      _notificationSettingsSetDefaultNotificationModeFuturePollPtr.asFunction<
-          _NotificationSettingsSetDefaultNotificationModeFuturePollReturn
-              Function(int, int, int)>();
-  late final _notificationSettingsGlobalContentSettingFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationSettingsGlobalContentSettingFuturePollReturn Function(
             ffi.IntPtr,
             ffi.IntPtr,
             ffi.Int64,
-          )>>("__NotificationSettings_global_content_setting_future_poll");
+          )
+        >
+      >("__NotificationSettings_default_notification_mode_future_poll");
+
+  late final _notificationSettingsDefaultNotificationModeFuturePoll =
+      _notificationSettingsDefaultNotificationModeFuturePollPtr
+          .asFunction<
+            _NotificationSettingsDefaultNotificationModeFuturePollReturn
+            Function(int, int, int)
+          >();
+  late final _notificationSettingsSetDefaultNotificationModeFuturePollPtr =
+      _lookup<
+        ffi.NativeFunction<
+          _NotificationSettingsSetDefaultNotificationModeFuturePollReturn
+          Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+        >
+      >("__NotificationSettings_set_default_notification_mode_future_poll");
+
+  late final _notificationSettingsSetDefaultNotificationModeFuturePoll =
+      _notificationSettingsSetDefaultNotificationModeFuturePollPtr
+          .asFunction<
+            _NotificationSettingsSetDefaultNotificationModeFuturePollReturn
+            Function(int, int, int)
+          >();
+  late final _notificationSettingsGlobalContentSettingFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _NotificationSettingsGlobalContentSettingFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NotificationSettings_global_content_setting_future_poll");
 
   late final _notificationSettingsGlobalContentSettingFuturePoll =
-      _notificationSettingsGlobalContentSettingFuturePollPtr.asFunction<
-          _NotificationSettingsGlobalContentSettingFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _notificationSettingsGlobalContentSettingFuturePollPtr
+          .asFunction<
+            _NotificationSettingsGlobalContentSettingFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _notificationSettingsSetGlobalContentSettingFuturePollPtr =
       _lookup<
-              ffi.NativeFunction<
-                  _NotificationSettingsSetGlobalContentSettingFuturePollReturn
-                      Function(
-                    ffi.IntPtr,
-                    ffi.IntPtr,
-                    ffi.Int64,
-                  )>>(
-          "__NotificationSettings_set_global_content_setting_future_poll");
+        ffi.NativeFunction<
+          _NotificationSettingsSetGlobalContentSettingFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )
+        >
+      >("__NotificationSettings_set_global_content_setting_future_poll");
 
   late final _notificationSettingsSetGlobalContentSettingFuturePoll =
-      _notificationSettingsSetGlobalContentSettingFuturePollPtr.asFunction<
-          _NotificationSettingsSetGlobalContentSettingFuturePollReturn Function(
-              int, int, int)>();
+      _notificationSettingsSetGlobalContentSettingFuturePollPtr
+          .asFunction<
+            _NotificationSettingsSetGlobalContentSettingFuturePollReturn
+            Function(int, int, int)
+          >();
   late final _notificationSettingsObjectPushSubscriptionStatusStrFuturePollPtr =
       _lookup<
-          ffi.NativeFunction<
-              _NotificationSettingsObjectPushSubscriptionStatusStrFuturePollReturn
-                  Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>(
-    "__NotificationSettings_object_push_subscription_status_str_future_poll",
-  );
+        ffi.NativeFunction<
+          _NotificationSettingsObjectPushSubscriptionStatusStrFuturePollReturn
+          Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+        >
+      >(
+        "__NotificationSettings_object_push_subscription_status_str_future_poll",
+      );
 
   late final _notificationSettingsObjectPushSubscriptionStatusStrFuturePoll =
       _notificationSettingsObjectPushSubscriptionStatusStrFuturePollPtr
           .asFunction<
-              _NotificationSettingsObjectPushSubscriptionStatusStrFuturePollReturn
-                  Function(int, int, int)>();
+            _NotificationSettingsObjectPushSubscriptionStatusStrFuturePollReturn
+            Function(int, int, int)
+          >();
   late final _notificationSettingsSubscribeObjectPushFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationSettingsSubscribeObjectPushFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NotificationSettings_subscribe_object_push_future_poll");
+    ffi.NativeFunction<
+      _NotificationSettingsSubscribeObjectPushFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NotificationSettings_subscribe_object_push_future_poll");
 
   late final _notificationSettingsSubscribeObjectPushFuturePoll =
-      _notificationSettingsSubscribeObjectPushFuturePollPtr.asFunction<
-          _NotificationSettingsSubscribeObjectPushFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _notificationSettingsSubscribeObjectPushFuturePollPtr
+          .asFunction<
+            _NotificationSettingsSubscribeObjectPushFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _notificationSettingsUnsubscribeObjectPushFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationSettingsUnsubscribeObjectPushFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__NotificationSettings_unsubscribe_object_push_future_poll");
+    ffi.NativeFunction<
+      _NotificationSettingsUnsubscribeObjectPushFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__NotificationSettings_unsubscribe_object_push_future_poll");
 
   late final _notificationSettingsUnsubscribeObjectPushFuturePoll =
-      _notificationSettingsUnsubscribeObjectPushFuturePollPtr.asFunction<
-          _NotificationSettingsUnsubscribeObjectPushFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _notificationSettingsUnsubscribeObjectPushFuturePollPtr
+          .asFunction<
+            _NotificationSettingsUnsubscribeObjectPushFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _invitationAcceptFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _InvitationAcceptFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Invitation_accept_future_poll");
+    ffi.NativeFunction<
+      _InvitationAcceptFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Invitation_accept_future_poll");
 
-  late final _invitationAcceptFuturePoll = _invitationAcceptFuturePollPtr
-      .asFunction<_InvitationAcceptFuturePollReturn Function(int, int, int)>();
+  late final _invitationAcceptFuturePoll =
+      _invitationAcceptFuturePollPtr
+          .asFunction<
+            _InvitationAcceptFuturePollReturn Function(int, int, int)
+          >();
   late final _invitationRejectFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _InvitationRejectFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Invitation_reject_future_poll");
+    ffi.NativeFunction<
+      _InvitationRejectFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Invitation_reject_future_poll");
 
-  late final _invitationRejectFuturePoll = _invitationRejectFuturePollPtr
-      .asFunction<_InvitationRejectFuturePollReturn Function(int, int, int)>();
+  late final _invitationRejectFuturePoll =
+      _invitationRejectFuturePollPtr
+          .asFunction<
+            _InvitationRejectFuturePollReturn Function(int, int, int)
+          >();
   late final _superInvitesTokensFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SuperInvitesTokensFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__SuperInvites_tokens_future_poll");
+    ffi.NativeFunction<
+      _SuperInvitesTokensFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__SuperInvites_tokens_future_poll");
 
   late final _superInvitesTokensFuturePoll =
-      _superInvitesTokensFuturePollPtr.asFunction<
-          _SuperInvitesTokensFuturePollReturn Function(int, int, int)>();
+      _superInvitesTokensFuturePollPtr
+          .asFunction<
+            _SuperInvitesTokensFuturePollReturn Function(int, int, int)
+          >();
   late final _superInvitesCreateOrUpdateTokenFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SuperInvitesCreateOrUpdateTokenFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__SuperInvites_create_or_update_token_future_poll");
+    ffi.NativeFunction<
+      _SuperInvitesCreateOrUpdateTokenFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__SuperInvites_create_or_update_token_future_poll");
 
   late final _superInvitesCreateOrUpdateTokenFuturePoll =
-      _superInvitesCreateOrUpdateTokenFuturePollPtr.asFunction<
-          _SuperInvitesCreateOrUpdateTokenFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _superInvitesCreateOrUpdateTokenFuturePollPtr
+          .asFunction<
+            _SuperInvitesCreateOrUpdateTokenFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _superInvitesDeleteFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SuperInvitesDeleteFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__SuperInvites_delete_future_poll");
+    ffi.NativeFunction<
+      _SuperInvitesDeleteFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__SuperInvites_delete_future_poll");
 
   late final _superInvitesDeleteFuturePoll =
-      _superInvitesDeleteFuturePollPtr.asFunction<
-          _SuperInvitesDeleteFuturePollReturn Function(int, int, int)>();
+      _superInvitesDeleteFuturePollPtr
+          .asFunction<
+            _SuperInvitesDeleteFuturePollReturn Function(int, int, int)
+          >();
   late final _superInvitesRedeemFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SuperInvitesRedeemFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__SuperInvites_redeem_future_poll");
+    ffi.NativeFunction<
+      _SuperInvitesRedeemFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__SuperInvites_redeem_future_poll");
 
   late final _superInvitesRedeemFuturePoll =
-      _superInvitesRedeemFuturePollPtr.asFunction<
-          _SuperInvitesRedeemFuturePollReturn Function(int, int, int)>();
+      _superInvitesRedeemFuturePollPtr
+          .asFunction<
+            _SuperInvitesRedeemFuturePollReturn Function(int, int, int)
+          >();
   late final _superInvitesInfoFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SuperInvitesInfoFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__SuperInvites_info_future_poll");
+    ffi.NativeFunction<
+      _SuperInvitesInfoFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__SuperInvites_info_future_poll");
 
-  late final _superInvitesInfoFuturePoll = _superInvitesInfoFuturePollPtr
-      .asFunction<_SuperInvitesInfoFuturePollReturn Function(int, int, int)>();
+  late final _superInvitesInfoFuturePoll =
+      _superInvitesInfoFuturePollPtr
+          .asFunction<
+            _SuperInvitesInfoFuturePollReturn Function(int, int, int)
+          >();
   late final _verificationEventGetEmojisFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventGetEmojisFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__VerificationEvent_get_emojis_future_poll");
+    ffi.NativeFunction<
+      _VerificationEventGetEmojisFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__VerificationEvent_get_emojis_future_poll");
 
   late final _verificationEventGetEmojisFuturePoll =
-      _verificationEventGetEmojisFuturePollPtr.asFunction<
-          _VerificationEventGetEmojisFuturePollReturn Function(
-              int, int, int)>();
+      _verificationEventGetEmojisFuturePollPtr
+          .asFunction<
+            _VerificationEventGetEmojisFuturePollReturn Function(int, int, int)
+          >();
   late final _verificationEventAcceptVerificationRequestFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventAcceptVerificationRequestFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__VerificationEvent_accept_verification_request_future_poll");
+    ffi.NativeFunction<
+      _VerificationEventAcceptVerificationRequestFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__VerificationEvent_accept_verification_request_future_poll");
 
   late final _verificationEventAcceptVerificationRequestFuturePoll =
-      _verificationEventAcceptVerificationRequestFuturePollPtr.asFunction<
-          _VerificationEventAcceptVerificationRequestFuturePollReturn Function(
-              int, int, int)>();
+      _verificationEventAcceptVerificationRequestFuturePollPtr
+          .asFunction<
+            _VerificationEventAcceptVerificationRequestFuturePollReturn
+            Function(int, int, int)
+          >();
   late final _verificationEventCancelVerificationRequestFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventCancelVerificationRequestFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__VerificationEvent_cancel_verification_request_future_poll");
+    ffi.NativeFunction<
+      _VerificationEventCancelVerificationRequestFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__VerificationEvent_cancel_verification_request_future_poll");
 
   late final _verificationEventCancelVerificationRequestFuturePoll =
-      _verificationEventCancelVerificationRequestFuturePollPtr.asFunction<
-          _VerificationEventCancelVerificationRequestFuturePollReturn Function(
-              int, int, int)>();
+      _verificationEventCancelVerificationRequestFuturePollPtr
+          .asFunction<
+            _VerificationEventCancelVerificationRequestFuturePollReturn
+            Function(int, int, int)
+          >();
   late final _verificationEventAcceptVerificationRequestWithMethodFuturePollPtr =
       _lookup<
-          ffi.NativeFunction<
-              _VerificationEventAcceptVerificationRequestWithMethodFuturePollReturn
-                  Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)>>(
-    "__VerificationEvent_accept_verification_request_with_method_future_poll",
-  );
+        ffi.NativeFunction<
+          _VerificationEventAcceptVerificationRequestWithMethodFuturePollReturn
+          Function(ffi.IntPtr, ffi.IntPtr, ffi.Int64)
+        >
+      >(
+        "__VerificationEvent_accept_verification_request_with_method_future_poll",
+      );
 
   late final _verificationEventAcceptVerificationRequestWithMethodFuturePoll =
       _verificationEventAcceptVerificationRequestWithMethodFuturePollPtr
           .asFunction<
-              _VerificationEventAcceptVerificationRequestWithMethodFuturePollReturn
-                  Function(int, int, int)>();
+            _VerificationEventAcceptVerificationRequestWithMethodFuturePollReturn
+            Function(int, int, int)
+          >();
   late final _verificationEventStartSasVerificationFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventStartSasVerificationFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__VerificationEvent_start_sas_verification_future_poll");
+    ffi.NativeFunction<
+      _VerificationEventStartSasVerificationFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__VerificationEvent_start_sas_verification_future_poll");
 
   late final _verificationEventStartSasVerificationFuturePoll =
-      _verificationEventStartSasVerificationFuturePollPtr.asFunction<
-          _VerificationEventStartSasVerificationFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _verificationEventStartSasVerificationFuturePollPtr
+          .asFunction<
+            _VerificationEventStartSasVerificationFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _verificationEventAcceptSasVerificationFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventAcceptSasVerificationFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__VerificationEvent_accept_sas_verification_future_poll");
+    ffi.NativeFunction<
+      _VerificationEventAcceptSasVerificationFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__VerificationEvent_accept_sas_verification_future_poll");
 
   late final _verificationEventAcceptSasVerificationFuturePoll =
-      _verificationEventAcceptSasVerificationFuturePollPtr.asFunction<
-          _VerificationEventAcceptSasVerificationFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _verificationEventAcceptSasVerificationFuturePollPtr
+          .asFunction<
+            _VerificationEventAcceptSasVerificationFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _verificationEventCancelSasVerificationFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventCancelSasVerificationFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__VerificationEvent_cancel_sas_verification_future_poll");
+    ffi.NativeFunction<
+      _VerificationEventCancelSasVerificationFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__VerificationEvent_cancel_sas_verification_future_poll");
 
   late final _verificationEventCancelSasVerificationFuturePoll =
-      _verificationEventCancelSasVerificationFuturePollPtr.asFunction<
-          _VerificationEventCancelSasVerificationFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _verificationEventCancelSasVerificationFuturePollPtr
+          .asFunction<
+            _VerificationEventCancelSasVerificationFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _verificationEventConfirmSasVerificationFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventConfirmSasVerificationFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__VerificationEvent_confirm_sas_verification_future_poll");
+    ffi.NativeFunction<
+      _VerificationEventConfirmSasVerificationFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__VerificationEvent_confirm_sas_verification_future_poll");
 
   late final _verificationEventConfirmSasVerificationFuturePoll =
-      _verificationEventConfirmSasVerificationFuturePollPtr.asFunction<
-          _VerificationEventConfirmSasVerificationFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _verificationEventConfirmSasVerificationFuturePollPtr
+          .asFunction<
+            _VerificationEventConfirmSasVerificationFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _verificationEventMismatchSasVerificationFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _VerificationEventMismatchSasVerificationFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__VerificationEvent_mismatch_sas_verification_future_poll");
+    ffi.NativeFunction<
+      _VerificationEventMismatchSasVerificationFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__VerificationEvent_mismatch_sas_verification_future_poll");
 
   late final _verificationEventMismatchSasVerificationFuturePoll =
-      _verificationEventMismatchSasVerificationFuturePollPtr.asFunction<
-          _VerificationEventMismatchSasVerificationFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _verificationEventMismatchSasVerificationFuturePollPtr
+          .asFunction<
+            _VerificationEventMismatchSasVerificationFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _sessionManagerAllSessionsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SessionManagerAllSessionsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__SessionManager_all_sessions_future_poll");
+    ffi.NativeFunction<
+      _SessionManagerAllSessionsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__SessionManager_all_sessions_future_poll");
 
   late final _sessionManagerAllSessionsFuturePoll =
-      _sessionManagerAllSessionsFuturePollPtr.asFunction<
-          _SessionManagerAllSessionsFuturePollReturn Function(int, int, int)>();
+      _sessionManagerAllSessionsFuturePollPtr
+          .asFunction<
+            _SessionManagerAllSessionsFuturePollReturn Function(int, int, int)
+          >();
   late final _sessionManagerDeleteDeviceFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SessionManagerDeleteDeviceFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__SessionManager_delete_device_future_poll");
+    ffi.NativeFunction<
+      _SessionManagerDeleteDeviceFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__SessionManager_delete_device_future_poll");
 
   late final _sessionManagerDeleteDeviceFuturePoll =
-      _sessionManagerDeleteDeviceFuturePollPtr.asFunction<
-          _SessionManagerDeleteDeviceFuturePollReturn Function(
-              int, int, int)>();
+      _sessionManagerDeleteDeviceFuturePollPtr
+          .asFunction<
+            _SessionManagerDeleteDeviceFuturePollReturn Function(int, int, int)
+          >();
   late final _sessionManagerRequestVerificationFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SessionManagerRequestVerificationFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__SessionManager_request_verification_future_poll");
+    ffi.NativeFunction<
+      _SessionManagerRequestVerificationFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__SessionManager_request_verification_future_poll");
 
   late final _sessionManagerRequestVerificationFuturePoll =
-      _sessionManagerRequestVerificationFuturePollPtr.asFunction<
-          _SessionManagerRequestVerificationFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _sessionManagerRequestVerificationFuturePollPtr
+          .asFunction<
+            _SessionManagerRequestVerificationFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _sessionManagerTerminateVerificationFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SessionManagerTerminateVerificationFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__SessionManager_terminate_verification_future_poll");
+    ffi.NativeFunction<
+      _SessionManagerTerminateVerificationFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__SessionManager_terminate_verification_future_poll");
 
   late final _sessionManagerTerminateVerificationFuturePoll =
-      _sessionManagerTerminateVerificationFuturePollPtr.asFunction<
-          _SessionManagerTerminateVerificationFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _sessionManagerTerminateVerificationFuturePollPtr
+          .asFunction<
+            _SessionManagerTerminateVerificationFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _backupManagerEnableFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _BackupManagerEnableFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__BackupManager_enable_future_poll");
+    ffi.NativeFunction<
+      _BackupManagerEnableFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__BackupManager_enable_future_poll");
 
   late final _backupManagerEnableFuturePoll =
-      _backupManagerEnableFuturePollPtr.asFunction<
-          _BackupManagerEnableFuturePollReturn Function(int, int, int)>();
+      _backupManagerEnableFuturePollPtr
+          .asFunction<
+            _BackupManagerEnableFuturePollReturn Function(int, int, int)
+          >();
   late final _backupManagerResetFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _BackupManagerResetFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__BackupManager_reset_future_poll");
+    ffi.NativeFunction<
+      _BackupManagerResetFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__BackupManager_reset_future_poll");
 
   late final _backupManagerResetFuturePoll =
-      _backupManagerResetFuturePollPtr.asFunction<
-          _BackupManagerResetFuturePollReturn Function(int, int, int)>();
+      _backupManagerResetFuturePollPtr
+          .asFunction<
+            _BackupManagerResetFuturePollReturn Function(int, int, int)
+          >();
   late final _backupManagerDisableFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _BackupManagerDisableFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__BackupManager_disable_future_poll");
+    ffi.NativeFunction<
+      _BackupManagerDisableFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__BackupManager_disable_future_poll");
 
   late final _backupManagerDisableFuturePoll =
-      _backupManagerDisableFuturePollPtr.asFunction<
-          _BackupManagerDisableFuturePollReturn Function(int, int, int)>();
+      _backupManagerDisableFuturePollPtr
+          .asFunction<
+            _BackupManagerDisableFuturePollReturn Function(int, int, int)
+          >();
   late final _backupManagerRecoverFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _BackupManagerRecoverFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__BackupManager_recover_future_poll");
+    ffi.NativeFunction<
+      _BackupManagerRecoverFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__BackupManager_recover_future_poll");
 
   late final _backupManagerRecoverFuturePoll =
-      _backupManagerRecoverFuturePollPtr.asFunction<
-          _BackupManagerRecoverFuturePollReturn Function(int, int, int)>();
+      _backupManagerRecoverFuturePollPtr
+          .asFunction<
+            _BackupManagerRecoverFuturePollReturn Function(int, int, int)
+          >();
   late final _acterPinSubscribeStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ActerPinSubscribeStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__ActerPin_subscribe_stream_stream_poll");
+    ffi.NativeFunction<
+      _ActerPinSubscribeStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__ActerPin_subscribe_stream_stream_poll");
 
   late final _acterPinSubscribeStreamStreamPoll =
-      _acterPinSubscribeStreamStreamPollPtr.asFunction<
-          _ActerPinSubscribeStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _acterPinSubscribeStreamStreamPollPtr
+          .asFunction<
+            _ActerPinSubscribeStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _rsvpManagerSubscribeStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _RsvpManagerSubscribeStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__RsvpManager_subscribe_stream_stream_poll");
+    ffi.NativeFunction<
+      _RsvpManagerSubscribeStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__RsvpManager_subscribe_stream_stream_poll");
 
   late final _rsvpManagerSubscribeStreamStreamPoll =
-      _rsvpManagerSubscribeStreamStreamPollPtr.asFunction<
-          _RsvpManagerSubscribeStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _rsvpManagerSubscribeStreamStreamPollPtr
+          .asFunction<
+            _RsvpManagerSubscribeStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _reactionManagerSubscribeStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReactionManagerSubscribeStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__ReactionManager_subscribe_stream_stream_poll");
+    ffi.NativeFunction<
+      _ReactionManagerSubscribeStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__ReactionManager_subscribe_stream_stream_poll");
 
   late final _reactionManagerSubscribeStreamStreamPoll =
-      _reactionManagerSubscribeStreamStreamPollPtr.asFunction<
-          _ReactionManagerSubscribeStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _reactionManagerSubscribeStreamStreamPollPtr
+          .asFunction<
+            _ReactionManagerSubscribeStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _readReceiptsManagerSubscribeStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReadReceiptsManagerSubscribeStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__ReadReceiptsManager_subscribe_stream_stream_poll");
+    ffi.NativeFunction<
+      _ReadReceiptsManagerSubscribeStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__ReadReceiptsManager_subscribe_stream_stream_poll");
 
   late final _readReceiptsManagerSubscribeStreamStreamPoll =
-      _readReceiptsManagerSubscribeStreamStreamPollPtr.asFunction<
-          _ReadReceiptsManagerSubscribeStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _readReceiptsManagerSubscribeStreamStreamPollPtr
+          .asFunction<
+            _ReadReceiptsManagerSubscribeStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _roomSubscribeToUpdatesStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomSubscribeToUpdatesStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Room_subscribe_to_updates_stream_poll");
+    ffi.NativeFunction<
+      _RoomSubscribeToUpdatesStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Room_subscribe_to_updates_stream_poll");
 
   late final _roomSubscribeToUpdatesStreamPoll =
-      _roomSubscribeToUpdatesStreamPollPtr.asFunction<
-          _RoomSubscribeToUpdatesStreamPollReturn Function(
-              int, int, int, int)>();
+      _roomSubscribeToUpdatesStreamPollPtr
+          .asFunction<
+            _RoomSubscribeToUpdatesStreamPollReturn Function(int, int, int, int)
+          >();
   late final _userRoomSettingsSubscribeStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _UserRoomSettingsSubscribeStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__UserRoomSettings_subscribe_stream_stream_poll");
+    ffi.NativeFunction<
+      _UserRoomSettingsSubscribeStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__UserRoomSettings_subscribe_stream_stream_poll");
 
   late final _userRoomSettingsSubscribeStreamStreamPoll =
-      _userRoomSettingsSubscribeStreamStreamPollPtr.asFunction<
-          _UserRoomSettingsSubscribeStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _userRoomSettingsSubscribeStreamStreamPollPtr
+          .asFunction<
+            _UserRoomSettingsSubscribeStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _timelineStreamMessagesStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamMessagesStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__TimelineStream_messages_stream_stream_poll");
+    ffi.NativeFunction<
+      _TimelineStreamMessagesStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__TimelineStream_messages_stream_stream_poll");
 
   late final _timelineStreamMessagesStreamStreamPoll =
-      _timelineStreamMessagesStreamStreamPollPtr.asFunction<
-          _TimelineStreamMessagesStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _timelineStreamMessagesStreamStreamPollPtr
+          .asFunction<
+            _TimelineStreamMessagesStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _commentsManagerSubscribeStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _CommentsManagerSubscribeStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__CommentsManager_subscribe_stream_stream_poll");
+    ffi.NativeFunction<
+      _CommentsManagerSubscribeStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__CommentsManager_subscribe_stream_stream_poll");
 
   late final _commentsManagerSubscribeStreamStreamPoll =
-      _commentsManagerSubscribeStreamStreamPollPtr.asFunction<
-          _CommentsManagerSubscribeStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _commentsManagerSubscribeStreamStreamPollPtr
+          .asFunction<
+            _CommentsManagerSubscribeStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _attachmentsManagerSubscribeStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _AttachmentsManagerSubscribeStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__AttachmentsManager_subscribe_stream_stream_poll");
+    ffi.NativeFunction<
+      _AttachmentsManagerSubscribeStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__AttachmentsManager_subscribe_stream_stream_poll");
 
   late final _attachmentsManagerSubscribeStreamStreamPoll =
-      _attachmentsManagerSubscribeStreamStreamPollPtr.asFunction<
-          _AttachmentsManagerSubscribeStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _attachmentsManagerSubscribeStreamStreamPollPtr
+          .asFunction<
+            _AttachmentsManagerSubscribeStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _taskSubscribeStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskSubscribeStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Task_subscribe_stream_stream_poll");
+    ffi.NativeFunction<
+      _TaskSubscribeStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Task_subscribe_stream_stream_poll");
 
   late final _taskSubscribeStreamStreamPoll =
-      _taskSubscribeStreamStreamPollPtr.asFunction<
-          _TaskSubscribeStreamStreamPollReturn Function(int, int, int, int)>();
+      _taskSubscribeStreamStreamPollPtr
+          .asFunction<
+            _TaskSubscribeStreamStreamPollReturn Function(int, int, int, int)
+          >();
   late final _taskListSubscribeStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _TaskListSubscribeStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__TaskList_subscribe_stream_stream_poll");
+    ffi.NativeFunction<
+      _TaskListSubscribeStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__TaskList_subscribe_stream_stream_poll");
 
   late final _taskListSubscribeStreamStreamPoll =
-      _taskListSubscribeStreamStreamPollPtr.asFunction<
-          _TaskListSubscribeStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _taskListSubscribeStreamStreamPollPtr
+          .asFunction<
+            _TaskListSubscribeStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _activitiesSubscribeStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ActivitiesSubscribeStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Activities_subscribe_stream_stream_poll");
+    ffi.NativeFunction<
+      _ActivitiesSubscribeStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Activities_subscribe_stream_stream_poll");
 
   late final _activitiesSubscribeStreamStreamPoll =
-      _activitiesSubscribeStreamStreamPollPtr.asFunction<
-          _ActivitiesSubscribeStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _activitiesSubscribeStreamStreamPollPtr
+          .asFunction<
+            _ActivitiesSubscribeStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _accountSubscribeAppSettingsStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _AccountSubscribeAppSettingsStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Account_subscribe_app_settings_stream_stream_poll");
+    ffi.NativeFunction<
+      _AccountSubscribeAppSettingsStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Account_subscribe_app_settings_stream_stream_poll");
 
   late final _accountSubscribeAppSettingsStreamStreamPoll =
-      _accountSubscribeAppSettingsStreamStreamPollPtr.asFunction<
-          _AccountSubscribeAppSettingsStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _accountSubscribeAppSettingsStreamStreamPollPtr
+          .asFunction<
+            _AccountSubscribeAppSettingsStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _syncStateFirstSyncedRxStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _SyncStateFirstSyncedRxStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__SyncState_first_synced_rx_stream_poll");
+    ffi.NativeFunction<
+      _SyncStateFirstSyncedRxStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__SyncState_first_synced_rx_stream_poll");
 
   late final _syncStateFirstSyncedRxStreamPoll =
-      _syncStateFirstSyncedRxStreamPollPtr.asFunction<
-          _SyncStateFirstSyncedRxStreamPollReturn Function(
-              int, int, int, int)>();
+      _syncStateFirstSyncedRxStreamPollPtr
+          .asFunction<
+            _SyncStateFirstSyncedRxStreamPollReturn Function(int, int, int, int)
+          >();
   late final _syncStateSyncErrorRxStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _SyncStateSyncErrorRxStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__SyncState_sync_error_rx_stream_poll");
+    ffi.NativeFunction<
+      _SyncStateSyncErrorRxStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__SyncState_sync_error_rx_stream_poll");
 
   late final _syncStateSyncErrorRxStreamPoll =
-      _syncStateSyncErrorRxStreamPollPtr.asFunction<
-          _SyncStateSyncErrorRxStreamPollReturn Function(int, int, int, int)>();
+      _syncStateSyncErrorRxStreamPollPtr
+          .asFunction<
+            _SyncStateSyncErrorRxStreamPollReturn Function(int, int, int, int)
+          >();
   late final _clientConvosStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientConvosStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_convos_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientConvosStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_convos_stream_stream_poll");
 
   late final _clientConvosStreamStreamPoll =
-      _clientConvosStreamStreamPollPtr.asFunction<
-          _ClientConvosStreamStreamPollReturn Function(int, int, int, int)>();
+      _clientConvosStreamStreamPollPtr
+          .asFunction<
+            _ClientConvosStreamStreamPollReturn Function(int, int, int, int)
+          >();
   late final _clientSpacesStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSpacesStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_spaces_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSpacesStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_spaces_stream_stream_poll");
 
   late final _clientSpacesStreamStreamPoll =
-      _clientSpacesStreamStreamPollPtr.asFunction<
-          _ClientSpacesStreamStreamPollReturn Function(int, int, int, int)>();
+      _clientSpacesStreamStreamPollPtr
+          .asFunction<
+            _ClientSpacesStreamStreamPollReturn Function(int, int, int, int)
+          >();
   late final _clientInvitationsRxStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientInvitationsRxStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_invitations_rx_stream_poll");
+    ffi.NativeFunction<
+      _ClientInvitationsRxStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_invitations_rx_stream_poll");
 
   late final _clientInvitationsRxStreamPoll =
-      _clientInvitationsRxStreamPollPtr.asFunction<
-          _ClientInvitationsRxStreamPollReturn Function(int, int, int, int)>();
+      _clientInvitationsRxStreamPollPtr
+          .asFunction<
+            _ClientInvitationsRxStreamPollReturn Function(int, int, int, int)
+          >();
   late final _clientVerificationEventRxStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientVerificationEventRxStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_verification_event_rx_stream_poll");
+    ffi.NativeFunction<
+      _ClientVerificationEventRxStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_verification_event_rx_stream_poll");
 
   late final _clientVerificationEventRxStreamPoll =
-      _clientVerificationEventRxStreamPollPtr.asFunction<
-          _ClientVerificationEventRxStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientVerificationEventRxStreamPollPtr
+          .asFunction<
+            _ClientVerificationEventRxStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientDeviceEventRxStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientDeviceEventRxStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_device_event_rx_stream_poll");
+    ffi.NativeFunction<
+      _ClientDeviceEventRxStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_device_event_rx_stream_poll");
 
   late final _clientDeviceEventRxStreamPoll =
-      _clientDeviceEventRxStreamPollPtr.asFunction<
-          _ClientDeviceEventRxStreamPollReturn Function(int, int, int, int)>();
+      _clientDeviceEventRxStreamPollPtr
+          .asFunction<
+            _ClientDeviceEventRxStreamPollReturn Function(int, int, int, int)
+          >();
   late final _clientSubscribeToTypingEventStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeToTypingEventStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_subscribe_to_typing_event_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSubscribeToTypingEventStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_subscribe_to_typing_event_stream_stream_poll");
 
   late final _clientSubscribeToTypingEventStreamStreamPoll =
-      _clientSubscribeToTypingEventStreamStreamPollPtr.asFunction<
-          _ClientSubscribeToTypingEventStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeToTypingEventStreamStreamPollPtr
+          .asFunction<
+            _ClientSubscribeToTypingEventStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeSectionStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeSectionStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_subscribe_section_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSubscribeSectionStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_subscribe_section_stream_stream_poll");
 
   late final _clientSubscribeSectionStreamStreamPoll =
-      _clientSubscribeSectionStreamStreamPollPtr.asFunction<
-          _ClientSubscribeSectionStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeSectionStreamStreamPollPtr
+          .asFunction<
+            _ClientSubscribeSectionStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeModelStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeModelStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_subscribe_model_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSubscribeModelStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_subscribe_model_stream_stream_poll");
 
   late final _clientSubscribeModelStreamStreamPoll =
-      _clientSubscribeModelStreamStreamPollPtr.asFunction<
-          _ClientSubscribeModelStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeModelStreamStreamPollPtr
+          .asFunction<
+            _ClientSubscribeModelStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeModelObjectsStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeModelObjectsStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_subscribe_model_objects_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSubscribeModelObjectsStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_subscribe_model_objects_stream_stream_poll");
 
   late final _clientSubscribeModelObjectsStreamStreamPoll =
-      _clientSubscribeModelObjectsStreamStreamPollPtr.asFunction<
-          _ClientSubscribeModelObjectsStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeModelObjectsStreamStreamPollPtr
+          .asFunction<
+            _ClientSubscribeModelObjectsStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeModelParamStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeModelParamStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_subscribe_model_param_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSubscribeModelParamStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_subscribe_model_param_stream_stream_poll");
 
   late final _clientSubscribeModelParamStreamStreamPoll =
-      _clientSubscribeModelParamStreamStreamPollPtr.asFunction<
-          _ClientSubscribeModelParamStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeModelParamStreamStreamPollPtr
+          .asFunction<
+            _ClientSubscribeModelParamStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeRoomStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeRoomStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_subscribe_room_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSubscribeRoomStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_subscribe_room_stream_stream_poll");
 
   late final _clientSubscribeRoomStreamStreamPoll =
-      _clientSubscribeRoomStreamStreamPollPtr.asFunction<
-          _ClientSubscribeRoomStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeRoomStreamStreamPollPtr
+          .asFunction<
+            _ClientSubscribeRoomStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeRoomParamStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeRoomParamStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_subscribe_room_param_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSubscribeRoomParamStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_subscribe_room_param_stream_stream_poll");
 
   late final _clientSubscribeRoomParamStreamStreamPoll =
-      _clientSubscribeRoomParamStreamStreamPollPtr.asFunction<
-          _ClientSubscribeRoomParamStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeRoomParamStreamStreamPollPtr
+          .asFunction<
+            _ClientSubscribeRoomParamStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeRoomSectionStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeRoomSectionStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_subscribe_room_section_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSubscribeRoomSectionStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_subscribe_room_section_stream_stream_poll");
 
   late final _clientSubscribeRoomSectionStreamStreamPoll =
-      _clientSubscribeRoomSectionStreamStreamPollPtr.asFunction<
-          _ClientSubscribeRoomSectionStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeRoomSectionStreamStreamPollPtr
+          .asFunction<
+            _ClientSubscribeRoomSectionStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeEventTypeStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeEventTypeStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_subscribe_event_type_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSubscribeEventTypeStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_subscribe_event_type_stream_stream_poll");
 
   late final _clientSubscribeEventTypeStreamStreamPoll =
-      _clientSubscribeEventTypeStreamStreamPollPtr.asFunction<
-          _ClientSubscribeEventTypeStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeEventTypeStreamStreamPollPtr
+          .asFunction<
+            _ClientSubscribeEventTypeStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeAccountDataStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeAccountDataStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_subscribe_account_data_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSubscribeAccountDataStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_subscribe_account_data_stream_stream_poll");
 
   late final _clientSubscribeAccountDataStreamStreamPoll =
-      _clientSubscribeAccountDataStreamStreamPollPtr.asFunction<
-          _ClientSubscribeAccountDataStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeAccountDataStreamStreamPollPtr
+          .asFunction<
+            _ClientSubscribeAccountDataStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeRoomAccountDataStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeRoomAccountDataStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_subscribe_room_account_data_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSubscribeRoomAccountDataStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_subscribe_room_account_data_stream_stream_poll");
 
   late final _clientSubscribeRoomAccountDataStreamStreamPoll =
-      _clientSubscribeRoomAccountDataStreamStreamPollPtr.asFunction<
-          _ClientSubscribeRoomAccountDataStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeRoomAccountDataStreamStreamPollPtr
+          .asFunction<
+            _ClientSubscribeRoomAccountDataStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientSubscribeMyOpenTasksStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientSubscribeMyOpenTasksStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__Client_subscribe_my_open_tasks_stream_stream_poll");
+    ffi.NativeFunction<
+      _ClientSubscribeMyOpenTasksStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__Client_subscribe_my_open_tasks_stream_stream_poll");
 
   late final _clientSubscribeMyOpenTasksStreamStreamPoll =
-      _clientSubscribeMyOpenTasksStreamStreamPollPtr.asFunction<
-          _ClientSubscribeMyOpenTasksStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _clientSubscribeMyOpenTasksStreamStreamPollPtr
+          .asFunction<
+            _ClientSubscribeMyOpenTasksStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _notificationSettingsChangesStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _NotificationSettingsChangesStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__NotificationSettings_changes_stream_stream_poll");
+    ffi.NativeFunction<
+      _NotificationSettingsChangesStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__NotificationSettings_changes_stream_stream_poll");
 
   late final _notificationSettingsChangesStreamStreamPoll =
-      _notificationSettingsChangesStreamStreamPollPtr.asFunction<
-          _NotificationSettingsChangesStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _notificationSettingsChangesStreamStreamPollPtr
+          .asFunction<
+            _NotificationSettingsChangesStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _backupManagerStateStreamStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _BackupManagerStateStreamStreamPollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-            ffi.Int64,
-          )>>("__BackupManager_state_stream_stream_poll");
+    ffi.NativeFunction<
+      _BackupManagerStateStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__BackupManager_state_stream_stream_poll");
 
   late final _backupManagerStateStreamStreamPoll =
-      _backupManagerStateStreamStreamPollPtr.asFunction<
-          _BackupManagerStateStreamStreamPollReturn Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _backupManagerStateStreamStreamPollPtr
+          .asFunction<
+            _BackupManagerStateStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   FfiListActerPin createFfiListActerPin() {
     final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
       _ffiListActerPinCreate(),
@@ -28945,48 +31003,47 @@ class Api {
 
   late final _ffiListActerPinCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListActerPinCreate",
-  );
+        "__FfiListActerPinCreate",
+      );
 
   late final _ffiListActerPinCreate =
       _ffiListActerPinCreatePtr.asFunction<int Function()>();
 
   late final _ffiListActerPinLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListActerPinLen",
-  );
+        "__FfiListActerPinLen",
+      );
 
   late final _ffiListActerPinLen =
       _ffiListActerPinLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListActerPinElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListActerPinElementAt",
-  );
+        "__FfiListActerPinElementAt",
+      );
 
   late final _ffiListActerPinElementAt =
       _ffiListActerPinElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListActerPinRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListActerPinRemove",
-  );
+        "__FfiListActerPinRemove",
+      );
 
   late final _ffiListActerPinRemove =
       _ffiListActerPinRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListActerPinAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListActerPinAdd",
-  );
+        "__FfiListActerPinAdd",
+      );
 
   late final _ffiListActerPinAdd =
       _ffiListActerPinAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListActerPinInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListActerPinInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListActerPinInsert");
 
   late final _ffiListActerPinInsert =
       _ffiListActerPinInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29000,48 +31057,47 @@ class Api {
 
   late final _ffiListAttachmentCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListAttachmentCreate",
-  );
+        "__FfiListAttachmentCreate",
+      );
 
   late final _ffiListAttachmentCreate =
       _ffiListAttachmentCreatePtr.asFunction<int Function()>();
 
   late final _ffiListAttachmentLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListAttachmentLen",
-  );
+        "__FfiListAttachmentLen",
+      );
 
   late final _ffiListAttachmentLen =
       _ffiListAttachmentLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListAttachmentElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListAttachmentElementAt",
-  );
+        "__FfiListAttachmentElementAt",
+      );
 
   late final _ffiListAttachmentElementAt =
       _ffiListAttachmentElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListAttachmentRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListAttachmentRemove",
-  );
+        "__FfiListAttachmentRemove",
+      );
 
   late final _ffiListAttachmentRemove =
       _ffiListAttachmentRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListAttachmentAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListAttachmentAdd",
-  );
+        "__FfiListAttachmentAdd",
+      );
 
   late final _ffiListAttachmentAdd =
       _ffiListAttachmentAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListAttachmentInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListAttachmentInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListAttachmentInsert");
 
   late final _ffiListAttachmentInsert =
       _ffiListAttachmentInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29055,48 +31111,47 @@ class Api {
 
   late final _ffiListCalendarEventCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListCalendarEventCreate",
-  );
+        "__FfiListCalendarEventCreate",
+      );
 
   late final _ffiListCalendarEventCreate =
       _ffiListCalendarEventCreatePtr.asFunction<int Function()>();
 
   late final _ffiListCalendarEventLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListCalendarEventLen",
-  );
+        "__FfiListCalendarEventLen",
+      );
 
   late final _ffiListCalendarEventLen =
       _ffiListCalendarEventLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListCalendarEventElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListCalendarEventElementAt",
-  );
+        "__FfiListCalendarEventElementAt",
+      );
 
   late final _ffiListCalendarEventElementAt =
       _ffiListCalendarEventElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListCalendarEventRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListCalendarEventRemove",
-  );
+        "__FfiListCalendarEventRemove",
+      );
 
   late final _ffiListCalendarEventRemove =
       _ffiListCalendarEventRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListCalendarEventAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListCalendarEventAdd",
-  );
+        "__FfiListCalendarEventAdd",
+      );
 
   late final _ffiListCalendarEventAdd =
       _ffiListCalendarEventAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListCalendarEventInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListCalendarEventInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListCalendarEventInsert");
 
   late final _ffiListCalendarEventInsert =
       _ffiListCalendarEventInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29110,48 +31165,47 @@ class Api {
 
   late final _ffiListCategoryCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListCategoryCreate",
-  );
+        "__FfiListCategoryCreate",
+      );
 
   late final _ffiListCategoryCreate =
       _ffiListCategoryCreatePtr.asFunction<int Function()>();
 
   late final _ffiListCategoryLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListCategoryLen",
-  );
+        "__FfiListCategoryLen",
+      );
 
   late final _ffiListCategoryLen =
       _ffiListCategoryLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListCategoryElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListCategoryElementAt",
-  );
+        "__FfiListCategoryElementAt",
+      );
 
   late final _ffiListCategoryElementAt =
       _ffiListCategoryElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListCategoryRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListCategoryRemove",
-  );
+        "__FfiListCategoryRemove",
+      );
 
   late final _ffiListCategoryRemove =
       _ffiListCategoryRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListCategoryAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListCategoryAdd",
-  );
+        "__FfiListCategoryAdd",
+      );
 
   late final _ffiListCategoryAdd =
       _ffiListCategoryAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListCategoryInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListCategoryInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListCategoryInsert");
 
   late final _ffiListCategoryInsert =
       _ffiListCategoryInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29165,48 +31219,47 @@ class Api {
 
   late final _ffiListCommentCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListCommentCreate",
-  );
+        "__FfiListCommentCreate",
+      );
 
   late final _ffiListCommentCreate =
       _ffiListCommentCreatePtr.asFunction<int Function()>();
 
   late final _ffiListCommentLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListCommentLen",
-  );
+        "__FfiListCommentLen",
+      );
 
   late final _ffiListCommentLen =
       _ffiListCommentLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListCommentElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListCommentElementAt",
-  );
+        "__FfiListCommentElementAt",
+      );
 
   late final _ffiListCommentElementAt =
       _ffiListCommentElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListCommentRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListCommentRemove",
-  );
+        "__FfiListCommentRemove",
+      );
 
   late final _ffiListCommentRemove =
       _ffiListCommentRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListCommentAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListCommentAdd",
-  );
+        "__FfiListCommentAdd",
+      );
 
   late final _ffiListCommentAdd =
       _ffiListCommentAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListCommentInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListCommentInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListCommentInsert");
 
   late final _ffiListCommentInsert =
       _ffiListCommentInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29220,48 +31273,47 @@ class Api {
 
   late final _ffiListConvoCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListConvoCreate",
-  );
+        "__FfiListConvoCreate",
+      );
 
   late final _ffiListConvoCreate =
       _ffiListConvoCreatePtr.asFunction<int Function()>();
 
   late final _ffiListConvoLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListConvoLen",
-  );
+        "__FfiListConvoLen",
+      );
 
   late final _ffiListConvoLen =
       _ffiListConvoLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListConvoElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListConvoElementAt",
-  );
+        "__FfiListConvoElementAt",
+      );
 
   late final _ffiListConvoElementAt =
       _ffiListConvoElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListConvoRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListConvoRemove",
-  );
+        "__FfiListConvoRemove",
+      );
 
   late final _ffiListConvoRemove =
       _ffiListConvoRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListConvoAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListConvoAdd",
-  );
+        "__FfiListConvoAdd",
+      );
 
   late final _ffiListConvoAdd =
       _ffiListConvoAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListConvoInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListConvoInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListConvoInsert");
 
   late final _ffiListConvoInsert =
       _ffiListConvoInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29275,48 +31327,47 @@ class Api {
 
   late final _ffiListDeviceRecordCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListDeviceRecordCreate",
-  );
+        "__FfiListDeviceRecordCreate",
+      );
 
   late final _ffiListDeviceRecordCreate =
       _ffiListDeviceRecordCreatePtr.asFunction<int Function()>();
 
   late final _ffiListDeviceRecordLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListDeviceRecordLen",
-  );
+        "__FfiListDeviceRecordLen",
+      );
 
   late final _ffiListDeviceRecordLen =
       _ffiListDeviceRecordLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListDeviceRecordElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListDeviceRecordElementAt",
-  );
+        "__FfiListDeviceRecordElementAt",
+      );
 
   late final _ffiListDeviceRecordElementAt =
       _ffiListDeviceRecordElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListDeviceRecordRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListDeviceRecordRemove",
-  );
+        "__FfiListDeviceRecordRemove",
+      );
 
   late final _ffiListDeviceRecordRemove =
       _ffiListDeviceRecordRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListDeviceRecordAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListDeviceRecordAdd",
-  );
+        "__FfiListDeviceRecordAdd",
+      );
 
   late final _ffiListDeviceRecordAdd =
       _ffiListDeviceRecordAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListDeviceRecordInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListDeviceRecordInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListDeviceRecordInsert");
 
   late final _ffiListDeviceRecordInsert =
       _ffiListDeviceRecordInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29330,24 +31381,24 @@ class Api {
 
   late final _ffiListEventLocationInfoCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListEventLocationInfoCreate",
-  );
+        "__FfiListEventLocationInfoCreate",
+      );
 
   late final _ffiListEventLocationInfoCreate =
       _ffiListEventLocationInfoCreatePtr.asFunction<int Function()>();
 
   late final _ffiListEventLocationInfoLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListEventLocationInfoLen",
-  );
+        "__FfiListEventLocationInfoLen",
+      );
 
   late final _ffiListEventLocationInfoLen =
       _ffiListEventLocationInfoLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListEventLocationInfoElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListEventLocationInfoElementAt",
-  );
+        "__FfiListEventLocationInfoElementAt",
+      );
 
   late final _ffiListEventLocationInfoElementAt =
       _ffiListEventLocationInfoElementAtPtr
@@ -29355,24 +31406,23 @@ class Api {
 
   late final _ffiListEventLocationInfoRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListEventLocationInfoRemove",
-  );
+        "__FfiListEventLocationInfoRemove",
+      );
 
   late final _ffiListEventLocationInfoRemove =
       _ffiListEventLocationInfoRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListEventLocationInfoAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListEventLocationInfoAdd",
-  );
+        "__FfiListEventLocationInfoAdd",
+      );
 
   late final _ffiListEventLocationInfoAdd =
       _ffiListEventLocationInfoAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListEventLocationInfoInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListEventLocationInfoInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListEventLocationInfoInsert");
 
   late final _ffiListEventLocationInfoInsert =
       _ffiListEventLocationInfoInsertPtr
@@ -29387,48 +31437,47 @@ class Api {
 
   late final _ffiListExternalIdCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListExternalIdCreate",
-  );
+        "__FfiListExternalIdCreate",
+      );
 
   late final _ffiListExternalIdCreate =
       _ffiListExternalIdCreatePtr.asFunction<int Function()>();
 
   late final _ffiListExternalIdLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListExternalIdLen",
-  );
+        "__FfiListExternalIdLen",
+      );
 
   late final _ffiListExternalIdLen =
       _ffiListExternalIdLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListExternalIdElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListExternalIdElementAt",
-  );
+        "__FfiListExternalIdElementAt",
+      );
 
   late final _ffiListExternalIdElementAt =
       _ffiListExternalIdElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListExternalIdRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListExternalIdRemove",
-  );
+        "__FfiListExternalIdRemove",
+      );
 
   late final _ffiListExternalIdRemove =
       _ffiListExternalIdRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListExternalIdAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListExternalIdAdd",
-  );
+        "__FfiListExternalIdAdd",
+      );
 
   late final _ffiListExternalIdAdd =
       _ffiListExternalIdAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListExternalIdInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListExternalIdInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListExternalIdInsert");
 
   late final _ffiListExternalIdInsert =
       _ffiListExternalIdInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29442,48 +31491,47 @@ class Api {
 
   late final _ffiListFfiStringCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListFfiStringCreate",
-  );
+        "__FfiListFfiStringCreate",
+      );
 
   late final _ffiListFfiStringCreate =
       _ffiListFfiStringCreatePtr.asFunction<int Function()>();
 
   late final _ffiListFfiStringLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListFfiStringLen",
-  );
+        "__FfiListFfiStringLen",
+      );
 
   late final _ffiListFfiStringLen =
       _ffiListFfiStringLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListFfiStringElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListFfiStringElementAt",
-  );
+        "__FfiListFfiStringElementAt",
+      );
 
   late final _ffiListFfiStringElementAt =
       _ffiListFfiStringElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListFfiStringRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListFfiStringRemove",
-  );
+        "__FfiListFfiStringRemove",
+      );
 
   late final _ffiListFfiStringRemove =
       _ffiListFfiStringRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListFfiStringAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListFfiStringAdd",
-  );
+        "__FfiListFfiStringAdd",
+      );
 
   late final _ffiListFfiStringAdd =
       _ffiListFfiStringAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListFfiStringInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListFfiStringInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListFfiStringInsert");
 
   late final _ffiListFfiStringInsert =
       _ffiListFfiStringInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29497,48 +31545,47 @@ class Api {
 
   late final _ffiListInvitationCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListInvitationCreate",
-  );
+        "__FfiListInvitationCreate",
+      );
 
   late final _ffiListInvitationCreate =
       _ffiListInvitationCreatePtr.asFunction<int Function()>();
 
   late final _ffiListInvitationLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListInvitationLen",
-  );
+        "__FfiListInvitationLen",
+      );
 
   late final _ffiListInvitationLen =
       _ffiListInvitationLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListInvitationElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListInvitationElementAt",
-  );
+        "__FfiListInvitationElementAt",
+      );
 
   late final _ffiListInvitationElementAt =
       _ffiListInvitationElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListInvitationRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListInvitationRemove",
-  );
+        "__FfiListInvitationRemove",
+      );
 
   late final _ffiListInvitationRemove =
       _ffiListInvitationRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListInvitationAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListInvitationAdd",
-  );
+        "__FfiListInvitationAdd",
+      );
 
   late final _ffiListInvitationAdd =
       _ffiListInvitationAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListInvitationInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListInvitationInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListInvitationInsert");
 
   late final _ffiListInvitationInsert =
       _ffiListInvitationInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29552,48 +31599,47 @@ class Api {
 
   late final _ffiListMemberCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListMemberCreate",
-  );
+        "__FfiListMemberCreate",
+      );
 
   late final _ffiListMemberCreate =
       _ffiListMemberCreatePtr.asFunction<int Function()>();
 
   late final _ffiListMemberLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListMemberLen",
-  );
+        "__FfiListMemberLen",
+      );
 
   late final _ffiListMemberLen =
       _ffiListMemberLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListMemberElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListMemberElementAt",
-  );
+        "__FfiListMemberElementAt",
+      );
 
   late final _ffiListMemberElementAt =
       _ffiListMemberElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListMemberRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListMemberRemove",
-  );
+        "__FfiListMemberRemove",
+      );
 
   late final _ffiListMemberRemove =
       _ffiListMemberRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListMemberAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListMemberAdd",
-  );
+        "__FfiListMemberAdd",
+      );
 
   late final _ffiListMemberAdd =
       _ffiListMemberAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListMemberInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListMemberInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListMemberInsert");
 
   late final _ffiListMemberInsert =
       _ffiListMemberInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29607,48 +31653,47 @@ class Api {
 
   late final _ffiListNewsEntryCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListNewsEntryCreate",
-  );
+        "__FfiListNewsEntryCreate",
+      );
 
   late final _ffiListNewsEntryCreate =
       _ffiListNewsEntryCreatePtr.asFunction<int Function()>();
 
   late final _ffiListNewsEntryLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListNewsEntryLen",
-  );
+        "__FfiListNewsEntryLen",
+      );
 
   late final _ffiListNewsEntryLen =
       _ffiListNewsEntryLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListNewsEntryElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListNewsEntryElementAt",
-  );
+        "__FfiListNewsEntryElementAt",
+      );
 
   late final _ffiListNewsEntryElementAt =
       _ffiListNewsEntryElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListNewsEntryRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListNewsEntryRemove",
-  );
+        "__FfiListNewsEntryRemove",
+      );
 
   late final _ffiListNewsEntryRemove =
       _ffiListNewsEntryRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListNewsEntryAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListNewsEntryAdd",
-  );
+        "__FfiListNewsEntryAdd",
+      );
 
   late final _ffiListNewsEntryAdd =
       _ffiListNewsEntryAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListNewsEntryInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListNewsEntryInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListNewsEntryInsert");
 
   late final _ffiListNewsEntryInsert =
       _ffiListNewsEntryInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29662,48 +31707,47 @@ class Api {
 
   late final _ffiListNewsSlideCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListNewsSlideCreate",
-  );
+        "__FfiListNewsSlideCreate",
+      );
 
   late final _ffiListNewsSlideCreate =
       _ffiListNewsSlideCreatePtr.asFunction<int Function()>();
 
   late final _ffiListNewsSlideLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListNewsSlideLen",
-  );
+        "__FfiListNewsSlideLen",
+      );
 
   late final _ffiListNewsSlideLen =
       _ffiListNewsSlideLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListNewsSlideElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListNewsSlideElementAt",
-  );
+        "__FfiListNewsSlideElementAt",
+      );
 
   late final _ffiListNewsSlideElementAt =
       _ffiListNewsSlideElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListNewsSlideRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListNewsSlideRemove",
-  );
+        "__FfiListNewsSlideRemove",
+      );
 
   late final _ffiListNewsSlideRemove =
       _ffiListNewsSlideRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListNewsSlideAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListNewsSlideAdd",
-  );
+        "__FfiListNewsSlideAdd",
+      );
 
   late final _ffiListNewsSlideAdd =
       _ffiListNewsSlideAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListNewsSlideInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListNewsSlideInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListNewsSlideInsert");
 
   late final _ffiListNewsSlideInsert =
       _ffiListNewsSlideInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29717,51 +31761,51 @@ class Api {
 
   late final _ffiListNewsSlideDraftCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListNewsSlideDraftCreate",
-  );
+        "__FfiListNewsSlideDraftCreate",
+      );
 
   late final _ffiListNewsSlideDraftCreate =
       _ffiListNewsSlideDraftCreatePtr.asFunction<int Function()>();
 
   late final _ffiListNewsSlideDraftLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListNewsSlideDraftLen",
-  );
+        "__FfiListNewsSlideDraftLen",
+      );
 
   late final _ffiListNewsSlideDraftLen =
       _ffiListNewsSlideDraftLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListNewsSlideDraftElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListNewsSlideDraftElementAt",
-  );
+        "__FfiListNewsSlideDraftElementAt",
+      );
 
   late final _ffiListNewsSlideDraftElementAt =
       _ffiListNewsSlideDraftElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListNewsSlideDraftRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListNewsSlideDraftRemove",
-  );
+        "__FfiListNewsSlideDraftRemove",
+      );
 
   late final _ffiListNewsSlideDraftRemove =
       _ffiListNewsSlideDraftRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListNewsSlideDraftAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListNewsSlideDraftAdd",
-  );
+        "__FfiListNewsSlideDraftAdd",
+      );
 
   late final _ffiListNewsSlideDraftAdd =
       _ffiListNewsSlideDraftAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListNewsSlideDraftInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListNewsSlideDraftInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListNewsSlideDraftInsert");
 
-  late final _ffiListNewsSlideDraftInsert = _ffiListNewsSlideDraftInsertPtr
-      .asFunction<void Function(int, int, int)>();
+  late final _ffiListNewsSlideDraftInsert =
+      _ffiListNewsSlideDraftInsertPtr
+          .asFunction<void Function(int, int, int)>();
   FfiListObjRef createFfiListObjRef() {
     final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
       _ffiListObjRefCreate(),
@@ -29772,48 +31816,47 @@ class Api {
 
   late final _ffiListObjRefCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListObjRefCreate",
-  );
+        "__FfiListObjRefCreate",
+      );
 
   late final _ffiListObjRefCreate =
       _ffiListObjRefCreatePtr.asFunction<int Function()>();
 
   late final _ffiListObjRefLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListObjRefLen",
-  );
+        "__FfiListObjRefLen",
+      );
 
   late final _ffiListObjRefLen =
       _ffiListObjRefLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListObjRefElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListObjRefElementAt",
-  );
+        "__FfiListObjRefElementAt",
+      );
 
   late final _ffiListObjRefElementAt =
       _ffiListObjRefElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListObjRefRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListObjRefRemove",
-  );
+        "__FfiListObjRefRemove",
+      );
 
   late final _ffiListObjRefRemove =
       _ffiListObjRefRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListObjRefAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListObjRefAdd",
-  );
+        "__FfiListObjRefAdd",
+      );
 
   late final _ffiListObjRefAdd =
       _ffiListObjRefAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListObjRefInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListObjRefInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListObjRefInsert");
 
   late final _ffiListObjRefInsert =
       _ffiListObjRefInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29831,24 +31874,24 @@ class Api {
 
   late final _ffiListPublicSearchResultItemCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListPublicSearchResultItemCreate",
-  );
+        "__FfiListPublicSearchResultItemCreate",
+      );
 
   late final _ffiListPublicSearchResultItemCreate =
       _ffiListPublicSearchResultItemCreatePtr.asFunction<int Function()>();
 
   late final _ffiListPublicSearchResultItemLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListPublicSearchResultItemLen",
-  );
+        "__FfiListPublicSearchResultItemLen",
+      );
 
   late final _ffiListPublicSearchResultItemLen =
       _ffiListPublicSearchResultItemLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListPublicSearchResultItemElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListPublicSearchResultItemElementAt",
-  );
+        "__FfiListPublicSearchResultItemElementAt",
+      );
 
   late final _ffiListPublicSearchResultItemElementAt =
       _ffiListPublicSearchResultItemElementAtPtr
@@ -29856,8 +31899,8 @@ class Api {
 
   late final _ffiListPublicSearchResultItemRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListPublicSearchResultItemRemove",
-  );
+        "__FfiListPublicSearchResultItemRemove",
+      );
 
   late final _ffiListPublicSearchResultItemRemove =
       _ffiListPublicSearchResultItemRemovePtr
@@ -29865,17 +31908,16 @@ class Api {
 
   late final _ffiListPublicSearchResultItemAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListPublicSearchResultItemAdd",
-  );
+        "__FfiListPublicSearchResultItemAdd",
+      );
 
   late final _ffiListPublicSearchResultItemAdd =
       _ffiListPublicSearchResultItemAddPtr
           .asFunction<void Function(int, int)>();
 
   late final _ffiListPublicSearchResultItemInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListPublicSearchResultItemInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListPublicSearchResultItemInsert");
 
   late final _ffiListPublicSearchResultItemInsert =
       _ffiListPublicSearchResultItemInsertPtr
@@ -29890,48 +31932,47 @@ class Api {
 
   late final _ffiListPusherCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListPusherCreate",
-  );
+        "__FfiListPusherCreate",
+      );
 
   late final _ffiListPusherCreate =
       _ffiListPusherCreatePtr.asFunction<int Function()>();
 
   late final _ffiListPusherLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListPusherLen",
-  );
+        "__FfiListPusherLen",
+      );
 
   late final _ffiListPusherLen =
       _ffiListPusherLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListPusherElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListPusherElementAt",
-  );
+        "__FfiListPusherElementAt",
+      );
 
   late final _ffiListPusherElementAt =
       _ffiListPusherElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListPusherRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListPusherRemove",
-  );
+        "__FfiListPusherRemove",
+      );
 
   late final _ffiListPusherRemove =
       _ffiListPusherRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListPusherAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListPusherAdd",
-  );
+        "__FfiListPusherAdd",
+      );
 
   late final _ffiListPusherAdd =
       _ffiListPusherAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListPusherInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListPusherInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListPusherInsert");
 
   late final _ffiListPusherInsert =
       _ffiListPusherInsertPtr.asFunction<void Function(int, int, int)>();
@@ -29945,48 +31986,47 @@ class Api {
 
   late final _ffiListReactionCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListReactionCreate",
-  );
+        "__FfiListReactionCreate",
+      );
 
   late final _ffiListReactionCreate =
       _ffiListReactionCreatePtr.asFunction<int Function()>();
 
   late final _ffiListReactionLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListReactionLen",
-  );
+        "__FfiListReactionLen",
+      );
 
   late final _ffiListReactionLen =
       _ffiListReactionLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListReactionElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListReactionElementAt",
-  );
+        "__FfiListReactionElementAt",
+      );
 
   late final _ffiListReactionElementAt =
       _ffiListReactionElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListReactionRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListReactionRemove",
-  );
+        "__FfiListReactionRemove",
+      );
 
   late final _ffiListReactionRemove =
       _ffiListReactionRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListReactionAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListReactionAdd",
-  );
+        "__FfiListReactionAdd",
+      );
 
   late final _ffiListReactionAdd =
       _ffiListReactionAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListReactionInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListReactionInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListReactionInsert");
 
   late final _ffiListReactionInsert =
       _ffiListReactionInsertPtr.asFunction<void Function(int, int, int)>();
@@ -30000,51 +32040,51 @@ class Api {
 
   late final _ffiListReactionRecordCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListReactionRecordCreate",
-  );
+        "__FfiListReactionRecordCreate",
+      );
 
   late final _ffiListReactionRecordCreate =
       _ffiListReactionRecordCreatePtr.asFunction<int Function()>();
 
   late final _ffiListReactionRecordLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListReactionRecordLen",
-  );
+        "__FfiListReactionRecordLen",
+      );
 
   late final _ffiListReactionRecordLen =
       _ffiListReactionRecordLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListReactionRecordElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListReactionRecordElementAt",
-  );
+        "__FfiListReactionRecordElementAt",
+      );
 
   late final _ffiListReactionRecordElementAt =
       _ffiListReactionRecordElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListReactionRecordRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListReactionRecordRemove",
-  );
+        "__FfiListReactionRecordRemove",
+      );
 
   late final _ffiListReactionRecordRemove =
       _ffiListReactionRecordRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListReactionRecordAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListReactionRecordAdd",
-  );
+        "__FfiListReactionRecordAdd",
+      );
 
   late final _ffiListReactionRecordAdd =
       _ffiListReactionRecordAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListReactionRecordInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListReactionRecordInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListReactionRecordInsert");
 
-  late final _ffiListReactionRecordInsert = _ffiListReactionRecordInsertPtr
-      .asFunction<void Function(int, int, int)>();
+  late final _ffiListReactionRecordInsert =
+      _ffiListReactionRecordInsertPtr
+          .asFunction<void Function(int, int, int)>();
   FfiListRoomMessage createFfiListRoomMessage() {
     final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
       _ffiListRoomMessageCreate(),
@@ -30055,48 +32095,47 @@ class Api {
 
   late final _ffiListRoomMessageCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListRoomMessageCreate",
-  );
+        "__FfiListRoomMessageCreate",
+      );
 
   late final _ffiListRoomMessageCreate =
       _ffiListRoomMessageCreatePtr.asFunction<int Function()>();
 
   late final _ffiListRoomMessageLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListRoomMessageLen",
-  );
+        "__FfiListRoomMessageLen",
+      );
 
   late final _ffiListRoomMessageLen =
       _ffiListRoomMessageLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListRoomMessageElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListRoomMessageElementAt",
-  );
+        "__FfiListRoomMessageElementAt",
+      );
 
   late final _ffiListRoomMessageElementAt =
       _ffiListRoomMessageElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListRoomMessageRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListRoomMessageRemove",
-  );
+        "__FfiListRoomMessageRemove",
+      );
 
   late final _ffiListRoomMessageRemove =
       _ffiListRoomMessageRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListRoomMessageAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListRoomMessageAdd",
-  );
+        "__FfiListRoomMessageAdd",
+      );
 
   late final _ffiListRoomMessageAdd =
       _ffiListRoomMessageAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListRoomMessageInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListRoomMessageInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListRoomMessageInsert");
 
   late final _ffiListRoomMessageInsert =
       _ffiListRoomMessageInsertPtr.asFunction<void Function(int, int, int)>();
@@ -30116,40 +32155,39 @@ class Api {
 
   late final _ffiListRsvpLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListRsvpLen",
-  );
+        "__FfiListRsvpLen",
+      );
 
   late final _ffiListRsvpLen =
       _ffiListRsvpLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListRsvpElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListRsvpElementAt",
-  );
+        "__FfiListRsvpElementAt",
+      );
 
   late final _ffiListRsvpElementAt =
       _ffiListRsvpElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListRsvpRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListRsvpRemove",
-  );
+        "__FfiListRsvpRemove",
+      );
 
   late final _ffiListRsvpRemove =
       _ffiListRsvpRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListRsvpAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListRsvpAdd",
-  );
+        "__FfiListRsvpAdd",
+      );
 
   late final _ffiListRsvpAdd =
       _ffiListRsvpAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListRsvpInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListRsvpInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListRsvpInsert");
 
   late final _ffiListRsvpInsert =
       _ffiListRsvpInsertPtr.asFunction<void Function(int, int, int)>();
@@ -30163,48 +32201,47 @@ class Api {
 
   late final _ffiListSpaceCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListSpaceCreate",
-  );
+        "__FfiListSpaceCreate",
+      );
 
   late final _ffiListSpaceCreate =
       _ffiListSpaceCreatePtr.asFunction<int Function()>();
 
   late final _ffiListSpaceLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListSpaceLen",
-  );
+        "__FfiListSpaceLen",
+      );
 
   late final _ffiListSpaceLen =
       _ffiListSpaceLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListSpaceElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListSpaceElementAt",
-  );
+        "__FfiListSpaceElementAt",
+      );
 
   late final _ffiListSpaceElementAt =
       _ffiListSpaceElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListSpaceRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListSpaceRemove",
-  );
+        "__FfiListSpaceRemove",
+      );
 
   late final _ffiListSpaceRemove =
       _ffiListSpaceRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListSpaceAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListSpaceAdd",
-  );
+        "__FfiListSpaceAdd",
+      );
 
   late final _ffiListSpaceAdd =
       _ffiListSpaceAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListSpaceInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListSpaceInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListSpaceInsert");
 
   late final _ffiListSpaceInsert =
       _ffiListSpaceInsertPtr.asFunction<void Function(int, int, int)>();
@@ -30222,24 +32259,24 @@ class Api {
 
   late final _ffiListSpaceHierarchyRoomInfoCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListSpaceHierarchyRoomInfoCreate",
-  );
+        "__FfiListSpaceHierarchyRoomInfoCreate",
+      );
 
   late final _ffiListSpaceHierarchyRoomInfoCreate =
       _ffiListSpaceHierarchyRoomInfoCreatePtr.asFunction<int Function()>();
 
   late final _ffiListSpaceHierarchyRoomInfoLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListSpaceHierarchyRoomInfoLen",
-  );
+        "__FfiListSpaceHierarchyRoomInfoLen",
+      );
 
   late final _ffiListSpaceHierarchyRoomInfoLen =
       _ffiListSpaceHierarchyRoomInfoLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListSpaceHierarchyRoomInfoElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListSpaceHierarchyRoomInfoElementAt",
-  );
+        "__FfiListSpaceHierarchyRoomInfoElementAt",
+      );
 
   late final _ffiListSpaceHierarchyRoomInfoElementAt =
       _ffiListSpaceHierarchyRoomInfoElementAtPtr
@@ -30247,8 +32284,8 @@ class Api {
 
   late final _ffiListSpaceHierarchyRoomInfoRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListSpaceHierarchyRoomInfoRemove",
-  );
+        "__FfiListSpaceHierarchyRoomInfoRemove",
+      );
 
   late final _ffiListSpaceHierarchyRoomInfoRemove =
       _ffiListSpaceHierarchyRoomInfoRemovePtr
@@ -30256,17 +32293,16 @@ class Api {
 
   late final _ffiListSpaceHierarchyRoomInfoAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListSpaceHierarchyRoomInfoAdd",
-  );
+        "__FfiListSpaceHierarchyRoomInfoAdd",
+      );
 
   late final _ffiListSpaceHierarchyRoomInfoAdd =
       _ffiListSpaceHierarchyRoomInfoAddPtr
           .asFunction<void Function(int, int)>();
 
   late final _ffiListSpaceHierarchyRoomInfoInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListSpaceHierarchyRoomInfoInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListSpaceHierarchyRoomInfoInsert");
 
   late final _ffiListSpaceHierarchyRoomInfoInsert =
       _ffiListSpaceHierarchyRoomInfoInsertPtr
@@ -30281,48 +32317,47 @@ class Api {
 
   late final _ffiListSpaceRelationCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListSpaceRelationCreate",
-  );
+        "__FfiListSpaceRelationCreate",
+      );
 
   late final _ffiListSpaceRelationCreate =
       _ffiListSpaceRelationCreatePtr.asFunction<int Function()>();
 
   late final _ffiListSpaceRelationLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListSpaceRelationLen",
-  );
+        "__FfiListSpaceRelationLen",
+      );
 
   late final _ffiListSpaceRelationLen =
       _ffiListSpaceRelationLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListSpaceRelationElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListSpaceRelationElementAt",
-  );
+        "__FfiListSpaceRelationElementAt",
+      );
 
   late final _ffiListSpaceRelationElementAt =
       _ffiListSpaceRelationElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListSpaceRelationRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListSpaceRelationRemove",
-  );
+        "__FfiListSpaceRelationRemove",
+      );
 
   late final _ffiListSpaceRelationRemove =
       _ffiListSpaceRelationRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListSpaceRelationAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListSpaceRelationAdd",
-  );
+        "__FfiListSpaceRelationAdd",
+      );
 
   late final _ffiListSpaceRelationAdd =
       _ffiListSpaceRelationAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListSpaceRelationInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListSpaceRelationInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListSpaceRelationInsert");
 
   late final _ffiListSpaceRelationInsert =
       _ffiListSpaceRelationInsertPtr.asFunction<void Function(int, int, int)>();
@@ -30336,48 +32371,47 @@ class Api {
 
   late final _ffiListStoryCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListStoryCreate",
-  );
+        "__FfiListStoryCreate",
+      );
 
   late final _ffiListStoryCreate =
       _ffiListStoryCreatePtr.asFunction<int Function()>();
 
   late final _ffiListStoryLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListStoryLen",
-  );
+        "__FfiListStoryLen",
+      );
 
   late final _ffiListStoryLen =
       _ffiListStoryLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListStoryElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListStoryElementAt",
-  );
+        "__FfiListStoryElementAt",
+      );
 
   late final _ffiListStoryElementAt =
       _ffiListStoryElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListStoryRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListStoryRemove",
-  );
+        "__FfiListStoryRemove",
+      );
 
   late final _ffiListStoryRemove =
       _ffiListStoryRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListStoryAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListStoryAdd",
-  );
+        "__FfiListStoryAdd",
+      );
 
   late final _ffiListStoryAdd =
       _ffiListStoryAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListStoryInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListStoryInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListStoryInsert");
 
   late final _ffiListStoryInsert =
       _ffiListStoryInsertPtr.asFunction<void Function(int, int, int)>();
@@ -30391,48 +32425,47 @@ class Api {
 
   late final _ffiListStorySlideCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListStorySlideCreate",
-  );
+        "__FfiListStorySlideCreate",
+      );
 
   late final _ffiListStorySlideCreate =
       _ffiListStorySlideCreatePtr.asFunction<int Function()>();
 
   late final _ffiListStorySlideLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListStorySlideLen",
-  );
+        "__FfiListStorySlideLen",
+      );
 
   late final _ffiListStorySlideLen =
       _ffiListStorySlideLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListStorySlideElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListStorySlideElementAt",
-  );
+        "__FfiListStorySlideElementAt",
+      );
 
   late final _ffiListStorySlideElementAt =
       _ffiListStorySlideElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListStorySlideRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListStorySlideRemove",
-  );
+        "__FfiListStorySlideRemove",
+      );
 
   late final _ffiListStorySlideRemove =
       _ffiListStorySlideRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListStorySlideAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListStorySlideAdd",
-  );
+        "__FfiListStorySlideAdd",
+      );
 
   late final _ffiListStorySlideAdd =
       _ffiListStorySlideAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListStorySlideInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListStorySlideInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListStorySlideInsert");
 
   late final _ffiListStorySlideInsert =
       _ffiListStorySlideInsertPtr.asFunction<void Function(int, int, int)>();
@@ -30446,51 +32479,51 @@ class Api {
 
   late final _ffiListStorySlideDraftCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListStorySlideDraftCreate",
-  );
+        "__FfiListStorySlideDraftCreate",
+      );
 
   late final _ffiListStorySlideDraftCreate =
       _ffiListStorySlideDraftCreatePtr.asFunction<int Function()>();
 
   late final _ffiListStorySlideDraftLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListStorySlideDraftLen",
-  );
+        "__FfiListStorySlideDraftLen",
+      );
 
   late final _ffiListStorySlideDraftLen =
       _ffiListStorySlideDraftLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListStorySlideDraftElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListStorySlideDraftElementAt",
-  );
+        "__FfiListStorySlideDraftElementAt",
+      );
 
   late final _ffiListStorySlideDraftElementAt =
       _ffiListStorySlideDraftElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListStorySlideDraftRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListStorySlideDraftRemove",
-  );
+        "__FfiListStorySlideDraftRemove",
+      );
 
   late final _ffiListStorySlideDraftRemove =
       _ffiListStorySlideDraftRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListStorySlideDraftAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListStorySlideDraftAdd",
-  );
+        "__FfiListStorySlideDraftAdd",
+      );
 
   late final _ffiListStorySlideDraftAdd =
       _ffiListStorySlideDraftAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListStorySlideDraftInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListStorySlideDraftInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListStorySlideDraftInsert");
 
-  late final _ffiListStorySlideDraftInsert = _ffiListStorySlideDraftInsertPtr
-      .asFunction<void Function(int, int, int)>();
+  late final _ffiListStorySlideDraftInsert =
+      _ffiListStorySlideDraftInsertPtr
+          .asFunction<void Function(int, int, int)>();
   FfiListSuperInviteToken createFfiListSuperInviteToken() {
     final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
       _ffiListSuperInviteTokenCreate(),
@@ -30501,51 +32534,51 @@ class Api {
 
   late final _ffiListSuperInviteTokenCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListSuperInviteTokenCreate",
-  );
+        "__FfiListSuperInviteTokenCreate",
+      );
 
   late final _ffiListSuperInviteTokenCreate =
       _ffiListSuperInviteTokenCreatePtr.asFunction<int Function()>();
 
   late final _ffiListSuperInviteTokenLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListSuperInviteTokenLen",
-  );
+        "__FfiListSuperInviteTokenLen",
+      );
 
   late final _ffiListSuperInviteTokenLen =
       _ffiListSuperInviteTokenLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListSuperInviteTokenElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListSuperInviteTokenElementAt",
-  );
+        "__FfiListSuperInviteTokenElementAt",
+      );
 
   late final _ffiListSuperInviteTokenElementAt =
       _ffiListSuperInviteTokenElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListSuperInviteTokenRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListSuperInviteTokenRemove",
-  );
+        "__FfiListSuperInviteTokenRemove",
+      );
 
   late final _ffiListSuperInviteTokenRemove =
       _ffiListSuperInviteTokenRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListSuperInviteTokenAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListSuperInviteTokenAdd",
-  );
+        "__FfiListSuperInviteTokenAdd",
+      );
 
   late final _ffiListSuperInviteTokenAdd =
       _ffiListSuperInviteTokenAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListSuperInviteTokenInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListSuperInviteTokenInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListSuperInviteTokenInsert");
 
-  late final _ffiListSuperInviteTokenInsert = _ffiListSuperInviteTokenInsertPtr
-      .asFunction<void Function(int, int, int)>();
+  late final _ffiListSuperInviteTokenInsert =
+      _ffiListSuperInviteTokenInsertPtr
+          .asFunction<void Function(int, int, int)>();
   FfiListTask createFfiListTask() {
     final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
       _ffiListTaskCreate(),
@@ -30562,40 +32595,39 @@ class Api {
 
   late final _ffiListTaskLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListTaskLen",
-  );
+        "__FfiListTaskLen",
+      );
 
   late final _ffiListTaskLen =
       _ffiListTaskLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListTaskElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListTaskElementAt",
-  );
+        "__FfiListTaskElementAt",
+      );
 
   late final _ffiListTaskElementAt =
       _ffiListTaskElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListTaskRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListTaskRemove",
-  );
+        "__FfiListTaskRemove",
+      );
 
   late final _ffiListTaskRemove =
       _ffiListTaskRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListTaskAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListTaskAdd",
-  );
+        "__FfiListTaskAdd",
+      );
 
   late final _ffiListTaskAdd =
       _ffiListTaskAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListTaskInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListTaskInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListTaskInsert");
 
   late final _ffiListTaskInsert =
       _ffiListTaskInsertPtr.asFunction<void Function(int, int, int)>();
@@ -30609,48 +32641,47 @@ class Api {
 
   late final _ffiListTaskListCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListTaskListCreate",
-  );
+        "__FfiListTaskListCreate",
+      );
 
   late final _ffiListTaskListCreate =
       _ffiListTaskListCreatePtr.asFunction<int Function()>();
 
   late final _ffiListTaskListLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListTaskListLen",
-  );
+        "__FfiListTaskListLen",
+      );
 
   late final _ffiListTaskListLen =
       _ffiListTaskListLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListTaskListElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListTaskListElementAt",
-  );
+        "__FfiListTaskListElementAt",
+      );
 
   late final _ffiListTaskListElementAt =
       _ffiListTaskListElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListTaskListRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListTaskListRemove",
-  );
+        "__FfiListTaskListRemove",
+      );
 
   late final _ffiListTaskListRemove =
       _ffiListTaskListRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListTaskListAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListTaskListAdd",
-  );
+        "__FfiListTaskListAdd",
+      );
 
   late final _ffiListTaskListAdd =
       _ffiListTaskListAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListTaskListInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListTaskListInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListTaskListInsert");
 
   late final _ffiListTaskListInsert =
       _ffiListTaskListInsertPtr.asFunction<void Function(int, int, int)>();
@@ -30664,48 +32695,47 @@ class Api {
 
   late final _ffiListUserIdCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListUserIdCreate",
-  );
+        "__FfiListUserIdCreate",
+      );
 
   late final _ffiListUserIdCreate =
       _ffiListUserIdCreatePtr.asFunction<int Function()>();
 
   late final _ffiListUserIdLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListUserIdLen",
-  );
+        "__FfiListUserIdLen",
+      );
 
   late final _ffiListUserIdLen =
       _ffiListUserIdLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListUserIdElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListUserIdElementAt",
-  );
+        "__FfiListUserIdElementAt",
+      );
 
   late final _ffiListUserIdElementAt =
       _ffiListUserIdElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListUserIdRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListUserIdRemove",
-  );
+        "__FfiListUserIdRemove",
+      );
 
   late final _ffiListUserIdRemove =
       _ffiListUserIdRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListUserIdAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListUserIdAdd",
-  );
+        "__FfiListUserIdAdd",
+      );
 
   late final _ffiListUserIdAdd =
       _ffiListUserIdAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListUserIdInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListUserIdInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListUserIdInsert");
 
   late final _ffiListUserIdInsert =
       _ffiListUserIdInsertPtr.asFunction<void Function(int, int, int)>();
@@ -30719,48 +32749,47 @@ class Api {
 
   late final _ffiListUserProfileCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListUserProfileCreate",
-  );
+        "__FfiListUserProfileCreate",
+      );
 
   late final _ffiListUserProfileCreate =
       _ffiListUserProfileCreatePtr.asFunction<int Function()>();
 
   late final _ffiListUserProfileLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListUserProfileLen",
-  );
+        "__FfiListUserProfileLen",
+      );
 
   late final _ffiListUserProfileLen =
       _ffiListUserProfileLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListUserProfileElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListUserProfileElementAt",
-  );
+        "__FfiListUserProfileElementAt",
+      );
 
   late final _ffiListUserProfileElementAt =
       _ffiListUserProfileElementAtPtr.asFunction<int Function(int, int)>();
 
   late final _ffiListUserProfileRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListUserProfileRemove",
-  );
+        "__FfiListUserProfileRemove",
+      );
 
   late final _ffiListUserProfileRemove =
       _ffiListUserProfileRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListUserProfileAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListUserProfileAdd",
-  );
+        "__FfiListUserProfileAdd",
+      );
 
   late final _ffiListUserProfileAdd =
       _ffiListUserProfileAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListUserProfileInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListUserProfileInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListUserProfileInsert");
 
   late final _ffiListUserProfileInsert =
       _ffiListUserProfileInsertPtr.asFunction<void Function(int, int, int)>();
@@ -30774,24 +32803,24 @@ class Api {
 
   late final _ffiListVerificationEmojiCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-    "__FfiListVerificationEmojiCreate",
-  );
+        "__FfiListVerificationEmojiCreate",
+      );
 
   late final _ffiListVerificationEmojiCreate =
       _ffiListVerificationEmojiCreatePtr.asFunction<int Function()>();
 
   late final _ffiListVerificationEmojiLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-    "__FfiListVerificationEmojiLen",
-  );
+        "__FfiListVerificationEmojiLen",
+      );
 
   late final _ffiListVerificationEmojiLen =
       _ffiListVerificationEmojiLenPtr.asFunction<int Function(int)>();
 
   late final _ffiListVerificationEmojiElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListVerificationEmojiElementAt",
-  );
+        "__FfiListVerificationEmojiElementAt",
+      );
 
   late final _ffiListVerificationEmojiElementAt =
       _ffiListVerificationEmojiElementAtPtr
@@ -30799,53 +32828,53 @@ class Api {
 
   late final _ffiListVerificationEmojiRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-    "__FfiListVerificationEmojiRemove",
-  );
+        "__FfiListVerificationEmojiRemove",
+      );
 
   late final _ffiListVerificationEmojiRemove =
       _ffiListVerificationEmojiRemovePtr.asFunction<int Function(int, int)>();
 
   late final _ffiListVerificationEmojiAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-    "__FfiListVerificationEmojiAdd",
-  );
+        "__FfiListVerificationEmojiAdd",
+      );
 
   late final _ffiListVerificationEmojiAdd =
       _ffiListVerificationEmojiAddPtr.asFunction<void Function(int, int)>();
 
   late final _ffiListVerificationEmojiInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListVerificationEmojiInsert");
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListVerificationEmojiInsert");
 
   late final _ffiListVerificationEmojiInsert =
       _ffiListVerificationEmojiInsertPtr
           .asFunction<void Function(int, int, int)>();
   late final _destructureRsvpStatusPtr =
       _lookup<ffi.NativeFunction<_EnumWrapper Function(ffi.IntPtr)>>(
-    "destructure_enum_RsvpStatus",
-  );
+        "destructure_enum_RsvpStatus",
+      );
 
   late final _destructureRsvpStatus =
       _destructureRsvpStatusPtr.asFunction<_EnumWrapper Function(int)>();
   late final _destructureRelationTargetTypePtr =
       _lookup<ffi.NativeFunction<_EnumWrapper Function(ffi.IntPtr)>>(
-    "destructure_enum_RelationTargetType",
-  );
+        "destructure_enum_RelationTargetType",
+      );
 
-  late final _destructureRelationTargetType = _destructureRelationTargetTypePtr
-      .asFunction<_EnumWrapper Function(int)>();
+  late final _destructureRelationTargetType =
+      _destructureRelationTargetTypePtr
+          .asFunction<_EnumWrapper Function(int)>();
   late final _destructureMembershipStatusPtr =
       _lookup<ffi.NativeFunction<_EnumWrapper Function(ffi.IntPtr)>>(
-    "destructure_enum_MembershipStatus",
-  );
+        "destructure_enum_MembershipStatus",
+      );
 
   late final _destructureMembershipStatus =
       _destructureMembershipStatusPtr.asFunction<_EnumWrapper Function(int)>();
   late final _destructureMemberPermissionPtr =
       _lookup<ffi.NativeFunction<_EnumWrapper Function(ffi.IntPtr)>>(
-    "destructure_enum_MemberPermission",
-  );
+        "destructure_enum_MemberPermission",
+      );
 
   late final _destructureMemberPermission =
       _destructureMemberPermissionPtr.asFunction<_EnumWrapper Function(int)>();
