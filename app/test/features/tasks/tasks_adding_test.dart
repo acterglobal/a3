@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:acter/features/tasks/actions/create_task.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +83,7 @@ void main() {
         goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
+          autoSubscribeProvider.overrideWith((a) async => false),
         ],
         child: CreateTaskWidget(
           taskList: mockTaskList,
@@ -143,6 +145,7 @@ void main() {
         goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
+          autoSubscribeProvider.overrideWith((a) async => false),
         ],
         child: CreateTaskWidget(
           taskList: mockTaskList,
@@ -214,6 +217,7 @@ void main() {
         goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
+          autoSubscribeProvider.overrideWith((a) async => false),
         ],
         child: CreateTaskWidget(
           taskList: mockTaskList,
@@ -294,6 +298,7 @@ void main() {
         goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
+          autoSubscribeProvider.overrideWith((a) async => false),
         ],
         child: CreateTaskWidget(
           taskList: mockTaskList,
@@ -381,6 +386,7 @@ void main() {
         goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
+          autoSubscribeProvider.overrideWith((a) async => false),
         ],
         child: CreateTaskWidget(
           taskList: mockTaskList,
