@@ -111,7 +111,8 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     RefDetails? refDetails;
     if (selectedChatId != null) {
       final selectedChat = await ref.read(chatProvider(selectedChatId).future);
-      refDetails = await selectedChat!.refDetails();
+      if(selectedChat == null) return;
+      refDetails = await selectedChat.refDetails();
     }
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
     selectedNewsSlide?.refDetails = refDetails;
