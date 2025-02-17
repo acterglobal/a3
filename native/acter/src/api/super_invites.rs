@@ -160,7 +160,7 @@ impl SuperInvites {
         RUNTIME
             .spawn(async move {
                 let req = api::list::Request::new();
-                let resp = client.send(req, None).await?;
+                let resp = client.deref().send(req, None).await?;
                 let tokens = resp
                     .tokens
                     .into_iter()
@@ -176,22 +176,22 @@ impl SuperInvites {
     }
 
     pub async fn redeem(&self, token: String) -> Result<Vec<String>> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let req = api::redeem::Request::new(token);
-                let resp = c.send(req, None).await?;
+                let resp = client.deref().send(req, None).await?;
                 Ok(resp.rooms)
             })
             .await?
     }
 
     pub async fn info(&self, token: String) -> Result<SuperInviteInfo> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let req = api::info::Request::new(token);
-                let resp = c.send(req, None).await?;
+                let resp = client.deref().send(req, None).await?;
                 Ok(SuperInviteInfo::new(resp.info))
             })
             .await?
@@ -210,12 +210,12 @@ impl SuperInvites {
                         .into_update_token()
                         .context("Unable to get update token from builder")?;
                     let req = api::update::Request::new(token);
-                    let resp = client.send(req, None).await?;
+                    let resp = client.deref().send(req, None).await?;
                     resp.token
                 } else {
                     let token = builder.token;
                     let req = api::create::Request::new(token);
-                    let resp = client.send(req, None).await?;
+                    let resp = client.deref().send(req, None).await?;
                     resp.token
                 };
                 Ok(SuperInviteToken { client, token })
@@ -224,11 +224,11 @@ impl SuperInvites {
     }
 
     pub async fn delete(&self, token: String) -> Result<bool> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let req = api::delete::Request::new(token);
-                c.send(req, None).await?;
+                client.deref().send(req, None).await?;
                 Ok(true)
             })
             .await?
