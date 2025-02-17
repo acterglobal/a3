@@ -15,6 +15,7 @@ import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/notifications/widgets/object_notification_status.dart';
 import 'package:acter/features/pins/actions/edit_pin_actions.dart';
 import 'package:acter/features/pins/actions/pin_update_actions.dart';
 import 'package:acter/features/pins/actions/reduct_pin_action.dart';
@@ -85,6 +86,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
             },
           ),
         BookmarkAction(bookmarker: BookmarkType.forPins(widget.pinId)),
+        ObjectNotificationStatus(objectId: widget.pinId),
         _buildActionMenu(),
       ],
     );
@@ -312,10 +314,10 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
               context: context,
               bottomSheetTitle: L10n.of(context).editName,
               titleValue: pin.title(),
-              onSave: (newTitle) async {
+              onSave: (ref, newTitle) async {
                 final notifier = ref.read(pinEditProvider(pin).notifier);
                 notifier.setTitle(newTitle);
-                updatePinTitle(context, pin, newTitle);
+                updatePinTitle(context, ref, pin, newTitle);
               },
             );
           }
@@ -356,9 +358,10 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
               context: context,
               descriptionHtmlValue: description.formattedBody(),
               descriptionMarkdownValue: plainBody,
-              onSave: (htmlBodyDescription, plainDescription) async {
+              onSave: (ref, htmlBodyDescription, plainDescription) async {
                 await updatePinDescription(
                   context,
+                  ref,
                   htmlBodyDescription,
                   plainDescription,
                   pin,

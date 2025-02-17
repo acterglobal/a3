@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
@@ -32,6 +33,12 @@ Future<void> updateTaskListIcon(
 
   try {
     await updateBuilder.send();
+
+    await autosubscribe(
+      ref: ref,
+      objectId: taskList.eventIdStr(),
+      lang: lang,
+    );
     EasyLoading.dismiss();
     ref.invalidate(taskListsProvider);
     if (!context.mounted) return;
@@ -50,6 +57,7 @@ Future<void> updateTaskListIcon(
 
 Future<void> updateTaskListTitle(
   BuildContext context,
+  WidgetRef ref,
   TaskList taskList,
   String newName,
 ) async {
@@ -59,6 +67,11 @@ Future<void> updateTaskListTitle(
   updater.name(newName);
   try {
     await updater.send();
+    await autosubscribe(
+      ref: ref,
+      objectId: taskList.eventIdStr(),
+      lang: lang,
+    );
     EasyLoading.dismiss();
     if (!context.mounted) return;
     Navigator.pop(context);

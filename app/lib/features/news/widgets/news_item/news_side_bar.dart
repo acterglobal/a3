@@ -95,15 +95,8 @@ class NewsSideBar extends ConsumerWidget {
                   shrinkWrap: false,
                   centerTitle: true,
                   useCompactEmptyState: false,
-                  postCreateComment: () async {
-                    // when user create a comment, let's autosubscribe to comments
-                    await autosubscribe(
-                      ref: ref,
-                      objectId: objectId,
-                      subType: SubscriptionSubType.comments,
-                      lang: L10n.of(context),
-                    );
-                  },
+                  autoSubscribeSection: SubscriptionSubType
+                      .comments, // we want to be using the comments only on boosts
                   actions: [
                     ObjectNotificationStatus(
                       objectId: objectId,
@@ -115,9 +108,13 @@ class NewsSideBar extends ConsumerWidget {
             },
             icon: Column(
               children: [
-                ShadowEffectWidget(child: Icon(Atlas.comment_blank),),
+                ShadowEffectWidget(
+                  child: Icon(Atlas.comment_blank),
+                ),
                 const SizedBox(height: 4),
-                ShadowEffectWidget(child:Text(commentCount.toString(), style: style),),
+                ShadowEffectWidget(
+                  child: Text(commentCount.toString(), style: style),
+                ),
               ],
             ),
           ),

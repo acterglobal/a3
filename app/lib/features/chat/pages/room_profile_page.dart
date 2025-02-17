@@ -211,7 +211,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
       context: context,
       bottomSheetTitle: L10n.of(context).editName,
       titleValue: roomAvatarInfo.displayName ?? '',
-      onSave: (newName) => _saveName(newName),
+      onSave: (ref, newName) => _saveName(newName),
     );
   }
 

@@ -1,7 +1,8 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/features/comments/actions/submit_comment.dart';
-import 'package:acter/features/comments/types.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
+import 'package:acter/features/notifications/types.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -14,12 +15,12 @@ class AddCommentWidget extends ConsumerStatefulWidget {
   static const addCommentButton = Key('add-comment-button');
 
   final CommentsManager manager;
-  final PostCreateComment? postCreateComment;
+  final SubscriptionSubType? autoSubscribeSection;
 
   const AddCommentWidget({
     super.key,
     required this.manager,
-    this.postCreateComment,
+    this.autoSubscribeSection,
   });
 
   @override
@@ -61,8 +62,9 @@ class _AddCommentWidgetState extends ConsumerState<AddCommentWidget> {
             context: context,
             bottomSheetTitle: L10n.of(context).addComment,
             descriptionHtmlValue: _commentController.text,
-            onSave: (htmlBodyDescription, plainDescription) async {
+            onSave: (ref, htmlBodyDescription, plainDescription) async {
               final success = await addComment(
+                ref: ref,
                 plainDescription: plainDescription,
                 htmlBodyDescription: htmlBodyDescription,
               );
@@ -91,8 +93,10 @@ class _AddCommentWidgetState extends ConsumerState<AddCommentWidget> {
                 ),
                 child: IconButton(
                   key: AddCommentWidget.addCommentButton,
-                  onPressed: () =>
-                      addComment(plainDescription: _commentController.text),
+                  onPressed: () => addComment(
+                    ref: ref,
+                    plainDescription: _commentController.text,
+                  ),
                   icon: Icon(PhosphorIcons.paperPlaneTilt()),
                 ),
               )
@@ -102,23 +106,27 @@ class _AddCommentWidgetState extends ConsumerState<AddCommentWidget> {
   }
 
   Future<bool> addComment({
+    required WidgetRef ref,
     required String plainDescription,
     String? htmlBodyDescription,
   }) async {
-    final success = await submitComment(
-      L10n.of(context),
+    final lang = L10n.of(context);
+    final objectId = await submitComment(
+      lang,
       plainDescription,
       htmlBodyDescription ?? plainDescription,
       widget.manager,
     );
-    if (success) {
+    if (objectId != null) {
       _commentController.clear();
       showSendButton.value = false;
-      final postCommentFn = widget.postCreateComment;
-      if (postCommentFn != null) {
-        postCommentFn();
-      }
+      await autosubscribe(
+        ref: ref,
+        objectId: widget.manager.objectIdStr(),
+        lang: lang,
+        subType: widget.autoSubscribeSection,
+      );
     }
-    return success;
+    return objectId != null;
   }
 }

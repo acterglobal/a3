@@ -2,6 +2,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
@@ -327,6 +328,12 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
       updateBuilder.utcEndFromRfc3339(utcEndDateTime);
       final eventId = await updateBuilder.send();
       _log.info('Calendar Event updated $eventId');
+
+      await autosubscribe(
+        ref: ref,
+        objectId: eventId.toString(),
+        lang: lang,
+      );
 
       EasyLoading.dismiss();
 
