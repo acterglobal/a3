@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -11,10 +12,12 @@ final _log = Logger('a3::news::image_slide');
 
 class ImageSlide extends StatefulWidget {
   final NewsSlide slide;
+  final NewsLoadingState errorState;  // Add the enum as a parameter
 
   const ImageSlide({
     super.key,
     required this.slide,
+    required this.errorState,
   });
 
   @override
@@ -73,29 +76,56 @@ class _ImageSlideState extends State<ImageSlide> {
     StackTrace? stackTrace,
   ) {
     _log.severe('Failed to load image of slide', error, stackTrace);
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            PhosphorIcons.imageBroken(),
-            size: 100,
-          ),
-          SizedBox(height: 10),
-          Text(L10n.of(context).unableToLoadImage),
-          SizedBox(height: 20),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white, width: 1),
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-            ),
-            child: TextButton(
-              onPressed: () => setState(() {}),
-              child: Text(L10n.of(context).tryAgain),
-            ),
-          ),
-        ],
+
+    Widget errorIcon = Icon(
+      PhosphorIcons.imageBroken(),
+      size: 100,
+    );
+
+    Widget errorText = Text(
+      L10n.of(context).unableToLoadImage,
+    );
+
+    Widget tryAgainButton = Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white, width: 1),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      child: TextButton(
+        onPressed: () {
+          setState(() {}); // Trigger reload of the image
+        },
+        child: Text(L10n.of(context).tryAgain,),
       ),
     );
+
+    switch (widget.errorState) {
+      case NewsLoadingState.showErrorImageOnly:
+        return Center(child: errorIcon);
+      case NewsLoadingState.showErrorImageWithText:
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              errorIcon,
+              SizedBox(height: 10),
+              errorText,
+            ],
+          ),
+        );
+      case NewsLoadingState.showErrorWithTryAgain:
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              errorIcon,
+              SizedBox(height: 10),
+              errorText,
+              SizedBox(height: 20),
+              tryAgainButton,
+            ],
+          ),
+        );
+    }
   }
 }

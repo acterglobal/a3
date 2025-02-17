@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/news/widgets/news_item/news_post_time_widget.dart';
 import 'package:acter/features/news/widgets/news_item/news_side_bar.dart';
@@ -64,7 +65,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
       itemCount: slides.length,
       preloadPagesCount: slides.length,
       onPageChanged: (page) =>  currentSlideIndex.value = page,
-      itemBuilder: (context, index) => NewsSlideItem(slide: slides[index]),
+      itemBuilder: (context, index) => NewsSlideItem(slide: slides[index],errorState: NewsLoadingState.showErrorWithTryAgain,),
     );
   }
 

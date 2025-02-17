@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ void main() {
       // Build the widget
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: ImageSlide(slide: mockSlide)),
+          home: Scaffold(body: ImageSlide(slide: mockSlide,errorState: NewsLoadingState.showErrorImageOnly,)),
         ),
       );
 
@@ -47,7 +48,33 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
-          home: Scaffold(body: ImageSlide(slide: mockSlide)),
+          home: Scaffold(body: ImageSlide(slide: mockSlide, errorState: NewsLoadingState.showErrorImageOnly,)),
+        ),
+      );
+
+      // Wait for Future to complete
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(PhosphorIcons.imageBroken()), findsOneWidget);
+
+      // Build the widget
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: L10n.localizationsDelegates,
+          home: Scaffold(body: ImageSlide(slide: mockSlide, errorState: NewsLoadingState.showErrorImageWithText,)),
+        ),
+      );
+
+      // Wait for Future to complete
+      await tester.pumpAndSettle();
+
+      expect(find.text('Unable to load image'), findsOneWidget);
+
+      // Build the widget
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: L10n.localizationsDelegates,
+          home: Scaffold(body: ImageSlide(slide: mockSlide, errorState: NewsLoadingState.showErrorWithTryAgain,)),
         ),
       );
 
@@ -61,7 +88,7 @@ void main() {
       await tester.tap(find.byType(TextButton));
       await tester.pumpAndSettle(); // Wait for the widget to rebuild
 
-      verify(() => mockSlide.sourceBinary(null)).called(2); // Called twice (1 for the initial error, 1 for retry)
+      verify(() => mockSlide.sourceBinary(null)).called(4);
     });
 
     testWidgets('shows image UI when data loading is successful',
@@ -80,7 +107,7 @@ void main() {
       // Build the widget
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: ImageSlide(slide: mockSlide)),
+          home: Scaffold(body: ImageSlide(slide: mockSlide, errorState: NewsLoadingState.showErrorImageOnly,)),
         ),
       );
 

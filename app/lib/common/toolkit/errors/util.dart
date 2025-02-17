@@ -19,3 +19,9 @@ enum ErrorCode {
     return ErrorCode.other;
   }
 }
+
+enum NewsLoadingState{
+  showErrorImageOnly,
+  showErrorImageWithText,
+  showErrorWithTryAgain,
+}
