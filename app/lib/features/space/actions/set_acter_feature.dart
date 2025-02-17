@@ -40,8 +40,6 @@ extension SpaceFeatureActivator on ActerAppSettings {
         updated.active(newVal);
         builder.tasks(updated.build());
         break;
-      default:
-        throw 'Unsupported SpaceFeature Type';
     }
     return builder;
   }

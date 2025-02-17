@@ -70,7 +70,7 @@ async fn pins_creation_notification() -> Result<()> {
     assert_eq!(notifications.push_style(), "creation");
     assert_eq!(notifications.target_url(), format!("/pins/{event_id}"));
     let parent = notifications.parent().unwrap();
-    assert_eq!(parent.object_type_str(), "pin".to_owned());
+    assert_eq!(parent.type_str(), "pin".to_owned());
     assert_eq!(parent.title().unwrap(), "Acter Website".to_owned());
     assert_eq!(parent.emoji(), "📌"); // pin icon
     assert_eq!(parent.object_id_str(), event_id);
@@ -128,7 +128,7 @@ async fn pin_title_update() -> Result<()> {
     assert_eq!(notification_item.title(), "Renamed Pin"); // old title
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
-    assert_eq!(parent.object_type_str(), "pin");
+    assert_eq!(parent.type_str(), "pin");
     // assert_eq!(parent.title().unwrap(), "Acter Website");
     assert_eq!(parent.emoji(), "📌"); // pin icon
     assert_eq!(parent.object_id_str(), obj_id);
@@ -185,7 +185,7 @@ async fn pin_desc_update() -> Result<()> {
     assert_eq!(content.body(), "Added description"); // new description
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
-    assert_eq!(parent.object_type_str(), "pin");
+    assert_eq!(parent.type_str(), "pin");
     assert_eq!(parent.title().unwrap(), "Acter Website");
     assert_eq!(parent.emoji(), "📌"); // pin icon
     assert_eq!(parent.object_id_str(), obj_id);
@@ -241,7 +241,7 @@ async fn pin_redaction() -> Result<()> {
 
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(notification_item.target_url(), format!("/pins/"));
-    assert_eq!(parent.object_type_str(), "pin");
+    assert_eq!(parent.type_str(), "pin");
     assert_eq!(parent.title().unwrap(), "Acter Website");
     assert_eq!(parent.emoji(), "📌"); // pin icon
     assert_eq!(parent.object_id_str(), obj_id);

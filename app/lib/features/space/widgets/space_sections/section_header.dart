@@ -40,9 +40,9 @@ class SectionHeader extends StatelessWidget {
             ? BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    colorScheme.surface.withOpacity(0.9),
-                    colorScheme.surface.withOpacity(0.3),
-                    colorScheme.secondaryContainer.withOpacity(0.1),
+                    colorScheme.surface.withValues(alpha:0.9),
+                    colorScheme.surface.withValues(alpha:0.3),
+                    colorScheme.secondaryContainer.withValues(alpha: 0.1),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.topRight,

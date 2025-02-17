@@ -22,7 +22,6 @@ import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
-import 'package:acter/features/super_invites/pages/create.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -141,27 +140,6 @@ final generalRoutes = [
         child: CreatePinPage(
           initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
         ),
-      );
-    },
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
-    name: Routes.actionCreateSuperInvite.name,
-    path: Routes.actionCreateSuperInvite.route,
-    pageBuilder: (context, state) {
-      final token = state.extra as SuperInviteToken?;
-      return SideSheetPage(
-        key: state.pageKey,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return SlideTransition(
-            position: Tween(
-              begin: const Offset(1, 0),
-              end: const Offset(0, 0),
-            ).animate(animation),
-            child: child,
-          );
-        },
-        child: CreateSuperInviteTokenPage(token: token),
       );
     },
   ),

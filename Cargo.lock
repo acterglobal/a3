@@ -131,6 +131,7 @@ dependencies = [
  "toml 0.8.20",
  "tracing",
  "url",
+ "urlencoding",
  "uuid",
 ]
 

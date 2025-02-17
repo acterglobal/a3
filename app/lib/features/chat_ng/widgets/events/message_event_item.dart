@@ -143,7 +143,7 @@ class MessageEventItem extends StatelessWidget {
     // whether it contains `replied to` event.
     if (repliedTo != null) {
       repliedToBuilder =
-          RepliedToPreview(roomId: roomId, originalId: repliedTo);
+          RepliedToPreview(roomId: roomId, originalId: repliedTo, isMe: isMe);
     }
 
     // if only consists of emojis

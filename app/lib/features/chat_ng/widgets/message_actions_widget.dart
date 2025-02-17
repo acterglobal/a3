@@ -37,7 +37,7 @@ class MessageActionsWidget extends ConsumerWidget {
       ),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(5)),
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
       ),
       child: Column(
         children: menuItems(context, ref, lang).map((e) => e).toList(),

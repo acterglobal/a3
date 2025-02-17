@@ -73,4 +73,20 @@ void main() {
       expect(find.text('Test Space'), findsOneWidget);
     });
   });
+  testWidgets('Forbidden shows fallback', (tester) async {
+    await tester.pumpProviderWidget(
+      overrides: [
+        roomPreviewProvider.overrideWith(
+            (r, a) async => throw '[403 / M_FORBIDDEN] Room not accessible',),
+        maybeRoomProvider.overrideWith(() => MockAsyncMaybeRoomNotifier()),
+      ],
+      child: RoomPreviewWidget(
+        roomId: 'roomId',
+        fallbackRoomDisplayName: 'Barcelona',
+        onForward: (a, b, c) {},
+      ),
+    );
+    await tester.pump();
+    expect(find.text('Barcelona'), findsOneWidget);
+  });
 }

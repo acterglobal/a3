@@ -170,10 +170,11 @@ class ActivitiesPage extends ConsumerWidget {
       security.add(renderUnconfirmedEmailAddrs(context));
     }
 
-    final sessions = renderSessions(context, ref);
-    if (sessions != null) {
-      security.add(sessions);
-    }
+    // FIXME: disabled until this flow actually works well
+    // final sessions = renderSessions(context, ref);
+    // if (sessions != null) {
+    //   security.add(sessions);
+    // }
 
     final invitations = renderInvitations(context, ref);
     if (invitations != null && invitations.isNotEmpty) {

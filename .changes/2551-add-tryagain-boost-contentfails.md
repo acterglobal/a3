@@ -1,1 +1,0 @@
-- [improvement] : Ability to reload the boost if the media fails to load.

@@ -3,6 +3,9 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+//Search Value provider for pin list
+final inviteListSearchTermProvider = StateProvider<String>((ref) => '');
+
 final hasSuperTokensAccess = FutureProvider<bool>((ref) async {
   final asyncVal = ref.watch(superInvitesTokensProvider);
   // if we error’d we assume it is not available on the server.
@@ -12,7 +15,15 @@ final hasSuperTokensAccess = FutureProvider<bool>((ref) async {
 final superInvitesTokensProvider =
     FutureProvider<List<SuperInviteToken>>((ref) async {
   final superInvites = await ref.watch(superInvitesProvider.future);
-  return (await superInvites.tokens()).toList();
+  final tokenList = (await superInvites.tokens()).toList();
+
+  final searchTerm =
+      ref.watch(inviteListSearchTermProvider).trim().toLowerCase();
+  if (searchTerm.isEmpty) return tokenList;
+
+  return tokenList
+      .where((invite) => invite.token().toLowerCase().contains(searchTerm))
+      .toList();
 });
 
 final superInviteTokenProvider = FutureProvider.autoDispose

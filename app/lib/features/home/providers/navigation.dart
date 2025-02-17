@@ -23,7 +23,7 @@ final bottomBarItems = [
     ),
     label: 'Dashboard',
     initialLocation: Routes.dashboard.route,
-    tutorialGlobalKey: dashboardKey,
+    tutorialGlobalKey: bottomDashboardKey,
   ),
   BottomBarNavigationItem(
     icon: const Icon(
@@ -39,14 +39,14 @@ final bottomBarItems = [
     ),
     label: 'Updates',
     initialLocation: Routes.updates.route,
-    tutorialGlobalKey: updateKey,
+    tutorialGlobalKey: bottomUpdateKey,
   ),
   BottomBarNavigationItem(
     icon: const ChatsIcon(),
     activeIcon: const CustomSelectedIcon(icon: ChatsIcon()),
     label: 'Chat',
     initialLocation: Routes.chat.route,
-    tutorialGlobalKey: chatsKey,
+    tutorialGlobalKey: bottomChatsKey,
   ),
   BottomBarNavigationItem(
     icon: const ActivitiesIcon(),
@@ -55,7 +55,7 @@ final bottomBarItems = [
     ),
     label: 'Activities',
     initialLocation: Routes.activities.route,
-    tutorialGlobalKey: activityKey,
+    tutorialGlobalKey: bottomActivityKey,
   ),
   BottomBarNavigationItem(
     icon: const Icon(
@@ -70,6 +70,6 @@ final bottomBarItems = [
     ),
     label: 'Search',
     initialLocation: Routes.search.route,
-    tutorialGlobalKey: jumpToKey,
+    tutorialGlobalKey: bottomJumpToKey,
   ),
 ];

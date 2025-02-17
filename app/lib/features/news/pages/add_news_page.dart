@@ -205,6 +205,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   void selectActionItemDialog(BuildContext buildContext) {
     showAdaptiveDialog(
       context: context,
+      barrierDismissible: true,
       builder: (context) {
         final lang = L10n.of(context);
         return AlertDialog.adaptive(
@@ -229,6 +230,16 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               Navigator.pop(context);
               final notifier = ref.read(newsStateProvider.notifier);
               await notifier.enterLinkToShare(buildContext);
+            },
+            onShareSpaceSelected: () async {
+              Navigator.pop(context);
+              final notifier = ref.read(newsStateProvider.notifier);
+              await notifier.selectSpaceToShare(buildContext);
+            },
+            onShareChatSelected: () async {
+              Navigator.pop(context);
+              final notifier = ref.read(newsStateProvider.notifier);
+              await notifier.selectChatToShare(buildContext);
             },
           ),
         );

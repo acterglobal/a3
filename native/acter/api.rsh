@@ -1519,6 +1519,9 @@ object Convo {
 
     /// clear composed message state of the room
     fn clear_msg_draft() -> Future<Result<bool>>;
+
+    /// get the internal reference object, defined in Room
+    fn ref_details() -> Future<Result<RefDetails>>;
 }
 
 
@@ -2177,6 +2180,68 @@ object ActerAppSettingsBuilder {
 
 
 
+//     ###     ######  ######## #### ##     ## #### ######## #### ########  ######  
+//    ## ##   ##    ##    ##     ##  ##     ##  ##     ##     ##  ##       ##    ## 
+//   ##   ##  ##          ##     ##  ##     ##  ##     ##     ##  ##       ##       
+//  ##     ## ##          ##     ##  ##     ##  ##     ##     ##  ######    ######  
+//  ######### ##          ##     ##   ##   ##   ##     ##     ##  ##             ## 
+//  ##     ## ##    ##    ##     ##    ## ##    ##     ##     ##  ##       ##    ## 
+//  ##     ##  ######     ##    ####    ###    ####    ##    #### ########  ######  
+
+object MembershipChange {
+    /// user_id of the member that has changed
+    fn user_id_str() -> string;
+
+    /// avatar_url of the member that has changed
+    fn avatar_url() -> Option<string>;
+
+    /// display_name of the member that has changed
+    fn display_name() -> Option<string>;
+
+    /// reason if any was provided
+    fn reason() -> Option<string>;
+}
+
+object ActivityObject {
+    fn type_str() -> string;
+    fn object_id_str() -> string;
+    fn title() -> Option<string>;
+    fn emoji() -> string;
+}
+
+object Activity {
+    // generic
+
+    /// the event_id as a string
+    fn event_id_str() -> string;
+    /// the sender of this event as a string
+    fn sender_id_str() -> string;
+
+    /// the server receiving timestamp in milliseconds
+    fn origin_server_ts() -> u64;
+
+    /// the room_id of this event
+    fn room_id_str() -> string;
+
+    /// the type of this activity as a string
+    /// e.g. invited, invitationAccepted
+    fn type_str() -> string;
+
+    /// the details of this membership change activity
+    fn membership_change() -> Option<MembershipChange>;
+
+}
+
+object Activities {
+    /// get the activity ids from offset to limit for this activities listing
+    fn get_ids(offset: u32, limit: u32) -> Future<Result<Vec<string>>>;
+
+    /// Receive an update when a the activities stream has changed
+    fn subscribe_stream() -> Stream<bool>;
+}
+
+
+
 //  ########   #######   #######  ##     ##    ########  ########  ######## ##     ## #### ######## ##      ## 
 //  ##     ## ##     ## ##     ## ###   ###    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ## 
 //  ##     ## ##     ## ##     ## #### ####    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ## 
@@ -2423,6 +2488,9 @@ object Space {
 
     /// Set the categories for a specific key
     fn set_categories(key: string, categories: CategoriesBuilder) -> Future<Result<bool>>;
+
+    /// get the internal reference object, defined in Room
+    fn ref_details() -> Future<Result<RefDetails>>;
 }
 
 enum MembershipStatus {
@@ -2751,20 +2819,13 @@ object NotificationRoom {
     fn image() -> Future<Result<buffer<u8>>>;
 }
 
-object NotificationItemParent {
-    fn object_type_str() -> string;
-    fn object_id_str() -> string;
-    fn title() -> Option<string>;
-    fn emoji() -> string;
-}
-
 // converting a room_id+event_id into the notification item to show
 // from push context.
 object NotificationItem {
     fn push_style() -> string;
     fn title() -> string;
     fn sender() -> NotificationSender;
-    fn parent() -> Option<NotificationItemParent>;
+    fn parent() -> Option<ActivityObject>;
     fn parent_id_str() -> Option<string>;
     fn room() -> NotificationRoom;
     fn target_url() -> string;
@@ -3014,6 +3075,12 @@ object Client {
     /// listen to updates to any event type
     fn subscribe_event_type_stream(key: string) -> Result<Stream<bool>>;
 
+    /// listen to account data updates
+    fn subscribe_account_data_stream(key: string) -> Result<Stream<bool>>;
+
+    /// listen to account data updates of specific room
+    fn subscribe_room_account_data_stream(room: string, key: string) -> Result<Stream<bool>>;
+
     /// Find the room or wait until it becomes available
     fn wait_for_room(key: string, timeout: Option<u8>) -> Future<Result<bool>>;
 
@@ -3138,6 +3205,14 @@ object Client {
     /// create a link ref details
     fn new_link_ref_details(title: string, uri: string) -> Result<RefDetails>;
 
+    /// get a specific activity
+    fn activity(key: string) -> Future<Result<Activity>>;
+
+    /// get the activities listener for a room
+    fn activities_for_room(key: string) -> Result<Activities>;
+
+    /// get the activities listener for a specific object
+    fn activities_for_obj(key: string) -> Result<Activities>;
 }
 
 object NotificationSettings {

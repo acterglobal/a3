@@ -2,10 +2,10 @@ use acter_core::referencing::ExecuteReference;
 use anyhow::Result;
 use eyeball_im::{ObservableVector, VectorDiff};
 use futures::{
+    lock::Mutex,
     pin_mut,
     stream::{Stream, StreamExt},
 };
-use futures::lock::Mutex;
 use imbl::vector::Vector;
 use matrix_sdk_base::{
     ruma::{api::client::sync::sync_events, assign, OwnedRoomId},
@@ -182,8 +182,7 @@ impl Client {
         let timelines = self.sync_controller.timelines.clone();
 
         let main_listener = tokio::spawn(async move {
-            let (room_stream, entries_controller) =
-                room_list.entries_with_dynamic_adapters(50_000);
+            let (room_stream, entries_controller) = room_list.entries_with_dynamic_adapters(50_000);
             entries_controller
                 .set_filter(Box::new(room_list_service::filters::new_filter_non_left()));
             pin_mut!(room_stream);

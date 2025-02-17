@@ -21,6 +21,12 @@ void messageActions({
   await HapticFeedback.heavyImpact();
   if (!context.mounted) return;
 
+  final RenderBox? messageBox = context.findRenderObject() as RenderBox?;
+  if (messageBox == null) return;
+
+  final messageSize = messageBox.size;
+  final messagePosition = messageBox.localToGlobal(Offset.zero);
+
   showGeneralDialog(
     context: context,
     barrierDismissible: true,
@@ -28,41 +34,47 @@ void messageActions({
     barrierColor: Colors.transparent,
     transitionDuration: const Duration(milliseconds: 200),
     pageBuilder: (context, animation, secondaryAnimation) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      return Stack(
         children: [
           _BlurOverlay(
             animation: animation,
             child: const SizedBox.shrink(),
           ),
-          // Reaction Row
-          Align(
-            alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-            child: _AnimatedActionsContainer(
-              animation: animation,
-              tagId: messageId,
-              child: ReactionSelector(
-                isMe: isMe,
-                messageId: '$messageId-reactions',
-                roomId: roomId,
-              ),
-            ),
-          ),
-          // Message
-          Center(child: messageWidget),
-          // Message actions
-          Align(
-            alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-            child: _AnimatedActionsContainer(
-              animation: animation,
-              tagId: '$messageId-actions',
-              child: MessageActionsWidget(
-                isMe: isMe,
-                canRedact: canRedact,
-                item: item,
-                messageId: messageId,
-                roomId: roomId,
-              ),
+          Positioned(
+            left: messagePosition.dx,
+            top: 0,
+            width: messageSize.width,
+            height: MediaQuery.sizeOf(context).height,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment:
+                  isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                // Reaction Row
+                _AnimatedActionsContainer(
+                  animation: animation,
+                  tagId: messageId,
+                  child: ReactionSelector(
+                    isMe: isMe,
+                    messageId: '$messageId-reactions',
+                    roomId: roomId,
+                  ),
+                ),
+                // Message
+                Center(child: messageWidget),
+                // Message actions
+                _AnimatedActionsContainer(
+                  animation: animation,
+                  tagId: '$messageId-actions',
+                  child: MessageActionsWidget(
+                    isMe: isMe,
+                    canRedact: canRedact,
+                    item: item,
+                    messageId: messageId,
+                    roomId: roomId,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -93,7 +105,7 @@ class _BlurOverlay extends StatelessWidget {
               sigmaY: 8 * animation.value,
             ),
             child: Container(
-              color: Colors.black.withOpacity(0.1 * animation.value),
+              color: Colors.black.withValues(alpha:(0.1 * animation.value)),
               child: child,
             ),
           );

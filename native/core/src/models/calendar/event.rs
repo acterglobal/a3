@@ -21,7 +21,7 @@ use crate::{
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CalendarEvent {
-    inner: CalendarEventEventContent,
+    pub(crate) inner: CalendarEventEventContent,
     meta: EventMeta,
 }
 impl Deref for CalendarEvent {
@@ -153,7 +153,7 @@ impl From<OriginalMessageLikeEvent<CalendarEventEventContent>> for CalendarEvent
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CalendarEventUpdate {
-    inner: CalendarEventUpdateEventContent,
+    pub(crate) inner: CalendarEventUpdateEventContent,
     meta: EventMeta,
 }
 
