@@ -1,11 +1,10 @@
 use anyhow::Result;
+use matrix_sdk::ruma::{events::room::MediaSource, OwnedServerName, RoomOrAliasId, ServerName};
 use matrix_sdk::{
-    media::MediaRequestParameters, room_preview::RoomPreview as SdkRoomPreview,
+    media::MediaRequestParameters,
+    room_preview::RoomPreview as SdkRoomPreview,
+    ruma::{room::RoomType, space::SpaceRoomJoinRule},
     Client as SdkClient, RoomState,
-};
-use ruma::{
-    events::room::MediaSource, room::RoomType, space::SpaceRoomJoinRule, OwnedServerName,
-    RoomOrAliasId, ServerName,
 };
 
 use crate::{api::utils::VecStringBuilder, OptionBuffer, ThumbnailSize, RUNTIME};
@@ -79,6 +78,7 @@ impl RoomPreview {
             Some(RoomState::Joined) => "joined".to_string(),
             Some(RoomState::Left) => "left".to_string(),
             Some(RoomState::Knocked) => "knocked".to_string(),
+            Some(RoomState::Banned) => "banned".to_string(),
         }
     }
 

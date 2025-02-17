@@ -13,11 +13,11 @@ use anyhow::{Context, Result};
 use base64ct::{Base64UrlUnpadded, Encoding};
 use core::time::Duration;
 use derive_builder::Builder;
-use eyeball_im::{ObservableVector, Vector};
 use futures::{
     future::join_all,
     stream::{Stream, StreamExt},
 };
+use matrix_sdk::ruma::{EventId, ServerName};
 use matrix_sdk::{room::Room as SdkRoom, Client as SdkClient};
 use matrix_sdk_base::{
     media::{MediaRequestParameters, UniqueKey},
@@ -28,7 +28,7 @@ use matrix_sdk_base::{
     },
     RoomStateFilter,
 };
-use ruma::{EventId, ServerName};
+use matrix_sdk_ui::eyeball_im::{ObservableVector, Vector};
 use std::{borrow::Cow, io::Write, ops::Deref, path::PathBuf, str::FromStr, sync::Arc};
 use tokio::{
     sync::{broadcast::Receiver, RwLock},

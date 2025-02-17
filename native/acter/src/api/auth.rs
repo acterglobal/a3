@@ -2,7 +2,7 @@ use acter_core::RestoreToken;
 use anyhow::{bail, Context, Result};
 use lazy_static::lazy_static;
 use matrix_sdk::{
-    matrix_auth::{MatrixSession, MatrixSessionTokens},
+    authentication::matrix::{MatrixSession, MatrixSessionTokens},
     reqwest::{ClientBuilder as ReqClientBuilder, StatusCode},
     Client as SdkClient, ClientBuilder as SdkClientBuilder,
 };
@@ -478,7 +478,7 @@ pub async fn request_registration_token_via_email(
                 email,
                 uint!(0),
             );
-            let inner = client.send(request, None).await?;
+            let inner = client.send(request).await?;
             Ok(RegistrationTokenViaEmailResponse { inner })
         })
         .await?
@@ -514,7 +514,7 @@ pub async fn request_password_change_token_via_email(
                 email,
                 uint!(0),
             );
-            let inner = client.send(request, None).await?;
+            let inner = client.send(request).await?;
             Ok(PasswordChangeEmailTokenResponse {
                 client_secret,
                 inner,

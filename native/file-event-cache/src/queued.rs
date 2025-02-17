@@ -1,8 +1,12 @@
 use crate::EventCacheStore;
 use async_trait::async_trait;
+use matrix_sdk::{deserialized_responses::TimelineEvent, ruma::OwnedEventId};
 use matrix_sdk_base::{
-    event_cache::{store::DEFAULT_CHUNK_CAPACITY, Event, Gap},
-    linked_chunk::{LinkedChunk, Update},
+    event_cache::{
+        store::media::{IgnoreMediaRetentionPolicy, MediaRetentionPolicy},
+        Event, Gap,
+    },
+    linked_chunk::{RawChunk, Update},
     media::MediaRequestParameters,
     ruma::{MxcUri, RoomId},
 };
@@ -72,7 +76,7 @@ where
     async fn reload_linked_chunk(
         &self,
         room_id: &RoomId,
-    ) -> Result<Option<LinkedChunk<DEFAULT_CHUNK_CAPACITY, Event, Gap>>, Self::Error> {
+    ) -> Result<Vec<RawChunk<TimelineEvent, Gap>>, Self::Error> {
         let _handle = self
             .queue
             .acquire()
@@ -86,13 +90,16 @@ where
         &self,
         request: &MediaRequestParameters,
         content: Vec<u8>,
+        ignore_policy: IgnoreMediaRetentionPolicy,
     ) -> Result<(), Self::Error> {
         let _handle = self
             .queue
             .acquire()
             .await
             .expect("We never close the semaphore");
-        self.inner.add_media_content(request, content).await
+        self.inner
+            .add_media_content(request, content, ignore_policy)
+            .await
     }
 
     #[instrument(skip_all)]
@@ -155,5 +162,41 @@ where
             .await
             .expect("We never close the semaphore");
         self.inner.replace_media_key(from, to).await
+    }
+
+    fn media_retention_policy(&self) -> MediaRetentionPolicy {
+        self.inner.media_retention_policy()
+    }
+
+    async fn set_media_retention_policy(
+        &self,
+        policy: MediaRetentionPolicy,
+    ) -> Result<(), Self::Error> {
+        self.inner.set_media_retention_policy(policy).await
+    }
+    async fn set_ignore_media_retention_policy(
+        &self,
+        request: &MediaRequestParameters,
+        ignore_policy: IgnoreMediaRetentionPolicy,
+    ) -> Result<(), Self::Error> {
+        self.inner
+            .set_ignore_media_retention_policy(request, ignore_policy)
+            .await
+    }
+
+    async fn clear_all_rooms_chunks(&self) -> Result<(), Self::Error> {
+        self.inner.clear_all_rooms_chunks().await
+    }
+
+    async fn clean_up_media_cache(&self) -> Result<(), Self::Error> {
+        self.inner.clean_up_media_cache().await
+    }
+
+    async fn filter_duplicated_events(
+        &self,
+        room_id: &RoomId,
+        events: Vec<OwnedEventId>,
+    ) -> Result<Vec<OwnedEventId>, Self::Error> {
+        self.inner.filter_duplicated_events(room_id, events).await
     }
 }

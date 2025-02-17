@@ -108,7 +108,7 @@ pub mod api {
 
         #[request]
         pub struct Request {
-            #[serde(flatten)]
+            #[ruma_api(body)]
             pub token: CreateToken,
         }
 
@@ -144,7 +144,7 @@ pub mod api {
 
         #[request]
         pub struct Request {
-            #[serde(flatten)]
+            #[ruma_api(body)]
             pub token: UpdateToken,
         }
 
@@ -258,7 +258,7 @@ pub mod api {
 
         #[response]
         pub struct Response {
-            #[serde(flatten)]
+            #[ruma_api(body)]
             pub info: TokenInfo,
         }
     }
