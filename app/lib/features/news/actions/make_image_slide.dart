@@ -14,26 +14,10 @@ Future<NewsSlideDraft> makeImageSlideForNews(
   NewsSlideItem slidePost,
   L10n lang,
 ) async {
-  final sdk = await ref.read(sdkProvider.future);
-  final client = await ref.read(alwaysClientProvider.future);
-
-  final file = slidePost.mediaFile;
-  if (file == null) {
-    throw 'Image File missing';
-  }
-  String? mimeType = file.mimeType ?? lookupMimeType(file.path);
-  if (mimeType == null) throw lang.failedToDetectMimeType;
-  if (!mimeType.startsWith('image/')) {
-    throw lang.postingOfTypeNotYetSupported(mimeType);
-  }
-  Uint8List bytes = await file.readAsBytes();
-  final decodedImage = await decodeImageFromList(bytes);
-  final imageDraft = client
-      .imageDraft(file.path, mimeType)
-      .size(bytes.length)
-      .width(decodedImage.width)
-      .height(decodedImage.height);
+  final imageDraft = await createImageMsgDraftDraft(ref, slidePost, lang);
   final imageSlideDraft = imageDraft.intoNewsSlideDraft();
+
+  final sdk = await ref.read(sdkProvider.future);
   imageSlideDraft.color(
     sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
   );
@@ -51,7 +35,27 @@ Future<StorySlideDraft> makeImageSlideForStory(
   NewsSlideItem slidePost,
   L10n lang,
 ) async {
+  final imageDraft = await createImageMsgDraftDraft(ref, slidePost, lang);
+  final imageSlideDraft = imageDraft.intoStorySlideDraft();
+
   final sdk = await ref.read(sdkProvider.future);
+  imageSlideDraft.color(
+    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
+  );
+
+  final refDetails = slidePost.refDetails;
+  if (refDetails != null) {
+    final objRefBuilder = sdk.api.newObjRefBuilder(null, refDetails);
+    imageSlideDraft.addReference(objRefBuilder);
+  }
+  return imageSlideDraft;
+}
+
+Future<MsgDraft> createImageMsgDraftDraft(
+  WidgetRef ref,
+  NewsSlideItem slidePost,
+  L10n lang,
+) async {
   final client = await ref.read(alwaysClientProvider.future);
 
   final file = slidePost.mediaFile;
@@ -70,15 +74,5 @@ Future<StorySlideDraft> makeImageSlideForStory(
       .size(bytes.length)
       .width(decodedImage.width)
       .height(decodedImage.height);
-  final imageSlideDraft = imageDraft.intoStorySlideDraft();
-  imageSlideDraft.color(
-    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
-  );
-
-  final refDetails = slidePost.refDetails;
-  if (refDetails != null) {
-    final objRefBuilder = sdk.api.newObjRefBuilder(null, refDetails);
-    imageSlideDraft.addReference(objRefBuilder);
-  }
-  return imageSlideDraft;
+  return imageDraft;
 }

@@ -11,19 +11,10 @@ Future<NewsSlideDraft> makeTextSlideForNews(
   NewsSlideItem slidePost,
   L10n lang,
 ) async {
-  final sdk = await ref.read(sdkProvider.future);
-  final client = await ref.read(alwaysClientProvider.future);
-
-  final text = slidePost.text?.trim();
-  if (text == null || text.isEmpty == true) {
-    throw lang.yourTextSlidesMustContainsSomeText;
-  }
-  final html = slidePost.html;
-  final textDraft = html != null
-      ? client.textHtmlDraft(html, text)
-      : client.textMarkdownDraft(text);
+  final textDraft = await createTextMsgDraftDraft(ref, slidePost, lang);
   final textSlideDraft = textDraft.intoNewsSlideDraft();
 
+  final sdk = await ref.read(sdkProvider.future);
   textSlideDraft.color(
     sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
   );
@@ -42,18 +33,9 @@ Future<StorySlideDraft> makeTextSlideForStory(
   NewsSlideItem slidePost,
   L10n lang,
 ) async {
-  final sdk = await ref.read(sdkProvider.future);
-  final client = await ref.read(alwaysClientProvider.future);
-
-  final text = slidePost.text?.trim();
-  if (text == null || text.isEmpty == true) {
-    throw lang.yourTextSlidesMustContainsSomeText;
-  }
-  final html = slidePost.html;
-  final textDraft = html != null
-      ? client.textHtmlDraft(html, text)
-      : client.textMarkdownDraft(text);
+  final textDraft = await createTextMsgDraftDraft(ref, slidePost, lang);
   final textSlideDraft = textDraft.intoStorySlideDraft();
+  final sdk = await ref.read(sdkProvider.future);
 
   textSlideDraft.color(
     sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
@@ -66,4 +48,22 @@ Future<StorySlideDraft> makeTextSlideForStory(
   }
 
   return textSlideDraft;
+}
+
+Future<MsgDraft> createTextMsgDraftDraft(
+  WidgetRef ref,
+  NewsSlideItem slidePost,
+  L10n lang,
+) async {
+  final client = await ref.read(alwaysClientProvider.future);
+
+  final text = slidePost.text?.trim();
+  if (text == null || text.isEmpty == true) {
+    throw lang.yourTextSlidesMustContainsSomeText;
+  }
+  final html = slidePost.html;
+  final textDraft = html != null
+      ? client.textHtmlDraft(html, text)
+      : client.textMarkdownDraft(text);
+  return textDraft;
 }

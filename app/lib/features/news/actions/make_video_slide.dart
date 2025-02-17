@@ -13,21 +13,10 @@ Future<NewsSlideDraft> makeVideoSlideForNews(
   NewsSlideItem slidePost,
   L10n lang,
 ) async {
-  final sdk = await ref.read(sdkProvider.future);
-  final client = await ref.read(alwaysClientProvider.future);
-  final file = slidePost.mediaFile;
-  if (file == null) {
-    throw 'Video File missing';
-  }
-
-  String? mimeType = file.mimeType ?? lookupMimeType(file.path);
-  if (mimeType == null) throw lang.failedToDetectMimeType;
-  if (!mimeType.startsWith('video/')) {
-    throw lang.postingOfTypeNotYetSupported(mimeType);
-  }
-  Uint8List bytes = await file.readAsBytes();
-  final videoDraft = client.videoDraft(file.path, mimeType).size(bytes.length);
+  final videoDraft = await createVideoMsgDraftDraft(ref, slidePost, lang);
   final videoSlideDraft = videoDraft.intoNewsSlideDraft();
+
+  final sdk = await ref.read(sdkProvider.future);
   videoSlideDraft.color(
     sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
   );
@@ -44,7 +33,26 @@ Future<StorySlideDraft> makeVideoSlideForStory(
   NewsSlideItem slidePost,
   L10n lang,
 ) async {
+  final videoDraft = await createVideoMsgDraftDraft(ref, slidePost, lang);
+  final videoSlideDraft = videoDraft.intoStorySlideDraft();
+
   final sdk = await ref.read(sdkProvider.future);
+  videoSlideDraft.color(
+    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
+  );
+  final refDetails = slidePost.refDetails;
+  if (refDetails != null) {
+    final objRefBuilder = sdk.api.newObjRefBuilder(null, refDetails);
+    videoSlideDraft.addReference(objRefBuilder);
+  }
+  return videoSlideDraft;
+}
+
+Future<MsgDraft> createVideoMsgDraftDraft(
+  WidgetRef ref,
+  NewsSlideItem slidePost,
+  L10n lang,
+) async {
   final client = await ref.read(alwaysClientProvider.future);
   final file = slidePost.mediaFile;
   if (file == null) {
@@ -58,14 +66,5 @@ Future<StorySlideDraft> makeVideoSlideForStory(
   }
   Uint8List bytes = await file.readAsBytes();
   final videoDraft = client.videoDraft(file.path, mimeType).size(bytes.length);
-  final videoSlideDraft = videoDraft.intoStorySlideDraft();
-  videoSlideDraft.color(
-    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
-  );
-  final refDetails = slidePost.refDetails;
-  if (refDetails != null) {
-    final objRefBuilder = sdk.api.newObjRefBuilder(null, refDetails);
-    videoSlideDraft.addReference(objRefBuilder);
-  }
-  return videoSlideDraft;
+  return videoDraft;
 }
