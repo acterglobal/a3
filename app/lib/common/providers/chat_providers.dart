@@ -51,7 +51,7 @@ final chatListQuickSearchedProvider = Provider.autoDispose<List<Convo>>((ref) {
   final chatsList = ref.watch(chatsProvider);
   final searchTerm = ref.watch(quickSearchValueProvider).trim().toLowerCase();
 
-  //Return all spaces if search is empty
+  //Return all chats if search is empty
   final searchValue = searchTerm.trim().toLowerCase();
   if (searchValue.isEmpty) return chatsList;
   return _filterByTerm(ref, chatsList, searchValue);
