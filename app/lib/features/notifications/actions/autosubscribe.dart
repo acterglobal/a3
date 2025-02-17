@@ -21,11 +21,6 @@ Future<bool> autosubscribe({
   required L10n lang,
   SubscriptionSubType? subType,
 }) async {
-  if (!ref.read(isActiveProvider(LabsFeature.autoSubscribe))) {
-    _log.info('AutoSubscribe Labs not activated');
-    return false;
-  }
-
   if (!await ref.read(autoSubscribeProvider.future)) {
     _log.info('AutoSubscribe deactivated');
     return false;
