@@ -291,6 +291,13 @@ pub enum RefDetails {
         /// The URI to open upon click
         uri: String,
     },
+    SuperInviteToken {
+        token: String,
+        create_dm: bool,
+        accepted_count: u32,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        rooms: Vec<String>,
+    },
 }
 
 impl RefDetails {
@@ -300,6 +307,7 @@ impl RefDetails {
             RefDetails::TaskList { .. } => "task-list".to_string(),
             RefDetails::CalendarEvent { .. } => "calendar-event".to_string(),
             RefDetails::Link { .. } => "link".to_string(),
+            RefDetails::SuperInviteToken { .. } => "super-invite".to_string(),
             RefDetails::Pin { .. } => "pin".to_string(),
             RefDetails::News { .. } => "news".to_string(),
         }
@@ -308,6 +316,7 @@ impl RefDetails {
     pub fn embed_action_str(&self) -> String {
         match self {
             RefDetails::Link { .. } => "link".to_string(),
+            RefDetails::SuperInviteToken { .. } => "super-invite".to_string(),
             RefDetails::Pin { .. } => "pin".to_string(),
             RefDetails::News { .. } => "news".to_string(),
             RefDetails::Task { action, .. } => action.to_string(),
@@ -318,7 +327,7 @@ impl RefDetails {
 
     pub fn target_id_str(&self) -> Option<String> {
         match self {
-            RefDetails::Link { .. } => None,
+            RefDetails::Link { .. } | RefDetails::SuperInviteToken { .. } => None,
             RefDetails::Task { target_id, .. }
             | RefDetails::TaskList { target_id, .. }
             | RefDetails::Pin { target_id, .. }
@@ -329,7 +338,7 @@ impl RefDetails {
 
     pub fn room_id_str(&self) -> Option<String> {
         match self {
-            RefDetails::Link { .. } => None,
+            RefDetails::Link { .. } | RefDetails::SuperInviteToken { .. } => None,
             RefDetails::Task { room_id, .. }
             | RefDetails::TaskList { room_id, .. }
             | RefDetails::Pin { room_id, .. }
@@ -340,7 +349,7 @@ impl RefDetails {
 
     pub fn via_servers(&self) -> Vec<String> {
         match self {
-            RefDetails::Link { .. } => vec![],
+            RefDetails::Link { .. } | RefDetails::SuperInviteToken { .. } => vec![],
             RefDetails::Task { via, .. }
             | RefDetails::TaskList { via, .. }
             | RefDetails::Pin { via, .. }
@@ -359,6 +368,7 @@ impl RefDetails {
     pub fn title(&self) -> Option<String> {
         match self {
             RefDetails::Link { title, .. } => Some(title.clone()),
+            RefDetails::SuperInviteToken { token, .. } => Some(token.clone()),
             RefDetails::CalendarEvent { preview, .. } => preview.title.clone(),
             RefDetails::Pin { preview, .. }
             | RefDetails::News { preview, .. }

@@ -64,6 +64,7 @@ fn generate_object_link(
     via: &[OwnedServerName],
     params: &[(&str, Option<&String>)],
 ) -> String {
+    // acter:o/${ROOM_ID}/${PATH}?via=${SERVER_NAME}&via=${SERVER_NAME}
     let room_id = &room_id.to_string()[1..];
     format!(
         "acter:o/{room_id}/{}?{}",
@@ -83,6 +84,11 @@ fn generate_object_link(
     )
 }
 
+fn generate_invite_link(server_name: &str, token: &str, inviter_user_id: &str) -> String {
+    // acter:i/${SERVERNAME}/${INVITE_TOKEN}?userId=${INVITER}
+    format!("acter:i/{server_name}/{token}?userId={inviter_user_id}")
+}
+
 impl RefDetails {
     pub(crate) fn new(client: Client, inner: CoreRefDetails) -> Self {
         Self { client, inner }
@@ -91,6 +97,7 @@ impl RefDetails {
     pub fn can_generate_internal_link(&self) -> bool {
         match &self.inner {
             CoreRefDetails::Link { title, uri } => false,
+            CoreRefDetails::SuperInviteToken { rooms, .. } => !rooms.is_empty(),
             CoreRefDetails::Task { room_id, .. }
             | CoreRefDetails::TaskList { room_id, .. }
             | CoreRefDetails::News { room_id, .. }
@@ -102,6 +109,15 @@ impl RefDetails {
     pub fn generate_internal_link(&self, include_preview: bool) -> Result<String> {
         Ok(match &self.inner {
             CoreRefDetails::Link { title, uri } => bail!("Link can't be made into internal link"),
+            CoreRefDetails::SuperInviteToken {
+                token,
+                create_dm,
+                accepted_count,
+                rooms,
+            } => {
+                let my_id = self.client.user_id()?.to_string();
+                generate_invite_link("acter.global", token, &my_id)
+            }
             CoreRefDetails::Task {
                 target_id,
                 room_id,

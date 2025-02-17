@@ -262,7 +262,7 @@ impl TryFrom<&AnyActerModel> for NotificationItemParent {
                 tl_id: e.task_list_id.event_id.clone(),
                 title: e.title().clone(),
             }),
-            AnyActerModel::RedactedActerModel(_)
+            AnyActerModel::RedactedActerModel(..)
             | AnyActerModel::CalendarEventUpdate(_)
             | AnyActerModel::TaskListUpdate(_)
             | AnyActerModel::TaskUpdate(_)
@@ -1086,6 +1086,7 @@ impl NotificationItem {
                                 RefDetails::Task { .. } => format!("☑️ {title}"),
                                 RefDetails::TaskList { .. } => format!("📋 {title}"),
                                 RefDetails::Link { .. } => format!("🔗 {title}"),
+                                RefDetails::SuperInviteToken { .. } => title,
                             })
                             .build()?
                     }
