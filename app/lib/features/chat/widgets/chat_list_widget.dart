@@ -1,5 +1,6 @@
 import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
+import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,8 +63,10 @@ class ChatListWidget extends ConsumerWidget {
       padding: EdgeInsets.all(16),
       physics: shrinkWrap ? const NeverScrollableScrollPhysics() : null,
       itemBuilder: (context, index) {
+        final roomId = chatList[index].getRoomIdStr();
         return ConvoCard(
-          roomId: chatList[index].getRoomIdStr(),
+          roomId: roomId,
+          onTap: () => goToChat(context, roomId),
         );
       },
     );
