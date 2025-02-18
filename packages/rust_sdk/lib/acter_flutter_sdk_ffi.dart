@@ -64331,6 +64331,7 @@ enum MemberPermissionTag {
   CanToggleReaction,
   CanSendSticker,
   CanPostNews,
+  CanPostStories,
   CanPostPin,
   CanPostEvent,
   CanPostTaskList,
@@ -64379,78 +64380,82 @@ class MemberPermission {
 
         break;
       case 4:
-        this._tag = MemberPermissionTag.CanPostPin;
+        this._tag = MemberPermissionTag.CanPostStories;
 
         break;
       case 5:
-        this._tag = MemberPermissionTag.CanPostEvent;
+        this._tag = MemberPermissionTag.CanPostPin;
 
         break;
       case 6:
-        this._tag = MemberPermissionTag.CanPostTaskList;
+        this._tag = MemberPermissionTag.CanPostEvent;
 
         break;
       case 7:
-        this._tag = MemberPermissionTag.CanPostTask;
+        this._tag = MemberPermissionTag.CanPostTaskList;
 
         break;
       case 8:
-        this._tag = MemberPermissionTag.CanBan;
+        this._tag = MemberPermissionTag.CanPostTask;
 
         break;
       case 9:
-        this._tag = MemberPermissionTag.CanKick;
+        this._tag = MemberPermissionTag.CanBan;
 
         break;
       case 10:
-        this._tag = MemberPermissionTag.CanInvite;
+        this._tag = MemberPermissionTag.CanKick;
 
         break;
       case 11:
-        this._tag = MemberPermissionTag.CanRedactOwn;
+        this._tag = MemberPermissionTag.CanInvite;
 
         break;
       case 12:
-        this._tag = MemberPermissionTag.CanRedactOther;
+        this._tag = MemberPermissionTag.CanRedactOwn;
 
         break;
       case 13:
-        this._tag = MemberPermissionTag.CanTriggerRoomNotification;
+        this._tag = MemberPermissionTag.CanRedactOther;
 
         break;
       case 14:
-        this._tag = MemberPermissionTag.CanUpgradeToActerSpace;
+        this._tag = MemberPermissionTag.CanTriggerRoomNotification;
 
         break;
       case 15:
-        this._tag = MemberPermissionTag.CanSetName;
+        this._tag = MemberPermissionTag.CanUpgradeToActerSpace;
 
         break;
       case 16:
-        this._tag = MemberPermissionTag.CanUpdateAvatar;
+        this._tag = MemberPermissionTag.CanSetName;
 
         break;
       case 17:
-        this._tag = MemberPermissionTag.CanUpdateJoinRule;
+        this._tag = MemberPermissionTag.CanUpdateAvatar;
 
         break;
       case 18:
-        this._tag = MemberPermissionTag.CanSetTopic;
+        this._tag = MemberPermissionTag.CanUpdateJoinRule;
 
         break;
       case 19:
-        this._tag = MemberPermissionTag.CanLinkSpaces;
+        this._tag = MemberPermissionTag.CanSetTopic;
 
         break;
       case 20:
-        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
+        this._tag = MemberPermissionTag.CanLinkSpaces;
 
         break;
       case 21:
-        this._tag = MemberPermissionTag.CanSetParentSpace;
+        this._tag = MemberPermissionTag.CanUpdatePowerLevels;
 
         break;
       case 22:
+        this._tag = MemberPermissionTag.CanSetParentSpace;
+
+        break;
+      case 23:
         this._tag = MemberPermissionTag.CanChangeAppSettings;
 
         break;
