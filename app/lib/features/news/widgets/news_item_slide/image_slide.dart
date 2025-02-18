@@ -1,9 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/widgets/news_item_slide/news_media_error_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -11,10 +12,12 @@ final _log = Logger('a3::news::image_slide');
 
 class ImageSlide extends StatefulWidget {
   final NewsSlide slide;
+  final NewsMediaErrorState errorState;  // Add the enum as a parameter
 
   const ImageSlide({
     super.key,
     required this.slide,
+    required this.errorState,
   });
 
   @override
@@ -73,29 +76,13 @@ class _ImageSlideState extends State<ImageSlide> {
     StackTrace? stackTrace,
   ) {
     _log.severe('Failed to load image of slide', error, stackTrace);
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            PhosphorIcons.imageBroken(),
-            size: 100,
-          ),
-          SizedBox(height: 10),
-          Text(L10n.of(context).unableToLoadImage),
-          SizedBox(height: 20),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white, width: 1),
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-            ),
-            child: TextButton(
-              onPressed: () => setState(() {}),
-              child: Text(L10n.of(context).tryAgain),
-            ),
-          ),
-        ],
-      ),
+
+    return NewsMediaErrorWidget(
+      errorState: widget.errorState,
+      onTryAgain: () {
+        setState(() {}); // Trigger reload of the image
+      },
+      mediaType: widget.slide.typeStr(),  // Specify it's an image
     );
   }
 }
