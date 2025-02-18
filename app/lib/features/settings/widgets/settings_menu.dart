@@ -24,7 +24,6 @@ class SettingsMenu extends ConsumerWidget {
   static Key logoutAccount = const Key('settings-auth-logout-account');
   static Key superInvitations = const Key('settings-super-invitations');
   static Key emailAddresses = const Key('settings-email-addresses');
-  static Key chat = const Key('settings-chat');
   static Key labs = const Key('settings-labs');
 
   final bool isFullPage;
@@ -198,35 +197,18 @@ class SettingsMenu extends ConsumerWidget {
           sectionTitle: lang.acterApp,
           children: [
             MenuItemWidget(
-              key: SettingsMenu.chat,
-              iconData: Atlas.chat_conversation_thin,
-              iconColor: routedColor(context, ref, Routes.settingsChat),
-              title: lang.chat,
-              subTitle: lang.chatSettingsExplainer,
+              iconData: PhosphorIconsThin.faders,
+              iconColor: routedColor(context, ref, Routes.settingsBehavior),
+              title: lang.behaviorSettingsTitle,
+              subTitle: lang.behaviorSettingsExplainer,
               titleStyles: TextStyle(
-                color: routedColor(context, ref, Routes.settingsChat),
+                color: routedColor(context, ref, Routes.settingsBehavior),
               ),
               onTap: () {
                 if (!isFullPage && context.isLargeScreen) {
-                  context.pushReplacementNamed(Routes.settingsChat.name);
+                  context.pushReplacementNamed(Routes.settingsBehavior.name);
                 } else {
-                  context.pushNamed(Routes.settingsChat.name);
-                }
-              },
-            ),
-            MenuItemWidget(
-              iconData: Atlas.language_translation,
-              iconColor: routedColor(context, ref, Routes.settingLanguage),
-              title: lang.language,
-              subTitle: lang.changeAppLanguage,
-              titleStyles: TextStyle(
-                color: routedColor(context, ref, Routes.settingLanguage),
-              ),
-              onTap: () {
-                if (!isFullPage && context.isLargeScreen) {
-                  context.pushReplacementNamed(Routes.settingLanguage.name);
-                } else {
-                  context.pushNamed(Routes.settingLanguage.name);
+                  context.pushNamed(Routes.settingsBehavior.name);
                 }
               },
             ),

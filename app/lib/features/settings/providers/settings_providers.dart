@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/notifiers/client_pref_notifier.dart';
 import 'package:acter/common/utils/main.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/notifiers/locale_notifier.dart';
@@ -44,3 +45,19 @@ final possibleEmailToAddForPushProvider =
   }
   return allowedEmails;
 });
+
+enum OpenSystemLinkSetting {
+  open,
+  // prompt // ask what to do
+  copy;
+}
+
+final openSystemLinkSettingsProvider =
+    createMapPrefProvider<OpenSystemLinkSetting>(
+  prefKey: 'openSystemLinkSettings',
+  mapFrom: (v) => OpenSystemLinkSetting.values.firstWhere(
+    (e) => e.toString() == v,
+    orElse: () => OpenSystemLinkSetting.open,
+  ),
+  mapTo: (v) => v.toString(),
+);
