@@ -265,20 +265,7 @@ impl NotificationItemInner {
                 ActivityContent::Boost {
                     first_slide: Some(first_slide),
                     ..
-                } => match &first_slide {
-                    // everything else we have to fallback to the body-text thing ...
-                    NewsContent::Fallback(FallbackNewsContent::Text(msg_content))
-                    | NewsContent::Text(msg_content) => Some(MsgContent::from(msg_content)),
-                    NewsContent::Fallback(FallbackNewsContent::Video(msg_content))
-                    | NewsContent::Video(msg_content) => Some(MsgContent::from(msg_content)),
-                    NewsContent::Fallback(FallbackNewsContent::Audio(msg_content))
-                    | NewsContent::Audio(msg_content) => Some(MsgContent::from(msg_content)),
-                    NewsContent::Fallback(FallbackNewsContent::File(msg_content))
-                    | NewsContent::File(msg_content) => Some(MsgContent::from(msg_content)),
-                    NewsContent::Fallback(FallbackNewsContent::Location(msg_content))
-                    | NewsContent::Location(msg_content) => Some(MsgContent::from(msg_content)),
-                    _ => None,
-                },
+                } => MsgContent::try_from(first_slide).ok(),
                 _ => None,
             },
 

@@ -2228,6 +2228,24 @@ object Activity {
     /// the details of this membership change activity
     fn membership_change() -> Option<MembershipChange>;
 
+    /// if the added information is a reference
+    fn ref_details() -> Option<RefDetails>;
+
+    /// where to route to for the details of this activity
+    fn target_url() -> string;
+
+    /// the object this activity happened on, if any
+    fn object() -> Option<ActivityObject>;
+
+    /// content of this activity, if any
+    fn msg_content() -> Option<MsgContent>;
+
+    /// reaction specific: the reaction key used
+    fn reaction_key() -> Option<string>;
+
+    /// the date on eventDateChange (started or ended) or taskDueDateChane
+    fn new_date() -> Option<UtcDateTime>;
+
 }
 
 object Activities {
