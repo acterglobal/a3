@@ -469,7 +469,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       final rsvpManager = await calendarEvent.rsvps();
       final rsvpDraft = rsvpManager.rsvpDraft();
       rsvpDraft.status('yes');
-      final objectId = await rsvpDraft.send();
+      await rsvpDraft.send();
       _log.info('Created Calendar Event: $eventId');
 
       EasyLoading.dismiss();
