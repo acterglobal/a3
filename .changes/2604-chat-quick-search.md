@@ -1,0 +1,1 @@
+- [New] : Now chat is also part of Quick Search screen.

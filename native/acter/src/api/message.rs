@@ -128,6 +128,7 @@ impl RoomEventItem {
             )
             .reactions(
                 event
+                    .content()
                     .reactions()
                     .iter()
                     .map(|(u, group)| {

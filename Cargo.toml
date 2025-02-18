@@ -9,59 +9,56 @@ default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
 git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "5a25e65da3faa6188c966083f9ea82614cb8ebc5"
+rev = "a95632aba2f1c6a0e74c05fd4574b32a6a449fcf"
 default-features = false
-features = [
-  "experimental-sliding-sync",
-  "rustls-tls",
-]
+features = ["rustls-tls"]
 
 [workspace.dependencies.matrix-sdk-base]
 git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "5a25e65da3faa6188c966083f9ea82614cb8ebc5"
+rev = "a95632aba2f1c6a0e74c05fd4574b32a6a449fcf"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
 git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "5a25e65da3faa6188c966083f9ea82614cb8ebc5"
+rev = "a95632aba2f1c6a0e74c05fd4574b32a6a449fcf"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
 git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "5a25e65da3faa6188c966083f9ea82614cb8ebc5"
+rev = "a95632aba2f1c6a0e74c05fd4574b32a6a449fcf"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
 git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "5a25e65da3faa6188c966083f9ea82614cb8ebc5"
+rev = "a95632aba2f1c6a0e74c05fd4574b32a6a449fcf"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-test]
 git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "5a25e65da3faa6188c966083f9ea82614cb8ebc5"
+rev = "a95632aba2f1c6a0e74c05fd4574b32a6a449fcf"
 default-features = false
 
 
 # not used directly but needed to enable specific features from ruma
 # ATTENTION: _MUST_ stay in sync with the ruma-rev used by matrix-sdk!
 [workspace.dependencies.ruma]
-# version = "0.11.1"
-git = "https://github.com/ruma/ruma"
-rev = "c91499fc464adc865a7c99d0ce0b35982ad96711"
+version = "0.12.1"
+# git = "https://github.com/ruma/ruma"
+# rev = "c91499fc464adc865a7c99d0ce0b35982ad96711"
 
 # - see comment above
 [workspace.dependencies.ruma-common]
-# version = "0.14.1"
-git = "https://github.com/ruma/ruma"
-rev = "c91499fc464adc865a7c99d0ce0b35982ad96711"
+version = "0.15.1"
+# git = "https://github.com/ruma/ruma"
+# rev = "c91499fc464adc865a7c99d0ce0b35982ad96711"
 
 [workspace.dependencies.url]
 version = "2.5.0"
 features = ["serde"]
 
 [workspace.dependencies]
-strum = { version = "0.26.1", features = ["derive"] }
+strum = { version = "0.27.0", features = ["derive"] }
 base64ct = "1.6.0"
 derive-getters = "0.5.0"
 derive_builder = "0.20.0"
@@ -69,6 +66,7 @@ icalendar = "0.16.1"
 scc = "2"
 env_logger = "0.11.5"
 urlencoding = "2.1.3"
+eyeball-im = "0.6.0"
 
 [profile.release]
 panic = "unwind"

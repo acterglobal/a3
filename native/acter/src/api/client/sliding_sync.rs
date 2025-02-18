@@ -1,6 +1,5 @@
 use acter_core::referencing::ExecuteReference;
 use anyhow::Result;
-use eyeball_im::{ObservableVector, VectorDiff};
 use futures::{
     lock::Mutex,
     pin_mut,
@@ -13,6 +12,7 @@ use matrix_sdk_base::{
 };
 use matrix_sdk_ui::{
     encryption_sync_service::EncryptionSyncService,
+    eyeball_im::{ObservableVector, VectorDiff},
     room_list_service,
     sync_service::{State, SyncService},
     timeline::{Timeline as SdkTimeline, TimelineItem},
@@ -114,7 +114,7 @@ impl SyncController {
             .spawn(async move {
                 let mut sync_service = me.sync_service.lock().await;
                 if let Some(sync_service) = sync_service.take() {
-                    sync_service.stop().await?;
+                    sync_service.stop().await;
                 }
 
                 let timelines = me.timelines.lock().await;
@@ -192,7 +192,7 @@ impl Client {
                     // Apply the diffs to the list of room entries.
                     let mut rooms = rooms.write().await;
 
-                    for diff in diffs {
+                    for diff in diffs.clone() {
                         match diff {
                             VectorDiff::Append { values } => {
                                 info!("rooms append");
@@ -310,9 +310,14 @@ impl Client {
                         pin_mut!(stream);
                         let items = i;
                         let room_infos = ri;
-                        while let Some(diff) = stream.next().await {
+                        while let Some(diffs) = stream.next().await {
+                            // Apply the diffs to the list of timeline items.
                             let mut items = items.lock().await;
-                            diff.apply(&mut items);
+                            for diff in diffs {
+                                diff.apply(&mut items);
+                            }
+
+                            // Update the latest message of room.
                             if let Some(item) = items.last() {
                                 if item.as_event().is_some() {
                                     let full_event =

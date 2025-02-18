@@ -56,13 +56,16 @@ impl TimelineStream {
             let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
             yield RoomMessageDiff::current_items(timeline_items.clone().into_iter().map(|x| RoomMessage::from((x, user_id.clone()))).collect());
 
-            let mut remap = timeline_stream.map(|diff| remap_for_diff(
-                diff,
+            let mut remap = timeline_stream.map(|diff| diff.into_iter().map(|d| remap_for_diff(
+                d,
                 |x| RoomMessage::from((x, user_id.clone())),
-            ));
+            )).collect::<Vec<_>>()
+            );
 
             while let Some(d) = remap.next().await {
-                yield d
+                for e in d {
+                    yield e
+                }
             }
         }
     }

@@ -24,7 +24,7 @@ use matrix_sdk_base::{
         OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId, RoomOrAliasId, ServerName,
     },
 };
-use matrix_sdk_ui::timeline::RoomExt;
+use matrix_sdk_ui::{room_list_service, timeline::RoomExt};
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
 use tokio::sync::broadcast::Receiver;
@@ -286,7 +286,7 @@ impl Space {
                 }
 
                 for request in requests {
-                    client.send(request, None).await?;
+                    client.send(request).await?;
                 }
 
                 Ok(true)
@@ -446,7 +446,7 @@ impl Client {
             };
             let mut remap = stream.into_stream().map(move |diff| remap_for_diff(
                 diff,
-                |x| {
+                |x: room_list_service::Room| {
                     let inner = Room::new(me.core.clone(), x.inner_room().clone());
                     Space::new(me.clone(), inner)
                 },

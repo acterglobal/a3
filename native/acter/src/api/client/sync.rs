@@ -4,7 +4,6 @@ use acter_core::{
 };
 use anyhow::Result;
 use core::time::Duration;
-use eyeball_im::ObservableVector;
 use futures::{
     future::join_all,
     pin_mut,
@@ -23,6 +22,7 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
+use matrix_sdk_ui::eyeball_im::ObservableVector;
 use std::{
     borrow::Cow,
     collections::BTreeMap,

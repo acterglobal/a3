@@ -44,8 +44,8 @@ impl List {
             let room_id = sp.room_id();
             let is_acter_space = sp.is_acter_space().await?;
             let acter_space = if is_acter_space { 'x' } else { ' ' };
-            let display_name = sp.compute_display_name().await?;
-            println!(" ## [{acter_space}] {room_id}: {display_name}");
+            let display_name = sp.display_name().await?.text();
+            println!(" ## [{acter_space}] {room_id}: {display_name:?}");
             if self.details {
                 let aliases = {
                     let aliases = sp.alt_aliases();
@@ -152,9 +152,9 @@ impl List {
             println!("## Chat rooms:");
             for convo in client.convos.read().await.iter() {
                 println!(
-                    " * {} : {}",
+                    " * {} : {:?}",
                     convo.room_id(),
-                    convo.compute_display_name().await?
+                    convo.display_name().await?.text()
                 );
             }
         }

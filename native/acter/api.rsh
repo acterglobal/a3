@@ -49,8 +49,6 @@ fn destroy_local_data(base_path: string, media_cache_base_path: Option<string>, 
 
 fn duration_from_secs(secs: u64) -> EfkDuration;
 
-fn parse_markdown(text: string) -> Option<string>;
-
 /// create size object to be used for thumbnail download
 fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
