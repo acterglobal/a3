@@ -25802,6 +25802,66 @@ class Api {
           _ActivityMembershipChangeReturn Function(
             int,
           )>();
+  late final _activityRefDetailsPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRefDetailsReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_ref_details");
+
+  late final _activityRefDetails = _activityRefDetailsPtr.asFunction<
+      _ActivityRefDetailsReturn Function(
+        int,
+      )>();
+  late final _activityTargetUrlPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityTargetUrlReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_target_url");
+
+  late final _activityTargetUrl = _activityTargetUrlPtr.asFunction<
+      _ActivityTargetUrlReturn Function(
+        int,
+      )>();
+  late final _activityObjectPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityObjectReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_object");
+
+  late final _activityObject = _activityObjectPtr.asFunction<
+      _ActivityObjectReturn Function(
+        int,
+      )>();
+  late final _activityMsgContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityMsgContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_msg_content");
+
+  late final _activityMsgContent = _activityMsgContentPtr.asFunction<
+      _ActivityMsgContentReturn Function(
+        int,
+      )>();
+  late final _activityReactionKeyPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityReactionKeyReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_reaction_key");
+
+  late final _activityReactionKey = _activityReactionKeyPtr.asFunction<
+      _ActivityReactionKeyReturn Function(
+        int,
+      )>();
+  late final _activityNewDatePtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityNewDateReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_new_date");
+
+  late final _activityNewDate = _activityNewDatePtr.asFunction<
+      _ActivityNewDateReturn Function(
+        int,
+      )>();
   late final _activitiesGetIdsPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -53656,6 +53716,146 @@ class Activity {
     return tmp2;
   }
 
+  /// if the added information is a reference
+  RefDetails? refDetails() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRefDetails(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RefDetails");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RefDetails._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// where to route to for the details of this activity
+  String targetUrl() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityTargetUrl(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the object this activity happened on, if any
+  ActivityObject? object() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityObject(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ActivityObject");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ActivityObject._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// content of this activity, if any
+  MsgContent? msgContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityMsgContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MsgContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// reaction specific: the reaction key used
+  String? reactionKey() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityReactionKey(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the date on eventDateChange (started or ended) or taskDueDateChane
+  UtcDateTime? newDate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityNewDate(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = UtcDateTime._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -66552,6 +66752,54 @@ class _ActivityTypeStrReturn extends ffi.Struct {
 }
 
 class _ActivityMembershipChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRefDetailsReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityTargetUrlReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _ActivityObjectReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityMsgContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityReactionKeyReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _ActivityNewDateReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

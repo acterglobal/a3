@@ -1,5 +1,6 @@
 use acter_core::events::{
     attachments::{AttachmentContent, FallbackAttachmentContent},
+    news::{FallbackNewsContent, NewsContent},
     rsvp::RsvpStatus,
     ColorizeBuilder, DisplayBuilder, ObjRefBuilder, Position, RefDetails as CoreRefDetails,
 };
@@ -168,6 +169,27 @@ pub enum MsgContent {
         name: Option<String>,
         link: String,
     },
+}
+
+impl TryFrom<&NewsContent> for MsgContent {
+    type Error = ();
+
+    fn try_from(value: &NewsContent) -> Result<Self, Self::Error> {
+        match value {
+            // everything else we have to fallback to the body-text thing ...
+            NewsContent::Fallback(FallbackNewsContent::Text(msg_content))
+            | NewsContent::Text(msg_content) => Ok(MsgContent::from(msg_content)),
+            NewsContent::Fallback(FallbackNewsContent::Video(msg_content))
+            | NewsContent::Video(msg_content) => Ok(MsgContent::from(msg_content)),
+            NewsContent::Fallback(FallbackNewsContent::Audio(msg_content))
+            | NewsContent::Audio(msg_content) => Ok(MsgContent::from(msg_content)),
+            NewsContent::Fallback(FallbackNewsContent::File(msg_content))
+            | NewsContent::File(msg_content) => Ok(MsgContent::from(msg_content)),
+            NewsContent::Fallback(FallbackNewsContent::Location(msg_content))
+            | NewsContent::Location(msg_content) => Ok(MsgContent::from(msg_content)),
+            _ => Err(()),
+        }
+    }
 }
 
 impl From<&TextMessageEventContent> for MsgContent {
