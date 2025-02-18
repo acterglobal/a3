@@ -32,7 +32,7 @@ void main() {
       // Build the widget
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: VideoSlide(slide: mockSlide, errorState: NewsLoadingState.showErrorImageOnly,)),
+          home: Scaffold(body: VideoSlide(slide: mockSlide, errorState: NewsMediaErrorState.showErrorImageOnly,)),
         ),
       );
 
@@ -48,7 +48,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
-          home: Scaffold(body: VideoSlide(slide: mockSlide,errorState: NewsLoadingState.showErrorImageOnly,)),
+          home: Scaffold(body: VideoSlide(slide: mockSlide,errorState: NewsMediaErrorState.showErrorImageOnly,)),
         ),
       );
 
@@ -61,7 +61,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
-          home: Scaffold(body: VideoSlide(slide: mockSlide,errorState: NewsLoadingState.showErrorImageWithText,)),
+          home: Scaffold(body: VideoSlide(slide: mockSlide,errorState: NewsMediaErrorState.showErrorImageWithText,)),
         ),
       );
 
@@ -74,7 +74,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
-          home: Scaffold(body: VideoSlide(slide: mockSlide,errorState: NewsLoadingState.showErrorWithTryAgain,)),
+          home: Scaffold(body: VideoSlide(slide: mockSlide,errorState: NewsMediaErrorState.showErrorWithTryAgain,)),
         ),
       );
 

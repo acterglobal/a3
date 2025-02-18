@@ -102,7 +102,7 @@ class NewsSection extends ConsumerWidget {
         child: NewsSlideItem(
           slide: slide,
           showRichContent: false,
-          errorState: NewsLoadingState.showErrorImageOnly,
+          errorState: NewsMediaErrorState.showErrorImageOnly,
         ),
       ),
     );

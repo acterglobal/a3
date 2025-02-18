@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/widgets/news_item_slide/news_media_error_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -14,7 +15,7 @@ final _log = Logger('a3::news::video_slide');
 
 class VideoSlide extends StatefulWidget {
   final NewsSlide slide;
-  final NewsLoadingState errorState; // Add the enum as a parameter
+  final NewsMediaErrorState errorState; // Add the enum as a parameter
 
   const VideoSlide({
     super.key,
@@ -87,57 +88,12 @@ class _VideoSlideState extends State<VideoSlide> {
   ) {
     _log.severe('Failed to load video of slide', error, stackTrace);
 
-    Widget errorIcon = Icon(
-      Icons.videocam_off_outlined,
-      size: 100,
+    return NewsMediaErrorWidget(
+      errorState: widget.errorState,
+      onTryAgain: () {
+        setState(() {}); // Trigger reload of the image
+      },
+      mediaType: widget.slide.typeStr(),  // Specify it's an image
     );
-
-    Widget errorText = Text(
-      L10n.of(context).unableToLoadVideo,
-    );
-
-    Widget tryAgainButton = Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white, width: 1),
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-      ),
-      child: TextButton(
-        onPressed: () {
-          setState(() {}); // Trigger reload of the image
-        },
-        child: Text(
-          L10n.of(context).tryAgain,
-        ),
-      ),
-    );
-
-    switch (widget.errorState) {
-      case NewsLoadingState.showErrorImageOnly:
-        return Center(child: errorIcon);
-      case NewsLoadingState.showErrorImageWithText:
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              errorIcon,
-              SizedBox(height: 10),
-              errorText,
-            ],
-          ),
-        );
-      case NewsLoadingState.showErrorWithTryAgain:
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              errorIcon,
-              SizedBox(height: 10),
-              errorText,
-              SizedBox(height: 20),
-              tryAgainButton,
-            ],
-          ),
-        );
-    }
   }
 }

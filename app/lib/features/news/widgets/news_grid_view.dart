@@ -57,7 +57,7 @@ class NewsGridView extends StatelessWidget {
       margin: const EdgeInsets.all(6),
       child: Stack(
         children: [
-          NewsSlideItem(slide: slide, showRichContent: false, errorState: NewsLoadingState.showErrorImageWithText,),
+          NewsSlideItem(slide: slide, showRichContent: false, errorState: NewsMediaErrorState.showErrorImageWithText,),
           if (slideCount > 1) slideStackCountView(slideCount),
           newsPostTime(newsEntry.originServerTs()),
         ],

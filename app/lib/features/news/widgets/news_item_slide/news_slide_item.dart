@@ -11,7 +11,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class NewsSlideItem extends StatelessWidget {
   final NewsSlide slide;
   final bool showRichContent;
-  final NewsLoadingState errorState;
+  final NewsMediaErrorState errorState;
 
   const NewsSlideItem({
     super.key,

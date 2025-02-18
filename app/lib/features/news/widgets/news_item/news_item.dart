@@ -65,7 +65,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
       itemCount: slides.length,
       preloadPagesCount: slides.length,
       onPageChanged: (page) =>  currentSlideIndex.value = page,
-      itemBuilder: (context, index) => NewsSlideItem(slide: slides[index],errorState: NewsLoadingState.showErrorWithTryAgain,),
+      itemBuilder: (context, index) => NewsSlideItem(slide: slides[index],errorState: NewsMediaErrorState.showErrorWithTryAgain,),
     );
   }
 
