@@ -38,7 +38,6 @@ class PinAttachmentOptions extends ConsumerWidget {
               onTap: () {
                 showEditPinDescriptionBottomSheet(
                   context: context,
-                  ref: ref,
                   isBottomSheetOpen: isBottomSheetOpen,
                   htmlBodyDescription:
                       pinState.pinDescriptionParams?.htmlBodyDescription,

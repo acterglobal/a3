@@ -15,6 +15,8 @@ import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
+import 'package:acter/features/notifications/widgets/object_notification_status.dart';
 import 'package:acter/features/share/action/share_space_object_action.dart';
 import 'package:acter/features/tasks/actions/update_tasklist.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
@@ -81,6 +83,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           },
         ),
       BookmarkAction(bookmarker: BookmarkType.forTaskList(widget.taskListId)),
+      ObjectNotificationStatus(objectId: widget.taskListId),
     ];
     if (tasklist != null) {
       actions.addAll(
@@ -212,9 +215,9 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
   Widget _taskListHeader(TaskList tasklist) {
     final textTheme = Theme.of(context).textTheme;
     final canPost = ref
-        .watch(roomMembershipProvider(tasklist.spaceIdStr()))
-        .valueOrNull
-        ?.canString('CanPostTaskList') ==
+            .watch(roomMembershipProvider(tasklist.spaceIdStr()))
+            .valueOrNull
+            ?.canString('CanPostTaskList') ==
         true;
     return ListTile(
       contentPadding: EdgeInsets.zero,
@@ -229,21 +232,20 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         ),
         onIconSelection: canPost
             ? (color, acterIcon) {
-          updateTaskListIcon(
-            context,
-            ref,
-            tasklist,
-            color,
-            acterIcon,
-          );
-        }
+                updateTaskListIcon(
+                  context,
+                  ref,
+                  tasklist,
+                  color,
+                  acterIcon,
+                );
+              }
             : null,
       ),
       title: SelectionArea(
         child: GestureDetector(
           onTap: () => showEditTaskListNameBottomSheet(
             context: context,
-            ref: ref,
             taskList: tasklist,
             titleValue: tasklist.name(),
           ),
@@ -287,7 +289,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       context: context,
       descriptionHtmlValue: taskListData.description()?.formattedBody(),
       descriptionMarkdownValue: taskListData.description()?.body(),
-      onSave: (htmlBodyDescription, plainDescription) {
+      onSave: (ref, htmlBodyDescription, plainDescription) {
         _saveDescription(taskListData, htmlBodyDescription, plainDescription);
       },
     );
@@ -304,6 +306,12 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       final updater = taskListData.updateBuilder();
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
       await updater.send();
+
+      await autosubscribe(
+        ref: ref,
+        objectId: taskListData.eventIdStr(),
+        lang: lang,
+      );
       EasyLoading.dismiss();
       if (mounted) Navigator.pop(context);
     } catch (e, s) {
@@ -354,13 +362,13 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     required BuildContext context,
     required String titleValue,
     required TaskList taskList,
-    required WidgetRef ref,
   }) {
     showEditTitleBottomSheet(
       context: context,
       bottomSheetTitle: L10n.of(context).editName,
       titleValue: titleValue,
-      onSave: (newName) => updateTaskListTitle(context, taskList, newName),
+      onSave: (ref, newName) =>
+          updateTaskListTitle(context, ref, taskList, newName),
     );
   }
 

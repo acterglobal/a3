@@ -11,7 +11,7 @@ void showEditHtmlDescriptionBottomSheet({
   String? bottomSheetTitle,
   String? descriptionHtmlValue,
   String? descriptionMarkdownValue,
-  required Function(String, String) onSave,
+  required Function(WidgetRef, String, String) onSave,
 }) {
   showModalBottomSheet(
     showDragHandle: true,
@@ -34,7 +34,7 @@ class EditHtmlDescriptionSheet extends ConsumerStatefulWidget {
   final String? bottomSheetTitle;
   final String? descriptionHtmlValue;
   final String? descriptionMarkdownValue;
-  final Function(String, String) onSave;
+  final Function(WidgetRef, String, String) onSave;
 
   const EditHtmlDescriptionSheet({
     super.key,
@@ -107,7 +107,7 @@ class _EditHtmlDescriptionSheetState
                     return;
                   }
 
-                  widget.onSave(htmlBodyDescription, plainDescription);
+                  widget.onSave(ref, htmlBodyDescription, plainDescription);
                 },
                 child: Text(lang.save),
               ),

@@ -5,8 +5,6 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/labs/model/labs_features.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/notifications/actions/update_autosubscribe.dart';
 import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:acter/features/room/widgets/notifications_settings_tile.dart';
@@ -87,8 +85,6 @@ class NotificationsSettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final subscribeIsOn =
-        ref.watch(isActiveProvider(LabsFeature.autoSubscribe));
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
@@ -108,31 +104,25 @@ class NotificationsSettingsPage extends ConsumerWidget {
                   description: lang.notifyAboutSpaceUpdates,
                   appKey: 'global.acter.dev.news',
                 ),
+                SettingsTile.switchTile(
+                  title: Text(lang.autoSubscribeSettingsTitle),
+                  description: Text(lang.autoSubscribeFeatureDesc),
+                  initialValue: ref
+                          .watch(
+                            autoSubscribeProvider,
+                          )
+                          .value ==
+                      true,
+                  onToggle: (newVal) async {
+                    await updateAutoSubscribe(
+                      ref,
+                      lang,
+                      newVal,
+                    );
+                  },
+                ),
               ],
             ),
-            if (subscribeIsOn)
-              SettingsSection(
-                title: Text(lang.autoSubscribeSettingsTitle),
-                tiles: [
-                  SettingsTile.switchTile(
-                    title: Text(lang.boosts),
-                    // description: Text(lang.autoSubscribeFeatureDesc),
-                    initialValue: ref
-                            .watch(
-                              autoSubscribeProvider,
-                            )
-                            .value ==
-                        true,
-                    onToggle: (newVal) async {
-                      await updateAutoSubscribe(
-                        ref,
-                        lang,
-                        newVal,
-                      );
-                    },
-                  ),
-                ],
-              ),
             SettingsSection(
               title: Text(lang.defaultModes),
               tiles: [
