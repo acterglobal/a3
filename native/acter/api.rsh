@@ -2503,6 +2503,7 @@ enum MemberPermission {
     CanToggleReaction,
     CanSendSticker,
     CanPostNews,
+    CanPostStories,
     CanPostPin,
     CanPostEvent,
     CanPostTaskList,
