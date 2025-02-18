@@ -1,19 +1,41 @@
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:logging/logging.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final _log = Logger('a3::common::actions::open_link');
 
-Future<bool> openLink(String target, BuildContext context) async {
+Future<bool> openLink(
+  WidgetRef ref,
+  String target,
+  BuildContext context,
+) async {
+  final lang = L10n.of(context);
+  return switch (ref.watch(openSystemLinkSettingsProvider)) {
+    OpenSystemLinkSetting.copy => _copyToClipboard(lang, target),
+    OpenSystemLinkSetting.open => await _tryOpeningLink(lang, target),
+  };
+}
+
+Future<bool> _tryOpeningLink(
+  L10n lang,
+  String target,
+) async {
   final Uri? url = Uri.tryParse(target);
-  if (url == null || !url.hasAuthority) {
-    _log.info('Opening internally: $url');
-    // not a valid URL, try local routing
-    await context.push(target);
-    return true;
-  } else {
-    _log.info('Opening external URL: $url');
-    return await launchUrl(url);
+  if (url == null) {
+    EasyLoading.showError(lang.errorParsinLink);
+    return false;
   }
+  return await launchUrl(url);
+}
+
+bool _copyToClipboard(L10n lang, String target) {
+  final data = ClipboardData(text: target);
+  Clipboard.setData(data);
+  EasyLoading.showToast(lang.linkCopiedToClipboard);
+  return true;
 }
