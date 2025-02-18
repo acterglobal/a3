@@ -499,7 +499,7 @@ jobs:
           gh release upload ${{ needs.tags.outputs.tag }} CHANGELOG.md
           gh release edit ${{ needs.tags.outputs.tag }} \
             --latest --draft=false \
-            --note-file CHANGELOG.md
+            --notes-file CHANGELOG.md
 
       - name: Create Pull Request
         id: cpr

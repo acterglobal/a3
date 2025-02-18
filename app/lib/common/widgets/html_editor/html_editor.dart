@@ -40,13 +40,62 @@ AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
   ],
 );
 
+// contains final input string with mentions processed and mentions
+typedef MentionParsedText = (String, List<MentionAttributes>);
+
 extension ActerEditorStateHelpers on EditorState {
-  String intoHtml({AppFlowyEditorHTMLCodec? codec}) {
-    return (codec ?? defaultHtmlCodec).encode(document);
+  MentionParsedText mentionsParsedText(
+    String plainText,
+    String? htmlText,
+  ) {
+    List<MentionAttributes> mentionAttributes = [];
+
+    // Get the base text
+    var processedText = htmlText ?? plainText;
+
+    // Process mentions
+    int index = 0;
+    while (true) {
+      final node = document.nodeAtPath([index]);
+      if (node == null) break;
+
+      final delta = node.delta;
+      if (delta != null) {
+        for (final op in delta) {
+          if (op.attributes != null && op.attributes?['@'] != null) {
+            final mention = op.attributes!['@'] as MentionAttributes;
+            final displayText =
+                mention.displayName ?? mention.mentionId.substring(1);
+            final replacement = htmlText != null
+                ? '<a href="https://matrix.to/#/${mention.mentionId}">@$displayText</a>'
+                : '[@$displayText](https://matrix.to/#/${mention.mentionId})';
+            processedText = processedText.replaceFirst('‖', replacement);
+            mentionAttributes.add(mention);
+          }
+        }
+      }
+      index++;
+    }
+
+    // Remove only trailing <br> tag if it exists
+    if (processedText.endsWith('<br>')) {
+      processedText =
+          processedText.substring(0, processedText.length - '<br>'.length);
+    }
+
+    return (processedText.trimRight(), mentionAttributes);
   }
 
-  String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {
+  String intoMarkdown({
+    AppFlowyEditorMarkdownCodec? codec,
+  }) {
     return (codec ?? defaultMarkdownCodec).encode(document);
+  }
+
+  String intoHtml({
+    AppFlowyEditorHTMLCodec? codec,
+  }) {
+    return (codec ?? defaultHtmlCodec).encode(document);
   }
 
   /// clear the editor text with selection
@@ -54,8 +103,16 @@ extension ActerEditorStateHelpers on EditorState {
     if (!document.isEmpty) {
       final transaction = this.transaction;
       final selection = this.selection;
-      final node = transaction.document.root.children.last;
-      transaction.deleteNode(node);
+
+      // Delete all existing nodes
+      int nodeIndex = 0;
+      while (true) {
+        final node = getNodeAtPath([nodeIndex]);
+        if (node == null) break;
+        transaction.deleteNode(node);
+        nodeIndex++;
+      }
+
       transaction.insertNode([0], paragraphNode(text: ''));
 
       updateSelectionWithReason(

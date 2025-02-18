@@ -19,3 +19,9 @@ enum ErrorCode {
     return ErrorCode.other;
   }
 }
+
+enum NewsMediaErrorState{
+  showErrorImageOnly,
+  showErrorImageWithText,
+  showErrorWithTryAgain,
+}
