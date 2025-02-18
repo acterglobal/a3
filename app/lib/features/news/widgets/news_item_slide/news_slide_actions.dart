@@ -1,4 +1,5 @@
 import 'package:acter/common/actions/open_link.dart';
+import 'package:acter/common/themes/components/text_theme.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
@@ -57,6 +58,8 @@ class NewsSlideActions extends ConsumerWidget {
             goToChat(context, roomId);
           },
         ),
+      NewsReferencesType.superInvite =>
+        renderInvitationCodeActionButton(context, ref, referenceDetails),
       _ => renderNotSupportedAction(context),
     };
   }
@@ -112,6 +115,35 @@ class NewsSlideActions extends ConsumerWidget {
           ),
         ),
       );
+    }
+  }
+
+  Widget renderInvitationCodeActionButton(
+    BuildContext context,
+    WidgetRef ref,
+    RefDetails referenceDetails,
+  ) {
+    final title = referenceDetails.title();
+    if (title != null) {
+      return Card(
+        child: ListTile(
+          leading: const Icon(Atlas.ticket_coupon),
+          onTap: () {},
+          title: Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            L10n.of(context).inviteCode,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.labelSmall,
+          ),
+        ),
+      );
+    } else {
+      return SizedBox.shrink();
     }
   }
 

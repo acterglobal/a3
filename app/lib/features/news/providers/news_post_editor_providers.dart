@@ -140,9 +140,8 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     final superInviteCode = await selectSuperInviteListDrawer(context: context);
     RefDetails? refDetails;
     if (superInviteCode != null) {
-      final selectedInviteCode = await ref
-          .watch(superInviteTokenProvider(superInviteCode.token()).future);
-      // refDetails = await selectedInviteCode.refDetails();
+      final selectedInviteCode = await ref.watch(superInviteTokenProvider(superInviteCode.token()).future);
+      refDetails = selectedInviteCode.refDetails();
     }
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
     selectedNewsSlide?.refDetails = refDetails;
