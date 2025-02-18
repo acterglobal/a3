@@ -1597,53 +1597,6 @@ class Api {
     return tmp3;
   }
 
-  String? parseMarkdown(
-    String text,
-  ) {
-    final tmp0 = text;
-    var tmp1 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    final tmp0_0 = utf8.encode(tmp0);
-    tmp2 = tmp0_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
-    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
-    tmp1_1.setAll(0, tmp0_0);
-    tmp1 = tmp1_0.address;
-    tmp3 = tmp2;
-    final tmp4 = _parseMarkdown(
-      tmp1,
-      tmp2,
-      tmp3,
-    );
-    final tmp6 = tmp4.arg0;
-    final tmp7 = tmp4.arg1;
-    final tmp8 = tmp4.arg2;
-    final tmp9 = tmp4.arg3;
-    if (tmp6 == 0) {
-      return null;
-    }
-    if (tmp8 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp7_ptr = ffi.Pointer.fromAddress(tmp7);
-    List<int> tmp7_buf = [];
-    final tmp7_precast = tmp7_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp8; i++) {
-      int char = tmp7_precast.elementAt(i).value;
-      tmp7_buf.add(char);
-    }
-    final tmp5 = utf8.decode(tmp7_buf, allowMalformed: true);
-    if (tmp9 > 0) {
-      final ffi.Pointer<ffi.Void> tmp7_0;
-      tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-      this.__deallocate(tmp7_0, tmp9 * 1, 1);
-    }
-    return tmp5;
-  }
-
   /// create size object to be used for thumbnail download
   ThumbnailSize newThumbSize(
     int width,
@@ -17785,20 +17738,6 @@ class Api {
 
   late final _durationFromSecs = _durationFromSecsPtr.asFunction<
       int Function(
-        int,
-      )>();
-  late final _parseMarkdownPtr = _lookup<
-      ffi.NativeFunction<
-          _ParseMarkdownReturn Function(
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__parse_markdown");
-
-  late final _parseMarkdown = _parseMarkdownPtr.asFunction<
-      _ParseMarkdownReturn Function(
-        int,
-        int,
         int,
       )>();
   late final _newThumbSizePtr = _lookup<
@@ -64593,17 +64532,6 @@ class _RotateLogFileReturn extends ffi.Struct {
   external int arg5;
   @ffi.UintPtr()
   external int arg6;
-}
-
-class _ParseMarkdownReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
 }
 
 class _NewThumbSizeReturn extends ffi.Struct {

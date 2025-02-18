@@ -25,7 +25,7 @@ testing = ['dep:uuid']
 tokio = { version = "1", features = ["rt", "macros"] }
 async-recursion = "1"
 chrono = { version = "0.4", default-features = false, features = ["serde", "clock"] }
-chrono-tz = { version = "0.9", default-features = false, features = ["serde"] }
+chrono-tz = { version = "0.10", default-features = false, features = ["serde"] }
 scc = { workspace = true }
 derive-getters = { workspace = true }
 derive_builder = { workspace = true }
@@ -33,12 +33,12 @@ enum_dispatch = "0.3.12"
 futures = "0.3.30"
 mime_guess = "2.0.4"
 icalendar = { workspace = true }
-eyeball-im = "0.5"
+eyeball-im = { workspace = true }
 serde = "1"
 serde_json = "1"
 serde_repr = "0.1"
 strum = { workspace = true }
-thiserror = "1.0"
+thiserror = "2"
 tracing = { version = "0.1.40", features = ["log"] }
 url = { workspace = true }
 urlencoding = { workspace = true }
@@ -81,3 +81,7 @@ default-features = false
 
 [dev-dependencies.matrix-sdk-test]
 workspace = true
+
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(ruma_unstable_exhaustive_types)'] }

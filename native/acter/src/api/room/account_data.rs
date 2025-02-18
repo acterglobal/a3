@@ -1,7 +1,7 @@
 use acter_core::{events::room::UserSettingsEventContent, referencing::ExecuteReference};
 use anyhow::Result;
 use futures::{Stream, StreamExt};
-use ruma::events::StaticEventContent;
+use matrix_sdk::ruma::events::StaticEventContent;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::wrappers::BroadcastStream;
 use tracing::error;

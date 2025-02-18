@@ -128,6 +128,7 @@ impl RoomEventItem {
             )
             .reactions(
                 event
+                    .content()
                     .reactions()
                     .iter()
                     .map(|(u, group)| {
@@ -402,7 +403,7 @@ pub struct RoomVirtualItem {
 impl RoomVirtualItem {
     pub(crate) fn new(event: &VirtualTimelineItem) -> Self {
         match event {
-            VirtualTimelineItem::DayDivider(ts) => {
+            VirtualTimelineItem::DateDivider(ts) => {
                 let desc = if let Some(st) = ts.to_system_time() {
                     let dt: DateTime<Utc> = st.into();
                     Some(dt.format("%Y-%m-%d").to_string())

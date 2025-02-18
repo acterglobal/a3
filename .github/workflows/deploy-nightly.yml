@@ -377,4 +377,4 @@ jobs:
           gh release upload nightly-${{ needs.tags.outputs.tag }} CHANGELOG.md
           gh release edit nightly-${{ needs.tags.outputs.tag }} \
             --prerelease --draft=false \
-            --note-file CHANGELOG.md
+            --notes-file CHANGELOG.md

@@ -98,7 +98,7 @@ class MessageActionsWidget extends ConsumerWidget {
         if (canRedact)
           makeMenuItem(
             pressed: () =>
-                redactMessageAction(context, ref, item, messageId, roomId),
+                redactMessageAction(context, item, messageId, roomId),
             text: Text(
               lang.delete,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
