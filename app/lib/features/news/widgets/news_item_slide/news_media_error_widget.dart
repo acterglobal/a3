@@ -28,13 +28,21 @@ class NewsMediaErrorWidget extends StatelessWidget {
       errorText = Text(
         L10n.of(context).unableToLoadImage,
       );
-    } else {
+    } else if(mediaType == 'video'){
       errorIcon = Icon(
         Icons.videocam_off_outlined,
         size: 100,
       );
       errorText = Text(
         L10n.of(context).unableToLoadVideo,
+      );
+    }else{
+      errorIcon = Icon(
+        Icons.file_download_off,
+        size: 100,
+      );
+      errorText = Text(
+        L10n.of(context).unableToLoadFile,
       );
     }
 

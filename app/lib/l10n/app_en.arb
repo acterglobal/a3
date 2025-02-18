@@ -2344,5 +2344,6 @@
   "tryAgain": "Try Again",
   "unableToLoadVideo": "Unable to load video",
   "unableToLoadImage": "Unable to load image",
+  "unableToLoadFile": "Unable to load file",
   "@addComment": {}
 }
