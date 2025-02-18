@@ -1,4 +1,5 @@
 import 'package:acter/common/actions/open_link.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/events/widgets/skeletons/event_item_skeleton_widget.dart';
@@ -28,13 +29,14 @@ class SelectedActionButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (refDetails == null) return SizedBox();
-    final refObjectType = refDetails!.typeStr();
-
+    final refObjectType = refDetails?.typeStr();
     return switch (refObjectType) {
       'pin' => pinActionButton(context, ref, refDetails!),
       'calendar-event' => calendarActionButton(context, ref, refDetails!),
       'task-list' => taskListActionButton(context, ref, refDetails!),
       'link' => linkActionButton(context, refDetails!),
+      'space' => spaceActionButton(context, ref, refDetails!),
+      'chat' => chatActionButton(context, ref, refDetails!),
       _ => const SizedBox(),
     };
   }
@@ -164,6 +166,44 @@ class SelectedActionButton extends ConsumerWidget {
             style: Theme.of(context).textTheme.labelSmall,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget spaceActionButton(
+    BuildContext context,
+    WidgetRef ref,
+    RefDetails refDetail,
+  ) {
+    final roomId = refDetail.roomIdStr();
+    if (roomId == null) return SizedBox();
+    return SizedBox(
+      width: 300,
+      child: RoomCard(
+        roomId: roomId,
+        onTap: () async {
+          final notifier = ref.read(newsStateProvider.notifier);
+          await notifier.selectSpaceToShare(context);
+        },
+      ),
+    );
+  }
+
+  Widget chatActionButton(
+    BuildContext context,
+    WidgetRef ref,
+    RefDetails refDetail,
+  ) {
+    final roomId = refDetail.roomIdStr();
+    if (roomId == null) return SizedBox();
+    return SizedBox(
+      width: 300,
+      child: RoomCard(
+        roomId: roomId,
+        onTap: () async {
+          final notifier = ref.read(newsStateProvider.notifier);
+          await notifier.selectChatToShare(context);
+        },
       ),
     );
   }

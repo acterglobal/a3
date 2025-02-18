@@ -1,4 +1,7 @@
+import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/event/event_selector_drawer.dart';
 import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
@@ -35,7 +38,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   Future<void> changeNewsPostSpaceId(BuildContext context) async {
     final spaceId = await selectSpaceDrawer(
       context: context,
-      canCheck: 'CanInvite',
+      canCheck: 'CanPostNews',
     );
     state = state.copyWith(newsPostSpaceId: spaceId);
   }
@@ -90,6 +93,32 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     state = state.copyWith(currentNewsSlide: selectedNewsSlide);
   }
 
+
+  Future<void> selectSpaceToShare(BuildContext context) async {
+    final selectedSpaceId = await selectSpaceDrawer(context: context);
+    RefDetails? refDetails;
+    if (selectedSpaceId != null) {
+      final selectedSpace = await ref.read(spaceProvider(selectedSpaceId).future);
+      refDetails = await selectedSpace.refDetails();
+    }
+    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
+    selectedNewsSlide?.refDetails = refDetails;
+    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+  }
+
+  Future<void> selectChatToShare(BuildContext context) async {
+    final selectedChatId = await selectChatDrawer(context: context);
+    RefDetails? refDetails;
+    if (selectedChatId != null) {
+      final selectedChat = await ref.read(chatProvider(selectedChatId).future);
+      if(selectedChat == null) return;
+      refDetails = await selectedChat.refDetails();
+    }
+    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
+    selectedNewsSlide?.refDetails = refDetails;
+    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+  }
+
   Future<void> enterLinkToShare(BuildContext context) async {
     showAddEditLinkBottomSheet(
       context: context,
@@ -103,6 +132,7 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
         state = state.copyWith(currentNewsSlide: selectedNewsSlide);
       },
     );
+
   }
 
   void changeTextSlideValue(String body, String? html) {

@@ -11,6 +11,8 @@ Future<void> showRoomPreview({
   required String roomIdOrAlias,
   Widget? headerInfo,
   OnForward? onForward,
+  String? fallbackRoomDisplayName,
+  String? senderId,
   List<String> serverNames = const [],
 }) =>
     showModalBottomSheet(
@@ -28,6 +30,8 @@ Future<void> showRoomPreview({
         child: RoomPreviewWidget(
           roomId: roomIdOrAlias,
           headerInfo: headerInfo,
+          senderId: senderId,
+          fallbackRoomDisplayName: fallbackRoomDisplayName,
           viaServers: serverNames,
           onForward: (inner, ref, room) async {
             if (context.canPop()) {

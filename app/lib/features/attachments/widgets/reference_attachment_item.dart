@@ -1,4 +1,5 @@
 import 'package:acter/common/actions/redact_content.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
@@ -52,6 +53,8 @@ class ReferenceAttachmentItem extends ConsumerWidget {
           showTaskListIndication: true,
           cardMargin: EdgeInsets.zero,
         ),
+      'space' => RoomCard(roomId: roomId,refDetails: refDetails,),
+      'chat' => RoomCard(roomId: roomId,refDetails: refDetails,),
       _ => defaultWidget,
     };
     return Container(

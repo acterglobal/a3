@@ -65,7 +65,6 @@ jobs:
     if: ${{ needs.run_checker.outputs.should_run != 'false' }}
     with:
       artifacts_prefix: 'demo-'
-      release_tag: demo-${{ needs.tags.outputs.tag }}
       release_env: demo
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.tag }}
@@ -88,5 +87,5 @@ jobs:
               issue_number: ${{needs.run_checker.outputs.pr_num}},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '[Your demo build ${{ needs.tags.outputs.tag }} is ready](${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{env.GITHUB_RUN_ID}})'
+              body: '[Your demo build ${{ needs.tags.outputs.tag }} is ready](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
             })

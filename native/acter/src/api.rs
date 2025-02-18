@@ -19,6 +19,7 @@ lazy_static! {
 }
 
 mod account;
+mod activities;
 mod attachments;
 mod auth;
 mod backup;
@@ -67,6 +68,7 @@ pub use acter_core::{
     },
     models::{ActerModel, Tag, TextMessageContent},
 };
+pub use activities::{Activities, Activity, ActivityObject, MembershipChange};
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     destroy_local_data, guest_client, login_new_client, login_with_token, register_with_token,
@@ -102,8 +104,8 @@ pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, New
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::UserProfile;
 pub use push::{
-    NotificationItem, NotificationItemParent, NotificationRoom, NotificationSender,
-    NotificationSettings, Pusher, SubscriptionStatus,
+    NotificationItem, NotificationRoom, NotificationSender, NotificationSettings, Pusher,
+    SubscriptionStatus,
 };
 pub use reactions::{Reaction, ReactionManager};
 pub use read_receipts::ReadReceiptsManager;
@@ -132,7 +134,7 @@ pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
 pub use typing::TypingEvent;
-pub use utils::{new_vec_string_builder, parse_markdown, VecStringBuilder};
+pub use utils::{new_vec_string_builder, VecStringBuilder};
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
 pub type DeviceId = matrix_sdk_base::ruma::OwnedDeviceId;

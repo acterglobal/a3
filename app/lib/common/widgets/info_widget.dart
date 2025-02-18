@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class InfoWidget extends StatelessWidget {
   final String title;
   final String? subTitle;
+  final IconData? icon;
 
   const InfoWidget({
     super.key,
     required this.title,
     this.subTitle,
+    this.icon,
   });
 
   @override
@@ -23,7 +25,7 @@ class InfoWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.info),
+          Icon(icon ?? Icons.info),
           SizedBox(width: 14),
           Expanded(
             child: Column(

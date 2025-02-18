@@ -15,6 +15,7 @@ use acter_core::{
         pins::PinEventContent,
         settings::ActerAppSettingsContent,
         tasks::{TaskEventContent, TaskListEventContent},
+        RefDetails as CoreRefDetails, RefPreview,
     },
     spaces::is_acter_space,
     statics::PURPOSE_FIELD_DEV,
@@ -61,6 +62,7 @@ use tracing::{info, warn};
 
 use super::{
     api::FfiBuffer,
+    deep_linking::RefDetails,
     push::{notification_mode_from_input, room_notification_mode_name},
 };
 use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
@@ -567,7 +569,7 @@ impl SpaceRelations {
                 let mut rooms = Vec::new();
                 while next.is_some() {
                     let request = assign!(get_hierarchy::v1::Request::new(room_id.clone()), { from: next.clone(), max_depth: Some(1u32.into()) });
-                    let resp = c.client().send(request, None).await?;
+                    let resp = c.client().send(request).await?;
                     if (resp.rooms.is_empty()) {
                         break; // we are done
                     }
@@ -617,7 +619,7 @@ impl Room {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let result = room.compute_display_name().await?;
+                let result = room.display_name().await?;
                 match result {
                     RoomDisplayName::Named(name) => Ok(OptionString::new(Some(name))),
                     RoomDisplayName::Aliased(name) => Ok(OptionString::new(Some(name))),
@@ -1204,6 +1206,7 @@ impl Room {
             RoomState::Left => "left".to_string(),
             RoomState::Invited => "invited".to_string(),
             RoomState::Knocked => "knocked".to_string(),
+            RoomState::Banned => "banned".to_string(),
         }
     }
 
@@ -1728,7 +1731,7 @@ impl Room {
             .spawn(async move {
                 let request =
                     report_content::v3::Request::new(room_id, event_id, int_score, reason);
-                client.send(request, None).await?;
+                client.send(request).await?;
                 Ok(true)
             })
             .await?
@@ -1753,6 +1756,28 @@ impl Room {
             .spawn(async move {
                 let response = room.redact(&event_id, reason.as_deref(), None).await?;
                 Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn ref_details(&self) -> Result<RefDetails> {
+        let room = self.room.clone();
+        let client = self.core.client().clone();
+        let room_id = self.room.room_id().to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let via = room.route().await?;
+                let room_display_name = room.cached_display_name();
+                Ok(RefDetails::new(
+                    client,
+                    CoreRefDetails::Room {
+                        room_id,
+                        is_space: room.is_space(),
+                        via,
+                        preview: RefPreview::new(None, room_display_name),
+                    },
+                ))
             })
             .await?
     }

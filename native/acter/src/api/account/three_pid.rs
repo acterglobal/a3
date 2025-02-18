@@ -255,7 +255,7 @@ impl Account {
                 {
                     if let Some(a) = e.as_uiaa_response() {
                         if let Some(std_err) = &a.auth_error {
-                            bail!("{0}: {1}", std_err.kind, std_err.message);
+                            bail!("{:?}: {:?}", std_err.kind, std_err.message);
                         }
                     }
                     return Err(e.into());
@@ -334,7 +334,7 @@ impl Account {
                 if let Err(e) = account.add_3pid(&secret, &sid, Some(auth_data)).await {
                     if let Some(a) = e.as_uiaa_response() {
                         if let Some(std_err) = &a.auth_error {
-                            bail!("{0}: {1}", std_err.kind, std_err.message);
+                            bail!("{:?}: {:?}", std_err.kind, std_err.message);
                         }
                     }
                     return Err(e.into());

@@ -96,7 +96,7 @@ impl OptionComposeDraft {
 }
 
 pub struct MediaSource {
-    inner: SdkMediaSource,
+    pub(crate) inner: SdkMediaSource,
 }
 
 impl MediaSource {
@@ -718,19 +718,19 @@ pub fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
             FromHttpResponseError::Server(inner) => match inner {
                 RumaApiError::ClientApi(error) => {
                     if let ErrorBody::Standard { kind, message } = &error.body {
-                        return anyhow::anyhow!("{message} [{kind}]");
+                        return anyhow::anyhow!("{message:?} [{kind:?}]");
                     }
                     return anyhow::anyhow!("{0:?} [{1}]", error.body, error.status_code);
                 }
                 RumaApiError::Uiaa(uiaa_error) => {
                     if let Some(err) = &uiaa_error.auth_error {
-                        return anyhow::anyhow!("{0} [{1}]", err.message, err.kind);
+                        return anyhow::anyhow!("{:?} [{:?}]", err.message, err.kind);
                     }
                     error!(?uiaa_error, "Other UIAA response");
                     return anyhow::anyhow!("Unsupported User Interaction needed.");
                 }
                 RumaApiError::Other(err) => {
-                    return anyhow::anyhow!("{0:?} [{1}]", err.body, err.status_code);
+                    return anyhow::anyhow!("{:?} [{:?}]", err.body, err.status_code);
                 }
             },
             _ => {}
