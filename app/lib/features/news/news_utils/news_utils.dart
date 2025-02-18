@@ -4,6 +4,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/news/model/news_post_color_data.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
+import 'package:acter/features/news/types.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
@@ -56,8 +57,8 @@ class NewsUtils {
     RefDetails? refDetails,
   }) {
     final clr = getRandomElement(newsPostColors);
-    NewsSlideItem textSlide = NewsSlideItem(
-      type: NewsSlideType.text,
+    UpdateSlideItem textSlide = UpdateSlideItem(
+      type: UpdateSlideType.text,
       text: '',
       backgroundColor: clr,
       refDetails: refDetails,
@@ -75,8 +76,8 @@ class NewsUtils {
       source: ImageSource.gallery,
     );
     if (imageFile != null) {
-      final slide = NewsSlideItem(
-        type: NewsSlideType.image,
+      final slide = UpdateSlideItem(
+        type: UpdateSlideType.image,
         mediaFile: imageFile,
         backgroundColor: clr,
         refDetails: refDetails,
@@ -95,8 +96,8 @@ class NewsUtils {
       source: ImageSource.gallery,
     );
     if (videoFile != null) {
-      final slide = NewsSlideItem(
-        type: NewsSlideType.video,
+      final slide = UpdateSlideItem(
+        type: UpdateSlideType.video,
         mediaFile: videoFile,
         backgroundColor: clr,
         refDetails: refDetails,
@@ -105,7 +106,7 @@ class NewsUtils {
     }
   }
 
-  static Color getBackgroundColor(BuildContext context, NewsSlide newsSlide) {
+  static Color getBackgroundColor(BuildContext context, UpdateSlide newsSlide) {
     final color = newsSlide.colors();
     return convertColor(
       color?.background(),
@@ -113,7 +114,7 @@ class NewsUtils {
     );
   }
 
-  static Color getForegroundColor(BuildContext context, NewsSlide newsSlide) {
+  static Color getForegroundColor(BuildContext context, UpdateSlide newsSlide) {
     final color = newsSlide.colors();
     return convertColor(
       color?.color(),

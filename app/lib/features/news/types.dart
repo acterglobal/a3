@@ -2,6 +2,8 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
 abstract class UpdateSlide {
   typeStr() {}
+
+  colors() {}
 }
 
 /// Abstract base class for entries that contain slides
@@ -45,7 +47,7 @@ abstract class UpdateEntry {
 
 /// A news entry
 class UpdateNewsEntrySlide extends UpdateSlide {
-  final UpdateSlide inner;
+  final NewsSlide inner;
 
   UpdateNewsEntrySlide(this.inner);
 }
