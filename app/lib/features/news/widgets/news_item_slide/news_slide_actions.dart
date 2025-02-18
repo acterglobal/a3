@@ -85,7 +85,7 @@ class NewsSlideActions extends ConsumerWidget {
       return Card(
         child: ListTile(
           leading: const Icon(Atlas.link),
-          onTap: () => openLink(uri, context),
+          onTap: () => openLink(ref, uri, context),
           title: Text(
             title,
             maxLines: 2,
@@ -103,7 +103,7 @@ class NewsSlideActions extends ConsumerWidget {
       return Card(
         child: ListTile(
           leading: const Icon(Atlas.link),
-          onTap: () => openLink(uri, context),
+          onTap: () => openLink(ref, uri, context),
           title: Text(
             uri,
             maxLines: 2,
