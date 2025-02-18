@@ -44,6 +44,8 @@ void main() {
         (tester) async {
       when(() => mockSlide.sourceBinary(null))
           .thenAnswer((_) async => Future.error('Failed to load video'));
+      // Mock the typeStr method to return a valid string
+      when(() => mockSlide.typeStr()).thenReturn('video');
       // Build the widget
       await tester.pumpWidget(
         MaterialApp(
