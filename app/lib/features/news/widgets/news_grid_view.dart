@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/features/news/types.dart';
 import 'package:acter/features/news/widgets/news_item/news_post_time_widget.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -9,7 +10,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class NewsGridView extends StatelessWidget {
-  final List<NewsEntry> newsList;
+  final List<UpdateEntry> newsList;
   final Function(int)? onTapNewItem;
 
   const NewsGridView({
@@ -44,8 +45,8 @@ class NewsGridView extends StatelessWidget {
     );
   }
 
-  Widget newsItemUI(NewsEntry newsEntry) {
-    final List<NewsSlide> newsSlides = newsEntry.slides().toList();
+  Widget newsItemUI(UpdateEntry updateEntry) {
+    final List<UpdateSlide> newsSlides = updateEntry.slides();
     final slideCount = newsSlides.length;
 
     if (newsSlides.isEmpty) return const SizedBox.shrink();
@@ -56,9 +57,9 @@ class NewsGridView extends StatelessWidget {
       margin: const EdgeInsets.all(6),
       child: Stack(
         children: [
-          NewsSlideItem(slide: slide, showRichContent: false),
+          UpdateSlideItem(slide: slide, showRichContent: false),
           if (slideCount > 1) slideStackCountView(slideCount),
-          newsPostTime(newsEntry.originServerTs()),
+          newsPostTime(updateEntry.originServerTs()),
         ],
       ),
     );

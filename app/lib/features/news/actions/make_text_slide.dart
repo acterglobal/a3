@@ -6,13 +6,13 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Future<NewsSlideDraft> makeTextSlideForNews(
+Future<UpdateSlideDraft> makeTextSlideForNews(
   WidgetRef ref,
-  NewsSlideItem slidePost,
+  UpdateSlideItem slidePost,
   L10n lang,
 ) async {
   final textDraft = await createTextMsgDraftDraft(ref, slidePost, lang);
-  final textSlideDraft = textDraft.intoNewsSlideDraft();
+  final textSlideDraft = textDraft.intoUpdateSlideDraft();
 
   final sdk = await ref.read(sdkProvider.future);
   textSlideDraft.color(
@@ -30,7 +30,7 @@ Future<NewsSlideDraft> makeTextSlideForNews(
 
 Future<StorySlideDraft> makeTextSlideForStory(
   WidgetRef ref,
-  NewsSlideItem slidePost,
+  UpdateSlideItem slidePost,
   L10n lang,
 ) async {
   final textDraft = await createTextMsgDraftDraft(ref, slidePost, lang);
@@ -52,7 +52,7 @@ Future<StorySlideDraft> makeTextSlideForStory(
 
 Future<MsgDraft> createTextMsgDraftDraft(
   WidgetRef ref,
-  NewsSlideItem slidePost,
+  UpdateSlideItem slidePost,
   L10n lang,
 ) async {
   final client = await ref.read(alwaysClientProvider.future);

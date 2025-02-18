@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 
 class NewsItem extends ConsumerStatefulWidget {
-  final NewsEntry news;
+  final UpdateEntry news;
 
   const NewsItem({super.key, required this.news});
 
@@ -27,7 +27,8 @@ class _NewsItemState extends ConsumerState<NewsItem> {
   @override
   void initState() {
     super.initState();
-    _pageController = PreloadPageController(initialPage: currentSlideIndex.value);
+    _pageController =
+        PreloadPageController(initialPage: currentSlideIndex.value);
   }
 
   @override
@@ -57,14 +58,14 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     );
   }
 
-  Widget buildSlidesUI(List<NewsSlide> slides) {
+  Widget buildSlidesUI(List<UpdateSlide> slides) {
     return PreloadPageView.builder(
       controller: _pageController,
       scrollDirection: Axis.horizontal,
       itemCount: slides.length,
       preloadPagesCount: slides.length,
-      onPageChanged: (page) =>  currentSlideIndex.value = page,
-      itemBuilder: (context, index) => NewsSlideItem(slide: slides[index]),
+      onPageChanged: (page) => currentSlideIndex.value = page,
+      itemBuilder: (context, index) => UpdateSlideItem(slide: slides[index]),
     );
   }
 

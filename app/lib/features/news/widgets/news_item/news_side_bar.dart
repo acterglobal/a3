@@ -18,7 +18,7 @@ import 'package:acter/features/read_receipts/widgets/read_counter.dart';
 import 'package:acter/features/share/action/share_space_object_action.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show UpdateEntry;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -29,7 +29,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 final _log = Logger('a3::news::sidebar');
 
 class NewsSideBar extends ConsumerWidget {
-  final NewsEntry news;
+  final UpdateEntry news;
 
   const NewsSideBar({
     super.key,
@@ -115,9 +115,13 @@ class NewsSideBar extends ConsumerWidget {
             },
             icon: Column(
               children: [
-                ShadowEffectWidget(child: Icon(Atlas.comment_blank),),
+                ShadowEffectWidget(
+                  child: Icon(Atlas.comment_blank),
+                ),
                 const SizedBox(height: 4),
-                ShadowEffectWidget(child:Text(commentCount.toString(), style: style),),
+                ShadowEffectWidget(
+                  child: Text(commentCount.toString(), style: style),
+                ),
               ],
             ),
           ),
@@ -190,7 +194,7 @@ class _SideBarItem extends StatelessWidget {
 
 class ActionBox extends ConsumerWidget {
   final String userId;
-  final NewsEntry news;
+  final UpdateEntry news;
   final String roomId;
 
   const ActionBox({

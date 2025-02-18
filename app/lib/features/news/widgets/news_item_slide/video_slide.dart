@@ -12,7 +12,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 final _log = Logger('a3::news::video_slide');
 
 class VideoSlide extends StatefulWidget {
-  final NewsSlide slide;
+  final UpdateSlide slide;
 
   const VideoSlide({
     super.key,
@@ -24,7 +24,6 @@ class VideoSlide extends StatefulWidget {
 }
 
 class _VideoSlideState extends State<VideoSlide> {
-
   Future<File> getNewsVideoFile() async {
     final newsVideo = await widget.slide.sourceBinary(null);
     final videoName = widget.slide.uniqueId();

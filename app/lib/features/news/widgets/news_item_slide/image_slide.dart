@@ -10,7 +10,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 final _log = Logger('a3::news::image_slide');
 
 class ImageSlide extends StatefulWidget {
-  final NewsSlide slide;
+  final UpdateSlide slide;
 
   const ImageSlide({
     super.key,

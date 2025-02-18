@@ -5,7 +5,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
 class TextSlide extends StatelessWidget {
-  final NewsSlide slide;
+  final UpdateSlide slide;
 
   const TextSlide({super.key, required this.slide});
 

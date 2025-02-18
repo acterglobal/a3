@@ -11,10 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NewsSlideActions extends ConsumerWidget {
-  final NewsSlide newsSlide;
+class UpdateSlideActions extends ConsumerWidget {
+  final UpdateSlide newsSlide;
 
-  const NewsSlideActions({
+  const UpdateSlideActions({
     super.key,
     required this.newsSlide,
   });

@@ -46,9 +46,9 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
     // If slide type is text
     try {
       final slide = await switch (slidePost.type) {
-        NewsSlideType.text => makeTextSlideForNews(ref, slidePost, lang),
-        NewsSlideType.image => makeImageSlideForNews(ref, slidePost, lang),
-        NewsSlideType.video => makeVideoSlideForNews(ref, slidePost, lang),
+        UpdateSlideType.text => makeTextSlideForNews(ref, slidePost, lang),
+        UpdateSlideType.image => makeImageSlideForNews(ref, slidePost, lang),
+        UpdateSlideType.video => makeVideoSlideForNews(ref, slidePost, lang),
       };
       await draft.addSlide(slide);
     } catch (err, s) {

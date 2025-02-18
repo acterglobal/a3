@@ -40,7 +40,7 @@ class AddNewsPage extends ConsumerStatefulWidget {
 
 class AddNewsState extends ConsumerState<AddNewsPage> {
   EditorState textEditorState = EditorState.blank();
-  NewsSlideItem? selectedNewsPost;
+  UpdateSlideItem? selectedNewsPost;
 
   @override
   void initState() {
@@ -52,9 +52,10 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     });
     ref.listenManual(newsStateProvider, fireImmediately: true,
         (prevState, nextState) async {
-      final nextSlide = nextState.currentNewsSlide;
-      final isText = nextSlide != null && nextSlide.type == NewsSlideType.text;
-      final changed = prevState?.currentNewsSlide != nextSlide;
+      final nextSlide = nextState.currentUpdateSlide;
+      final isText =
+          nextSlide != null && nextSlide.type == UpdateSlideType.text;
+      final changed = prevState?.currentUpdateSlide != nextSlide;
       if (isText && changed) {
         final document = ActerDocumentHelpers.parse(
           nextSlide.text ?? '',
@@ -88,7 +89,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           });
         }
       } else {
-        setState(() => selectedNewsPost = nextState.currentNewsSlide);
+        setState(() => selectedNewsPost = nextState.currentUpdateSlide);
       }
     });
   }
@@ -260,7 +261,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         //News content UI
         Expanded(child: newsContentUI()),
         //Slide options
-        const NewsSlideOptions(),
+        const UpdateSlideOptions(),
       ],
     );
   }
@@ -287,9 +288,9 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   Widget slidePostUI(BuildContext context) {
     return selectedNewsPost.map(
           (slide) => switch (slide.type) {
-            NewsSlideType.text => slideTextPostUI(context),
-            NewsSlideType.image => slideImagePostUI(context, slide),
-            NewsSlideType.video => slideVideoPostUI(context, slide),
+            UpdateSlideType.text => slideTextPostUI(context),
+            UpdateSlideType.image => slideImagePostUI(context, slide),
+            UpdateSlideType.video => slideVideoPostUI(context, slide),
           },
         ) ??
         emptySlidePostUI(context);
@@ -376,7 +377,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     );
   }
 
-  Widget slideImagePostUI(BuildContext context, NewsSlideItem slide) {
+  Widget slideImagePostUI(BuildContext context, UpdateSlideItem slide) {
     final imageFile = slide.mediaFile;
     if (imageFile == null) throw 'media file of image slide not available';
     return Container(
@@ -389,7 +390,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     );
   }
 
-  Widget slideVideoPostUI(BuildContext context, NewsSlideItem slide) {
+  Widget slideVideoPostUI(BuildContext context, UpdateSlideItem slide) {
     final videoFile = slide.mediaFile;
     if (videoFile == null) throw 'media file of video slide not available';
     return Container(

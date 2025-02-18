@@ -8,13 +8,13 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mime/mime.dart';
 
-Future<NewsSlideDraft> makeVideoSlideForNews(
+Future<UpdateSlideDraft> makeVideoSlideForNews(
   WidgetRef ref,
-  NewsSlideItem slidePost,
+  UpdateSlideItem slidePost,
   L10n lang,
 ) async {
   final videoDraft = await createVideoMsgDraftDraft(ref, slidePost, lang);
-  final videoSlideDraft = videoDraft.intoNewsSlideDraft();
+  final videoSlideDraft = videoDraft.intoUpdateSlideDraft();
 
   final sdk = await ref.read(sdkProvider.future);
   videoSlideDraft.color(
@@ -30,7 +30,7 @@ Future<NewsSlideDraft> makeVideoSlideForNews(
 
 Future<StorySlideDraft> makeVideoSlideForStory(
   WidgetRef ref,
-  NewsSlideItem slidePost,
+  UpdateSlideItem slidePost,
   L10n lang,
 ) async {
   final videoDraft = await createVideoMsgDraftDraft(ref, slidePost, lang);
@@ -50,7 +50,7 @@ Future<StorySlideDraft> makeVideoSlideForStory(
 
 Future<MsgDraft> createVideoMsgDraftDraft(
   WidgetRef ref,
-  NewsSlideItem slidePost,
+  UpdateSlideItem slidePost,
   L10n lang,
 ) async {
   final client = await ref.read(alwaysClientProvider.future);

@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 
 class NewsFullView extends ConsumerStatefulWidget {
-  final List<NewsEntry> newsList;
+  final List<UpdateEntry> newsList;
   final int initialPageIndex;
 
   const NewsFullView({
@@ -27,7 +27,8 @@ class NewsVerticalViewState extends ConsumerState<NewsFullView> {
   @override
   void initState() {
     super.initState();
-    _pageController = PreloadPageController(initialPage: widget.initialPageIndex);
+    _pageController =
+        PreloadPageController(initialPage: widget.initialPageIndex);
   }
 
   @override
@@ -61,25 +62,27 @@ class NewsVerticalViewState extends ConsumerState<NewsFullView> {
         },
       ),
       child: PreloadPageView.builder(
-          controller: _pageController,
-          itemCount: widget.newsList.length,
-          scrollDirection: Axis.vertical,
-          preloadPagesCount: widget.newsList.length > 5 ? 5 : widget.newsList.length,
-          itemBuilder: (context, index) {
-            return InkWell(
-              onDoubleTap: () async {
-                LikeAnimation.run(index);
-                final news = widget.newsList[index];
-                final manager =
-                    await ref.read(newsReactionsProvider(news).future);
-                final status = manager.likedByMe();
-                if (!status) {
-                  await manager.sendLike();
-                }
-              },
-              child: NewsItem(news: widget.newsList[index]),
-            );
-          },),
+        controller: _pageController,
+        itemCount: widget.newsList.length,
+        scrollDirection: Axis.vertical,
+        preloadPagesCount:
+            widget.newsList.length > 5 ? 5 : widget.newsList.length,
+        itemBuilder: (context, index) {
+          return InkWell(
+            onDoubleTap: () async {
+              LikeAnimation.run(index);
+              final news = widget.newsList[index];
+              final manager =
+                  await ref.read(newsReactionsProvider(news).future);
+              final status = manager.likedByMe();
+              if (!status) {
+                await manager.sendLike();
+              }
+            },
+            child: NewsItem(news: widget.newsList[index]),
+          );
+        },
+      ),
     );
   }
 }

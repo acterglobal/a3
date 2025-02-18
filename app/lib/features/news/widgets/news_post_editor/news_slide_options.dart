@@ -13,15 +13,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class NewsSlideOptions extends ConsumerStatefulWidget {
-  const NewsSlideOptions({super.key});
+class UpdateSlideOptions extends ConsumerStatefulWidget {
+  const UpdateSlideOptions({super.key});
 
   @override
-  ConsumerState<NewsSlideOptions> createState() => _NewsSlideOptionsState();
+  ConsumerState<UpdateSlideOptions> createState() => _UpdateSlideOptionsState();
 }
 
-class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
-  List<NewsSlideItem> newsSlideList = <NewsSlideItem>[];
+class _UpdateSlideOptionsState extends ConsumerState<UpdateSlideOptions> {
+  List<UpdateSlideItem> newsSlideList = <UpdateSlideItem>[];
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideOptionsUI(BuildContext context) {
-    final curSlide = ref.watch(newsStateProvider).currentNewsSlide;
+    final curSlide = ref.watch(newsStateProvider).currentUpdateSlide;
     final keyboardVisibility = ref.watch(keyboardVisibleProvider);
     return Visibility(
       visible: curSlide != null && keyboardVisibility.value != true,
@@ -43,7 +43,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
 
   Widget newsSlideListUI(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final currentSlide = ref.watch(newsStateProvider).currentNewsSlide;
+    final currentSlide = ref.watch(newsStateProvider).currentUpdateSlide;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -107,7 +107,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           ),
         ),
         IconButton(
-          key: NewsUpdateKeys.addNewsSlide,
+          key: NewsUpdateKeys.addUpdateSlide,
           onPressed: () => showPostAttachmentOptions(context),
           icon: Icon(PhosphorIcons.stackPlus()),
         ),
@@ -132,17 +132,18 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     );
   }
 
-  Widget getIconAsPerSlideType(NewsSlideType slidePostType, XFile? mediaFile) {
+  Widget getIconAsPerSlideType(
+      UpdateSlideType slidePostType, XFile? mediaFile) {
     return switch (slidePostType) {
-      NewsSlideType.text => const Icon(Atlas.size_text),
-      NewsSlideType.image => ClipRRect(
+      UpdateSlideType.text => const Icon(Atlas.size_text),
+      UpdateSlideType.image => ClipRRect(
           borderRadius: BorderRadius.circular(5),
           child: Image(
             image: XFileImage(mediaFile.expect('image slide needs media file')),
             fit: BoxFit.cover,
           ),
         ),
-      NewsSlideType.video => Stack(
+      UpdateSlideType.video => Stack(
           fit: StackFit.expand,
           children: [
             FutureBuilder(

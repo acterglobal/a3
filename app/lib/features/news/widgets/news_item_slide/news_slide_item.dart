@@ -7,11 +7,11 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-class NewsSlideItem extends StatelessWidget {
-  final NewsSlide slide;
+class UpdateSlideItem extends StatelessWidget {
+  final UpdateSlide slide;
   final bool showRichContent;
 
-  const NewsSlideItem({
+  const UpdateSlideItem({
     super.key,
     required this.slide,
     this.showRichContent = true,
@@ -19,10 +19,10 @@ class NewsSlideItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return buildNewsSlideItem(context);
+    return buildUpdateSlideItem(context);
   }
 
-  Widget buildNewsSlideItem(BuildContext context) {
+  Widget buildUpdateSlideItem(BuildContext context) {
     final slideType = slide.typeStr();
     final slideBackgroundColor = NewsUtils.getBackgroundColor(context, slide);
     return Stack(
@@ -50,7 +50,7 @@ class NewsSlideItem extends StatelessWidget {
                 right: 60,
                 bottom: 80,
               ),
-              child: NewsSlideActions(newsSlide: slide),
+              child: UpdateSlideActions(newsSlide: slide),
             ),
           ),
       ],
