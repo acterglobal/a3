@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
+import 'package:acter/features/notifications/providers/object_notifications_settings_provider.dart';
+import 'package:acter/features/notifications/types.dart';
 import 'package:acter/features/tasks/actions/create_task.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:flutter/material.dart';
@@ -15,22 +17,21 @@ class FakeBottomModal<T> extends Fake implements ModalBottomSheetRoute<T> {}
 
 void main() {
   group('Create Task Widget on TaskList', () {
-    late MockGoRouter mockedGoRouter;
-    late MockNavigator navigator;
-
     setUpAll(() {
       registerFallbackValue(FakeBottomModal<PickedDue>());
     });
 
-    setUp(() {
-      mockedGoRouter = MockGoRouter();
-      navigator = MockNavigator();
+    (MockGoRouter, MockNavigator) setUpRouters() {
+      final mockedGoRouter = MockGoRouter();
+      final navigator = MockNavigator();
       when(navigator.canPop).thenReturn(true);
       when(() => navigator.pop(any())).thenAnswer((_) async {});
       when(() => navigator.push<void>(any())).thenAnswer((_) async {});
-    });
+      return (mockedGoRouter, navigator);
+    }
 
     testWidgets('Simple only title', (tester) async {
+      final (mockedGoRouter, navigator) = setUpRouters();
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
@@ -43,6 +44,7 @@ void main() {
         goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
+          autoSubscribeProvider.overrideWith((a) async => false),
         ],
         child: CreateTaskWidget(
           taskList: mockTaskList,
@@ -71,6 +73,7 @@ void main() {
       verify(() => mockTaskDraft.send()).called(1);
     });
     testWidgets('with description', (tester) async {
+      final (mockedGoRouter, navigator) = setUpRouters();
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
@@ -84,12 +87,16 @@ void main() {
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
           autoSubscribeProvider.overrideWith((a) async => false),
+          pushNotificationSubscribedStatusProvider
+              .overrideWith((ref, arg) => SubscriptionStatus.none),
         ],
         child: CreateTaskWidget(
           taskList: mockTaskList,
         ),
       );
       // try to submit without a title
+
+      debugDumpApp();
 
       final submitBtn = find.byKey(CreateTaskWidget.submitBtn);
       expect(submitBtn, findsOneWidget);
@@ -133,6 +140,7 @@ void main() {
     });
 
     testWidgets('toggle description, not added', (tester) async {
+      final (mockedGoRouter, navigator) = setUpRouters();
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
@@ -146,6 +154,8 @@ void main() {
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
           autoSubscribeProvider.overrideWith((a) async => false),
+          pushNotificationSubscribedStatusProvider
+              .overrideWith((ref, arg) => SubscriptionStatus.none),
         ],
         child: CreateTaskWidget(
           taskList: mockTaskList,
@@ -201,6 +211,7 @@ void main() {
     });
 
     testWidgets('with due date', (tester) async {
+      final (mockedGoRouter, navigator) = setUpRouters();
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
@@ -218,6 +229,8 @@ void main() {
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
           autoSubscribeProvider.overrideWith((a) async => false),
+          pushNotificationSubscribedStatusProvider
+              .overrideWith((ref, arg) => SubscriptionStatus.none),
         ],
         child: CreateTaskWidget(
           taskList: mockTaskList,
@@ -281,6 +294,7 @@ void main() {
     });
 
     testWidgets('with due date toggled, not added', (tester) async {
+      final (mockedGoRouter, navigator) = setUpRouters();
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
@@ -299,6 +313,8 @@ void main() {
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
           autoSubscribeProvider.overrideWith((a) async => false),
+          pushNotificationSubscribedStatusProvider
+              .overrideWith((ref, arg) => SubscriptionStatus.none),
         ],
         child: CreateTaskWidget(
           taskList: mockTaskList,
@@ -365,6 +381,7 @@ void main() {
     });
 
     testWidgets('with due date from immediate dialog', (tester) async {
+      final (mockedGoRouter, navigator) = setUpRouters();
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
@@ -387,6 +404,8 @@ void main() {
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
           autoSubscribeProvider.overrideWith((a) async => false),
+          pushNotificationSubscribedStatusProvider
+              .overrideWith((ref, arg) => SubscriptionStatus.none),
         ],
         child: CreateTaskWidget(
           taskList: mockTaskList,
