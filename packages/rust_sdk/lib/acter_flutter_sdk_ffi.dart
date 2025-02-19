@@ -30303,6 +30303,17 @@ class Api {
           int Function(
             int,
           )>();
+  late final _superInviteTokenRefDetailsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__SuperInviteToken_ref_details");
+
+  late final _superInviteTokenRefDetails =
+      _superInviteTokenRefDetailsPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _superInvitesTokenUpdateBuilderTokenPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -63427,6 +63438,21 @@ class SuperInviteToken {
         _Box(_api, tmp3_0, "drop_box_SuperInvitesTokenUpdateBuilder");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = SuperInvitesTokenUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// get the internal reference object
+  RefDetails refDetails() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._superInviteTokenRefDetails(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_RefDetails");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = RefDetails._(_api, tmp3_1);
     return tmp2;
   }
 

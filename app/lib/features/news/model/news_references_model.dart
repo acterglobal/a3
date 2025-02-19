@@ -4,7 +4,8 @@ enum NewsReferencesType {
   taskList,
   link,
   space,
-  chat;
+  chat,
+  superInvite;
 
   static NewsReferencesType? fromStr(String typeStr) {
     return values.asNameMap()[_toCamelCase(typeStr)];

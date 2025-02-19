@@ -3362,6 +3362,9 @@ object SuperInviteToken {
 
     /// Updater for this SuperInviteToken
     fn update_builder() -> SuperInvitesTokenUpdateBuilder;
+
+    /// get the internal reference object
+    fn ref_details() -> RefDetails;
 }
 
 /// Updater/Creator for an invite token

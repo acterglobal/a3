@@ -2340,6 +2340,7 @@
   "removeReferenceConfirmation": "Are you sure you want to remove this reference?",
   "noObjectAccess": "You are not part of {spaceName} so you can't access this {objectType}",
   "shareLink": "Share link",
+  "shareSuperInvite": "Share Invitation Code",
   "tryAgain": "Try Again",
   "unableToLoadVideo": "Unable to load video",
   "unableToLoadImage": "Unable to load image",
