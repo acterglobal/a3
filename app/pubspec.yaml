@@ -154,7 +154,7 @@ dependencies:
       ref: master
   permission_handler: ^11.3.1
   hooks_riverpod: ^2.6.1
-  app_links: ^6.3.2
+  app_links: ^6.3.3
   pretty_qr_code: ^3.3.0
   qr_code_dart_scan: ^0.9.3
   appcheck: ^1.5.2

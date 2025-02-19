@@ -9,11 +9,13 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 class InviteListItem extends StatelessWidget {
   final SuperInviteToken? inviteToken;
   final EdgeInsetsGeometry? cardMargin;
+  final Function(SuperInviteToken)? onSelectInviteCode;
 
   const InviteListItem({
     super.key,
     this.inviteToken,
     this.cardMargin,
+    this.onSelectInviteCode,
   });
 
   @override
@@ -36,12 +38,16 @@ class InviteListItem extends StatelessWidget {
             style: Theme.of(context).textTheme.labelMedium,
           ),
           onTap: () {
-            context.pushNamed(
-              Routes.createSuperInvite.name,
-              extra: inviteToken,
-            );
+            if (onSelectInviteCode != null && inviteToken != null) {
+              onSelectInviteCode!(inviteToken!);
+            } else {
+              context.pushNamed(
+                Routes.createSuperInvite.name,
+                extra: inviteToken,
+              );
+            }
           },
-          trailing: firstRoom != null
+          trailing: firstRoom != null && onSelectInviteCode == null
               ? IconButton(
                   onPressed: () => context.pushNamed(
                     Routes.shareInviteCode.name,

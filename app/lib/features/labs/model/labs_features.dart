@@ -14,7 +14,6 @@ enum LabsFeature {
 
   // system features
   encryptionBackup,
-  autoSubscribe, // in labs until we have this ready for all types
 
   // candidates for always on
   comments,
@@ -25,6 +24,7 @@ enum LabsFeature {
   tasks,
   events,
   pins,
+  autoSubscribe,
   showNotifications; // old name for desktop notifications
 
   static List<LabsFeature> get defaults =>

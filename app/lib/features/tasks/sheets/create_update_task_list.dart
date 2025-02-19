@@ -7,6 +7,7 @@ import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -230,7 +231,8 @@ class _CreateUpdateTaskListConsumerState
       final plainDescription = textEditorState.intoMarkdown();
       final htmlBodyDescription = textEditorState.intoHtml();
       taskListDraft.descriptionHtml(plainDescription, htmlBodyDescription);
-      await taskListDraft.send();
+      final objectId = await taskListDraft.send();
+      await autosubscribe(ref: ref, objectId: objectId.toString(), lang: lang);
 
       EasyLoading.dismiss();
       if (!mounted) return;

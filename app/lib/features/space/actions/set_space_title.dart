@@ -22,7 +22,7 @@ void showEditSpaceNameBottomSheet({
     context: context,
     bottomSheetTitle: lang.editName,
     titleValue: spaceAvatarInfo.displayName ?? '',
-    onSave: (newName) async {
+    onSave: (ref, newName) async {
       try {
         EasyLoading.show(status: lang.updateName);
         final space = await ref.read(spaceProvider(spaceId).future);

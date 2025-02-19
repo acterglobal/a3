@@ -16,6 +16,7 @@ import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/pins/actions/attachment_leading_icon.dart';
 import 'package:acter/features/pins/actions/set_pin_description.dart';
 import 'package:acter/features/pins/actions/set_pin_links.dart';
@@ -260,7 +261,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       showEditTitleBottomSheet(
         context: context,
         titleValue: attachmentData.title,
-        onSave: (newTitle) {
+        onSave: (ref, newTitle) {
           Navigator.pop(context);
           final pinAttachment = attachmentData.copyWith(title: newTitle);
           final notifier = ref.read(createPinStateProvider.notifier);
@@ -288,7 +289,6 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
             onTap: () {
               showEditPinDescriptionBottomSheet(
                 context: context,
-                ref: ref,
                 htmlBodyDescription: params.htmlBodyDescription,
                 plainDescription: params.plainDescription,
               );
@@ -364,6 +364,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
 
       // Add Attachments
       await addAttachment(pinId, pinState);
+      await autosubscribe(ref: ref, objectId: pinId.toString(), lang: lang);
 
       EasyLoading.dismiss();
       if (!mounted) return;

@@ -4,7 +4,7 @@ use std::sync::Arc;
 use crate::{Client, RUNTIME};
 use acter_core::events::{ObjRef as CoreObjRef, RefDetails as CoreRefDetails};
 use acter_core::share_link::api;
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use matrix_sdk::ruma::{OwnedEventId, OwnedRoomId, OwnedServerName};
 use matrix_sdk::Client as SdkClient;
 use urlencoding::encode;
@@ -66,6 +66,7 @@ fn generate_object_link(
     via: &[OwnedServerName],
     params: &[(&str, Option<&String>)],
 ) -> String {
+    // acter:o/${ROOM_ID}/${PATH}?via=${SERVER_NAME}&via=${SERVER_NAME}
     let room_id = &room_id.to_string()[1..];
     format!(
         "acter:o/{room_id}/{}?{}",
@@ -86,14 +87,20 @@ fn generate_object_link(
 }
 
 fn generate_room_link(room_id: &OwnedRoomId, via: &[OwnedServerName]) -> String {
+    // matrix:roomid/${ROOM_ID}?via=${SERVER_NAME}&via=${SERVER_NAME}
     let room_id = &room_id.to_string()[1..];
     format!(
-        "matrix:roomid/{room_id}/?{}",
+        "matrix:roomid/{room_id}?{}",
         via.iter()
             .map(|v| format!("via={}", encode(v.as_str())))
             .collect::<Vec<String>>()
             .join("&")
     )
+}
+
+fn generate_invite_link(server_name: &str, token: &str, inviter_user_id: &str) -> String {
+    // acter:i/${SERVER_NAME}/${INVITE_TOKEN}?userId=${INVITER}
+    format!("acter:i/{server_name}/{token}?userId={inviter_user_id}")
 }
 
 impl RefDetails {
@@ -105,6 +112,7 @@ impl RefDetails {
         match &self.inner {
             CoreRefDetails::Link { title, uri } => false,
             CoreRefDetails::Room { room_id, .. } => true, // always
+            CoreRefDetails::SuperInviteToken { rooms, .. } => !rooms.is_empty(),
             CoreRefDetails::Task { room_id, .. }
             | CoreRefDetails::TaskList { room_id, .. }
             | CoreRefDetails::News { room_id, .. }
@@ -122,6 +130,19 @@ impl RefDetails {
                 via,
                 preview,
             } => generate_room_link(room_id, via.as_slice()),
+            CoreRefDetails::SuperInviteToken {
+                token,
+                create_dm,
+                accepted_count,
+                rooms,
+            } => {
+                let my_id = self
+                    .client
+                    .user_id()
+                    .context("You must be logged in to do that")?
+                    .as_str();
+                generate_invite_link("acter.global", token, my_id)
+            }
             CoreRefDetails::Task {
                 target_id,
                 room_id,

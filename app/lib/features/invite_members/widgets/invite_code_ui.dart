@@ -123,11 +123,10 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
           alignment: Alignment.centerRight,
           child: ActerInlineTextButton(
             onPressed: () async {
-              final token =
-                  await ref.read(superInviteTokenProvider(inviteCode).future);
+              final token = await ref.read(superInviteTokenProvider(inviteCode).future);
               if (!context.mounted) return;
               context.pushNamed(
-                Routes.actionCreateSuperInvite.name,
+                Routes.createSuperInvite.name,
                 extra: token,
               );
             },

@@ -1565,6 +1565,9 @@ object CommentsManager {
     /// String representation of the room id this comments manager is in
     fn room_id_str() -> string;
 
+    /// String of the id of the object the comments are managed for
+    fn object_id_str() -> string;
+
     /// Does this item have any comments?
     fn has_comments() -> bool;
 
@@ -1637,6 +1640,9 @@ object Attachment {
 object AttachmentsManager {
     /// the room this attachments manager lives in
     fn room_id_str() -> string;
+
+    /// the id of the object whose attachments are managed
+    fn object_id_str() -> string;
 
     /// Whether or not the current user can post, edit and delete
     /// attachments in this manager
@@ -2228,6 +2234,24 @@ object Activity {
     /// the details of this membership change activity
     fn membership_change() -> Option<MembershipChange>;
 
+    /// if the added information is a reference
+    fn ref_details() -> Option<RefDetails>;
+
+    /// where to route to for the details of this activity
+    fn target_url() -> string;
+
+    /// the object this activity happened on, if any
+    fn object() -> Option<ActivityObject>;
+
+    /// content of this activity, if any
+    fn msg_content() -> Option<MsgContent>;
+
+    /// reaction specific: the reaction key used
+    fn reaction_key() -> Option<string>;
+
+    /// the date on eventDateChange (started or ended) or taskDueDateChane
+    fn new_date() -> Option<UtcDateTime>;
+
 }
 
 object Activities {
@@ -2503,6 +2527,7 @@ enum MemberPermission {
     CanToggleReaction,
     CanSendSticker,
     CanPostNews,
+    CanPostStories,
     CanPostPin,
     CanPostEvent,
     CanPostTaskList,
@@ -3337,6 +3362,9 @@ object SuperInviteToken {
 
     /// Updater for this SuperInviteToken
     fn update_builder() -> SuperInvitesTokenUpdateBuilder;
+
+    /// get the internal reference object
+    fn ref_details() -> RefDetails;
 }
 
 /// Updater/Creator for an invite token

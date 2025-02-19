@@ -1,3 +1,4 @@
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/tasks/actions/select_tasklist.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -38,8 +39,20 @@ Future<(String, String)?> addTask({
   }
   try {
     final eventId = await taskDraft.send();
+    final tlId = taskList.eventIdStr();
+
+    await autosubscribe(
+      ref: ref,
+      objectId: eventId.toString(),
+      lang: lang,
+    );
+    await autosubscribe(
+      ref: ref,
+      objectId: tlId.toString(),
+      lang: lang,
+    );
     EasyLoading.dismiss();
-    return (taskList.eventIdStr(), eventId.toString());
+    return (tlId, eventId.toString());
   } catch (e, s) {
     _log.severe('Failed to create task', e, s);
     if (!context.mounted) {

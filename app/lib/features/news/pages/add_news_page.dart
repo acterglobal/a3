@@ -241,6 +241,11 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               final notifier = ref.read(newsStateProvider.notifier);
               await notifier.selectChatToShare(buildContext);
             },
+            onShareSuperInviteSelected: () async {
+              Navigator.pop(context);
+              final notifier = ref.read(newsStateProvider.notifier);
+              await notifier.selectInvitationCodeToShare(buildContext);
+            },
           ),
         );
       },
