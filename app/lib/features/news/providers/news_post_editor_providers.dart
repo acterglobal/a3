@@ -137,10 +137,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   }
 
   Future<void> selectInvitationCodeToShare(BuildContext context) async {
-    final superInviteCode = await selectSuperInviteListDrawer(context: context);
+    final selectedInviteCode = await selectSuperInviteDrawer(context: context);
     RefDetails? refDetails;
-    if (superInviteCode != null) {
-      final selectedInviteCode = await ref.watch(superInviteTokenProvider(superInviteCode.token()).future);
+    if (selectedInviteCode != null) {
       refDetails = selectedInviteCode.refDetails();
     }
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;

@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 
 const Key selectInviteCodeDrawerKey = Key('select-invitation-code-drawer');
 
-Future<SuperInviteToken?> selectSuperInviteListDrawer({
+Future<SuperInviteToken?> selectSuperInviteDrawer({
   required BuildContext context,
 }) async {
-  final inviteCodeId = await showModalBottomSheet(
+ return await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
@@ -16,5 +16,4 @@ Future<SuperInviteToken?> selectSuperInviteListDrawer({
       onSelectInviteCode : (inviteCodeId) => Navigator.pop(context, inviteCodeId),
     ),
   );
-  return inviteCodeId == '' ? null : inviteCodeId;
 }

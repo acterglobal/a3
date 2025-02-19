@@ -130,39 +130,37 @@ class NewsSlideActions extends ConsumerWidget {
   ) {
     final lang = L10n.of(context);
     final title = referenceDetails.title();
-    if (title != null) {
-      return Card(
-        child: ListTile(
-          leading: const Icon(Atlas.ticket_coupon),
-          onTap: () async {
-            try {
-              final token = await ref.read(superInviteTokenProvider(title).future);
-              if (!context.mounted) return;
-              context.pushNamed(
-                Routes.createSuperInvite.name,
-                extra: token,
-              );
-            } catch(e) {
-              await Clipboard.setData(ClipboardData(text: title));
-              EasyLoading.showToast(lang.messageCopiedToClipboard);
-            }
-          },
-          title: Text(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            L10n.of(context).inviteCode,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: textTheme.labelSmall,
-          ),
+    if (title == null) return SizedBox.shrink();
+    return Card(
+      child: ListTile(
+        leading: const Icon(Atlas.ticket_coupon),
+        onTap: () async {
+          try {
+            final token =
+                await ref.read(superInviteTokenProvider(title).future);
+            if (!context.mounted) return;
+            context.pushNamed(
+              Routes.createSuperInvite.name,
+              extra: token,
+            );
+          } catch (e) {
+            await Clipboard.setData(ClipboardData(text: title));
+            EasyLoading.showToast(lang.messageCopiedToClipboard);
+          }
+        },
+        title: Text(
+          title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
-      );
-    } else {
-      return SizedBox.shrink();
-    }
+        subtitle: Text(
+          L10n.of(context).inviteCode,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: textTheme.labelSmall,
+        ),
+      ),
+    );
   }
 
   Widget renderNotSupportedAction(BuildContext context) {
