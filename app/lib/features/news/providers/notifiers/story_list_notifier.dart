@@ -2,33 +2,32 @@ import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Story;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
-final _log = Logger('a3::news::list_notifier');
+final _log = Logger('a3::stories::list_notifier');
 
-class AsyncNewsListNotifier
-    extends FamilyAsyncNotifier<List<NewsEntry>, String?> {
+class AsyncStoryListNotifier extends FamilyAsyncNotifier<List<Story>, String?> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
   @override
-  Future<List<NewsEntry>> build(String? arg) async {
+  Future<List<Story>> build(String? arg) async {
     final spaceId = arg;
     final client = await ref.watch(alwaysClientProvider.future);
 
-    //GET ALL NEWS
+    //GET ALL STORIES
     if (spaceId == null) {
       _listener = client.subscribeSectionStream('stories');
     } else {
-      //GET SPACE NEWS
+      //GET SPACE STORIES
       _listener = client.subscribeRoomSectionStream(spaceId, 'stories');
     }
     _poller = _listener.listen(
       (data) async {
         _log.info('stories subscribe received');
-        state = await AsyncValue.guard(() => _fetchNews(client, spaceId));
+        state = await AsyncValue.guard(() => _fetchStories(client, spaceId));
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);
@@ -38,26 +37,26 @@ class AsyncNewsListNotifier
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await _fetchNews(client, spaceId);
+    return await _fetchStories(client, spaceId);
   }
 
-  Future<List<NewsEntry>> _fetchNews(Client client, String? spaceId) async {
-    //GET ALL NEWS
+  Future<List<Story>> _fetchStories(Client client, String? spaceId) async {
+    //GET ALL STORIES
     if (spaceId == null) {
-      final newsEntries =
-          await client.latestNewsEntries(25); // this might throw internally
-      return sortNewsListDscTime(newsEntries.toList());
+      final storyEntries =
+          await client.latestStories(25); // this might throw internally
+      return sortNewsListDscTime(storyEntries.toList());
     } else {
-      //GET SPACE NEWS
+      //GET SPACE STORIES
       final space = await client.space(spaceId);
-      final newsEntries =
-          await space.latestNewsEntries(100); // this might throw internally
-      return sortNewsListDscTime(newsEntries.toList());
+      final storyEntries =
+          await space.latestStories(100); // this might throw internally
+      return sortNewsListDscTime(storyEntries.toList());
     }
   }
 }
 
-Future<List<NewsEntry>> sortNewsListDscTime(List<NewsEntry> newsList) async {
-  newsList.sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
-  return newsList;
+Future<List<Story>> sortNewsListDscTime(List<Story> storyList) async {
+  storyList.sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+  return storyList;
 }

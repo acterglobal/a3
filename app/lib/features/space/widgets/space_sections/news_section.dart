@@ -28,7 +28,7 @@ class NewsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final updateLoader = ref.watch(updatesProvider(spaceId));
+    final updateLoader = ref.watch(updateListProvider(spaceId));
     return updateLoader.when(
       data: (updateList) => buildNewsSectionUI(context, updateList),
       error: (e, s) {

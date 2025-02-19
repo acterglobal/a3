@@ -81,6 +81,7 @@ class AppShellState extends ConsumerState<AppShell> {
     ref.read(spacesProvider);
     ref.read(chatsProvider);
     ref.read(newsListProvider(null));
+    ref.read(storiesListProvider(null));
     ref.read(hasActivitiesProvider);
   }
 
