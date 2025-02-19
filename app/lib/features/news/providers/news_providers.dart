@@ -25,8 +25,8 @@ final updateListProvider =
       .toList();
 
   final List<UpdateEntry> entries = [];
-  entries.addAll(news);
   entries.addAll(stories);
+  entries.addAll(news);
 
   // sort
   return entries;

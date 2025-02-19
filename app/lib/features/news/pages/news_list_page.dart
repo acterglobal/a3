@@ -4,6 +4,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
+import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_full_view.dart';
 import 'package:acter/features/news/widgets/news_grid_view.dart';
@@ -144,18 +145,19 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
     final updateListLoader = ref.watch(updateListProvider(widget.spaceId));
 
     return updateListLoader.when(
-      data: (newsList) {
-        if (newsList.isEmpty) return newsEmptyStateUI(context);
+      data: (updateList) {
+        if (updateList.isEmpty) return newsEmptyStateUI(context);
+
         return useGridMode
             ? NewsGridView(
-                newsList: newsList,
+                updateList: updateList,
                 onTapNewItem: (index) {
                   this.useGridMode.value = false;
                   currentIndex.value = index;
                 },
               )
             : NewsFullView(
-                newsList: newsList,
+                updateList: updateList,
                 initialPageIndex: currentIndex.value,
               );
       },

@@ -11,12 +11,12 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class NewsGridView extends StatelessWidget {
-  final List<UpdateEntry> newsList;
+  final List<UpdateEntry> updateList;
   final Function(int)? onTapNewItem;
 
   const NewsGridView({
     super.key,
-    required this.newsList,
+    required this.updateList,
     this.onTapNewItem,
   });
 
@@ -30,16 +30,16 @@ class NewsGridView extends StatelessWidget {
     final widthCount = (size.width ~/ 300).toInt();
     const int minCount = 2;
 
-    if (newsList.isEmpty) return Container();
+    if (updateList.isEmpty) return Container();
 
     return SingleChildScrollView(
       child: StaggeredGrid.count(
         crossAxisCount: max(widthCount, minCount),
         children: List.generate(
-          newsList.length,
+          updateList.length,
           (index) => InkWell(
             onTap: onTapNewItem.map((cb) => () => cb(index)),
-            child: newsItemUI(newsList[index]),
+            child: newsItemUI(updateList[index]),
           ),
         ),
       ),
@@ -58,7 +58,11 @@ class NewsGridView extends StatelessWidget {
       margin: const EdgeInsets.all(6),
       child: Stack(
         children: [
-          UpdateSlideItem(slide: slide, showRichContent: false, errorState: NewsMediaErrorState.showErrorImageWithText,),
+          UpdateSlideItem(
+            slide: slide,
+            showRichContent: false,
+            errorState: NewsMediaErrorState.showErrorImageWithText,
+          ),
           if (slideCount > 1) slideStackCountView(slideCount),
           newsPostTime(updateEntry.originServerTs()),
         ],

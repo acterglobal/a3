@@ -8,12 +8,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 
 class NewsFullView extends ConsumerStatefulWidget {
-  final List<UpdateEntry> newsList;
+  final List<UpdateEntry> updateList;
   final int initialPageIndex;
 
   const NewsFullView({
     super.key,
-    required this.newsList,
+    required this.updateList,
     this.initialPageIndex = 0,
   });
 
@@ -63,15 +63,15 @@ class NewsVerticalViewState extends ConsumerState<NewsFullView> {
       ),
       child: PreloadPageView.builder(
         controller: _pageController,
-        itemCount: widget.newsList.length,
+        itemCount: widget.updateList.length,
         scrollDirection: Axis.vertical,
         preloadPagesCount:
-            widget.newsList.length > 5 ? 5 : widget.newsList.length,
+            widget.updateList.length > 5 ? 5 : widget.updateList.length,
         itemBuilder: (context, index) {
           return InkWell(
             onDoubleTap: () async {
               LikeAnimation.run(index);
-              final news = widget.newsList[index];
+              final news = widget.updateList[index];
               final manager =
                   await ref.read(updateReactionsProvider(news).future);
               final status = manager.likedByMe();
@@ -79,7 +79,7 @@ class NewsVerticalViewState extends ConsumerState<NewsFullView> {
                 await manager.sendLike();
               }
             },
-            child: NewsItem(updateEntry: widget.newsList[index]),
+            child: NewsItem(updateEntry: widget.updateList[index]),
           );
         },
       ),
