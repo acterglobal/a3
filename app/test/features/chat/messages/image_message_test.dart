@@ -6,7 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../../helpers/error_helpers.dart';
 import '../../../helpers/mock_chat_providers.dart';

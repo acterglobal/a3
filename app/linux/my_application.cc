@@ -17,6 +17,7 @@ G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 // Implements GApplication::activate.
 static void my_application_activate(GApplication* application) {
   MyApplication* self = MY_APPLICATION(application);
+
   GList *list = gtk_application_get_windows(GTK_APPLICATION(application));
   GtkWindow* existing_window = list ? GTK_WINDOW(list->data) : NULL;
 
@@ -65,8 +66,9 @@ static void my_application_activate(GApplication* application) {
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
+  gtk_widget_hide(GTK_WIDGET(window));
 
-  gtk_widget_grab_focus(GTK_WIDGET(view));
+  // gtk_widget_grab_focus(GTK_WIDGET(view));
 }
 
 // Implements GApplication::local_command_line.
@@ -106,5 +108,6 @@ static void my_application_init(MyApplication* self) {}
 MyApplication* my_application_new() {
   return MY_APPLICATION(g_object_new(my_application_get_type(),
                                      "application-id", APPLICATION_ID,
-                                     "flags", nullptr));
+                                     "flags", G_APPLICATION_HANDLES_COMMAND_LINE | G_APPLICATION_HANDLES_OPEN,
+                                     nullptr));
 }

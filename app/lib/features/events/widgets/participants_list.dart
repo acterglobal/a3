@@ -15,19 +15,23 @@ class ParticipantsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
           child: Row(
             children: [
               Expanded(
-                child: Text(L10n.of(context).eventParticipants),
+                child: Text(lang.eventParticipants),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(L10n.of(context).close),
+                child: Text(lang.close),
               ),
             ],
           ),
@@ -36,13 +40,12 @@ class ParticipantsList extends ConsumerWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                ...participants.map(
-                  (a) => MemberListEntry(
-                    memberId: a,
+                for (final memberId in participants)
+                  MemberListEntry(
+                    memberId: memberId,
                     roomId: roomId,
                     isShowActions: false,
                   ),
-                ),
               ],
             ),
           ),

@@ -1,6 +1,7 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/deep_linking/widgets/qr_code_button.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,11 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class SettingsPage extends ConsumerWidget {
   final bool isFullPage;
-  const SettingsPage({this.isFullPage = false, super.key});
+
+  const SettingsPage({
+    this.isFullPage = false,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,44 +47,62 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Widget _userProfileUI(BuildContext context, WidgetRef ref) {
-    final account = ref.watch(accountProvider);
     final accountInfo = ref.watch(accountAvatarInfoProvider);
     final shouldGoReplacement = context.isLargeScreen;
-    final userId = account.userId().toString();
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          ListTile(
-            onTap: () => shouldGoReplacement
-                ? context.pushReplacementNamed(Routes.myProfile.name)
-                : context.pushNamed(Routes.myProfile.name),
-            leading: ActerAvatar(
-              options: AvatarOptions.DM(accountInfo),
+    final userId = ref.watch(myUserIdStrProvider);
+    return InkWell(
+      onTap: () => shouldGoReplacement
+          ? context.pushReplacementNamed(Routes.myProfile.name)
+          : context.pushNamed(Routes.myProfile.name),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            ListTile(
+              leading: ActerAvatar(
+                options: AvatarOptions.DM(accountInfo),
+              ),
+              title: Text(
+                accountInfo.displayName ?? '',
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              subtitle: Text(
+                userId,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: QrCodeButton(
+                qrCodeData: 'matrix:u/${userId.substring(1)}?action=chat',
+                qrTitle: ListTile(
+                  leading: ActerAvatar(
+                    options: AvatarOptions.DM(accountInfo),
+                  ),
+                  title: Text(
+                    accountInfo.displayName ?? '',
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  subtitle: Text(
+                    userId,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
             ),
-            title: Text(
-              accountInfo.displayName ?? '',
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleSmall,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(L10n.of(context).editProfile),
             ),
-            subtitle: Text(
-              userId,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: const Icon(Icons.arrow_forward_ios),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Text(L10n.of(context).editProfile),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget userProfileMenuSkeletonUI(BuildContext context) {
+    final lang = L10n.of(context);
     return Skeletonizer(
       child: Card(
         child: Padding(
@@ -94,8 +117,8 @@ class SettingsPage extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).displayName),
-                  Text(L10n.of(context).username),
+                  Text(lang.displayName),
+                  Text(lang.username),
                 ],
               ),
             ],

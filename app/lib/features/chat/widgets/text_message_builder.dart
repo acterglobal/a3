@@ -2,19 +2,17 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/toolkit/buttons/room_chip.dart';
-import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 // removes all matrix custom links
 String _cleanMessage(String input) {
@@ -45,31 +43,22 @@ class _TextMessageBuilderConsumerState
     extends ConsumerState<TextMessageBuilder> {
   @override
   Widget build(BuildContext context) {
-    String msgType = '';
-    final metadata = widget.message.metadata;
-    if (metadata?.containsKey('msgType') == true) {
-      msgType = metadata!['msgType'];
-    }
+    String? msgType = widget.message.metadata?['msgType'];
     final bool isNotice =
         (msgType == 'm.notice' || msgType == 'm.server_notice');
-    bool enlargeEmoji = false;
-    if (metadata?.containsKey('enlargeEmoji') == true) {
-      enlargeEmoji = metadata!['enlargeEmoji'];
-    }
-    bool wasEdited = false;
-    if (metadata?.containsKey('was_edited') == true) {
-      wasEdited = metadata!['was_edited'];
-    }
+    bool enlargeEmoji = widget.message.metadata?['enlargeEmoji'] == true;
+    bool wasEdited = widget.message.metadata?['was_edited'] == true;
     final isAuthor = widget.message.author.id == ref.watch(myUserIdStrProvider);
+    final chatTheme = Theme.of(context).chatTheme;
 
     //will return empty if link is other than mention
     return LinkPreview(
       metadataTitleStyle: isAuthor
-          ? Theme.of(context).chatTheme.sentMessageLinkTitleTextStyle
-          : Theme.of(context).chatTheme.receivedMessageLinkTitleTextStyle,
+          ? chatTheme.sentMessageLinkTitleTextStyle
+          : chatTheme.receivedMessageLinkTitleTextStyle,
       metadataTextStyle: isAuthor
-          ? Theme.of(context).chatTheme.sentMessageLinkDescriptionTextStyle
-          : Theme.of(context).chatTheme.receivedMessageLinkDescriptionTextStyle,
+          ? chatTheme.sentMessageLinkDescriptionTextStyle
+          : chatTheme.receivedMessageLinkDescriptionTextStyle,
       enableAnimation: true,
       imageBuilder: (image) {
         return Padding(
@@ -96,7 +85,10 @@ class _TextMessageBuilderConsumerState
         roomId: widget.roomId,
       ),
       width: widget.messageWidth.toDouble(),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 16,
+      ),
     );
   }
 
@@ -127,10 +119,13 @@ class _TextWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(alwaysClientProvider);
-    final emojiTextStyle = client.userId().toString() == message.author.id
-        ? Theme.of(context).chatTheme.sentEmojiMessageTextStyle
-        : Theme.of(context).chatTheme.receivedEmojiMessageTextStyle;
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final chatTheme = Theme.of(context).chatTheme;
+    final myId = ref.watch(myUserIdStrProvider);
+    final emojiTextStyle = myId == message.author.id
+        ? chatTheme.sentEmojiMessageTextStyle
+        : chatTheme.receivedEmojiMessageTextStyle;
     return Column(
       children: [
         ConstrainedBox(
@@ -145,26 +140,27 @@ class _TextWidget extends ConsumerWidget {
                   maxLines: isReply ? 3 : null,
                 )
               : Html(
-                  onLinkTap: (url) => onLinkTap(url, context, ref),
+                  onLinkTap: (url) => onMessageLinkTap(url, ref, context),
                   backgroundColor: Colors.transparent,
                   data: message.text,
+                  renderNewlines: true,
                   pillBuilder: ({
                     required String identifier,
                     required String url,
                     OnPillTap? onTap,
                   }) =>
-                      _pillBuilder(context, ref, identifier, url),
+                      ActerPillBuilder(
+                    identifier: identifier,
+                    uri: url,
+                    roomId: roomId,
+                  ),
                   shrinkToFit: true,
-                  defaultTextStyle:
-                      Theme.of(context).textTheme.bodySmall!.copyWith(
-                            overflow: isReply ? TextOverflow.ellipsis : null,
-                            color: isNotice
-                                ? Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withOpacity(0.5)
-                                : null,
-                          ),
+                  defaultTextStyle: textTheme.bodySmall?.copyWith(
+                    overflow: isReply ? TextOverflow.ellipsis : null,
+                    color: isNotice
+                        ? colorScheme.onSurface.withValues(alpha:0.5)
+                        : null,
+                  ),
                   maxLines: isReply ? 3 : null,
                 ),
         ),
@@ -172,46 +168,11 @@ class _TextWidget extends ConsumerWidget {
           visible: wasEdited,
           child: Text(
             L10n.of(context).edited,
-            style: Theme.of(context)
-                .chatTheme
-                .emptyChatPlaceholderTextStyle
-                .copyWith(fontSize: 12),
+            style:
+                chatTheme.emptyChatPlaceholderTextStyle.copyWith(fontSize: 12),
           ),
         ),
       ],
     );
-  }
-
-  Widget _pillBuilder(
-    BuildContext context,
-    WidgetRef ref,
-    String identifier,
-    String uri,
-  ) {
-    return switch (identifier.characters.first) {
-      '@' => UserChip(
-          roomId: roomId,
-          memberId: identifier,
-        ),
-      '!' => RoomChip(roomId: identifier),
-      _ => InkWell(
-          child: Text(identifier),
-          onTap: () => onLinkTap(Uri.parse(uri), context, ref),
-        ),
-    };
-  }
-
-  Future<void> onLinkTap(Uri uri, BuildContext context, WidgetRef ref) async {
-    final roomId = getRoomIdFromLink(uri);
-
-    ///If link is type of matrix room link
-    if (roomId != null) {
-    }
-
-    ///If link is other than matrix room link
-    ///Then open it on browser
-    else {
-      await openLink(uri.toString(), context);
-    }
   }
 }

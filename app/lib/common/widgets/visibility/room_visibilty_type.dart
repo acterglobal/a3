@@ -1,9 +1,9 @@
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/visibility/room_visibility_item.dart';
+import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RoomVisibilityType extends ConsumerWidget {
   final RoomVisibility? selectedVisibilityEnum;
@@ -21,6 +21,7 @@ class RoomVisibilityType extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -28,8 +29,8 @@ class RoomVisibilityType extends ConsumerWidget {
           const SizedBox(height: 10),
           RoomVisibilityItem(
             iconData: Icons.language,
-            title: L10n.of(context).public,
-            subtitle: L10n.of(context).publicVisibilitySubtitle,
+            title: lang.public,
+            subtitle: lang.publicVisibilitySubtitle,
             selectedVisibilityValue: selectedVisibilityEnum,
             spaceVisibilityValue: RoomVisibility.Public,
             onChanged: canChange ? onVisibilityChange : null,
@@ -37,8 +38,8 @@ class RoomVisibilityType extends ConsumerWidget {
           const SizedBox(height: 10),
           RoomVisibilityItem(
             iconData: Icons.lock,
-            title: L10n.of(context).private,
-            subtitle: L10n.of(context).privateVisibilitySubtitle,
+            title: lang.private,
+            subtitle: lang.privateVisibilitySubtitle,
             selectedVisibilityValue: selectedVisibilityEnum,
             spaceVisibilityValue: RoomVisibility.Private,
             onChanged: canChange ? onVisibilityChange : null,
@@ -47,8 +48,8 @@ class RoomVisibilityType extends ConsumerWidget {
           if (isLimitedVisibilityShow)
             RoomVisibilityItem(
               iconData: Atlas.users,
-              title: L10n.of(context).limited,
-              subtitle: L10n.of(context).limitedVisibilitySubtitle,
+              title: lang.limited,
+              subtitle: lang.limitedVisibilitySubtitle,
               selectedVisibilityValue: selectedVisibilityEnum,
               spaceVisibilityValue: RoomVisibility.SpaceVisible,
               onChanged: canChange ? onVisibilityChange : null,

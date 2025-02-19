@@ -1,7 +1,6 @@
 use derive_builder::Builder;
 use derive_getters::Getters;
-use ruma_events::room::message::TextMessageEventContent;
-use ruma_macros::EventContent;
+use matrix_sdk_base::ruma::events::{macros::EventContent, room::message::TextMessageEventContent};
 use serde::{Deserialize, Serialize};
 use tracing::trace;
 
@@ -30,7 +29,7 @@ pub enum EventLocation {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         icon: Option<Icon>,
 
-        /// A `geo:` URI [RFC5870] for the location.
+        /// A `geo:` URI RFC5870 for the location.
         #[serde(default, skip_serializing_if = "Option::is_none")]
         coordinates: Option<String>,
 

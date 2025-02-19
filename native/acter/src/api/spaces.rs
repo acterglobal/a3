@@ -5,48 +5,31 @@ pub use acter_core::spaces::{
     SpaceRelations as CoreSpaceRelations,
 };
 use acter_core::{
-    error::Error,
-    events::{
-        attachments::{SyncAttachmentEvent, SyncAttachmentUpdateEvent},
-        calendar::{SyncCalendarEventEvent, SyncCalendarEventUpdateEvent},
-        comments::{SyncCommentEvent, SyncCommentUpdateEvent},
-        news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
-        pins::{SyncPinEvent, SyncPinUpdateEvent},
-        rsvp::SyncRsvpEvent,
-        tasks::{
-            SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskSelfAssignEvent,
-            SyncTaskSelfUnassignEvent, SyncTaskUpdateEvent,
-        },
-    },
-    executor::Executor,
-    models::{AnyActerModel, EventMeta},
-    statics::default_acter_space_states,
-    templates::Engine,
+    error::Error, events::AnyActerEvent, models::AnyActerModel,
+    statics::default_acter_space_states, store::Store, templates::Engine,
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{
+use matrix_sdk::room::{Messages, MessagesOptions};
+use matrix_sdk_base::{
     deserialized_responses::SyncOrStrippedState,
-    event_handler::{Ctx, EventHandlerHandle},
-    room::{Messages, MessagesOptions, Room as SdkRoom},
+    ruma::{
+        api::client::state::send_state_event,
+        assign,
+        events::{
+            space::child::SpaceChildEventContent, AnyStateEventContent, MessageLikeEventType,
+            StateEventType,
+        },
+        serde::Raw,
+        OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId, RoomOrAliasId, ServerName,
+    },
 };
 use matrix_sdk_ui::timeline::RoomExt;
-use ruma::assign;
-use ruma_client_api::state::send_state_event;
-use ruma_common::{
-    serde::Raw, OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId, RoomOrAliasId, ServerName,
-};
-use ruma_events::{
-    reaction::SyncReactionEvent,
-    room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
-    space::child::SpaceChildEventContent,
-    AnyStateEventContent, MessageLikeEvent, MessageLikeEventType, StateEventType,
-};
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::{error, trace, warn};
+use tracing::{error, info, trace, warn};
 
 use crate::{Client, Room, TimelineStream, RUNTIME};
 
@@ -79,9 +62,32 @@ impl Ord for Space {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct HistoryState {
+pub(crate) struct HistoryState {
     /// The last `end` send from the server
     seen: String,
+}
+
+impl HistoryState {
+    pub fn new(last_seen: String) -> HistoryState {
+        HistoryState { seen: last_seen }
+    }
+    pub(crate) fn storage_key(room_id: &RoomId) -> String {
+        format!("{room_id}::history")
+    }
+
+    pub(crate) async fn load(store: &Store, room_id: &RoomId) -> Result<HistoryState> {
+        let history = store
+            .get_raw::<HistoryState>(&HistoryState::storage_key(room_id))
+            .await?;
+        trace!(?room_id, seen = history.seen, "Loading history key");
+        Ok(history)
+    }
+    pub(crate) async fn store(store: &Store, room_id: &RoomId, seen: String) -> Result<()> {
+        trace!(?room_id, ?seen, "Storing history key");
+        Ok(store
+            .set_raw(&HistoryState::storage_key(room_id), &HistoryState { seen })
+            .await?)
+    }
 }
 
 // internal API
@@ -98,290 +104,6 @@ impl Space {
         }
     }
 
-    pub(crate) async fn setup_handles(&self) -> Vec<EventHandlerHandle> {
-        self.room
-            .client()
-            .add_event_handler_context(self.client.executor().clone());
-        trace!(room_id=?self.room.room_id(), "adding handles");
-        // FIXME: combine into one handler
-        vec![
-            // generic redaction management
-            self.room.add_event_handler(
-                |ev: SyncRoomRedactionEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id();
-
-                    if let RoomRedactionEvent::Original(t) = ev.into_full_event(room_id.to_owned()) {
-                        trace!(?room_id, "received redaction");
-                        if let Err(error) = executor.live_redact(t).await {
-                            error!(?room_id, ?error, "redaction failed");
-                        }
-                    } else {
-                        warn!(?room_id, "redaction redaction isn't supported yet");
-                    }
-                },
-            ),
-
-            // Task
-            self.room.add_event_handler(
-                |ev: SyncTaskListEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor.handle(AnyActerModel::TaskList(t.into())).await {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-            self.room.add_event_handler(
-                |ev: SyncTaskListUpdateEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor
-                            .handle(AnyActerModel::TaskListUpdate(t.into()))
-                            .await
-                        {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-            self.room.add_event_handler(
-                |ev: SyncTaskEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor.handle(AnyActerModel::Task(t.into())).await {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-            self.room.add_event_handler(
-                |ev: SyncTaskUpdateEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor.handle(AnyActerModel::TaskUpdate(t.into())).await {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-            self.room.add_event_handler(
-                |ev: SyncTaskSelfAssignEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor.handle(AnyActerModel::TaskSelfAssign(t.into())).await {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-            self.room.add_event_handler(
-                |ev: SyncTaskSelfUnassignEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor.handle(AnyActerModel::TaskSelfUnassign(t.into())).await {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-
-            // Comment
-            self.room.add_event_handler(
-                |ev: SyncCommentEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor.handle(AnyActerModel::Comment(t.into())).await {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-            self.room.add_event_handler(
-                |ev: SyncCommentUpdateEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor
-                            .handle(AnyActerModel::CommentUpdate(t.into()))
-                            .await
-                        {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-
-            // Attachment
-            self.room.add_event_handler(
-                |ev: SyncAttachmentEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor.handle(AnyActerModel::Attachment(t.into())).await {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-            self.room.add_event_handler(
-                |ev: SyncAttachmentUpdateEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor
-                            .handle(AnyActerModel::AttachmentUpdate(t.into()))
-                            .await
-                        {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-
-            // Pin
-            self.room.add_event_handler(
-                |ev: SyncPinEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor.handle(AnyActerModel::Pin(t.into())).await {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-            self.room.add_event_handler(
-                |ev: SyncPinUpdateEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor.handle(AnyActerModel::PinUpdate(t.into())).await {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-
-            // Calendar Event
-            self.room.add_event_handler(
-                |ev: SyncCalendarEventEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor
-                            .handle(AnyActerModel::CalendarEvent(t.into()))
-                            .await
-                        {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-            self.room.add_event_handler(
-                |ev: SyncCalendarEventUpdateEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor
-                            .handle(AnyActerModel::CalendarEventUpdate(t.into()))
-                            .await
-                        {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-
-            // RSVP
-            self.room.add_event_handler(
-                |ev: SyncRsvpEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor
-                            .handle(AnyActerModel::Rsvp(t.into()))
-                            .await
-                        {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-
-            // News Entry
-            self.room.add_event_handler(
-                |ev: SyncNewsEntryEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor.handle(AnyActerModel::NewsEntry(t.into())).await {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-            self.room.add_event_handler(
-                |ev: SyncNewsEntryUpdateEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor
-                            .handle(AnyActerModel::NewsEntryUpdate(t.into()))
-                            .await
-                        {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            ),
-
-            // Reactions
-            self.room.add_event_handler(
-                |ev: SyncReactionEvent,
-                 room: SdkRoom,
-                 Ctx(executor): Ctx<Executor>| async move {
-                    let room_id = room.room_id().to_owned();
-                    // FIXME: handle redactions
-                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id) {
-                        if let Err(error) = executor
-                            .handle(AnyActerModel::Reaction(t.into()))
-                            .await
-                        {
-                            error!(?error, "execution failed");
-                        }
-                    }
-                },
-            )
-        ]
-    }
-
     pub(crate) async fn refresh_history(&self) -> Result<()> {
         let name = self.room.name();
         let room_id = self.room.room_id();
@@ -389,14 +111,7 @@ impl Space {
         let client = self.room.client();
         // self.room.sync_members().await.context("Unable to sync members of room")?;
 
-        let custom_storage_key = format!("{room_id}::history");
-
-        let mut from = if let Ok(h) = self
-            .client
-            .store()
-            .get_raw::<HistoryState>(&custom_storage_key)
-            .await
-        {
+        let mut from = if let Ok(h) = HistoryState::load(self.client.store(), room_id).await {
             trace!(name, state=?h.seen, "found history state");
             Some(h.seen)
         } else {
@@ -409,50 +124,31 @@ impl Space {
             msg_options.limit = 100u32.into();
         }
 
+        let executor = self.client.executor();
+
         loop {
-            trace!(name, ?msg_options, "fetching messages");
+            trace!(?room_id, name, ?msg_options, "fetching messages");
             let Messages {
                 end, chunk, state, ..
             } = self.room.messages(msg_options).await?;
-            trace!(name, ?chunk, end, "messages received");
+            trace!(?room_id, name, ?chunk, end, "messages received");
 
             let has_chunks = !chunk.is_empty();
 
             for msg in chunk {
-                match AnyActerModel::try_from(&msg.event) {
-                    Ok(model) => {
-                        trace!(?room_id, user_id=?client.user_id(), ?model, "handling timeline event");
-                        if let Err(e) = self.client.executor().handle(model).await {
-                            error!("Failure handling event: {:}", e);
-                        }
+                let event = match msg.kind.raw().deserialize_as::<AnyActerEvent>() {
+                    Ok(AnyActerEvent::RegularTimelineEvent(event)) => {
+                        info!(?event, "Received regular event. Ignoring for now");
+                        continue;
                     }
-                    Err(Error::ModelRedacted {
-                        model_type,
-                        meta,
-                        reason,
-                    }) => {
-                        trace!(?room_id, user_id=?client.user_id(), model_type, ?meta.event_id, "redacted event");
-                        if let Err(e) = self
-                            .client
-                            .executor()
-                            .redact(model_type, meta, reason)
-                            .await
-                        {
-                            error!("Failure redacting {:}", e);
-                        }
-                    }
-                    Err(Error::UnknownModel(inner)) => {
-                        trace!(?room_id, user_id=?client.user_id(), ?inner, "ignoring event");
-                    }
-                    Err(m) => {
-                        if let Ok(state_key) = msg.event.get_field::<String>("state_key") {
-                            trace!(state_key=?state_key, "ignoring state event");
-                            // ignore state keys
-                        } else {
-                            error!(event=?msg.event, "Model didn't parse {:}", m);
-                        }
+                    Ok(e) => e,
+                    Err(error) => {
+                        error!(?error, ?room_id, "Not a proper acter event");
+                        continue;
                     }
                 };
+
+                AnyActerModel::execute(executor, event).await;
             }
 
             // Todo: Do we want to do something with the states, too?
@@ -460,13 +156,7 @@ impl Space {
             if let Some(seen) = end {
                 from = Some(seen.clone());
                 msg_options = MessagesOptions::forward().from(from.as_deref());
-                client
-                    .store()
-                    .set_custom_value_no_read(
-                        custom_storage_key.as_bytes(),
-                        serde_json::to_vec(&HistoryState { seen })?,
-                    )
-                    .await?;
+                HistoryState::store(self.client.store(), room_id, seen).await?;
             } else {
                 // how do we want to understand this case?
                 trace!(room_id = ?self.room.room_id(), "Done loading");
@@ -494,7 +184,7 @@ impl Space {
                 .deref()
                 .timeline()
                 .await
-                .expect("Timeline creation doesn't fail"),
+                .expect("Timeline creation doesn’t fail"),
         );
         TimelineStream::new(room, timeline)
     }
@@ -523,7 +213,7 @@ impl Space {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        self.client.subscribe(format!("{}", self.room_id()))
+        self.client.subscribe(self.room_id())
     }
 
     // for only cli run_marking_space, not api.rsh
@@ -552,7 +242,7 @@ impl Space {
 
     pub async fn set_acter_space_states(&self) -> Result<bool> {
         if !self.inner.is_joined() {
-            bail!("Unable to convert a space you didn't join");
+            bail!("Unable to convert a space you didn’t join");
         }
         let room = self.inner.room.clone();
         let my_id = self.client.user_id()?;
@@ -591,7 +281,7 @@ impl Space {
                 }
 
                 for request in requests {
-                    client.send(request, None).await?;
+                    client.send(request).await?;
                 }
 
                 Ok(true)
@@ -601,7 +291,7 @@ impl Space {
 
     pub async fn add_child_room(&self, room_id: String, suggested: bool) -> Result<String> {
         if !self.inner.is_joined() {
-            bail!("Unable to update a space you aren't part of");
+            bail!("Unable to update a space you aren’t part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -640,7 +330,7 @@ impl Space {
 
     pub async fn remove_child_room(&self, room_id: String, reason: Option<String>) -> Result<bool> {
         if !self.inner.is_joined() {
-            bail!("Unable to update a space you aren't part of");
+            bail!("Unable to update a space you aren’t part of");
         }
         let room_id = RoomId::parse(room_id)?;
         if !self
@@ -804,7 +494,7 @@ impl Client {
             let room_alias = RoomAliasId::parse(either.as_str())?;
             self.space_by_alias_typed(room_alias).await
         } else {
-            bail!("{room_id_or_alias} isn't a valid room id or alias...");
+            bail!("{room_id_or_alias} isn’t a valid room id or alias...");
         }
     }
 }

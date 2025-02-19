@@ -1,0 +1,1 @@
+- [New] - Implemented "Space" as a boost action, providing functionality of share space.

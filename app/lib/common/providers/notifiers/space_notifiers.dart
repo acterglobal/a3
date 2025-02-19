@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Client, Space, SpaceDiff;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -11,19 +12,18 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
-  Future<Space?> _getSpace() async {
-    final client = ref.read(alwaysClientProvider);
+  Future<Space?> _getSpace(Client client) async {
     return await client.space(arg);
   }
 
   @override
   Future<Space?> build(String arg) async {
-    final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(arg); // keep it resident in memory
+    final client = await ref.watch(alwaysClientProvider.future);
+    _listener = client.subscribeRoomStream(arg); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
         _log.info('seen update $arg');
-        state = await AsyncValue.guard(_getSpace);
+        state = await AsyncValue.guard(() async => await _getSpace(client));
       },
       onError: (e, s) {
         _log.severe('space stream errored', e, s);
@@ -33,25 +33,37 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await _getSpace();
+    return await _getSpace(client);
   }
 }
 
-class SpaceListNotifier extends StateNotifier<List<Space>> {
-  final Ref ref;
-  final Client client;
+class SpaceListNotifier extends Notifier<List<Space>> {
   late Stream<SpaceDiff> _listener;
-  late StreamSubscription<SpaceDiff> _poller;
+  StreamSubscription<SpaceDiff>? _poller;
+  late ProviderSubscription _providerSubscription;
 
-  SpaceListNotifier({
-    required this.ref,
-    required this.client,
-  }) : super(List<Space>.empty(growable: false)) {
-    _init();
+  @override
+  List<Space> build() {
+    _providerSubscription = ref.listen<AsyncValue<Client?>>(
+      alwaysClientProvider,
+      (AsyncValue<Client?>? oldVal, AsyncValue<Client?> newVal) {
+        final client = newVal.valueOrNull;
+        if (client == null) {
+          // we don't care for not having a proper client yet
+          return;
+        }
+        _reset(client);
+      },
+      fireImmediately: true,
+    );
+    ref.onDispose(() => _providerSubscription.close());
+    return List<Space>.empty(growable: false);
   }
 
-  void _init() async {
+  void _reset(Client client) async {
     _listener = client.spacesStream(); // keep it resident in memory
+    _poller?.cancel();
+    state = List<Space>.empty(growable: false);
     _poller = _listener.listen(
       _handleDiff,
       onError: (e, s) {
@@ -61,7 +73,7 @@ class SpaceListNotifier extends StateNotifier<List<Space>> {
         _log.info('space list stream ended');
       },
     );
-    ref.onDispose(() => _poller.cancel());
+    ref.onDispose(() => _poller?.cancel());
   }
 
   List<Space> listCopy() => List.from(state, growable: true);
@@ -69,41 +81,73 @@ class SpaceListNotifier extends StateNotifier<List<Space>> {
   void _handleDiff(SpaceDiff diff) {
     switch (diff.action()) {
       case 'Append':
+        final values = diff.values();
+        if (values == null) {
+          _log.severe('On append action, values should be available');
+          return;
+        }
         final newList = listCopy();
-        List<Space> items = diff.values()!.toList();
-        newList.addAll(items);
+        newList.addAll(values.toList());
         state = newList;
         break;
       case 'Insert':
-        Space m = diff.value()!;
-        final index = diff.index()!;
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On insert action, value should be available');
+          return;
+        }
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On insert action, index should be available');
+          return;
+        }
         final newList = listCopy();
-        newList.insert(index, m);
+        newList.insert(index, value);
         state = newList;
         break;
       case 'Set':
-        Space m = diff.value()!;
-        final index = diff.index()!;
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On set action, value should be available');
+          return;
+        }
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On set action, index should be available');
+          return;
+        }
         final newList = listCopy();
-        newList[index] = m;
+        newList[index] = value;
         state = newList;
         break;
       case 'Remove':
-        final index = diff.index()!;
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On remove action, index should be available');
+          return;
+        }
         final newList = listCopy();
         newList.removeAt(index);
         state = newList;
         break;
       case 'PushBack':
-        Space m = diff.value()!;
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On push back action, value should be available');
+          return;
+        }
         final newList = listCopy();
-        newList.add(m);
+        newList.add(value);
         state = newList;
         break;
       case 'PushFront':
-        Space m = diff.value()!;
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On push front action, value should be available');
+          return;
+        }
         final newList = listCopy();
-        newList.insert(0, m);
+        newList.insert(0, value);
         state = newList;
         break;
       case 'PopBack':
@@ -120,12 +164,21 @@ class SpaceListNotifier extends StateNotifier<List<Space>> {
         state = [];
         break;
       case 'Reset':
-        state = diff.values()!.toList();
+        final values = diff.values();
+        if (values == null) {
+          _log.severe('On reset action, values should be available');
+          return;
+        }
+        state = values.toList();
         break;
       case 'Truncate':
-        final length = diff.index()!;
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On truncate action, index should be available');
+          return;
+        }
         final newList = listCopy();
-        state = newList.take(length).toList();
+        state = newList.take(index).toList();
         break;
       default:
         break;

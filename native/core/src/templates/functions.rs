@@ -7,7 +7,7 @@ use crate::events::UtcDateTime;
 
 /// create a date using the current date time
 pub fn now() -> Value {
-    Value::from_struct_object(UtcDateTimeValue::new(UtcDateTime::from(SystemTime::now())))
+    Value::from_object(UtcDateTimeValue::new(UtcDateTime::from(SystemTime::now())))
 }
 
 /// create a date in the future add `days`, `weeks`, `hours`, `mins`, `secs` (or any combinations of them) to create
@@ -26,7 +26,7 @@ pub fn future(kwargs: Value) -> Result<Value, Error> {
     {
         duration = duration
             .checked_add(&Duration::days(days))
-            .ok_or_else(|| Error::new(ErrorKind::InvalidOperation, "days couldn't be added"))?;
+            .ok_or_else(|| Error::new(ErrorKind::InvalidOperation, "days couldn’t be added"))?;
     }
 
     if let Some(Ok(weeks)) = kwargs
@@ -37,7 +37,7 @@ pub fn future(kwargs: Value) -> Result<Value, Error> {
     {
         duration = duration
             .checked_add(&Duration::weeks(weeks))
-            .ok_or_else(|| Error::new(ErrorKind::InvalidOperation, "weeks couldn't be added"))?;
+            .ok_or_else(|| Error::new(ErrorKind::InvalidOperation, "weeks couldn’t be added"))?;
     }
 
     if let Some(Ok(hours)) = kwargs
@@ -48,7 +48,7 @@ pub fn future(kwargs: Value) -> Result<Value, Error> {
     {
         duration = duration
             .checked_add(&Duration::hours(hours))
-            .ok_or_else(|| Error::new(ErrorKind::InvalidOperation, "hours couldn't be added"))?;
+            .ok_or_else(|| Error::new(ErrorKind::InvalidOperation, "hours couldn’t be added"))?;
     }
 
     if let Some(Ok(minutes)) = kwargs
@@ -59,7 +59,7 @@ pub fn future(kwargs: Value) -> Result<Value, Error> {
     {
         duration = duration
             .checked_add(&Duration::minutes(minutes))
-            .ok_or_else(|| Error::new(ErrorKind::InvalidOperation, "minutes couldn't be added"))?;
+            .ok_or_else(|| Error::new(ErrorKind::InvalidOperation, "minutes couldn’t be added"))?;
     }
 
     if let Some(Ok(seconds)) = kwargs
@@ -70,9 +70,9 @@ pub fn future(kwargs: Value) -> Result<Value, Error> {
     {
         duration = duration
             .checked_add(&Duration::seconds(seconds))
-            .ok_or_else(|| Error::new(ErrorKind::InvalidOperation, "seconds couldn't be added"))?;
+            .ok_or_else(|| Error::new(ErrorKind::InvalidOperation, "seconds couldn’t be added"))?;
     }
 
-    let val = Value::from_struct_object(UtcDateTimeValue::new(date + duration));
+    let val = Value::from_object(UtcDateTimeValue::new(date + duration));
     Ok(val)
 }

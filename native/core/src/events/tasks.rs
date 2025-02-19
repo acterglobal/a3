@@ -2,8 +2,7 @@ use chrono_tz::Tz;
 use core::result::Result as CoreResult;
 use derive_builder::Builder;
 use derive_getters::Getters;
-use ruma_events::room::message::TextMessageEventContent;
-use ruma_macros::EventContent;
+use matrix_sdk_base::ruma::events::{macros::EventContent, room::message::TextMessageEventContent};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use tracing::trace;
@@ -280,7 +279,7 @@ impl TaskBuilder {
     fn validate(&self) -> CoreResult<(), String> {
         if let Some(Some(percent)) = &self.progress_percent {
             if *percent > 100 {
-                return Err("Progress percent can't be higher than 100".to_string());
+                return Err("Progress percent can’t be higher than 100".to_string());
             }
         }
         Ok(())

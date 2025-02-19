@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Client, Task;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -14,7 +14,7 @@ class MyOpenTasksNotifier extends AsyncNotifier<List<Task>> {
   @override
   Future<List<Task>> build() async {
     // Load initial todo list from the remote repository
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     _listener =
         client.subscribeMyOpenTasksStream(); // keep it resident in memory
     _poller = _listener.listen(

@@ -6,6 +6,14 @@ services:
       - 1025:1025 # smtp server
       - 8025:8025 # web ui
 
+  share_links_ownership:
+    image: alpine
+    user: root
+    volumes:
+      - ./.local/share_links:/share_links
+    command: chmod 777 /share_links
+    restart: none
+
   synapse:
     build:
       context: .config/acter-synapse-ci
@@ -15,9 +23,23 @@ services:
       - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
     volumes:
       - ./.local/docker-data:/data:rw
+      - ./.local/share_links:/share_links
     ports:
       - 8448:8448/tcp
       - 8118:8008/tcp
+    depends_on:
+      - share_links_ownership
+
+  web:
+    image: nginx
+    restart: on-failure
+    volumes:
+      - ./.config/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./.local/share_links/:/app/static/:ro
+    ports:
+      - 8099:8099/tcp
+    depends_on:
+      - share_links_ownership
 
   rageshake:
     image: "ghcr.io/matrix-org/rageshake"

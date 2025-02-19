@@ -34,7 +34,7 @@ class CustomMessageBuilder extends StatelessWidget {
           return LocationMessageWidget(message: message);
         }
         _log.warning(
-          "Asked to render room message that isn't a location isn't supported. $message",
+          'Asked to render room message that isn’t a location isn’t supported. $message',
         );
         return const SizedBox.shrink();
       case 'm.room.redaction':

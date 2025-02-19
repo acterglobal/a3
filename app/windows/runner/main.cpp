@@ -1,5 +1,6 @@
 #include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
+#include "app_links/app_links_plugin_c_api.h"
 #include <windows.h>
 
 #include "flutter_window.h"
@@ -7,9 +8,14 @@
 
 int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
                       _In_ wchar_t *command_line, _In_ int show_command) {
-
+#ifdef _DEBUG
+  HWND hwnd = ::FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", L"Acter-dev");
+#else
   HWND hwnd = ::FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", L"Acter");
+#endif
   if (hwnd != NULL) {
+    // Dispatch new link to current window
+    SendAppLink(hwnd);
     ::ShowWindow(hwnd, SW_NORMAL);
     ::SetForegroundWindow(hwnd);
     return EXIT_FAILURE;
@@ -34,9 +40,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1280, 720);
+#ifdef _DEBUG
+  if (!window.CreateAndShow(L"Acter-dev", origin, size)) {
+    return EXIT_FAILURE;
+  }
+#else
   if (!window.CreateAndShow(L"Acter", origin, size)) {
     return EXIT_FAILURE;
   }
+#endif
   window.SetQuitOnClose(true);
 
   ::MSG msg;

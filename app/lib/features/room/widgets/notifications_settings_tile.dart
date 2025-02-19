@@ -10,12 +10,13 @@ import 'package:settings_ui/settings_ui.dart';
 final _log = Logger('a3::room::notification_settings');
 
 String? notifToText(BuildContext context, String curNotifStatus) {
+  final lang = L10n.of(context);
   if (curNotifStatus == 'muted') {
-    return L10n.of(context).muted;
+    return lang.muted;
   } else if (curNotifStatus == 'mentions') {
-    return L10n.of(context).mentionsAndKeywordsOnly;
+    return lang.mentionsAndKeywordsOnly;
   } else if (curNotifStatus == 'all') {
-    return L10n.of(context).allMessages;
+    return lang.allMessages;
   } else {
     return null;
   }
@@ -36,28 +37,25 @@ class _NotificationSettingsTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notificationStatus =
-        ref.watch(roomNotificationStatusProvider(roomId));
-    final defaultNotificationStatus =
-        ref.watch(roomDefaultNotificationStatusProvider(roomId));
-    final curNotifStatus = notificationStatus.valueOrNull;
-    final tileTextTheme = Theme.of(context).textTheme.bodySmall;
-    // ignore: always_declare_return_types
+    final lang = L10n.of(context);
+    final curNotifStatus =
+        ref.watch(roomNotificationStatusProvider(roomId)).valueOrNull;
+    final defNotifStatus =
+        ref.watch(roomDefaultNotificationStatusProvider(roomId)).valueOrNull;
+    final defStatusText = notifToText(context, defNotifStatus ?? '');
+    final defNotifText = defaultTitle ??
+        lang.defaultNotification('(${defStatusText ?? lang.undefined})');
     return SettingsTile(
       title: Text(
-        title ?? L10n.of(context).notifications,
-        style: tileTextTheme,
+        title ?? lang.notifications,
+        style: Theme.of(context).textTheme.bodySmall,
       ),
-      description: Text(
-        notifToText(context, curNotifStatus ?? '') ??
-            (defaultTitle ??
-                L10n.of(context).defaultNotification(
-                  '(${notifToText(context, defaultNotificationStatus.valueOrNull ?? '') ?? L10n.of(context).undefined})',
-                )),
+      description:
+          Text(notifToText(context, curNotifStatus ?? '') ?? defNotifText),
+      leading: Icon(
+        curNotifStatus == 'muted' ? Atlas.bell_dash_bold : Atlas.bell_thin,
+        size: 18,
       ),
-      leading: curNotifStatus == 'muted'
-          ? const Icon(Atlas.bell_dash_bold, size: 18)
-          : const Icon(Atlas.bell_thin, size: 18),
       trailing: PopupMenuButton<String>(
         initialValue: curNotifStatus,
         // Callback that sets the selected popup menu item.
@@ -68,7 +66,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
             child: notificationSettingItemUI(
               context,
               curNotifStatus == 'all',
-              L10n.of(context).allMessages,
+              lang.allMessages,
             ),
           ),
           if (includeMentions)
@@ -77,7 +75,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
               child: notificationSettingItemUI(
                 context,
                 curNotifStatus == 'mentions',
-                L10n.of(context).mentionsAndKeywordsOnly,
+                lang.mentionsAndKeywordsOnly,
               ),
             ),
           PopupMenuItem<String>(
@@ -85,7 +83,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
             child: notificationSettingItemUI(
               context,
               curNotifStatus == 'muted',
-              L10n.of(context).muted,
+              lang.muted,
             ),
           ),
           PopupMenuItem<String>(
@@ -93,10 +91,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
             child: notificationSettingItemUI(
               context,
               curNotifStatus == '',
-              defaultTitle ??
-                  L10n.of(context).defaultNotification(
-                    '(${notifToText(context, defaultNotificationStatus.valueOrNull ?? '') ?? L10n.of(context).undefined})',
-                  ),
+              defNotifText,
             ),
           ),
         ],
@@ -131,7 +126,8 @@ class _NotificationSettingsTile extends ConsumerWidget {
     String newMode,
   ) async {
     _log.info('new value: $newMode');
-    EasyLoading.show(status: L10n.of(context).changingNotificationMode);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.changingNotificationMode);
     try {
       final room = await ref.read(maybeRoomProvider(roomId).future);
       if (room == null) {
@@ -141,7 +137,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
           return;
         }
         EasyLoading.showError(
-          L10n.of(context).roomNotFound,
+          lang.roomNotFound,
           duration: const Duration(seconds: 3),
         );
         return;
@@ -161,11 +157,11 @@ class _NotificationSettingsTile extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).notificationStatusSubmitted);
+      EasyLoading.showToast(lang.notificationStatusSubmitted);
       await Future.delayed(const Duration(seconds: 1), () {
-        // FIXME: we want to refresh the view but don't know
+        // FIXME: we want to refresh the view but don’t know
         //        when the event was confirmed form sync :(
-        // let's hope that a second delay is reasonable enough
+        // let’s hope that a second delay is reasonable enough
         ref.invalidate(maybeRoomProvider(roomId));
       });
     } catch (e, s) {
@@ -175,7 +171,7 @@ class _NotificationSettingsTile extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToChangeNotificationMode(e),
+        lang.failedToChangeNotificationMode(e),
         duration: const Duration(seconds: 3),
       );
     }

@@ -1,14 +1,10 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-
-final _log = Logger('a3::common::spaces::select_form_field');
 
 class SelectSpaceFormField extends ConsumerWidget {
   static Key openKey = const Key('select-space-form-field-open');
@@ -18,7 +14,7 @@ class SelectSpaceFormField extends ConsumerWidget {
   final String? emptyText;
   final String canCheck;
   final bool mandatory;
-  final bool useCompatView;
+  final bool useCompactView;
 
   const SelectSpaceFormField({
     super.key,
@@ -27,7 +23,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     this.emptyText,
     this.mandatory = true,
     required this.canCheck,
-    this.useCompatView = false,
+    this.useCompactView = false,
   });
 
   void selectSpace(BuildContext context, WidgetRef ref) async {
@@ -42,87 +38,79 @@ class SelectSpaceFormField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentSelectedSpace = ref.watch(selectedSpaceIdProvider);
-    final selectedSpace = currentSelectedSpace != null;
+    final currentSpaceId = ref.watch(selectedSpaceIdProvider);
+    final lang = L10n.of(context);
 
     final emptyButton = OutlinedButton(
       key: openKey,
       onPressed: () => selectSpace(context, ref),
-      child: Text(emptyText ?? L10n.of(context).pleaseSelectSpace),
+      child: Text(emptyText ?? lang.pleaseSelectSpace),
     );
 
     return FormField(
-      builder: (state) => selectedSpace
+      builder: (state) => currentSpaceId != null
           ? InkWell(
               key: openKey,
               onTap: () => selectSpace(context, ref),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (!useCompatView)
+                  if (!useCompactView)
                     Text(
-                      title ?? L10n.of(context).space,
+                      title ?? lang.space,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                  Consumer(builder: spaceBuilder),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      return spaceBuilder(context, ref, child, currentSpaceId);
+                    },
+                  ),
                 ],
               ),
             )
           : Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: state.hasError
-                  ? Column(
+              child: state.errorText.map(
+                    (err) => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         emptyButton,
                         Text(
-                          state.errorText!,
+                          err,
                           style:
-                              Theme.of(context).textTheme.bodySmall!.copyWith(
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: Theme.of(context).colorScheme.error,
                                   ),
                         ),
                       ],
-                    )
-                  : emptyButton,
+                    ),
+                  ) ??
+                  emptyButton,
             ),
-      validator: (x) =>
-          (!mandatory || ref.read(selectedSpaceIdProvider) != null)
+      validator: (val) =>
+          !mandatory || ref.read(selectedSpaceIdProvider) != null
               ? null
-              : L10n.of(context).youMustSelectSpace,
+              : lang.youMustSelectSpace,
     );
   }
 
-  Widget spaceBuilder(BuildContext context, WidgetRef ref, Widget? child) {
-    final spaceLoader = ref.watch(selectedSpaceDetailsProvider);
-    final currentId = ref.watch(selectedSpaceIdProvider);
-    return spaceLoader.when(
-      data: (space) {
-        if (space == null) return Text(currentId!);
-        return SpaceChip(
-          spaceId: space.roomId,
-          onTapOpenSpaceDetail: false,
-          useCompatView: useCompatView,
-          onTapSelectSpace: () {
-            if (useCompatView) selectSpace(context, ref);
-          },
-        );
-      },
-      error: (e, s) {
-        _log.severe('Failed to load the details of selected space', e, s);
-        return Text(L10n.of(context).loadingFailed(e));
-      },
-      loading: () => Skeletonizer(
-        child: Chip(
-          avatar: ActerAvatar(
-            options: AvatarOptions(
-              AvatarInfo(uniqueId: L10n.of(context).loading),
-              size: 24,
-            ),
+  Widget spaceBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    Widget? child,
+    String currentSpaceId,
+  ) {
+    final space = ref.watch(selectedSpaceDetailsProvider);
+    return space.map(
+          (p0) => SpaceChip(
+            spaceId: p0.roomId,
+            onTapOpenSpaceDetail: false,
+            useCompactView: useCompactView,
+            onTapSelectSpace: () {
+              if (useCompactView) selectSpace(context, ref);
+            },
           ),
-          label: Text(L10n.of(context).loading),
-        ),
-      ),
-    );
+        ) ??
+        Text(currentSpaceId);
   }
 }

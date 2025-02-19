@@ -19,6 +19,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+import 'package:acter/common/extensions/options.dart';
 import 'package:flutter/material.dart';
 
 class BlinkText extends StatefulWidget {
@@ -46,7 +47,7 @@ class BlinkText extends StatefulWidget {
 
   /// If non-null, the style to use for this text.
   ///
-  /// If the style's "inherit" property is true, the style will be merged with
+  /// If the style’s "inherit" property is true, the style will be merged with
   /// the closest enclosing [DefaultTextStyle]. Otherwise, the style will
   /// replace the closest enclosing [DefaultTextStyle].
   final TextStyle? style;
@@ -75,7 +76,7 @@ class BlinkText extends StatefulWidget {
   /// Used to select a font when the same Unicode character can
   /// be rendered differently, depending on the locale.
   ///
-  /// It's rarely necessary to set this property. By default its value
+  /// It’s rarely necessary to set this property. By default its value
   /// is inherited from the enclosing app with `Localizations.localeOf(context)`.
   ///
   /// See [RenderParagraph.locale] for more information.
@@ -135,23 +136,22 @@ class BlinkTextState extends State<BlinkText>
   late AnimationController _controller;
   late Animation<Color?> _colorAnimation;
   int _counter = 0;
-  Duration? duration = const Duration(milliseconds: 500);
+  Duration duration = const Duration(milliseconds: 500);
   Color? beginColor = Colors.black;
 
   @override
   void initState() {
     super.initState();
     //default duration
-    if (widget.duration != null) {
-      duration = widget.duration;
-    }
+    widget.duration.map((val) => duration = val);
 
     //default beginColor
     if (widget.beginColor != null) {
       beginColor = widget.beginColor;
     } else {
-      if (widget.style != null && widget.style!.inherit) {
-        beginColor = widget.style!.color;
+      final style = widget.style;
+      if (style != null && style.inherit) {
+        beginColor = style.color;
       }
     }
 
@@ -178,9 +178,8 @@ class BlinkTextState extends State<BlinkText>
     _controller.forward();
   }
 
-  Future<void> _endTween() => Future.delayed(duration!, () {
-        _controller.stop();
-      });
+  Future<void> _endTween() =>
+      Future.delayed(duration, () => _controller.stop());
 
   @override
   void dispose() {
@@ -205,12 +204,9 @@ class BlinkTextState extends State<BlinkText>
 
   @override
   Widget build(BuildContext context) {
-    var defaultTextStyle = DefaultTextStyle.of(context);
-    var style = defaultTextStyle.style;
-
-    if (widget.style != null) {
-      style = defaultTextStyle.style.merge(widget.style!);
-    }
+    final defaultStyle = DefaultTextStyle.of(context);
+    var style = defaultStyle.style;
+    widget.style.map((val) => style = defaultStyle.style.merge(val));
     if (MediaQuery.boldTextOf(context)) {
       style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
     }

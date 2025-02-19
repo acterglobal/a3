@@ -1,13 +1,12 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
+import 'package:acter/features/space/actions/set_acter_feature.dart';
+import 'package:acter/features/space/actions/update_feature_power_level.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -16,19 +15,13 @@ import 'package:settings_ui/settings_ui.dart';
 final _log = Logger('a3::space::settings::app_settings');
 
 String powerLevelName(int? pw) {
-  if (pw == null) {
-    return 'None';
-  }
-  switch (pw) {
-    case 100:
-      return 'Admin';
-    case 50:
-      return 'Mod';
-    case 0:
-      return 'Regular';
-    default:
-      return 'Custom';
-  }
+  if (pw == null) return 'None';
+  return switch (pw) {
+    100 => 'Admin',
+    50 => 'Mod',
+    0 => 'Regular',
+    _ => 'Custom',
+  };
 }
 
 class SettingsAndMembership {
@@ -58,12 +51,17 @@ final spaceAppSettingsProvider = FutureProvider.autoDispose
 
 class SpaceAppsSettingsPage extends ConsumerWidget {
   static const tasksSwitch = Key('space-settings-tasks');
+
   final String spaceId;
 
-  const SpaceAppsSettingsPage({super.key, required this.spaceId});
+  const SpaceAppsSettingsPage({
+    super.key,
+    required this.spaceId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final settingsLoader = ref.watch(spaceAppSettingsProvider(spaceId));
 
     return WithSidebar(
@@ -91,798 +89,643 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           final pins = appSettings.pins();
           final tasks = appSettings.tasks();
 
-          final moreSections = [];
-          final labActions = [];
-          if (news.active()) {
-            final currentPw = powerLevels.news();
-            final pwText = maxPowerLevel == 100
-                ? powerLevelName(currentPw)
-                : 'Custom ($currentPw)';
-            moreSections.add(
-              SettingsSection(
-                title: const Text('Updates'),
-                tiles: [
-                  SettingsTile(
-                    enabled: canEdit,
-                    title: const Text('Required PowerLevel'),
-                    description: const Text(
-                      'Minimum power level required to post news updates',
-                    ),
-                    trailing:
-                        currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async => await onNewsLevelChange(
-                      context,
-                      maxPowerLevel,
-                      currentPw,
-                      space,
-                      powerLevels,
-                    ),
-                  ),
-                  SettingsTile.switchTile(
-                    title: const Text('Comments on Updates'),
-                    description: const Text('not yet supported'),
-                    enabled: false,
-                    initialValue: false,
-                    onToggle: (newVal) {},
-                  ),
-                ],
-              ),
-            );
-          }
-          if (pins.active()) {
-            final currentPw = powerLevels.pins();
-            final pwText = maxPowerLevel == 100
-                ? powerLevelName(currentPw)
-                : 'Custom ($currentPw)';
-            moreSections.add(
-              SettingsSection(
-                title: const Text('Pin'),
-                tiles: [
-                  SettingsTile(
-                    enabled: canEdit,
-                    title: const Text('Required PowerLevel'),
-                    description: const Text(
-                      'Minimum power level required to post and edit pins',
-                    ),
-                    trailing:
-                        currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async => await onPinLevelChange(
-                      context,
-                      maxPowerLevel,
-                      currentPw,
-                      space,
-                      powerLevels,
-                    ),
-                  ),
-                  SettingsTile.switchTile(
-                    title: const Text('Comments on Pins'),
-                    description: const Text('not yet supported'),
-                    enabled: false,
-                    initialValue: false,
-                    onToggle: (newVal) {},
-                  ),
-                ],
-              ),
-            );
-          }
-          if (events.active()) {
-            final currentPw = powerLevels.events();
-            final pwText = maxPowerLevel == 100
-                ? powerLevelName(currentPw)
-                : 'Custom ($currentPw)';
-            moreSections.add(
-              SettingsSection(
-                title: const Text('Calendar Events'),
-                tiles: [
-                  SettingsTile(
-                    enabled: canEdit,
-                    title: const Text('Admin PowerLevel'),
-                    description: const Text(
-                      'Minimum power level required to post calendar events',
-                    ),
-                    trailing:
-                        currentPw != null ? Text(pwText) : Text(defaultDesc),
-                    onPressed: (context) async =>
-                        await onCalendarEventLevelChange(
-                      context,
-                      maxPowerLevel,
-                      currentPw,
-                      space,
-                      powerLevels,
-                    ),
-                  ),
-                  SettingsTile(
-                    enabled: false,
-                    title: const Text('RSVP PowerLevel'),
-                    description: const Text(
-                      'Minimum power level to RSVP to calendar events',
-                    ),
-                    trailing: const Text('not yet implemented'),
-                  ),
-                  SettingsTile.switchTile(
-                    title: const Text('Comments'),
-                    description: const Text('not yet supported'),
-                    enabled: false,
-                    initialValue: false,
-                    onToggle: (newVal) {},
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (tasks.active()) {
-            final taskListCurrentPw = powerLevels.taskLists();
-            final tasksCurrentPw = powerLevels.tasks();
-            final pwTextTL = maxPowerLevel == 100
-                ? powerLevelName(taskListCurrentPw)
-                : 'Custom ($taskListCurrentPw)';
-            final pwTextT = maxPowerLevel == 100
-                ? powerLevelName(tasksCurrentPw)
-                : 'Custom ($tasksCurrentPw)';
-            moreSections.add(
-              SettingsSection(
-                title: const Text('Tasks'),
-                tiles: [
-                  SettingsTile(
-                    enabled: canEdit,
-                    title: const Text('TaskList PowerLevel'),
-                    description: const Text(
-                      'Minimum power level required to create & manage task lists',
-                    ),
-                    trailing: taskListCurrentPw != null
-                        ? Text(pwTextTL)
-                        : Text(defaultDesc),
-                    onPressed: (context) async => await onTaskListLevelChange(
-                      context,
-                      maxPowerLevel,
-                      taskListCurrentPw,
-                      space,
-                      powerLevels,
-                    ),
-                  ),
-                  SettingsTile(
-                    enabled: canEdit,
-                    title: const Text('Tasks PowerLevel'),
-                    description: const Text(
-                      'Minimum power level required to interact with tasks',
-                    ),
-                    trailing: tasksCurrentPw != null
-                        ? Text(pwTextT)
-                        : Text(defaultDesc),
-                    onPressed: (context) async => await onTaskLevelChange(
-                      context,
-                      maxPowerLevel,
-                      tasksCurrentPw,
-                      space,
-                      powerLevels,
-                    ),
-                  ),
-                  SettingsTile.switchTile(
-                    title: const Text('Comments'),
-                    description: const Text('not yet supported'),
-                    enabled: false,
-                    initialValue: false,
-                    onToggle: (newVal) {},
-                  ),
-                ],
-              ),
-            );
-          }
-
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Apps Settings'),
+              title: Text(lang.appSettings),
               automaticallyImplyLeading: !context.isLargeScreen,
             ),
             body: SettingsList(
               sections: [
                 SettingsSection(
-                  title: const Text('Active Apps'),
+                  title: Text(lang.activeApps),
                   tiles: [
                     SettingsTile.switchTile(
-                      title: const Text('Updates'),
+                      title: Text(lang.boost),
                       enabled: canEdit,
-                      description: const Text('Post space-wide updates'),
+                      description: Text(lang.postSpaceWiseBoost),
                       initialValue: news.active(),
-                      onToggle: (newVal) async => await onNewsToggle(
+                      onToggle: (newVal) => setActerFeature(
                         context,
-                        news,
                         newVal,
                         appSettings,
                         space,
+                        SpaceFeature.boosts,
+                        lang.boosts,
                       ),
                     ),
                     SettingsTile.switchTile(
-                      title: const Text('Pins'),
+                      title: Text(lang.pin),
                       enabled: canEdit,
-                      description: const Text('Pin important information'),
+                      description: Text(lang.pinImportantInformation),
                       initialValue: pins.active(),
-                      onToggle: (newVal) async => onPinToggle(
+                      onToggle: (newVal) => setActerFeature(
                         context,
-                        pins,
                         newVal,
                         appSettings,
                         space,
+                        SpaceFeature.pins,
+                        lang.pins,
                       ),
                     ),
                     SettingsTile.switchTile(
-                      title: const Text('Events Calendar'),
+                      title: Text(lang.events),
                       enabled: canEdit,
-                      description: const Text('Calender with Events'),
+                      description: Text(lang.calenderWithEvents),
                       initialValue: events.active(),
-                      onToggle: (newVal) async => await onCalendarEventToggle(
+                      onToggle: (newVal) => setActerFeature(
                         context,
-                        events,
                         newVal,
                         appSettings,
                         space,
+                        SpaceFeature.events,
+                        lang.event,
                       ),
                     ),
                     SettingsTile.switchTile(
-                      title: const Text('Tasks'),
+                      title: Text(lang.tasks),
                       key: tasksSwitch,
                       enabled: canEdit,
-                      description: const Text('ToDo-Lists & Tasks'),
+                      description: Text(lang.taskList),
                       initialValue: tasks.active(),
-                      onToggle: (newVal) async => await onTaskToggle(
+                      onToggle: (newVal) => setActerFeature(
                         context,
-                        tasks,
                         newVal,
                         appSettings,
                         space,
+                        SpaceFeature.tasks,
+                        lang.tasks,
                       ),
                     ),
-                    ...labActions,
                   ],
                 ),
-                ...moreSections,
+                buildDefaultSection(
+                  context,
+                  powerLevels,
+                  space,
+                  maxPowerLevel,
+                  canEdit,
+                  defaultDesc,
+                ),
+                if (news.active())
+                  buildNewsSection(
+                    context,
+                    powerLevels,
+                    space,
+                    maxPowerLevel,
+                    canEdit,
+                    defaultDesc,
+                  ),
+                if (pins.active())
+                  buildPinsSection(
+                    context,
+                    powerLevels,
+                    space,
+                    maxPowerLevel,
+                    canEdit,
+                    defaultDesc,
+                  ),
+                if (events.active())
+                  buildEventsSection(
+                    context,
+                    powerLevels,
+                    space,
+                    maxPowerLevel,
+                    canEdit,
+                    defaultDesc,
+                  ),
+                if (tasks.active())
+                  buildTasksSection(
+                    context,
+                    powerLevels,
+                    space,
+                    maxPowerLevel,
+                    canEdit,
+                    defaultDesc,
+                  ),
               ],
             ),
           );
         },
-        loading: () => const Center(child: Text('loading')),
+        loading: () => Center(
+          child: Text(lang.loading),
+        ),
         error: (e, s) {
           _log.severe('Failed to load space settings', e, s);
           return Center(
-            child: Text(L10n.of(context).loadingFailed(e)),
+            child: Text(lang.loadingFailed(e)),
           );
         },
+        skipLoadingOnReload: true,
+        skipLoadingOnRefresh: true,
       ),
     );
   }
 
-  Future<void> onNewsLevelChange(
+  SettingsSection buildDefaultSection(
     BuildContext context,
-    int maxPowerLevel,
-    int? currentPw,
-    Space space,
     RoomPowerLevels powerLevels,
-  ) async {
-    final newPowerLevel = await showDialog<int?>(
-      context: context,
-      builder: (BuildContext context) => ChangePowerLevel(
-        featureName: 'Updates',
-        currentPowerLevelName:
-            maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
-        currentPowerLevel: currentPw,
-      ),
-    );
-    if (newPowerLevel == currentPw) return;
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-    EasyLoading.show(status: L10n.of(context).changingPowerLevelOf('Updates'));
-    try {
-      await space.updateFeaturePowerLevels(
-        powerLevels.newsKey(),
-        newPowerLevel,
-      );
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Updates'));
-    } catch (e, s) {
-      _log.severe('Failed to change power level of Updates', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).failedToChangePowerLevel(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> onNewsToggle(
-    BuildContext context,
-    NewsSettings news,
-    bool newVal,
-    ActerAppSettings appSettings,
     Space space,
-  ) async {
-    EasyLoading.show(status: L10n.of(context).changingSettingOf('Updates'));
-    try {
-      final updated = news.updater();
-      updated.active(newVal);
-      final builder = appSettings.updateBuilder();
-      builder.news(updated.build());
-      await space.updateAppSettings(builder);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showToast(L10n.of(context).changedSettingOf('Updates'));
-    } catch (e, s) {
-      _log.severe('Failed to change setting of Updates', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).failedToToggleSettingOf('Updates', e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> onPinLevelChange(
-    BuildContext context,
     int maxPowerLevel,
-    int? currentPw,
-    Space space,
-    RoomPowerLevels powerLevels,
-  ) async {
-    final newPowerLevel = await showDialog<int?>(
-      context: context,
-      builder: (BuildContext context) => ChangePowerLevel(
-        featureName: 'Pin',
-        currentPowerLevelName:
-            maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
-        currentPowerLevel: currentPw,
-      ),
-    );
-    if (newPowerLevel == currentPw) return;
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-    EasyLoading.show(status: L10n.of(context).changingSettingOf('Pins'));
-    try {
-      await space.updateFeaturePowerLevels(
-        powerLevels.pinsKey(),
-        newPowerLevel,
-      );
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Pins'));
-    } catch (e, s) {
-      _log.severe('Failed to change power level of Pins', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).failedToChangePowerLevel(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> onPinToggle(
-    BuildContext context,
-    PinsSettings pins,
-    bool newVal,
-    ActerAppSettings appSettings,
-    Space space,
-  ) async {
-    EasyLoading.show(status: L10n.of(context).changingSettingOf('Pins'));
-    try {
-      final updated = pins.updater();
-      updated.active(newVal);
-      final builder = appSettings.updateBuilder();
-      builder.pins(updated.build());
-      await space.updateAppSettings(builder);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showToast(L10n.of(context).changedSettingOf('Pins'));
-    } catch (e, s) {
-      _log.severe('Failed to change setting of Pins', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).failedToToggleSettingOf('Pins', e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> onCalendarEventLevelChange(
-    BuildContext context,
-    int maxPowerLevel,
-    int? currentPw,
-    Space space,
-    RoomPowerLevels powerLevels,
-  ) async {
-    final newPowerLevel = await showDialog<int?>(
-      context: context,
-      builder: (BuildContext context) => ChangePowerLevel(
-        featureName: 'Calendar Events',
-        currentPowerLevelName:
-            maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
-        currentPowerLevel: currentPw,
-      ),
-    );
-    if (newPowerLevel == currentPw) return;
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-    EasyLoading.show(status: L10n.of(context).changingPowerLevelOf('Events'));
-    try {
-      await space.updateFeaturePowerLevels(
-        powerLevels.eventsKey(),
-        newPowerLevel,
-      );
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Events'));
-    } catch (e, s) {
-      _log.severe('Failed to change power level of Events', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).failedToChangePowerLevel(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> onCalendarEventToggle(
-    BuildContext context,
-    EventsSettings events,
-    bool newVal,
-    ActerAppSettings appSettings,
-    Space space,
-  ) async {
-    EasyLoading.show(status: L10n.of(context).changingSettingOf('Events'));
-    try {
-      final updated = events.updater();
-      updated.active(newVal);
-      final builder = appSettings.updateBuilder();
-      builder.events(updated.build());
-      await space.updateAppSettings(builder);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showToast(L10n.of(context).changedSettingOf('Events'));
-    } catch (e, s) {
-      _log.severe('Failed to change setting of Events', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).failedToToggleSettingOf('Events', e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> onTaskListLevelChange(
-    BuildContext context,
-    int maxPowerLevel,
-    int? currentPw,
-    Space space,
-    RoomPowerLevels powerLevels,
-  ) async {
-    final newPowerLevel = await showDialog<int?>(
-      context: context,
-      builder: (BuildContext context) => ChangePowerLevel(
-        featureName: 'Task Lists',
-        currentPowerLevelName:
-            maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
-        currentPowerLevel: currentPw,
-      ),
-    );
-    if (newPowerLevel == currentPw) return;
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-    EasyLoading.show(
-      status: L10n.of(context).changingPowerLevelOf('Tasklists'),
-    );
-    try {
-      await space.updateFeaturePowerLevels(
-        powerLevels.taskListsKey(),
-        newPowerLevel,
-      );
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Tasklists'));
-    } catch (e, s) {
-      _log.severe('Failed to change power level of Tasklists', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).failedToChangePowerLevel(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> onTaskLevelChange(
-    BuildContext context,
-    int maxPowerLevel,
-    int? currentPw,
-    Space space,
-    RoomPowerLevels powerLevels,
-  ) async {
-    final newPowerLevel = await showDialog<int?>(
-      context: context,
-      builder: (BuildContext context) => ChangePowerLevel(
-        featureName: 'Tasks',
-        currentPowerLevelName:
-            maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
-        currentPowerLevel: currentPw,
-      ),
-    );
-    if (newPowerLevel == currentPw) return;
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
-    EasyLoading.show(status: L10n.of(context).changingPowerLevelOf('Updates'));
-    try {
-      await space.updateFeaturePowerLevels(
-        powerLevels.tasksKey(),
-        newPowerLevel,
-      );
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showToast(L10n.of(context).powerLevelSubmitted('Tasks'));
-    } catch (e, s) {
-      _log.severe('Failed to change power level of Tasks', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).failedToChangePowerLevel(e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-
-  Future<void> onTaskToggle(
-    BuildContext context,
-    TasksSettings tasks,
-    bool newVal,
-    ActerAppSettings appSettings,
-    Space space,
-  ) async {
-    EasyLoading.show(status: L10n.of(context).changingSettingOf('Tasks'));
-    try {
-      final updated = tasks.updater();
-      updated.active(newVal);
-      final builder = appSettings.updateBuilder();
-      builder.tasks(updated.build());
-      await space.updateAppSettings(builder);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showToast(L10n.of(context).changedSettingOf('Tasks'));
-    } catch (e, s) {
-      _log.severe('Failed to change setting of Tasks', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
-      EasyLoading.showError(
-        L10n.of(context).failedToToggleSettingOf('Tasks', e),
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
-}
-
-class ChangePowerLevel extends StatefulWidget {
-  final String featureName;
-  final int? currentPowerLevel;
-  final String currentPowerLevelName;
-
-  const ChangePowerLevel({
-    super.key,
-    required this.featureName,
-    required this.currentPowerLevelName,
-    this.currentPowerLevel,
-  });
-
-  @override
-  State<ChangePowerLevel> createState() => _ChangePowerLevelState();
-}
-
-class _ChangePowerLevelState extends State<ChangePowerLevel> {
-  final TextEditingController dropDownMenuCtrl = TextEditingController();
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'change power level form');
-
-  String? currentMemberStatus;
-  int? customValue;
-
-  @override
-  void initState() {
-    super.initState();
-    setState(() => currentMemberStatus = widget.currentPowerLevelName);
-  }
-
-  void _updateMembershipStatus(String? value) {
-    if (mounted) {
-      setState(() => currentMemberStatus = value);
-    }
-  }
-
-  void _newCustomLevel(String? value) {
-    if (mounted) {
-      setState(() {
-        if (value != null) {
-          customValue = int.tryParse(value);
-        } else {
-          customValue = null;
-        }
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final memberStatus = widget.currentPowerLevelName;
-    final currentPowerLevel = widget.currentPowerLevel;
-    return AlertDialog(
-      title: const Text('Update Power level'),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Change the power level of'),
-            Text(widget.featureName),
-            // Row(
-            //   children: [
-            currentPowerLevel != null
-                ? Text('from $memberStatus ($currentPowerLevel) to ')
-                : const Text('from default to'),
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: DropdownButtonFormField(
-                value: currentMemberStatus,
-                onChanged: _updateMembershipStatus,
-                items: const [
-                  DropdownMenuItem(
-                    value: 'Admin',
-                    child: Text('Admin'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Mod',
-                    child: Text('Moderator'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Regular',
-                    child: Text('Regular'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'None',
-                    child: Text('None'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Custom',
-                    child: Text('Custom'),
-                  ),
-                ],
-              ),
-            ),
-            Visibility(
-              visible: currentMemberStatus == 'Custom',
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'any number',
-                    labelText: 'Custom power level',
-                  ),
-                  onChanged: _newCustomLevel,
-                  initialValue: currentPowerLevel.toString(),
-                  keyboardType:
-                      const TextInputType.numberWithOptions(signed: true),
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly,
-                  ], // Only numbers
-                  validator: (String? value) {
-                    return currentMemberStatus == 'Custom' &&
-                            (value == null || int.tryParse(value) == null)
-                        ? 'You need to enter the custom value as a number.'
-                        : null;
-                  },
-                ),
-              ),
-            ),
-          ],
-          //   ),
-          // ],
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    return SettingsSection(
+      title: Text(L10n.of(context).powerLevelsTitle),
+      tiles: [
+        buildDefaultEventsTile(
+          context,
+          powerLevels,
+          space,
+          maxPowerLevel,
+          canEdit,
+          defaultDesc,
         ),
-      ),
-      actionsAlignment: MainAxisAlignment.spaceEvenly,
-      actions: <Widget>[
-        OutlinedButton(
-          onPressed: onCancel,
-          child: const Text('Cancel'),
+        buildDefaultInviteTile(
+          context,
+          powerLevels,
+          space,
+          maxPowerLevel,
+          canEdit,
+          defaultDesc,
         ),
-        OutlinedButton(
-          onPressed: onUnset,
-          child: const Text('Unset'),
+        buildDefaultKickTile(
+          context,
+          powerLevels,
+          space,
+          maxPowerLevel,
+          canEdit,
+          defaultDesc,
         ),
-        ActerPrimaryActionButton(
-          onPressed: onSubmit,
-          child: const Text('Submit'),
+        buildDefaultBanTile(
+          context,
+          powerLevels,
+          space,
+          maxPowerLevel,
+          canEdit,
+          defaultDesc,
+        ),
+        buildDefaultRedactTile(
+          context,
+          powerLevels,
+          space,
+          maxPowerLevel,
+          canEdit,
+          defaultDesc,
+        ),
+        buildCommentsTile(
+          context,
+          powerLevels,
+          space,
+          maxPowerLevel,
+          canEdit,
+          defaultDesc,
+        ),
+        buildAttachmentsTile(
+          context,
+          powerLevels,
+          space,
+          maxPowerLevel,
+          canEdit,
+          defaultDesc,
         ),
       ],
     );
   }
 
-  void onCancel() {
-    Navigator.pop(context, widget.currentPowerLevel);
+  SettingsTile buildDefaultEventsTile(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+    final currentLevel = powerLevels.eventsDefault();
+    final pwTextTL = maxPowerLevel == 100
+        ? powerLevelName(currentLevel)
+        : 'Custom ($currentLevel)';
+
+    return SettingsTile(
+      enabled: canEdit,
+      title: Text(lang.powerLevelPostEventsTitle),
+      description: Text(lang.powerLevelPostEventsDesc),
+      trailing: Text(pwTextTL),
+      onPressed: (context) => updateFeatureLevelChangeDialog(
+        context,
+        maxPowerLevel,
+        currentLevel,
+        space,
+        powerLevels,
+        'events_default',
+        lang.powerLevelPostEventsTitle,
+        isGlobal: true,
+      ),
+    );
   }
 
-  void onUnset() {
-    Navigator.pop(context, null);
+  SettingsTile buildDefaultKickTile(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+    final currentLevel = powerLevels.kick();
+    final pwTextTL = maxPowerLevel == 100
+        ? powerLevelName(currentLevel)
+        : 'Custom ($currentLevel)';
+
+    return SettingsTile(
+      enabled: canEdit,
+      title: Text(lang.powerLevelKickTitle),
+      description: Text(lang.powerLevelKickDesc),
+      trailing: Text(pwTextTL),
+      onPressed: (context) => updateFeatureLevelChangeDialog(
+        context,
+        maxPowerLevel,
+        currentLevel,
+        space,
+        powerLevels,
+        'kick',
+        lang.powerLevelKickTitle,
+        isGlobal: true,
+      ),
+    );
   }
 
-  void onSubmit() {
-    if (!_formKey.currentState!.validate()) return;
-    final freshMemberStatus = widget.currentPowerLevelName;
-    if (freshMemberStatus == currentMemberStatus) {
-      // nothing to do, all the same.
-      Navigator.pop(context, null);
-      return;
-    }
-    int? newValue;
-    if (currentMemberStatus == 'Admin') {
-      newValue = 100;
-    } else if (currentMemberStatus == 'Mod') {
-      newValue = 50;
-    } else if (currentMemberStatus == 'Regular') {
-      newValue = 0;
-    } else {
-      newValue = customValue ?? 0;
-    }
+  SettingsTile buildDefaultInviteTile(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+    final currentLevel = powerLevels.invite();
+    final pwTextTL = maxPowerLevel == 100
+        ? powerLevelName(currentLevel)
+        : 'Custom ($currentLevel)';
 
-    if (widget.currentPowerLevel == newValue) {
-      // nothing to be done.
-      newValue = null;
-    }
+    return SettingsTile(
+      enabled: canEdit,
+      title: Text(lang.powerLevelInviteTitle),
+      description: Text(lang.powerLevelInviteDesc),
+      trailing: Text(pwTextTL),
+      onPressed: (context) => updateFeatureLevelChangeDialog(
+        context,
+        maxPowerLevel,
+        currentLevel,
+        space,
+        powerLevels,
+        'invite',
+        lang.powerLevelInviteTitle,
+        isGlobal: true,
+      ),
+    );
+  }
 
-    Navigator.pop(context, newValue);
+  SettingsTile buildDefaultRedactTile(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+    final currentLevel = powerLevels.redact();
+    final pwTextTL = maxPowerLevel == 100
+        ? powerLevelName(currentLevel)
+        : 'Custom ($currentLevel)';
+
+    return SettingsTile(
+      enabled: canEdit,
+      title: Text(lang.powerLevelRedactTitle),
+      description: Text(lang.powerLevelRedactDesc),
+      trailing: Text(pwTextTL),
+      onPressed: (context) => updateFeatureLevelChangeDialog(
+        context,
+        maxPowerLevel,
+        currentLevel,
+        space,
+        powerLevels,
+        'redact',
+        lang.powerLevelRedactTitle,
+        isGlobal: true,
+      ),
+    );
+  }
+
+  SettingsTile buildDefaultBanTile(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+    final currentLevel = powerLevels.ban();
+    final pwTextTL = maxPowerLevel == 100
+        ? powerLevelName(currentLevel)
+        : 'Custom ($currentLevel)';
+
+    return SettingsTile(
+      enabled: canEdit,
+      title: Text(lang.powerLevelBanTitle),
+      description: Text(lang.powerLevelBanDesc),
+      trailing: Text(pwTextTL),
+      onPressed: (context) => updateFeatureLevelChangeDialog(
+        context,
+        maxPowerLevel,
+        currentLevel,
+        space,
+        powerLevels,
+        'ban',
+        lang.powerLevelBanDesc,
+        isGlobal: true,
+      ),
+    );
+  }
+
+  SettingsTile buildCommentsTile(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+    final powerLevel = powerLevels.comments();
+    final pwTextTL = maxPowerLevel == 100
+        ? powerLevelName(powerLevel)
+        : 'Custom ($powerLevel)';
+
+    return SettingsTile(
+      enabled: canEdit,
+      title: Text(lang.comments),
+      description: Text(
+        lang.minPowerLevelDesc(lang.comments),
+      ),
+      trailing: Text(pwTextTL),
+      onPressed: (context) => updateFeatureLevelChangeDialog(
+        context,
+        maxPowerLevel,
+        powerLevel,
+        space,
+        powerLevels,
+        powerLevels.commentsKey(),
+        lang.minPowerLevelDesc(lang.comments),
+        isGlobal: false,
+      ),
+    );
+  }
+
+  SettingsTile buildAttachmentsTile(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+    final powerLevel = powerLevels.attachments();
+    final pwTextTL = maxPowerLevel == 100
+        ? powerLevelName(powerLevel)
+        : 'Custom ($powerLevel)';
+
+    return SettingsTile(
+      enabled: canEdit,
+      title: Text(lang.attachments),
+      description: Text(
+        lang.minPowerLevelDesc(lang.attachments),
+      ),
+      trailing: Text(pwTextTL),
+      onPressed: (context) => updateFeatureLevelChangeDialog(
+        context,
+        maxPowerLevel,
+        powerLevel,
+        space,
+        powerLevels,
+        powerLevels.attachmentsKey(),
+        lang.minPowerLevelDesc(lang.attachments),
+        isGlobal: false,
+      ),
+    );
+  }
+
+  SettingsTile buildRsvpTile(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+    final powerLevel = powerLevels.rsvp();
+    final pwTextTL = maxPowerLevel == 100
+        ? powerLevelName(powerLevel)
+        : 'Custom ($powerLevel)';
+
+    return SettingsTile(
+      enabled: canEdit,
+      title: Text(lang.rsvpPowerLevel),
+      description: Text(
+        lang.minPowerLevelDesc(lang.rsvp),
+      ),
+      trailing: Text(pwTextTL),
+      onPressed: (context) => updateFeatureLevelChangeDialog(
+        context,
+        maxPowerLevel,
+        powerLevel,
+        space,
+        powerLevels,
+        powerLevels.rsvpKey(),
+        lang.minPowerLevelDesc(lang.rsvp),
+        isGlobal: false,
+      ),
+    );
+  }
+
+  SettingsSection buildNewsSection(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+
+    final currentPw = powerLevels.news();
+    final pwText = maxPowerLevel == 100
+        ? powerLevelName(currentPw)
+        : 'Custom ($currentPw)';
+    return SettingsSection(
+      title: Text(lang.boosts),
+      tiles: [
+        SettingsTile(
+          enabled: canEdit,
+          title: Text(lang.requiredPowerLevel),
+          description: Text(lang.minPowerLevelDesc(lang.boost)),
+          trailing: Text(currentPw != null ? pwText : defaultDesc),
+          onPressed: (context) => updateFeatureLevelChangeDialog(
+            context,
+            maxPowerLevel,
+            currentPw,
+            space,
+            powerLevels,
+            powerLevels.newsKey(),
+            lang.boosts,
+          ),
+        ),
+      ],
+    );
+  }
+
+  SettingsSection buildPinsSection(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+
+    final currentPw = powerLevels.pins();
+    final pwText = maxPowerLevel == 100
+        ? powerLevelName(currentPw)
+        : 'Custom ($currentPw)';
+    return SettingsSection(
+      title: Text(lang.pin),
+      tiles: [
+        SettingsTile(
+          enabled: canEdit,
+          title: Text(lang.requiredPowerLevel),
+          description: Text(
+            lang.minPowerLevelDesc(lang.pin),
+          ),
+          trailing: Text(currentPw != null ? pwText : defaultDesc),
+          onPressed: (context) => updateFeatureLevelChangeDialog(
+            context,
+            maxPowerLevel,
+            currentPw,
+            space,
+            powerLevels,
+            powerLevels.pinsKey(),
+            lang.pins,
+          ),
+        ),
+      ],
+    );
+  }
+
+  SettingsSection buildEventsSection(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+    final currentPw = powerLevels.events();
+    final pwText = maxPowerLevel == 100
+        ? powerLevelName(currentPw)
+        : 'Custom ($currentPw)';
+    return SettingsSection(
+      title: Text(lang.events),
+      tiles: [
+        SettingsTile(
+          enabled: canEdit,
+          title: Text(lang.adminPowerLevel),
+          description: Text(
+            lang.minPowerLevelDesc(lang.event),
+          ),
+          trailing: Text(currentPw != null ? pwText : defaultDesc),
+          onPressed: (context) => updateFeatureLevelChangeDialog(
+            context,
+            maxPowerLevel,
+            currentPw,
+            space,
+            powerLevels,
+            powerLevels.eventsKey(),
+            lang.events,
+          ),
+        ),
+        buildRsvpTile(
+          context,
+          powerLevels,
+          space,
+          maxPowerLevel,
+          canEdit,
+          defaultDesc,
+        ),
+      ],
+    );
+  }
+
+  SettingsSection buildTasksSection(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+
+    final taskListCurrentPw = powerLevels.taskLists();
+    final tasksCurrentPw = powerLevels.tasks();
+    final pwTextTL = maxPowerLevel == 100
+        ? powerLevelName(taskListCurrentPw)
+        : 'Custom ($taskListCurrentPw)';
+    final pwTextT = maxPowerLevel == 100
+        ? powerLevelName(tasksCurrentPw)
+        : 'Custom ($tasksCurrentPw)';
+    return SettingsSection(
+      title: Text(lang.tasks),
+      tiles: [
+        SettingsTile(
+          enabled: canEdit,
+          title: Text(lang.taskListPowerLevel),
+          description: Text(lang.minPowerLevelDesc(lang.taskList)),
+          trailing:
+              taskListCurrentPw != null ? Text(pwTextTL) : Text(defaultDesc),
+          onPressed: (context) => updateFeatureLevelChangeDialog(
+            context,
+            maxPowerLevel,
+            taskListCurrentPw,
+            space,
+            powerLevels,
+            powerLevels.taskListsKey(),
+            lang.taskList,
+          ),
+        ),
+        SettingsTile(
+          enabled: canEdit,
+          title: Text(lang.tasksPowerLevel),
+          description: Text(lang.minPowerLevelDesc(lang.tasks)),
+          trailing: tasksCurrentPw != null ? Text(pwTextT) : Text(defaultDesc),
+          onPressed: (context) => updateFeatureLevelChangeDialog(
+            context,
+            maxPowerLevel,
+            tasksCurrentPw,
+            space,
+            powerLevels,
+            powerLevels.tasksKey(),
+            lang.tasks,
+          ),
+        ),
+      ],
+    );
   }
 }

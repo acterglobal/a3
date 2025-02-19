@@ -22,7 +22,9 @@ mixin _$CreatePinState {
   List<PinAttachment> get pinAttachmentList =>
       throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of CreatePinState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $CreatePinStateCopyWith<CreatePinState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -52,6 +54,8 @@ class _$CreatePinStateCopyWithImpl<$Res, $Val extends CreatePinState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of CreatePinState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -101,6 +105,8 @@ class __$$CreatePinStateImplCopyWithImpl<$Res>
       _$CreatePinStateImpl _value, $Res Function(_$CreatePinStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of CreatePinState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -173,7 +179,9 @@ class _$CreatePinStateImpl implements _CreatePinState {
   int get hashCode => Object.hash(runtimeType, pinTitle, pinDescriptionParams,
       const DeepCollectionEquality().hash(_pinAttachmentList));
 
-  @JsonKey(ignore: true)
+  /// Create a copy of CreatePinState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$CreatePinStateImplCopyWith<_$CreatePinStateImpl> get copyWith =>
@@ -197,8 +205,11 @@ abstract class _CreatePinState implements CreatePinState {
       get pinDescriptionParams;
   @override
   List<PinAttachment> get pinAttachmentList;
+
+  /// Create a copy of CreatePinState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CreatePinStateImplCopyWith<_$CreatePinStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

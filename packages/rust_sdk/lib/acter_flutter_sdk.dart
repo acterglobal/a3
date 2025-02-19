@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logging/logging.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,7 +28,7 @@ RegExp logFileRegExp = RegExp('app_.*log');
 RegExp screenshotFileRegExp = RegExp('screenshot_.*png');
 
 Color convertColor(int? primary, Color fallback) =>
-    Color(primary ?? fallback.value);
+    primary != null ? Color(primary) : fallback;
 
 Completer<SharedPreferences>? _sharedPrefCompl;
 Completer<String>? _appDirCompl;

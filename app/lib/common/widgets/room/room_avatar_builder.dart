@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -24,10 +25,6 @@ class RoomAvatarBuilder extends ConsumerWidget {
         size: avatarSize,
       ),
     );
-    if (padding != null) {
-      return Padding(padding: padding!, child: child);
-    } else {
-      return child;
-    }
+    return padding.map((p) => Padding(padding: p, child: child)) ?? child;
   }
 }

@@ -1,14 +1,16 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/setup.dart';
 import 'package:acter/features/calendar_sync/providers/events_to_sync_provider.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter/router/router.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:device_calendar/device_calendar.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:device_calendar/device_calendar.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,14 +26,12 @@ const calendarSyncKey = 'calendar_sync_id';
 const calendarSyncIdsKey = 'calendar_sync_ids';
 
 // internal state
-
-// ignore: unnecessary_late
-late DeviceCalendarPlugin deviceCalendar = DeviceCalendarPlugin();
+DeviceCalendarPlugin deviceCalendar = DeviceCalendarPlugin();
 ProviderSubscription<AsyncValue<List<EventAndRsvp>>>? _subscription;
 
 Future<bool> _isEnabled() async {
   try {
-    return (await rootNavKey.currentContext!
+    return (await mainProviderContainer
         .read(asyncIsActiveProvider(LabsFeature.deviceCalendarSync).future));
   } catch (e, s) {
     _log.severe('Reading current context failed', e, s);
@@ -68,7 +68,7 @@ Future<void> initCalendarSync({bool ignoreRejection = false}) async {
   final hasPermission = await deviceCalendar.hasPermissions();
 
   if (hasPermission.data == false) {
-    if (!ignoreRejection && (preferences.getBool(rejectionKey) ?? false)) {
+    if (!ignoreRejection && preferences.getBool(rejectionKey) == true) {
       _log.warning('user previously rejected calendar sync. quitting');
       return;
     }
@@ -86,26 +86,71 @@ Future<void> initCalendarSync({bool ignoreRejection = false}) async {
   // clear if it existed before
   _subscription?.close();
   // start listening
-  _subscription =
-      ProviderScope.containerOf(rootNavKey.currentContext!, listen: true)
-          .listen(
+  _subscription = mainProviderContainer.listen(
     eventsToSyncProvider,
     (prev, next) async {
-      if (!next.hasValue) {
+      final events = next.valueOrNull;
+      if (events == null) {
         _log.info('ignoring state change without value');
         return;
       }
-      // FIXME: we probably want to debounce this ...
-      await _refreshCalendar(calendarId, next.valueOrNull ?? []);
+      scheduleRefresh(calendarId, events);
     },
     fireImmediately: true,
   );
+}
+
+Completer<void>? _completer;
+Timer? _debounce;
+(String, List<EventAndRsvp>)? _next;
+bool _running = false;
+
+// schedules an update of the calender
+// makes sure there is only one running at a time
+@visibleForTesting
+Future<void> scheduleRefresh(
+  String calendarId,
+  List<EventAndRsvp> events,
+) {
+  _debounce?.cancel(); // cancel the current debounce;
+  _completer ??= Completer<void>();
+  _debounce = Timer(const Duration(seconds: 3), () async {
+    _debounce = null;
+    try {
+      await _refreshLoop();
+    } finally {
+      _completer?.complete();
+      _completer = null;
+    }
+  });
+  _next = (calendarId, events);
+  return _completer!.future;
+}
+
+Future<void> _refreshLoop() async {
+  if (_running) return;
+  _running = true;
+  try {
+    while (true) {
+      final next = _next;
+      _next = null; // clear it
+      if (next == null) {
+        break;
+      }
+
+      final (calendarId, events) = next;
+      await _refreshCalendar(calendarId, events);
+    }
+  } finally {
+    _running = false;
+  }
 }
 
 Future<void> _refreshCalendar(
   String calendarId,
   List<EventAndRsvp> events,
 ) async {
+  _log.info('Refreshing calendar $calendarId with ${events.length} items');
   final preferences = await sharedPrefs();
   final Map<String, String> currentLinks = {};
   // reading the existing  linking
@@ -117,6 +162,7 @@ Future<void> _refreshCalendar(
   final currentLinkKeys = currentLinks.values;
   List<Event> foundEvents = [];
   if (currentLinkKeys.isNotEmpty) {
+    _log.info('Current links: $calendarId: $currentLinkKeys');
     final foundEventsResult = await deviceCalendar.retrieveEvents(
       calendarId,
       RetrieveEventsParams(eventIds: currentLinks.values.toList()),
@@ -133,9 +179,9 @@ Future<void> _refreshCalendar(
     final calEvent = eventAndRsvp.event;
     final rsvp = eventAndRsvp.rsvp;
     final calEventId = calEvent.eventId().toString();
+    final localId = currentLinks[calEventId];
     Event? localEvent;
-    if (currentLinks.containsKey(calEventId)) {
-      final localId = currentLinks[calEventId];
+    if (localId != null) {
       localEvent = foundEvents.cast<Event?>().firstWhere(
             (e) => e?.eventId == localId,
             orElse: () => null,
@@ -143,12 +189,14 @@ Future<void> _refreshCalendar(
     }
 
     if (localEvent == null) {
+      _log.info('$calendarId: creating new items for $calEventId');
       localEvent = Event(calendarId);
     } else {
+      _log.info('$calendarId: updating item for $calEventId');
       foundEventIds.add(localEvent.eventId);
     }
 
-    localEvent = await _updateEventDetails(calEvent, rsvp, localEvent);
+    localEvent = await updateEventDetails(calEvent, rsvp, localEvent);
     final localRequest = await deviceCalendar.createOrUpdateEvent(localEvent);
     if (localRequest == null) {
       _log.severe('Updating $calEventId failed. No response. skipping');
@@ -175,7 +223,7 @@ Future<void> _refreshCalendar(
     newMapping,
   );
 
-  // time to clean up events that we aren't tracking anymore
+  // time to clean up events that we aren’t tracking anymore
   for (final toDelete in foundEvents
       .where((e) => e.eventId != null && !foundEventIds.contains(e.eventId))) {
     _log.info('Deleting event ${toDelete.eventId}');
@@ -186,14 +234,14 @@ Future<void> _refreshCalendar(
   }
 }
 
-Future<Event> _updateEventDetails(
+@visibleForTesting
+Future<Event> updateEventDetails(
   CalendarEvent acterEvent,
   RsvpStatusTag? rsvp,
   Event localEvent,
 ) async {
   localEvent.title = acterEvent.title();
   localEvent.description = acterEvent.description()?.body();
-  localEvent.reminders = [Reminder(minutes: 10)];
   localEvent.start = TZDateTime.from(
     toDartDatetime(acterEvent.utcStart()),
     UTC,
@@ -202,11 +250,15 @@ Future<Event> _updateEventDetails(
     toDartDatetime(acterEvent.utcEnd()),
     UTC,
   );
-  localEvent.status = switch (rsvp) {
-    RsvpStatusTag.Yes => EventStatus.Confirmed,
-    RsvpStatusTag.Maybe => EventStatus.Tentative,
-    _ => EventStatus.None
+  final (status, reminders) = switch (rsvp) {
+    RsvpStatusTag.Yes => (EventStatus.Confirmed, [Reminder(minutes: 10)]),
+    RsvpStatusTag.Maybe => (EventStatus.Tentative, [Reminder(minutes: 10)]),
+    RsvpStatusTag.No => (EventStatus.Canceled, null),
+    null => (EventStatus.None, null),
   };
+
+  localEvent.status = status;
+  localEvent.reminders = reminders;
   return localEvent;
 }
 
@@ -219,23 +271,12 @@ Future<List<String>> _findActerCalendars() async {
   if (calendars == null) {
     return [];
   }
-  if (Platform.isAndroid) {
-    return calendars
-        .where(
-      (c) =>
-          c.accountType == 'LOCAL' &&
-          c.accountName == 'Acter' &&
-          c.name == 'Acter',
-    )
-        .map((c) {
-      _log.info('Scheduling to delete ${c.id} (${c.accountType})');
-      return c.id!;
-    }).toList();
-  }
   return calendars
-      .where((c) => c.accountType == 'Local' && c.name == 'Acter')
+      .where(
+    (c) => c.accountType?.toLowerCase() == 'local' && c.name == 'Acter',
+  )
       .map((c) {
-    _log.info('Scheduling to delete ${c.id} (${c.accountType})');
+    _log.info('Found ${c.id} (${c.accountType})');
     return c.id!;
   }).toList();
 }

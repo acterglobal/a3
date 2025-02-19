@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/tasks/models/tasks.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Client, Task, TaskList;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -19,10 +20,11 @@ class TaskItemsListNotifier
     List<String> openTasks = [];
     List<String> doneTasks = [];
     for (final task in tasks) {
+      final eventId = task.eventIdStr();
       if (task.isDone()) {
-        doneTasks.add(task.eventIdStr());
+        doneTasks.add(eventId);
       } else {
-        openTasks.add(task.eventIdStr());
+        openTasks.add(eventId);
       }
     }
 
@@ -68,7 +70,7 @@ class TaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String> {
   @override
   Future<TaskList> build(String arg) async {
     // Load initial todo list from the remote repository
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     final taskList = await _refresh(client, arg);
     _listener = taskList.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen(
@@ -123,14 +125,14 @@ class AsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
 
   @override
   Future<List<TaskList>> build() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
 
     //GET ALL TASKS LIST
-    _listener = client.subscribeStream('tasks');
+    _listener = client.subscribeSectionStream('tasks');
 
     _poller = _listener.listen(
       (data) async {
-        state = await AsyncValue.guard(() => _getTasksList(client));
+        state = await AsyncValue.guard(() async => await _getTasksList(client));
       },
       onError: (e, s) {
         _log.severe('all tasks stream errored', e, s);

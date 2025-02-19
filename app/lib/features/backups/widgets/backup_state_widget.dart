@@ -6,8 +6,8 @@ import 'package:acter/features/backups/providers/backup_state_providers.dart';
 import 'package:acter/features/backups/types.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -16,37 +16,35 @@ final _log = Logger('a3::backups::widgets::backup_state');
 
 class BackupStateWidget extends ConsumerWidget {
   final bool allowDisabling;
-  const BackupStateWidget({super.key, this.allowDisabling = false});
+
+  const BackupStateWidget({
+    super.key,
+    this.allowDisabling = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    switch (ref.watch(backupStateProvider)) {
-      case RecoveryState.enabled:
-        if (allowDisabling) {
-          return renderCanResetAction(context, ref);
-        } else {
-          // nothing to see here. all good.
-          return const SizedBox.shrink();
-        }
-      case RecoveryState.incomplete:
-        return renderRecoverAction(context, ref);
-      case RecoveryState.disabled:
-        return renderStartAction(context, ref);
-      default:
-        return renderUnknown(context, ref);
-    }
+    return switch (ref.watch(backupStateProvider)) {
+      RecoveryState.enabled => allowDisabling
+          ? renderCanResetAction(context, ref)
+          : const SizedBox.shrink(), // nothing to see here. all good.
+      RecoveryState.incomplete => renderRecoverAction(context, ref),
+      RecoveryState.disabled => renderStartAction(context, ref),
+      _ => renderUnknown(context, ref),
+    };
   }
 
   Widget renderUnknown(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return Skeletonizer(
       child: Card(
         child: ListTile(
           leading: const Icon(Icons.warning),
-          title: Text(L10n.of(context).encryptionBackupMissing),
-          subtitle: Text(L10n.of(context).encryptionBackupMissingExplainer),
+          title: Text(lang.encryptionBackupMissing),
+          subtitle: Text(lang.encryptionBackupMissingExplainer),
           trailing: OutlinedButton(
             onPressed: () {},
-            child: Text(L10n.of(context).loading),
+            child: Text(lang.loading),
           ),
         ),
       ),
@@ -54,36 +52,38 @@ class BackupStateWidget extends ConsumerWidget {
   }
 
   Widget renderCanResetAction(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return Card(
       child: ListTile(
         leading: const Icon(Atlas.check_website_thin),
-        title: Text(L10n.of(context).encryptionBackupEnabled),
-        subtitle: Text(L10n.of(context).encryptionBackupEnabledExplainer),
+        title: Text(lang.encryptionBackupEnabled),
+        subtitle: Text(lang.encryptionBackupEnabledExplainer),
         trailing: OutlinedButton.icon(
           icon: const Icon(Icons.toggle_on_outlined),
           onPressed: () => showConfirmResetDialog(context, ref),
-          label: Text(L10n.of(context).reset),
+          label: Text(lang.reset),
         ),
       ),
     );
   }
 
   Widget renderRecoverAction(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return Card(
       child: ListTile(
         leading: const Icon(Icons.warning),
-        title: Text(L10n.of(context).encryptionBackupProvideKey),
-        subtitle: Text(L10n.of(context).encryptionBackupProvideKeyExplainer),
+        title: Text(lang.encryptionBackupProvideKey),
+        subtitle: Text(lang.encryptionBackupProvideKeyExplainer),
         trailing: Wrap(
           children: [
             OutlinedButton(
               onPressed: () => showProviderRecoveryKeyDialog(context, ref),
-              child: Text(L10n.of(context).encryptionBackupProvideKeyAction),
+              child: Text(lang.encryptionBackupProvideKeyAction),
             ),
             if (allowDisabling)
               OutlinedButton(
                 onPressed: () => showConfirmResetDialog(context, ref),
-                child: Text(L10n.of(context).reset),
+                child: Text(lang.reset),
               ),
           ],
         ),
@@ -92,24 +92,26 @@ class BackupStateWidget extends ConsumerWidget {
   }
 
   Widget renderStartAction(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return Card(
       child: ListTile(
         leading: const Icon(Icons.warning),
-        title: Text(L10n.of(context).encryptionBackupNoBackup),
-        subtitle: Text(L10n.of(context).encryptionBackupNoBackupExplainer),
+        title: Text(lang.encryptionBackupNoBackup),
+        subtitle: Text(lang.encryptionBackupNoBackupExplainer),
         trailing: OutlinedButton(
           onPressed: () => startAction(context, ref),
-          child: Text(L10n.of(context).encryptionBackupNoBackupAction),
+          child: Text(lang.encryptionBackupNoBackupAction),
         ),
       ),
     );
   }
 
   void startAction(BuildContext context, WidgetRef ref) async {
-    EasyLoading.show(status: L10n.of(context).encryptionBackupEnabling);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.encryptionBackupEnabling);
     String secret;
     try {
-      final manager = ref.read(backupManagerProvider);
+      final manager = await ref.read(backupManagerProvider.future);
       secret = await manager.enable();
     } catch (e, s) {
       _log.severe('Failed to enable backup', e, s);
@@ -118,7 +120,7 @@ class BackupStateWidget extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).encryptionBackupEnablingFailed(e),
+        lang.encryptionBackupEnablingFailed(e),
         duration: const Duration(seconds: 5),
       );
       return;
@@ -137,10 +139,10 @@ class BackupStateWidget extends ConsumerWidget {
     return Card(
       child: Column(
         children: [
-          const LinearProgressIndicator(
-            semanticsLabel: 'in progress',
+          const LinearProgressIndicator(semanticsLabel: 'in progress'),
+          ListTile(
+            title: Text(currentState.toString()),
           ),
-          ListTile(title: Text('$currentState')),
         ],
       ),
     );

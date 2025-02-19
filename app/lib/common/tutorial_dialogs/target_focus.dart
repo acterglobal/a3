@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 TargetFocus targetFocus({
   required String identify,
@@ -28,6 +28,7 @@ TargetFocus targetFocus({
       TargetContent(
         align: contentAlign,
         builder: (context, controller) {
+          final lang = L10n.of(context);
           return Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,15 +62,13 @@ TargetFocus targetFocus({
                   if (!isFirst)
                     TextButton(
                       onPressed: () => controller.previous(),
-                      child: Text(L10n.of(context).previous),
+                      child: Text(lang.previous),
                     )
                   else
                     const Spacer(),
                   TextButton(
                     onPressed: () => controller.next(),
-                    child: Text(
-                      isLast ? L10n.of(context).finish : L10n.of(context).next,
-                    ),
+                    child: Text(isLast ? lang.finish : lang.next),
                   ),
                 ],
               ),

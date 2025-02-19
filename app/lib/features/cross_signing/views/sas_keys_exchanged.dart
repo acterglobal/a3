@@ -67,19 +67,16 @@ class SasKeysExchangedView extends StatelessWidget {
   }
 
   Widget buildTitleBar(BuildContext context) {
+    final lang = L10n.of(context);
     // has close button
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(10),
-          child: isDesktop ? const Icon(Atlas.laptop) : const Icon(Atlas.phone),
+          child: Icon(isDesktop ? Atlas.laptop : Atlas.phone),
         ),
         const SizedBox(width: 5),
-        Text(
-          isVerifier
-              ? L10n.of(context).verifyOtherSession
-              : L10n.of(context).verifyThisSession,
-        ),
+        Text(isVerifier ? lang.verifyOtherSession : lang.verifyThisSession),
         const Spacer(),
         Padding(
           padding: const EdgeInsets.only(right: 10),
@@ -98,40 +95,42 @@ class SasKeysExchangedView extends StatelessWidget {
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       padding: EdgeInsets.zero,
-      children: List.generate(emojis.length, (index) {
-        final emoji = emojis.elementAt(index);
-        return GridTile(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Text(
-                String.fromCharCode(emoji.symbol()),
-                style: const TextStyle(fontSize: 32),
-                textAlign: TextAlign.center,
+      children: emojis
+          .map(
+            (emoji) => GridTile(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    String.fromCharCode(emoji.symbol()),
+                    style: const TextStyle(fontSize: 32),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    emoji.description(),
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-              Text(
-                emoji.description(),
-                maxLines: 1,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        );
-      }),
+            ),
+          )
+          .toList(),
     );
   }
 
   Widget buildActionButtons(BuildContext context) {
+    final lang = L10n.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         ActerDangerActionButton(
           onPressed: () => onMismatch(context),
-          child: Text(L10n.of(context).verificationSasDoNotMatch),
+          child: Text(lang.verificationSasDoNotMatch),
         ),
         ActerPrimaryActionButton(
-          child: Text(L10n.of(context).verificationSasMatch),
+          child: Text(lang.verificationSasMatch),
           onPressed: () => onMatch(context),
         ),
       ],

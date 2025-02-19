@@ -4,12 +4,19 @@ use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStr
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::{Room, RoomMember},
+};
+use matrix_sdk_base::{
+    ruma::{
+        api::client::user_directory::search_users,
+        events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
+        OwnedRoomId, OwnedUserId, RoomId,
+    },
     RoomMemberships, RoomState,
 };
-use ruma_client_api::user_directory::search_users;
-use ruma_common::{OwnedRoomId, OwnedUserId, RoomId};
-use ruma_events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::{
+    collections::BTreeMap,
+    time::{SystemTime, UNIX_EPOCH},
+};
 use tokio::time::{sleep, Duration};
 use tokio_retry::{strategy::FixedInterval, Retry};
 use tracing::{error, info};
@@ -82,7 +89,7 @@ impl Invitation {
         if !matches!(room.state(), RoomState::Invited) {
             bail!("Unable to join a room we are not invited to");
         }
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let strategy = FixedInterval::from_millis(2000).take(5);
@@ -106,7 +113,7 @@ impl Invitation {
         if !matches!(room.state(), RoomState::Invited) {
             bail!("Unable to get a room we are not invited");
         }
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let mut delay = 2;
@@ -322,39 +329,54 @@ impl Client {
             .await?
     }
 
-    pub async fn suggested_users_to_invite(&self, room_name: String) -> Result<Vec<UserProfile>> {
+    pub async fn suggested_users(&self, room_name: Option<String>) -> Result<Vec<UserProfile>> {
         let me = self.clone();
-        let room_id = RoomId::parse(room_name)?;
-        let Some(room) = self.core.client().get_room(&room_id) else {
-            return Ok(vec![]);
-        };
         RUNTIME
             .spawn(async move {
                 // get member list of target room
-                let members = room.members(RoomMemberships::ACTIVE).await?;
-                let room_members = members
-                    .iter()
-                    .map(|x| x.user_id().to_owned())
-                    .collect::<Vec<OwnedUserId>>();
+                let local_members = if let Some(room_name) = room_name {
+                    if let Some(room) = me.core.client().get_room(&RoomId::parse(room_name)?) {
+                        room.members(RoomMemberships::all())
+                            .await?
+                            .iter()
+                            .map(|x| x.user_id().to_owned())
+                            .collect::<Vec<OwnedUserId>>()
+                    } else {
+                        // but we always ignore ourselves
+                        vec![me.user_id()?]
+                    }
+                } else {
+                    // but we always ignore ourselves
+                    vec![me.user_id()?]
+                };
                 // iterate my rooms to get user list
-                let mut profiles: Vec<UserProfile> = vec![];
-                if let Some(convo) = me.convo_typed(&room_id).await {
-                    let members = convo.members(RoomMemberships::ACTIVE).await?;
-                    for member in members {
+                let mut profiles: BTreeMap<OwnedUserId, (RoomMember, Vec<String>)> =
+                    Default::default();
+                for room in me.rooms().iter().filter(|r| r.are_members_synced()) {
+                    let members = room.members(RoomMemberships::ACTIVE).await?;
+                    let room_id = room.room_id().to_string();
+                    for member in members.into_iter() {
                         let user_id = member.user_id().to_owned();
                         // exclude user that belongs to target room
-                        if room_members.contains(&user_id) {
+                        if local_members.contains(&user_id) {
                             continue;
                         }
-                        // exclude user that already selected
-                        if profiles.iter().any(|x| x.user_id() == user_id) {
-                            continue;
-                        }
-                        let user_profile = UserProfile::from_member(member);
-                        profiles.push(user_profile);
+                        profiles
+                            .entry(user_id)
+                            .and_modify(|(m, rooms)| {
+                                rooms.push(room_id.clone());
+                            })
+                            .or_insert_with(|| (member, vec![room_id.clone()]));
                     }
                 }
-                Ok(profiles)
+                let mut found_profiles = profiles
+                    .into_values()
+                    .map(|(m, rooms)| UserProfile::with_shared_rooms(m, rooms))
+                    .collect::<Vec<_>>();
+
+                found_profiles.sort_by_cached_key(|a| -(a.shared_rooms().len() as i64)); // reverse sort
+
+                Ok(found_profiles)
             })
             .await?
     }

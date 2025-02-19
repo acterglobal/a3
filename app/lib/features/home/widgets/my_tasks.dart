@@ -1,6 +1,6 @@
-import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/task_providers.dart';
+import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/features/tasks/widgets/task_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -21,6 +21,7 @@ class MyTasksSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final tasksLoader = ref.watch(myOpenTasksProvider);
     return tasksLoader.when(
       data: (tasks) {
@@ -28,8 +29,14 @@ class MyTasksSection extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            myTaskHeader(context),
+            SectionHeader(
+              title: lang.myTasks,
+              showSectionBg: false,
+              isShowSeeAllButton: true,
+              onTapSeeAll: () => context.pushNamed(Routes.tasks.name),
+            ),
             ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               separatorBuilder: (context, index) => const Divider(
@@ -42,9 +49,7 @@ class MyTasksSection extends ConsumerWidget {
                   taskListId: tasks[index].taskListIdStr(),
                   taskId: tasks[index].eventIdStr(),
                   showBreadCrumb: true,
-                  onDone: () => EasyLoading.showToast(
-                    L10n.of(context).markedAsDone,
-                  ),
+                  onDone: () => EasyLoading.showToast(lang.markedAsDone),
                 );
               },
             ),
@@ -53,25 +58,9 @@ class MyTasksSection extends ConsumerWidget {
       },
       error: (e, s) {
         _log.severe('Failed to load open tasks', e, s);
-        return Text(L10n.of(context).loadingTasksFailed(e));
+        return Text(lang.loadingTasksFailed(e));
       },
-      loading: () => Text(L10n.of(context).loading),
-    );
-  }
-
-  Widget myTaskHeader(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-          L10n.of(context).myTasks,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const Spacer(),
-        ActerInlineTextButton(
-          onPressed: () => context.pushNamed(Routes.tasks.name),
-          child: Text(L10n.of(context).seeAll),
-        ),
-      ],
+      loading: () => Text(lang.loading),
     );
   }
 }

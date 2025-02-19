@@ -29,8 +29,8 @@ class InfoCommand extends Command {
     print(' - Number of current sessions found: ${appInfo.sessions.length}');
     if (appInfo.accounts.isNotEmpty) {
       print(' - Data of sessions found: ${appInfo.accounts.length}');
-      for (final a in appInfo.accounts) {
-        print('    * $a');
+      for (final acc in appInfo.accounts) {
+        print('    * $acc');
       }
     }
     exit(0);

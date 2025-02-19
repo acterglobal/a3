@@ -43,7 +43,7 @@ async fn bookmarks_e2e() -> Result<()> {
     assert!(bookmarks.entries("news".to_owned()).is_empty());
     assert!(bookmarks.entries("events".to_owned()).is_empty());
 
-    // adding it again, doesn't actually add it again
+    // adding it again, doesn’t actually add it again
     bookmarks.add("pins".to_owned(), "AsdfG".to_owned()).await?;
     let fetch_account = account.clone();
     let bookmarks = Retry::spawn(retry_strategy.clone(), move || {

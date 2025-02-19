@@ -1,6 +1,6 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/widgets/email_address_card.dart';
@@ -27,8 +27,9 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return AlertDialog(
-      title: Text(L10n.of(context).pleaseProvideEmailAddressToAdd),
+      title: Text(lang.pleaseProvideEmailAddressToAdd),
       // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
@@ -40,9 +41,7 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
               child: TextFormField(
                 controller: newEmailAddress,
                 // FIXME: should have an email-addres-validator ,
-                decoration: InputDecoration(
-                  hintText: L10n.of(context).emailAddress,
-                ),
+                decoration: InputDecoration(hintText: lang.emailAddress),
               ),
             ),
           ],
@@ -51,11 +50,11 @@ class _AddEmailAddrState extends State<AddEmailAddr> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
-          child: Text(L10n.of(context).cancel),
+          child: Text(lang.cancel),
         ),
         ActerPrimaryActionButton(
           onPressed: () => onSubmit(context),
-          child: Text(L10n.of(context).submit),
+          child: Text(lang.submit),
         ),
       ],
     );
@@ -78,18 +77,20 @@ class EmailAddressesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final addressesLoader = ref.watch(emailAddressesProvider);
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: !context.isLargeScreen,
-          title: Text(L10n.of(context).emailAddresses),
+          title: Text(lang.emailAddresses),
           centerTitle: true,
           actions: [
             IconButton(
               onPressed: () {
                 ref.invalidate(emailAddressesProvider);
+                EasyLoading.showToast(lang.refreshing);
               },
               icon: const Icon(Atlas.refresh_account_arrows_thin),
             ),
@@ -104,7 +105,7 @@ class EmailAddressesPage extends ConsumerWidget {
           error: (e, s) {
             _log.severe('Failed to load email addresses', e, s);
             return Center(
-              child: Text(L10n.of(context).errorLoadingEmailAddresses(e)),
+              child: Text(lang.errorLoadingEmailAddresses(e)),
             );
           },
           loading: () => const Center(
@@ -116,6 +117,8 @@ class EmailAddressesPage extends ConsumerWidget {
   }
 
   Widget buildAddresses(BuildContext context, EmailAddresses addresses) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     if (addresses.unconfirmed.isNotEmpty) {
       final slivers = [
         SliverToBoxAdapter(
@@ -131,8 +134,8 @@ class EmailAddressesPage extends ConsumerWidget {
                   child: Icon(Atlas.envelope_question_thin),
                 ),
                 Text(
-                  L10n.of(context).awaitingConfirmation,
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  lang.awaitingConfirmation,
+                  style: textTheme.headlineSmall,
                 ),
               ],
             ),
@@ -145,8 +148,8 @@ class EmailAddressesPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              L10n.of(context).awaitingConfirmationDescription,
-              style: Theme.of(context).textTheme.bodyMedium,
+              lang.awaitingConfirmationDescription,
+              style: textTheme.bodyMedium,
             ),
           ),
         ),
@@ -167,8 +170,8 @@ class EmailAddressesPage extends ConsumerWidget {
                 vertical: 15,
               ),
               child: Text(
-                L10n.of(context).confirmedEmailAddresses,
-                style: Theme.of(context).textTheme.headlineSmall,
+                lang.confirmedEmailAddresses,
+                style: textTheme.headlineSmall,
               ),
             ),
           ),
@@ -193,7 +196,7 @@ class EmailAddressesPage extends ConsumerWidget {
               vertical: 15,
             ),
             child: Text(
-              L10n.of(context).confirmedEmailAddressesDescription,
+              lang.confirmedEmailAddressesDescription,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
@@ -210,13 +213,14 @@ class EmailAddressesPage extends ConsumerWidget {
   }
 
   Future<void> addEmailAddress(BuildContext context, WidgetRef ref) async {
-    final account = ref.read(accountProvider);
+    final lang = L10n.of(context);
     final newValue = await showDialog<String>(
       context: context,
       builder: (BuildContext context) => const AddEmailAddr(),
     );
     if (newValue != null && context.mounted) {
-      EasyLoading.show(status: L10n.of(context).addingEmailAddress);
+      EasyLoading.show(status: lang.addingEmailAddress);
+      final account = await ref.read(accountProvider.future);
       try {
         await account.request3pidManagementTokenViaEmail(newValue);
         ref.invalidate(emailAddressesProvider);
@@ -224,7 +228,7 @@ class EmailAddressesPage extends ConsumerWidget {
           EasyLoading.dismiss();
           return;
         }
-        EasyLoading.showToast(L10n.of(context).pleaseCheckYourInbox);
+        EasyLoading.showToast(lang.pleaseCheckYourInbox);
       } catch (e, s) {
         _log.severe('Failed to submit email address', e, s);
         if (!context.mounted) {
@@ -232,7 +236,7 @@ class EmailAddressesPage extends ConsumerWidget {
           return;
         }
         EasyLoading.showError(
-          L10n.of(context).failedToSubmitEmail(e),
+          lang.failedToSubmitEmail(e),
           duration: const Duration(seconds: 3),
         );
       }

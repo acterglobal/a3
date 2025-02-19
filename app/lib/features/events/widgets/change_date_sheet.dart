@@ -2,15 +2,16 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::event::change::date');
+final _log = Logger('a3::cal_event::change_date');
 
 void showChangeDateBottomSheet({
   required BuildContext context,
@@ -21,13 +22,10 @@ void showChangeDateBottomSheet({
     showDragHandle: true,
     useSafeArea: true,
     context: context,
-    constraints: const BoxConstraints(maxHeight: 500),
-    builder: (context) {
-      return ChangeDateSheet(
-        bottomSheetTitle: bottomSheetTitle,
-        calendarId: calendarId,
-      );
-    },
+    builder: (context) => ChangeDateSheet(
+      bottomSheetTitle: bottomSheetTitle,
+      calendarId: calendarId,
+    ),
   );
 }
 
@@ -60,13 +58,13 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) async {
       _setEditEventData();
     });
   }
 
   // Apply existing data to fields
-  void _setEditEventData() async {
+  Future<void> _setEditEventData() async {
     final calendarEvent =
         await ref.read(calendarEventProvider(widget.calendarId).future);
     if (!mounted) return;
@@ -91,13 +89,14 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       constraints: const BoxConstraints(maxWidth: 500),
       child: Column(
         children: [
           Text(
-            widget.bottomSheetTitle ?? L10n.of(context).changeDate,
+            widget.bottomSheetTitle ?? lang.changeDate,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium,
           ),
@@ -109,12 +108,12 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
             children: [
               OutlinedButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(L10n.of(context).cancel),
+                child: Text(lang.cancel),
               ),
               const SizedBox(width: 20),
               ActerPrimaryActionButton(
                 onPressed: _handleUpdateEvent,
-                child: Text(L10n.of(context).save),
+                child: Text(lang.save),
               ),
             ],
           ),
@@ -125,6 +124,7 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
 
   // Event date and time field
   Widget _eventDateAndTime() {
+    final lang = L10n.of(context);
     return Form(
       key: _formKey,
       child: Column(
@@ -135,23 +135,21 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(L10n.of(context).startDate),
+                    Text(lang.startDate),
                     const SizedBox(height: 10),
                     TextFormField(
                       readOnly: true,
                       keyboardType: TextInputType.text,
                       controller: _startDateController,
                       decoration: InputDecoration(
-                        hintText: L10n.of(context).selectDate,
+                        hintText: lang.selectDate,
                         suffixIcon: const Icon(Icons.calendar_month_outlined),
                       ),
                       onTap: () => _selectDate(isStartDate: true),
-                      validator: (value) {
-                        if (value != null && value.isEmpty) {
-                          return L10n.of(context).startDateRequired;
-                        }
-                        return null;
-                      },
+                      // required field, space not allowed
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? lang.startDateRequired
+                          : null,
                     ),
                   ],
                 ),
@@ -161,23 +159,21 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(L10n.of(context).startTime),
+                    Text(lang.startTime),
                     const SizedBox(height: 10),
                     TextFormField(
                       readOnly: true,
                       keyboardType: TextInputType.text,
                       controller: _startTimeController,
                       decoration: InputDecoration(
-                        hintText: L10n.of(context).selectTime,
+                        hintText: lang.selectTime,
                         suffixIcon: const Icon(Icons.access_time_outlined),
                       ),
                       onTap: () => _selectTime(isStartTime: true),
-                      validator: (value) {
-                        if (value != null && value.isEmpty) {
-                          return L10n.of(context).startTimeRequired;
-                        }
-                        return null;
-                      },
+                      // required field, space not allowed
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? lang.startTimeRequired
+                          : null,
                     ),
                   ],
                 ),
@@ -191,23 +187,21 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(L10n.of(context).endDate),
+                    Text(lang.endDate),
                     const SizedBox(height: 10),
                     TextFormField(
                       readOnly: true,
                       keyboardType: TextInputType.text,
                       controller: _endDateController,
                       decoration: InputDecoration(
-                        hintText: L10n.of(context).selectDate,
+                        hintText: lang.selectDate,
                         suffixIcon: const Icon(Icons.calendar_month_outlined),
                       ),
                       onTap: () => _selectDate(isStartDate: false),
-                      validator: (value) {
-                        if (value != null && value.isEmpty) {
-                          return L10n.of(context).endDateRequired;
-                        }
-                        return null;
-                      },
+                      // required field, space not allowed
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? lang.endDateRequired
+                          : null,
                     ),
                   ],
                 ),
@@ -217,23 +211,21 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(L10n.of(context).endTime),
+                    Text(lang.endTime),
                     const SizedBox(height: 10),
                     TextFormField(
                       readOnly: true,
                       keyboardType: TextInputType.text,
                       controller: _endTimeController,
                       decoration: InputDecoration(
-                        hintText: L10n.of(context).selectTime,
+                        hintText: lang.selectTime,
                         suffixIcon: const Icon(Icons.access_time_outlined),
                       ),
                       onTap: () => _selectTime(isStartTime: false),
-                      validator: (value) {
-                        if (value != null && value.isEmpty) {
-                          return L10n.of(context).endTimeRequired;
-                        }
-                        return null;
-                      },
+                      // required field, space not allowed
+                      validator: (val) => val == null || val.trim().isEmpty
+                          ? lang.endTimeRequired
+                          : null,
                     ),
                   ],
                 ),
@@ -311,7 +303,8 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
   Future<void> _handleUpdateEvent() async {
     if (!_formKey.currentState!.validate()) return;
 
-    EasyLoading.show(status: L10n.of(context).updatingDate);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.updatingDate);
     try {
       // We always have calendar object at this stage.
       final calendarEvent =
@@ -336,6 +329,12 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
       final eventId = await updateBuilder.send();
       _log.info('Calendar Event updated $eventId');
 
+      await autosubscribe(
+        ref: ref,
+        objectId: eventId.toString(),
+        lang: lang,
+      );
+
       EasyLoading.dismiss();
 
       if (mounted) Navigator.pop(context);
@@ -346,7 +345,7 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).errorUpdatingEvent(e),
+        lang.errorUpdatingEvent(e),
         duration: const Duration(seconds: 3),
       );
     }

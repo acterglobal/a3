@@ -1,11 +1,13 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
+import 'package:acter/features/tasks/widgets/task_status_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -15,7 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::tasks::widget::task_item');
+final _log = Logger('a3::tasks::widgets::task_item');
 
 class TaskItem extends ConsumerWidget {
   final String taskListId;
@@ -35,6 +37,7 @@ class TaskItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final taskLoader =
         ref.watch(taskItemProvider((taskListId: taskListId, taskId: taskId)));
     return taskLoader.when(
@@ -51,7 +54,10 @@ class TaskItem extends ConsumerWidget {
         horizontalTitleGap: 0,
         minVerticalPadding: 0,
         contentPadding: const EdgeInsets.all(3),
-        visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+        visualDensity: const VisualDensity(
+          horizontal: 0,
+          vertical: -4,
+        ),
         minLeadingWidth: 35,
         leading: leadingWidget(task),
         title: takeItemTitle(context, task),
@@ -60,54 +66,40 @@ class TaskItem extends ConsumerWidget {
       ),
       error: (e, s) {
         _log.severe('Failed to load task', e, s);
-        return ListTile(
-          title: Text(L10n.of(context).loadingFailed(e)),
-        );
+        // FIXME: don't show broken task list items on main screen;
+        return const SizedBox.shrink();
+        // // return ListTile(
+        // //   title: Text(lang.loadingFailed(e)),
+        // );
       },
       loading: () => ListTile(
-        title: Text(L10n.of(context).loading),
+        title: Text(lang.loading),
       ),
     );
   }
 
   Widget takeItemTitle(BuildContext context, Task task) {
+    final textTheme = Theme.of(context).textTheme;
     return Text(
       task.title(),
       style: task.isDone()
-          ? Theme.of(context).textTheme.bodyMedium!.copyWith(
-                fontWeight: FontWeight.w100,
-                decoration: TextDecoration.lineThrough,
-              )
-          : Theme.of(context).textTheme.bodyMedium!,
+          ? textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w100,
+              decoration: TextDecoration.lineThrough,
+            )
+          : textTheme.bodyMedium,
     );
   }
 
-  Widget leadingWidget(Task task) {
-    final isDone = task.isDone();
-    return InkWell(
-      key: isDone ? doneKey() : notDoneKey(),
-      child: Icon(
-        isDone ? Atlas.check_circle_thin : Icons.radio_button_off_outlined,
-      ),
-      onTap: () async {
-        final updater = task.updateBuilder();
-        if (!isDone) {
-          updater.markDone();
-        } else {
-          updater.markUndone();
-        }
-        await updater.send();
-        if (onDone != null) {
-          onDone!();
-        }
-      },
-    );
-  }
+  Widget leadingWidget(Task task) =>
+      TaskStatusWidget(task: task, onDone: onDone);
 
   Widget takeItemSubTitle(WidgetRef ref, BuildContext context, Task task) {
-    final description = task.description();
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final description = task.description()?.body();
     final tasklistId = task.taskListIdStr();
-    final tasklistLoader = ref.watch(taskListItemProvider(tasklistId));
+    final tasklistLoader = ref.watch(taskListProvider(tasklistId));
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: Column(
@@ -125,24 +117,24 @@ class TaskItem extends ConsumerWidget {
                   const SizedBox(width: 6),
                   Text(
                     taskList.name(),
-                    style: Theme.of(context).textTheme.labelMedium,
+                    style: textTheme.labelMedium,
                   ),
                 ],
               ),
               error: (e, s) {
                 _log.severe('Failed to load task', e, s);
-                return Text(L10n.of(context).loadingFailed(e));
+                return Text(lang.loadingFailed(e));
               },
               loading: () => Skeletonizer(
-                child: Text(L10n.of(context).loading),
+                child: Text(lang.loading),
               ),
             ),
-          if (description?.body() != null && !showBreadCrumb)
+          if (description != null && !showBreadCrumb)
             Text(
-              description!.body(),
+              description,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelMedium,
+              style: textTheme.labelMedium,
             ),
           dueDateWidget(context, task),
         ],
@@ -151,42 +143,42 @@ class TaskItem extends ConsumerWidget {
   }
 
   Widget dueDateWidget(BuildContext context, Task task) {
-    TextStyle? textStyle = Theme.of(context).textTheme.labelMedium;
-    DateTime? dueDate =
-        task.dueDate() == null ? null : DateTime.parse(task.dueDate()!);
-
-    if (dueDate == null) return const SizedBox.shrink();
-
-    String? label;
-    Color iconColor = Colors.white54;
-    if (dueDate.isToday) {
-      label = L10n.of(context).dueToday;
-    } else if (dueDate.isTomorrow) {
-      label = L10n.of(context).dueTomorrow;
-    } else if (dueDate.isPast) {
-      label = dueDate.timeago();
-      iconColor = Theme.of(context).colorScheme.onSurface;
-      textStyle = textStyle?.copyWith(
-        color: Theme.of(context).colorScheme.error,
-      );
-    }
-    final dateText =
-        DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(dueDate);
-
-    return Row(
-      children: [
-        Icon(
-          Icons.access_time,
-          color: iconColor,
-          size: 18,
-        ),
-        const SizedBox(width: 6),
-        Text(
-          label ?? L10n.of(context).due(dateText),
-          style: textStyle,
-        ),
-      ],
-    );
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return task.dueDate().map((dueDate) {
+          final date = DateTime.parse(dueDate);
+          final dateText =
+              DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(date);
+          final label = date.isToday
+              ? lang.dueToday
+              : date.isTomorrow
+                  ? lang.dueTomorrow
+                  : date.isPast
+                      ? date.timeago()
+                      : lang.due(dateText);
+          final iconColor =
+              date.isPast ? colorScheme.onSurface : Colors.white54;
+          var textStyle = textTheme.labelMedium;
+          if (date.isPast) {
+            textStyle = textStyle?.copyWith(color: colorScheme.error);
+          }
+          return Row(
+            children: [
+              Icon(
+                Icons.access_time,
+                color: iconColor,
+                size: 18,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: textStyle,
+              ),
+            ],
+          );
+        }) ??
+        const SizedBox.shrink();
   }
 
   Widget? trailing(WidgetRef ref, Task task) {
@@ -199,14 +191,12 @@ class TaskItem extends ConsumerWidget {
   }
 
   Widget? taskAssignee(WidgetRef ref, Task task) {
-    final assignees = task.assigneesStr().map((s) => s.toDartString()).toList();
-
+    final assignees = asDartStringList(task.assigneesStr());
     if (assignees.isEmpty) return null;
 
+    final roomId = task.roomIdStr();
     final avatarInfo = ref.watch(
-      memberAvatarInfoProvider(
-        (roomId: task.roomIdStr(), userId: assignees.first),
-      ),
+      memberAvatarInfoProvider((roomId: roomId, userId: assignees.first)),
     );
 
     return ActerAvatar(

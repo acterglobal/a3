@@ -1,7 +1,13 @@
 // internal API
 
-use acter_core::super_invites::{api, CreateToken, Token, TokenInfo, UpdateToken};
+use acter_core::{
+    events::{RefDetails as CoreRefDetails, RefPreview},
+    super_invites::{api, CreateToken, Token, TokenInfo, UpdateToken},
+};
 use anyhow::{Context, Result};
+use std::ops::Deref;
+
+use super::deep_linking::RefDetails;
 
 use crate::{Client, RUNTIME};
 
@@ -13,6 +19,7 @@ impl SuperInviteInfo {
     fn new(token: TokenInfo) -> SuperInviteInfo {
         SuperInviteInfo { token }
     }
+
     pub fn create_dm(&self) -> bool {
         self.token.create_dm
     }
@@ -43,16 +50,17 @@ impl SuperInviteInfo {
 }
 
 pub struct SuperInviteToken {
+    client: Client,
     token: Token,
 }
 
 impl SuperInviteToken {
-    fn new(token: Token) -> SuperInviteToken {
-        SuperInviteToken { token }
+    fn new(client: Client, token: Token) -> SuperInviteToken {
+        SuperInviteToken { client, token }
     }
 
     pub fn token(&self) -> String {
-        self.token.token.to_string()
+        self.token.token.clone()
     }
 
     pub fn create_dm(&self) -> bool {
@@ -76,6 +84,19 @@ impl SuperInviteToken {
             },
         }
     }
+
+    pub fn ref_details(&self) -> RefDetails {
+        let client = self.client.deref().clone();
+        RefDetails::new(
+            client,
+            CoreRefDetails::SuperInviteToken {
+                token: self.token(),
+                create_dm: self.create_dm(),
+                accepted_count: self.accepted_count(),
+                rooms: self.rooms(),
+            },
+        )
+    }
 }
 
 pub struct SuperInvites {
@@ -85,6 +106,7 @@ pub struct SuperInvites {
 pub struct SuperInvitesTokenUpdateBuilder {
     token: CreateToken,
 }
+
 impl Default for SuperInvitesTokenUpdateBuilder {
     fn default() -> Self {
         Self::new()
@@ -101,12 +123,15 @@ impl SuperInvitesTokenUpdateBuilder {
     pub fn token(&mut self, token: String) {
         self.token.token = Some(token);
     }
+
     pub fn add_room(&mut self, room: String) {
         self.token.rooms.push(room);
     }
+
     pub fn remove_room(&mut self, room: String) {
         self.token.rooms.retain(|a| a != &room);
     }
+
     pub fn create_dm(&mut self, val: bool) {
         self.token.create_dm = Some(val);
     }
@@ -131,16 +156,17 @@ impl SuperInvitesTokenUpdateBuilder {
 
 impl SuperInvites {
     pub async fn tokens(&self) -> Result<Vec<SuperInviteToken>> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let req = api::list::Request::new();
-                let resp = c.send(req, None).await?;
-                Ok(resp
+                let resp = client.deref().send(req).await?;
+                let tokens = resp
                     .tokens
                     .into_iter()
-                    .map(SuperInviteToken::new)
-                    .collect::<Vec<_>>())
+                    .map(|token| SuperInviteToken::new(client.clone(), token))
+                    .collect::<Vec<SuperInviteToken>>();
+                Ok(tokens)
             })
             .await?
     }
@@ -150,22 +176,22 @@ impl SuperInvites {
     }
 
     pub async fn redeem(&self, token: String) -> Result<Vec<String>> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let req = api::redeem::Request::new(token);
-                let resp = c.send(req, None).await?;
+                let resp = client.deref().send(req).await?;
                 Ok(resp.rooms)
             })
             .await?
     }
 
     pub async fn info(&self, token: String) -> Result<SuperInviteInfo> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let req = api::info::Request::new(token);
-                let resp = c.send(req, None).await?;
+                let resp = client.deref().send(req).await?;
                 Ok(SuperInviteInfo::new(resp.info))
             })
             .await?
@@ -175,34 +201,34 @@ impl SuperInvites {
         &self,
         builder: Box<SuperInvitesTokenUpdateBuilder>,
     ) -> Result<SuperInviteToken> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
-                Ok(if builder.has_token() {
+                let token = if builder.has_token() {
                     // we just checked for it
                     let token = builder
                         .into_update_token()
                         .context("Unable to get update token from builder")?;
                     let req = api::update::Request::new(token);
-                    let resp = c.send(req, None).await?;
+                    let resp = client.deref().send(req).await?;
                     resp.token
                 } else {
                     let token = builder.token;
                     let req = api::create::Request::new(token);
-                    let resp = c.send(req, None).await?;
+                    let resp = client.deref().send(req).await?;
                     resp.token
-                })
+                };
+                Ok(SuperInviteToken { client, token })
             })
             .await?
-            .map(SuperInviteToken::new)
     }
 
     pub async fn delete(&self, token: String) -> Result<bool> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let req = api::delete::Request::new(token);
-                c.send(req, None).await?;
+                client.deref().send(req).await?;
                 Ok(true)
             })
             .await?

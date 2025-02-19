@@ -14,25 +14,18 @@ const String astonishedFace = '\u{1F632}';
 class LoginPageKeys {
   static const signUpBtn = Key('sign-up-btn');
   static const submitBtn = Key('login-submit-btn');
-  static const brandIcon = Key('brand-icon');
   static const forgotPassBtn = Key('forgot-pass-btn');
   static const usernameField = Key('login-username-txt');
   static const passwordField = Key('login-password-txt');
-  static const snackbarSuccess = Key('login-snackbar-success');
-  static const snackbarFailed = Key('login-snackbar-failed');
 }
 
 class Keys {
   static const mainNav = Key('main-nav'); // either bottom or sidebar
   // generic / home
   static const bottomBar = Key('bottom-bar');
-  static const newsSectionBtn = Key('news-section-btn');
-  static const sidebarBtn = Key('sidebar-btn');
-  static const logoutBtn = Key('logout-btn');
   static const exploreBtn = Key('explore-btn');
   static const loginBtn = Key('login-btn');
   static const avatar = Key('user-avatar');
-  static const usernameLabel = Key('username-lbl');
 }
 
 const canGuestLogin = Env.canLoginAsGuest;
@@ -54,7 +47,11 @@ const List<TargetPlatform> desktopPlatforms = [
 class ServerEntry {
   final String value;
   final String? name;
-  const ServerEntry({required this.value, this.name});
+
+  const ServerEntry({
+    required this.value,
+    this.name,
+  });
 }
 
 List<ServerEntry> parseServers(String listing) {

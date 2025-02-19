@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -30,7 +30,8 @@ Future<String?> createSpace(
   RoomVisibility? roomVisibility,
   bool createDefaultChat = false,
 }) async {
-  EasyLoading.show(status: L10n.of(context).creatingSpace);
+  final lang = L10n.of(context);
+  EasyLoading.show(status: lang.creatingSpace);
   try {
     final sdk = await ref.read(sdkProvider.future);
     final config = sdk.api.newSpaceSettingsBuilder();
@@ -48,8 +49,9 @@ Future<String?> createSpace(
     if (roomVisibility != null) {
       config.setVisibility(roomVisibility.name);
     }
-    final client = ref.read(alwaysClientProvider);
-    final roomId = (await client.createActerSpace(config.build())).toString();
+    final client = await ref.read(alwaysClientProvider.future);
+    final result = await client.createActerSpace(config.build());
+    final roomId = result.toString();
     if (parentRoomId != null) {
       final space = await ref.read(spaceProvider(parentRoomId).future);
       await space.addChildRoom(roomId, false);
@@ -64,7 +66,7 @@ Future<String?> createSpace(
       final chatId = await createChat(
         context,
         ref,
-        name: L10n.of(context).defaultChatName(name),
+        name: lang.defaultChatName(name),
         parentId: roomId,
         suggested: true,
       );
@@ -81,7 +83,7 @@ Future<String?> createSpace(
       return null;
     }
     EasyLoading.showError(
-      L10n.of(context).creatingSpaceFailed(e),
+      lang.creatingSpaceFailed(e),
       duration: const Duration(seconds: 3),
     );
     return null;

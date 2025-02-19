@@ -1,29 +1,29 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/pages/fatal_fail.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/avatar/full_screen_avatar_page.dart';
 import 'package:acter/common/widgets/dialog_page.dart';
 import 'package:acter/common/widgets/side_sheet_page.dart';
+import 'package:acter/features/auth/pages/forgot_password.dart';
+import 'package:acter/features/auth/pages/login_page.dart';
+import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
-import 'package:acter/features/news/pages/add_news_page.dart';
-import 'package:acter/features/auth/pages/forgot_password.dart';
+import 'package:acter/features/deep_linking/pages/scan_qr_code.dart';
 import 'package:acter/features/intro/pages/intro_page.dart';
 import 'package:acter/features/intro/pages/intro_profile.dart';
-import 'package:acter/features/auth/pages/login_page.dart';
+import 'package:acter/features/link_room/pages/link_room_page.dart';
+import 'package:acter/features/link_room/types.dart';
+import 'package:acter/features/news/pages/add_news_page.dart';
 import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
-import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
-import 'package:acter/features/search/pages/quick_jump.dart';
-import 'package:acter/features/super_invites/pages/create.dart';
-import 'package:acter/features/space/sheets/link_room_sheet.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -68,8 +68,17 @@ final generalRoutes = [
     parentNavigatorKey: rootNavKey,
     name: Routes.saveUsername.name,
     path: Routes.saveUsername.route,
-    builder: (context, state) =>
-        SaveUsernamePage(username: state.uri.queryParameters['username']!),
+    builder: (context, state) {
+      final username = state.uri.queryParameters['username']
+          .expect('saveUsername route needs username as query param');
+      return SaveUsernamePage(username: username);
+    },
+  ),
+  GoRoute(
+    parentNavigatorKey: rootNavKey,
+    name: Routes.scanQrCode.name,
+    path: Routes.scanQrCode.route,
+    builder: (context, state) => const ScanQrCode(),
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
@@ -94,62 +103,42 @@ final generalRoutes = [
     name: Routes.bugReport.name,
     path: Routes.bugReport.route,
     pageBuilder: (context, state) => DialogPage(
-      builder: (BuildContext context) => BugReportPage(
-        imagePath: state.uri.queryParameters['screenshot'],
-        error: state.uri.queryParameters['error'],
-        stack: state.uri.queryParameters['stack'],
-      ),
+      builder: (BuildContext context) {
+        final screenshot = state.uri.queryParameters['screenshot'];
+        final error = state.uri.queryParameters['error'];
+        final stack = state.uri.queryParameters['stack'];
+        return BugReportPage(
+          imagePath: screenshot,
+          error: error,
+          stack: stack,
+        );
+      },
     ),
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
     name: Routes.fatalFail.name,
     path: Routes.fatalFail.route,
-    builder: (context, state) => FatalFailPage(
-      error: state.uri.queryParameters['error']!,
-      trace: state.uri.queryParameters['trace']!,
-    ),
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
-    name: Routes.quickJump.name,
-    path: Routes.quickJump.route,
-    pageBuilder: (context, state) => DialogPage(
-      builder: (BuildContext context) => const QuickjumpDialog(),
-    ),
+    builder: (context, state) {
+      final error = state.uri.queryParameters['error']
+          .expect('fatalFail route needs error query param');
+      final trace = state.uri.queryParameters['trace']
+          .expect('fatalFail route needs trace query param');
+      return FatalFailPage(
+        error: error,
+        trace: trace,
+      );
+    },
   ),
   GoRoute(
     name: Routes.createPin.name,
     path: Routes.createPin.route,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      final spaceId = state.uri.queryParameters['spaceId'];
+      return MaterialPage(
         key: state.pageKey,
         child: CreatePinPage(
-          initialSelectedSpace: state.uri.queryParameters['spaceId'],
-        ),
-      );
-    },
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
-    name: Routes.actionCreateSuperInvite.name,
-    path: Routes.actionCreateSuperInvite.route,
-    pageBuilder: (context, state) {
-      return SideSheetPage(
-        key: state.pageKey,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return SlideTransition(
-            position: Tween(
-              begin: const Offset(1, 0),
-              end: const Offset(0, 0),
-            ).animate(
-              animation,
-            ),
-            child: child,
-          );
-        },
-        child: CreateSuperInviteTokenPage(
-          token: state.extra != null ? state.extra as SuperInviteToken : null,
+          initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
         ),
       );
     },
@@ -159,6 +148,8 @@ final generalRoutes = [
     name: Routes.linkChat.name,
     path: Routes.linkChat.route,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('linkChat route needs spaceId as path param');
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -166,15 +157,12 @@ final generalRoutes = [
             position: Tween(
               begin: const Offset(1, 0),
               end: const Offset(0, 0),
-            ).animate(
-              animation,
-            ),
+            ).animate(animation),
             child: child,
           );
         },
         child: LinkRoomPage(
-          parentSpaceId: state.pathParameters['spaceId']!,
-          pageTitle: 'Link as Space-chat',
+          parentSpaceId: spaceId,
           childRoomType: ChildRoomType.chat,
         ),
       );
@@ -182,9 +170,11 @@ final generalRoutes = [
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
-    name: Routes.linkSubspace.name,
-    path: Routes.linkSubspace.route,
+    name: Routes.linkSpace.name,
+    path: Routes.linkSpace.route,
     pageBuilder: (context, state) {
+      final spaceId = state.pathParameters['spaceId']
+          .expect('linkSpace route needs spaceId as path param');
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -192,42 +182,13 @@ final generalRoutes = [
             position: Tween(
               begin: const Offset(1, 0),
               end: const Offset(0, 0),
-            ).animate(
-              animation,
-            ),
+            ).animate(animation),
             child: child,
           );
         },
         child: LinkRoomPage(
-          parentSpaceId: state.pathParameters['spaceId']!,
-          pageTitle: 'Link Sub-Space',
+          parentSpaceId: spaceId,
           childRoomType: ChildRoomType.space,
-        ),
-      );
-    },
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
-    name: Routes.linkRecommended.name,
-    path: Routes.linkRecommended.route,
-    pageBuilder: (context, state) {
-      return SideSheetPage(
-        key: state.pageKey,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return SlideTransition(
-            position: Tween(
-              begin: const Offset(1, 0),
-              end: const Offset(0, 0),
-            ).animate(
-              animation,
-            ),
-            child: child,
-          );
-        },
-        child: LinkRoomPage(
-          parentSpaceId: state.pathParameters['spaceId']!,
-          pageTitle: 'Link Recommended-Space',
-          childRoomType: ChildRoomType.recommendedSpace,
         ),
       );
     },
@@ -238,9 +199,14 @@ final generalRoutes = [
     path: Routes.actionAddUpdate.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      final spaceId = state.uri.queryParameters['spaceId'];
+      final refDetails = state.extra as RefDetails?;
+      return MaterialPage(
         key: state.pageKey,
-        child: const AddNewsPage(),
+        child: AddNewsPage(
+          initialSelectedSpace: spaceId?.isNotEmpty == true ? spaceId : null,
+          refDetails: refDetails,
+        ),
       );
     },
   ),
@@ -249,31 +215,32 @@ final generalRoutes = [
     name: Routes.createChat.name,
     path: Routes.createChat.route,
     pageBuilder: (context, state) {
+      final spaceId = state.uri.queryParameters['spaceId'];
+      final page = state.extra as int?;
       return context.isLargeScreen
           ? DialogPage(
               barrierDismissible: false,
               builder: (context) => CreateChatPage(
-                initialSelectedSpaceId: state.uri.queryParameters['spaceId'],
-                initialPage: state.extra as int?,
+                initialSelectedSpaceId: spaceId,
+                initialPage: page,
               ),
             )
           : CustomTransitionPage(
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
-                var begin = const Offset(0.0, 1.0);
-                var end = Offset.zero;
-                var curve = Curves.easeInOut;
-                var tween = Tween(begin: begin, end: end)
-                    .chain(CurveTween(curve: curve));
-                var offsetAnimation = animation.drive(tween);
+                final tween = Tween(
+                  begin: const Offset(0, 1),
+                  end: Offset.zero,
+                ).chain(CurveTween(curve: Curves.easeInOut));
+                final offsetAnimation = animation.drive(tween);
                 return SlideTransition(
                   position: offsetAnimation,
                   child: child,
                 );
               },
               child: CreateChatPage(
-                initialSelectedSpaceId: state.uri.queryParameters['spaceId'],
-                initialPage: state.extra as int?,
+                initialSelectedSpaceId: spaceId,
+                initialPage: page,
               ),
             );
     },
@@ -283,11 +250,11 @@ final generalRoutes = [
     name: Routes.fullScreenAvatar.name,
     path: Routes.fullScreenAvatar.route,
     pageBuilder: (context, state) {
-      return NoTransitionPage(
+      final roomId = state.uri.queryParameters['roomId']
+          .expect('fullScreenAvatar route needs roomId as query param');
+      return MaterialPage(
         key: state.pageKey,
-        child: FullScreenAvatarPage(
-          roomId: state.uri.queryParameters['roomId']!,
-        ),
+        child: FullScreenAvatarPage(roomId: roomId),
       );
     },
   ),

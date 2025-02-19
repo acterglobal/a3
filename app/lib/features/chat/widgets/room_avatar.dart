@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -86,18 +86,24 @@ class RoomAvatar extends ConsumerWidget {
   }
 
   Widget dmAvatar(WidgetRef ref, BuildContext context) {
-    final client = ref.watch(alwaysClientProvider);
+    final myUserId = ref.watch(myUserIdStrProvider);
     final membersLoader = ref.watch(membersIdsProvider(roomId));
     return membersLoader.when(
       data: (members) {
         int count = members.length;
-
+        // handle empty list first, in case.
+        if (count == 0) {
+          return errorAvatar(
+            L10n.of(context)
+                .loadingMembersCountFailed('failed to fetched room: null'),
+          );
+        }
         //Show member avatar
         if (count == 1) {
           return memberAvatar(members[0], ref);
         } else if (count == 2) {
           //Show opponent member avatar
-          if (members[0] != client.userId().toString()) {
+          if (members[0] != myUserId) {
             return memberAvatar(members[0], ref);
           } else {
             return memberAvatar(members[1], ref);

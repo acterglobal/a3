@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -10,7 +11,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::common::redact_content');
+final _log = Logger('a3::common::actions::redact_content');
 
 Future<bool> openRedactContentDialog(
   BuildContext context, {
@@ -68,13 +69,14 @@ class _RedactContentWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return DefaultDialog(
       title: Align(
         alignment: Alignment.topLeft,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            title ?? L10n.of(context).remove,
+            title ?? lang.remove,
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
@@ -82,7 +84,7 @@ class _RedactContentWidget extends ConsumerWidget {
       subtitle: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(
-          description ?? L10n.of(context).removeThisContent,
+          description ?? lang.removeThisContent,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ),
@@ -90,7 +92,7 @@ class _RedactContentWidget extends ConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: InputTextField(
           controller: reasonController,
-          hintText: L10n.of(context).reason,
+          hintText: lang.reason,
           textInputType: TextInputType.multiline,
           maxLines: 5,
         ),
@@ -99,20 +101,21 @@ class _RedactContentWidget extends ConsumerWidget {
         OutlinedButton(
           key: cancelBtnKey,
           onPressed: () => Navigator.pop(context, false),
-          child: Text(L10n.of(context).close),
+          child: Text(lang.close),
         ),
         ActerPrimaryActionButton(
           key: removeBtnKey,
           onPressed: onRemove ??
               () => redactContent(context, ref, reasonController.text),
-          child: Text(L10n.of(context).remove),
+          child: Text(lang.remove),
         ),
       ],
     );
   }
 
   void redactContent(BuildContext context, WidgetRef ref, String reason) async {
-    EasyLoading.show(status: L10n.of(context).removingContent);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.removingContent);
     try {
       if (isSpace) {
         final space = await ref.read(spaceProvider(roomId).future);
@@ -120,9 +123,7 @@ class _RedactContentWidget extends ConsumerWidget {
         _log.info('Content from $redactedId reason:$reason}');
       } else {
         final room = await ref.read(chatProvider(roomId).future);
-        if (room == null) {
-          throw RoomNotFound();
-        }
+        if (room == null) throw RoomNotFound();
         final redactedId = await room.redactContent(eventId, reason);
         _log.info('Content from $redactedId reason:$reason}');
       }
@@ -131,11 +132,9 @@ class _RedactContentWidget extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).contentSuccessfullyRemoved);
+      EasyLoading.showToast(lang.contentSuccessfullyRemoved);
       Navigator.pop(context, true);
-      if (onSuccess != null) {
-        onSuccess!();
-      }
+      onSuccess.map((cb) => cb());
     } catch (e, s) {
       _log.severe('Failed to redact content', e, s);
       if (!context.mounted) {
@@ -143,7 +142,7 @@ class _RedactContentWidget extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).redactionFailed(e),
+        lang.redactionFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

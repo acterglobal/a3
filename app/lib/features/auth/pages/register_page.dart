@@ -5,9 +5,8 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
+import 'package:acter/features/auth/actions/register_action.dart';
 import 'package:acter/features/auth/providers/auth_providers.dart';
-import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -19,15 +18,6 @@ import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::auth::register');
-
-Future<void> tryRedeem(SuperInvites superInvites, String token) async {
-  // try to redeem the token in a fire-and-forget-manner
-  try {
-    await superInvites.redeem(token);
-  } catch (error) {
-    _log.warning('redeeming super invite failed: $error');
-  }
-}
 
 class RegisterPage extends ConsumerStatefulWidget {
   static const usernameField = Key('reg-username-txt');
@@ -59,31 +49,26 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       showNoInternetNotification(context);
       return;
     }
-    final authNotifier = ref.read(authStateProvider.notifier);
-    final errorMsg = await authNotifier.register(
-      username.text,
-      password.text,
-      name.text,
-      token.text,
-      context,
-    );
-    if (errorMsg != null) {
-      _log.severe('Failed to register', errorMsg);
-      if (!context.mounted) return;
+    final lang = L10n.of(context);
+    try {
+      if (await register(
+        username: username.text,
+        password: password.text,
+        name: name.text,
+        token: token.text,
+        ref: ref,
+      )) {
+        if (context.mounted) {
+          context.goNamed(
+            Routes.saveUsername.name,
+            queryParameters: {'username': username.text},
+          );
+        }
+      }
+    } catch (errorMsg) {
       EasyLoading.showError(
-        L10n.of(context).registerFailed(errorMsg),
+        lang.registerFailed(errorMsg),
         duration: const Duration(seconds: 3),
-      );
-      return;
-    }
-    if (token.text.isNotEmpty) {
-      final superInvites = ref.read(superInvitesProvider);
-      tryRedeem(superInvites, token.text);
-    }
-    if (context.mounted) {
-      context.goNamed(
-        Routes.saveUsername.name,
-        queryParameters: {'username': username.text},
       );
     }
   }
@@ -150,59 +135,56 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   Widget _buildHeadlineText(BuildContext context) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: [
         Text(
-          L10n.of(context).createProfile,
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: Theme.of(context).colorScheme.textHighlight,
-              ),
+          lang.createProfile,
+          style: textTheme.headlineMedium?.copyWith(
+            color: Theme.of(context).colorScheme.textHighlight,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
-          L10n.of(context).onboardText,
-          style: Theme.of(context).textTheme.bodyMedium,
+          lang.onboardText,
+          style: textTheme.bodyMedium,
         ),
       ],
     );
   }
 
   Widget _buildNameInputField(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(L10n.of(context).displayName),
+        Text(lang.displayName),
         const SizedBox(height: 10),
         TextFormField(
           key: RegisterPage.nameField,
           controller: name,
-          decoration: InputDecoration(
-            hintText: L10n.of(context).hintMessageDisplayName,
-          ),
+          decoration: InputDecoration(hintText: lang.hintMessageDisplayName),
           style: Theme.of(context).textTheme.labelLarge,
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).missingName;
-            }
-            return null;
-          },
+          // required field, space not allowed
+          validator: (val) =>
+              val == null || val.trim().isEmpty ? lang.missingName : null,
         ),
       ],
     );
   }
 
   Widget _buildUsernameInputField(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(L10n.of(context).username),
+        Text(lang.username),
         const SizedBox(height: 10),
         TextFormField(
           key: RegisterPage.usernameField,
           controller: username,
-          decoration: InputDecoration(
-            hintText: L10n.of(context).hintMessageUsername,
-          ),
+          decoration: InputDecoration(hintText: lang.hintMessageUsername),
           inputFormatters: [
             TextInputFormatter.withFunction((
               TextEditingValue oldValue,
@@ -215,9 +197,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             }),
           ],
           style: Theme.of(context).textTheme.labelLarge,
+          // required field, space not allowed
           validator: (val) {
             if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyUsername;
+              return lang.emptyUsername;
             }
             final cleanedVal = val.trim().toLowerCase();
             if (!usernamePattern.hasMatch(cleanedVal)) {
@@ -231,59 +214,55 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   Widget _buildPasswordInputField(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(L10n.of(context).password),
+        Text(lang.password),
         const SizedBox(height: 10),
         TextFormField(
           key: RegisterPage.passwordField,
           controller: password,
           decoration: InputDecoration(
-            hintText: L10n.of(context).hintMessagePassword,
+            hintText: lang.hintMessagePassword,
             suffixIcon: IconButton(
               icon: Icon(
                 _passwordVisible ? Icons.visibility : Icons.visibility_off,
               ),
               onPressed: () {
-                setState(() {
-                  _passwordVisible = !_passwordVisible;
-                });
+                setState(() => _passwordVisible = !_passwordVisible);
               },
             ),
           ),
           obscureText: !_passwordVisible,
           inputFormatters: [
-            FilteringTextInputFormatter.deny(
-              RegExp(r'\s'),
-            ),
+            FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
           style: Theme.of(context).textTheme.labelLarge,
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyPassword;
-            }
-            return null;
-          },
+          // required field, space allowed
+          validator: (val) =>
+              val == null || val.isEmpty ? lang.emptyPassword : null,
         ),
       ],
     );
   }
 
   Widget _buildTokenInputField(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Expanded(
-              child: Text(
-                L10n.of(context).inviteCode,
-              ),
+              child: Text(lang.inviteCode),
             ),
             IconButton(
               onPressed: showInviteCodeDialog,
-              icon: const Icon(Atlas.question_chat, size: 20),
+              icon: const Icon(
+                Atlas.question_chat,
+                size: 20,
+              ),
             ),
           ],
         ),
@@ -291,21 +270,14 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         TextFormField(
           key: RegisterPage.tokenField,
           controller: token,
-          decoration: InputDecoration(
-            hintText: L10n.of(context).hintMessageInviteCode,
-          ),
+          decoration: InputDecoration(hintText: lang.hintMessageInviteCode),
           inputFormatters: [
-            FilteringTextInputFormatter.deny(
-              RegExp(r'\s'),
-            ),
+            FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
           style: Theme.of(context).textTheme.labelLarge,
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyToken;
-            }
-            return null;
-          },
+          // required field, space not allowed
+          validator: (val) =>
+              val == null || val.trim().isEmpty ? lang.emptyToken : null,
         ),
       ],
     );
@@ -315,12 +287,13 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final lang = L10n.of(context);
         return AlertDialog(
-          title: Text(L10n.of(context).inviteCode),
+          title: Text(lang.inviteCode),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(L10n.of(context).inviteCodeInfo),
+              Text(lang.inviteCodeInfo),
               const SizedBox(height: 10),
               Container(
                 decoration: BoxDecoration(
@@ -341,14 +314,17 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       onPressed: () async {
                         Navigator.pop(context); // close the drawer
                         EasyLoading.showToast(
-                          L10n.of(context).inviteCopiedToClipboard,
+                          lang.inviteCopiedToClipboard,
                           toastPosition: EasyLoadingToastPosition.bottom,
                         );
                         await Clipboard.setData(
                           const ClipboardData(text: 'organize'),
                         );
                       },
-                      icon: const Icon(Icons.copy, size: 20),
+                      icon: const Icon(
+                        Icons.copy,
+                        size: 20,
+                      ),
                     ),
                   ],
                 ),
@@ -357,7 +333,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           ),
           actions: <Widget>[
             OutlinedButton(
-              child: Text(L10n.of(context).ok),
+              child: Text(lang.ok),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -369,6 +345,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   Widget _buildTermsAcceptText(BuildContext context) {
+    final lang = L10n.of(context);
     return RichText(
       textAlign: TextAlign.start,
       text: TextSpan(
@@ -376,7 +353,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         // Child text spans will inherit styles from parent
         children: <TextSpan>[
           TextSpan(
-            text: '${L10n.of(context).termsText1} ',
+            text: '${lang.termsText1} ',
           ),
           TextSpan(
             style: const TextStyle(
@@ -384,20 +361,20 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                _log.info(L10n.of(context).termsOfService);
+                _log.info(lang.termsOfService);
               },
-            text: L10n.of(context).termsOfService,
+            text: lang.termsOfService,
           ),
-          TextSpan(text: ' ${L10n.of(context).and} '),
+          TextSpan(text: ' ${lang.and} '),
           TextSpan(
             style: const TextStyle(
               decoration: TextDecoration.underline,
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () {
-                _log.info(L10n.of(context).privacyPolicy);
+                _log.info(lang.privacyPolicy);
               },
-            text: L10n.of(context).privacyPolicy,
+            text: lang.privacyPolicy,
           ),
         ],
       ),
@@ -407,7 +384,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   Widget _buildSignUpButton(BuildContext context) {
     final authState = ref.watch(authStateProvider);
     return authState
-        ? const Center(child: CircularProgressIndicator())
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
         : ActerPrimaryActionButton(
             key: RegisterPage.submitBtn,
             onPressed: () => handleSubmit(context),
@@ -419,19 +398,18 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   Widget _buildLoginAccountButton(BuildContext context) {
+    final lang = L10n.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          L10n.of(context).haveProfile,
+          lang.haveProfile,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         ActerInlineTextButton(
           key: Keys.loginBtn,
           onPressed: () => context.goNamed(Routes.authLogin.name),
-          child: Text(
-            L10n.of(context).logIn,
-          ),
+          child: Text(lang.logIn),
         ),
       ],
     );

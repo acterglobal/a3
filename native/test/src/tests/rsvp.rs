@@ -15,7 +15,7 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}'s pins test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s pins test space"}
 
 [objects.acter-event-1]
 type = "calendar-event"
@@ -39,7 +39,8 @@ utc_end = "{{ future(add_days=25).as_rfc3339 }}"
 #[tokio::test]
 async fn rsvp_last_status() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("rsvp_last_status", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("rsvp_last_status", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -110,7 +111,8 @@ async fn rsvp_last_status() -> Result<()> {
 #[tokio::test]
 async fn rsvp_my_status() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("rsvp_my_status", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("rsvp_my_status", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -185,8 +187,9 @@ async fn rsvp_my_status() -> Result<()> {
 #[tokio::test]
 async fn rsvp_count_at_status() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) =
+    let (user, sync_state, _engine) =
         random_user_with_template("rsvp_count_at_status", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -261,8 +264,9 @@ async fn rsvp_count_at_status() -> Result<()> {
 #[tokio::test]
 async fn rsvp_users_at_status() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) =
+    let (user, sync_state, _engine) =
         random_user_with_template("rsvp-users-at-status-", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);

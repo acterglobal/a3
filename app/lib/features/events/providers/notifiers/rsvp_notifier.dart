@@ -1,31 +1,39 @@
 import 'dart:async';
+
+import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Client, RsvpStatusTag;
 import 'package:riverpod/riverpod.dart';
 
 class AsyncRsvpStatusNotifier
-    extends AutoDisposeFamilyAsyncNotifier<ffi.RsvpStatusTag?, String> {
+    extends AutoDisposeFamilyAsyncNotifier<RsvpStatusTag?, String> {
   late Stream<bool> _listener;
 
-  Future<ffi.RsvpStatusTag?> _getMyResponse() async {
-    final client = ref.read(alwaysClientProvider);
-    final calEvent = await client.waitForCalendarEvent(arg, null);
-    return switch ((await calEvent.respondedByMe()).statusStr()) {
-      'yes' => ffi.RsvpStatusTag.Yes,
-      'no' => ffi.RsvpStatusTag.No,
-      'maybe' => ffi.RsvpStatusTag.Maybe,
+  Future<RsvpStatusTag?> _getMyResponse(Client client, String calEvtId) async {
+    final calEvent = await ref.watch(calendarEventProvider(calEvtId).future);
+    final rsvp = await calEvent.respondedByMe();
+    return switch (rsvp.statusStr()) {
+      'yes' => RsvpStatusTag.Yes,
+      'no' => RsvpStatusTag.No,
+      'maybe' => RsvpStatusTag.Maybe,
       _ => null,
     };
   }
 
   @override
-  Future<ffi.RsvpStatusTag?> build(String arg) async {
-    final client = ref.watch(alwaysClientProvider);
-    _listener =
-        client.subscribeStream('$arg::rsvp'); // keep it resident in memory
+  Future<RsvpStatusTag?> build(String arg) async {
+    final calEvtId = arg;
+    final client = await ref.watch(alwaysClientProvider.future);
+    _listener = client.subscribeModelObjectsStream(
+      calEvtId,
+      'rsvp',
+    ); // keep it resident in memory
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(_getMyResponse);
+      state = await AsyncValue.guard(
+        () async => await _getMyResponse(client, calEvtId),
+      );
     });
-    return await _getMyResponse();
+    return await _getMyResponse(client, calEvtId);
   }
 }

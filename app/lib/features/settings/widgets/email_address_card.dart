@@ -23,8 +23,13 @@ class EmailAddressCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
+      margin: const EdgeInsets.symmetric(
+        vertical: 2,
+        horizontal: 15,
+      ),
       child: ListTile(
         leading: isConfirmed
             ? Icon(
@@ -35,7 +40,7 @@ class EmailAddressCard extends ConsumerWidget {
         title: Text(emailAddress),
         trailing: isConfirmed
             ? PopupMenuButton(
-                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                itemBuilder: (context) => <PopupMenuEntry>[
                   PopupMenuItem(
                     onTap: () => onUnregister(context, ref),
                     child: Row(
@@ -44,8 +49,8 @@ class EmailAddressCard extends ConsumerWidget {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Text(
-                            L10n.of(context).remove,
-                            style: Theme.of(context).textTheme.labelSmall,
+                            lang.remove,
+                            style: textTheme.labelSmall,
                             softWrap: false,
                           ),
                         ),
@@ -63,17 +68,16 @@ class EmailAddressCard extends ConsumerWidget {
                       icon: const Icon(Atlas.envelope_check_thin),
                     ),
                     PopupMenuButton(
-                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                      itemBuilder: (context) => <PopupMenuEntry>[
                         PopupMenuItem(
                           onTap: () => alreadyConfirmedAddress(context, ref),
                           child: Row(
                             children: [
                               const Icon(Atlas.envelope_check_thin),
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
-                                child: Text(L10n.of(context).alreadyConfirmed),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Text(lang.alreadyConfirmed),
                               ),
                             ],
                           ),
@@ -84,10 +88,9 @@ class EmailAddressCard extends ConsumerWidget {
                             children: [
                               const Icon(Atlas.passcode_thin),
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
-                                child: Text(L10n.of(context).confirmWithToken),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Text(lang.confirmWithToken),
                               ),
                             ],
                           ),
@@ -98,12 +101,11 @@ class EmailAddressCard extends ConsumerWidget {
                             children: [
                               const Icon(Atlas.trash_can_thin),
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
                                 child: Text(
-                                  L10n.of(context).remove,
-                                  style: Theme.of(context).textTheme.labelSmall,
+                                  lang.remove,
+                                  style: textTheme.labelSmall,
                                   softWrap: false,
                                 ),
                               ),
@@ -120,25 +122,26 @@ class EmailAddressCard extends ConsumerWidget {
   }
 
   void onUnregister(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     showAdaptiveDialog(
       context: context,
       builder: (context) => DefaultDialog(
-        title: Text(L10n.of(context).areYouSureYouWantToUnregisterEmailAddress),
+        title: Text(lang.areYouSureYouWantToUnregisterEmailAddress),
         actions: <Widget>[
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(L10n.of(context).no),
+            child: Text(lang.no),
           ),
           ActerPrimaryActionButton(
             onPressed: () async {
-              final account = ref.read(accountProvider);
+              final account = await ref.read(accountProvider.future);
               await account.removeEmailAddress(emailAddress);
               ref.invalidate(emailAddressesProvider);
 
               if (!context.mounted) return;
               Navigator.pop(context);
             },
-            child: Text(L10n.of(context).yes),
+            child: Text(lang.yes),
           ),
         ],
       ),
@@ -149,14 +152,15 @@ class EmailAddressCard extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final account = ref.read(accountProvider);
+    final lang = L10n.of(context);
     final newValue = await showDialog<String>(
       context: context,
       builder: (BuildContext context) => const PasswordConfirm(),
     );
     if (!context.mounted) return;
     if (newValue == null) return;
-    EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
+    EasyLoading.show(status: lang.tryingToConfirmToken);
+    final account = await ref.read(accountProvider.future);
     try {
       await account.tryConfirmEmailStatus(emailAddress, newValue);
       ref.invalidate(emailAddressesProvider);
@@ -164,7 +168,7 @@ class EmailAddressCard extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
+      EasyLoading.showToast(lang.looksGoodAddressConfirmed);
     } catch (e, s) {
       _log.severe('Failed to confirm token', e, s);
       if (!context.mounted) {
@@ -172,7 +176,7 @@ class EmailAddressCard extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToConfirmToken(e),
+        lang.failedToConfirmToken(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -182,14 +186,15 @@ class EmailAddressCard extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) async {
-    final account = ref.read(accountProvider);
+    final lang = L10n.of(context);
     final newValue = await showDialog<EmailConfirm>(
       context: context,
       builder: (BuildContext context) => const TokenConfirm(),
     );
     if (!context.mounted) return;
     if (newValue == null) return;
-    EasyLoading.show(status: L10n.of(context).tryingToConfirmToken);
+    EasyLoading.show(status: lang.tryingToConfirmToken);
+    final account = await ref.read(accountProvider.future);
     try {
       final result = await account.submitTokenFromEmail(
         emailAddress,
@@ -202,11 +207,11 @@ class EmailAddressCard extends ConsumerWidget {
       }
       if (result) {
         ref.invalidate(emailAddressesProvider);
-        EasyLoading.showToast(L10n.of(context).looksGoodAddressConfirmed);
+        EasyLoading.showToast(lang.looksGoodAddressConfirmed);
       } else {
         _log.severe('Invalid token or password');
         EasyLoading.showError(
-          L10n.of(context).invalidTokenOrPassword,
+          lang.invalidTokenOrPassword,
           duration: const Duration(seconds: 3),
         );
       }
@@ -217,7 +222,7 @@ class EmailAddressCard extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).failedToConfirmToken(e),
+        lang.failedToConfirmToken(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -228,12 +233,16 @@ class EmailConfirm {
   String token;
   String password;
 
-  EmailConfirm(this.token, this.password);
+  EmailConfirm(
+    this.token,
+    this.password,
+  );
 }
 
 class PasswordConfirm extends StatefulWidget {
   static Key passwordConfirmTxt = const Key('password-confirm-txt');
   static Key passwordConfirmBtn = const Key('password-confirm-btn');
+
   const PasswordConfirm({super.key});
 
   @override
@@ -248,8 +257,9 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return AlertDialog(
-      title: Text(L10n.of(context).needYourPasswordToConfirm),
+      title: Text(lang.needYourPasswordToConfirm),
       // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
@@ -262,7 +272,7 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
                 key: PasswordConfirm.passwordConfirmTxt,
                 controller: newPassword,
                 decoration: InputDecoration(
-                  hintText: L10n.of(context).yourPassword,
+                  hintText: lang.yourPassword,
                   suffixIcon: IconButton(
                     onPressed: togglePassword,
                     icon: Icon(
@@ -281,21 +291,19 @@ class _PasswordConfirmState extends State<PasswordConfirm> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
-          child: Text(L10n.of(context).cancel),
+          child: Text(lang.cancel),
         ),
         ActerPrimaryActionButton(
           key: PasswordConfirm.passwordConfirmBtn,
           onPressed: () => onSubmit(context),
-          child: Text(L10n.of(context).submit),
+          child: Text(lang.submit),
         ),
       ],
     );
   }
 
   void togglePassword() {
-    setState(() {
-      passwordVisible = !passwordVisible;
-    });
+    setState(() => passwordVisible = !passwordVisible);
   }
 
   void onSubmit(BuildContext context) {
@@ -320,8 +328,9 @@ class _TokenConfirmState extends State<TokenConfirm> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return AlertDialog(
-      title: Text(L10n.of(context).confirmationToken),
+      title: Text(lang.confirmationToken),
       // The token-reset path is just the process by which control over that email address is confirmed.
       content: Form(
         key: _formKey,
@@ -332,7 +341,7 @@ class _TokenConfirmState extends State<TokenConfirm> {
               padding: const EdgeInsets.all(5),
               child: TextFormField(
                 controller: tokenField,
-                decoration: InputDecoration(hintText: L10n.of(context).token),
+                decoration: InputDecoration(hintText: lang.token),
               ),
             ),
             Padding(
@@ -340,7 +349,7 @@ class _TokenConfirmState extends State<TokenConfirm> {
               child: TextFormField(
                 controller: newPassword,
                 decoration: InputDecoration(
-                  hintText: L10n.of(context).yourPassword,
+                  hintText: lang.yourPassword,
                   suffixIcon: IconButton(
                     onPressed: togglePassword,
                     icon: Icon(
@@ -359,20 +368,18 @@ class _TokenConfirmState extends State<TokenConfirm> {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context, null),
-          child: Text(L10n.of(context).cancel),
+          child: Text(lang.cancel),
         ),
         ActerPrimaryActionButton(
           onPressed: () => onSubmit(context),
-          child: Text(L10n.of(context).submit),
+          child: Text(lang.submit),
         ),
       ],
     );
   }
 
   void togglePassword() {
-    setState(() {
-      passwordVisible = !passwordVisible;
-    });
+    setState(() => passwordVisible = !passwordVisible);
   }
 
   void onSubmit(BuildContext context) {

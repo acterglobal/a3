@@ -17,12 +17,14 @@ class BookmarkAction extends ConsumerWidget {
 
     if (isBookmarked) {
       return IconButton(
+        key: ValueKey('${bookmarker.id}-unbookmark'),
         onPressed: () => unbookmark(ref: ref, bookmarker: bookmarker),
         icon: const Icon(Icons.bookmark),
       );
     }
 
     return IconButton(
+      key: ValueKey('${bookmarker.id}-bookmark'),
       icon: const Icon(Icons.bookmark_border),
       onPressed: () async => bookmark(ref: ref, bookmarker: bookmarker),
     );

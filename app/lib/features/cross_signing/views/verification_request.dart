@@ -18,6 +18,7 @@ class VerificationRequestView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -31,12 +32,12 @@ class VerificationRequestView extends StatelessWidget {
             child: buildTitleBar(context),
           ),
           const Spacer(),
-          Text(L10n.of(context).sasIncomingReqNotifContent(sender)),
+          Text(lang.sasIncomingReqNotifContent(sender)),
           const Spacer(),
           const Icon(Atlas.lock_keyhole),
           const Spacer(),
           ActerPrimaryActionButton(
-            child: Text(L10n.of(context).acceptRequest),
+            child: Text(lang.acceptRequest),
             onPressed: () => onAccept(context),
           ),
           const Spacer(),

@@ -1,9 +1,9 @@
 import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
-import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/search/model/keys.dart';
@@ -11,6 +11,7 @@ import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uuid/uuid.dart';
+
 import './appstart.dart';
 import 'util.dart';
 
@@ -24,7 +25,7 @@ extension ActerLogin on ConvenientTest {
     String? registrationToken,
     String? displayName,
   }) async {
-    final newId = 'it-${const Uuid().v4().toString()}';
+    final newId = 'it-${const Uuid().v4()}';
     startFreshTestApp(newId);
     await register(
       newId,

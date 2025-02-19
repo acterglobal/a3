@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
 
 class FileMessageBuilder extends ConsumerWidget {
   final types.FileMessage message;
@@ -24,16 +25,22 @@ class FileMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ChatMessageInfo messageInfo = (messageId: message.id, roomId: roomId);
+    final ChatMessageInfo messageInfo =
+        (messageId: message.remoteId ?? message.id, roomId: roomId);
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     return InkWell(
       onTap: () async {
-        if (mediaState.mediaFile != null) {
-          openFileShareDialog(context: context, file: mediaState.mediaFile!);
+        final mediaFile =
+            ref.read(mediaChatStateProvider(messageInfo)).mediaFile;
+        if (mediaFile != null) {
+          await openFileShareDialog(
+            context: context,
+            file: mediaFile,
+          );
         } else {
-          await ref
-              .read(mediaChatStateProvider(messageInfo).notifier)
-              .downloadMedia();
+          final notifier =
+              ref.read(mediaChatStateProvider(messageInfo).notifier);
+          await notifier.downloadMedia();
         }
       },
       child: Container(
@@ -57,51 +64,35 @@ class FileMessageBuilder extends ConsumerWidget {
   }
 
   Widget getFileIcon(BuildContext context) {
-    final extension = message.name.split('.').last;
-    IconData iconData;
-    switch (extension) {
-      case 'png':
-      case 'jpg':
-      case 'jpeg':
-        iconData = Atlas.file_image;
-        break;
-      case 'pdf':
-        iconData = Icons.picture_as_pdf;
-        break;
-      case 'doc':
-        iconData = Atlas.file;
-        break;
-      case 'mp4':
-        iconData = Atlas.file_video;
-        break;
-      case 'mp3':
-        iconData = Atlas.music_file;
-        break;
-      case 'rtf':
-      case 'txt':
-      default:
-        iconData = Atlas.lines_file;
-        break;
-    }
+    final extension = p.extension(message.name);
+    IconData iconData = switch (extension) {
+      '.png' || '.jpg' || '.jpeg' => Atlas.file_image,
+      '.pdf' => Icons.picture_as_pdf,
+      '.doc' => Atlas.file,
+      '.mp4' => Atlas.file_video,
+      '.mp3' => Atlas.music_file,
+      '.rtf' || '.txt' => Atlas.lines_file,
+      _ => Atlas.lines_file,
+    };
     return Icon(iconData, size: 28);
   }
 
   Widget fileInfoUI(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             message.name,
-            style: Theme.of(context).textTheme.labelLarge,
+            style: textTheme.labelLarge,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 5),
           Text(
             formatBytes(message.size.truncate()),
-            style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+            style: textTheme.labelMedium?.copyWith(color: colorScheme.primary),
           ),
         ],
       ),

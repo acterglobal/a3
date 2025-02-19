@@ -21,7 +21,8 @@ Future<String?> createChat(
   List<String>? selectedUsers,
   bool suggested = false,
 }) async {
-  EasyLoading.show(status: L10n.of(context).creatingChat);
+  final lang = L10n.of(context);
+  EasyLoading.show(status: lang.creatingChat);
   try {
     final sdk = await ref.read(sdkProvider.future);
     final config = sdk.api.newConvoSettingsBuilder();
@@ -49,8 +50,9 @@ Future<String?> createChat(
     if (parentId != null) {
       config.setParent(parentId);
     }
-    final client = ref.read(alwaysClientProvider);
-    final roomIdStr = (await client.createConvo(config.build())).toString();
+    final client = await ref.read(alwaysClientProvider.future);
+    final roomId = await client.createConvo(config.build());
+    final roomIdStr = roomId.toString();
     // add room to child of space (if given)
     if (parentId != null) {
       final space = await ref.read(spaceProvider(parentId).future);
@@ -68,7 +70,7 @@ Future<String?> createChat(
       return null;
     }
     EasyLoading.showError(
-      L10n.of(context).errorCreatingChat(e),
+      lang.errorCreatingChat(e),
       duration: const Duration(seconds: 3),
     );
     return null;

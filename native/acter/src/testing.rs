@@ -1,7 +1,8 @@
-//! Testing modules, don't use in production!
+//! Testing modules, don’t use in production!
 
 use anyhow::Result;
 use core::{future::Future, time::Duration};
+use matrix_sdk::config::RequestConfig;
 use matrix_sdk::{Client as SdkClient, ClientBuilder};
 use matrix_sdk_base::store::StoreConfig;
 use tokio::time::sleep;
@@ -25,7 +26,7 @@ where
 ///
 /// Will call `fun().await` up to `count` times, checking wether that returned `Ok(Some(T))` and
 /// return `Ok(Some(T))` if it does. Sleep up to `secs` seconds in between each call. Return `Ok(None)`
-/// if even after all that time, it didn't succeed. Passes on any internally raised error
+/// if even after all that time, it didn’t succeed. Passes on any internally raised error
 pub async fn wait_for_secs<F, T, O>(count: u32, secs: u8, fun: F) -> Result<Option<T>>
 where
     F: Fn() -> O,
@@ -52,10 +53,16 @@ pub async fn default_client_config(
     user_agent: String,
     store_cfg: StoreConfig,
 ) -> Result<ClientBuilder> {
-    let builder = SdkClient::builder()
+    let config = RequestConfig::new().disable_retry();
+    let mut builder = SdkClient::builder()
         .user_agent(user_agent)
         .store_config(store_cfg)
-        .homeserver_url(homeserver);
+        .homeserver_url(homeserver)
+        .request_config(config);
+    if let Some(http_proxy) = option_env!("HTTP_PROXY") {
+        println!("Setting http proxy to {http_proxy}");
+        builder = builder.proxy(http_proxy);
+    }
     Ok(builder)
 }
 

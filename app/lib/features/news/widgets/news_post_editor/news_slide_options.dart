@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
@@ -31,10 +32,10 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideOptionsUI(BuildContext context) {
+    final curSlide = ref.watch(newsStateProvider).currentNewsSlide;
     final keyboardVisibility = ref.watch(keyboardVisibleProvider);
     return Visibility(
-      visible: ref.watch(newsStateProvider).currentNewsSlide != null &&
-          !(keyboardVisibility.value ?? false),
+      visible: curSlide != null && keyboardVisibility.value != true,
       child: Container(
         color: Theme.of(context).colorScheme.primary,
         child: newsSlideListUI(context),
@@ -43,6 +44,8 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideListUI(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final currentSlide = ref.watch(newsStateProvider).currentNewsSlide;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -64,27 +67,20 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                     InkWell(
                       key: Key('slide-${slidePost.type.name}-$index'),
                       onTap: () {
-                        ref
-                            .read(newsStateProvider.notifier)
-                            .changeSelectedSlide(slidePost);
+                        final notifier = ref.read(newsStateProvider.notifier);
+                        notifier.changeSelectedSlide(slidePost);
                       },
                       child: Container(
                         width: 60,
                         margin: const EdgeInsets.symmetric(
-                          vertical: 10.0,
-                          horizontal: 5.0,
+                          vertical: 10,
+                          horizontal: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
+                          color: colorScheme.surface,
                           borderRadius: BorderRadius.circular(5),
-                          border: ref
-                                      .watch(newsStateProvider)
-                                      .currentNewsSlide ==
-                                  slidePost
-                              ? Border.all(
-                                  color:
-                                      Theme.of(context).colorScheme.textColor,
-                                )
+                          border: currentSlide == slidePost
+                              ? Border.all(color: colorScheme.textColor)
                               : null,
                         ),
                         child: getIconAsPerSlideType(
@@ -99,13 +95,12 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                       child: InkWell(
                         key: Key('remove-slide-${slidePost.type.name}-$index'),
                         onTap: () {
-                          ref
-                              .read(newsStateProvider.notifier)
-                              .deleteSlide(index);
+                          final notifier = ref.read(newsStateProvider.notifier);
+                          notifier.deleteSlide(index);
                         },
                         child: Icon(
                           Icons.remove_circle_outlined,
-                          color: Theme.of(context).colorScheme.error,
+                          color: colorScheme.error,
                         ),
                       ),
                     ),
@@ -132,9 +127,8 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           ? InkWell(
               key: NewsUpdateKeys.selectSpace,
               onTap: () async {
-                await ref
-                    .read(newsStateProvider.notifier)
-                    .changeNewsPostSpaceId(context);
+                final notifier = ref.read(newsStateProvider.notifier);
+                await notifier.changeNewsPostSpaceId(context);
               },
               child: Stack(
                 clipBehavior: Clip.none,
@@ -165,9 +159,8 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           : OutlinedButton(
               key: NewsUpdateKeys.selectSpace,
               onPressed: () async {
-                await ref
-                    .read(newsStateProvider.notifier)
-                    .changeNewsPostSpaceId(context);
+                final notifier = ref.read(newsStateProvider.notifier);
+                await notifier.changeNewsPostSpaceId(context);
               },
               child: Text(L10n.of(context).selectSpace),
             ),
@@ -178,7 +171,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     return Container(
       height: 50,
       width: 2,
-      margin: const EdgeInsets.symmetric(horizontal: 10.0),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
       color: Theme.of(context).colorScheme.onPrimary,
     );
   }
@@ -193,40 +186,37 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
         ),
       ),
       builder: (context) => PostAttachmentOptions(
-        onTapAddText: () => NewsUtils.addTextSlide(ref),
-        onTapImage: () async => await NewsUtils.addImageSlide(ref),
-        onTapVideo: () async => await NewsUtils.addVideoSlide(ref),
+        onTapAddText: () => NewsUtils.addTextSlide(ref: ref),
+        onTapImage: () async => await NewsUtils.addImageSlide(ref: ref),
+        onTapVideo: () async => await NewsUtils.addVideoSlide(ref: ref),
       ),
     );
   }
 
-  Widget getIconAsPerSlideType(
-    NewsSlideType slidePostType,
-    XFile? mediaFile,
-  ) {
-    switch (slidePostType) {
-      case NewsSlideType.text:
-        return const Icon(Atlas.size_text);
-      case NewsSlideType.image:
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(5.0),
+  Widget getIconAsPerSlideType(NewsSlideType slidePostType, XFile? mediaFile) {
+    return switch (slidePostType) {
+      NewsSlideType.text => const Icon(Atlas.size_text),
+      NewsSlideType.image => ClipRRect(
+          borderRadius: BorderRadius.circular(5),
           child: Image(
-            image: XFileImage(mediaFile!),
+            image: XFileImage(mediaFile.expect('image slide needs media file')),
             fit: BoxFit.cover,
           ),
-        );
-      case NewsSlideType.video:
-        return Stack(
+        ),
+      NewsSlideType.video => Stack(
           fit: StackFit.expand,
           children: [
             FutureBuilder(
-              future: NewsUtils.getThumbnailData(mediaFile!),
+              future: NewsUtils.getThumbnailData(
+                mediaFile.expect('video slide needs media file'),
+              ),
               builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
+                final data = snapshot.data;
+                if (data != null) {
                   return ClipRRect(
-                    borderRadius: BorderRadius.circular(5.0),
+                    borderRadius: BorderRadius.circular(5),
                     child: Image.file(
-                      snapshot.data!,
+                      data,
                       fit: BoxFit.cover,
                     ),
                   );
@@ -236,12 +226,13 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
             ),
             Container(
               color: Colors.black38,
-              child: const Icon(Icons.play_arrow_outlined, size: 32),
+              child: const Icon(
+                Icons.play_arrow_outlined,
+                size: 32,
+              ),
             ),
           ],
-        );
-      default:
-        return Container();
-    }
+        ),
+    };
   }
 }

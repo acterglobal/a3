@@ -27,9 +27,7 @@ class MemberInfoSkeleton extends StatelessWidget {
                   ),
                   child: ActerAvatar(
                     options: const AvatarOptions.DM(
-                      AvatarInfo(
-                        uniqueId: '@memberId:acter.global',
-                      ),
+                      AvatarInfo(uniqueId: '@memberId:acter.global'),
                       size: 50,
                     ),
                   ),
@@ -64,7 +62,9 @@ class MemberInfoSkeleton extends StatelessWidget {
               ),
             ),
             const Skeletonizer(
-              child: Center(child: Text('This is you')),
+              child: Center(
+                child: Text('This is you'),
+              ),
             ),
             const SizedBox(height: 30),
           ],

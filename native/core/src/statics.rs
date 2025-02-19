@@ -1,22 +1,11 @@
-use ruma_common::{serde::Raw, OwnedRoomAliasId, RoomAliasId};
-use ruma_events::AnyInitialStateEvent;
+use matrix_sdk_base::ruma::{
+    events::AnyInitialStateEvent, serde::Raw, OwnedRoomAliasId, RoomAliasId,
+};
 use serde_json::{json, value::to_raw_value};
 
 pub static PURPOSE_FIELD: &str = "m.room.purpose";
 pub static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
 pub static PURPOSE_TEAM_VALUE: &str = "global.acter.team";
-
-#[allow(non_snake_case)]
-pub mod KEYS {
-    pub mod TASKS {
-        pub static TASKS: &str = "tasks";
-        pub static MY_OPEN_TASKS: &str = "tasks_my_open";
-        pub static MY_DONE_TASKS: &str = "tasks_my_done";
-    }
-    pub static CALENDAR: &str = "calendar";
-    pub static NEWS: &str = "news";
-    pub static PINS: &str = "pins";
-}
 
 const HISTORY: &str = r#"{
     "type": "m.room.history_visibility",
@@ -40,7 +29,7 @@ const ENCRYPTION: &str = r#"{
 pub fn default_acter_space_states() -> Vec<Raw<AnyInitialStateEvent>> {
     let mut v = [HISTORY]
         .into_iter()
-        .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))
+        .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don’t fail"))
         .collect::<Vec<Raw<AnyInitialStateEvent>>>();
     let r = to_raw_value(&json!({
         "type": PURPOSE_FIELD_DEV,
@@ -50,7 +39,7 @@ pub fn default_acter_space_states() -> Vec<Raw<AnyInitialStateEvent>> {
             "m.importance_level": 50
         }
     }))
-    .expect("static parsing of subtype doesn't fail");
+    .expect("static parsing of subtype doesn’t fail");
 
     v.push(Raw::from_json(r));
     v
@@ -59,7 +48,7 @@ pub fn default_acter_space_states() -> Vec<Raw<AnyInitialStateEvent>> {
 pub fn default_acter_convo_states() -> Vec<Raw<AnyInitialStateEvent>> {
     [HISTORY, ENCRYPTION]
         .into_iter()
-        .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))
+        .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don’t fail"))
         .collect()
 }
 
@@ -75,7 +64,7 @@ pub fn initial_state_for_alias(
             "alt_aliases": alt_aliases,
         }
     }))
-    .expect("static doesn't fail");
+    .expect("static doesn’t fail");
 
     Raw::from_json(r)
 }

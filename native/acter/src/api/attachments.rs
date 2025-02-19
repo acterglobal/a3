@@ -1,24 +1,26 @@
 use acter_core::{
-    events::attachments::{
-        AttachmentBuilder, AttachmentContent, FallbackAttachmentContent, LinkAttachmentContent,
+    events::{
+        attachments::{
+            AttachmentBuilder, AttachmentContent, FallbackAttachmentContent, LinkAttachmentContent,
+        },
+        RefDetails as CoreRefDetails,
     },
     models::{self, can_redact, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{
-    media::{MediaFormat, MediaRequest},
-    room::Room,
+use matrix_sdk::room::Room;
+use matrix_sdk_base::{
+    media::{MediaFormat, MediaRequestParameters},
+    ruma::{events::MessageLikeEventType, EventId, OwnedEventId, OwnedTransactionId, OwnedUserId},
     RoomState,
 };
-use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
-use ruma_events::{room::message::RoomMessageEvent, MessageLikeEventType};
-use std::{io::Write, ops::Deref, path::PathBuf, str::FromStr};
+use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
 use tokio::sync::broadcast::Receiver;
-use tokio_stream::Stream;
+use tokio_stream::{wrappers::BroadcastStream, Stream};
 use tracing::warn;
 
-use super::{client::Client, common::ThumbnailSize, RUNTIME};
+use super::{client::Client, common::ThumbnailSize, deep_linking::RefDetails, RUNTIME};
 use crate::{MsgContent, MsgDraft, OptionString};
 
 impl Client {
@@ -76,7 +78,6 @@ impl Attachment {
     pub fn room_id_str(&self) -> String {
         self.room.room_id().to_string()
     }
-
     pub fn type_str(&self) -> String {
         self.inner.content().type_str()
     }
@@ -89,8 +90,16 @@ impl Attachment {
         self.inner.meta.origin_server_ts.get().into()
     }
 
-    pub fn msg_content(&self) -> MsgContent {
-        MsgContent::from(&self.inner.content)
+    pub fn ref_details(&self) -> Option<RefDetails> {
+        if let AttachmentContent::Reference(r) = &self.inner.content {
+            Some(RefDetails::new(self.client.deref().clone(), r.clone()))
+        } else {
+            None
+        }
+    }
+
+    pub fn msg_content(&self) -> Option<MsgContent> {
+        MsgContent::try_from(&self.inner.content).ok()
     }
 
     pub async fn can_redact(&self) -> Result<bool> {
@@ -122,7 +131,7 @@ impl Attachment {
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest {
+                                .map(|source| MediaRequestParameters {
                                     source,
                                     format: MediaFormat::from(thumb_size),
                                 });
@@ -137,12 +146,12 @@ impl Attachment {
                                 });
                             (request, filename)
                         }
-                        AttachmentContent::Video(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content))=> {
+                        AttachmentContent::Video(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
                             let request = content
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest {
+                                .map(|source| MediaRequestParameters {
                                     source,
                                     format: MediaFormat::from(thumb_size),
                                 });
@@ -157,12 +166,12 @@ impl Attachment {
                                 });
                             (request, filename)
                         }
-                        AttachmentContent::File(content) | AttachmentContent::Fallback(FallbackAttachmentContent::File(content))=> {
+                        AttachmentContent::File(content) | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
                             let request = content
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest {
+                                .map(|source| MediaRequestParameters {
                                     source,
                                     format: MediaFormat::from(thumb_size),
                                 });
@@ -182,7 +191,7 @@ impl Attachment {
                                 .info
                                 .as_ref()
                                 .and_then(|info| info.thumbnail_source.clone())
-                                .map(|source| MediaRequest {
+                                .map(|source| MediaRequestParameters {
                                     source,
                                     format: MediaFormat::from(thumb_size),
                                 });
@@ -202,7 +211,7 @@ impl Attachment {
                     },
                     None => match evt_content {
                         AttachmentContent::Image(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
-                            let request = MediaRequest {
+                            let request = MediaRequestParameters {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
                             };
@@ -216,8 +225,8 @@ impl Attachment {
                                 });
                             (Some(request), filename)
                         }
-                        AttachmentContent::Audio(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content))=> {
-                            let request = MediaRequest {
+                        AttachmentContent::Audio(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
+                            let request = MediaRequestParameters {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
                             };
@@ -232,7 +241,7 @@ impl Attachment {
                             (Some(request), filename)
                         }
                         AttachmentContent::Video(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
-                            let request = MediaRequest {
+                            let request = MediaRequestParameters {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
                             };
@@ -247,7 +256,7 @@ impl Attachment {
                             (Some(request), filename)
                         }
                         AttachmentContent::File(content) | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
-                            let request = MediaRequest {
+                            let request = MediaRequestParameters {
                                 source: content.source.clone(),
                                 format: MediaFormat::File,
                             };
@@ -349,12 +358,18 @@ impl Attachment {
                 } else {
                     [room.room_id().as_str().as_bytes(), evt_id.as_bytes()].concat()
                 };
-                let path = client.store().get_custom_value(&key).await?;
-                let text = match path {
-                    Some(path) => Some(std::str::from_utf8(&path)?.to_string()),
-                    None => None,
+                let Some(path_vec) = client.store().get_custom_value(&key).await? else {
+                    return Ok(OptionString::new(None));
                 };
-                Ok(OptionString::new(text))
+                let path_str = std::str::from_utf8(&path_vec)?.to_string();
+                if matches!(exists(&path_str), Ok(true)) {
+                    return Ok(OptionString::new(Some(path_str)));
+                }
+
+                // file wasn’t existing, clear cache.
+
+                client.store().remove_custom_value(&key).await?;
+                Ok(OptionString::new(None))
             })
             .await?
     }
@@ -370,6 +385,10 @@ pub struct AttachmentsManager {
 impl AttachmentsManager {
     pub fn room_id_str(&self) -> String {
         self.room.room_id().to_string()
+    }
+
+    pub fn object_id_str(&self) -> String {
+        self.inner.event_id().to_string()
     }
 
     pub fn can_edit_attachments(&self) -> bool {
@@ -475,7 +494,7 @@ impl AttachmentsManager {
             .any(|inner| inner == attachment_id);
 
         if !has_entry {
-            bail!("attachment doesn't exist");
+            bail!("attachment doesn’t exist");
         }
 
         let event_id = EventId::parse(&attachment_id)?;
@@ -483,9 +502,11 @@ impl AttachmentsManager {
 
         RUNTIME
             .spawn(async move {
-                let evt = room.event(&event_id).await?;
-                let event_content = evt.event.deserialize_as::<RoomMessageEvent>()?;
-                let permitted = if event_content.sender() == my_id {
+                let evt = room.event(&event_id, None).await?;
+                let Some(sender) = evt.kind.raw().get_field::<OwnedUserId>("sender")? else {
+                    bail!("Could not determine the sender of the previous event");
+                };
+                let permitted = if sender == my_id {
                     room.can_user_redact_own(&my_id).await?
                 } else {
                     room.can_user_redact_other(&my_id).await?
@@ -559,8 +580,23 @@ impl AttachmentsManager {
         })
     }
 
+    pub async fn reference_draft(&self, ref_details: Box<RefDetails>) -> Result<AttachmentDraft> {
+        let room = self.room.clone();
+        let client = self.client.deref().clone();
+
+        let content = AttachmentContent::Reference((*ref_details).deref().clone());
+
+        let mut builder = self.inner.draft_builder();
+        builder.content(content);
+        Ok(AttachmentDraft {
+            client: self.client.clone(),
+            room: self.room.clone(),
+            inner: builder,
+        })
+    }
+
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
-        self.client.subscribe_stream(self.inner.update_key())
+        BroadcastStream::new(self.subscribe()).map(|f| true)
     }
 
     pub fn subscribe(&self) -> Receiver<()> {

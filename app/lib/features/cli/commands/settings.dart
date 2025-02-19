@@ -1,5 +1,6 @@
-import 'package:args/command_runner.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:args/command_runner.dart';
 
 // ignore_for_file: avoid_print
 const supportedKeys = {
@@ -24,16 +25,20 @@ class ShowCommand extends Command {
 
   @override
   Future<void> run() async {
-    if (argResults != null) {
-      if (argResults!['all']) {
-        for (final key in supportedKeys.keys) {
-          await printSetting(supportedKeys[key]!, key);
+    final results = argResults;
+    if (results != null) {
+      if (results['all']) {
+        for (final title in supportedKeys.keys) {
+          final key =
+              supportedKeys[title].expect('key of $title not available');
+          await printSetting(key, title);
         }
         return;
       }
-      final key = argResults!['key'];
-      if (key != null) {
-        return await printSetting(supportedKeys[key!]!, key);
+      final title = results['key'];
+      if (title != null) {
+        final key = supportedKeys[title].expect('key of $title not available');
+        return await printSetting(key, title);
       }
     }
 
@@ -73,11 +78,13 @@ class SetCommand extends Command {
 
   @override
   Future<void> run() async {
-    if (argResults != null) {
-      final key = argResults!['key'];
-      final value = argResults!['value'];
-      if (key != null && value != null) {
-        return await setSetting(supportedKeys[key!]!, key, value);
+    final results = argResults;
+    if (results != null) {
+      final title = results['key'];
+      final value = results['value'];
+      if (title != null && value != null) {
+        final key = supportedKeys[title].expect('key of $title not available');
+        return await setSetting(key, title, value);
       }
     }
 
@@ -108,16 +115,20 @@ class ResetCommand extends Command {
 
   @override
   Future<void> run() async {
-    if (argResults != null) {
-      if (argResults!['all']) {
-        for (final key in supportedKeys.keys) {
-          await resetSetting(supportedKeys[key]!, key);
+    final results = argResults;
+    if (results != null) {
+      if (results['all']) {
+        for (final title in supportedKeys.keys) {
+          final key =
+              supportedKeys[title].expect('key of $title not available');
+          await resetSetting(key, title);
         }
         return;
       }
-      final key = argResults!['key'];
-      if (key != null) {
-        return await resetSetting(supportedKeys[key!]!, key);
+      final title = results['key'];
+      if (title != null) {
+        final key = supportedKeys[title].expect('key of $title not available');
+        return await resetSetting(key, title);
       }
     }
 

@@ -9,6 +9,7 @@ class PinListSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Skeletonizer(
       child: ListView(
+        shrinkWrap: true,
         children: [
           listItem(),
           listItem(),

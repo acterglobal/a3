@@ -1,1 +1,0 @@
-- Fixes of bugs and the UX of the emoji picker: you can now close it easily with the x on the top right, even from the search.

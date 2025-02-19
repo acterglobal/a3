@@ -29,7 +29,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ),
-		// The end.
+		    // The end.
       ),
     );
   }
@@ -65,7 +65,7 @@ detector.startListening();
 
 Control Detector:
 ```dart
-// usually you don't start listening but used in constructor
+// usually you don’t start listening but used in constructor
 detector.startListening();
 
 // pause shake listening for a while (e.g. when app is in background)

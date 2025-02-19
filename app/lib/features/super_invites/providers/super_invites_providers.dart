@@ -1,45 +1,52 @@
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+//Search Value provider for pin list
+final inviteListSearchTermProvider = StateProvider<String>((ref) => '');
+
 final hasSuperTokensAccess = FutureProvider<bool>((ref) async {
   final asyncVal = ref.watch(superInvitesTokensProvider);
-  return !asyncVal
-      .hasError; // if we error'd we assume it is not available on the server.
+  // if we error’d we assume it is not available on the server.
+  return !asyncVal.hasError;
 });
 
 final superInvitesTokensProvider =
     FutureProvider<List<SuperInviteToken>>((ref) async {
-  final superInvites = ref.watch(superInvitesProvider);
-  return (await superInvites.tokens()).toList();
+  final superInvites = await ref.watch(superInvitesProvider.future);
+  final tokenList = (await superInvites.tokens()).toList();
+
+  final searchTerm =
+      ref.watch(inviteListSearchTermProvider).trim().toLowerCase();
+  if (searchTerm.isEmpty) return tokenList;
+
+  return tokenList
+      .where((invite) => invite.token().toLowerCase().contains(searchTerm))
+      .toList();
 });
 
 final superInviteTokenProvider = FutureProvider.autoDispose
     .family<SuperInviteToken, String>((ref, tokenCode) async {
   final tokens = await ref.watch(superInvitesTokensProvider.future);
   for (final token in tokens) {
-    if (token.token() == tokenCode) {
-      return token;
-    }
+    if (token.token() == tokenCode) return token;
   }
-
   throw 'SuperInvite $tokenCode not found';
 });
 
-final superInvitesProvider = Provider<SuperInvites>((ref) {
-  final client = ref.watch(alwaysClientProvider);
-  return client.superInvites();
-});
+final superInvitesProvider = FutureProvider<SuperInvites>(
+  (ref) => ref.watch(
+    alwaysClientProvider.selectAsync((client) => client.superInvites()),
+  ),
+);
 
 /// List of SuperInviteTokens that have the given roomId in their to-invite list
 final superInvitesForRoom = FutureProvider.autoDispose
     .family<List<SuperInviteToken>, String>((ref, roomId) async {
   final allInvites = await ref.watch(superInvitesTokensProvider.future);
   return allInvites
-      .where(
-        (invite) =>
-            invite.rooms().map((e) => e.toDartString()).contains(roomId),
-      )
+      .where((invite) => asDartStringList(invite.rooms()).contains(roomId))
       .toList();
 });
 
@@ -49,7 +56,7 @@ Future<String> newSuperInviteForRooms(
   List<String> rooms, {
   String? inviteCode,
 }) async {
-  final superInvites = ref.read(superInvitesProvider);
+  final superInvites = await ref.read(superInvitesProvider.future);
   final builder = superInvites.newTokenUpdater();
   if (inviteCode != null) {
     builder.token(inviteCode);
@@ -64,6 +71,6 @@ Future<String> newSuperInviteForRooms(
 
 final superInviteInfoProvider = FutureProvider.autoDispose
     .family<SuperInviteInfo, String>((ref, token) async {
-  final superInvites = ref.watch(superInvitesProvider);
+  final superInvites = await ref.watch(superInvitesProvider.future);
   return await superInvites.info(token);
 });

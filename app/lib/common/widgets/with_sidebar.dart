@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:flutter/material.dart';
 
 class WithSidebar extends StatelessWidget {

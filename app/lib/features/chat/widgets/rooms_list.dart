@@ -1,6 +1,6 @@
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/chat/models/room_list_filter_state/room_list_filter_state.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
@@ -14,16 +14,16 @@ import 'package:go_router/go_router.dart';
 
 final bucketGlobal = PageStorageBucket();
 
+typedef RoomSelectAction = Function(String);
+
 class RoomsListWidget extends ConsumerStatefulWidget {
-  final Function(String) onSelected;
   static const roomListMenuKey = Key('chat-room-list');
   static const openSearchActionButtonKey =
       Key('chat-rooms-list-open-search-action-btn');
   static const closeSearchActionButtonKey =
       Key('chat-rooms-list-close-search-action-btn');
-  static const clearSearchActionButtonKey =
-      Key('chat-rooms-list-clear-search-action-btn');
-  static const searchBarKey = Key('chat-rooms-list-search-bar');
+
+  final RoomSelectAction onSelected;
 
   const RoomsListWidget({
     required this.onSelected,
@@ -31,13 +31,11 @@ class RoomsListWidget extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _RoomsListWidgetState();
+  ConsumerState<ConsumerStatefulWidget> createState() => RoomsListWidgetState();
 }
 
-class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
+class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   final ScrollController controller = ScrollController();
-  final TextEditingController searchTextController = TextEditingController();
   final FocusNode searchFocus = FocusNode();
 
   bool _isSearchVisible = false;
@@ -46,15 +44,6 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   void initState() {
     super.initState();
     controller.addListener(_onScroll);
-    searchTextController.text =
-        ref.read(roomListFilterProvider).searchTerm ?? '';
-  }
-
-  @override
-  void didUpdateWidget(RoomsListWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    searchTextController.text =
-        ref.read(roomListFilterProvider).searchTerm ?? '';
   }
 
   void _onScroll() {
@@ -62,49 +51,39 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
     final outOfRange = controller.position.outOfRange;
     final offset = controller.offset;
     if (topPosition && outOfRange && offset <= -80) {
-      setState(() {
-        _isSearchVisible = true;
-      });
+      setState(() => _isSearchVisible = true);
     } else if (!topPosition && !outOfRange) {
-      setState(() {
-        _isSearchVisible = false;
-      });
+      setState(() => _isSearchVisible = false);
     }
   }
 
   Widget roomListTitle(BuildContext context) {
-    String title = L10n.of(context).chat;
+    final lang = L10n.of(context);
+    String? title;
 
     if (ref.watch(hasRoomFilters)) {
       final selection =
           ref.watch(roomListFilterProvider.select((value) => value.selection));
-      switch (selection) {
-        case FilterSelection.dmsOnly:
-          title = L10n.of(context).dms;
-          break;
-        case FilterSelection.favorites:
-          title = L10n.of(context).bookmarked;
-        default:
-          break;
-      }
+      title = switch (selection) {
+        FilterSelection.dmsOnly => lang.dms,
+        FilterSelection.favorites => lang.bookmarked,
+        _ => null,
+      };
     }
 
     return Text(
-      title,
+      title ?? lang.chat,
       style: Theme.of(context).textTheme.headlineSmall,
     );
   }
 
   Widget searchTerms(BuildContext context) {
-    String searchFilterText = '';
-
     final searchTerm =
         ref.watch(roomListFilterProvider.select((value) => value.searchTerm));
     if (searchTerm != null && searchTerm.isNotEmpty) {
-      searchFilterText = L10n.of(context).searchResultFor(searchTerm);
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Text(searchFilterText),
+        child: Text(L10n.of(context).searchResultFor(searchTerm)),
       );
     } else {
       return const SizedBox.shrink();
@@ -112,45 +91,21 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget filterBox(BuildContext context) {
-    final hasSearchTerm = ref
-            .watch(roomListFilterProvider.select((value) => value.searchTerm))
-            ?.isNotEmpty ==
-        true;
+    final searchTerm = ref.watch(roomListFilterProvider).searchTerm;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 5),
-        SearchBar(
-          key: RoomsListWidget.searchBarKey,
-          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-            const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-            ),
-          ),
-          focusNode: searchFocus,
-          controller: searchTextController,
-          leading: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(Atlas.magnifying_glass),
-          ),
+        ActerSearchWidget(
+          initialText: searchTerm,
+          padding: EdgeInsets.zero,
           hintText: L10n.of(context).searchChats,
-          trailing: hasSearchTerm
-              ? [
-                  InkWell(
-                    key: RoomsListWidget.clearSearchActionButtonKey,
-                    onTap: () {
-                      searchTextController.clear();
-                      ref
-                          .read(roomListFilterProvider.notifier)
-                          .updateSearchTerm(null);
-                    },
-                    child: const Icon(Icons.clear),
-                  ),
-                ]
-              : null,
-          onChanged: (value) {
+          onChanged: (String value) {
             ref.read(roomListFilterProvider.notifier).updateSearchTerm(value);
+          },
+          onClear: () {
+            ref.read(roomListFilterProvider.notifier).updateSearchTerm(null);
           },
         ),
         filterChipsButtons(),
@@ -159,6 +114,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget filterChipsButtons() {
+    final lang = L10n.of(context);
     final selected =
         ref.watch(roomListFilterProvider.select((value) => value.selection));
     return Container(
@@ -167,31 +123,28 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         children: [
           FilterChip(
             selected: selected == FilterSelection.all,
-            label: Text(L10n.of(context).all),
+            label: Text(lang.all),
             onSelected: (value) async {
-              await ref
-                  .read(roomListFilterProvider.notifier)
-                  .setSelection(FilterSelection.all);
+              final notifier = ref.read(roomListFilterProvider.notifier);
+              await notifier.setSelection(FilterSelection.all);
             },
           ),
           const SizedBox(width: 10),
           FilterChip(
             selected: selected == FilterSelection.favorites,
-            label: Text(L10n.of(context).bookmarked),
+            label: Text(lang.bookmarked),
             onSelected: (value) async {
-              await ref
-                  .read(roomListFilterProvider.notifier)
-                  .setSelection(FilterSelection.favorites);
+              final notifier = ref.read(roomListFilterProvider.notifier);
+              await notifier.setSelection(FilterSelection.favorites);
             },
           ),
           const SizedBox(width: 10),
           FilterChip(
             selected: selected == FilterSelection.dmsOnly,
-            label: Text(L10n.of(context).dms),
+            label: Text(lang.dms),
             onSelected: (value) async {
-              await ref
-                  .read(roomListFilterProvider.notifier)
-                  .setSelection(FilterSelection.dmsOnly);
+              final notifier = ref.read(roomListFilterProvider.notifier);
+              await notifier.setSelection(FilterSelection.dmsOnly);
             },
           ),
           const SizedBox(width: 10),
@@ -202,26 +155,22 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return PageStorage(
-      bucket: bucketGlobal,
-      child: CustomScrollView(
-        controller: controller,
-        key: const PageStorageKey<String>('convo-list'),
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            automaticallyImplyLeading: false,
-            floating: true,
-            elevation: 0,
-            leading: Padding(
-              padding: const EdgeInsets.all(15),
-              child: roomListTitle(context),
-            ),
-            leadingWidth: double.infinity,
-            actions: renderActions(),
-          ),
-          SliverToBoxAdapter(
-            child: AnimatedOpacity(
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.all(15),
+          child: roomListTitle(context),
+        ),
+        leadingWidth: double.infinity,
+        actions: renderActions(),
+      ),
+      body: PageStorage(
+        bucket: bucketGlobal,
+        child: Column(
+          children: [
+            AnimatedOpacity(
               opacity: !_isSearchVisible ? 0 : 1,
               curve: Curves.easeInOut,
               duration: const Duration(milliseconds: 400),
@@ -232,16 +181,20 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
                     )
                   : const SizedBox.shrink(),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: searchTerms(context),
-          ),
-          ref.watch(isGuestProvider)
-              ? empty
-              : ChatsList(
-                  onSelected: widget.onSelected,
-                ),
-        ],
+            searchTerms(context),
+            Expanded(
+              child: ChatsList(
+                onSelected: (roomId) {
+                  ref
+                      .read(roomListFilterProvider.notifier)
+                      .updateSearchTerm(null);
+                  setState(() => _isSearchVisible = false);
+                  widget.onSelected(roomId);
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -258,9 +211,7 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
               TextButton(
                 key: RoomsListWidget.closeSearchActionButtonKey,
                 onPressed: () {
-                  setState(() {
-                    _isSearchVisible = false;
-                  });
+                  setState(() => _isSearchVisible = false);
                 },
                 child: Text(L10n.of(context).close),
               ),
@@ -279,36 +230,36 @@ class _RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
               searchFocus.requestFocus();
             });
           },
-          padding: const EdgeInsets.only(right: 10, left: 5),
+          padding: const EdgeInsets.only(
+            right: 10,
+            left: 5,
+          ),
           icon: const Icon(Atlas.magnifying_glass),
         ),
       if (hasFilters)
         IconButton(
           key: RoomsListWidget.openSearchActionButtonKey,
           onPressed: () {
-            setState(() {
-              _isSearchVisible = true;
-            });
+            setState(() => _isSearchVisible = true);
           },
-          padding: const EdgeInsets.only(right: 10, left: 5),
+          padding: const EdgeInsets.only(
+            right: 10,
+            left: 5,
+          ),
           icon: Badge(
             backgroundColor: Theme.of(context).colorScheme.badgeImportant,
             child: const Icon(Atlas.filter_thin),
           ),
         ),
       PlusIconWidget(
-        onPressed: () async => context.pushNamed(
-          Routes.createChat.name,
-        ),
+        onPressed: () => context.pushNamed(Routes.createChat.name),
       ),
     ];
   }
 
   Widget get empty {
-    return SliverToBoxAdapter(
-      child: Center(
-        child: SvgPicture.asset('assets/images/empty_messages.svg'),
-      ),
+    return Center(
+      child: SvgPicture.asset('assets/images/empty_messages.svg'),
     );
   }
 }

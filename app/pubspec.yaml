@@ -18,8 +18,8 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 0.0.1+1
 
 environment:
-  sdk: ">=3.5.0"
-  flutter: ^3.24.0
+  sdk: ">=3.6.2"
+  flutter: ^3.27.4
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
 
   # UI
-  flutter_adaptive_scaffold: ^0.2.2
+  flutter_adaptive_scaffold: ^0.3.1
   atlas_icons: ^0.0.12
   skeletonizer: ^1.1.1
   flutter_chat_ui: ^1.6.9
@@ -49,7 +49,7 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   expandable_text: ^2.3.0
   cached_network_image: ^3.4.1
-  fc_native_video_thumbnail: ^0.11.1
+  fc_native_video_thumbnail: ^0.16.1
   flutter_matrix_html:
     # path: "../../flutter_matrix_html"
     git:
@@ -63,7 +63,7 @@ dependencies:
       ref: main
 
   flutter_easyloading: ^3.0.5
-  appflowy_editor: ^3.0.0
+  appflowy_editor: ^4.0.0
   acter_trigger_auto_complete:
     path: ../packages/acter_trigger_auto_complete
   acter_notifify:
@@ -76,11 +76,10 @@ dependencies:
   freezed: ^2.5.7
   acter_flutter_sdk:
     path: ../packages/rust_sdk
-  mockito: ^5.4.4
 
   # State Management
-  flutter_riverpod: ^2.5.1
-  riverpod: ^2.5.1
+  flutter_riverpod: ^2.6.1
+  riverpod: ^2.6.1
   # Routing
   go_router: ^14.1.4
 
@@ -96,7 +95,7 @@ dependencies:
   file_picker: ^8.1.2
   emoji_picker_flutter: ^3.0.0
   connectivity_plus: ^6.0.3
-  mime: ^1.0.2
+  mime: ^2.0.0
   freezed_annotation: ^2.4.1
   http_parser: ^4.0.2
   flutter_custom_selector: ^0.0.3
@@ -104,7 +103,7 @@ dependencies:
   screenshot: ^3.0.0
   http: ^1.0.0
   crypto: ^3.0.2
-  flutter_math_fork: ^0.7.2
+  flutter_math_fork: ^0.7.3
   shared_preferences: ^2.2.0
   image_picker_for_web: ^3.0.1
   riverpod_infinite_scroll:
@@ -135,7 +134,7 @@ dependencies:
   scrolls_to_top: ^2.1.1
   scrollable_positioned_list: ^0.3.8
   diffutil_dart: ^4.0.1
-  tray_manager: ^0.2.3
+  tray_manager: ^0.3.0
   window_manager:  #^0.4.0
     # path: ../../window_manager
     git:
@@ -147,16 +146,30 @@ dependencies:
     path: ../packages/shake_detector
   open_filex: ^4.5.0
   phosphor_flutter: ^2.1.0
-  device_calendar: ^4.3.2
+  device_calendar: ^4.3.3-20240801
   quickalert: ^1.1.0
+  drag_and_drop_lists:
+    git:
+      url: https://github.com/acterglobal/DragAndDropLists
+      ref: master
+  permission_handler: ^11.3.1
+  hooks_riverpod: ^2.6.1
+  app_links: ^6.3.2
+  pretty_qr_code: ^3.3.0
+  qr_code_dart_scan: ^0.9.3
+  appcheck: ^1.5.2
+  screen_retriever: ^0.1.9
+  android_intent_plus: ^5.2.1
+  collection: ^1.18.0
+  preload_page_view: ^0.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
-  icons_launcher: ^2.0.7
-  flutter_lints: ^4.0.0
+  icons_launcher: ^3.0.0
+  flutter_lints: ^5.0.0
   build_runner: ^2.4.12
   convenient_test: ^1.3.7
   convenient_test_dev: ^1.3.7
@@ -165,39 +178,25 @@ dev_dependencies:
       url: https://github.com/gnunicorn/flutter_convenient_test/
       ref: ben-cli-limit-tests
       path: packages/convenient_test_manager_dart
-  msix: #^3.7.0
-    # FIXME mainline `msix` comes with outdated VS redistribution libs
-    # that make our app crash. We already copy over the proper ones in the
-    # CI job, it we need a msix-version that doesn't copy over its own bad ones
-    # see https://github.com/YehudaKremer/msix/issues/272#issuecomment-2181634105
-    git:
-      url: https://github.com/insertjokehere/msix.git
-      ref: msvc_redist
-  # mockito: ^5.4.2
+  msix: ^3.7.0
   uuid: ^4.0.0
   enough_mail: ^2.1.6
   sentry_dart_plugin: ^2.0.0
   translations_cleaner: ^0.0.5
   enven: ^1.0.1
+  mockingjay: ^0.6.0
+  mocktail: ^1.0.4
 
 dependency_overrides:
-  flutter_secure_storage_linux:
-    git:
-      url: https://github.com/gnunicorn/flutter_secure_storage/
-      ref: ben-fix-linux-secret-store-problem
-      path: flutter_secure_storage_linux
 
-  firebase_core:
-    git:
-      url: https://github.com/firebase/flutterfire/
-      path:  packages/firebase_core/firebase_core
-      ref: feat/update-web100
-
-  firebase_core_web:
-    git:
-      url: https://github.com/firebase/flutterfire/
-      path:  packages/firebase_core/firebase_core_web
-      ref: feat/update-web100
+  # msix: #^3.7.0
+  #   # FIXME mainline `msix` comes with outdated VS redistribution libs
+  #   # that make our app crash. We already copy over the proper ones in the
+  #   # CI job, it we need a msix-version that doesn't copy over its own bad ones
+  #   # see https://github.com/YehudaKremer/msix/issues/272#issuecomment-2181634105
+  #   git:
+  #     url: https://github.com/insertjokehere/msix.git
+  #     ref: msvc_redist
 sentry:
   upload_debug_symbols: true
   upload_source_maps: false
@@ -289,3 +288,5 @@ msix_config:
   icons_background_color: transparent
   architecture: x64
   capabilities: "internetClient,removableStorage"
+  protocol_activation: https, matrix, acter
+  app_uri_handler_hosts: app.global.acter,matrix.to

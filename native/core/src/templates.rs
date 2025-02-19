@@ -5,10 +5,9 @@ use futures::{
     Stream,
 };
 use indexmap::IndexMap;
-use matrix_sdk::RoomState;
+use matrix_sdk_base::{ruma::RoomId, RoomState};
 pub use minijinja::value::Value;
 use minijinja::Environment;
-use ruma_common::RoomId;
 use serde::Deserialize;
 use std::{collections::BTreeMap, sync::Arc};
 use tokio_retry::{
@@ -30,6 +29,7 @@ use crate::{
         calendar::CalendarEventEventContent,
         news::NewsEntryEventContent,
         pins::PinEventContent,
+        stories::StoryEventContent,
         tasks::{TaskEventContent, TaskListEventContent},
     },
     spaces::CreateSpaceSettings,
@@ -37,7 +37,7 @@ use crate::{
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Toml couldn't be parsed: {0:?}")]
+    #[error("Toml couldn’t be parsed: {0:?}")]
     TomlDeserializationFailed(#[from] toml::de::Error),
 
     #[error("Missing inputs: {0:?} are required")]
@@ -64,7 +64,7 @@ pub enum Error {
     #[error("Referenced {0} '{1}' on {2} not found.")]
     UnknownReference(String, String, String),
 
-    #[error("{1} doesn't have '{0}' set but no default has been defined.")]
+    #[error("{1} doesn’t have '{0}' set but no default has been defined.")]
     NoDefaultSet(String, String),
 
     #[error("{0} already found in context.")]
@@ -155,6 +155,10 @@ pub enum ObjectInner {
     NewsEntry {
         #[serde(flatten)]
         fields: NewsEntryEventContent,
+    },
+    Story {
+        #[serde(flatten)]
+        fields: StoryEventContent,
     },
 }
 
@@ -288,10 +292,7 @@ impl Engine {
     pub fn add_ref(&mut self, name: String, obj_type: String, id: String) -> Result<(), Error> {
         if self
             .context
-            .insert(
-                name.clone(),
-                Value::from_struct_object(ObjRef::new(id, obj_type)),
-            )
+            .insert(name.clone(), Value::from_object(ObjRef::new(id, obj_type)))
             .is_some()
         {
             Err(Error::ContextClash(name))
@@ -306,7 +307,7 @@ impl Engine {
         self.users.insert(name.clone(), cl.clone());
         if self
             .context
-            .insert(name.clone(), Value::from_struct_object(user_value))
+            .insert(name.clone(), Value::from_object(user_value))
             .is_some()
         {
             Err(Error::ContextClash(name))
@@ -406,7 +407,7 @@ impl Engine {
                         .map_err(|e| Error::Remap(format!("Creating space '{key}' failed"), e.to_string()))?;
                     context.insert(
                         key.to_string(),
-                        Value::from_struct_object(ObjRef::new(new_room_id.to_string() , "space".to_owned())),
+                        Value::from_object(ObjRef::new(new_room_id.to_string() , "space".to_owned())),
                     );
                     if is_default {
                         default_space = Some(key.to_string());
@@ -462,7 +463,7 @@ impl Engine {
                         trace!(?id, "task list created");
                         context.insert(
                             key.to_string(),
-                            Value::from_struct_object(ObjRef::new(id.to_string(), "task-list".to_owned())),
+                            Value::from_object(ObjRef::new(id.to_string(), "task-list".to_owned())),
                         );
                         yield
                     }
@@ -476,7 +477,7 @@ impl Engine {
                         trace!(?id, "task created");
                         context.insert(
                             key.to_string(),
-                            Value::from_struct_object(ObjRef::new(id.to_string(), "task".to_owned())),
+                            Value::from_object(ObjRef::new(id.to_string(), "task".to_owned())),
                         );
                         yield
                     }
@@ -490,7 +491,7 @@ impl Engine {
                         trace!(?id, "calendar event created");
                         context.insert(
                             key.to_string(),
-                            Value::from_struct_object(ObjRef::new(id.to_string(), "calendar-event".to_owned())),
+                            Value::from_object(ObjRef::new(id.to_string(), "calendar-event".to_owned())),
                         );
                         yield
                     }
@@ -504,7 +505,7 @@ impl Engine {
                         trace!(?id, "pin created");
                         context.insert(
                             key.to_string(),
-                            Value::from_struct_object(ObjRef::new(id.to_string(), "pin".to_owned())),
+                            Value::from_object(ObjRef::new(id.to_string(), "pin".to_owned())),
                         );
                         yield
                     }
@@ -518,7 +519,21 @@ impl Engine {
                         trace!(?id, "news created");
                         context.insert(
                             key.to_string(),
-                            Value::from_struct_object(ObjRef::new(id.to_string(), "news-entry".to_owned())),
+                            Value::from_object(ObjRef::new(id.to_string(), "news-entry".to_owned())),
+                        );
+                        yield
+                    }
+                    ObjectInner::Story { fields } => {
+                        trace!(?fields, "submitting story");
+                        let id = room
+                            .send(fields)
+                            .await
+                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .event_id;
+                        trace!(?id, "story created");
+                        context.insert(
+                            key.to_string(),
+                            Value::from_object(ObjRef::new(id.to_string(), "story".to_owned())),
                         );
                         yield
                     }
@@ -561,7 +576,7 @@ main = { type = "user", is-default = true, required = true, description = "The s
 space = { type = "space", required = true, description = "The acter space" }
 
 [objects]
-start_list = { type = "task-list", name = "{{ user.display_name() }}'s Acter onboarding list" }
+start_list = { type = "task-list", name = "{{ user.display_name() }}’s Acter onboarding list" }
 
 [objects.task_1]
 type = "task"

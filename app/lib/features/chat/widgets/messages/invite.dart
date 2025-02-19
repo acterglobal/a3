@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 class InviteSystemMessageWidget extends ConsumerWidget {
   final SystemMessage message;
   final String roomId;
+
   const InviteSystemMessageWidget({
     super.key,
     required this.roomId,

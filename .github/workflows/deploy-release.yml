@@ -6,18 +6,27 @@ concurrency:
 
 permissions:
   contents: write
+  pull-requests: write
 
 on:
   workflow_dispatch:
     inputs:
-      new_version:
-        description: 'Provide the version for this release'
+      patch_version:
+        description: 'Provide the patch version for this release'
         required: true
-        type: string
-      prev_tag:
-        description: 'The tag to compare the changelog to'
-        required: false
-        type: string
+        default: '1'
+        type: choice
+        options:
+          - '0'
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          - '8'
+          - '9'
       target:
         description: 'Build only Target'
         required: true
@@ -31,6 +40,9 @@ on:
           - linux
           - windows-exe
           - windows-msix
+          - ios,macos
+          - android,linux
+          - none
       custom_title:
         description: 'You want a custom title for the release?'
         required: false
@@ -39,12 +51,16 @@ on:
   schedule:
    - cron: 0 1 * * 4
 
+env:
+  # Due to a typo the last needs to be prefixed with this
+  RELEASE_STUPIDITY_PREFIX: '1'
+
 jobs:
   run_checker:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
-      should_run: ${{ inputs.new_version != null || steps.check-new-commits.outputs.has-new-commits }}
+      should_run: ${{ inputs.patch_version != null || steps.check-new-commits.outputs.has-new-commits }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -53,39 +69,72 @@ jobs:
         id: check-new-commits
         shell: bash
         run: |
-          if [ `git diff --name-only ${{ inputs.prev_tag || 'release-latest' }} -- app native .changes | wc -l` -ne 0 ]; then
+          if [ `git diff --name-only release-latest -- app native .changes | wc -l` -ne 0 ]; then
             echo "has-new-commits=true"  >> $GITHUB_OUTPUT ;
           else
             echo "has-new-commits=false" >> $GITHUB_OUTPUT ;
           fi
 
   tags:
+    env:
+      PATCH_VERSION: ${{ inputs.patch_version || 0 }}
     runs-on: ubuntu-latest
     needs:
      - run_checker
     if: ${{ needs.run_checker.outputs.should_run != 'false' }}
     # Map a step output to a job output
     outputs:
-      tag: v${{ inputs.new_version || steps.version.outputs.version }}
-      version: ${{ inputs.new_version || steps.version.outputs.version }}
+      tag: v${{ steps.version.outputs.version }}
+      version: ${{ steps.version.outputs.version }}
+      msix_version: ${{ steps.msix_version.outputs.version }}
       build_num: ${{ steps.build_num.outputs.build_num }}
       targets: ${{ inputs.target || 'all' }}
       release_title_prefix: ${{ inputs.custom_title || 'Release'}}
     steps:
       - id: version
-        # the suffix 0 allows us to provide up to 9 more hotfixes on the same day
-        run: echo "version=`date +1.%y.%-m%d0`" >> $GITHUB_OUTPUT
+        run: |
+          VERSION=`date +1.%y.$RELEASE_STUPIDITY_PREFIX%-m%d$PATCH_VERSION`
+          echo "version=$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - id: msix_version
+        run: |
+          VERSION=`date +1.%y.%-m%d$PATCH_VERSION`
+          echo "version=$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
       - id: build_num
-        run: echo "build_num=`date +%s`" >> $GITHUB_OUTPUT
+        run: |
+          BUILD_NUM=`date +%s`
+          echo "build_num=$BUILD_NUM"
+          echo "build_num=$BUILD_NUM" >> $GITHUB_OUTPUT
+      - if: ${{ inputs.target == 'none' }}
+        run: |
+          echo "stopping right here"
+          exit 1
   
+  create_draft_release:
+    runs-on: ubuntu-latest
+    needs:
+     - tags
+    steps:
+      - uses: actions/checkout@v4
+      # create temporary release to upload assets to
+      - name: Create Draft Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create ${{ needs.tags.outputs.tag }} \
+              --draft \
+              --title "${{ needs.tags.outputs.release_title_prefix }} ${{ needs.tags.outputs.tag }}"
+
   build:
     uses: ./.github/workflows/build-app.yml
     needs:
      - tags
+     - create_draft_release
     with:
       build_num: ${{ needs.tags.outputs.build_num }}
       version: ${{ needs.tags.outputs.version }}
-      release_title: "${{ needs.tags.outputs.release_title_prefix }} ${{ needs.tags.outputs.tag }}"
+      msix_version: ${{ needs.tags.outputs.msix_version }}
       release_tag: ${{ needs.tags.outputs.tag }}
       targets: ${{ needs.tags.outputs.targets }}
       release: true
@@ -115,7 +164,7 @@ jobs:
       - build
     steps:
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Windows msix
       - name: Create Archive
@@ -177,10 +226,10 @@ jobs:
       - tags
       - build
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Android
-      # - uses: actions/download-artifact@v3
+      # - uses: actions/download-artifact@v4
       #   with:
       #     name: Android-debug-symbols
       - name: Release Build to playstore
@@ -212,10 +261,10 @@ jobs:
       - changelog
       - build
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: iOS
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Changelog
 
@@ -267,11 +316,11 @@ jobs:
       - changelog
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: MacOS
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Changelog
 
@@ -313,8 +362,6 @@ jobs:
 ##     ## ##    ##  ##    ## ##     ##    ##     ## ##     ## ##    ##  
 ##     ## ##     ##  ######  ##     ##    ##     ##  #######  ##     ## 
 
-
-
   publish_aur:
     environment: release
     needs:
@@ -324,17 +371,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Linux x64
       - name: Create PKGBUILD file
         run: |
           cp app/linux/packaging/aur/PKGBUILD PKGBUILD
-          sed -i "s/%{{TAG}}%/${{ needs.tags.outputs.version }}/g" PKGBUILD
-          VERSION=$(echo ${{ needs.tags.outputs.version }} | sed "s/-/./g")
+
+          VERSION=${{ needs.tags.outputs.version }}
+          DOWNLOAD_PATH='v${{ needs.tags.outputs.version }}\/acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2'
+          MD5SUM=`md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'`
+
+          echo "Version: $VERSION"
+          echo "Download Path: $DOWNLOAD_PATH"
+          echo "MD5Sum: $MD5SUM"
+
+          sed -i "s/%{{PKGNAME}}%/acter-bin/g" PKGBUILD
+          sed -i "s/%{{PKGNAME_CONFLICTS}}%/acter-nightly-bin/g" PKGBUILD
+
           sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
-          sed -i "s/%{{PKGREL}}%/2/g" PKGBUILD
-          sed -i "s/%{{LINUX_MD5}}%/`md5sum acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2  | awk '{print $1}'`/g" PKGBUILD
+          sed -i "s/%{{DOWNLOAD_PATH}}%/$DOWNLOAD_PATH/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/$MD5SUM/g" PKGBUILD
+
+          echo " --- Final PKGBUILD File "
+          cat PKGBUILD
       - uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
         name: Publish to AUR
         with:
@@ -345,6 +405,48 @@ jobs:
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: Updated to ${{ needs.tags.outputs.version }}
 
+  publish_aur_nightly:
+    environment: release
+    needs:
+      - tags
+      - build
+    name: Publish AUR nightly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v4
+        with:
+          name: Linux x64
+      - name: Patch PKGBUILD file
+        run: |
+          cp app/linux/packaging/aur/PKGBUILD PKGBUILD
+
+          VERSION=${{ needs.tags.outputs.version }}
+          DOWNLOAD_PATH='v${{ needs.tags.outputs.version }}\/acter-linux-x64-${{ needs.tags.outputs.version }}.tar.bz2'
+          MD5SUM=`md5sum acter-linux-x64-$VERSION.tar.bz2  | awk '{print $1}'`
+
+          echo "Version: $VERSION"
+          echo "Download Path: $DOWNLOAD_PATH"
+          echo "MD5Sum: $MD5SUM"
+
+          sed -i "s/%{{PKGNAME}}%/acter-nightly-bin/g" PKGBUILD
+          sed -i "s/%{{PKGNAME_CONFLICTS}}%/acter-bin/g" PKGBUILD
+
+          sed -i "s/%{{VERSION}}%/$VERSION/g" PKGBUILD
+          sed -i "s/%{{DOWNLOAD_PATH}}%/$DOWNLOAD_PATH/g" PKGBUILD
+          sed -i "s/%{{LINUX_MD5}}%/$MD5SUM/g" PKGBUILD
+
+          echo " --- Final PKGBUILD File "
+          cat PKGBUILD
+      - uses: KSXGitHub/github-actions-deploy-aur@v2.7.2
+        name: Publish to AUR
+        with:
+          pkgname: acter-nightly-bin
+          pkgbuild: ./PKGBUILD
+          commit_username: Sari
+          commit_email: sari@acter.global
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Updated to ${{ needs.tags.outputs.tag }}
 
 
  ######   #### ######## ##     ## ##     ## ########     ########  ##     ## ########  ##       ####  ######  ##     ## 
@@ -366,10 +468,7 @@ jobs:
       - changelog
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Changelog
 
@@ -382,12 +481,7 @@ jobs:
       - name: Clear old docs
         continue-on-error: true
         run: |
-          git rm .changes/*.md
-
-      - name: "Update flatpack version"
-        run : |
-          bash app/flatpak/add_release_info.sh ${{ needs.tags.outputs.version }}
-          git add app/flatpak/global.acter.a3.metainfo_versions.xml
+          git rm --ignore-unmatch .changes/*.md
 
       - name: Tag for release
         run: |
@@ -397,35 +491,22 @@ jobs:
           git tag ${{ needs.tags.outputs.tag }}
           git push origin ci/release-${{ needs.tags.outputs.tag }} ${{ needs.tags.outputs.tag }}
 
+      - name: Release
+          # publish this nightly release now
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ needs.tags.outputs.tag }} CHANGELOG.md
+          gh release edit ${{ needs.tags.outputs.tag }} \
+            --latest --draft=false \
+            --notes-file CHANGELOG.md
+
       - name: Create Pull Request
         id: cpr
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: "ci/release-${{ needs.tags.outputs.tag }}"
-          title: "Releasing ${{ needs.tags.outputs.tag }}"
-          body: Release ${{ needs.tags.outputs.tag }} auto PR.
-          labels: minor
-          assignees: gnunicorn
-
-      - name: Enable Pull Request Automerge
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
-
-      - name: Release
-        id: create_release
-        uses: softprops/action-gh-release@v2
-        with:
-          # publish this full release now
-          draft: true
-          generate_release_notes: false
-          name: "${{ needs.tags.outputs.release_title_prefix }} ${{ needs.tags.outputs.tag }}"
-          tag_name: ${{ needs.tags.outputs.tag }}
-          body_path: CHANGELOG.md
-          prerelease: false
-          files: CHANGELOG.md
-      - uses: eregon/publish-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_id: ${{ steps.create_release.outputs.id }}
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.tags.outputs.tag }}
+        run: |
+          gh pr create -B main -H ci/release-$TAG --title "Releasing $TAG" --body "Release $TAG auto PR." -a gnunicorn -l minor
+          gh pr merge --merge --auto --delete-branch ci/release-$TAG
+

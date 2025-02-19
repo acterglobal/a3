@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class TaskItemsSkeleton extends StatelessWidget {
   const TaskItemsSkeleton({super.key});
@@ -19,10 +19,11 @@ class TaskItemsSkeleton extends StatelessWidget {
   }
 
   Widget taskItem(BuildContext context) {
+    final lang = L10n.of(context);
     return ListTile(
       leading: const Icon(Icons.radio_button_off_outlined),
-      title: Text(L10n.of(context).taskName),
-      subtitle: Text(L10n.of(context).taskName),
+      title: Text(lang.taskName),
+      subtitle: Text(lang.taskName),
     );
   }
 }

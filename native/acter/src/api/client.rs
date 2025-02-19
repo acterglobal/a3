@@ -1,29 +1,35 @@
 use acter_core::{
-    client::CoreClient, executor::Executor, models::AnyActerModel, store::Store, templates::Engine,
+    client::CoreClient,
+    executor::Executor,
+    models::AnyActerModel,
+    referencing::{
+        ExecuteReference, IndexKey, ModelParam, ObjectListIndex, RoomParam, SectionIndex,
+    },
+    store::Store,
+    templates::Engine,
     CustomAuthSession, RestoreToken,
 };
 use anyhow::{Context, Result};
 use base64ct::{Base64UrlUnpadded, Encoding};
 use core::time::Duration;
 use derive_builder::Builder;
-use eyeball_im::{ObservableVector, Vector};
 use futures::{
     future::join_all,
     stream::{Stream, StreamExt},
 };
-use matrix_sdk::{
-    media::{MediaRequest, UniqueKey},
-    room::Room as SdkRoom,
-    Client as SdkClient,
+use matrix_sdk::ruma::{EventId, ServerName};
+use matrix_sdk::{room::Room as SdkRoom, Client as SdkClient};
+use matrix_sdk_base::{
+    media::{MediaRequestParameters, UniqueKey},
+    ruma::{
+        device_id, events::room::MediaSource, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId,
+        OwnedRoomId, OwnedRoomOrAliasId, OwnedServerName, OwnedUserId, RoomAliasId, RoomId,
+        RoomOrAliasId, UserId,
+    },
+    RoomStateFilter,
 };
-use matrix_sdk_base::RoomStateFilter;
-use ruma::OwnedRoomOrAliasId;
-use ruma_common::{
-    device_id, IdParseError, OwnedDeviceId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
-    OwnedServerName, OwnedUserId, RoomAliasId, RoomId, RoomOrAliasId, UserId,
-};
-use ruma_events::room::MediaSource;
-use std::{io::Write, ops::Deref, path::PathBuf, sync::Arc};
+use matrix_sdk_ui::eyeball_im::{ObservableVector, Vector};
+use std::{borrow::Cow, io::Write, ops::Deref, path::PathBuf, str::FromStr, sync::Arc};
 use tokio::{
     sync::{broadcast::Receiver, RwLock},
     time,
@@ -35,9 +41,10 @@ use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
     api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-    receipt::ReceiptController, typing::TypingController, verification::VerificationController,
+    typing::TypingController, verification::VerificationController, VecStringBuilder,
 };
 
+mod models;
 mod sync;
 
 pub use sync::{HistoryLoadState, SyncState};
@@ -68,7 +75,6 @@ pub struct Client {
     pub(crate) verification_controller: VerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
-    pub(crate) receipt_controller: ReceiptController,
     pub spaces: Arc<RwLock<ObservableVector<Space>>>,
     pub convos: Arc<RwLock<ObservableVector<Convo>>>,
 }
@@ -87,10 +93,10 @@ impl Client {
         source: MediaSource,
         thumb_size: Option<Box<ThumbnailSize>>,
     ) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
-        let request = MediaRequest { source, format };
+        let request = MediaRequestParameters { source, format };
         trace!(?request, "tasked to get source binary");
         RUNTIME
             .spawn(async move {
@@ -107,10 +113,10 @@ impl Client {
         tmp_path: String,
         file_suffix: &str,
     ) -> Result<String> {
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         let client = self.core.client().clone();
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
-        let request = MediaRequest { source, format };
+        let request = MediaRequestParameters { source, format };
         let path = PathBuf::from(tmp_path).join(format!(
             "{}.{file_suffix}",
             Base64UrlUnpadded::encode_string(request.unique_key().as_bytes())
@@ -121,7 +127,7 @@ impl Client {
             "tasked to get source binary and store to file"
         );
         if !path.exists() {
-            // only download if the temp isn't already there.
+            // only download if the temp isn’t already there.
             let target_path = path.clone();
             RUNTIME
                 .spawn(async move {
@@ -133,24 +139,24 @@ impl Client {
                 .await?;
         }
 
-        return path
-            .to_str()
+        path.to_str()
             .map(|s| s.to_string())
-            .context("Path was generated from strings. Must be string");
+            .context("Path was generated from strings. Must be string")
     }
 
     pub async fn join_room(
         &self,
         room_id_or_alias: String,
-        server_name: Option<String>,
+        server_names: Box<VecStringBuilder>,
     ) -> Result<Room> {
         let parsed = RoomOrAliasId::parse(room_id_or_alias)?;
-        let server_names = match server_name {
-            Some(inner) => vec![OwnedServerName::try_from(inner)?],
-            None => vec![],
-        };
+        let servers = (*server_names)
+            .0
+            .into_iter()
+            .map(ServerName::parse)
+            .collect::<Result<Vec<OwnedServerName>, matrix_sdk::IdParseError>>()?;
 
-        self.join_room_typed(parsed, server_names).await
+        self.join_room_typed(parsed, servers).await
     }
     pub async fn join_room_typed(
         &self,
@@ -183,9 +189,9 @@ impl Client {
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
-            receipt_controller: ReceiptController::new(),
         };
         cl.load_from_cache().await;
+        cl.setup_handlers();
         Ok(cl)
     }
 
@@ -290,9 +296,9 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().context("don't know mime type")?;
+                let content_type = guess.first().context("don’t know mime type")?;
                 let buf = std::fs::read(path)?;
-                let response = client.media().upload(&content_type, buf).await?;
+                let response = client.media().upload(&content_type, buf, None).await?;
                 Ok(response.content_uri)
             })
             .await?
@@ -337,8 +343,10 @@ impl Client {
 
     pub async fn wait_for_room(&self, room_id: String, timeout: Option<u8>) -> Result<bool> {
         let executor = self.core.executor().clone();
-        let mut subscription = executor.subscribe(room_id.clone());
-        if self.room_by_id_typed(&RoomId::parse(room_id)?).is_ok() {
+        let room_id = RoomId::parse(room_id)?;
+
+        let mut subscription = executor.subscribe(ExecuteReference::Room(room_id.clone()));
+        if self.room_by_id_typed(&room_id).is_ok() {
             return Ok(true);
         }
 
@@ -387,11 +395,100 @@ impl Client {
         Ok(OptionString::new(room_id))
     }
 
-    pub fn subscribe_stream(&self, key: String) -> impl Stream<Item = bool> {
-        BroadcastStream::new(self.subscribe(key)).map(|_| true)
+    pub fn subscribe_section_stream(&self, section: String) -> Result<impl Stream<Item = bool>> {
+        let index = SectionIndex::from_str(&section)?;
+        Ok(BroadcastStream::new(self.subscribe(index)).map(|_| true))
     }
 
-    pub fn subscribe(&self, key: String) -> Receiver<()> {
+    pub fn subscribe_model_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
+        let model_id = EventId::parse(key)?;
+        Ok(BroadcastStream::new(self.subscribe(model_id)).map(|_| true))
+    }
+
+    pub fn subscribe_model_param_stream(
+        &self,
+        key: String,
+        param: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        let model_id = EventId::parse(key)?;
+        let param = ModelParam::from_str(&param)?;
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::ModelParam(model_id, param)))
+                .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_model_objects_stream(
+        &self,
+        key: String,
+        sublist: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        let model_id = EventId::parse(key)?;
+        let param = ObjectListIndex::from_str(&sublist)?;
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::Index(IndexKey::ObjectList(
+                model_id, param,
+            ))))
+            .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_room_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
+        let model_id = RoomId::parse(key)?;
+        Ok(BroadcastStream::new(self.subscribe(model_id)).map(|_| true))
+    }
+
+    pub fn subscribe_room_param_stream(
+        &self,
+        key: String,
+        param: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        let model_id = RoomId::parse(key)?;
+        let param = RoomParam::from_str(&param)?;
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::RoomParam(model_id, param)))
+                .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_room_section_stream(
+        &self,
+        key: String,
+        section: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        let index = IndexKey::RoomSection(RoomId::parse(key)?, SectionIndex::from_str(&section)?);
+        Ok(BroadcastStream::new(self.subscribe(ExecuteReference::Index(index))).map(|_| true))
+    }
+
+    pub fn subscribe_event_type_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::ModelType(Cow::Owned(key))))
+                .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_account_data_stream(&self, key: String) -> Result<impl Stream<Item = bool>> {
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::AccountData(Cow::Owned(key))))
+                .map(|_| true),
+        )
+    }
+
+    pub fn subscribe_room_account_data_stream(
+        &self,
+        room_id: String,
+        key: String,
+    ) -> Result<impl Stream<Item = bool>> {
+        Ok(
+            BroadcastStream::new(self.subscribe(ExecuteReference::RoomAccountData(
+                RoomId::parse(room_id)?,
+                Cow::Owned(key),
+            )))
+            .map(|_| true),
+        )
+    }
+
+    pub fn subscribe<K: Into<ExecuteReference>>(&self, key: K) -> Receiver<()> {
         self.executor().subscribe(key)
     }
 
@@ -400,7 +497,8 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
-                let waiter = executor.wait_for(key);
+                let model_id = EventId::parse(key)?;
+                let waiter = executor.wait_for(model_id);
                 let Some(tm) = timeout else {
                     return Ok(waiter.await?);
                 };
@@ -450,7 +548,6 @@ impl Client {
         self.verification_controller
             .remove_sync_event_handler(&client);
         self.typing_controller.remove_event_handler(&client);
-        self.receipt_controller.remove_event_handler(&client);
 
         RUNTIME
             .spawn(async move {

@@ -1,17 +1,17 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/widgets/html_editor.dart';
+import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void showEditHtmlDescriptionBottomSheet({
   required BuildContext context,
   String? bottomSheetTitle,
   String? descriptionHtmlValue,
   String? descriptionMarkdownValue,
-  required Function(String, String) onSave,
+  required Function(WidgetRef, String, String) onSave,
 }) {
   showModalBottomSheet(
     showDragHandle: true,
@@ -34,7 +34,7 @@ class EditHtmlDescriptionSheet extends ConsumerStatefulWidget {
   final String? bottomSheetTitle;
   final String? descriptionHtmlValue;
   final String? descriptionMarkdownValue;
-  final Function(String, String) onSave;
+  final Function(WidgetRef, String, String) onSave;
 
   const EditHtmlDescriptionSheet({
     super.key,
@@ -56,24 +56,24 @@ class _EditHtmlDescriptionSheetState
   @override
   void initState() {
     super.initState();
-    final document = widget.descriptionHtmlValue != null
-        ? ActerDocumentHelpers.fromHtml(
-            widget.descriptionHtmlValue!,
-          )
-        : ActerDocumentHelpers.fromMarkdown(
-            widget.descriptionMarkdownValue ?? '',
-          );
-    textEditorState = EditorState(document: document);
+    final document = ActerDocumentHelpers.parse(
+      widget.descriptionMarkdownValue ?? '',
+      htmlContent: widget.descriptionHtmlValue,
+    );
+    if (!document.isEmpty) {
+      textEditorState = EditorState(document: document);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(widget.bottomSheetTitle ?? L10n.of(context).editDescription),
+          Text(widget.bottomSheetTitle ?? lang.editDescription),
           const SizedBox(height: 20),
           Container(
             height: 200,
@@ -93,22 +93,23 @@ class _EditHtmlDescriptionSheetState
             children: [
               OutlinedButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(L10n.of(context).cancel),
+                child: Text(lang.cancel),
               ),
               const SizedBox(width: 20),
               ActerPrimaryActionButton(
                 onPressed: () {
                   // No need to change
-                  final htmlBodyDescription = textEditorState.intoHtml();
+                  String htmlBodyDescription = textEditorState.intoHtml();
                   final plainDescription = textEditorState.intoMarkdown();
                   if (htmlBodyDescription == widget.descriptionHtmlValue ||
                       plainDescription == widget.descriptionMarkdownValue) {
                     Navigator.pop(context);
                     return;
                   }
-                  widget.onSave(htmlBodyDescription, plainDescription);
+
+                  widget.onSave(ref, htmlBodyDescription, plainDescription);
                 },
-                child: Text(L10n.of(context).save),
+                child: Text(lang.save),
               ),
             ],
           ),

@@ -1,19 +1,31 @@
 pub use acter_core::events::settings::{
-    ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleSettingWithTurnOff,
-    SimpleSettingWithTurnOffBuilder, TasksSettings, TasksSettingsBuilder,
+    ActerAppSettingsContent, EventsSettings, NewsSettings, PinsSettings, SimpleOnOffSetting,
+    SimpleOnOffSettingBuilder, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
+    StoriesSettings, TasksSettings,
 };
 use acter_core::events::{
+    attachments::AttachmentEventContent,
     calendar::CalendarEventEventContent,
+    comments::CommentEventContent,
     news::NewsEntryEventContent,
     pins::PinEventContent,
+    rsvp::RsvpEventContent,
     settings::ActerAppSettingsContentBuilder,
+    stories::StoryEventContent,
     tasks::{TaskEventContent, TaskListEventContent},
 };
 use anyhow::{bail, Context, Result};
-use matrix_sdk::{deserialized_responses::SyncOrStrippedState, ruma::Int};
-use ruma_events::{
-    room::power_levels::{RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent},
-    StateEventType, StaticEventContent, SyncStateEvent, TimelineEventType,
+use matrix_sdk_base::{
+    deserialized_responses::SyncOrStrippedState,
+    ruma::{
+        events::{
+            room::power_levels::{
+                RoomPowerLevels as RumaRoomPowerLevels, RoomPowerLevelsEventContent,
+            },
+            StateEventType, StaticEventContent, SyncStateEvent, TimelineEventType,
+        },
+        Int,
+    },
 };
 use std::{collections::btree_map, ops::Deref};
 
@@ -32,6 +44,9 @@ impl From<ActerAppSettingsContentBuilder> for ActerAppSettingsBuilder {
 impl ActerAppSettingsBuilder {
     pub fn news(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.news(value.map(|i| *i));
+    }
+    pub fn stories(&mut self, value: Option<Box<StoriesSettings>>) {
+        self.inner.stories(value.map(|i| *i));
     }
     pub fn pins(&mut self, value: Option<Box<SimpleSettingWithTurnOff>>) {
         self.inner.pins(value.map(|i| *i));
@@ -58,6 +73,12 @@ impl RoomPowerLevels {
     pub fn news_key(&self) -> String {
         <NewsEntryEventContent as StaticEventContent>::TYPE.into()
     }
+    pub fn stories(&self) -> Option<i64> {
+        self.get_for_key(<StoryEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn stories_key(&self) -> String {
+        <StoryEventContent as StaticEventContent>::TYPE.into()
+    }
     pub fn events(&self) -> Option<i64> {
         self.get_for_key(<CalendarEventEventContent as StaticEventContent>::TYPE.into())
     }
@@ -82,6 +103,24 @@ impl RoomPowerLevels {
     pub fn pins_key(&self) -> String {
         <PinEventContent as StaticEventContent>::TYPE.into()
     }
+    pub fn comments(&self) -> Option<i64> {
+        self.get_for_key(<CommentEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn comments_key(&self) -> String {
+        <CommentEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn attachments(&self) -> Option<i64> {
+        self.get_for_key(<AttachmentEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn attachments_key(&self) -> String {
+        <AttachmentEventContent as StaticEventContent>::TYPE.into()
+    }
+    pub fn rsvp(&self) -> Option<i64> {
+        self.get_for_key(<RsvpEventContent as StaticEventContent>::TYPE.into())
+    }
+    pub fn rsvp_key(&self) -> String {
+        <RsvpEventContent as StaticEventContent>::TYPE.into()
+    }
     pub fn events_default(&self) -> i64 {
         self.inner.events_default.into()
     }
@@ -90,6 +129,18 @@ impl RoomPowerLevels {
     }
     pub fn max_power_level(&self) -> i64 {
         self.inner.max().into()
+    }
+    pub fn kick(&self) -> i64 {
+        self.inner.kick.into()
+    }
+    pub fn ban(&self) -> i64 {
+        self.inner.ban.into()
+    }
+    pub fn invite(&self) -> i64 {
+        self.inner.invite.into()
+    }
+    pub fn redact(&self) -> i64 {
+        self.inner.redact.into()
     }
 }
 
@@ -140,13 +191,49 @@ impl Room {
             .await?
     }
 
+    pub async fn update_regular_power_levels(
+        &self,
+        name: String,
+        power_level: i32,
+    ) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("Unable to update a space you aren’t part of");
+        }
+        let mut current_power_levels = self.power_levels_content().await?;
+
+        match name.to_lowercase().as_str() {
+            "events_default" => {
+                current_power_levels.events_default = Int::from(power_level);
+            }
+            "ban" => {
+                current_power_levels.ban = Int::from(power_level);
+            }
+            "kick" => {
+                current_power_levels.kick = Int::from(power_level);
+            }
+            "redact" => {
+                current_power_levels.redact = Int::from(power_level);
+            }
+            "invite" => {
+                current_power_levels.invite = Int::from(power_level);
+            }
+            "state_default" => {
+                current_power_levels.state_default = Int::from(power_level);
+            }
+            _ => {
+                bail!("Power level {name} unknown");
+            }
+        }
+        self.update_power_levels(current_power_levels).await
+    }
+
     pub async fn update_feature_power_levels(
         &self,
         name: String,
         power_level: Option<i32>,
     ) -> Result<bool> {
         if !self.is_joined() {
-            bail!("Unable to update a space you aren't part of");
+            bail!("Unable to update a space you aren’t part of");
         }
         let mut current_power_levels = self.power_levels_content().await?;
         let mut updated = false;
@@ -171,7 +258,10 @@ impl Room {
         if !updated {
             return Ok(false);
         }
+        self.update_power_levels(current_power_levels).await
+    }
 
+    async fn update_power_levels(&self, current_power_levels: RumaRoomPowerLevels) -> Result<bool> {
         if !self
             .get_my_membership()
             .await?
@@ -233,7 +323,7 @@ impl Room {
         }
 
         if !self.is_joined() {
-            bail!("Unable to update a space you aren't part of");
+            bail!("Unable to update a space you aren’t part of");
         }
         let room = self.room.clone();
 

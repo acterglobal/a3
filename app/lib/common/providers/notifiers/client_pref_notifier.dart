@@ -7,8 +7,9 @@
 ///
 library;
 
+import 'dart:async';
+
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,31 +17,26 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// The type parameter `T` is the type of value that will
 /// be persisted in [SharedPreferences].
 ///
-/// To update the value, use the [update()] function.
+/// To update the value, use the [set()] function.
 /// Direct assignment to state cannot be used.
 ///
 /// ```dart
-/// await watch(booPrefProvider.notifier).update(v);
+/// await watch(booPrefProvider.notifier).set(v);
 /// ```
 ///
 ///
-class PrefNotifier<T> extends StateNotifier<T> {
-  PrefNotifier(this.prefKey, this.defaultValue) : super(defaultValue) {
-    _init();
-  }
+class PrefNotifier<T> extends Notifier<T> {
+  PrefNotifier(this.prefKeySuffix, this.defaultValue);
 
+  final String prefKeySuffix;
+  late String deviceId;
   late SharedPreferences prefs;
-  String prefKey;
+
+  String get prefKey => '$deviceId-$prefKeySuffix';
   T defaultValue;
 
-  void _init() async {
-    prefs = await sharedPrefs();
-    final newValue = (prefs.get(prefKey) as T? ?? defaultValue);
-    state = newValue;
-  }
-
   /// Updates the value asynchronously.
-  Future<void> update(T value) async {
+  Future<void> set(T value) async {
     if (value is String) {
       await prefs.setString(prefKey, value);
     } else if (value is bool) {
@@ -55,16 +51,18 @@ class PrefNotifier<T> extends StateNotifier<T> {
     super.state = value;
   }
 
-  /// Do not use the setter for state.
-  /// Instead, use `await update(value).`
   @override
-  set state(T value) {
-    assert(
-      false,
-      "Don't use the setter for state. Instead use `await update(value)`.",
-    );
-    Future(() async {
-      await update(value);
+  T build() {
+    _init();
+    return defaultValue;
+  }
+
+  void _init() async {
+    prefs = await sharedPrefs();
+    deviceId = await ref.watch(deviceIdProvider.future);
+    Future.delayed(Duration(milliseconds: 10), () {
+      // make sure we do this _after_ the initial build function has passed
+      state = (prefs.get(prefKey) as T? ?? defaultValue);
     });
   }
 }
@@ -104,65 +102,60 @@ class PrefNotifier<T> extends StateNotifier<T> {
 ///
 /// ```dart
 ///
-///   await watch(booPrefProvider.notifier).update(true);
+///   await watch(booPrefProvider.notifier).set(true);
 ///
 /// ```
 ///
-StateNotifierProvider<PrefNotifier<T>, T> createPrefProvider<T>({
+NotifierProvider<PrefNotifier<T>, T> createPrefProvider<T>({
   required String prefKey,
   required T defaultValue,
-}) {
-  return StateNotifierProvider<PrefNotifier<T>, T>((ref) {
-    final clientId =
-        ref.watch(alwaysClientProvider.select((v) => v.deviceId().toString()));
-    return PrefNotifier<T>('$clientId-$prefKey', defaultValue);
-  });
-}
+}) =>
+    NotifierProvider<PrefNotifier<T>, T>(
+      () => PrefNotifier<T>(prefKey, defaultValue),
+    );
 
 /// Converts the value of type parameter `T` to a String and persists
 /// it in SharedPreferences.
 ///
-/// To update the value, use the [update()] function.
+/// To update the value, use the [set()] function.
 /// Direct assignment to state cannot be used.
 ///
 /// ```dart
-/// await watch(mapPrefProvider.notifier).update(v);
+/// await watch(mapPrefProvider.notifier).set(v);
 /// ```
 ///
-class MapPrefNotifier<T> extends StateNotifier<T> {
-  MapPrefNotifier(this.prefKey, this.mapFrom, this.mapTo)
-      : super(mapFrom(null)) {
-    _init();
-  }
+class MapPrefNotifier<T> extends Notifier<T> {
+  MapPrefNotifier(this.prefKeySuffix, this.mapFrom, this.mapTo);
 
+  late String deviceId;
   late SharedPreferences prefs;
-  String prefKey;
+
+  final String prefKeySuffix;
   T Function(String?) mapFrom;
   String Function(T) mapTo;
 
+  String get prefKey => '$deviceId-$prefKeySuffix';
+
   void _init() async {
+    deviceId = await ref.watch(deviceIdProvider.future);
     prefs = await sharedPrefs();
     final newValue = mapFrom(prefs.getString(prefKey));
-    super.state = newValue;
+    Future.delayed(Duration(milliseconds: 10), () {
+      // make sure we do this _after_ the initial build function has passed
+      state = newValue;
+    });
   }
 
   /// Updates the value asynchronously.
-  Future<void> update(T value) async {
+  Future<void> set(T value) async {
     await prefs.setString(prefKey, mapTo(value));
-    super.state = value;
+    state = value;
   }
 
-  /// Do not use the setter for state.
-  /// Instead, use `await update(value).`
   @override
-  set state(T value) {
-    assert(
-      false,
-      "Don't use the setter for state. Instead use `await update(value)`.",
-    );
-    Future(() async {
-      await update(value);
-    });
+  T build() {
+    _init();
+    return mapFrom(null);
   }
 }
 
@@ -210,17 +203,15 @@ class MapPrefNotifier<T> extends StateNotifier<T> {
 ///
 /// ```dart
 ///
-///   await watch(enumPrefProvider.notifier).update(EnumValues.bar);
+///   await watch(enumPrefProvider.notifier).set(EnumValues.bar);
 ///
 /// ```
 ///
-StateNotifierProvider<MapPrefNotifier<T>, T> createMapPrefProvider<T>({
+NotifierProvider<MapPrefNotifier<T>, T> createMapPrefProvider<T>({
   required String prefKey,
   required T Function(String?) mapFrom,
   required String Function(T) mapTo,
-}) {
-  return StateNotifierProvider<MapPrefNotifier<T>, T>((ref) {
-    final clientId = ref.watch(deviceIdProvider);
-    return MapPrefNotifier<T>('$clientId-$prefKey', mapFrom, mapTo);
-  });
-}
+}) =>
+    NotifierProvider<MapPrefNotifier<T>, T>(
+      () => MapPrefNotifier<T>(prefKey, mapFrom, mapTo),
+    );

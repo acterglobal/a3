@@ -1,5 +1,7 @@
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show NotificationSettings;
 import 'package:riverpod/riverpod.dart';
 
 typedef NotificationConfiguration = ({bool encrypted, bool oneToOne});
@@ -10,20 +12,17 @@ class AsyncNotificationSettingNotifier
 
   @override
   Future<NotificationSettings> build() async {
-    final client = ref.watch(alwaysClientProvider);
+    final client = await ref.watch(alwaysClientProvider.future);
     final settings = await client.notificationSettings();
     _listener = settings.changesStream(); // stay up to date
     _listener.forEach((e) async {
-      state = AsyncValue.data(settings);
+      state = await AsyncValue.guard(
+        () async => await client.notificationSettings(),
+      );
     });
     return settings;
   }
 }
-
-final notificationSettingsProvider = AsyncNotifierProvider.autoDispose<
-    AsyncNotificationSettingNotifier, NotificationSettings>(
-  () => AsyncNotificationSettingNotifier(),
-);
 
 final currentNotificationModeProvider = FutureProvider.autoDispose
     .family<String, NotificationConfiguration>((ref, config) async {

@@ -1,10 +1,11 @@
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
 import 'package:acter/features/attachments/providers/attachment_providers.dart';
-import 'package:acter/features/pins/Utils/pins_utils.dart';
+import 'package:acter/features/attachments/types.dart';
+import 'package:acter/features/pins/actions/pin_update_actions.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -14,7 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::pin::fake-pin-link-attachment-item');
+final _log = Logger('a3::pins::fake_link_attachment_item');
 
 class FakeLinkAttachmentItem extends ConsumerWidget {
   final String pinId;
@@ -26,16 +27,17 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final pinData = ref.watch(pinProvider(pinId));
     return pinData.when(
       data: (pin) => fakeLinkAttachmentItemUI(context, ref, pin),
       loading: () => Skeletonizer(
-        child: Text(L10n.of(context).loadingPin),
+        child: Text(lang.loadingPin),
       ),
       error: (e, s) {
         _log.severe('Error loading pin', e, s);
         return Text(
-          L10n.of(context).errorLoadingPin(e),
+          lang.errorLoadingPin(e),
         );
       },
     );
@@ -69,11 +71,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     );
   }
 
-  Widget? optionMenu(
-    WidgetRef ref,
-    ActerPin pin,
-    String link,
-  ) {
+  Widget? optionMenu(WidgetRef ref, ActerPin pin, String link) {
     //Get my membership details
     final membership =
         ref.read(roomMembershipProvider(pin.roomIdStr())).valueOrNull;
@@ -82,39 +80,40 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     return PopupMenuButton<String>(
       key: const Key('fake-pink-link-menu-options'),
       icon: const Icon(Icons.more_vert),
-      itemBuilder: (context) => [
-        //Check for can post pin permission
-        PopupMenuItem<String>(
-          key: const Key('fake-pink-link-edit'),
-          onTap: () {
-            showAddEditLinkBottomSheet(
-              context: context,
-              pinLink: link,
-              onSave: (title, newLink) async {
-                if (link == newLink) Navigator.pop(context);
-                await handleLinkBackwardSupportOnEdit(
-                  context,
-                  ref,
-                  pin,
-                  title,
-                  newLink,
-                );
-              },
-            );
-          },
-          child: Text(L10n.of(context).edit),
-        ),
-        PopupMenuItem<String>(
-          key: const Key('fake-pink-link-delete'),
-          onTap: () => savePinLink(context, pin, ''),
-          child: Text(
-            L10n.of(context).delete,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.error,
+      itemBuilder: (context) {
+        final lang = L10n.of(context);
+        return [
+          //Check for can post pin permission
+          PopupMenuItem<String>(
+            key: const Key('fake-pink-link-edit'),
+            onTap: () {
+              showAddEditLinkBottomSheet(
+                context: context,
+                pinLink: link,
+                onSave: (title, newLink) async {
+                  if (link == newLink) Navigator.pop(context);
+                  await handleLinkBackwardSupportOnEdit(
+                    context,
+                    ref,
+                    pin,
+                    title,
+                    newLink,
+                  );
+                },
+              );
+            },
+            child: Text(lang.edit),
+          ),
+          PopupMenuItem<String>(
+            key: const Key('fake-pink-link-delete'),
+            onTap: () => updatePinLink(context, pin, ''),
+            child: Text(
+              lang.delete,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
-        ),
-      ],
+        ];
+      },
     );
   }
 
@@ -125,11 +124,12 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     String title,
     String link,
   ) async {
-    var manager =
-        await ref.read(attachmentsManagerProvider(pin.attachments()).future);
+    final manager = await ref.read(
+      attachmentsManagerProvider(pin.asAttachmentsManagerProvider()).future,
+    );
     if (!context.mounted) return;
     //Make link empty on Pin Data
-    await savePinLink(context, pin, '');
+    await updatePinLink(context, pin, '');
     if (!context.mounted) return;
     //Add pin link to attachments
     await handleAttachmentSelected(

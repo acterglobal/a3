@@ -16,17 +16,17 @@ final _log = Logger('a3::super_invites::redeem');
 
 class _ShowRedeemTokenDialog extends ConsumerWidget {
   final String token;
+
   const _ShowRedeemTokenDialog({required this.token});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final infoLoader = ref.watch(superInviteInfoProvider(token));
     return AlertDialog(
-      title: Text(L10n.of(context).redeem),
+      title: Text(lang.redeem),
       content: Container(
-        constraints: const BoxConstraints(
-          maxWidth: 500,
-        ),
+        constraints: const BoxConstraints(maxWidth: 500),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
@@ -37,16 +37,14 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
                 _log.severe('Failed to load the super invite: $token', e, s);
                 final errorStr = e.toString();
                 if (errorStr.contains('error: [404]')) {
-                  // Server doesn't yet support previewing
-                  return Text(
-                    L10n.of(context).superInvitesPreviewMissing(token),
-                  );
+                  // Server doesn’t yet support previewing
+                  return Text(lang.superInvitesPreviewMissing(token));
                 }
                 if (errorStr.contains('error: [403]')) {
-                  // 403 means we can't use that anymore
-                  return Text(L10n.of(context).superInvitesDeleted(token));
+                  // 403 means we can’t use that anymore
+                  return Text(lang.superInvitesDeleted(token));
                 }
-                return Text(L10n.of(context).loadingFailed(e));
+                return Text(lang.loadingFailed(e));
               },
               loading: () => Skeletonizer(
                 child: Card(
@@ -69,31 +67,29 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
       actions: <Widget>[
         OutlinedButton(
           onPressed: () => Navigator.pop(context, false),
-          child: Text(L10n.of(context).cancel),
+          child: Text(lang.cancel),
         ),
         ActerPrimaryActionButton(
           key: redeemConfirmKey,
           onPressed: () => redeem(context, ref),
-          child: Text(L10n.of(context).redeem),
+          child: Text(lang.redeem),
         ),
       ],
     );
   }
 
   Widget renderInfo(BuildContext context, WidgetRef ref, SuperInviteInfo info) {
+    final lang = L10n.of(context);
     final displayName = info.inviterDisplayNameStr();
     final userId = info.inviterUserIdStr();
+    final inviter = displayName != null ? '$displayName ($userId)' : userId;
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Card(
         child: ListTile(
           key: redeemInfoKey,
-          title: Text(
-            L10n.of(context).superInvitedBy(
-              displayName != null ? '$displayName ($userId)' : userId,
-            ),
-          ),
-          subtitle: Text(L10n.of(context).superInvitedTo(info.roomsCount())),
+          title: Text(lang.superInvitedBy(inviter)),
+          subtitle: Text(lang.superInvitedTo(info.roomsCount())),
           leading: ActerAvatar(
             options: AvatarOptions.DM(
               AvatarInfo(
@@ -109,19 +105,21 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
   }
 
   void redeem(BuildContext context, WidgetRef ref) async {
-    final superInvites = ref.read(superInvitesProvider);
+    final lang = L10n.of(context);
+    final superInvites = await ref.read(superInvitesProvider.future);
 
-    EasyLoading.show(status: L10n.of(context).redeeming(token));
+    EasyLoading.show(status: lang.redeeming(token));
     try {
       final rooms = (await superInvites.redeem(token)).toList();
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(
-        L10n.of(context).addedToSpacesAndChats(rooms.length),
-      );
-      Navigator.of(context, rootNavigator: true).pop(true);
+      EasyLoading.showToast(lang.addedToSpacesAndChats(rooms.length));
+      Navigator.of(
+        context,
+        rootNavigator: true,
+      ).pop(true);
     } catch (e, s) {
       _log.severe('Failed to redeem', e, s);
       if (!context.mounted) {
@@ -129,7 +127,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).redeemingFailed(e),
+        lang.redeemingFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

@@ -11,13 +11,15 @@ default-members = ["native/acter"]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 # path = "../matrix-rust-sdk/crates/matrix-sdk"
 default-features = false
-features = ["experimental-sliding-sync"]
+features = [
+  "rustls-tls",
+]
+
 
 [workspace.dependencies.matrix-sdk-base]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-base"
 default-features = false
-
 [workspace.dependencies.matrix-sdk-sqlite]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-sqlite"
@@ -33,44 +35,40 @@ default-features = false
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 # path = "../matrix-rust-sdk/crates/matrix-sdk-ui"
 default-features = false
-features = ["e2e-encryption"]
 
 [workspace.dependencies.matrix-sdk-test]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 # path = "../matrix-rust-sdk/testing/matrix-sdk-test"
 default-features = false
 
+
+# not used directly but needed to enable specific features from ruma
+# ATTENTION: _MUST_ stay in sync with the ruma-rev used by matrix-sdk!
 [workspace.dependencies.ruma]
-git = "https://github.com/matrix-org/ruma"
-rev = "f25b3220d0c3ece7720020ed180af4955a855402"
+version = "0.12.1"
+# git = "https://github.com/ruma/ruma"
+# rev = "c91499fc464adc865a7c99d0ce0b35982ad96711"
 
-[workspace.dependencies.ruma-client-api]
-git = "https://github.com/matrix-org/ruma"
-rev = "f25b3220d0c3ece7720020ed180af4955a855402"
-
+# - see comment above
 [workspace.dependencies.ruma-common]
-git = "https://github.com/matrix-org/ruma"
-rev = "f25b3220d0c3ece7720020ed180af4955a855402"
-
-[workspace.dependencies.ruma-events]
-git = "https://github.com/matrix-org/ruma"
-rev = "f25b3220d0c3ece7720020ed180af4955a855402"
-
-[workspace.dependencies.ruma-macros]
-git = "https://github.com/matrix-org/ruma"
-rev = "f25b3220d0c3ece7720020ed180af4955a855402"
+version = "0.15.1"
+# git = "https://github.com/ruma/ruma"
+# rev = "c91499fc464adc865a7c99d0ce0b35982ad96711"
 
 [workspace.dependencies.url]
 version = "2.5.0"
 features = ["serde"]
 
 [workspace.dependencies]
-strum = { version = "0.26.1", features = ["derive"] }
+strum = { version = "0.27.0", features = ["derive"] }
 base64ct = "1.6.0"
-derive-getters = "0.3.0"
+derive-getters = "0.5.0"
 derive_builder = "0.20.0"
 icalendar = "0.16.1"
 scc = "2"
+env_logger = "0.11.5"
+urlencoding = "2.1.3"
+eyeball-im = "0.6.0"
 
 [profile.release]
 panic = "unwind"

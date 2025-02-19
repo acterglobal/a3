@@ -1,7 +1,5 @@
 use derive_getters::Getters;
-use ruma::RoomId;
-use ruma_common::{EventId, OwnedEventId, UserId};
-use ruma_events::OriginalMessageLikeEvent;
+use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedEventId, UserId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use tracing::{error, info, trace};
@@ -11,13 +9,11 @@ use crate::{
     events::comments::{
         CommentBuilder, CommentEventContent, CommentUpdateBuilder, CommentUpdateEventContent,
     },
+    referencing::{ExecuteReference, IndexKey, ModelParam, ObjectListIndex},
     store::Store,
     util::{is_false, is_zero},
     Result,
 };
-
-static COMMENTS_FIELD: &str = "comments";
-static COMMENTS_STATS_FIELD: &str = "comments_stats";
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
 pub struct CommentsStats {
@@ -35,15 +31,17 @@ pub struct CommentsManager {
 }
 
 impl CommentsManager {
-    fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
-        let r = parent.as_ref();
-        format!("{r}::{COMMENTS_STATS_FIELD}")
+    fn stats_field_for(parent: OwnedEventId) -> ExecuteReference {
+        ExecuteReference::ModelParam(parent, ModelParam::CommentsStats)
     }
 
     pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> CommentsManager {
         let store = store.clone();
 
-        let stats = match store.get_raw(&Self::stats_field_for(&event_id)).await {
+        let stats = match store
+            .get_raw(&Self::stats_field_for(event_id.to_owned()).as_storage_key())
+            .await
+        {
             Ok(e) => e,
             Err(error) => {
                 info!(
@@ -64,7 +62,7 @@ impl CommentsManager {
     pub async fn comments(&self) -> Result<Vec<Comment>> {
         let comments = self
             .store
-            .get_list(&Comment::index_for(&self.event_id))
+            .get_list(&Comment::index_for(self.event_id.clone()))
             .await?
             .filter_map(|e| match e {
                 AnyActerModel::Comment(c) => Some(c),
@@ -90,13 +88,15 @@ impl CommentsManager {
             .to_owned()
     }
 
-    pub fn update_key(&self) -> String {
-        Self::stats_field_for(&self.event_id)
+    pub fn update_key(&self) -> ExecuteReference {
+        Self::stats_field_for(self.event_id.to_owned())
     }
 
-    pub async fn save(&self) -> Result<String> {
+    pub async fn save(&self) -> Result<ExecuteReference> {
         let update_key = self.update_key();
-        self.store.set_raw(&update_key, &self.stats).await?;
+        self.store
+            .set_raw(&update_key.as_storage_key(), &self.stats)
+            .await?;
         Ok(update_key)
     }
 
@@ -126,9 +126,8 @@ impl Deref for Comment {
 }
 
 impl Comment {
-    pub fn index_for<T: AsRef<str>>(parent: &T) -> String {
-        let r = parent.as_ref();
-        format!("{r}::{COMMENTS_FIELD}")
+    pub fn index_for(parent: OwnedEventId) -> IndexKey {
+        IndexKey::ObjectList(parent, ObjectListIndex::Comments)
     }
 
     pub fn updater(&self) -> CommentUpdateBuilder {
@@ -144,43 +143,39 @@ impl Comment {
             .to_owned()
     }
 
-    fn belongs_to_inner(&self) -> Vec<String> {
+    fn belongs_to_inner(&self) -> Vec<OwnedEventId> {
         let mut references = self
             .inner
             .reply_to
             .as_ref()
-            .map(|r| {
-                r.event_ids
-                    .iter()
-                    .map(ToString::to_string)
-                    .collect::<Vec<_>>()
-            })
+            .map(|r| r.event_ids.clone())
             .unwrap_or_default();
-        references.push(self.inner.on.event_id.to_string());
+        references.push(self.inner.on.event_id.to_owned());
         references
     }
 }
 
 impl ActerModel for Comment {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        self.belongs_to_inner()
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        let mut indizes = self
+            .belongs_to_inner()
             .into_iter()
-            .map(|v| Comment::index_for(&v))
-            .collect()
+            .map(Comment::index_for)
+            .collect::<Vec<_>>();
+        indizes.push(IndexKey::ObjectHistory(self.inner.on.event_id.to_owned()));
+        indizes.push(IndexKey::RoomHistory(self.meta.room_id.to_owned()));
+        indizes
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     fn capabilities(&self) -> &[Capability] {
         &[Capability::Commentable, Capability::Reactable]
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         let belongs_to = self.belongs_to_inner();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying comment");
 
@@ -188,7 +183,7 @@ impl ActerModel for Comment {
         for p in belongs_to {
             let parent = store.get(&p).await?;
             if !parent.capabilities().contains(&Capability::Commentable) {
-                error!(?parent, comment = ?self, "doesn't support comments. can't apply");
+                error!(?parent, comment = ?self, "doesn’t support comments. can’t apply");
                 continue;
             }
 
@@ -207,7 +202,7 @@ impl ActerModel for Comment {
         Ok(updates)
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
         // Do not trigger the parent to update, we have a manager
         None
     }
@@ -251,22 +246,21 @@ pub struct CommentUpdate {
 }
 
 impl ActerModel for CommentUpdate {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![format!("{:}::history", self.inner.comment.event_id)]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            IndexKey::ObjectHistory(self.inner.comment.event_id.to_owned()),
+            IndexKey::RoomHistory(self.meta.room_id.to_owned()),
+        ]
+    }
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
+        Some(vec![self.inner.comment.event_id.to_owned()])
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![self.inner.comment.event_id.to_string()])
-    }
-
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         default_model_execute(store, self.into()).await
     }
 }

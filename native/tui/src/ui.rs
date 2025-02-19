@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use acter::{Convo, HistoryLoadState, Space, Task, TaskList};
+use acter::api::{Convo, HistoryLoadState, Space, Task, TaskList};
 use anyhow::Result;
 use clap::crate_version;
 use crossterm::{
@@ -132,7 +132,7 @@ impl TasksState {
         if self.selected.is_some() {
             if let Some(idx) = self.tasks_list_state.selected() {
                 let Some(task) = self.tasks.get(idx) else {
-                    panic!("can't be readed");
+                    panic!("can’t be readed");
                 };
 
                 let resp = if task.is_done() {
@@ -628,7 +628,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
         titles.push(Spans::from(vec![Span::styled(
             format!(
                 "{} / {} spaces history loaded",
-                app.history_load_state.known_spaces.len(),
+                app.history_load_state.loaded_spaces(),
                 app.history_load_state.total_spaces()
             ),
             Style::default().fg(BG_GRAY),

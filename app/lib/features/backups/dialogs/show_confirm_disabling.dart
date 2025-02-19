@@ -4,16 +4,17 @@ import 'package:acter/features/backups/dialogs/show_recovery_key.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class _ShowConfirmResetDialog extends ConsumerWidget {
   const _ShowConfirmResetDialog();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     return AlertDialog(
-      title: Text(L10n.of(context).encryptionBackupDisable),
+      title: Text(lang.encryptionBackupDisable),
       content: Container(
         constraints: const BoxConstraints(
           maxWidth: 500,
@@ -22,10 +23,8 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(L10n.of(context).encryptionBackupDisableExplainer),
-            const SizedBox(
-              height: 10,
-            ),
+            Text(lang.encryptionBackupDisableExplainer),
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -33,27 +32,28 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
       actions: <Widget>[
         ActerPrimaryActionButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(L10n.of(context).encryptionBackupDisableActionKeepIt),
+          child: Text(lang.encryptionBackupDisableActionKeepIt),
         ),
         ActerDangerActionButton(
           onPressed: () => disable(context, ref),
-          child: Text(L10n.of(context).encryptionBackupDisableActionDestroyIt),
+          child: Text(lang.encryptionBackupDisableActionDestroyIt),
         ),
       ],
     );
   }
 
   void disable(BuildContext context, WidgetRef ref) async {
-    EasyLoading.show(status: L10n.of(context).encryptionBackupResetting);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.encryptionBackupResetting);
     try {
-      final manager = ref.read(backupManagerProvider);
+      final manager = await ref.read(backupManagerProvider.future);
       final newKey = await manager.reset();
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
       }
       EasyLoading.showToast(
-        L10n.of(context).encryptionBackupResettingSuccess,
+        lang.encryptionBackupResettingSuccess,
         toastPosition: EasyLoadingToastPosition.bottom,
       );
       if (context.mounted) {
@@ -65,9 +65,7 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(
-        L10n.of(context).encryptionBackupResettingFailed(error),
-      );
+      EasyLoading.showToast(lang.encryptionBackupResettingFailed(error));
     }
   }
 }

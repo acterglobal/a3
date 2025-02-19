@@ -6,6 +6,7 @@ import 'package:acter_notifify/acter_notifify.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/matrix.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
 
@@ -58,6 +59,7 @@ Future<bool?> setupNtfyNotificationsForDevice(
   );
   if (rs.data == null) {
     _log.severe('Connecting to ntfy server failed: $rs');
+    Sentry.captureMessage('Connecting to ntfy server failed: $rs');
     return false;
   }
   _subscriptions[token] = rs.data!.stream
@@ -83,6 +85,7 @@ Future<bool?> setupNtfyNotificationsForDevice(
       );
     } catch (error, stack) {
       _log.severe('Failed to show push notification $event', error, stack);
+      Sentry.captureException(error, stackTrace: stack);
     }
   });
   return true;

@@ -1,11 +1,11 @@
 import 'dart:io';
 
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/avatar_builder.dart';
@@ -24,11 +24,13 @@ import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -36,6 +38,7 @@ final _log = Logger('a3::chat::room');
 
 class RoomPage extends ConsumerWidget {
   static const roomPageKey = Key('chat-room-page');
+
   final String roomId;
 
   const RoomPage({
@@ -44,8 +47,12 @@ class RoomPage extends ConsumerWidget {
   });
 
   Widget appBar(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final membersLoader = ref.watch(membersIdsProvider(roomId));
+    final isEncrypted =
+        ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
     return AppBar(
       elevation: 0,
       automaticallyImplyLeading: !context.isLargeScreen,
@@ -66,27 +73,35 @@ class RoomPage extends ConsumerWidget {
             Text(
               roomAvatarInfo.displayName ?? roomId,
               overflow: TextOverflow.clip,
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: textTheme.bodyLarge,
             ),
             const SizedBox(height: 5),
             membersLoader.when(
               data: (members) => Text(
-                L10n.of(context).membersCount(members.length),
-                style: Theme.of(context).textTheme.bodySmall,
+                lang.membersCount(members.length),
+                style: textTheme.bodySmall,
               ),
               skipLoadingOnReload: false,
               error: (e, s) {
                 _log.severe('Failed to load active members', e, s);
-                return Text(L10n.of(context).errorLoadingMembersCount(e));
+                return Text(lang.errorLoadingMembersCount(e));
               },
               loading: () => Skeletonizer(
-                child: Text(L10n.of(context).membersCount(100)),
+                child: Text(lang.membersCount(100)),
               ),
             ),
           ],
         ),
       ),
       actions: [
+        if (!isEncrypted)
+          IconButton(
+            onPressed: () => EasyLoading.showInfo(lang.chatNotEncrypted),
+            icon: Icon(
+              PhosphorIcons.shieldWarning(),
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
         GestureDetector(
           onTap: () => context.pushNamed(
             Routes.chatProfile.name,
@@ -129,12 +144,12 @@ class RoomPage extends ConsumerWidget {
     return CustomChatInput(
       key: Key('chat-input-$roomId'),
       roomId: roomId,
-      onTyping: sendTypingNotice
-          ? (typing) async {
-              final chat = await ref.read(chatProvider(roomId).future);
-              chat?.typingNotice(typing);
-            }
-          : null,
+      onTyping: (typing) async {
+        if (sendTypingNotice) {
+          final chat = await ref.read(chatProvider(roomId).future);
+          await chat?.typingNotice(typing);
+        }
+      },
     );
   }
 }
@@ -165,11 +180,12 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         if (scrollController.offset == 0) {
           final message = ref.read(latestTrackableMessageId(roomId));
           if (message != null) {
-            await (await ref.read(timelineStreamProvider(roomId).future))
-                .sendSingleReceipt('Read', 'Main', message);
+            final timeline =
+                await ref.read(timelineStreamProvider(roomId).future);
+            await timeline.sendSingleReceipt('Read', 'Main', message);
           }
 
-          // FIXME: this is the proper API, but it doesn't seem to
+          // FIXME: this is the proper API, but it doesn’t seem to
           // properly be handled by the server yet
           // final marked = await ref
           //
@@ -181,10 +197,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
 
   void showMessageOptions(BuildContext context, types.Message message) {
     if (message is types.CustomMessage) {
-      if (message.metadata!.containsKey('eventType') &&
-          message.metadata!['eventType'] == 'm.room.redaction') {
-        return;
-      }
+      if (message.metadata?['eventType'] == 'm.room.redaction') return;
     }
     final inputNotifier = ref.read(chatInputProvider.notifier);
     inputNotifier.setActionsMessage(message);
@@ -236,13 +249,13 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         customBottomWidget: const SizedBox.shrink(),
         scrollController: scrollController,
         textMessageBuilder: (
-          types.TextMessage m, {
+          types.TextMessage msg, {
           required int messageWidth,
           required bool showName,
         }) {
           return TextMessageBuilder(
             roomId: widget.roomId,
-            message: m,
+            message: msg,
             messageWidth: messageWidth,
           );
         },
@@ -276,7 +289,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
               roomId: widget.roomId,
               message: message,
               nextMessageInGroup: nextMessageInGroup,
-              enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
+              enlargeEmoji: message.metadata?['enlargeEmoji'] == true,
               child: child,
             ),
           );
@@ -329,6 +342,7 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         onEndReachedThreshold: 0.75,
         onBackgroundTap: ref.read(chatInputProvider.notifier).unsetActions,
         typingIndicatorOptions: TypingIndicatorOptions(
+          animationSpeed: const Duration(seconds: 1),
           typingMode: TypingIndicatorMode.name,
           typingUsers: typingUsers,
         ),

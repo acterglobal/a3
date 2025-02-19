@@ -16,7 +16,7 @@ import 'package:flutter_chat_types/src/message.dart';
 import 'package:flutter_chat_types/src/messages/text_message.dart';
 import 'package:flutter_chat_types/src/preview_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 
 typedef MockedRoomData = Map<String, AvatarInfo>;
@@ -40,7 +40,7 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
         );
 
   @override
-  Future<void> fetchMediaBinary(String? msgType, String eventId) {
+  Future<void> fetchMediaBinary(String? msgType, String eventId, String msgId) {
     // TODO: implement fetchMediaBinary
     throw UnimplementedError();
   }
@@ -169,22 +169,27 @@ class MockRoomListFilterNotifier extends StateNotifier<RoomListFilterState>
         );
 }
 
-class MockPersistentPrefNotifier extends StateNotifier<FilterSelection>
+class MockPersistentPrefNotifier extends Notifier<FilterSelection>
     with Mock
     implements MapPrefNotifier<FilterSelection> {
-  MockPersistentPrefNotifier() : super(FilterSelection.all);
+  MockPersistentPrefNotifier() : super();
+
+  @override
+  FilterSelection build() {
+    return FilterSelection.all;
+  }
 
   /// Updates the value asynchronously.
   @override
-  Future<void> update(FilterSelection value) async {
-    super.state = value;
+  Future<void> set(FilterSelection value) async {
+    state = value;
   }
 }
 
 List<Override> mockChatRoomProviders(MockedRoomData roomsData) {
   return [
     persistentRoomListFilterSelector
-        .overrideWith((_) => MockPersistentPrefNotifier()),
+        .overrideWith(() => MockPersistentPrefNotifier()),
     chatIdsProvider.overrideWithValue(roomsData.keys.toList()),
     chatTypingEventProvider.overrideWith((ref, roomId) => const Stream.empty()),
     roomIsMutedProvider.overrideWith((ref, roomId) => false),

@@ -45,7 +45,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 /// Returns
 Future<String?> initializeLocalNotifications({
   required HandleMessageTap handleMessageTap,
-  }) async {
+}) async {
   String? selectedNotificationPayload;
   // do this only on supported platforms
   if (Platform.isAndroid || Platform.isIOS) {
@@ -105,17 +105,17 @@ Future<String?> initializeLocalNotifications({
     ),
   ];
 
-  /// Note: permissions aren't requested here just to demonstrate that can be
+  /// Note: permissions aren’t requested here just to demonstrate that can be
   /// done later
   final DarwinInitializationSettings initializationSettingsDarwin =
       DarwinInitializationSettings(
     // do not bother the user at startup, set all these to falls for now:
     requestAlertPermission: false,
-    requestBadgePermission: false,
+    requestBadgePermission: true,
     requestSoundPermission: false,
     onDidReceiveLocalNotification:
         (int id, String? title, String? body, String? payload) async {
-          handleMessageTap({"payload": payload});
+      handleMessageTap({"payload": payload});
     },
     notificationCategories: darwinNotificationCategories,
   );
@@ -134,8 +134,9 @@ Future<String?> initializeLocalNotifications({
     initializationSettings,
     onDidReceiveNotificationResponse:
         (NotificationResponse notificationResponse) {
-      if (notificationResponse.notificationResponseType == NotificationResponseType.selectedNotification){
-          handleMessageTap({"payload": notificationResponse.payload});
+      if (notificationResponse.notificationResponseType ==
+          NotificationResponseType.selectedNotification) {
+        handleMessageTap({"payload": notificationResponse.payload});
       }
     },
     onDidReceiveBackgroundNotificationResponse: notificationTapBackground,

@@ -1,6 +1,5 @@
 import 'package:acter/common/models/keys.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-
 import 'package:acter/features/auth/providers/auth_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
+      final lang = L10n.of(context);
       return AlertDialog(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Column(
@@ -22,24 +22,18 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
               Atlas.warning,
               color: Theme.of(context).colorScheme.error,
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(L10n.of(context).logOut),
+            const SizedBox(height: 10),
+            Text(lang.logOut),
           ],
         ),
         content: RichText(
           textAlign: TextAlign.left,
           text: TextSpan(
-            text: L10n.of(context).logOutConformationDescription1,
+            text: lang.logOutConformationDescription1,
             style: Theme.of(context).textTheme.bodyLarge,
             children: <TextSpan>[
-              TextSpan(
-                text: L10n.of(context).logOutConformationDescription2,
-              ),
-              TextSpan(
-                text: L10n.of(context).logOutConformationDescription3,
-              ),
+              TextSpan(text: lang.logOutConformationDescription2),
+              TextSpan(text: lang.logOutConformationDescription3),
             ],
           ),
         ),
@@ -48,16 +42,17 @@ void logoutConfirmationDialog(BuildContext context, WidgetRef ref) {
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              L10n.of(context).no,
+              lang.no,
               key: LogoutDialogKeys.cancel,
             ),
           ),
           ActerDangerActionButton(
             onPressed: () async {
-              await ref.read(authStateProvider.notifier).logout(context);
+              final notifier = ref.read(authStateProvider.notifier);
+              await notifier.logout(context);
             },
             child: Text(
-              L10n.of(context).yes,
+              lang.yes,
               key: LogoutDialogKeys.confirm,
             ),
           ),

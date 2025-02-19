@@ -84,6 +84,9 @@ class _$ChatListStateCopyWithImpl<$Res, $Val extends ChatListState>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
+
+  /// Create a copy of ChatListState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -100,6 +103,9 @@ class __$$ChatListStateInitialImplCopyWithImpl<$Res>
   __$$ChatListStateInitialImplCopyWithImpl(_$ChatListStateInitialImpl _value,
       $Res Function(_$ChatListStateInitialImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of ChatListState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -215,6 +221,9 @@ class __$$ChatListStateLoadingImplCopyWithImpl<$Res>
   __$$ChatListStateLoadingImplCopyWithImpl(_$ChatListStateLoadingImpl _value,
       $Res Function(_$ChatListStateLoadingImpl) _then)
       : super(_value, _then);
+
+  /// Create a copy of ChatListState
+  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -333,6 +342,8 @@ class __$$ChatListStateDataImplCopyWithImpl<$Res>
       $Res Function(_$ChatListStateDataImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ChatListState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -378,7 +389,9 @@ class _$ChatListStateDataImpl implements _ChatListStateData {
   int get hashCode =>
       Object.hash(runtimeType, const DeepCollectionEquality().hash(_chats));
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChatListState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ChatListStateDataImplCopyWith<_$ChatListStateDataImpl> get copyWith =>
@@ -465,7 +478,10 @@ abstract class _ChatListStateData implements ChatListState {
       _$ChatListStateDataImpl;
 
   List<Convo> get chats;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ChatListState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ChatListStateDataImplCopyWith<_$ChatListStateDataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -487,6 +503,8 @@ class __$$ChatListStateErrorImplCopyWithImpl<$Res>
       $Res Function(_$ChatListStateErrorImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ChatListState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -525,7 +543,9 @@ class _$ChatListStateErrorImpl implements _ChatListStateError {
   @override
   int get hashCode => Object.hash(runtimeType, error);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChatListState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ChatListStateErrorImplCopyWith<_$ChatListStateErrorImpl> get copyWith =>
@@ -612,7 +632,10 @@ abstract class _ChatListStateError implements ChatListState {
       _$ChatListStateErrorImpl;
 
   String? get error;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ChatListState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ChatListStateErrorImplCopyWith<_$ChatListStateErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

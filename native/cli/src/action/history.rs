@@ -2,7 +2,7 @@ use anyhow::Result;
 use clap::Parser;
 use futures::stream::StreamExt;
 use matrix_sdk::room::{Messages, MessagesOptions};
-use ruma_common::OwnedRoomId;
+use matrix_sdk_base::ruma::OwnedRoomId;
 use tracing::{info, trace};
 
 use crate::config::{LoginConfig, ENV_ROOM};
@@ -25,7 +25,7 @@ impl HistoryOpts {
         let sync_state = client.start_sync();
 
         let mut is_synced = sync_state.first_synced_rx();
-        while is_synced.next().await != Some(true) {} // let's wait for it to have synced
+        while is_synced.next().await != Some(true) {} // let’s wait for it to have synced
         info!(" - First Sync finished - ");
 
         let room = client.room_by_id_typed(&self.room)?;
@@ -42,7 +42,7 @@ impl HistoryOpts {
             } = room.messages(msg_options).await?;
 
             for msg in chunk {
-                let evt = msg.event;
+                let evt = msg.kind.raw().clone();
                 println!("- {}", evt.into_json());
             }
 

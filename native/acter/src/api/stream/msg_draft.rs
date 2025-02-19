@@ -1,18 +1,20 @@
 use anyhow::Result;
 use core::time::Duration;
 use matrix_sdk::room::Room;
-use ruma::{assign, UInt};
-use ruma_common::UserId;
-use ruma_events::{
-    room::{
-        message::{
-            AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
-            ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
-            RoomMessageEventContentWithoutRelation, VideoInfo, VideoMessageEventContent,
+use matrix_sdk_base::ruma::{
+    assign,
+    events::{
+        room::{
+            message::{
+                AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
+                ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
+                RoomMessageEventContentWithoutRelation, VideoInfo, VideoMessageEventContent,
+            },
+            ImageInfo, MediaSource, ThumbnailInfo,
         },
-        ImageInfo,
+        Mentions,
     },
-    Mentions,
+    OwnedMxcUri, UInt, UserId,
 };
 use std::path::PathBuf;
 use tracing::{info, warn};
@@ -57,34 +59,71 @@ pub(crate) enum MsgContentDraft {
 }
 
 impl MsgContentDraft {
-    fn size(mut self, value: u64) -> Self {
+    fn mimetype(mut self, value: String) -> Self {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.size = UInt::new(value)
+                    o.mimetype = Some(value);
                 } else {
-                    *info = Some(assign!(ImageInfo::new(), { size : UInt::new(value)}));
+                    *info = Some(assign!(ImageInfo::new(), { mimetype: Some(value) }));
                 }
             }
             MsgContentDraft::Audio { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.size = UInt::new(value)
+                    o.mimetype = Some(value);
                 } else {
-                    *info = Some(assign!(AudioInfo::new(), { size : UInt::new(value)}));
+                    *info = Some(assign!(AudioInfo::new(), { mimetype: Some(value) }));
                 }
             }
             MsgContentDraft::Video { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.size = UInt::new(value)
+                    o.mimetype = Some(value);
                 } else {
-                    *info = Some(assign!(VideoInfo::new(), { size : UInt::new(value)}));
+                    *info = Some(assign!(VideoInfo::new(), { mimetype: Some(value) }));
                 }
             }
             MsgContentDraft::File { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.size = UInt::new(value)
+                    o.mimetype = Some(value);
                 } else {
-                    *info = Some(assign!(FileInfo::new(), { size : UInt::new(value)}));
+                    *info = Some(assign!(FileInfo::new(), { mimetype: Some(value) }));
+                }
+            }
+            _ => {
+                warn!("mimetype is available for only image/audio/video/file");
+            }
+        }
+        self
+    }
+
+    fn size(mut self, value: u64) -> Self {
+        match self {
+            MsgContentDraft::Image { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.size = UInt::new(value);
+                } else {
+                    *info = Some(assign!(ImageInfo::new(), { size: UInt::new(value) }));
+                }
+            }
+            MsgContentDraft::Audio { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.size = UInt::new(value);
+                } else {
+                    *info = Some(assign!(AudioInfo::new(), { size: UInt::new(value) }));
+                }
+            }
+            MsgContentDraft::Video { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.size = UInt::new(value);
+                } else {
+                    *info = Some(assign!(VideoInfo::new(), { size: UInt::new(value) }));
+                }
+            }
+            MsgContentDraft::File { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.size = UInt::new(value);
+                } else {
+                    *info = Some(assign!(FileInfo::new(), { size: UInt::new(value) }));
                 }
             }
             _ => {
@@ -98,16 +137,16 @@ impl MsgContentDraft {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.width = UInt::new(value)
+                    o.width = UInt::new(value);
                 } else {
-                    *info = Some(assign!(ImageInfo::new(), { width : UInt::new(value)}));
+                    *info = Some(assign!(ImageInfo::new(), { width: UInt::new(value) }));
                 }
             }
             MsgContentDraft::Video { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.width = UInt::new(value)
+                    o.width = UInt::new(value);
                 } else {
-                    *info = Some(assign!(VideoInfo::new(), { width : UInt::new(value)}));
+                    *info = Some(assign!(VideoInfo::new(), { width: UInt::new(value) }));
                 }
             }
             _ => warn!("width is available for only image/video"),
@@ -119,19 +158,94 @@ impl MsgContentDraft {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.height = UInt::new(value)
+                    o.height = UInt::new(value);
                 } else {
-                    *info = Some(assign!(ImageInfo::new(), { height : UInt::new(value)}));
+                    *info = Some(assign!(ImageInfo::new(), { height: UInt::new(value) }));
                 }
             }
             MsgContentDraft::Video { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.height = UInt::new(value)
+                    o.height = UInt::new(value);
                 } else {
-                    *info = Some(assign!(VideoInfo::new(), { height : UInt::new(value)}));
+                    *info = Some(assign!(VideoInfo::new(), { height: UInt::new(value) }));
                 }
             }
             _ => warn!("height is available for only image/video"),
+        }
+        self
+    }
+
+    fn thumbnail_source(mut self, value: MediaSource) -> Self {
+        match self {
+            MsgContentDraft::Image { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_source = Some(value);
+                } else {
+                    *info = Some(assign!(ImageInfo::new(), { thumbnail_source: Some(value) }));
+                }
+            }
+            MsgContentDraft::Video { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_source = Some(value);
+                } else {
+                    *info = Some(assign!(VideoInfo::new(), { thumbnail_source: Some(value) }));
+                }
+            }
+            MsgContentDraft::File { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_source = Some(value);
+                } else {
+                    *info = Some(assign!(FileInfo::new(), { thumbnail_source: Some(value) }));
+                }
+            }
+            MsgContentDraft::Location { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_source = Some(value);
+                } else {
+                    *info = Some(assign!(LocationInfo::new(), { thumbnail_source: Some(value) }));
+                }
+            }
+            _ => warn!("thumbnail_source is available for only image/video/file/location"),
+        }
+        self
+    }
+
+    fn thumbnail_info(mut self, value: ThumbnailInfo) -> Self {
+        match self {
+            MsgContentDraft::Image { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_info = Some(Box::new(value));
+                } else {
+                    *info =
+                        Some(assign!(ImageInfo::new(), { thumbnail_info: Some(Box::new(value)) }));
+                }
+            }
+            MsgContentDraft::Video { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_info = Some(Box::new(value));
+                } else {
+                    *info =
+                        Some(assign!(VideoInfo::new(), { thumbnail_info: Some(Box::new(value)) }));
+                }
+            }
+            MsgContentDraft::File { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_info = Some(Box::new(value));
+                } else {
+                    *info =
+                        Some(assign!(FileInfo::new(), { thumbnail_info: Some(Box::new(value)) }));
+                }
+            }
+            MsgContentDraft::Location { ref mut info, .. } => {
+                if let Some(o) = info.as_mut() {
+                    o.thumbnail_info = Some(Box::new(value));
+                } else {
+                    *info = Some(
+                        assign!(LocationInfo::new(), { thumbnail_info: Some(Box::new(value)) }),
+                    );
+                }
+            }
+            _ => warn!("thumbnail_info is available for only image/video/file/location"),
         }
         self
     }
@@ -143,7 +257,7 @@ impl MsgContentDraft {
                     o.duration = Some(Duration::from_secs(value));
                 } else {
                     *info = Some(
-                        assign!(AudioInfo::new(), { duration : Some(Duration::from_secs(value)) } ),
+                        assign!(AudioInfo::new(), { duration: Some(Duration::from_secs(value)) }),
                     );
                 }
             }
@@ -152,7 +266,7 @@ impl MsgContentDraft {
                     o.duration = Some(Duration::from_secs(value));
                 } else {
                     *info = Some(
-                        assign!(VideoInfo::new(), { duration : Some(Duration::from_secs(value))}),
+                        assign!(VideoInfo::new(), { duration: Some(Duration::from_secs(value)) }),
                     );
                 }
             }
@@ -165,16 +279,16 @@ impl MsgContentDraft {
         match self {
             MsgContentDraft::Image { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.blurhash = Some(value)
+                    o.blurhash = Some(value);
                 } else {
-                    *info = Some(assign!(ImageInfo::new(), { blurhash : Some(value)}));
+                    *info = Some(assign!(ImageInfo::new(), { blurhash: Some(value) }));
                 }
             }
             MsgContentDraft::Video { ref mut info, .. } => {
                 if let Some(o) = info.as_mut() {
-                    o.blurhash = Some(value)
+                    o.blurhash = Some(value);
                 } else {
-                    *info = Some(assign!(VideoInfo::new(), { blurhash : Some(value)}));
+                    *info = Some(assign!(VideoInfo::new(), { blurhash: Some(value) }));
                 }
             }
             _ => warn!("blurhash is available for only image/video"),
@@ -184,44 +298,28 @@ impl MsgContentDraft {
 
     fn filename(mut self, value: String) -> Self {
         match self {
-            MsgContentDraft::Image {
-                source,
-                info,
-                filename: _,
-            } => {
+            MsgContentDraft::Image { source, info, .. } => {
                 return MsgContentDraft::Image {
                     source,
                     filename: Some(value),
                     info,
                 };
             }
-            MsgContentDraft::Video {
-                source,
-                info,
-                filename: _,
-            } => {
+            MsgContentDraft::Video { source, info, .. } => {
                 return MsgContentDraft::Video {
                     source,
                     filename: Some(value),
                     info,
                 };
             }
-            MsgContentDraft::Audio {
-                source,
-                info,
-                filename: _,
-            } => {
+            MsgContentDraft::Audio { source, info, .. } => {
                 return MsgContentDraft::Audio {
                     source,
                     filename: Some(value),
                     info,
                 };
             }
-            MsgContentDraft::File {
-                source,
-                info,
-                filename: _,
-            } => {
+            MsgContentDraft::File { source, info, .. } => {
                 return MsgContentDraft::File {
                     source,
                     filename: Some(value),
@@ -271,6 +369,13 @@ impl MsgDraft {
         Ok(MsgDraft { inner, mentions })
     }
 
+    pub fn mimetype(&self, value: String) -> Self {
+        let MsgDraft { inner, mentions } = self.clone();
+        MsgDraft {
+            inner: inner.mimetype(value),
+            mentions,
+        }
+    }
     pub fn size(&self, value: u64) -> Self {
         let MsgDraft { inner, mentions } = self.clone();
         MsgDraft {
@@ -289,6 +394,33 @@ impl MsgDraft {
         let MsgDraft { inner, mentions } = self.clone();
         MsgDraft {
             inner: inner.height(value),
+            mentions,
+        }
+    }
+    pub fn thumbnail_file_path(&self, value: String) -> Self {
+        let MsgDraft { inner, mentions } = self.clone();
+        let v = MediaSource::Plain(OwnedMxcUri::from(value));
+        MsgDraft {
+            inner: inner.thumbnail_source(v),
+            mentions,
+        }
+    }
+    pub fn thumbnail_info(
+        &self,
+        width: Option<u64>,
+        height: Option<u64>,
+        mimetype: Option<String>,
+        size: Option<u64>,
+    ) -> Self {
+        let value = assign!(ThumbnailInfo::new(), {
+            width: width.and_then(UInt::new),
+            height: height.and_then(UInt::new),
+            mimetype,
+            size: size.and_then(UInt::new),
+        });
+        let MsgDraft { inner, mentions } = self.clone();
+        MsgDraft {
+            inner: inner.thumbnail_info(value),
             mentions,
         }
     }
@@ -367,7 +499,7 @@ impl MsgDraft {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room
                         .client()
-                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .upload_encrypted_file(&content_type, &mut reader)
                         .await?;
                     let body = path
                         .file_name()
@@ -380,7 +512,7 @@ impl MsgDraft {
                     let response = room
                         .client()
                         .media()
-                        .upload(&content_type, image_buf)
+                        .upload(&content_type, image_buf, None)
                         .await?;
                     let body = path
                         .file_name()
@@ -406,7 +538,7 @@ impl MsgDraft {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room
                         .client()
-                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .upload_encrypted_file(&content_type, &mut reader)
                         .await?;
                     let body = path
                         .file_name()
@@ -419,7 +551,7 @@ impl MsgDraft {
                     let response = room
                         .client()
                         .media()
-                        .upload(&content_type, audio_buf)
+                        .upload(&content_type, audio_buf, None)
                         .await?;
                     let body = path
                         .file_name()
@@ -445,7 +577,7 @@ impl MsgDraft {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room
                         .client()
-                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .upload_encrypted_file(&content_type, &mut reader)
                         .await?;
                     let body = path
                         .file_name()
@@ -458,7 +590,7 @@ impl MsgDraft {
                     let response = room
                         .client()
                         .media()
-                        .upload(&content_type, video_buf)
+                        .upload(&content_type, video_buf, None)
                         .await?;
                     let body = path
                         .file_name()
@@ -484,7 +616,7 @@ impl MsgDraft {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room
                         .client()
-                        .prepare_encrypted_file(&content_type, &mut reader)
+                        .upload_encrypted_file(&content_type, &mut reader)
                         .await?;
                     let body = path
                         .file_name()
@@ -497,7 +629,7 @@ impl MsgDraft {
                     let response = room
                         .client()
                         .media()
-                        .upload(&content_type, file_buf)
+                        .upload(&content_type, file_buf, None)
                         .await?;
                     let body = path
                         .file_name()

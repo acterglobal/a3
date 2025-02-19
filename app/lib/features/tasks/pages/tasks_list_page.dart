@@ -1,41 +1,49 @@
-import 'dart:math';
-
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
-import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
-import 'package:acter/features/tasks/widgets/skeleton/tasks_list_skeleton.dart';
-import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
+import 'package:acter/features/tasks/widgets/task_list_widget.dart';
+import 'package:acter/features/tasks/widgets/task_lists_empty.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger('a3::tasks::tasklist');
 
 class TasksListPage extends ConsumerStatefulWidget {
   static const scrollView = Key('space-task-lists');
   static const createNewTaskListKey = Key('tasks-create-list');
   static const taskListsKey = Key('tasks-task-lists');
-  final String? spaceId;
 
-  const TasksListPage({super.key, this.spaceId});
+  final String? spaceId;
+  final String? searchQuery;
+  final bool showOnlyTaskList;
+  final Function(String)? onSelectTaskListItem;
+
+  const TasksListPage({
+    super.key,
+    this.spaceId,
+    this.searchQuery,
+    this.showOnlyTaskList = false,
+    this.onSelectTaskListItem,
+  });
 
   @override
   ConsumerState<TasksListPage> createState() => _TasksListPageConsumerState();
 }
 
 class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
-  final TextEditingController searchTextController = TextEditingController();
-
-  String get searchValue => ref.watch(searchValueProvider);
+  String get searchValue => ref.watch(taskListSearchTermProvider);
   final ValueNotifier<bool> showCompletedTask = ValueNotifier(false);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      ref.read(taskListSearchTermProvider.notifier).state =
+          widget.searchQuery ?? '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,48 +54,47 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   }
 
   AppBar _buildAppBar() {
+    final lang = L10n.of(context);
+    final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(L10n.of(context).tasks),
-          if (widget.spaceId != null)
-            SpaceNameWidget(
-              spaceId: widget.spaceId!,
+      title: widget.onSelectTaskListItem != null
+          ? Text(L10n.of(context).selectTaskList)
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(lang.tasks),
+                if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
+              ],
             ),
-        ],
-      ),
       actions: [
-        ValueListenableBuilder(
-          valueListenable: showCompletedTask,
-          builder: (context, value, child) {
-            return TextButton.icon(
-              onPressed: () => showCompletedTask.value = !value,
-              icon: Icon(
-                value
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
-                size: 18,
-              ),
-              label: Text(
-                value
-                    ? L10n.of(context).hideCompleted
-                    : L10n.of(context).showCompleted,
-              ),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-              ),
-            );
-          },
-        ),
+        if (!widget.showOnlyTaskList)
+          ValueListenableBuilder(
+            valueListenable: showCompletedTask,
+            builder: (context, value, child) {
+              return TextButton.icon(
+                onPressed: () => showCompletedTask.value = !value,
+                icon: Icon(
+                  value
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  size: 18,
+                ),
+                label: Text(value ? lang.hideCompleted : lang.showCompleted),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                ),
+              );
+            },
+          ),
         AddButtonWithCanPermission(
           key: TasksListPage.createNewTaskListKey,
+          spaceId: spaceId,
           canString: 'CanPostTaskList',
           onPressed: () => showCreateUpdateTaskListBottomSheet(
             context,
-            initialSelectedSpace: widget.spaceId,
+            initialSelectedSpace: spaceId,
           ),
         ),
       ],
@@ -95,90 +102,49 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   }
 
   Widget _buildBody() {
-    final tasklistsLoader = ref.watch(
-      tasksListSearchProvider(
-        (spaceId: widget.spaceId, searchText: searchValue),
-      ),
-    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerSearchWidget(
-          searchTextController: searchTextController,
+          initialText: widget.searchQuery,
+          onChanged: (value) {
+            final notifier = ref.read(taskListSearchTermProvider.notifier);
+            notifier.state = value;
+          },
+          onClear: () {
+            final notifier = ref.read(taskListSearchTermProvider.notifier);
+            notifier.state = '';
+          },
         ),
         Expanded(
-          child: tasklistsLoader.when(
-            data: (tasklists) => _buildTasklists(tasklists),
-            error: (error, stack) {
-              _log.severe('Failed to search tasklists in space', error, stack);
-              return ErrorPage(
-                background: const TasksListSkeleton(),
-                error: error,
-                stack: stack,
-                onRetryTap: () {
-                  ref.invalidate(allTasksListsProvider);
-                },
-              );
-            },
-            loading: () => const TasksListSkeleton(),
+          child: ValueListenableBuilder(
+            valueListenable: showCompletedTask,
+            builder: (context, value, child) => TaskListWidget(
+              taskListProvider: tasksListSearchProvider(widget.spaceId),
+              spaceId: widget.spaceId,
+              shrinkWrap: false,
+              showOnlyTaskList: widget.showOnlyTaskList,
+              showCompletedTask: showCompletedTask.value,
+              onSelectTaskListItem: widget.onSelectTaskListItem,
+              emptyState: _taskListsEmptyState(),
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTasklists(List<String> tasklists) {
-    final size = MediaQuery.of(context).size;
-    final widthCount = (size.width ~/ 500).toInt();
-    const int minCount = 2;
-
-    if (tasklists.isEmpty) return _buildTasklistsEmptyState();
-
-    return SingleChildScrollView(
-      key: TasksListPage.scrollView,
-      child: StaggeredGrid.count(
-        crossAxisCount: max(1, min(widthCount, minCount)),
-        children: [
-          for (var tasklistId in tasklists)
-            ValueListenableBuilder(
-              valueListenable: showCompletedTask,
-              builder: (context, value, child) => TaskListItemCard(
-                taskListId: tasklistId,
-                showCompletedTask: value,
-                showSpace: widget.spaceId == null,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTasklistsEmptyState() {
+  Widget _taskListsEmptyState() {
     var canAdd = false;
     if (searchValue.isEmpty) {
-      final canPostLoader = ref.watch(
-        hasSpaceWithPermissionProvider('CanPostTaskList'),
-      );
+      final canPostLoader =
+          ref.watch(hasSpaceWithPermissionProvider('CanPostTaskList'));
       if (canPostLoader.valueOrNull == true) canAdd = true;
     }
-    return Center(
-      heightFactor: 1,
-      child: EmptyState(
-        title: searchValue.isNotEmpty
-            ? L10n.of(context).noMatchingTasksListFound
-            : L10n.of(context).noTasksListAvailableYet,
-        subtitle: L10n.of(context).noTasksListAvailableDescription,
-        image: 'assets/images/tasks.svg',
-        primaryButton: canAdd
-            ? ActerPrimaryActionButton(
-                onPressed: () => showCreateUpdateTaskListBottomSheet(
-                  context,
-                  initialSelectedSpace: widget.spaceId,
-                ),
-                child: Text(L10n.of(context).createTaskList),
-              )
-            : null,
-      ),
+    return TaskListsEmptyState(
+      canAdd: canAdd,
+      inSearch: searchValue.isNotEmpty,
+      spaceId: widget.spaceId,
     );
   }
 }

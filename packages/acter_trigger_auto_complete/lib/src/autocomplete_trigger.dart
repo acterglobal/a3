@@ -97,7 +97,7 @@ class AutocompleteTrigger {
     final suggestionEnd = cursorPosition;
     if (suggestionStart > suggestionEnd) return null;
 
-    // Fetch the suggestion text. The suggestions can't have spaces.
+    // Fetch the suggestion text. The suggestions can’t have spaces.
     // valid example: "@luke_skywa..."
     // invalid example: "@luke skywa..."
     final suggestionText = text.substring(suggestionStart, suggestionEnd);

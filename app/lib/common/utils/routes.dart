@@ -1,8 +1,4 @@
 enum Routes {
-  // primary & quickjump actions
-  // actionAddTask('/actions/addTask'),
-  actionCreateSuperInvite('/actions/createSuperInvite'),
-
   // pre
   intro('/intro'),
   introProfile('/introProfile'),
@@ -29,6 +25,8 @@ enum Routes {
 
   // --- Updates
   updates('/updates'),
+  update('/updates/:updateId([^/]+)'),
+  updateList('/updateList'),
   actionAddUpdate('/actions/addUpdate'),
 
   // --- search
@@ -57,20 +55,26 @@ enum Routes {
   inviteSpaceMembers('/inviteSpaceMembers'),
   invitePending('/invitePending'),
 
+  // -- Activities sub pages
+  myOpenInvitations('/activities/invites'),
+
   // -- spaces
   spaces('/spaces'),
   createSpace('/spaces/create'),
-  linkSubspace('/:spaceId([!#][^/]+)/linkSubspace'),
+  linkSpace('/:spaceId([!#][^/]+)/linkSpace'),
   linkChat('/:spaceId([!#][^/]+)/linkChat'),
-  linkRecommended('/:spaceId([!#][^/]+)/linkRecommended'),
   spaceInvite('/:spaceId([!#][^/]+)/invite'),
   space('/:spaceId([!#][^/]+)'), // !spaceId, #spaceName
-  spaceRelatedSpaces('/:spaceId([!#][^/]+)/spaces'),
+  subSpaces('/:spaceId([!#][^/]+)/subSpaces'),
+  subChats('/:spaceId([!#][^/]+)/subChats'),
+  organizeCategories(
+    '/organizeCategories/:spaceId([^/]+)/:categoriesFor([^/]+)',
+  ),
   spaceMembers('/:spaceId([!#][^/]+)/members'),
   spacePins('/:spaceId([!#][^/]+)/pins'),
   spaceEvents('/:spaceId([!#][^/]+)/events'),
-  spaceChats('/:spaceId([!#][^/]+)/chats'),
   spaceTasks('/:spaceId([!#][^/]+)/tasks'),
+  spaceUpdates('/:spaceId([!#][^/]+)/updates'),
   // -- space Settings
   spaceSettings('/:spaceId([!#][^/]+)/settings'),
   spaceSettingsApps('/:spaceId([!#][^/]+)/settings/app'),
@@ -103,14 +107,17 @@ enum Routes {
 
   // -- super invites
   settingsSuperInvites('/settings/super_invites'),
+  actionCreateSuperInvite('/actions/createSuperInvite'),
+  createSuperInvite('/settings/super_invites/create'),
   // -- utils
   bugReport('/bug-report'),
-  quickJump('/quick-jump'),
+  scanQrCode('/scan-qr-code'),
   // -- coming in from a push notification
   forward('/forward'),
   // -- fatal failure
   fatalFail('/error');
 
   const Routes(this.route);
+
   final String route;
 }

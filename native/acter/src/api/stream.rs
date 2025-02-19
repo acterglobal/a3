@@ -1,19 +1,23 @@
 use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{room::Receipts, RoomState};
-use matrix_sdk_ui::timeline::Timeline;
-use ruma::assign;
-use ruma_client_api::receipt::create_receipt;
-use ruma_common::{EventId, OwnedEventId, OwnedTransactionId};
-use ruma_events::{
-    receipt::ReceiptThread,
-    relation::Annotation,
-    room::{
-        message::{AudioInfo, FileInfo, ForwardThread, LocationInfo, RoomMessageEvent, VideoInfo},
-        ImageInfo,
+use matrix_sdk::room::{edit::EditedContent, Receipts};
+use matrix_sdk_base::{
+    ruma::{
+        api::client::receipt::create_receipt,
+        assign,
+        events::{
+            receipt::ReceiptThread,
+            room::{
+                message::{AudioInfo, FileInfo, ForwardThread, VideoInfo},
+                ImageInfo,
+            },
+            MessageLikeEventType,
+        },
+        EventId, OwnedEventId, OwnedTransactionId,
     },
-    MessageLikeEventType,
+    RoomState,
 };
+use matrix_sdk_ui::timeline::{Timeline, TimelineEventItemId};
 use std::{ops::Deref, sync::Arc};
 use tracing::info;
 
@@ -52,13 +56,16 @@ impl TimelineStream {
             let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
             yield RoomMessageDiff::current_items(timeline_items.clone().into_iter().map(|x| RoomMessage::from((x, user_id.clone()))).collect());
 
-            let mut remap = timeline_stream.map(|diff| remap_for_diff(
-                diff,
+            let mut remap = timeline_stream.map(|diff| diff.into_iter().map(|d| remap_for_diff(
+                d,
                 |x| RoomMessage::from((x, user_id.clone())),
-            ));
+            )).collect::<Vec<_>>()
+            );
 
             while let Some(d) = remap.next().await {
-                yield d
+                for e in d {
+                    yield e
+                }
             }
         }
     }
@@ -83,7 +90,7 @@ impl TimelineStream {
                 let Some(tl) = timeline.item_by_event_id(&event_id).await else {
                     bail!("Event not found")
                 };
-                Ok(RoomMessage::from((tl, user_id)))
+                Ok(RoomMessage::new_event_item(user_id, &tl))
             })
             .await?
     }
@@ -134,22 +141,22 @@ impl TimelineStream {
                     bail!("No permissions to send message in this room");
                 }
 
-                let event_content = room
-                    .event(&event_id)
-                    .await?
-                    .event
-                    .deserialize_as::<RoomMessageEvent>()?;
+                let Some(item) = timeline.item_by_event_id(&event_id).await else {
+                    bail!("Unable to find event");
+                };
 
-                if event_content.sender() != my_id {
-                    bail!("Unable to edit an event not sent by own user");
+                if !item.is_own() {
+                    // !item.is_editable() { // FIXME: matrix-sdk is_editable doesn't allow us to post other things
+                    bail!("You can't edit other peoples messages");
                 }
 
                 let item = timeline
                     .item_by_event_id(&event_id)
                     .await
                     .context("Not found which item would be edited")?;
-                let new_content = draft.into_room_msg(&room).await?;
-                timeline.edit(&item, new_content).await?;
+                let event_content = draft.into_room_msg(&room).await?;
+                let new_content = EditedContent::RoomMessage(event_content);
+                timeline.edit(&item.identifier(), new_content).await?;
                 Ok(true)
             })
             .await?
@@ -227,14 +234,17 @@ impl TimelineStream {
     pub async fn mark_as_read(&self, user_triggered: bool) -> Result<bool> {
         let timeline = self.timeline.clone();
         let receipt = if user_triggered {
-            ruma_client_api::receipt::create_receipt::v3::ReceiptType::Read
+            create_receipt::v3::ReceiptType::Read
         } else {
-            ruma_client_api::receipt::create_receipt::v3::ReceiptType::FullyRead
+            create_receipt::v3::ReceiptType::FullyRead
         };
 
-        Ok(RUNTIME
-            .spawn(async move { timeline.mark_as_read(receipt).await })
-            .await??)
+        RUNTIME
+            .spawn(async move {
+                let result = timeline.mark_as_read(receipt).await?;
+                Ok(result)
+            })
+            .await?
     }
 
     pub async fn send_multiple_receipts(
@@ -284,14 +294,18 @@ impl TimelineStream {
             .await?
     }
 
-    pub async fn toggle_reaction(&self, event_id: String, key: String) -> Result<bool> {
+    pub async fn toggle_reaction(&self, unique_id: String, key: String) -> Result<bool> {
         if !self.is_joined() {
             bail!("Unable to send reaction in a room we are not in");
         }
         let room = self.room.clone();
         let my_id = self.room.user_id()?;
         let timeline = self.timeline.clone();
-        let event_id = EventId::parse(event_id)?;
+        let unique_id =
+            match OwnedEventId::try_from(unique_id.clone()).map(TimelineEventItemId::EventId) {
+                Ok(o) => o,
+                Err(e) => TimelineEventItemId::TransactionId(OwnedTransactionId::from(unique_id)),
+            };
 
         RUNTIME
             .spawn(async move {
@@ -301,8 +315,7 @@ impl TimelineStream {
                 if !permitted {
                     bail!("No permissions to send reaction in this room");
                 }
-                let annotation = Annotation::new(event_id, key);
-                timeline.toggle_reaction(&annotation).await?;
+                timeline.toggle_reaction(&unique_id, &key).await?;
                 Ok(true)
             })
             .await?

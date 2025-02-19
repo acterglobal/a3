@@ -1,9 +1,6 @@
 use matrix_sdk_ui::notification_client::{
     NotificationEvent, NotificationItem as SdkNotificationItem,
 };
-use ruma_events::{
-    room::message::MessageType, AnySyncMessageLikeEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
-};
 
 use crate::{api::NotificationItem as ApiNotificationItem, login_with_token};
 
@@ -44,34 +41,69 @@ impl NotificationItem {
 
         let ApiNotificationItem {
             title,
-            push_style,
-            target_url,
-            room_invite,
             thread_id,
-            body,
             noisy,
             sender,
-            image,
+            inner,
             ..
         } = value;
 
+        let target_url = inner.target_url();
+        let room_invite = inner.room_invite();
+        let push_style = inner.key();
+        let body = inner.body();
+
+        let mut msg_title = title;
         let mut short_msg = None;
 
-        if let Some(invite) = room_invite {
-            short_msg = Some(invite);
-        } else if let Some(content) = body {
-            short_msg = Some(content.body());
+        let parent_title = if let Some(p) = inner.parent() {
+            let parent_title = p.title().unwrap_or("boost".to_owned());
+            let parent_emoji = p.emoji();
+            Some(format!("{parent_emoji} {parent_title}"))
+        } else {
+            None
+        };
+
+        let sender_name = sender
+            .display_name()
+            .clone()
+            .unwrap_or_else(|| sender.user_id());
+
+        if let Some(content) = body {
+            let msg = Some(content.body());
+            short_msg = Some(format!("${sender_name}: $msg"))
         }
 
-        if push_style == "chat" {
-            if let Some(sender_name) = sender.display_name() {
-                // wrap the user display name before the message
-                short_msg = Some(format!("${sender_name}: $short_msg"));
+        match push_style.as_str() {
+            "invite" => {
+                if let Some(invite_id) = room_invite {
+                    short_msg = Some(invite_id.to_string());
+                }
+            }
+            "comment" => {
+                if let Some(pt) = parent_title {
+                    msg_title = format!("💬 Comment on {pt}");
+                } else {
+                    msg_title = "💬 Comment".to_owned();
+                }
+            }
+            "reaction" => {
+                short_msg = Some(sender_name);
+                let reaction = inner.reaction_key().unwrap_or("❤️".to_owned());
+
+                if let Some(pt) = parent_title {
+                    msg_title = format!("{reaction} to {pt}");
+                } else {
+                    msg_title = reaction;
+                }
+            }
+            _ => {
+                // e.g. "chat" -> default is fine.
             }
         }
 
         NotificationItem {
-            title,
+            title: msg_title,
             body: short_msg,
             push_style,
             target_url,

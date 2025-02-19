@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.5
+Type=Application
+
+Name=Acter
+Comment=Casual Community Organizing
+Categories=Network;Office;Chat;ProjectManagement;
+MimeType=x-scheme-handler/acter;x-scheme-handler/matrix;
+
+Icon=acter
+Exec=acter %u
+Terminal=false
+StartupWMClass=acter
+SingleMainWindow=true

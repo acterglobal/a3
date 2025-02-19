@@ -1,9 +1,9 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/chat/convo_card.dart';
-import 'package:acter/common/widgets/spaces/space_card.dart';
+import 'package:acter/common/widgets/room/room_card.dart';
+import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +16,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
   final bool canMatchAlias;
   final bool canMatchId;
   final String searchVal;
+
   const MaybeDirectRoomActionWidget({
     super.key,
     required this.searchVal,
@@ -29,18 +30,31 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String alias,
     String server,
   ) {
+    final lang = L10n.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 20,
+      ),
       child: Card(
         child: ListTile(
-          onTap: () => onSelectedMatch(context, ref, [server], alias: alias),
+          onTap: () => onSelectedMatch(
+            context,
+            ref,
+            [server],
+            alias: alias,
+          ),
           title: Text(alias),
-          subtitle: Text('${L10n.of(context).on} $server'),
+          subtitle: Text('${lang.on} $server'),
           trailing: OutlinedButton.icon(
-            onPressed: () =>
-                onSelectedMatch(context, ref, [server], alias: alias),
+            onPressed: () => onSelectedMatch(
+              context,
+              ref,
+              [server],
+              alias: alias,
+            ),
             icon: const Icon(Atlas.entrance_thin),
-            label: Text(L10n.of(context).tryToJoin),
+            label: Text(lang.tryToJoin),
           ),
         ),
       ),
@@ -53,6 +67,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String roomId,
     List<String> servers,
   ) {
+    final lang = L10n.of(context);
     final roomWatch = ref.watch(maybeRoomProvider(roomId));
     if (roomWatch.valueOrNull == null) {
       return Card(
@@ -65,7 +80,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
           ),
           title: Text(roomId),
           subtitle: servers.isNotEmpty
-              ? Text('${L10n.of(context).via} ${servers.join(', ')}')
+              ? Text('${lang.via} ${servers.join(', ')}')
               : null,
           trailing: OutlinedButton.icon(
             onPressed: () => onSelectedMatch(
@@ -75,46 +90,36 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
               roomId: roomId,
             ),
             icon: const Icon(Atlas.entrance_thin),
-            label: Text(L10n.of(context).tryToJoin),
+            label: Text(lang.tryToJoin),
           ),
         ),
       );
     }
-    final room = roomWatch.value!;
+    final room =
+        roomWatch.value.expect('could not get room from id without domain');
 
     if (room.isJoined()) {
-      if (room.isSpace()) {
-        return renderSpaceCard(
-          context,
-          ref,
-          roomId,
-          onTap: () => context.pushNamed(
-            Routes.space.name,
-            pathParameters: {
-              'spaceId': roomId,
-            },
-          ),
-        );
-      }
-      return renderConvoCard(
-        context,
-        ref,
-        roomId,
-        onTap: () => context.pushNamed(
-          Routes.chatroom.name,
-          pathParameters: {
-            'roomId': roomId,
-          },
-        ),
-      );
+      return room.isSpace()
+          ? renderRoomCard(
+              roomId,
+              onTap: () => context.pushNamed(
+                Routes.space.name,
+                pathParameters: {'spaceId': roomId},
+              ),
+            )
+          : renderRoomCard(
+              roomId,
+              onTap: () => context.pushNamed(
+                Routes.chatroom.name,
+                pathParameters: {'roomId': roomId},
+              ),
+            );
     }
 
-    final trailing = noMemberButton(context, ref, room, roomId, servers);
-
-    if (room.isSpace()) {
-      return renderSpaceCard(context, ref, roomId, trailing: trailing);
-    }
-    return renderConvoCard(context, ref, roomId, trailing: trailing);
+    return renderRoomCard(
+      roomId,
+      trailing: noMemberButton(context, ref, room, roomId, servers),
+    );
   }
 
   Widget noMemberButton(
@@ -124,6 +129,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     String roomId,
     List<String> servers,
   ) {
+    final lang = L10n.of(context);
     if (room.joinRuleStr() == 'Public') {
       return OutlinedButton(
         onPressed: () => onSelectedMatch(
@@ -132,7 +138,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
           servers,
           roomId: roomId,
         ),
-        child: Text(L10n.of(context).join),
+        child: Text(lang.join),
       );
     } else {
       return OutlinedButton(
@@ -142,7 +148,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
           servers,
           roomId: roomId,
         ),
-        child: Text(L10n.of(context).requestToJoin),
+        child: Text(lang.requestToJoin),
       );
     }
   }
@@ -156,29 +162,12 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     );
   }
 
-  Widget renderSpaceCard(
-    BuildContext context,
-    WidgetRef ref,
+  Widget renderRoomCard(
     String roomId, {
     void Function()? onTap,
     Widget? trailing,
   }) {
-    return SpaceCard(
-      roomId: roomId,
-      showParents: true,
-      onTap: onTap,
-      trailing: trailing,
-    );
-  }
-
-  Widget renderConvoCard(
-    BuildContext context,
-    WidgetRef ref,
-    String roomId, {
-    void Function()? onTap,
-    Widget? trailing,
-  }) {
-    return ConvoCard(
+    return RoomCard(
       roomId: roomId,
       showParents: true,
       onTap: onTap,
@@ -191,8 +180,12 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     final aliased = aliasedHttpRegexp.firstMatch(searchVal) ??
         idAliasRegexp.firstMatch(searchVal);
     if (canMatchAlias && aliased != null) {
-      final alias = aliased.namedGroup('alias')!;
-      final server = aliased.namedGroup('server')!;
+      final alias = aliased
+          .namedGroup('alias')
+          .expect('could not extract alias from search value');
+      final server = aliased
+          .namedGroup('server')
+          .expect('could not extract server from search value');
       return renderAliased(context, ref, alias, server);
     }
 
@@ -200,14 +193,18 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
         idMatrixRegexp.firstMatch(searchVal);
 
     if (canMatchId && id != null) {
-      final roomId = id.namedGroup('id')!;
+      final roomId =
+          id.namedGroup('id').expect('could not extract id from search value');
       final List<String> servers = [
         id.namedGroup('server_name') ?? '',
         id.namedGroup('server_name2') ?? '',
         id.namedGroup('server_name3') ?? '',
       ].where((e) => e.isNotEmpty).toList();
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 10,
+        ),
         child: renderForRoomId(context, ref, '!$roomId', servers),
       );
     }
@@ -215,23 +212,26 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     return const SizedBox.shrink();
   }
 
-  void onSelectedMatch(
+  Future<void> onSelectedMatch(
     BuildContext context,
     WidgetRef ref,
     List<String> serverNames, {
     String? roomId,
     String? alias,
   }) async {
-    await joinRoom(
-      context,
-      ref,
-      L10n.of(context).tryingToJoin('${alias ?? roomId}'),
-      (alias ?? roomId)!,
-      serverNames.first,
-      (roomId) => context.pushNamed(
-        Routes.forward.name,
-        pathParameters: {'roomId': roomId},
-      ),
+    final roomIdOrAlias = alias ?? roomId;
+    if (roomIdOrAlias == null) throw 'neither room id nor alias available';
+    final newRoomId = await joinRoom(
+      context: context,
+      ref: ref,
+      roomIdOrAlias: roomIdOrAlias,
+      serverNames: serverNames,
     );
+    if (newRoomId != null && context.mounted) {
+      context.pushNamed(
+        Routes.forward.name,
+        pathParameters: {'roomId': newRoomId},
+      );
+    }
   }
 }

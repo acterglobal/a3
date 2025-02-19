@@ -1,14 +1,14 @@
 use acter_core::events::three_pid::{ThreePidContent, ThreePidRecord};
 use anyhow::{bail, Context, Result};
 use matrix_sdk::reqwest::{ClientBuilder, StatusCode};
-use ruma::{assign, uint};
-use ruma_client_api::{
-    account::{request_3pid_management_token_via_email, ThirdPartyIdRemovalStatus},
-    uiaa::{AuthData, Password, UserIdentifier},
-};
-use ruma_common::{
+use matrix_sdk_base::ruma::{
+    api::client::{
+        account::{request_3pid_management_token_via_email, ThirdPartyIdRemovalStatus},
+        uiaa::{AuthData, Password, UserIdentifier},
+    },
+    assign,
     thirdparty::{Medium, ThirdPartyIdentifier},
-    ClientSecret, MilliSecondsSinceUnixEpoch, OwnedClientSecret, SessionId,
+    uint, ClientSecret, MilliSecondsSinceUnixEpoch, OwnedClientSecret, SessionId,
 };
 use serde::Deserialize;
 use std::{collections::BTreeMap, ops::Deref};
@@ -126,7 +126,7 @@ impl Account {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("Server doesn't support change of third party identity");
+                    bail!("Server doesn’t support change of third party identity");
                 }
                 let inner = account
                     .request_3pid_email_token(&client_secret, &email, uint!(0))
@@ -182,7 +182,7 @@ impl Account {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("Server doesn't support 3pid change");
+                    bail!("Server doesn’t support 3pid change");
                 }
                 if let Err(e) = account.add_3pid(&client_secret, &sid, None).await {
                     let Some(inf) = e.as_uiaa_response() else {
@@ -227,7 +227,7 @@ impl Account {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("Server doesn't support change of third party identity");
+                    bail!("Server doesn’t support change of third party identity");
                 }
                 let mut content = account
                     .account_data::<ThreePidContent>()
@@ -243,7 +243,7 @@ impl Account {
                 let sid = SessionId::parse(session_id.clone())?;
                 let secret = ClientSecret::parse(passphrase.clone())?;
                 // try again with password
-                // FIXME: this shouldn't be hardcoded but use an Actual IUAA-flow
+                // FIXME: this shouldn’t be hardcoded but use an Actual IUAA-flow
                 let auth_data = AuthData::Password(Password::new(
                     UserIdentifier::UserIdOrLocalpart(user_id.to_string()),
                     password,
@@ -255,7 +255,7 @@ impl Account {
                 {
                     if let Some(a) = e.as_uiaa_response() {
                         if let Some(std_err) = &a.auth_error {
-                            bail!("{0}: {1}", std_err.kind, std_err.message);
+                            bail!("{:?}: {:?}", std_err.kind, std_err.message);
                         }
                     }
                     return Err(e.into());
@@ -285,7 +285,7 @@ impl Account {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("Server doesn't support change of third party identity");
+                    bail!("Server doesn’t support change of third party identity");
                 }
                 let mut content = account
                     .account_data::<ThreePidContent>()
@@ -325,7 +325,7 @@ impl Account {
                     return Ok(false);
                 }
                 // try again with password
-                // FIXME: this shouldn't be hardcoded but use an Actual IUAA-flow
+                // FIXME: this shouldn’t be hardcoded but use an Actual IUAA-flow
                 let auth_data = AuthData::Password(Password::new(
                     UserIdentifier::UserIdOrLocalpart(user_id.to_string()),
                     password,
@@ -334,7 +334,7 @@ impl Account {
                 if let Err(e) = account.add_3pid(&secret, &sid, Some(auth_data)).await {
                     if let Some(a) = e.as_uiaa_response() {
                         if let Some(std_err) = &a.auth_error {
-                            bail!("{0}: {1}", std_err.kind, std_err.message);
+                            bail!("{:?}: {:?}", std_err.kind, std_err.message);
                         }
                     }
                     return Err(e.into());
@@ -357,7 +357,7 @@ impl Account {
             .spawn(async move {
                 let capabilities = client.get_capabilities().await?;
                 if !capabilities.thirdparty_id_changes.enabled {
-                    bail!("Server doesn't support change of third party identity");
+                    bail!("Server doesn’t support change of third party identity");
                 }
                 // find it among the confirmed email addresses
                 let response = account.get_3pids().await?;

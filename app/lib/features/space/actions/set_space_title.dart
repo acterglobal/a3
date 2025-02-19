@@ -13,17 +13,18 @@ void showEditSpaceNameBottomSheet({
   required BuildContext context,
   required WidgetRef ref,
   required String spaceId,
-}) async {
+}) {
+  final lang = L10n.of(context);
   final spaceAvatarInfo = ref.read(roomAvatarInfoProvider(spaceId));
   if (!context.mounted) return;
 
   showEditTitleBottomSheet(
     context: context,
-    bottomSheetTitle: L10n.of(context).editName,
+    bottomSheetTitle: lang.editName,
     titleValue: spaceAvatarInfo.displayName ?? '',
-    onSave: (newName) async {
+    onSave: (ref, newName) async {
       try {
-        EasyLoading.show(status: L10n.of(context).updateName);
+        EasyLoading.show(status: lang.updateName);
         final space = await ref.read(spaceProvider(spaceId).future);
         await space.setName(newName);
         EasyLoading.dismiss();
@@ -36,7 +37,7 @@ void showEditSpaceNameBottomSheet({
           return;
         }
         EasyLoading.showError(
-          L10n.of(context).updateNameFailed(e),
+          lang.updateNameFailed(e),
           duration: const Duration(seconds: 3),
         );
       }

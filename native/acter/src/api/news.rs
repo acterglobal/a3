@@ -1,16 +1,22 @@
 use acter_core::{
     events::{
         news::{self, FallbackNewsContent, NewsContent, NewsEntryBuilder, NewsSlideBuilder},
-        Colorize, ColorizeBuilder, ObjRef,
+        Colorize, ColorizeBuilder, ObjRef as CoreObjRef, ObjRefBuilder,
+        RefDetails as CoreRefDetails, RefPreview,
     },
     models::{self, can_redact, ActerModel, AnyActerModel, ReactionManager},
-    statics::KEYS,
+    referencing::{IndexKey, SectionIndex},
 };
 use anyhow::{bail, Context, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{OwnedEventId, OwnedRoomId, OwnedUserId};
-use ruma_events::{room::message::MessageType, MessageLikeEventType};
+use matrix_sdk::room::Room;
+use matrix_sdk_base::{
+    ruma::{
+        events::{room::message::MessageType, MessageLikeEventType},
+        OwnedEventId, OwnedRoomId, OwnedUserId,
+    },
+    RoomState,
+};
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -25,6 +31,7 @@ use super::{
     api::FfiBuffer,
     client::Client,
     common::{MsgContent, ThumbnailSize},
+    deep_linking::{ObjRef, RefDetails},
     spaces::Space,
     RUNTIME,
 };
@@ -39,92 +46,49 @@ impl Client {
                     bail!("{key} is not a news");
                 };
                 let room = me.room_by_id_typed(content.room_id())?;
-                NewsEntry::new(me.clone(), room, content).await
+                Ok(NewsEntry::new(me.clone(), room, content))
             })
             .await?
     }
 
     pub async fn latest_news_entries(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
-        let mut news = Vec::new();
-        let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
-        let me = self.clone();
-        RUNTIME
-            .spawn(async move {
-                let mut all_news = me
-                    .store()
-                    .get_list(KEYS::NEWS)
-                    .await?
-                    .filter_map(|any| {
-                        if let AnyActerModel::NewsEntry(t) = any {
-                            Some(t)
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<models::NewsEntry>>();
-                all_news.sort_by(|a, b| b.meta.origin_server_ts.cmp(&a.meta.origin_server_ts));
-
-                let client = me.core.client();
-                for content in all_news {
-                    if count == 0 {
-                        break; // we filled what we wanted
-                    }
-                    let room_id = content.room_id().to_owned();
-                    let room = match rooms_map.entry(room_id) {
-                        Entry::Occupied(t) => t.get().clone(),
-                        Entry::Vacant(e) => {
-                            if let Some(room) = client.get_room(e.key()) {
-                                e.insert(room.clone());
-                                room
-                            } else {
-                                /// User not part of the room anymore, ignore
-                                continue;
-                            }
-                        }
-                    };
-                    let news_entry = NewsEntry::new(me.clone(), room, content).await?;
-                    news.push(news_entry);
-                    count -= 1;
-                }
-                Ok(news)
-            })
+        Ok(self
+            .models_of_list_with_room(IndexKey::Section(SectionIndex::Boosts))
             .await?
+            .take_while(|_| {
+                if count > 0 {
+                    count -= 1;
+                    true
+                } else {
+                    false
+                }
+            })
+            .map(|(inner, room)| NewsEntry::new(self.clone(), room, inner))
+            .collect())
     }
 }
 
 impl Space {
     pub async fn latest_news_entries(&self, mut count: u32) -> Result<Vec<NewsEntry>> {
-        let mut news = Vec::new();
-        let room_id = self.room_id().to_owned();
-        let client = self.client.clone();
         let room = self.room.clone();
-        RUNTIME
-            .spawn(async move {
-                let mut all_news = client
-                    .store()
-                    .get_list(&format!("{room_id}::{}", KEYS::NEWS))
-                    .await?
-                    .filter_map(|any| {
-                        if let AnyActerModel::NewsEntry(t) = any {
-                            Some(t)
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<models::NewsEntry>>();
-                all_news.reverse();
-
-                for content in all_news {
-                    if count == 0 {
-                        break; // we filled what we wanted
-                    }
-                    news.push(NewsEntry::new(client.clone(), room.clone(), content).await?);
-                    count -= 1;
-                }
-
-                Ok(news)
-            })
+        let room_id = room.room_id().to_owned();
+        Ok(self
+            .client
+            .models_of_list_with_room_under_check(
+                IndexKey::RoomSection(room_id, SectionIndex::Boosts),
+                move |_r| Ok(room.clone()),
+            )
             .await?
+            .take_while(|_| {
+                if count > 0 {
+                    count -= 1;
+                    true
+                } else {
+                    false
+                }
+            })
+            .map(|(inner, room)| NewsEntry::new(self.client.clone(), room, inner))
+            .collect())
     }
 }
 
@@ -189,7 +153,7 @@ impl NewsSlide {
         &self,
         thumb_size: Option<Box<ThumbnailSize>>,
     ) -> Result<FfiBuffer<u8>> {
-        // any variable in self can't be called directly in spawn
+        // any variable in self can’t be called directly in spawn
         match &self.inner.content {
             NewsContent::Text(content)
             | NewsContent::Fallback(FallbackNewsContent::Text(content)) => {
@@ -273,14 +237,18 @@ impl NewsSlide {
     }
 
     pub fn references(&mut self) -> Vec<ObjRef> {
-        self.inner.references().clone()
+        self.inner
+            .references()
+            .iter()
+            .map(|inner| ObjRef::new(self.client.deref().clone(), inner.clone()))
+            .collect()
     }
 }
 
 #[derive(Clone)]
 pub struct NewsSlideDraft {
     content: MsgDraft,
-    references: Vec<ObjRef>,
+    references: Vec<CoreObjRef>,
     colorize_builder: ColorizeBuilder,
 }
 
@@ -293,7 +261,6 @@ impl NewsSlideDraft {
         }
     }
 
-    #[allow(clippy::boxed_local)]
     pub fn color(&mut self, colors: Box<ColorizeBuilder>) {
         self.colorize_builder = *colors;
     }
@@ -320,9 +287,8 @@ impl NewsSlideDraft {
             .build()?)
     }
 
-    #[allow(clippy::boxed_local)]
-    pub fn add_reference(&mut self, reference: Box<ObjRef>) -> &Self {
-        self.references.push(*reference);
+    pub fn add_reference(&mut self, reference: Box<ObjRefBuilder>) -> &Self {
+        self.references.push((*reference).build());
         self
     }
 
@@ -348,12 +314,12 @@ impl Deref for NewsEntry {
 
 /// Custom functions
 impl NewsEntry {
-    pub async fn new(client: Client, room: Room, content: models::NewsEntry) -> Result<Self> {
-        Ok(NewsEntry {
+    pub fn new(client: Client, room: Room, content: models::NewsEntry) -> Self {
+        NewsEntry {
             client,
             room,
             content,
-        })
+        }
     }
 
     pub fn slides_count(&self) -> u8 {
@@ -391,7 +357,7 @@ impl NewsEntry {
     }
 
     pub async fn refresh(&self) -> Result<NewsEntry> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         let client = self.client.clone();
         let room = self.room.clone();
 
@@ -400,7 +366,7 @@ impl NewsEntry {
                 let AnyActerModel::NewsEntry(content) = client.store().get(&key).await? else {
                     bail!("Refreshing failed. {key} not a news")
                 };
-                NewsEntry::new(client, room, content).await
+                Ok(NewsEntry::new(client, room, content))
             })
             .await?
     }
@@ -416,6 +382,15 @@ impl NewsEntry {
 
     pub async fn reactions(&self) -> Result<crate::ReactionManager> {
         crate::ReactionManager::new(
+            self.client.clone(),
+            self.room.clone(),
+            self.content.event_id().to_owned(),
+        )
+        .await
+    }
+
+    pub async fn read_receipts(&self) -> Result<crate::ReadReceiptsManager> {
+        crate::ReadReceiptsManager::new(
             self.client.clone(),
             self.room.clone(),
             self.content.event_id().to_owned(),
@@ -443,7 +418,7 @@ impl NewsEntry {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.content.event_id().to_string();
+        let key = self.content.event_id().to_owned();
         self.client.subscribe(key)
     }
 
@@ -464,6 +439,39 @@ impl NewsEntry {
 
     pub fn event_id(&self) -> OwnedEventId {
         self.content.event_id().to_owned()
+    }
+
+    pub fn origin_server_ts(&self) -> u64 {
+        self.content.meta.origin_server_ts.get().into()
+    }
+
+    pub async fn ref_details(&self) -> Result<RefDetails> {
+        let room = self.room.clone();
+        let client = self.client.deref().clone();
+        let target_id = self.content.event_id().to_owned();
+        let room_id = self.room.room_id().to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let via = room.route().await?;
+                let room_display_name = room.cached_display_name();
+                Ok(RefDetails::new(
+                    client,
+                    CoreRefDetails::News {
+                        target_id,
+                        room_id: Some(room_id),
+                        via,
+                        preview: RefPreview::new(None, room_display_name),
+                    },
+                ))
+            })
+            .await?
+    }
+
+    pub fn internal_link(&self) -> String {
+        let target_id = &self.content.event_id().to_string()[1..];
+        let room_id = &self.room.room_id().to_string()[1..];
+        format!("acter:o/{room_id}/boost/{target_id}")
     }
 }
 

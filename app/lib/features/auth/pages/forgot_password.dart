@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
@@ -44,15 +45,12 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
         ),
       );
     }
-    if (tokenResponse != null) {
-      return _NewPassword(tokenResponse: tokenResponse!, sdk: sdk);
-    }
-    return _AskForEmail(
-      sdk: sdk,
-      onSubmit: (tokenResp) => setState(() {
-        tokenResponse = tokenResp;
-      }),
-    );
+    return tokenResponse
+            .map((resp) => _NewPassword(tokenResponse: resp, sdk: sdk)) ??
+        _AskForEmail(
+          sdk: sdk,
+          onSubmit: (resp) => setState(() => tokenResponse = resp),
+        );
   }
 }
 
@@ -60,7 +58,10 @@ class _AskForEmail extends StatelessWidget {
   final void Function(PasswordChangeEmailTokenResponse) onSubmit;
   final ActerSdk sdk;
 
-  _AskForEmail({required this.onSubmit, required this.sdk});
+  _AskForEmail({
+    required this.onSubmit,
+    required this.sdk,
+  });
 
   final formKey = GlobalKey<FormState>(debugLabel: 'ask for email form');
   final TextEditingController emailController = TextEditingController();
@@ -74,9 +75,7 @@ class _AskForEmail extends StatelessWidget {
   }
 
   AppBar _buildAppbar() {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-    );
+    return AppBar(backgroundColor: Colors.transparent);
   }
 
   Widget _buildBody(BuildContext context) {
@@ -107,28 +106,30 @@ class _AskForEmail extends StatelessWidget {
   }
 
   Widget _buildTitleText(BuildContext context) {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Align(
           alignment: Alignment.center,
           child: Text(
-            L10n.of(context).passwordResetTitle,
-            style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                  color: Theme.of(context).colorScheme.textHighlight,
-                ),
+            lang.passwordResetTitle,
+            style: Theme.of(context)
+                .textTheme
+                .displaySmall
+                ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
           ),
         ),
         const SizedBox(height: 20),
-        Text(L10n.of(context).forgotYourPassword),
-        Text(L10n.of(context).noWorriesWeHaveGotYouCovered),
+        Text(lang.forgotYourPassword),
+        Text(lang.noWorriesWeHaveGotYouCovered),
       ],
     );
   }
 
   Widget _buildImage(BuildContext context) {
-    var screenHeight = MediaQuery.of(context).size.height;
-    var imageSize = screenHeight / 4;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final imageSize = screenHeight / 4;
     return SvgPicture.asset(
       'assets/images/forgot_password.svg',
       height: imageSize,
@@ -141,19 +142,18 @@ class _AskForEmail extends StatelessWidget {
   }
 
   Widget _buildEmailInputField(BuildContext context) {
+    final lang = L10n.of(context);
     return Form(
       key: formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(L10n.of(context).emailAddress),
+          Text(lang.emailAddress),
           const SizedBox(height: 10),
           TextFormField(
             key: ForgotPassword.emailFieldKey,
             controller: emailController,
-            decoration: InputDecoration(
-              hintText: L10n.of(context).hintEmail,
-            ),
+            decoration: InputDecoration(hintText: lang.hintEmail),
             style: Theme.of(context).textTheme.labelLarge,
             validator: (val) => validateEmail(context, val),
           ),
@@ -202,7 +202,10 @@ class _NewPassword extends StatelessWidget {
   final PasswordChangeEmailTokenResponse tokenResponse;
   final ActerSdk sdk;
 
-  _NewPassword({required this.tokenResponse, required this.sdk});
+  _NewPassword({
+    required this.tokenResponse,
+    required this.sdk,
+  });
 
   final formKey = GlobalKey<FormState>(debugLabel: 'new password form');
   final TextEditingController passwordController = TextEditingController();
@@ -216,9 +219,7 @@ class _NewPassword extends StatelessWidget {
   }
 
   AppBar _buildAppbar() {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-    );
+    return AppBar(backgroundColor: Colors.transparent);
   }
 
   Widget _buildBody(BuildContext context) {
@@ -254,9 +255,10 @@ class _NewPassword extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             L10n.of(context).passwordResetTitle,
-            style: Theme.of(context).textTheme.displaySmall!.copyWith(
-                  color: Theme.of(context).colorScheme.textHighlight,
-                ),
+            style: Theme.of(context)
+                .textTheme
+                .displaySmall
+                ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
           ),
         ),
       ],
@@ -268,23 +270,24 @@ class _NewPassword extends StatelessWidget {
   }
 
   Widget _buildPasswordInputField(BuildContext context) {
+    final lang = L10n.of(context);
     return Form(
       key: formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(L10n.of(context).newPassword),
+          Text(lang.newPassword),
           const SizedBox(height: 10),
           TextFormField(
             key: ForgotPassword.passwordKey,
             controller: passwordController,
             decoration: InputDecoration(
-              hintText: L10n.of(context).hintMessagePassword,
+              hintText: lang.hintMessagePassword,
             ),
             style: Theme.of(context).textTheme.labelLarge,
-            validator: (val) => (val == null || val.length < 6)
-                ? L10n.of(context).hintMessagePassword
-                : null,
+            // required field, space allowed
+            validator: (val) =>
+                val == null || val.length < 6 ? lang.hintMessagePassword : null,
           ),
         ],
       ),

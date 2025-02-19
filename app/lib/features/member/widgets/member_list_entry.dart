@@ -1,6 +1,5 @@
-import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
-
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -23,6 +22,7 @@ class MemberListEntry extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final textTheme = Theme.of(context).textTheme;
     final memberStatus = ref
         .watch(membershipStatusStr((roomId: roomId, userId: memberId)))
         .valueOrNull;
@@ -61,13 +61,13 @@ class MemberListEntry extends ConsumerWidget {
       ),
       title: Text(
         avatarInfo.displayName ?? memberId,
-        style: Theme.of(context).textTheme.bodyMedium,
+        style: textTheme.bodyMedium,
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: avatarInfo.displayName != null
           ? Text(
               memberId,
-              style: Theme.of(context).textTheme.labelLarge,
+              style: textTheme.labelLarge,
               overflow: TextOverflow.ellipsis,
             )
           : null,

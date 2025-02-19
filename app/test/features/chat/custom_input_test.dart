@@ -8,9 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../helpers/mock_client_provider.dart';
 import '../../helpers/room_test_wrapper.dart';
 import '../../helpers/utils.dart';
-import '../../helpers/mocks.dart';
+import '../../helpers/mock_a3sdk.dart';
 import '../../helpers/test_wrapper_widget.dart';
 
 void main() {
@@ -24,9 +25,11 @@ void main() {
             ProviderScope(
               overrides: [
                 // Same as before
-                canSendProvider.overrideWith((ref, roomId) => false),
+                canSendMessageProvider.overrideWith((ref, roomId) => false),
                 sdkProvider.overrideWith((ref) => MockActerSdk()),
-                alwaysClientProvider.overrideWith((ref) => MockClient()),
+                clientProvider.overrideWith(
+                  () => MockClientNotifier(client: MockClient()),
+                ),
               ],
               child: const InActerContextTestWrapper(
                 child: CustomChatInput(
@@ -46,8 +49,9 @@ void main() {
             ProviderScope(
               overrides: [
                 // Same as before
-                canSendProvider
-                    .overrideWith((ref, roomId) => null), // null means loading
+                canSendMessageProvider.overrideWith(
+                  (ref, roomId) => null,
+                ), // null means loading
                 sdkProvider.overrideWith((ref) => MockActerSdk()),
               ],
               child: const InActerContextTestWrapper(
@@ -68,10 +72,12 @@ void main() {
             ProviderScope(
               overrides: [
                 // Same as before
-                canSendProvider.overrideWith((ref, roomId) => true),
+                canSendMessageProvider.overrideWith((ref, roomId) => true),
                 isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
                 sdkProvider.overrideWith((ref) => MockActerSdk()),
-                alwaysClientProvider.overrideWith((ref) => MockClient()),
+                clientProvider.overrideWith(
+                  () => MockClientNotifier(client: MockClient()),
+                ),
                 chatComposerDraftProvider
                     .overrideWith((ref, roomId) => MockComposeDraft()),
               ],
@@ -91,10 +97,12 @@ void main() {
 
   group('Send button states', () {
     final overrides = [
-      canSendProvider.overrideWith((ref, roomId) => true),
+      canSendMessageProvider.overrideWith((ref, roomId) => true),
       isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
       sdkProvider.overrideWith((ref) => MockActerSdk()),
-      alwaysClientProvider.overrideWith((ref) => MockClient()),
+      clientProvider.overrideWith(
+        () => MockClientNotifier(client: MockClient()),
+      ),
       chatProvider.overrideWith(() => MockAsyncConvoNotifier()),
       chatComposerDraftProvider
           .overrideWith((ref, roomId) => MockComposeDraft()),
@@ -192,10 +200,12 @@ void main() {
       'roomId-2': buildMockDraft(''),
     };
     final overrides = [
-      canSendProvider.overrideWith((ref, roomId) => true),
+      canSendMessageProvider.overrideWith((ref, roomId) => true),
       isRoomEncryptedProvider.overrideWith((ref, roomId) => true),
       sdkProvider.overrideWith((ref) => MockActerSdk()),
-      alwaysClientProvider.overrideWith((ref) => MockClient()),
+      clientProvider.overrideWith(
+        () => MockClientNotifier(client: MockClient()),
+      ),
       chatProvider.overrideWith(() => MockAsyncConvoNotifier()),
       chatComposerDraftProvider
           .overrideWith((ref, roomId) => Future.value(roomDrafts[roomId])),

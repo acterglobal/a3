@@ -1,9 +1,8 @@
-use acter::{
-    api::RoomMessage, ruma_common::OwnedEventId, ruma_events::room::redaction::RoomRedactionEvent,
-};
+use acter::api::RoomMessage;
 use anyhow::{Context, Result};
 use core::time::Duration;
-use futures::{pin_mut, stream::StreamExt, FutureExt};
+use futures::{pin_mut, FutureExt, StreamExt};
+use matrix_sdk_base::ruma::events::room::redaction::RoomRedactionEvent;
 use tokio::time::sleep;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -98,29 +97,32 @@ async fn message_redaction() -> Result<()> {
         )
         .await?;
 
-    // timeline reorders events and doesn't assign redaction as separate event
+    // timeline reorders events and doesn’t assign redaction as separate event
     // it is impossible to get redaction event by event id on timeline
-    // so we don't use retry-loop about redact_id
+    // so we don’t use retry-loop about redact_id
 
     // but it is possible to get redaction event by event id on convo
-    let ev = convo.event(&redact_id).await?;
-    let event_content = ev.event.deserialize_as::<RoomRedactionEvent>()?;
+    let ev = convo.event(&redact_id, None).await?;
+    let event_content = ev.kind.raw().deserialize_as::<RoomRedactionEvent>()?;
     let original = event_content
         .as_original()
         .context("Redaction event should get original event")?;
-    assert_eq!(original.redacts, Some(received));
-    assert_eq!(original.content.reason, Some("redact-test".to_string()));
+    assert_eq!(original.redacts.clone().unwrap().to_string(), received);
+    assert_eq!(
+        original.content.reason.clone().unwrap().to_string(),
+        "redact-test".to_string()
+    );
 
     Ok(())
 }
 
-fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<OwnedEventId> {
+fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<String> {
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(msg_content) = event_item.msg_content() {
             if msg_content.body() == body {
                 // exclude the pending msg
-                if let Some(event_id) = event_item.evt_id() {
+                if let Some(event_id) = event_item.event_id() {
                     return Some(event_id);
                 }
             }

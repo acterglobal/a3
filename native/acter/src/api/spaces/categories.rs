@@ -1,15 +1,16 @@
-use super::Space;
-use crate::{Categories, CategoriesBuilder, RUNTIME};
 use acter_core::events::CategoriesStateEventContent;
 use anyhow::{bail, Result};
-use matrix_sdk::deserialized_responses::{RawSyncOrStrippedState, SyncOrStrippedState};
-use ruma_events::{EventContent, FullStateEventContent, SyncStateEvent};
+use matrix_sdk_base::{deserialized_responses::RawSyncOrStrippedState, ruma::events::EventContent};
 use tracing::warn;
+
+use crate::{Categories, CategoriesBuilder, RUNTIME};
+
+use super::Space;
 
 impl Space {
     pub async fn categories(&self, cat_type: String) -> Result<Categories> {
         if !self.inner.is_joined() {
-            bail!("Unable to read categories of a space you didn't join");
+            bail!("Unable to read categories of a space you didn’t join");
         }
         let room = self.inner.room.clone();
         RUNTIME
@@ -40,7 +41,7 @@ impl Space {
     ) -> Result<bool> {
         let state_event = (*builder).build();
         if !self.inner.is_joined() {
-            bail!("Unable to read categories of a space you didn't join");
+            bail!("Unable to read categories of a space you didn’t join");
         }
         let room = self.inner.room.clone();
         let user_id = self.client.user_id()?;

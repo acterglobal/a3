@@ -1,16 +1,22 @@
 import 'dart:io';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/pins/actions/attachment_leading_icon.dart';
 import 'package:acter/features/pins/actions/set_pin_description.dart';
 import 'package:acter/features/pins/actions/set_pin_links.dart';
@@ -27,7 +33,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::pins::create_pin');
+final _log = Logger('a3::pins::create_page');
 
 class CreatePinPage extends ConsumerStatefulWidget {
   static const createPinPageKey = Key('create-pin-page');
@@ -49,16 +55,16 @@ class CreatePinPage extends ConsumerStatefulWidget {
 class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
+  ActerIcon? pinIcon;
+  Color? pinIconColor;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      if (widget.initialSelectedSpace != null &&
-          widget.initialSelectedSpace!.isNotEmpty) {
-        final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
-        parentNotifier.state = widget.initialSelectedSpace;
-      }
+    widget.initialSelectedSpace.map((p0) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+        ref.read(selectedSpaceIdProvider.notifier).state = p0;
+      });
     });
   }
 
@@ -81,7 +87,11 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
+        padding: const EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: 24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -93,6 +103,16 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
+                      Center(
+                        child: ActerIconWidget(
+                          showEditIconIndicator: true,
+                          icon: pinIcon ?? ActerIcon.pin,
+                          onIconSelection: (pinIconColor, pinIcon) {
+                            this.pinIcon = pinIcon;
+                            this.pinIconColor = pinIconColor;
+                          },
+                        ),
+                      ),
                       const SizedBox(height: 14),
                       _buildTitleField(),
                       const SizedBox(height: 14),
@@ -100,7 +120,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                         alignment: Alignment.centerLeft,
                         child: SelectSpaceFormField(
                           canCheck: 'CanPostPin',
-                          useCompatView: true,
+                          useCompactView: true,
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -124,44 +144,46 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   Widget _buildTitleField() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(L10n.of(context).title),
+        Text(lang.title),
         const SizedBox(height: 6),
         InputTextField(
-          hintText: L10n.of(context).pinName,
+          hintText: lang.pinName,
           key: CreatePinPage.titleFieldKey,
           textInputType: TextInputType.text,
           textInputAction: TextInputAction.done,
           controller: _titleController,
-          onInputChanged: (text) => ref
-              .read(createPinStateProvider.notifier)
-              .setPinTitleValue(text ?? ''),
-          validator: (value) => (value != null && value.trim().isNotEmpty)
-              ? null
-              : L10n.of(context).pleaseEnterATitle,
+          onInputChanged: (text) {
+            final notifier = ref.read(createPinStateProvider.notifier);
+            notifier.setPinTitleValue(text ?? '');
+          },
+          // required field, space not allowed
+          validator: (val) =>
+              val == null || val.trim().isEmpty ? lang.pleaseEnterATitle : null,
         ),
       ],
     );
   }
 
   Widget attachmentHeader(CreatePinState pinState) {
+    final lang = L10n.of(context);
     return Row(
       children: [
-        Expanded(child: Text(L10n.of(context).attachments)),
+        Expanded(child: Text(lang.attachments)),
         if (pinState.pinAttachmentList.isNotEmpty)
           ActerInlineTextButton(
             onPressed: () {
               showModalBottomSheet<void>(
                 context: context,
                 showDragHandle: true,
-                builder: (context) => const PinAttachmentOptions(
-                  isBottomSheetOpen: true,
-                ),
+                builder: (context) =>
+                    const PinAttachmentOptions(isBottomSheetOpen: true),
               );
             },
-            child: Text(L10n.of(context).add),
+            child: Text(lang.add),
           ),
       ],
     );
@@ -214,8 +236,10 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                 ],
               ),
         trailing: IconButton(
-          onPressed: () =>
-              ref.read(createPinStateProvider.notifier).removeAttachment(index),
+          onPressed: () {
+            final notifier = ref.read(createPinStateProvider.notifier);
+            notifier.removeAttachment(index);
+          },
           icon: const Icon(
             Atlas.xmark_circle,
             color: Colors.red,
@@ -237,23 +261,24 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
       showEditTitleBottomSheet(
         context: context,
         titleValue: attachmentData.title,
-        onSave: (newTitle) {
+        onSave: (ref, newTitle) {
           Navigator.pop(context);
           final pinAttachment = attachmentData.copyWith(title: newTitle);
-          ref
-              .read(createPinStateProvider.notifier)
-              .changeAttachmentTitle(pinAttachment, index);
+          final notifier = ref.read(createPinStateProvider.notifier);
+          notifier.changeAttachmentTitle(pinAttachment, index);
         },
       );
     }
   }
 
   Widget _pinDescription(CreatePinState pinState) {
-    if (pinState.pinDescriptionParams == null ||
-        pinState.pinDescriptionParams!.htmlBodyDescription.trim().isEmpty ||
-        pinState.pinDescriptionParams!.plainDescription.trim().isEmpty) {
+    final params = pinState.pinDescriptionParams;
+    if (params == null ||
+        params.htmlBodyDescription.trim().isEmpty ||
+        params.plainDescription.trim().isEmpty) {
       return const SizedBox.shrink();
     }
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -264,21 +289,18 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
             onTap: () {
               showEditPinDescriptionBottomSheet(
                 context: context,
-                ref: ref,
-                htmlBodyDescription:
-                    pinState.pinDescriptionParams?.htmlBodyDescription,
-                plainDescription:
-                    pinState.pinDescriptionParams?.plainDescription,
+                htmlBodyDescription: params.htmlBodyDescription,
+                plainDescription: params.plainDescription,
               );
             },
-            child: pinState.pinDescriptionParams!.htmlBodyDescription.isNotEmpty
+            child: params.htmlBodyDescription.isNotEmpty
                 ? RenderHtml(
-                    text: pinState.pinDescriptionParams!.htmlBodyDescription,
-                    defaultTextStyle: Theme.of(context).textTheme.labelLarge,
+                    text: params.htmlBodyDescription,
+                    defaultTextStyle: textTheme.labelLarge,
                   )
                 : Text(
-                    pinState.pinDescriptionParams!.plainDescription,
-                    style: Theme.of(context).textTheme.labelLarge,
+                    params.plainDescription,
+                    style: textTheme.labelLarge,
                   ),
           ),
         ),
@@ -296,40 +318,57 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   Future<void> _createPin() async {
+    final lang = L10n.of(context);
+    //Close keyboard
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    String? spaceId = ref.read(selectedSpaceIdProvider);
+    spaceId ??= await selectSpace();
     if (!_formKey.currentState!.validate()) return;
-    EasyLoading.show(status: L10n.of(context).creatingPin);
+    if (!mounted) return;
+
+    EasyLoading.show(status: lang.creatingPin);
     try {
-      final spaceId = ref.read(selectedSpaceIdProvider);
-      final space = await ref.read(spaceProvider(spaceId!).future);
+      final space = await ref
+          .read(spaceProvider(spaceId.expect('space not selected')).future);
       final pinDraft = space.pinDraft();
       final pinState = ref.read(createPinStateProvider);
 
-      // Pin Title
-      if (pinState.pinTitle != null && pinState.pinTitle!.isNotEmpty) {
-        pinDraft.title(pinState.pinTitle!);
+      // Pin IconData
+      if (pinIconColor != null || pinIcon != null) {
+        final sdk = await ref.watch(sdkProvider.future);
+        final displayBuilder = sdk.api.newDisplayBuilder();
+        pinIconColor.map((color) => displayBuilder.color(color.toInt()));
+        pinIcon.map((icon) => displayBuilder.icon('acter-icon', icon.name));
+        pinDraft.display(displayBuilder.build());
       }
 
+      // Pin Title
+      pinState.pinTitle.map((title) {
+        if (title.isNotEmpty) pinDraft.title(title);
+      });
+
       // Pin Description
-      if (pinState.pinDescriptionParams != null) {
-        if (pinState.pinDescriptionParams!.htmlBodyDescription.isNotEmpty) {
-          pinDraft.contentHtml(
-            pinState.pinDescriptionParams!.plainDescription,
-            pinState.pinDescriptionParams!.htmlBodyDescription,
-          );
+      final params = pinState.pinDescriptionParams;
+      if (params != null) {
+        final plain = params.plainDescription;
+        final html = params.htmlBodyDescription;
+        if (html.isNotEmpty) {
+          pinDraft.contentHtml(plain, html);
         } else {
-          pinDraft.contentMarkdown(
-            pinState.pinDescriptionParams!.plainDescription,
-          );
+          pinDraft.contentMarkdown(plain);
         }
       }
+
       final pinId = await pinDraft.send();
 
       // Add Attachments
       await addAttachment(pinId, pinState);
+      await autosubscribe(ref: ref, objectId: pinId.toString(), lang: lang);
 
       EasyLoading.dismiss();
       if (!mounted) return;
-      EasyLoading.showToast(L10n.of(context).pinCreatedSuccessfully);
+      EasyLoading.showToast(lang.pinCreatedSuccessfully);
       context.replaceNamed(
         Routes.pin.name,
         pathParameters: {'pinId': pinId.toString()},
@@ -341,10 +380,21 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).errorCreatingPin(e),
+        lang.errorCreatingPin(e),
         duration: const Duration(seconds: 3),
       );
     }
+  }
+
+  Future<String?> selectSpace() async {
+    final newSelectedSpaceId = await selectSpaceDrawer(
+      context: context,
+      currentSpaceId: ref.read(selectedSpaceIdProvider),
+      canCheck: 'CanPostPin',
+      title: Text(L10n.of(context).selectSpace),
+    );
+    ref.read(selectedSpaceIdProvider.notifier).state = newSelectedSpaceId;
+    return newSelectedSpaceId;
   }
 
   Future<void> addAttachment(EventId pinId, CreatePinState pinState) async {
@@ -356,7 +406,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
         context: context,
         ref: ref,
         manager: manager,
-        attachments: attachment.path != null ? [File(attachment.path!)] : [],
+        attachments: attachment.path.map((path) => [File(path)]) ?? [],
         title: attachment.title,
         link: attachment.link,
         attachmentType: attachment.attachmentType,

@@ -1,10 +1,10 @@
 import 'package:acter/common/actions/show_parent_space_list.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/spaces/space_info.dart';
+import 'package:acter/features/room/actions/avatar_upload.dart';
 import 'package:acter/features/space/actions/set_space_title.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
+import 'package:acter/features/space/widgets/space_info.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -20,7 +20,10 @@ class SpaceHeaderProfile extends ConsumerWidget {
 
   final String spaceId;
 
-  const SpaceHeaderProfile(this.spaceId, {super.key = headerKey});
+  const SpaceHeaderProfile(
+    this.spaceId, {
+    super.key = headerKey,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

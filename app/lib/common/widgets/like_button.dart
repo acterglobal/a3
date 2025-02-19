@@ -1,4 +1,5 @@
 import 'package:acter/common/animations/like_animation.dart';
+import 'package:acter/common/widgets/visibility/shadow_effect_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -8,17 +9,15 @@ final _log = Logger('a3::common::like_button');
 class LikeButton extends StatefulWidget {
   final bool isLiked;
   final int likeCount;
-  final TextStyle style;
+  final TextStyle? style;
   final Color color;
-  final int index;
   final Future<void> Function() onTap;
 
   const LikeButton({
     super.key,
     required this.likeCount,
-    required this.style,
+    this.style,
     required this.color,
-    required this.index,
     this.isLiked = false,
     required this.onTap,
   });
@@ -71,7 +70,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
         ),
       ],
     ).animate(
-      CurvedAnimation(parent: controller, curve: const Interval(0, 1)),
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0, 1),
+      ),
     );
 
     smallHeartOpacity = TweenSequence(
@@ -90,7 +92,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
         ),
       ],
     ).animate(
-      CurvedAnimation(parent: controller, curve: const Interval(0, 0.7)),
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0, 0.7),
+      ),
     );
 
     sizedBoxsize = TweenSequence(
@@ -109,7 +114,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
         ),
       ],
     ).animate(
-      CurvedAnimation(parent: controller, curve: const Interval(0, 0.7)),
+      CurvedAnimation(
+        parent: controller,
+        curve: const Interval(0, 0.7),
+      ),
     );
   }
 
@@ -139,24 +147,24 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                         }
                       }
                     },
-                    child: _LikeWidget(
-                      size: Size(
-                        heartSize.value * 30,
-                        heartSize.value * 30,
+                    child: ShadowEffectWidget(
+                      child: _LikeWidget(
+                        size: Size(
+                          heartSize.value * 30,
+                          heartSize.value * 30,
+                        ),
+                        icon: widget.isLiked
+                            ? Icon(
+                                Atlas.heart,
+                                fill: 1.0,
+                                color: Theme.of(context).colorScheme.error,
+                              )
+                            : const Icon(Atlas.heart),
+                        color: widget.isLiked
+                            ? Theme.of(context).colorScheme.tertiary
+                            : widget.color,
+                        isSmall: false,
                       ),
-                      icon: widget.isLiked
-                          ? Icon(
-                              Atlas.heart,
-                              fill: 1.0,
-                              color: Theme.of(context).colorScheme.error,
-                            )
-                          : const Icon(
-                              Atlas.heart,
-                            ),
-                      color: widget.isLiked
-                          ? Theme.of(context).colorScheme.tertiary
-                          : widget.color,
-                      isSmall: false,
                     ),
                   ),
                   Align(
@@ -184,7 +192,12 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
             );
           },
         ),
-        Text(widget.likeCount.toString(), style: widget.style),
+        ShadowEffectWidget(
+          child: Text(
+            widget.likeCount.toString(),
+            style: widget.style,
+          ),
+        ),
       ],
     );
   }
@@ -223,7 +236,7 @@ class _SmallHeartWidget extends StatelessWidget {
       color: Theme.of(context)
           .colorScheme
           .tertiary
-          .withOpacity(smallHeartOpacity.value * 0.8),
+          .withValues(alpha:smallHeartOpacity.value * 0.8),
       size: 12,
     );
   }

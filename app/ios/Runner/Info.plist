@@ -63,6 +63,10 @@
 	<key>LSApplicationQueriesSchemes</key>
     <array>
         <string>whatsapp</string>
+        <string>sgnl</string>
+        <string>tg</string>
     </array>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 </dict>
 </plist>

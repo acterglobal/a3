@@ -23,11 +23,15 @@ dependencies:
   path_provider: ^2.1.4
   dio: ^5.5.0+1
   windows_notification: ^1.2.0
+  app_badge_plus: ^1.1.5
+  sentry: any
 
+  sentry_flutter: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  mocktail: ^1.0.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

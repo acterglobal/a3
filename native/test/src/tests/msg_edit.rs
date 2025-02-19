@@ -1,4 +1,4 @@
-use acter::{api::RoomMessage, ruma_common::OwnedEventId};
+use acter::api::RoomMessage;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -133,14 +133,14 @@ async fn edit_text_msg() -> Result<()> {
     Ok(())
 }
 
-fn match_text_msg(msg: &RoomMessage, body: &str, modified: bool) -> Option<OwnedEventId> {
+fn match_text_msg(msg: &RoomMessage, body: &str, modified: bool) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(msg_content) = event_item.msg_content() {
             if msg_content.body() == body && event_item.was_edited() == modified {
                 // exclude the pending msg
-                if let Some(event_id) = event_item.evt_id() {
+                if let Some(event_id) = event_item.event_id() {
                     return Some(event_id);
                 }
             }
@@ -296,7 +296,7 @@ fn match_image_msg(
     msg: &RoomMessage,
     content_type: &str,
     modified: bool,
-) -> Option<(OwnedEventId, String)> {
+) -> Option<(String, String)> {
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(msg_content) = event_item.msg_content() {
@@ -304,7 +304,7 @@ fn match_image_msg(
                 if let Some(mimetype) = msg_content.mimetype() {
                     if mimetype == content_type {
                         // exclude the pending msg
-                        if let Some(evt_id) = event_item.evt_id() {
+                        if let Some(evt_id) = event_item.event_id() {
                             return Some((evt_id, msg_content.body()));
                         }
                     }

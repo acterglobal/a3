@@ -1,6 +1,10 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/calendar_sync/actions/set_room_sync_preference.dart';
+import 'package:acter/features/calendar_sync/providers/events_to_sync_provider.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +17,7 @@ const defaultSpaceSettingsMenuKey = Key('space-settings-menu');
 
 class SpaceSettingsMenu extends ConsumerWidget {
   static const appsMenu = Key('space-settings-apps');
+
   final bool isFullPage;
   final String spaceId;
 
@@ -24,20 +29,27 @@ class SpaceSettingsMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final spaceAvatarInfo = ref.watch(roomAvatarInfoProvider(spaceId));
     final parentBadges =
         ref.watch(parentAvatarInfosProvider(spaceId)).valueOrNull;
-
-    final notificationStatus =
-        ref.watch(roomNotificationStatusProvider(spaceId));
-    final curNotifStatus = notificationStatus.valueOrNull;
-    final replaceRoute = !isFullPage && context.isLargeScreen;
+    final curNotifStatus =
+        ref.watch(roomNotificationStatusProvider(spaceId)).valueOrNull;
 
     final spaceName = spaceAvatarInfo.displayName ?? spaceId;
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: isFullPage,
+        leading: !isFullPage
+            ? InkWell(
+                child: const Icon(Icons.close),
+                onTap: () {
+                  context.pop();
+                  context.pop();
+                },
+              )
+            : null,
         title: FittedBox(
           fit: BoxFit.fitWidth,
           child: Row(
@@ -58,7 +70,7 @@ class SpaceSettingsMenu extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(L10n.of(context).settings),
+                  Text(lang.settings),
                   Text(
                     '($spaceName)',
                     overflow: TextOverflow.ellipsis,
@@ -76,69 +88,91 @@ class SpaceSettingsMenu extends ConsumerWidget {
           child: SettingsList(
             sections: [
               SettingsSection(
-                title: Text(L10n.of(context).personalSettings),
+                title: Text(lang.personalSettings),
                 tiles: [
                   SettingsTile(
                     key: appsMenu,
-                    title: Text(L10n.of(context).notificationsOverwrites),
-                    description: Text(
-                      L10n.of(context).notificationsOverwritesDescription,
+                    title: Text(lang.notificationsOverwrites),
+                    description: Text(lang.notificationsOverwritesDescription),
+                    leading: Icon(
+                      curNotifStatus == 'muted'
+                          ? Atlas.bell_dash_bold
+                          : Atlas.bell_thin,
+                      size: 18,
                     ),
-                    leading: curNotifStatus == 'muted'
-                        ? const Icon(Atlas.bell_dash_bold, size: 18)
-                        : const Icon(Atlas.bell_thin, size: 18),
                     onPressed: (context) {
-                      replaceRoute
-                          ? context.pushReplacementNamed(
-                              Routes.spaceSettingsNotifications.name,
-                              pathParameters: {'spaceId': spaceId},
-                            )
-                          : context.pushNamed(
-                              Routes.spaceSettingsNotifications.name,
-                              pathParameters: {'spaceId': spaceId},
-                            );
+                      if (!isFullPage && context.isLargeScreen) {
+                        context.pushReplacementNamed(
+                          Routes.spaceSettingsNotifications.name,
+                          pathParameters: {'spaceId': spaceId},
+                        );
+                      } else {
+                        context.pushNamed(
+                          Routes.spaceSettingsNotifications.name,
+                          pathParameters: {'spaceId': spaceId},
+                        );
+                      }
                     },
                   ),
+                  if (ref
+                      .watch(isActiveProvider(LabsFeature.deviceCalendarSync)))
+                    SettingsTile.switchTile(
+                      initialValue: ref
+                              .watch(shouldSyncRoomProvider(spaceId))
+                              .valueOrNull ??
+                          true,
+                      leading: const Icon(Atlas.calendar_dots_thin),
+                      onToggle: (newVal) {
+                        setRoomSyncPreference(
+                          ref,
+                          L10n.of(context),
+                          spaceId,
+                          newVal,
+                        );
+                      },
+                      title: Text(L10n.of(context).syncThisCalendarTitle),
+                      description: Text(L10n.of(context).syncThisCalendarDesc),
+                    ),
                 ],
               ),
               SettingsSection(
-                title: Text(L10n.of(context).spaceConfiguration),
+                title: Text(lang.spaceConfiguration),
                 tiles: <SettingsTile>[
                   SettingsTile(
-                    title: Text(L10n.of(context).accessAndVisibility),
-                    description: Text(
-                      L10n.of(context).spaceConfigurationDescription,
-                    ),
+                    title: Text(lang.accessAndVisibility),
+                    description: Text(lang.spaceConfigurationDescription),
                     leading: const Icon(Atlas.lab_appliance_thin),
                     onPressed: (context) {
-                      replaceRoute
-                          ? context.pushReplacementNamed(
-                              Routes.spaceSettingsVisibility.name,
-                              pathParameters: {'spaceId': spaceId},
-                            )
-                          : context.pushNamed(
-                              Routes.spaceSettingsVisibility.name,
-                              pathParameters: {'spaceId': spaceId},
-                            );
+                      if (!isFullPage && context.isLargeScreen) {
+                        context.pushReplacementNamed(
+                          Routes.spaceSettingsVisibility.name,
+                          pathParameters: {'spaceId': spaceId},
+                        );
+                      } else {
+                        context.pushNamed(
+                          Routes.spaceSettingsVisibility.name,
+                          pathParameters: {'spaceId': spaceId},
+                        );
+                      }
                     },
                   ),
                   SettingsTile(
                     key: appsMenu,
-                    title: Text(L10n.of(context).apps),
-                    description: Text(
-                      L10n.of(context).customizeAppsAndTheirFeatures,
-                    ),
+                    title: Text(lang.apps),
+                    description: Text(lang.customizeAppsAndTheirFeatures),
                     leading: const Icon(Atlas.info_circle_thin),
                     onPressed: (context) {
-                      replaceRoute
-                          ? context.pushReplacementNamed(
-                              Routes.spaceSettingsApps.name,
-                              pathParameters: {'spaceId': spaceId},
-                            )
-                          : context.pushNamed(
-                              Routes.spaceSettingsApps.name,
-                              pathParameters: {'spaceId': spaceId},
-                            );
+                      if (!isFullPage && context.isLargeScreen) {
+                        context.pushReplacementNamed(
+                          Routes.spaceSettingsApps.name,
+                          pathParameters: {'spaceId': spaceId},
+                        );
+                      } else {
+                        context.pushNamed(
+                          Routes.spaceSettingsApps.name,
+                          pathParameters: {'spaceId': spaceId},
+                        );
+                      }
                     },
                   ),
                 ],

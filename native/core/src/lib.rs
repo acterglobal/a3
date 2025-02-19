@@ -6,12 +6,15 @@
 pub use matrix_sdk;
 pub use matrix_sdk::ruma;
 
+pub mod activities;
 pub mod client;
 pub mod error;
 pub mod events;
 pub mod executor;
 pub mod models;
 pub mod push;
+pub mod referencing;
+pub mod share_link;
 pub mod spaces;
 pub mod statics;
 pub mod store;

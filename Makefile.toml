@@ -1,12 +1,15 @@
 [env]
 CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
 CARGO_MAKE_WORKSPACE_INCLUDE_MEMBERS = ["native/acter"]
-ANDROID_PLATFORM_VERSION = "23"
+ANDROID_PLATFORM_VERSION = "27"
 TARGET_PLUGIN = "packages/rust_sdk"
 LIB_OUT_DIR = "debug"
 TARGET_OS = "unknown"
 DEV = true
 RELEASE = false
+# FIXME currently needed to fix building for ios
+# see https://github.com/matrix-org/matrix-rust-sdk/issues/4416
+CARGO_FEATURE_NO_NEON=1
 
 [env.release]
 RELEASE = true
@@ -108,10 +111,6 @@ dependencies = [
     "post-android-i686",
     "post-android",
 ]
-
-[tasks.mock-data]
-command = "cargo"
-args = ["run", "-p", "acter-cli", "mock", "--homeserver-url",  "http://localhost:8118", "--homeserver-name", "localhost"]
 
 [tasks.fixup]
 dependencies = [

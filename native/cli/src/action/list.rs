@@ -30,7 +30,7 @@ impl List {
         let sync_state = client.start_sync();
 
         let mut is_synced = sync_state.first_synced_rx();
-        while is_synced.next().await != Some(true) {} // let's wait for it to have synced
+        while is_synced.next().await != Some(true) {} // let’s wait for it to have synced
         info!(" - First Sync finished - ");
 
         if self.await_history_sync {
@@ -44,8 +44,8 @@ impl List {
             let room_id = sp.room_id();
             let is_acter_space = sp.is_acter_space().await?;
             let acter_space = if is_acter_space { 'x' } else { ' ' };
-            let display_name = sp.compute_display_name().await?;
-            println!(" ## [{acter_space}] {room_id}: {display_name}");
+            let display_name = sp.display_name().await?.text();
+            println!(" ## [{acter_space}] {room_id}: {display_name:?}");
             if self.details {
                 let aliases = {
                     let aliases = sp.alt_aliases();
@@ -136,13 +136,12 @@ impl List {
                     let news_count = sp.latest_news_entries(100).await?.len();
                     let task_lists = sp.task_lists().await?.len();
                     let pins = sp.pins().await?.len();
-                    let pinned_links = sp.pinned_links().await?.len();
                     let events_count = sp.calendar_events().await?.len();
                     println!(" - Objects: ");
                     println!("   * {news_count} NewsItems ");
                     println!("   * {task_lists} TaskList ");
                     println!("   * {events_count} Calendar Events ");
-                    println!("   * {pins} Pins of which {pinned_links} are links");
+                    println!("   * {pins} Pins ");
                 }
 
                 println!(); // give it space to breath
@@ -153,9 +152,9 @@ impl List {
             println!("## Chat rooms:");
             for convo in client.convos.read().await.iter() {
                 println!(
-                    " * {} : {}",
+                    " * {} : {:?}",
                     convo.room_id(),
-                    convo.compute_display_name().await?
+                    convo.display_name().await?.text()
                 );
             }
         }

@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show SpaceHierarchyRoomInfo;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HasSubSpacesNotifier extends FamilyAsyncNotifier<bool, String> {
   late ProviderSubscription<AsyncValue<List<SpaceHierarchyRoomInfo>>> listener;
+
   @override
   FutureOr<bool> build(String arg) async {
     final spaceId = arg;
@@ -27,6 +29,7 @@ class HasSubSpacesNotifier extends FamilyAsyncNotifier<bool, String> {
 
 class HasSubChatsNotifier extends FamilyAsyncNotifier<bool, String> {
   late ProviderSubscription<AsyncValue<List<SpaceHierarchyRoomInfo>>> listener;
+
   @override
   FutureOr<bool> build(String arg) async {
     final spaceId = arg;

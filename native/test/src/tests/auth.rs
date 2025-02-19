@@ -1,14 +1,12 @@
-use acter::{
-    api::{
-        guest_client, login_new_client, login_new_client_under_config,
-        login_with_token_under_config, make_client_config, request_password_change_token_via_email,
-        request_registration_token_via_email, reset_password,
-    },
-    matrix_sdk::reqwest::{Client as ReqClient, Response as ReqResponse},
+use acter::api::{
+    guest_client, login_new_client, login_new_client_under_config, login_with_token_under_config,
+    make_client_config, request_password_change_token_via_email,
+    request_registration_token_via_email, reset_password,
 };
 use anyhow::{bail, Context, Result};
 use mail_parser::MessageParser;
 use mailhog_rs::{MailHog, MessageList, SearchKind, SearchParams};
+use matrix_sdk::reqwest::{Client as ReqClient, Response as ReqResponse};
 use regex::Regex;
 use tempfile::TempDir;
 use tokio_retry::{
@@ -48,23 +46,24 @@ async fn guest_can_login() -> Result<()> {
 }
 
 #[tokio::test]
-async fn sisko_can_login() -> Result<()> {
+async fn user_can_login() -> Result<()> {
     let _ = env_logger::try_init();
-    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
-        .unwrap_or("localhost")
-        .to_string();
-    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
-        .unwrap_or("http://localhost:8118")
-        .to_string();
+    let sisko = random_user("sisko").await?;
+    let user_id = sisko.user_id()?;
+    let username = user_id.localpart();
 
     let tmp_dir = TempDir::new()?;
     let _client = login_new_client(
         tmp_dir.path().to_string_lossy().to_string(),
         tmp_dir.path().to_string_lossy().to_string(),
-        "@sisko".to_string(),
-        default_user_password("sisko"),
-        homeserver_name,
-        homeserver_url,
+        username.to_owned(),
+        default_user_password(username),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
         Some("SISKO_DEV".to_string()),
     )
     .await?;
@@ -72,32 +71,13 @@ async fn sisko_can_login() -> Result<()> {
 }
 
 #[tokio::test]
-async fn kyra_can_login() -> Result<()> {
+async fn user_can_restore() -> Result<()> {
     let _ = env_logger::try_init();
-    let tmp_dir = TempDir::new()?;
-    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
-        .unwrap_or("localhost")
-        .to_string();
-    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
-        .unwrap_or("http://localhost:8118")
-        .to_string();
 
-    let _client = login_new_client(
-        tmp_dir.path().to_string_lossy().to_string(),
-        tmp_dir.path().to_string_lossy().to_string(),
-        "@kyra".to_string(),
-        default_user_password("kyra"),
-        homeserver_name,
-        homeserver_url,
-        Some("KYRA_DEV".to_string()),
-    )
-    .await?;
-    Ok(())
-}
+    let kyra = random_user("kyra").await?;
+    let user_id = kyra.user_id()?;
+    let username = user_id.localpart();
 
-#[tokio::test]
-async fn kyra_can_restore() -> Result<()> {
-    let _ = env_logger::try_init();
     let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
         .unwrap_or("localhost")
         .to_string();
@@ -108,7 +88,7 @@ async fn kyra_can_restore() -> Result<()> {
     let media_dir = TempDir::new()?;
     let (config, user_id) = make_client_config(
         base_dir.path().to_string_lossy().to_string(),
-        "@kyra",
+        username,
         media_dir.path().to_string_lossy().to_string(),
         None,
         &homeserver_name,
@@ -120,8 +100,8 @@ async fn kyra_can_restore() -> Result<()> {
     let (token, user_id) = {
         let client = login_new_client_under_config(
             config.clone(),
-            user_id,
-            default_user_password("kyra"),
+            user_id.to_owned(),
+            default_user_password(username),
             None,
             Some("KYRA_DEV".to_string()),
         )
@@ -144,6 +124,11 @@ async fn kyra_can_restore() -> Result<()> {
 #[tokio::test]
 async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
     let _ = env_logger::try_init();
+
+    let kyra = random_user("kyra2").await?;
+    let user_id = kyra.user_id()?;
+    let username = user_id.localpart();
+
     let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
         .unwrap_or("localhost")
         .to_string();
@@ -155,7 +140,7 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
     let db_passphrase = Uuid::new_v4().to_string();
     let (config, user_id) = make_client_config(
         base_dir.path().to_string_lossy().to_string(),
-        "@kyra",
+        username,
         media_dir.path().to_string_lossy().to_string(),
         Some(db_passphrase.clone()),
         &homeserver_name,
@@ -168,7 +153,7 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
         let client = login_new_client_under_config(
             config.clone(),
             user_id,
-            default_user_password("kyra"),
+            default_user_password(username),
             Some(db_passphrase),
             Some("KYRA_DEV".to_string()),
         )
@@ -227,10 +212,10 @@ async fn user_changes_password() -> Result<()> {
     let result = account
         .change_password(password.clone(), new_password.clone())
         .await?;
-    assert!(result, "Couldn't change password successfully");
+    assert!(result, "Couldn’t change password successfully");
 
     let result = client.logout().await?;
-    assert!(result, "Couldn't logout successfully");
+    assert!(result, "Couldn’t logout successfully");
 
     let base_dir = TempDir::new()?;
     let media_dir = TempDir::new()?;
@@ -247,7 +232,7 @@ async fn user_changes_password() -> Result<()> {
 
     let old_pswd_res =
         login_new_client_under_config(config.clone(), uid.clone(), password, None, None).await;
-    assert!(old_pswd_res.is_err(), "Can't login with old password");
+    assert!(old_pswd_res.is_err(), "Can’t login with old password");
 
     let new_pswd_res = login_new_client_under_config(config, uid, new_password, None, None).await;
     assert!(

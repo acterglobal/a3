@@ -5,6 +5,7 @@ import 'package:acter_notifify/local.dart';
 import 'package:acter_notifify/matrix.dart';
 import 'package:acter_notifify/util.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::notifify::android');
@@ -24,6 +25,7 @@ Future<ByteArrayAndroidBitmap?> _fetchImage(
       return ByteArrayAndroidBitmap(image.asTypedList());
     } catch (e, s) {
       _log.severe('fetching image data failed', e, s);
+      Sentry.captureException(e, stackTrace: s);
     }
   }
   return null;
@@ -41,6 +43,7 @@ Future<Person> _makeSenderPerson(NotificationItem notification) async {
       );
     } catch (e, s) {
       _log.severe('fetching image data failed', e, s);
+      Sentry.captureException(e, stackTrace: s);
     }
   }
   return Person(key: sender.userId(), name: sender.displayName());
@@ -56,6 +59,7 @@ Future<ByteArrayAndroidBitmap?> _fetchRoomAvatar(
       return ByteArrayAndroidBitmap(image.asTypedList());
     } catch (e, s) {
       _log.severe('fetching room avatar failed', e, s);
+      Sentry.captureException(e, stackTrace: s);
     }
   }
   return null;
@@ -91,14 +95,16 @@ Future<void> _showInvite(NotificationItem notification) async {
       groupKey: threadId,
       autoCancel: true,
       largeIcon: roomAvatar,
+      importance: Importance.high,
+      priority: Priority.max,
+      category: AndroidNotificationCategory.message,
       styleInformation: MessagingStyleInformation(
         person,
         groupConversation: true,
         conversationTitle: title,
         messages: [
-          Message('<i>invited you to join</i>', DateTime.now(), person),
+          Message('invited you to join', DateTime.now(), person),
         ],
-        htmlFormatContent: true,
       ),
     ),
     title: title,
@@ -120,6 +126,9 @@ Future<void> _showNews(NotificationItem notification) async {
         groupKey: threadId,
         autoCancel: true,
         largeIcon: roomAvatar,
+        importance: Importance.high,
+        priority: Priority.max,
+        category: AndroidNotificationCategory.message,
         styleInformation: BigPictureStyleInformation(image),
       ),
     );
@@ -138,6 +147,9 @@ Future<void> _showNews(NotificationItem notification) async {
           groupKey: threadId,
           autoCancel: true,
           largeIcon: roomAvatar,
+          importance: Importance.high,
+          priority: Priority.max,
+          category: AndroidNotificationCategory.message,
           styleInformation: BigTextStyleInformation(
             formatted ?? body,
             htmlFormatBigText: formatted != null,
@@ -188,6 +200,9 @@ Future<void> _showChat(NotificationItem notification) async {
       autoCancel: true,
       setAsGroupSummary: true,
       largeIcon: roomAvatar,
+      importance: Importance.high,
+      priority: Priority.max,
+      category: AndroidNotificationCategory.message,
       styleInformation: MessagingStyleInformation(
         person,
         groupConversation: true,
@@ -241,6 +256,9 @@ Future<void> _showDM(NotificationItem notification) async {
       groupKey: threadId,
       autoCancel: true,
       largeIcon: roomAvatar,
+      importance: Importance.high,
+      priority: Priority.max,
+      category: AndroidNotificationCategory.message,
       styleInformation: MessagingStyleInformation(
         person,
         groupConversation: false,
@@ -253,6 +271,24 @@ Future<void> _showDM(NotificationItem notification) async {
   );
 }
 
+Future<void> _showObjNotif(NotificationItem notification) async {
+  final (title, body) = genTitleAndBody(notification);
+  await _androidShow(
+    notification,
+    AndroidNotificationDetails(
+      'messages',
+      'Messages',
+      channelDescription: 'Messages sent to you',
+      importance: Importance.high,
+      priority: Priority.max,
+      category: AndroidNotificationCategory.message,
+      groupKey: notification.threadId(),
+    ),
+    title: title,
+    body: body,
+  );
+}
+
 Future<void> _showFallback(NotificationItem notification) async {
   await _androidShow(
     notification,
@@ -260,6 +296,9 @@ Future<void> _showFallback(NotificationItem notification) async {
       'messages',
       'Messages',
       channelDescription: 'Messages sent to you',
+      importance: Importance.high,
+      priority: Priority.max,
+      category: AndroidNotificationCategory.message,
       groupKey: notification.threadId(),
     ),
   );
@@ -273,6 +312,7 @@ Future<void> showNotificationOnAndroid(NotificationItem notification) async {
     'news' => _showNews(notification),
     'chat' => _showChat(notification),
     'dm' => _showDM(notification),
+    'comment' || 'reaction' => _showObjNotif(notification),
     _ => _showFallback(notification),
   });
 }

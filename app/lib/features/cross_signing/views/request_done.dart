@@ -18,6 +18,7 @@ class RequestDoneView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -35,8 +36,8 @@ class RequestDoneView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
               isVerifier
-                  ? L10n.of(context).verificationConclusionOkDone(sender)
-                  : L10n.of(context).verificationConclusionOkSelfNotice,
+                  ? lang.verificationConclusionOkDone(sender)
+                  : lang.verificationConclusionOkSelfNotice,
               textAlign: TextAlign.center,
             ),
           ),
@@ -49,7 +50,7 @@ class RequestDoneView extends StatelessWidget {
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.40,
               child: ActerPrimaryActionButton(
-                child: Text(L10n.of(context).sasGotIt),
+                child: Text(lang.sasGotIt),
                 onPressed: () => onDone(context),
               ),
             ),

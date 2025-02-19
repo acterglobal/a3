@@ -31,7 +31,7 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     let tokens = super_invites.tokens().await?;
     assert_eq!(tokens.len(), 0); // we start with zero tokens
 
-    // let's create a new one
+    // let’s create a new one
     let mut builder = SuperInvitesTokenUpdateBuilder::new();
     builder.add_room(room_id.to_string());
 
@@ -92,7 +92,7 @@ async fn super_invites_manage() -> Result<()> {
     let tokens = super_invites.tokens().await?;
     assert_eq!(tokens.len(), 0); // we start with zero tokens
 
-    // let's create a new one
+    // let’s create a new one
 
     let mut builder = SuperInvitesTokenUpdateBuilder::new();
     builder.add_room(room_id.to_string());

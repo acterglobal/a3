@@ -22,6 +22,7 @@ class _JoinBtn extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final roomId = item.roomIdStr();
     final membershipLoader = ref.watch(roomMembershipProvider(roomId));
     return membershipLoader.when(
@@ -29,12 +30,12 @@ class _JoinBtn extends ConsumerWidget {
           membership == null ? noMember(context) : alreadyMember(context),
       error: (e, s) {
         _log.severe('Failed to load room membership', e, s);
-        return Text(L10n.of(context).loadingFailed(e));
+        return Text(lang.loadingFailed(e));
       },
       loading: () => Skeletonizer(
         child: OutlinedButton(
           onPressed: () => onSelected(item),
-          child: Text(L10n.of(context).requestToJoin),
+          child: Text(lang.requestToJoin),
         ),
       ),
     );
@@ -48,15 +49,16 @@ class _JoinBtn extends ConsumerWidget {
   }
 
   Widget noMember(BuildContext context) {
+    final lang = L10n.of(context);
     if (item.joinRuleStr() == 'Public') {
       return OutlinedButton(
         onPressed: () => onSelected(item),
-        child: Text(L10n.of(context).join),
+        child: Text(lang.join),
       );
     } else {
       return OutlinedButton(
         onPressed: () => onSelected(item),
-        child: Text(L10n.of(context).requestToJoin),
+        child: Text(lang.requestToJoin),
       );
     }
   }
@@ -74,6 +76,8 @@ class PublicRoomItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final avatarLoader = ref.watch(searchItemProfileData(item));
     final topic = item.topic();
 
@@ -99,13 +103,13 @@ class PublicRoomItem extends ConsumerWidget {
                   loading: fallbackAvatar,
                 ),
                 title: Text(
-                  item.name() ?? L10n.of(context).noDisplayName,
-                  style: Theme.of(context).textTheme.labelLarge,
+                  item.name() ?? lang.noDisplayName,
+                  style: textTheme.labelLarge,
                   softWrap: false,
                 ),
                 subtitle: Text(
-                  L10n.of(context).countsMembers(item.numJoinedMembers()),
-                  style: Theme.of(context).textTheme.labelSmall,
+                  lang.countsMembers(item.numJoinedMembers()),
+                  style: textTheme.labelSmall,
                   softWrap: false,
                 ),
                 trailing: _JoinBtn(
@@ -124,7 +128,7 @@ class PublicRoomItem extends ConsumerWidget {
                 ),
                 child: Text(
                   topic,
-                  style: Theme.of(context).textTheme.labelMedium,
+                  style: textTheme.labelMedium,
                   maxLines: 5,
                   overflow: TextOverflow.ellipsis,
                 ),

@@ -5,25 +5,29 @@ import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/bookmarks/widgets/bookmark_action.dart';
-import 'package:acter/features/comments/widgets/comments_section.dart';
-import 'package:acter/features/events/actions/get_event_type.dart';
+import 'package:acter/features/comments/types.dart';
+import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/events/widgets/change_date_sheet.dart';
 import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter/features/events/widgets/participants_list.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
-import 'package:acter/features/files/actions/file_share.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
+import 'package:acter/features/notifications/widgets/object_notification_status.dart';
+import 'package:acter/features/share/action/share_space_object_action.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -33,6 +37,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' show join;
@@ -55,74 +60,77 @@ class EventDetailPage extends ConsumerStatefulWidget {
 }
 
 class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
-  ValueNotifier<List<String>> eventParticipantsList = ValueNotifier([]);
-
   @override
   Widget build(BuildContext context) {
     final calEventLoader = ref.watch(calendarEventProvider(widget.calendarId));
+    final errored = calEventLoader.asError;
+    if (errored != null) {
+      _log.severe(
+        'Failed to load cal event',
+        errored.error,
+        errored.stackTrace,
+      );
+      return ErrorPage(
+        background: const EventDetailsSkeleton(),
+        error: errored.error,
+        stack: errored.stackTrace,
+        textBuilder: (error, code) =>
+            L10n.of(context).errorLoadingEventDueTo(error),
+        onRetryTap: () {
+          ref.invalidate(calendarEventProvider(widget.calendarId));
+        },
+      );
+    }
+    final calEvent = calEventLoader.valueOrNull;
     return Scaffold(
-      body: calEventLoader.when(
-        data: (calEvent) {
-          // Update event participants list
-          updateEventParticipantsList(calEvent);
-
-          return CustomScrollView(
-            slivers: [
-              _buildEventAppBar(calEvent),
-              _buildEventBody(calEvent),
-            ],
-          );
-        },
-        error: (error, stack) {
-          _log.severe('Failed to load cal event', error, stack);
-          return ErrorPage(
-            background: const EventDetailsSkeleton(),
-            error: error,
-            stack: stack,
-            textBuilder: L10n.of(context).errorLoadingEventDueTo,
-            onRetryTap: () {
-              ref.invalidate(calendarEventProvider(widget.calendarId));
-            },
-          );
-        },
-        loading: () => const EventDetailsSkeleton(),
+      body: CustomScrollView(
+        slivers: [
+          _buildEventAppBar(calEvent),
+          _buildEventBody(calEvent),
+        ],
       ),
     );
   }
 
-  Future<void> updateEventParticipantsList(CalendarEvent ev) async {
-    final ffiListFfiString = await ev.participants();
-    final participantsList = asDartStringList(ffiListFfiString);
-    _log.info('Event Participants => $participantsList');
-    if (!mounted) return;
-    eventParticipantsList.value = participantsList;
-  }
-
-  Widget _buildEventAppBar(CalendarEvent calendarEvent) {
+  Widget _buildEventAppBar(CalendarEvent? calendarEvent) {
     return SliverAppBar(
       expandedHeight: 200.0,
       pinned: true,
-      actions: [
-        _buildShareAction(calendarEvent),
-        BookmarkAction(bookmarker: BookmarkType.forEvent(widget.calendarId)),
-        _buildActionMenu(calendarEvent),
-      ],
+      actions: calendarEvent != null
+          ? [
+              IconButton(
+                icon: PhosphorIcon(PhosphorIcons.shareFat()),
+                onPressed: () => onShareEvent(context, calendarEvent),
+              ),
+              BookmarkAction(
+                bookmarker: BookmarkType.forEvent(widget.calendarId),
+              ),
+              ObjectNotificationStatus(objectId: widget.calendarId),
+              _buildActionMenu(calendarEvent),
+            ]
+          : [],
       flexibleSpace: Container(
         padding: const EdgeInsets.only(top: 20),
         child: const FlexibleSpaceBar(
-          background: Icon(Atlas.calendar_dots, size: 80),
+          background: Icon(
+            Atlas.calendar_dots,
+            size: 80,
+          ),
         ),
       ),
     );
   }
 
   Widget _buildActionMenu(CalendarEvent event) {
+    final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     //Get membership details
     final spaceId = event.roomIdStr();
     final canRedact = ref.watch(canRedactProvider(event));
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final canPostEvent = membership?.canString('CanPostEvent') == true;
-    final canChangeDate = getEventType(event) == EventFilters.upcoming;
+    final canChangeDate =
+        ref.watch(eventTypeProvider(event)) == EventFilters.upcoming;
 
     //Create event actions
     List<PopupMenuEntry> actions = [];
@@ -139,7 +147,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               children: <Widget>[
                 const Icon(Atlas.pencil_edit_thin),
                 const SizedBox(width: 10),
-                Text(L10n.of(context).editTitle),
+                Text(lang.editTitle),
               ],
             ),
           ),
@@ -154,7 +162,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               children: <Widget>[
                 const Icon(Atlas.pencil_edit_thin),
                 const SizedBox(width: 10),
-                Text(L10n.of(context).editDescription),
+                Text(lang.editDescription),
               ],
             ),
           ),
@@ -170,40 +178,58 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                 children: <Widget>[
                   const Icon(Atlas.pencil_edit_thin),
                   const SizedBox(width: 10),
-                  Text(L10n.of(context).changeDate),
+                  Text(lang.changeDate),
                 ],
               ),
             ),
           );
         }
+
+        // Copy as New
+        actions.add(
+          PopupMenuItem(
+            onTap: () {
+              context.pushNamed(
+                Routes.createEvent.name,
+                extra: event,
+              );
+            },
+            child: Row(
+              children: <Widget>[
+                Icon(PhosphorIcons.calendarPlus()),
+                const SizedBox(width: 10),
+                Text(lang.createAcopy),
+              ],
+            ),
+          ),
+        );
       }
     }
 
     //Delete Event Action
     if (canRedact.valueOrNull == true) {
-      final roomId = event.roomIdStr();
       actions.addAll([
         PopupMenuItem(
           key: EventsKeys.eventDeleteBtn,
           onTap: () => openRedactContentDialog(
             context,
             removeBtnKey: EventsKeys.eventRemoveBtn,
-            title: L10n.of(context).removeThisPost,
+            title: lang.removeThisPost,
             eventId: event.eventId().toString(),
             onSuccess: () {
               Navigator.pop(context);
             },
-            roomId: roomId,
+            roomId: spaceId,
             isSpace: true,
           ),
           child: Row(
             children: <Widget>[
               Icon(
                 Atlas.trash_can_thin,
-                color: Theme.of(context).colorScheme.error,
+                color: colorScheme.error,
               ),
               const SizedBox(width: 10),
-              Text(L10n.of(context).eventRemove),
+              Text(lang.eventRemove),
             ],
           ),
         ),
@@ -215,10 +241,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       PopupMenuItem(
         onTap: () => openReportContentDialog(
           context,
-          title: L10n.of(context).reportThisEvent,
-          description: L10n.of(context).reportThisContent,
+          title: lang.reportThisEvent,
+          description: lang.reportThisContent,
           eventId: widget.calendarId,
-          roomId: event.roomIdStr(),
+          roomId: spaceId,
           senderId: event.sender().toString(),
           isSpace: true,
         ),
@@ -226,10 +252,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           children: <Widget>[
             Icon(
               Atlas.warning_thin,
-              color: Theme.of(context).colorScheme.error,
+              color: colorScheme.error,
             ),
             const SizedBox(width: 10),
-            Text(L10n.of(context).eventReport),
+            Text(lang.eventReport),
           ],
         ),
       ),
@@ -241,24 +267,31 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildEventBody(CalendarEvent calendarEvent) {
+  Widget _buildEventBody(CalendarEvent? calendarEvent) {
     return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         key: Key('cal-event-${widget.calendarId}'),
         children: [
-          const SizedBox(height: 20),
-          _buildEventBasicDetails(calendarEvent),
-          const SizedBox(height: 10),
-          _buildEventRsvpActions(calendarEvent),
-          const SizedBox(height: 10),
-          _buildEventDataSet(calendarEvent),
-          const SizedBox(height: 10),
-          _buildEventDescription(calendarEvent),
+          if (calendarEvent != null) ...[
+            const SizedBox(height: 20),
+            _buildEventBasicDetails(calendarEvent),
+            const SizedBox(height: 10),
+            _buildEventRsvpActions(calendarEvent),
+            const SizedBox(height: 10),
+            _buildEventDataSet(calendarEvent),
+            const SizedBox(height: 10),
+            _buildEventDescription(calendarEvent),
+            const SizedBox(height: 40),
+          ] else
+            const EventDetailsSkeleton(),
+          AttachmentSectionWidget(
+            manager: calendarEvent?.asAttachmentsManagerProvider(),
+          ),
           const SizedBox(height: 40),
-          AttachmentSectionWidget(manager: calendarEvent.attachments()),
-          const SizedBox(height: 40),
-          CommentsSection(manager: calendarEvent.comments()),
+          CommentsSectionWidget(
+            managerProvider: calendarEvent?.asCommentsManagerProvider(),
+          ),
           const SizedBox(height: 40),
         ],
       ),
@@ -266,19 +299,18 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventBasicDetails(CalendarEvent calendarEvent) {
-    final membership = ref
-        .watch(roomMembershipProvider(calendarEvent.roomIdStr()))
-        .valueOrNull;
+    final spaceId = calendarEvent.roomIdStr();
+    final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final canPostEvent = membership?.canString('CanPostEvent') == true;
+    final eventType = ref.watch(eventTypeProvider(calendarEvent));
+    final eventParticipantsList =
+        ref.watch(participantsProvider(widget.calendarId)).valueOrNull;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Date and Month
-        EventDateWidget(
-          calendarEvent: calendarEvent,
-          size: 80,
-        ),
+        EventDateWidget(calendarEvent: calendarEvent, eventType: eventType),
         // Title, Space, User counts, comments counts and like counts
         Expanded(
           child: Column(
@@ -299,20 +331,18 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                   ),
                 ),
               ),
-              SpaceChip(spaceId: calendarEvent.roomIdStr()),
+              SpaceChip(
+                spaceId: spaceId,
+                useCompactView: true,
+              ),
               const SizedBox(height: 5),
               Row(
                 children: [
                   const Icon(Atlas.accounts_group_people),
                   const SizedBox(width: 10),
-                  ValueListenableBuilder(
-                    valueListenable: eventParticipantsList,
-                    builder: (context, eventParticipantsList, child) {
-                      return Text(
-                        L10n.of(context)
-                            .peopleGoing(eventParticipantsList.length),
-                      );
-                    },
+                  Text(
+                    L10n.of(context)
+                        .peopleGoing(eventParticipantsList?.length ?? 0),
                   ),
                 ],
               ),
@@ -327,9 +357,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     showEditTitleBottomSheet(
       context: context,
       titleValue: calendarEvent.title(),
-      onSave: (newName) {
+      onSave: (ref, newName) {
         saveEventTitle(
           context: context,
+          ref: ref,
           calendarEvent: calendarEvent,
           newName: newName,
         );
@@ -338,27 +369,29 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Future<void> onRsvp(RsvpStatusTag status, WidgetRef ref) async {
-    EasyLoading.show(status: L10n.of(context).updatingRSVP);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.updatingRSVP);
     try {
       final event =
           await ref.read(calendarEventProvider(widget.calendarId).future);
       final rsvpManager = await event.rsvps();
       final draft = rsvpManager.rsvpDraft();
-      switch (status) {
-        case RsvpStatusTag.Yes:
-          draft.status('yes');
-          break;
-        case RsvpStatusTag.No:
-          draft.status('no');
-          break;
-        case RsvpStatusTag.Maybe:
-          draft.status('maybe');
-          break;
-      }
+      final statusStr = switch (status) {
+        RsvpStatusTag.Yes => 'yes',
+        RsvpStatusTag.No => 'no',
+        RsvpStatusTag.Maybe => 'maybe',
+      };
+      draft.status(statusStr);
       final rsvpId = await draft.send();
       _log.info('new rsvp id: $rsvpId');
+
+      await autosubscribe(
+        ref: ref,
+        objectId: widget.calendarId,
+        lang: lang,
+      );
       // refresh cache
-      final client = ref.read(alwaysClientProvider);
+      final client = await ref.read(alwaysClientProvider.future);
       await client.waitForRsvp(rsvpId.toString(), null);
       EasyLoading.dismiss();
     } catch (e, s) {
@@ -368,17 +401,19 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).sendingRsvpFailed(e),
+        lang.sendingRsvpFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
   }
 
   Widget _buildEventRsvpActions(CalendarEvent calendarEvent) {
+    final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final rsvp = ref.watch(myRsvpStatusProvider(widget.calendarId)).valueOrNull;
 
     return Container(
-      color: Theme.of(context).colorScheme.surface,
+      color: colorScheme.surface,
       padding: const EdgeInsets.symmetric(vertical: 15.0),
       child: Row(
         children: [
@@ -387,8 +422,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             calendarEvent: calendarEvent,
             onTap: () => onRsvp(RsvpStatusTag.Yes, ref),
             iconData: Icons.check,
-            actionName: L10n.of(context).going,
-            rsvpStatusColor: Theme.of(context).colorScheme.secondary,
+            actionName: lang.going,
+            rsvpStatusColor: colorScheme.secondary,
             isSelected: rsvp == RsvpStatusTag.Yes,
           ),
           _buildVerticalDivider(),
@@ -397,8 +432,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             calendarEvent: calendarEvent,
             onTap: () => onRsvp(RsvpStatusTag.No, ref),
             iconData: Icons.close,
-            actionName: L10n.of(context).notGoing,
-            rsvpStatusColor: Theme.of(context).colorScheme.error,
+            actionName: lang.notGoing,
+            rsvpStatusColor: colorScheme.error,
             isSelected: rsvp == RsvpStatusTag.No,
           ),
           _buildVerticalDivider(),
@@ -407,7 +442,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             calendarEvent: calendarEvent,
             onTap: () => onRsvp(RsvpStatusTag.Maybe, ref),
             iconData: Icons.question_mark,
-            actionName: L10n.of(context).maybe,
+            actionName: lang.maybe,
             rsvpStatusColor: Colors.white,
             isSelected: rsvp == RsvpStatusTag.Maybe,
           ),
@@ -416,35 +451,39 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildShareAction(CalendarEvent calendarEvent) {
-    return IconButton(
-      icon: PhosphorIcon(PhosphorIcons.shareFat()),
-      onPressed: () => onShareEvent(calendarEvent),
-    );
-  }
-
-  Future<void> onShareEvent(CalendarEvent event) async {
+  Future<void> onShareEvent(BuildContext context, CalendarEvent event) async {
+    final lang = L10n.of(context);
     try {
-      final filename = event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
-      final tempDir = await getTemporaryDirectory();
-      final icalPath = join(tempDir.path, '$filename.ics');
-      event.icalForSharing(icalPath);
-
+      final refDetails = await event.refDetails();
+      final internalLink = refDetails.generateInternalLink(true);
       if (context.mounted) {
-        await openFileShareDialog(
-          // ignore: use_build_context_synchronously
+        openShareSpaceObjectDialog(
           context: context,
-          // ignore: use_build_context_synchronously
-          header: Text(L10n.of(context).shareIcal),
-          file: File(icalPath),
-          mimeType: 'text/calendar',
+          refDetails: refDetails,
+          internalLink: internalLink,
+          shareContentBuilder: () async {
+            Navigator.pop(context);
+            return await refDetails.generateExternalLink();
+          },
+          fileDetailContentBuilder: () async {
+            Navigator.pop(context);
+            final filename =
+                event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+            final tempDir = await getTemporaryDirectory();
+            final icalPath = join(tempDir.path, '$filename.ics');
+            event.icalForSharing(icalPath);
+            return (
+              file: File(icalPath),
+              mimeType: 'text/calendar',
+            );
+          },
         );
       }
     } catch (e, s) {
-      _log.severe('Creating iCal Share Event failed', e, s);
+      _log.severe('Creating iCal share Event failed', e, s);
       if (!mounted) return;
       EasyLoading.showError(
-        L10n.of(context).shareFailed(e),
+        lang.shareFailed(e),
         duration: const Duration(seconds: 3),
       );
     }
@@ -459,7 +498,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     required Color rsvpStatusColor,
     bool isSelected = false,
   }) {
-    final canRSVPUpdate = getEventType(calendarEvent) != EventFilters.past;
+    final canRSVPUpdate =
+        ref.watch(eventTypeProvider(calendarEvent)) != EventFilters.past;
     return Expanded(
       child: InkWell(
         key: key,
@@ -474,7 +514,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             const SizedBox(height: 4),
             Text(
               actionName,
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     color: isSelected ? rsvpStatusColor : Colors.white38,
                   ),
             ),
@@ -494,34 +534,36 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventDataSet(CalendarEvent ev) {
+    final lang = L10n.of(context);
     final agoTime =
         Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
             .endOf(Unit.hour)
             .fromNow();
-    final startDate =
-        Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
-            .format(pattern: 'EEE, MMM dd, yyyy AT hh:mm');
-    final endDate =
-        Jiffy.parseFromDateTime(toDartDatetime(ev.utcEnd()).toLocal())
-            .format(pattern: 'EEE, MMM dd, yyyy AT hh:mm');
 
-    String eventTimingTitle = switch (getEventType(ev)) {
-      EventFilters.ongoing => '${L10n.of(context).eventStarted} $agoTime',
-      EventFilters.upcoming => '${L10n.of(context).eventStarts} $agoTime',
-      EventFilters.past => '${L10n.of(context).eventEnded} $agoTime',
+    String eventDateTime = '${formatDate(ev)} (${formatTime(ev)})';
+    final eventType = ref.watch(eventTypeProvider(ev));
+
+    String eventTimingTitle = switch (eventType) {
+      EventFilters.ongoing => '${lang.eventStarted} $agoTime',
+      EventFilters.upcoming => '${lang.eventStarts} $agoTime',
+      EventFilters.past => '${lang.eventEnded} $agoTime',
       _ => '',
     };
-    final canChangeDate = getEventType(ev) == EventFilters.upcoming;
+    final canChangeDate = eventType == EventFilters.upcoming;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
         children: [
           ListTile(
-            leading: const Icon(Atlas.calendar_dots),
+            leading: const Icon(Atlas.clock_time),
             title: Text(eventTimingTitle),
             onTap: canChangeDate ? () => showChangeDateSheet(ev) : null,
-            subtitle: Text('$startDate - $endDate'),
+          ),
+          ListTile(
+            leading: const Icon(Atlas.calendar_dots),
+            title: Text(eventDateTime),
+            onTap: canChangeDate ? () => showChangeDateSheet(ev) : null,
           ),
           ListTile(
             leading: const Icon(Atlas.accounts_group_people),
@@ -540,52 +582,52 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget participantsListUI(String roomId) {
-    return ValueListenableBuilder(
-      valueListenable: eventParticipantsList,
-      builder: (context, eventParticipantsList, child) {
-        if (eventParticipantsList.isEmpty) {
-          return Text(L10n.of(context).noParticipantsGoing);
-        }
+    final eventParticipantsList =
+        ref.watch(participantsProvider(widget.calendarId)).valueOrNull ?? [];
+    if (eventParticipantsList.isEmpty) {
+      return Text(L10n.of(context).noParticipantsGoing);
+    }
 
-        final membersCount = eventParticipantsList.length;
-        List<String> firstFiveEventParticipantsList = eventParticipantsList;
-        if (membersCount > 5) {
-          firstFiveEventParticipantsList =
-              firstFiveEventParticipantsList.sublist(0, 5);
-        }
+    final membersCount = eventParticipantsList.length;
+    List<String> firstFiveEventParticipantsList = eventParticipantsList;
+    if (membersCount > 5) {
+      firstFiveEventParticipantsList =
+          firstFiveEventParticipantsList.sublist(0, 5);
+    }
 
-        return GestureDetector(
-          onTap: () => showAllParticipantListDialog(roomId),
-          child: Wrap(
-            direction: Axis.horizontal,
-            spacing: -10,
-            children: [
-              ...firstFiveEventParticipantsList.map(
-                (a) => MemberAvatar(
-                  memberId: a,
-                  roomId: roomId,
+    return GestureDetector(
+      onTap: () => showAllParticipantListDialog(roomId, eventParticipantsList),
+      child: Wrap(
+        direction: Axis.horizontal,
+        spacing: -10,
+        children: [
+          ...firstFiveEventParticipantsList.map(
+            (a) => MemberAvatar(
+              memberId: a,
+              roomId: roomId,
+            ),
+          ),
+          if (membersCount > 5)
+            CircleAvatar(
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Text(
+                  '+${membersCount - 5}',
+                  textAlign: TextAlign.center,
+                  textScaler: const TextScaler.linear(0.8),
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
-              if (membersCount > 5)
-                CircleAvatar(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Text(
-                      '+${membersCount - 5}',
-                      textAlign: TextAlign.center,
-                      textScaler: const TextScaler.linear(0.8),
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
+            ),
+        ],
+      ),
     );
   }
 
-  void showAllParticipantListDialog(String roomId) {
+  void showAllParticipantListDialog(
+    String roomId,
+    List<String> eventParticipantsList,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -597,7 +639,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           heightFactor: 1,
           child: ParticipantsList(
             roomId: roomId,
-            participants: eventParticipantsList.value,
+            participants: eventParticipantsList,
           ),
         );
       },
@@ -611,6 +653,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventDescription(CalendarEvent ev) {
+    final textTheme = Theme.of(context).textTheme;
     TextMessageContent? content = ev.description();
     final formattedText = content?.formatted();
     final bodyText = content?.body() ?? '';
@@ -623,7 +666,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         children: [
           Text(
             L10n.of(context).about,
-            style: Theme.of(context).textTheme.titleSmall,
+            style: textTheme.titleSmall,
           ),
           const SizedBox(height: 10),
           SelectionArea(
@@ -632,11 +675,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               child: formattedText != null
                   ? RenderHtml(
                       text: formattedText,
-                      defaultTextStyle: Theme.of(context).textTheme.labelMedium,
+                      defaultTextStyle: textTheme.labelMedium,
                     )
                   : Text(
                       bodyText,
-                      style: Theme.of(context).textTheme.labelMedium,
+                      style: textTheme.labelMedium,
                     ),
             ),
           ),
@@ -651,10 +694,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       context: context,
       descriptionHtmlValue: content?.formatted(),
       descriptionMarkdownValue: content?.body(),
-      onSave: (htmlBodyDescription, plainDescription) {
+      onSave: (ref, htmlBodyDescription, plainDescription) {
         saveEventDescription(
           context: context,
           calendarEvent: ev,
+          ref: ref,
           htmlBodyDescription: htmlBodyDescription,
           plainDescription: plainDescription,
         );

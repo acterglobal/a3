@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Client, Room;
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
@@ -14,8 +14,7 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
-  Future<Room?> _getRoom() async {
-    final client = ref.read(alwaysClientProvider);
+  Future<Room?> _getRoom(Client client) async {
     try {
       return await client.room(arg);
     } catch (e) {
@@ -26,12 +25,12 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
 
   @override
   Future<Room?> build(String arg) async {
-    final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(arg); // keep it resident in memory
+    final client = await ref.watch(alwaysClientProvider.future);
+    _listener = client.subscribeRoomStream(arg); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
         _log.info('seen update for room $arg');
-        state = await AsyncValue.guard(_getRoom);
+        state = await AsyncValue.guard(() async => await _getRoom(client));
       },
       onError: (e, s) {
         _log.severe('room stream errored', e, s);
@@ -41,13 +40,14 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await _getRoom();
+    return await _getRoom(client);
   }
 }
 
 class RoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String> {
   late ProviderSubscription<AsyncValue<String?>> _displayNameListener;
   late ProviderSubscription<AsyncValue<MemoryImage?>> _avatarListener;
+
   @override
   AvatarInfo build(arg) {
     final roomId = arg;

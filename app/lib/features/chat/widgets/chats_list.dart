@@ -1,11 +1,12 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/widgets/chat/convo_card.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
+import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -40,32 +41,27 @@ class ChatsList extends ConsumerWidget {
   }
 
   Widget _renderFiltered(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final filteredChats = ref.watch(filteredChatsProvider);
     return filteredChats.when(
       data: (chatsIds) {
         if (chatsIds.isEmpty) {
-          return SliverToBoxAdapter(
-            child: Center(
-              heightFactor: 10,
-              child: Text(L10n.of(context).noChatsFoundMatchingYourFilter),
-            ),
+          return Center(
+            heightFactor: 10,
+            child: Text(lang.noChatsFoundMatchingYourFilter),
           );
         }
         return _renderList(context, chatsIds);
       },
-      loading: () => const SliverToBoxAdapter(
-        child: Center(
-          heightFactor: 10,
-          child: CircularProgressIndicator(),
-        ),
+      loading: () => Center(
+        heightFactor: 10,
+        child: CircularProgressIndicator(),
       ),
       error: (e, s) {
         _log.severe('Failed to filter convos', e, s);
-        return SliverToBoxAdapter(
-          child: Center(
-            heightFactor: 10,
-            child: Text(L10n.of(context).searchingFailed(e)),
-          ),
+        return Center(
+          heightFactor: 10,
+          child: Text(lang.searchingFailed(e)),
         );
       },
       skipLoadingOnReload: true,
@@ -74,30 +70,28 @@ class ChatsList extends ConsumerWidget {
   }
 
   Widget _renderSyncing(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Center(
-        heightFactor: 1.5,
-        child: EmptyState(
-          title: L10n.of(context).noChatsStillSyncing,
-          subtitle: L10n.of(context).noChatsStillSyncingSubtitle,
-          image: 'assets/images/empty_chat.svg',
-        ),
+    final lang = L10n.of(context);
+    return Center(
+      heightFactor: 1.5,
+      child: EmptyState(
+        title: lang.noChatsStillSyncing,
+        subtitle: lang.noChatsStillSyncingSubtitle,
+        image: 'assets/images/empty_chat.svg',
       ),
     );
   }
 
   Widget _renderEmpty(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Center(
-        heightFactor: 1.5,
-        child: EmptyState(
-          title: L10n.of(context).youHaveNoDMsAtTheMoment,
-          subtitle: L10n.of(context).getInTouchWithOtherChangeMakers,
-          image: 'assets/images/empty_chat.svg',
-          primaryButton: ActerPrimaryActionButton(
-            onPressed: () => context.pushNamed(Routes.createChat.name),
-            child: Text(L10n.of(context).sendDM),
-          ),
+    final lang = L10n.of(context);
+    return Center(
+      heightFactor: 1.5,
+      child: EmptyState(
+        title: lang.youHaveNoDMsAtTheMoment,
+        subtitle: lang.getInTouchWithOtherChangeMakers,
+        image: 'assets/images/empty_chat.svg',
+        primaryButton: ActerPrimaryActionButton(
+          onPressed: () => context.pushNamed(Routes.createChat.name),
+          child: Text(lang.sendDM),
         ),
       ),
     );
@@ -144,10 +138,8 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
     super.didUpdateWidget(oldWidget);
     if (_listKey.currentState == null) {
       _log.fine('no state, hard reset');
-      // we can ignore the diffing as we aren't live, just reset
-      setState(() {
-        _reset();
-      });
+      // we can ignore the diffing as we aren’t live, just reset
+      setState(_reset);
       return;
     } else {
       refreshList();
@@ -184,23 +176,21 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
   void _insert(int pos, String data) {
     _log.fine('insert $pos: $data');
     _currentList.insert(pos, data);
-    if (_listKey.currentState != null) {
-      _listKey.currentState!.insertItem(pos);
-    } else {
-      _log.fine('we are not');
-    }
+    _listKey.currentState.map(
+      (curState) => curState.insertItem(pos),
+      orElse: () => _log.fine('we are not'),
+    );
   }
 
   void _remove(int pos, String data) {
     _currentList.removeAt(pos);
-    if (_listKey.currentState != null) {
-      _listKey.currentState!.removeItem(
+    _listKey.currentState.map(
+      (curState) => curState.removeItem(
         pos,
         (context, animation) => _removedItemBuilder(data, context, animation),
-      );
-    } else {
-      _log.fine('we are not');
-    }
+      ),
+      orElse: () => _log.fine('we are not'),
+    );
   }
 
   Widget _removedItemBuilder(
@@ -245,7 +235,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
   @override
   Widget build(BuildContext context) {
     _log.fine('render list $_currentList');
-    return SliverAnimatedList(
+    return AnimatedList(
       key: _listKey,
       initialItemCount: _currentList.length,
       itemBuilder: buildItem,

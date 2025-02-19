@@ -80,20 +80,16 @@ class _InviteSpaceMembersConsumerState
   Widget _buildParentSpaces() {
     final parentSpaceIds =
         ref.watch(parentIdsProvider(widget.roomId)).valueOrNull;
-
-    if (parentSpaceIds == null && parentSpaceIds!.isEmpty) {
+    if (parentSpaceIds == null || parentSpaceIds.isEmpty) {
       return const SizedBox.shrink();
     }
+    final lang = L10n.of(context);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          parentSpaceIds.length > 1
-              ? L10n.of(context).parentSpaces
-              : L10n.of(context).parentSpace,
-        ),
+        Text(parentSpaceIds.length > 1 ? lang.parentSpaces : lang.parentSpace),
         for (final roomId in parentSpaceIds)
           SpaceMemberInviteCard(
             roomId: roomId,
@@ -109,7 +105,7 @@ class _InviteSpaceMembersConsumerState
             },
           ),
         const SizedBox(height: 16),
-        Text(L10n.of(context).otherSpaces),
+        Text(lang.otherSpaces),
       ],
     );
   }
@@ -153,14 +149,15 @@ class _InviteSpaceMembersConsumerState
   }
 
   Widget _buildSkeletonizerLoading() {
+    final lang = L10n.of(context);
     return Skeletonizer(
       child: ListView(
         shrinkWrap: true,
         children: [
-          ListTile(title: Text(L10n.of(context).loading)),
-          ListTile(title: Text(L10n.of(context).loading)),
-          ListTile(title: Text(L10n.of(context).loading)),
-          ListTile(title: Text(L10n.of(context).loading)),
+          ListTile(title: Text(lang.loading)),
+          ListTile(title: Text(lang.loading)),
+          ListTile(title: Text(lang.loading)),
+          ListTile(title: Text(lang.loading)),
         ],
       ),
     );
@@ -174,15 +171,13 @@ class _InviteSpaceMembersConsumerState
   }
 
   Future<void> _inviteMembers() async {
+    final lang = L10n.of(context);
     if (selectedSpaces.isEmpty) {
-      EasyLoading.showToast(L10n.of(context).pleaseSelectSpace);
+      EasyLoading.showToast(lang.pleaseSelectSpace);
       return;
     }
 
-    final lang = L10n.of(context);
-
     EasyLoading.show(status: lang.invitingSpaceMembersLoading);
-
     try {
       final room = ref.read(maybeRoomProvider(widget.roomId)).valueOrNull;
       if (room == null) {
@@ -197,13 +192,11 @@ class _InviteSpaceMembersConsumerState
         );
         return;
       }
+      final invitedMemebers =
+          await ref.read(roomInvitedMembersProvider(widget.roomId).future);
       final invited =
-          (ref.read(roomInvitedMembersProvider(widget.roomId)).valueOrNull ??
-                  [])
-              .map((e) => e.userId().toString())
-              .toList();
-      final joined =
-          ref.read(membersIdsProvider(widget.roomId)).valueOrNull ?? [];
+          invitedMemebers.map((e) => e.userId().toString()).toList();
+      final joined = await ref.read(membersIdsProvider(widget.roomId).future);
       var total = 0;
       var inviteCount = 0;
       for (final roomId in selectedSpaces) {

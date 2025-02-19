@@ -1,32 +1,25 @@
-import 'dart:math';
-
-import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
-import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
-import 'package:acter/features/pins/widgets/pin_list_skeleton.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter/features/pins/widgets/pin_list_empty_state.dart';
+import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger('a3::pins::list');
 
 class PinsListPage extends ConsumerStatefulWidget {
   final String? spaceId;
+  final String? searchQuery;
+  final Function(String)? onSelectPinItem;
 
   const PinsListPage({
     super.key,
     this.spaceId,
+    this.searchQuery,
+    this.onSelectPinItem,
   });
 
   @override
@@ -34,9 +27,16 @@ class PinsListPage extends ConsumerStatefulWidget {
 }
 
 class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
-  final TextEditingController searchTextController = TextEditingController();
+  String get _searchValue => ref.watch(pinListSearchTermProvider);
 
-  String get searchValue => ref.watch(searchValueProvider);
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      ref.read(pinListSearchTermProvider.notifier).state =
+          widget.searchQuery ?? '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,119 +50,59 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
     final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(L10n.of(context).pins),
-          if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
-        ],
-      ),
+      title: widget.onSelectPinItem != null
+          ? Text(L10n.of(context).selectPin)
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(L10n.of(context).pins),
+                if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
+              ],
+            ),
       actions: [
-        AddButtonWithCanPermission(
-          canString: 'CanPostPin',
-          onPressed: () => context.pushNamed(
-            Routes.createPin.name,
-            queryParameters: {'spaceId': widget.spaceId},
+        if (widget.onSelectPinItem == null)
+          AddButtonWithCanPermission(
+            canString: 'CanPostPin',
+            spaceId: widget.spaceId,
+            onPressed: () => context.pushNamed(
+              Routes.createPin.name,
+              queryParameters: {'spaceId': spaceId},
+            ),
           ),
-        ),
       ],
     );
   }
 
   Widget _buildBody() {
-    AsyncValue<List<ActerPin>> pinsLoader;
-    if (searchValue.isNotEmpty) {
-      pinsLoader = ref.watch(
-        pinListSearchProvider(
-          (spaceId: widget.spaceId, searchText: searchValue),
-        ),
-      );
-    } else {
-      pinsLoader = ref.watch(pinListProvider(widget.spaceId));
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActerSearchWidget(searchTextController: searchTextController),
+        ActerSearchWidget(
+          initialText: widget.searchQuery,
+          onChanged: (value) {
+            final notifier = ref.read(pinListSearchTermProvider.notifier);
+            notifier.state = value;
+          },
+          onClear: () {
+            final notifier = ref.read(pinListSearchTermProvider.notifier);
+            notifier.state = '';
+          },
+        ),
         Expanded(
-          child: pinsLoader.when(
-            data: (pins) => _buildPinsList(pins),
-            error: (error, stack) {
-              _log.severe('Failed to load pins', error, stack);
-              return ErrorPage(
-                background: const PinListSkeleton(),
-                error: error,
-                stack: stack,
-                textBuilder: L10n.of(context).loadingFailed,
-                onRetryTap: () {
-                  if (searchValue.isNotEmpty) {
-                    ref.invalidate(
-                      pinListSearchProvider(
-                        (spaceId: widget.spaceId, searchText: searchValue),
-                      ),
-                    );
-                  } else {
-                    ref.invalidate(pinListProvider(widget.spaceId));
-                  }
-                },
-              );
-            },
-            loading: () => const PinListSkeleton(),
+          child: PinListWidget(
+            pinListProvider: pinListSearchedProvider(widget.spaceId),
+            spaceId: widget.spaceId,
+            shrinkWrap: false,
+            searchValue: _searchValue,
+            onTaPinItem: widget.onSelectPinItem,
+            emptyState: PinListEmptyState(
+              spaceId: widget.spaceId,
+              isSearchApplied: _searchValue.isNotEmpty,
+            ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildPinsList(List<ActerPin> pins) {
-    final size = MediaQuery.of(context).size;
-    final widthCount = (size.width ~/ 500).toInt();
-    const int minCount = 2;
-
-    if (pins.isEmpty) return _buildPinsEmptyState();
-
-    return SingleChildScrollView(
-      child: StaggeredGrid.count(
-        crossAxisCount: max(1, min(widthCount, minCount)),
-        children: [
-          for (var pin in pins)
-            PinListItemWidget(
-              pinId: pin.eventIdStr(),
-              showSpace: widget.spaceId == null,
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPinsEmptyState() {
-    var canAdd = false;
-    if (searchValue.isEmpty) {
-      final canPostLoader = ref.watch(
-        hasSpaceWithPermissionProvider('CanPostPin'),
-      );
-      if (canPostLoader.valueOrNull == true) canAdd = true;
-    }
-    return Center(
-      heightFactor: 1,
-      child: EmptyState(
-        title: searchValue.isNotEmpty
-            ? L10n.of(context).noMatchingPinsFound
-            : L10n.of(context).noPinsAvailableYet,
-        subtitle: L10n.of(context).noPinsAvailableDescription,
-        image: 'assets/images/empty_pin.svg',
-        primaryButton: canAdd
-            ? ActerPrimaryActionButton(
-                onPressed: () => context.pushNamed(
-                  Routes.createPin.name,
-                  queryParameters: {'spaceId': widget.spaceId},
-                ),
-                child: Text(L10n.of(context).createPin),
-              )
-            : null,
-      ),
     );
   }
 }

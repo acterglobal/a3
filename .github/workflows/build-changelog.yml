@@ -18,7 +18,7 @@ jobs:
           git fetch --prune --unshallow --tags
           cargo run -p mr_minutes -- --output CHANGELOG.md
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: "Upload Changelog"
         with:
           name: Changelog

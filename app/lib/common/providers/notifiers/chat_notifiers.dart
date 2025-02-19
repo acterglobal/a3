@@ -1,9 +1,11 @@
 import 'dart:async';
 
-import 'package:acter_notifify/util.dart';
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Client, Convo, ConvoDiff, RoomMessage;
+import 'package:acter_notifify/util.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
@@ -16,13 +18,13 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
 
   @override
   FutureOr<Convo?> build(String arg) async {
-    final convoId = arg;
-    final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(convoId); // keep it resident in memory
+    final roomId = arg;
+    final client = await ref.watch(alwaysClientProvider.future);
+    _listener =
+        client.subscribeRoomStream(roomId); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
-        final newConvo = await client.convo(convoId);
-        state = AsyncValue.data(newConvo);
+        state = await AsyncValue.guard(() async => await client.convo(roomId));
       },
       onError: (e, s) {
         _log.severe('convo stream errored', e, s);
@@ -33,7 +35,7 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await client.convoWithRetry(convoId, 120);
+    return await client.convoWithRetry(roomId, 120);
   }
 }
 
@@ -41,17 +43,20 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
+  FutureOr<RoomMessage?> _refresh(String roomId) async {
+    final convo = await ref.read(chatProvider(roomId).future);
+    return convo?.latestMessage();
+  }
+
   @override
   FutureOr<RoomMessage?> build(String arg) async {
     final roomId = arg;
-    final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream('$roomId::latest_message');
+    final client = await ref.watch(alwaysClientProvider.future);
+    _listener = client.subscribeRoomParamStream(roomId, 'latest_message');
     _poller = _listener.listen(
-      (data) {
+      (data) async {
         _log.info('received new latest message call for $roomId');
-        state = ref
-            .watch(chatProvider(roomId))
-            .whenData((cb) => cb?.latestMessage());
+        state = await AsyncValue.guard(() async => await _refresh(roomId));
       },
       onError: (e, s) {
         _log.severe('latest msg stream errored', e, s);
@@ -62,24 +67,19 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return ref.watch(chatProvider(roomId)).valueOrNull?.latestMessage();
+    return await _refresh(roomId);
   }
 }
 
-class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
-  final Client client;
+class ChatRoomsListNotifier extends Notifier<List<Convo>> {
   late Stream<ConvoDiff> _listener;
-  late StreamSubscription<ConvoDiff> _poller;
+  StreamSubscription<ConvoDiff>? _poller;
+  late ProviderSubscription _providerSubscription;
 
-  ChatRoomsListNotifier({
-    required Ref ref,
-    required this.client,
-  }) : super(List<Convo>.empty(growable: false)) {
-    _init(ref);
-  }
-
-  void _init(Ref ref) {
+  void _reset(Client client) {
+    state = List<Convo>.empty(growable: false);
     _listener = client.convosStream(); // keep it resident in memory
+    _poller?.cancel();
     _poller = _listener.listen(
       _handleDiff,
       onError: (e, s) {
@@ -89,7 +89,7 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
         _log.info('convo list stream ended');
       },
     );
-    ref.onDispose(() => _poller.cancel());
+    ref.onDispose(() => _poller?.cancel());
   }
 
   List<Convo> listCopy() => List.from(state, growable: true);
@@ -97,41 +97,73 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
   void _handleDiff(ConvoDiff diff) {
     switch (diff.action()) {
       case 'Append':
+        final values = diff.values();
+        if (values == null) {
+          _log.severe('On append action, values should be available');
+          return;
+        }
         final newList = listCopy();
-        List<Convo> items = diff.values()!.toList();
-        newList.addAll(items);
+        newList.addAll(values.toList());
         state = newList;
         break;
       case 'Insert':
-        Convo m = diff.value()!;
-        final index = diff.index()!;
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On insert action, value should be available');
+          return;
+        }
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On insert action, index should be available');
+          return;
+        }
         final newList = listCopy();
-        newList.insert(index, m);
+        newList.insert(index, value);
         state = newList;
         break;
       case 'Set':
-        Convo m = diff.value()!;
-        final index = diff.index()!;
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On set action, value should be available');
+          return;
+        }
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On set action, index should be available');
+          return;
+        }
         final newList = listCopy();
-        newList[index] = m;
+        newList[index] = value;
         state = newList;
         break;
       case 'Remove':
-        final index = diff.index()!;
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On remove action, index should be available');
+          return;
+        }
         final newList = listCopy();
         newList.removeAt(index);
         state = newList;
         break;
       case 'PushBack':
-        Convo m = diff.value()!;
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On push back action, value should be available');
+          return;
+        }
         final newList = listCopy();
-        newList.add(m);
+        newList.add(value);
         state = newList;
         break;
       case 'PushFront':
-        Convo m = diff.value()!;
+        final value = diff.value();
+        if (value == null) {
+          _log.severe('On push front action, value should be available');
+          return;
+        }
         final newList = listCopy();
-        newList.insert(0, m);
+        newList.insert(0, value);
         state = newList;
         break;
       case 'PopBack':
@@ -148,16 +180,43 @@ class ChatRoomsListNotifier extends StateNotifier<List<Convo>> {
         state = [];
         break;
       case 'Reset':
-        state = diff.values()!.toList();
+        final values = diff.values();
+        if (values == null) {
+          _log.severe('On reset action, values should be available');
+          return;
+        }
+        state = values.toList();
         break;
       case 'Truncate':
-        final length = diff.index()!;
+        final index = diff.index();
+        if (index == null) {
+          _log.severe('On truncate action, index should be available');
+          return;
+        }
         final newList = listCopy();
-        state = newList.take(length).toList();
+        state = newList.take(index).toList();
         break;
       default:
         break;
     }
+  }
+
+  @override
+  List<Convo> build() {
+    _providerSubscription = ref.listen<AsyncValue<Client?>>(
+      alwaysClientProvider,
+      (AsyncValue<Client?>? oldVal, AsyncValue<Client?> newVal) {
+        final client = newVal.valueOrNull;
+        if (client == null) {
+          // we don't care for not having a proper client yet
+          return;
+        }
+        _reset(client);
+      },
+      fireImmediately: true,
+    );
+    ref.onDispose(() => _providerSubscription.close());
+    return List<Convo>.empty(growable: false);
   }
 }
 
@@ -168,9 +227,7 @@ class SelectedChatIdNotifier extends Notifier<String?> {
   }
 
   void select(String? input) {
-    if (input != null) {
-      removeNotificationsForRoom(input);
-    }
+    input.map((roomId) => removeNotificationsForRoom(roomId));
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       state = input;
     });

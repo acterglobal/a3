@@ -3,7 +3,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
@@ -14,8 +14,9 @@ import 'package:acter/features/chat/providers/notifiers/media_chat_notifier.dart
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -43,15 +44,6 @@ final chatStateProvider =
     StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, String>(
   (ref, roomId) => ChatRoomNotifier(ref: ref, roomId: roomId),
 );
-
-final chatComposerDraftProvider = FutureProvider.autoDispose
-    .family<ComposeDraft?, String>((ref, roomId) async {
-  final chat = await ref.watch(chatProvider(roomId).future);
-  if (chat == null) {
-    return null;
-  }
-  return (await chat.msgDraft().then((val) => val.draft()));
-});
 
 final chatTopic =
     FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
@@ -186,7 +178,7 @@ final isRoomEncryptedProvider =
 
 final chatTypingEventProvider = StreamProvider.autoDispose
     .family<List<types.User>, String>((ref, roomId) async* {
-  final client = ref.watch(alwaysClientProvider);
+  final client = await ref.watch(alwaysClientProvider.future);
   final userId = ref.watch(myUserIdStrProvider);
   yield [];
   await for (final event in client.subscribeToTypingEventStream(roomId)) {
@@ -250,3 +242,38 @@ final hasUnreadChatsProvider = FutureProvider.autoDispose((ref) async {
   }
   return currentBadge;
 });
+
+final subChatsListProvider =
+    FutureProvider.family<List<String>, String>((ref, spaceId) async {
+  List<String> subChatsList = [];
+
+  //Get known sub-chats
+  final spaceRelationsOverview =
+      await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+  subChatsList.addAll(spaceRelationsOverview.knownChats);
+
+  //Get more sub-chats
+  final relatedChatsLoader =
+      await ref.watch(remoteChatRelationsProvider(spaceId).future);
+  for (var element in relatedChatsLoader) {
+    subChatsList.add(element.roomIdStr());
+  }
+
+  return subChatsList;
+});
+
+// useful for disabling send button for short time while message is preparing to be sent
+final allowSendInputProvider = StateProvider.family.autoDispose<bool, String>(
+  (ref, roomId) => ref.watch(
+    chatInputProvider
+        .select((state) => state.sendingState == SendingState.preparing),
+  ),
+);
+
+// whether user has enough permissions to send message in room
+final canSendMessageProvider = FutureProvider.family<bool?, String>(
+  (ref, roomId) async {
+    final membership = ref.watch(roomMembershipProvider(roomId));
+    return membership.valueOrNull?.canString('CanSendChatMessages');
+  },
+);

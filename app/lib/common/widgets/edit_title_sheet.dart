@@ -1,13 +1,13 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void showEditTitleBottomSheet({
   required BuildContext context,
   String? bottomSheetTitle,
   required String titleValue,
-  required Function(String) onSave,
+  required Function(WidgetRef, String) onSave,
 }) {
   showModalBottomSheet(
     showDragHandle: true,
@@ -27,7 +27,7 @@ void showEditTitleBottomSheet({
 class EditTitleSheet extends ConsumerStatefulWidget {
   final String? bottomSheetTitle;
   final String titleValue;
-  final Function(String) onSave;
+  final Function(WidgetRef, String) onSave;
 
   const EditTitleSheet({
     super.key,
@@ -51,13 +51,14 @@ class _EditTitleSheetState extends ConsumerState<EditTitleSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Container(
       padding: MediaQuery.of(context).viewInsets,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            widget.bottomSheetTitle ?? L10n.of(context).editTitle,
+            widget.bottomSheetTitle ?? lang.editTitle,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium,
           ),
@@ -69,9 +70,7 @@ class _EditTitleSheetState extends ConsumerState<EditTitleSheet> {
             autofocus: true,
             minLines: 1,
             maxLines: 1,
-            decoration: InputDecoration(
-              hintText: L10n.of(context).name,
-            ),
+            decoration: InputDecoration(hintText: lang.name),
           ),
           const SizedBox(height: 20),
           Row(
@@ -79,7 +78,7 @@ class _EditTitleSheetState extends ConsumerState<EditTitleSheet> {
             children: [
               OutlinedButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(L10n.of(context).cancel),
+                child: Text(lang.cancel),
               ),
               const SizedBox(width: 20),
               ActerPrimaryActionButton(
@@ -92,9 +91,9 @@ class _EditTitleSheetState extends ConsumerState<EditTitleSheet> {
                   }
 
                   // Need to update change of tile
-                  widget.onSave(_titleController.text.trim());
+                  widget.onSave(ref, _titleController.text.trim());
                 },
-                child: Text(L10n.of(context).save),
+                child: Text(lang.save),
               ),
             ],
           ),

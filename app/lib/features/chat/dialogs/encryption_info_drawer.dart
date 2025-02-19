@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
-void showEncryptionInfoBottomSheet({
-  required BuildContext context,
-}) {
+void showEncryptionInfoBottomSheet({required BuildContext context}) {
   showModalBottomSheet(
     showDragHandle: false,
     useSafeArea: true,
@@ -21,6 +19,8 @@ class EncryptionInfoSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -30,27 +30,25 @@ class EncryptionInfoSheet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                L10n.of(context).encryptedChatMessageInfoTitle,
-                style: Theme.of(context).textTheme.headlineSmall,
+                lang.encryptedChatMessageInfoTitle,
+                style: textTheme.headlineSmall,
               ),
               if (context.canPop())
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    L10n.of(context).close,
-                  ),
+                  child: Text(lang.close),
                 ),
             ],
           ),
           const SizedBox(height: 20),
           Text(
-            L10n.of(context).encryptedChatMessageInfo,
-            style: Theme.of(context).textTheme.bodySmall,
+            lang.encryptedChatMessageInfo,
+            style: textTheme.bodySmall,
           ),
           const SizedBox(height: 20),
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(L10n.of(context).close),
+            child: Text(lang.close),
           ),
         ],
       ),

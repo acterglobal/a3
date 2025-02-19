@@ -1,26 +1,28 @@
 import 'dart:async';
-import 'package:acter/common/providers/common_providers.dart';
+
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show Bookmarks, Client;
 import 'package:riverpod/riverpod.dart';
 
-class BookmarksManagerNotifier extends AsyncNotifier<ffi.Bookmarks> {
+class BookmarksManagerNotifier extends AsyncNotifier<Bookmarks> {
   late Stream<bool> _listener;
 
-  Future<ffi.Bookmarks> _getBookmarkManager() async {
-    final account = ref.read(accountProvider);
-    return await account.bookmarks();
+  Future<Bookmarks> _getBookmarkManager(Client client) async {
+    return await client.account().bookmarks();
   }
 
   @override
-  Future<ffi.Bookmarks> build() async {
-    final client = ref.watch(alwaysClientProvider);
+  Future<Bookmarks> build() async {
+    final client = await ref.watch(alwaysClientProvider.future);
 
-    _listener = client.subscribeStream('global.acter.bookmarks');
+    _listener = client.subscribeAccountDataStream('global.acter.bookmarks');
 
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(_getBookmarkManager);
+      state = await AsyncValue.guard(
+        () async => await _getBookmarkManager(client),
+      );
     });
-    return await _getBookmarkManager();
+    return await _getBookmarkManager(client);
   }
 }

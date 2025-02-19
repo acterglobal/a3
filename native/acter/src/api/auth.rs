@@ -2,21 +2,25 @@ use acter_core::RestoreToken;
 use anyhow::{bail, Context, Result};
 use lazy_static::lazy_static;
 use matrix_sdk::{
-    matrix_auth::{MatrixSession, MatrixSessionTokens},
+    authentication::matrix::{MatrixSession, MatrixSessionTokens},
     reqwest::{ClientBuilder as ReqClientBuilder, StatusCode},
-    Client as SdkClient, ClientBuilder as SdkClientBuilder, SessionMeta,
+    Client as SdkClient, ClientBuilder as SdkClientBuilder,
 };
-use ruma::{assign, uint};
-use ruma_client_api::{
-    account::{
-        register, request_password_change_token_via_email, request_registration_token_via_email,
+use matrix_sdk_base::{
+    ruma::{
+        api::client::{
+            account::{
+                register, request_password_change_token_via_email,
+                request_registration_token_via_email,
+            },
+            uiaa::{AuthData, Dummy, RegistrationToken},
+        },
+        assign, uint, ClientSecret, OwnedClientSecret, OwnedUserId, UserId,
     },
-    uiaa::{AuthData, Dummy, Password, RegistrationToken},
+    SessionMeta,
 };
-use ruma_common::{ClientSecret, OwnedClientSecret, OwnedUserId, UserId};
-use serde::Deserialize;
-use std::{ops::Deref, sync::RwLock};
-use tracing::{error, info};
+use std::sync::RwLock;
+use tracing::info;
 use url::Url;
 use uuid::Uuid;
 
@@ -32,7 +36,7 @@ lazy_static! {
 }
 
 pub fn set_proxy(new_proxy: Option<String>) {
-    *PROXY_URL.write().expect("Proxy URL couldn't be unlocked") = new_proxy;
+    *PROXY_URL.write().expect("Proxy URL couldn’t be unlocked") = new_proxy;
 }
 
 pub async fn sanitize_user(
@@ -93,7 +97,7 @@ pub async fn make_client_config(
         Ok((builder.homeserver_url(default_homeserver_url), user_id))
     } else {
         // we need to fallback to the testing/default scenario
-        return Ok((builder.server_name(user_id.server_name()), user_id));
+        Ok((builder.server_name(user_id.server_name()), user_id))
     }
 }
 
@@ -344,7 +348,7 @@ pub async fn register_under_config(
                     .build()?;
                 Client::new(client, state).await
             } else {
-                // we didn't receive the login details yet, do a full login attempt
+                // we didn’t receive the login details yet, do a full login attempt
                 login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
             }
         })
@@ -437,7 +441,7 @@ pub async fn register_with_token_under_config(
                     .build()?;
                 Client::new(client, state).await
             } else {
-                // we didn't receive the login details yet, do a full login attempt
+                // we didn’t receive the login details yet, do a full login attempt
                 login_client(client, user_id, password, db_passphrase, Some(user_agent)).await
             }
         })
@@ -474,7 +478,7 @@ pub async fn request_registration_token_via_email(
                 email,
                 uint!(0),
             );
-            let inner = client.send(request, None).await?;
+            let inner = client.send(request).await?;
             Ok(RegistrationTokenViaEmailResponse { inner })
         })
         .await?
@@ -510,7 +514,7 @@ pub async fn request_password_change_token_via_email(
                 email,
                 uint!(0),
             );
-            let inner = client.send(request, None).await?;
+            let inner = client.send(request).await?;
             Ok(PasswordChangeEmailTokenResponse {
                 client_secret,
                 inner,

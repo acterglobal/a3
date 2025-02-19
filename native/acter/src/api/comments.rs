@@ -4,9 +4,14 @@ use acter_core::{
 };
 use anyhow::{bail, Result};
 use futures::stream::StreamExt;
-use matrix_sdk::{room::Room, RoomState};
-use ruma_common::{OwnedEventId, OwnedUserId};
-use ruma_events::{room::message::TextMessageEventContent, MessageLikeEventType};
+use matrix_sdk::room::Room;
+use matrix_sdk_base::{
+    ruma::{
+        events::{room::message::TextMessageEventContent, MessageLikeEventType},
+        OwnedEventId, OwnedUserId,
+    },
+    RoomState,
+};
 use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, Stream};
@@ -157,6 +162,10 @@ impl CommentsManager {
                 })
             })
             .await?
+    }
+
+    pub fn object_id_str(&self) -> String {
+        self.inner.event_id().to_string()
     }
 
     pub fn room_id_str(&self) -> String {

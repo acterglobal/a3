@@ -23,40 +23,36 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Form(
       key: formKey,
       child: AlertDialog(
-        title: Text(L10n.of(context).encryptionBackupRecover),
+        title: Text(lang.encryptionBackupRecover),
         content: Container(
-          constraints: const BoxConstraints(
-            maxWidth: 500,
-          ),
+          constraints: const BoxConstraints(maxWidth: 500),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(L10n.of(context).encryptionBackupRecoverExplainer),
-              const SizedBox(
-                height: 10,
-              ),
+              Text(lang.encryptionBackupRecoverExplainer),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: recoveryKey,
                 obscureText: !showInput,
                 decoration: InputDecoration(
-                  hintText: L10n.of(context).encryptionBackupRecoverInputHint,
+                  hintText: lang.encryptionBackupRecoverInputHint,
                   suffixIcon: IconButton(
                     icon: Icon(
                       showInput ? Icons.visibility : Icons.visibility_off,
                     ),
                     onPressed: () {
-                      setState(() {
-                        showInput = !showInput;
-                      });
+                      setState(() => showInput = !showInput);
                     },
                   ),
                 ),
-                validator: (v) => (v == null || v.isEmpty)
-                    ? L10n.of(context).encryptionBackupRecoverProvideKey
+                // required field, space not allowed
+                validator: (val) => val == null || val.trim().isEmpty
+                    ? lang.encryptionBackupRecoverProvideKey
                     : null,
               ),
             ],
@@ -66,11 +62,11 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
         actions: <Widget>[
           OutlinedButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(L10n.of(context).cancel),
+            child: Text(lang.cancel),
           ),
           ActerPrimaryActionButton(
             onPressed: () => submit(context),
-            child: Text(L10n.of(context).encryptionBackupRecoverAction),
+            child: Text(lang.encryptionBackupRecoverAction),
           ),
         ],
       ),
@@ -81,21 +77,18 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
     if (!formKey.currentState!.validate()) {
       return;
     }
-    EasyLoading.show(
-      status: L10n.of(context).encryptionBackupRecoverRecovering,
-    );
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.encryptionBackupRecoverRecovering);
     try {
       final key = recoveryKey.text;
-      final manager = ref.read(backupManagerProvider);
+      final manager = await ref.read(backupManagerProvider.future);
       final recoveryWorked = await manager.recover(key);
       if (recoveryWorked) {
         if (!context.mounted) {
           EasyLoading.dismiss();
           return;
         }
-        EasyLoading.showToast(
-          L10n.of(context).encryptionBackupRecoverRecoveringSuccess,
-        );
+        EasyLoading.showToast(lang.encryptionBackupRecoverRecoveringSuccess);
         if (context.mounted) {
           Navigator.pop(context);
         }
@@ -106,7 +99,7 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
           return;
         }
         EasyLoading.showError(
-          L10n.of(context).encryptionBackupRecoverRecoveringImportFailed,
+          lang.encryptionBackupRecoverRecoveringImportFailed,
           duration: const Duration(seconds: 3),
         );
       }
@@ -117,7 +110,7 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).encryptionBackupRecoverRecoveringFailed(e),
+        lang.encryptionBackupRecoverRecoveringFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

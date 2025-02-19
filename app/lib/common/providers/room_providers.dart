@@ -3,11 +3,13 @@ library;
 
 import 'dart:typed_data';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +37,7 @@ class RoomItem {
 class RoomNotFound extends Error {}
 
 /// Attempts to map a roomId to the room, but could come back empty (null) rather than throw.
-/// keeps up to date with underlying client even if the room wasn't found initially,
+/// keeps up to date with underlying client even if the room wasn’t found initially,
 final maybeRoomProvider =
     AsyncNotifierProvider.family<AsyncMaybeRoomNotifier, Room?, String>(
   () => AsyncMaybeRoomNotifier(),
@@ -45,32 +47,28 @@ final maybeRoomProvider =
 final roomVisibilityProvider = FutureProvider.family
     .autoDispose<RoomVisibility?, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return null;
-  }
+  if (room == null) return null;
   final joinRule = room.joinRuleStr();
-  switch (joinRule) {
-    case 'public':
-      return RoomVisibility.Public;
-    case 'restricted':
-      return RoomVisibility.SpaceVisible;
-    case 'invite':
-      return RoomVisibility.Private;
-    default:
-      _log.warning('Unsupported joinRule for $roomId: $joinRule');
-      throw 'Unsupported joinRule $joinRule';
+  final visibility = switch (joinRule) {
+    'public' => RoomVisibility.Public,
+    'restricted' => RoomVisibility.SpaceVisible,
+    'invite' => RoomVisibility.Private,
+    _ => null,
+  };
+  if (visibility == null) {
+    _log.warning('Unsupported joinRule for $roomId: $joinRule');
+    throw 'Unsupported joinRule $joinRule';
   }
+  return visibility;
 });
 
 /// Get the members invited of a given roomId the user knows about. Errors
-/// if the room isn't found. Stays up to date with underlying client data
+/// if the room isn’t found. Stays up to date with underlying client data
 /// if a room was found.
 final roomInvitedMembersProvider = FutureProvider.autoDispose
     .family<List<Member>, String>((ref, roomIdOrAlias) async {
   final room = await ref.watch(maybeRoomProvider(roomIdOrAlias).future);
-  if (room == null || !room.isJoined()) {
-    return [];
-  }
+  if (room == null || !room.isJoined()) return [];
   final members = await room.invitedMembers();
   return members.toList();
 });
@@ -83,7 +81,7 @@ typedef _RoomIdAndName = (String, String?);
 final _briefGroupChatsWithName =
     FutureProvider.autoDispose<List<_RoomIdAndName>>((ref) async {
   final chatList =
-      ref.watch(chatsProvider).where((element) => (!element.isDm())).toList();
+      ref.watch(chatsProvider).where((element) => !element.isDm()).toList();
 
   List<_RoomIdAndName> items = [];
   for (final convo in chatList) {
@@ -101,17 +99,18 @@ final roomSearchedChatsProvider =
   final searchValue = ref.watch(roomSearchValueProvider);
 
   if (searchValue == null || searchValue.isEmpty) {
-    return allRoomList.map((i) {
-      return i.$1;
+    return allRoomList.map((item) {
+      final (roomId, dispName) = item;
+      return roomId;
     }).toList();
   }
 
   final loweredSearchValue = searchValue.toLowerCase();
 
-  for (final item in allRoomList) {
-    if (item.$1.toLowerCase().contains(loweredSearchValue) ||
-        (item.$2 ?? '').toLowerCase().contains(loweredSearchValue)) {
-      foundRooms.add(item.$1);
+  for (final (roomId, dispName) in allRoomList) {
+    if (roomId.toLowerCase().contains(loweredSearchValue) ||
+        (dispName ?? '').toLowerCase().contains(loweredSearchValue)) {
+      foundRooms.add(roomId);
     }
   }
 
@@ -123,9 +122,7 @@ final roomSearchedChatsProvider =
 final spaceRelationsProvider =
     FutureProvider.family<SpaceRelations?, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return null;
-  }
+  if (room == null) return null;
   return await room.spaceRelations();
 });
 
@@ -134,18 +131,12 @@ final parentIdsProvider =
   try {
     // FIXME: we should get only the parent Ids from the underlying SDK
     final relations = await ref.watch(spaceRelationsProvider(roomId).future);
-    if (relations == null) {
-      return [];
-    }
-
+    if (relations == null) return [];
     // Collect all parents: mainParent and otherParents
-    List<String> allParents = [];
-    final mainParent = relations.mainParent();
-    if (mainParent != null) {
-      allParents.add(mainParent.roomId().toString());
-    }
-    allParents
-        .addAll(relations.otherParents().map((p) => p.roomId().toString()));
+    List<String> allParents =
+        relations.mainParent().map((p) => [p.roomId().toString()]) ?? [];
+    final others = relations.otherParents().map((p) => p.roomId().toString());
+    allParents.addAll(others);
     return allParents;
   } catch (e) {
     _log.warning('Failed to load parent ids for $roomId: $e');
@@ -157,9 +148,7 @@ final parentIdsProvider =
 final roomDisplayNameProvider =
     FutureProvider.family<String?, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return null;
-  }
+  if (room == null) return null;
   return (await room.displayName()).text();
 });
 
@@ -169,15 +158,11 @@ final roomAvatarProvider =
   final sdk = await ref.watch(sdkProvider.future);
   final thumbsize = sdk.api.newThumbSize(48, 48);
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null || !room.hasAvatar()) {
-    return null;
-  }
-
-  final avatar = (await room.avatar(thumbsize)).data();
-  if (avatar != null) {
-    return MemoryImage(Uint8List.fromList(avatar.asTypedList()));
-  }
-  return null;
+  if (room == null || !room.hasAvatar()) return null;
+  final avatar = await room.avatar(thumbsize);
+  return avatar
+      .data()
+      .map((data) => MemoryImage(Uint8List.fromList(data.asTypedList())));
 });
 
 /// Provide the AvatarInfo for each room. Update internally accordingly
@@ -190,27 +175,29 @@ final roomAvatarInfoProvider =
 final parentAvatarInfosProvider =
     FutureProvider.family<List<AvatarInfo>?, String>((ref, roomId) async {
   final parents = await ref.watch(parentIdsProvider(roomId).future);
+  // Filter out parents where we can't get the room
+  final validParents = parents.where((parent) {
+    final room = ref.watch(maybeRoomProvider(parent)).valueOrNull;
+    return room != null;
+  }).toList();
+
   // watch each one individually
-  return parents.map((e) => ref.watch(roomAvatarInfoProvider(e))).toList();
+  return validParents.map((e) => ref.watch(roomAvatarInfoProvider(e))).toList();
 });
 
 final joinRulesAllowedRoomsProvider = FutureProvider.autoDispose
     .family<List<String>, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return [];
-  }
-  return room.restrictedRoomIdsStr().map((e) => e.toDartString()).toList();
+  if (room == null) return [];
+  return asDartStringList(room.restrictedRoomIdsStr());
 });
 
-/// Get the user's membership for a specific space based off the roomId
-/// will not throw if the client doesn't kow the room
+/// Get the user’s membership for a specific space based off the roomId
+/// will not throw if the client doesn’t kow the room
 final roomMembershipProvider = FutureProvider.family<Member?, String>(
   (ref, roomId) async {
     final room = await ref.watch(maybeRoomProvider(roomId).future);
-    if (room == null || !room.isJoined()) {
-      return null;
-    }
+    if (room == null || !room.isJoined()) return null;
     return await room.getMyMembership();
   },
 );
@@ -219,20 +206,16 @@ final roomMembershipProvider = FutureProvider.family<Member?, String>(
 final roomNotificationStatusProvider =
     FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return null;
-  }
-  return room.notificationMode();
+  if (room == null) return null;
+  return await room.notificationMode();
 });
 
 /// Get the default RoomNotificationsStatus for this room type
 final roomDefaultNotificationStatusProvider =
     FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
   final room = await ref.watch(maybeRoomProvider(roomId).future);
-  if (room == null) {
-    return null;
-  }
-  return room.defaultNotificationMode();
+  if (room == null) return null;
+  return await room.defaultNotificationMode();
 });
 
 /// Get the default RoomNotificationsStatus for this room type
@@ -245,9 +228,7 @@ final roomIsMutedProvider =
 final memberProvider =
     FutureProvider.autoDispose.family<Member, MemberInfo>((ref, query) async {
   final room = await ref.watch(maybeRoomProvider(query.roomId).future);
-  if (room == null) {
-    throw RoomNotFound;
-  }
+  if (room == null) throw RoomNotFound;
   return await room.getMember(query.userId);
 });
 
@@ -266,17 +247,15 @@ final membershipStatusStr =
 final memberDisplayNameProvider =
     FutureProvider.autoDispose.family<String?, MemberInfo>((ref, query) async {
   try {
-    return ref
-        .watch(_memberProfileProvider(query))
-        .valueOrNull
-        ?.getDisplayName();
+    final profile = ref.watch(_memberProfileProvider(query)).valueOrNull;
+    return profile?.displayName();
   } on RoomNotFound {
     return null;
   }
 });
 
 /// Caching the MemoryImage of each room
-final _memberAvatarProvider = FutureProvider.autoDispose
+final memberAvatarProvider = FutureProvider.autoDispose
     .family<MemoryImage?, MemberInfo>((ref, query) async {
   final sdk = await ref.watch(sdkProvider.future);
 
@@ -285,11 +264,10 @@ final _memberAvatarProvider = FutureProvider.autoDispose
     final profile = await ref.watch(_memberProfileProvider(query).future);
     // use .data() consumes the value so we keep it stored, any further call to .data()
     // comes back empty as the data was consumed.
-    final avatar = (await profile.getAvatar(thumbsize)).data();
-    if (avatar != null) {
-      return MemoryImage(Uint8List.fromList(avatar.asTypedList()));
-    }
-    return null;
+    final avatar = await profile.getAvatar(thumbsize);
+    return avatar
+        .data()
+        .map((data) => MemoryImage(Uint8List.fromList(data.asTypedList())));
   } on RoomNotFound {
     return null;
   }
@@ -298,7 +276,7 @@ final _memberAvatarProvider = FutureProvider.autoDispose
 final memberAvatarInfoProvider =
     Provider.autoDispose.family<AvatarInfo, MemberInfo>((ref, query) {
   final displayName = ref.watch(memberDisplayNameProvider(query)).valueOrNull;
-  final avatarData = ref.watch(_memberAvatarProvider(query)).valueOrNull;
+  final avatarData = ref.watch(memberAvatarProvider(query)).valueOrNull;
 
   return AvatarInfo(
     uniqueId: query.userId,
@@ -307,15 +285,39 @@ final memberAvatarInfoProvider =
   );
 });
 
-/// Ids of the members of this Room. Returns empty list if the room isn't found
+/// Ids of the members of this Room. Returns empty list if the room isn’t found
 final membersIdsProvider =
     FutureProvider.family<List<String>, String>((ref, roomIdOrAlias) async {
   final room = await ref.watch(maybeRoomProvider(roomIdOrAlias).future);
-  if (room == null) {
-    return [];
-  }
+  if (room == null) return [];
   final members = await room.activeMembersIds();
   return asDartStringList(members);
+});
+
+typedef RoomMembersSearchParam = ({String roomId, String searchValue});
+
+/// Ids of the members of the Room with search value.
+/// Returns empty list if the room isn’t found
+final membersIdWithSearchProvider = FutureProvider.family
+    .autoDispose<List<String>, RoomMembersSearchParam>((ref, param) async {
+  final room = await ref.watch(maybeRoomProvider(param.roomId).future);
+  if (room == null) return [];
+  final members = await room.activeMembersIds();
+  final List<String> membersIdList = asDartStringList(members);
+  final searchTerm = param.searchValue.toLowerCase();
+  if (searchTerm.isEmpty) return membersIdList;
+
+  final List<String> foundedMembersId = [];
+  for (final memberId in membersIdList) {
+    final memberInfo = ref.watch(
+      memberAvatarInfoProvider((userId: memberId, roomId: param.roomId)),
+    );
+    if (memberInfo.displayName?.toLowerCase().contains(searchTerm) == true ||
+        memberId.toLowerCase().contains(searchTerm)) {
+      foundedMembersId.add(memberId);
+    }
+  }
+  return foundedMembersId;
 });
 
 //FIXME : This need to be handle from rust side
@@ -338,12 +340,10 @@ final roomHierarchyAvatarProvider =
         (ref, room) async {
   final sdk = await ref.watch(sdkProvider.future);
   final thumbsize = sdk.api.newThumbSize(48, 48);
-
-  final avatar = (await room.getAvatar(thumbsize)).data();
-  if (avatar != null) {
-    return MemoryImage(Uint8List.fromList(avatar.asTypedList()));
-  }
-  return null;
+  final avatar = await room.getAvatar(thumbsize);
+  return avatar
+      .data()
+      .map((data) => MemoryImage(Uint8List.fromList(data.asTypedList())));
 });
 
 /// Fill the Profile data for the given space-hierarchy-info

@@ -18,7 +18,7 @@ Future<bool> setCanReportToSentry(bool input) async {
 }
 
 Future<SentryEvent?> sentryBeforeSend(SentryEvent evt, Hint hint) async {
-  if (!(await getCanReportToSentry())) {
+  if (!await getCanReportToSentry()) {
     return null;
   }
   return evt;

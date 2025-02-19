@@ -35,6 +35,7 @@ class EmojiRow extends StatelessWidget {
   final String roomId;
   final bool isAuthor;
   final Function(String messageId, String emoji) onEmojiTap;
+
   EmojiRow({
     super.key,
     required this.isAuthor,
@@ -74,7 +75,7 @@ class EmojiRow extends StatelessWidget {
             direction: Axis.horizontal,
             spacing: 5.0,
             children: [
-              for (var emoji in emojiList)
+              for (final emoji in emojiList)
                 InkWell(
                   onTap: () => onEmojiTap(message.id, emoji),
                   child: Text(

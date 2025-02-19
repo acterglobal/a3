@@ -3,13 +3,17 @@ import 'package:acter/common/providers/notifiers/space_notifiers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockRoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String>
     with Mock
     implements RoomAvatarInfoNotifier {
+  final Map<String, AvatarInfo> items;
+
+  MockRoomAvatarInfoNotifier({this.items = const {}});
+
   @override
-  AvatarInfo build(arg) => AvatarInfo(uniqueId: arg);
+  AvatarInfo build(arg) => items[arg] ?? AvatarInfo(uniqueId: arg);
 }
 
 class RetryMockAsyncSpaceNotifier extends FamilyAsyncNotifier<Space?, String>
@@ -28,4 +32,72 @@ class RetryMockAsyncSpaceNotifier extends FamilyAsyncNotifier<Space?, String>
   }
 }
 
-class MockSpace extends Fake implements Space {}
+class MockSpace extends Mock implements Space {
+  final String id;
+  final bool bookmarked;
+
+  MockSpace({
+    this.id = 'id',
+    this.bookmarked = false,
+  });
+
+  @override
+  String getRoomIdStr() => id;
+
+  @override
+  bool isBookmarked() => bookmarked;
+}
+
+class MockFfiListString extends Fake implements FfiListFfiString {
+  final List<String> items;
+
+  MockFfiListString({this.items = const []});
+
+  List<String> toDart() => items;
+
+  @override
+  bool get isEmpty => items.isEmpty;
+}
+
+class MockSpaceHierarchyRoomInfo extends Fake
+    implements SpaceHierarchyRoomInfo {
+  final String roomId;
+  final String? roomName;
+  final String joinRule;
+  final List<String> serverNames;
+  final bool isSuggested;
+
+  MockSpaceHierarchyRoomInfo({
+    required this.roomId,
+    this.roomName,
+    this.joinRule = 'Private',
+    this.isSuggested = false,
+    this.serverNames = const [],
+  });
+
+  @override
+  String roomIdStr() => roomId;
+
+  @override
+  String? name() => roomName;
+
+  @override
+  String joinRuleStr() => joinRule;
+
+  @override
+  MockFfiListString viaServerNames() => MockFfiListString(items: serverNames);
+
+  @override
+  bool suggested() => isSuggested;
+}
+
+class MockSpaceListNotifiers extends Notifier<List<Space>>
+    with Mock
+    implements SpaceListNotifier {
+  MockSpaceListNotifiers(this.spaces);
+
+  final List<Space> spaces;
+
+  @override
+  List<Space> build() => spaces;
+}

@@ -4,14 +4,22 @@ import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or
 import 'package:acter/common/tutorial_dialogs/target_focus.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
-final dashboardKey = GlobalKey(debugLabel: 'dashboard');
-final updateKey = GlobalKey(debugLabel: 'updae');
-final chatsKey = GlobalKey(debugLabel: 'chats');
-final activityKey = GlobalKey(debugLabel: 'activities');
-final jumpToKey = GlobalKey(debugLabel: 'jump to key');
+// Keys for Sidebar navigation
+final sidebarDashboardKey = GlobalKey(debugLabel: 'sidebar-dashboard');
+final sidebarUpdateKey = GlobalKey(debugLabel: 'sidebar-update');
+final sidebarChatsKey = GlobalKey(debugLabel: 'sidebar-chats');
+final sidebarActivityKey = GlobalKey(debugLabel: 'sidebar-activities');
+final sidebarJumpToKey = GlobalKey(debugLabel: 'sidebar-jump-to');
+
+// Keys for Bottom navigation
+final bottomDashboardKey = GlobalKey(debugLabel: 'bottom-dashboard');
+final bottomUpdateKey = GlobalKey(debugLabel: 'bottom-update');
+final bottomChatsKey = GlobalKey(debugLabel: 'bottom-chats');
+final bottomActivityKey = GlobalKey(debugLabel: 'bottom-activities');
+final bottomJumpToKey = GlobalKey(debugLabel: 'bottom-jump-to');
 
 const bottomNavigationPrefKey = 'bottomNavigationPrefKey';
 
@@ -27,6 +35,7 @@ void showCreateOrJoinSpaceTutorials(BuildContext context) {
 }
 
 void bottomNavigationTutorials({required BuildContext context}) async {
+  final lang = L10n.of(context);
   final prefs = await sharedPrefs();
   final isShow = prefs.getBool(bottomNavigationPrefKey) ?? true;
 
@@ -46,45 +55,45 @@ void bottomNavigationTutorials({required BuildContext context}) async {
       targets: [
         targetFocus(
           identify: 'dashboardKey',
-          keyTarget: dashboardKey,
+          keyTarget: bottomDashboardKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_home.svg',
-          contentTitle: L10n.of(context).homeTabTutorialTitle,
-          contentDescription: L10n.of(context).homeTabTutorialDescription,
+          contentTitle: lang.homeTabTutorialTitle,
+          contentDescription: lang.homeTabTutorialDescription,
           isFirst: true,
         ),
         if (!isDesktop)
           targetFocus(
             identify: 'updateKey',
-            keyTarget: updateKey,
+            keyTarget: bottomUpdateKey,
             contentAlign: ContentAlign.top,
             contentImageUrl: 'assets/images/empty_updates.svg',
-            contentTitle: L10n.of(context).updatesTabTutorialTitle,
-            contentDescription: L10n.of(context).updatesTabTutorialDescription,
+            contentTitle: lang.updatesTabTutorialTitle,
+            contentDescription: lang.updatesTabTutorialDescription,
           ),
         targetFocus(
           identify: 'chatsKey',
-          keyTarget: chatsKey,
+          keyTarget: bottomChatsKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_chat.svg',
-          contentTitle: L10n.of(context).chatsTabTutorialTitle,
-          contentDescription: L10n.of(context).chatsTabTutorialDescription,
+          contentTitle: lang.chatsTabTutorialTitle,
+          contentDescription: lang.chatsTabTutorialDescription,
         ),
         targetFocus(
           identify: 'activityKey',
-          keyTarget: activityKey,
+          keyTarget: bottomActivityKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           contentImageUrl: 'assets/images/empty_activity.svg',
-          contentTitle: L10n.of(context).activityTabTutorialTitle,
-          contentDescription: L10n.of(context).activityTabTutorialDescription,
+          contentTitle: lang.activityTabTutorialTitle,
+          contentDescription: lang.activityTabTutorialDescription,
         ),
         targetFocus(
           identify: 'jumpToKey',
-          keyTarget: jumpToKey,
+          keyTarget: bottomJumpToKey,
           contentAlign: isDesktop ? ContentAlign.right : ContentAlign.top,
           iconData: Icons.search,
-          contentTitle: L10n.of(context).jumpToTabTutorialTitle,
-          contentDescription: L10n.of(context).jumpToTabTutorialDescription,
+          contentTitle: lang.jumpToTabTutorialTitle,
+          contentDescription: lang.jumpToTabTutorialDescription,
           isLast: true,
         ),
       ],

@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 export SYNAPSE_SERVER_NAME=localhost
+export SYNAPSE_LOG_LEVEL=DEBUG
+export SYNAPSE_LOG_SENSITIVE=true
+export SYNAPSE_LOG_TESTING=true
 export SYNAPSE_REPORT_STATS=no
 echo " ====== Generating config  ====== "
 /start.py generate
@@ -69,6 +72,9 @@ modules:
     config:
       sql_url: sqlite:///data/super_invites.db
       generate_registration_token: true
+      share_link_generator:
+        url_prefix: http://localhost:8099/
+        target_path: /share_links/
 
 """ >>  /data/homeserver.yaml
 

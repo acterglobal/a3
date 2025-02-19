@@ -14,8 +14,8 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}'s test space"}
-start_list = { type = "task-list", name = "{{ main.display_name }}'s Acter onboarding list" }
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s test space"}
+start_list = { type = "task-list", name = "{{ main.display_name }}’s Acter onboarding list" }
 
 [objects.task_1]
 type = "task"
@@ -39,8 +39,9 @@ url = "https://github.com/acterglobal/a3"
 #[tokio::test]
 async fn template_creates_space() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) =
+    let (user, sync_state, _engine) =
         random_user_with_template("template_create_space", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);

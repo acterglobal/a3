@@ -5,13 +5,9 @@ import 'package:acter/features/home/data/models/nav_item.dart';
 import 'package:acter/features/home/widgets/activities_icon.dart';
 import 'package:acter/features/home/widgets/chats_icon.dart';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
-import 'package:acter/router/providers/router_providers.dart';
+import 'package:acter/features/news/widgets/news_full_view.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
-import 'package:riverpod/riverpod.dart';
-
-final _log = Logger('a3::home::navigation');
 
 const fallbackBottomBarIdx = 0;
 
@@ -27,27 +23,30 @@ final bottomBarItems = [
     ),
     label: 'Dashboard',
     initialLocation: Routes.dashboard.route,
-    tutorialGlobalKey: dashboardKey,
+    tutorialGlobalKey: bottomDashboardKey,
   ),
   BottomBarNavigationItem(
     icon: const Icon(
       key: MainNavKeys.updates,
       Atlas.megaphone_thin,
     ),
-    activeIcon: const CustomSelectedIcon(
-      icon: Icon(Atlas.megaphone_thin),
+    activeIcon: CustomSelectedIcon(
+      icon: const Icon(Atlas.megaphone_thin),
       key: MainNavKeys.updates,
+      onTap: () {
+        NewsVerticalViewState.goToPage(0);
+      },
     ),
     label: 'Updates',
     initialLocation: Routes.updates.route,
-    tutorialGlobalKey: updateKey,
+    tutorialGlobalKey: bottomUpdateKey,
   ),
   BottomBarNavigationItem(
     icon: const ChatsIcon(),
     activeIcon: const CustomSelectedIcon(icon: ChatsIcon()),
     label: 'Chat',
     initialLocation: Routes.chat.route,
-    tutorialGlobalKey: chatsKey,
+    tutorialGlobalKey: bottomChatsKey,
   ),
   BottomBarNavigationItem(
     icon: const ActivitiesIcon(),
@@ -56,7 +55,7 @@ final bottomBarItems = [
     ),
     label: 'Activities',
     initialLocation: Routes.activities.route,
-    tutorialGlobalKey: activityKey,
+    tutorialGlobalKey: bottomActivityKey,
   ),
   BottomBarNavigationItem(
     icon: const Icon(
@@ -71,17 +70,6 @@ final bottomBarItems = [
     ),
     label: 'Search',
     initialLocation: Routes.search.route,
-    tutorialGlobalKey: jumpToKey,
+    tutorialGlobalKey: bottomJumpToKey,
   ),
 ];
-
-final currentSelectedBottomBarIndexProvider = Provider.autoDispose((ref) {
-  final location = ref.watch(currentRoutingLocation);
-
-  _log.info('bottom location: $location');
-  final index =
-      bottomBarItems.indexWhere((t) => location.startsWith(t.initialLocation));
-  _log.info('bottom index: $index');
-
-  return index < 0 ? fallbackBottomBarIdx : index;
-});

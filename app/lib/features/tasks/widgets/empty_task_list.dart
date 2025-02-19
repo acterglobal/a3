@@ -6,20 +6,27 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class EmptyTaskList extends StatelessWidget {
   final String? initialSelectedSpace;
 
-  const EmptyTaskList({super.key, this.initialSelectedSpace});
+  const EmptyTaskList({
+    super.key,
+    this.initialSelectedSpace,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return SizedBox(
       height: 450,
       child: Center(
         child: Column(
           children: [
             const SizedBox(height: 40),
-            const Icon(Atlas.list, size: 50.0),
+            const Icon(
+              Atlas.list,
+              size: 50,
+            ),
             const SizedBox(height: 20),
             Text(
-              L10n.of(context).emptyTaskList,
+              lang.emptyTaskList,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 20),
@@ -28,7 +35,7 @@ class EmptyTaskList extends StatelessWidget {
                 context,
                 initialSelectedSpace: initialSelectedSpace,
               ),
-              child: Text(L10n.of(context).createTaskList),
+              child: Text(lang.createTaskList),
             ),
           ],
         ),

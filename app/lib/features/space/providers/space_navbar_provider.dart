@@ -1,28 +1,23 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TabEntry {
-  static const overview = Key('overview');
-  static const pins = Key('pins');
-  static const tasks = Key('tasks');
-  static const events = Key('events');
-  static const chatsKey = Key('chat');
-  static const spacesKey = Key('spaces');
-  static const membersKey = Key('members');
-  static const actionsKey = Key('quickActionsKey');
-
-  final Key key;
-  final String label;
-
-  const TabEntry({
-    required this.key,
-    required this.label,
-  });
+enum TabEntry {
+  overview,
+  news,
+  pins,
+  tasks,
+  events,
+  suggestedChats,
+  suggestedSpaces,
+  chats,
+  spaces,
+  members,
+  actions;
 }
 
 final tabsProvider =
@@ -33,58 +28,71 @@ final tabsProvider =
 
   final spaceTopic = space.topic();
   if (spaceTopic != null) {
-    tabs.add(
-      const TabEntry(key: TabEntry.overview, label: 'Overview'),
-    );
+    tabs.add(TabEntry.overview);
   }
 
   if ((await space.isActerSpace()) == true) {
     final appSettings = await space.appSettings();
+
+    if (appSettings.news().active()) {
+      final newsList = await ref.watch(newsListProvider(spaceId).future);
+      if (newsList.isNotEmpty) {
+        tabs.add(TabEntry.news);
+      }
+    }
+
     if (appSettings.pins().active()) {
       final pinsList = await ref.watch(pinListProvider(spaceId).future);
       if (pinsList.isNotEmpty) {
-        tabs.add(
-          const TabEntry(key: TabEntry.pins, label: 'Pins'),
-        );
+        tabs.add(TabEntry.pins);
       }
     }
 
     if (appSettings.tasks().active()) {
-      final taskList = await ref.watch(taskListProvider(spaceId).future);
+      final taskList = await ref.watch(taskListsProvider(spaceId).future);
       if (taskList.isNotEmpty) {
-        tabs.add(
-          const TabEntry(key: TabEntry.tasks, label: 'Tasks'),
-        );
+        tabs.add(TabEntry.tasks);
       }
     }
 
     if (appSettings.events().active()) {
       final eventList = await ref.watch(allEventListProvider(spaceId).future);
       if (eventList.isNotEmpty) {
-        tabs.add(
-          const TabEntry(key: TabEntry.events, label: 'Events'),
-        );
+        tabs.add(TabEntry.events);
       }
     }
   }
 
-  final hasSpaces = await ref.watch(hasSubSpacesProvider(spaceId).future);
-  if (hasSpaces) {
-    tabs.add(
-      const TabEntry(key: TabEntry.spacesKey, label: 'Spaces'),
-    );
+  final suggestedChats =
+      await ref.watch(suggestedChatsProvider(spaceId).future);
+  final hasSuggestedChats =
+      suggestedChats.$1.isNotEmpty || suggestedChats.$2.isNotEmpty;
+  if (hasSuggestedChats) {
+    tabs.add(TabEntry.suggestedChats);
+  }
+  final suggestedSpaces =
+      await ref.watch(suggestedSpacesProvider(spaceId).future);
+  final hasSuggestedSpaces =
+      suggestedSpaces.$1.isNotEmpty || suggestedSpaces.$2.isNotEmpty;
+  if (hasSuggestedSpaces) {
+    tabs.add(TabEntry.suggestedSpaces);
   }
 
-  final hasChats = await ref.watch(hasSubChatsProvider(spaceId).future);
+  final otherChats = await ref.watch(otherChatsProvider(spaceId).future);
+  final hasChats = otherChats.$1.isNotEmpty || otherChats.$2.isNotEmpty;
   if (hasChats) {
-    tabs.add(
-      const TabEntry(key: TabEntry.chatsKey, label: 'Chats'),
-    );
+    tabs.add(TabEntry.chats);
   }
 
-  tabs.add(
-    const TabEntry(key: TabEntry.membersKey, label: 'Members'),
-  );
+  final otherSubSpaces =
+      await ref.watch(otherSubSpacesProvider(spaceId).future);
+  final hasOtherSubSpaces =
+      otherSubSpaces.$1.isNotEmpty || otherSubSpaces.$2.isNotEmpty;
+  if (hasOtherSubSpaces) {
+    tabs.add(TabEntry.spaces);
+  }
+
+  tabs.add(TabEntry.members);
 
   final membership = ref.watch(roomMembershipProvider(spaceId));
   bool canAddPin = membership.valueOrNull?.canString('CanPostPin') == true;
@@ -96,9 +104,7 @@ final tabsProvider =
 
   //Show action menu only if you have at lease one permission
   if (canAddPin | canAddEvent | canAddTask | canLinkSpaces) {
-    tabs.add(
-      const TabEntry(key: TabEntry.actionsKey, label: '•••'),
-    );
+    tabs.add(TabEntry.actions);
   }
   return tabs;
 });

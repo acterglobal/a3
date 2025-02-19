@@ -49,8 +49,6 @@ fn destroy_local_data(base_path: string, media_cache_base_path: Option<string>, 
 
 fn duration_from_secs(secs: u64) -> EfkDuration;
 
-fn parse_markdown(text: string) -> Option<string>;
-
 /// create size object to be used for thumbnail download
 fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
@@ -60,29 +58,9 @@ fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<C
 /// create a display builder
 fn new_display_builder() -> DisplayBuilder;
 
-/// create a task ref builder
-/// target_id: event id of target
-/// task_list: event id of task list
-/// action: link/embed/embed-subscribe/embed-accept-assignment/embed-mark-done
-fn new_task_ref_builder(target_id: string, room_id: Option<string>, task_list: string, action: Option<string>) -> Result<RefDetailsBuilder>;
-
-/// create a task list ref builder
-/// target_id: event id of target
-/// action: link/embed/embed-subscribe
-fn new_task_list_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
-
-/// create a calendar event ref builder
-/// target_id: event id of target
-/// action: link/embed/embed-rsvp
-fn new_calendar_event_ref_builder(target_id: string, room_id: Option<string>, action: Option<string>) -> Result<RefDetailsBuilder>;
-
-/// create a link ref builder
-fn new_link_ref_builder(title: string, uri: string) -> Result<RefDetailsBuilder>;
-
 /// create object reference
 /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
 fn new_obj_ref_builder(position: Option<string>, reference: RefDetails) -> Result<ObjRefBuilder>;
-
 
 //  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
 //  ##     ## ##     ##  ##  ###   ###  ##     ##     ##  ##     ## ##       ##    ## 
@@ -108,16 +86,31 @@ object RefDetails {
     fn target_id_str() -> Option<string>;
     /// if that is in a different room, specified here
     fn room_id_str() -> Option<string>;
-    /// gives either `link`, `task`, `task-list` or `calendar_client`
+    /// gives either `link`, `task`, `task-list` or `calendar-event`
     fn type_str() -> string;
     /// what type of embed action is requested_inputs
     fn embed_action_str() -> string;
     /// if this is a `task` type, what `task-list-id` does it belong to
     fn task_list_id_str() -> Option<string>;
-    /// if ref is `link`, its display title
+    /// the display title of the reference
     fn title() -> Option<string>;
+    /// the room display name from the preview data
+    fn room_display_name() -> Option<string>;
+    /// the participants count if this is a calendar event
+    fn participants() -> Option<u64>;
+    /// When the event starts according to the calender preview data
+    fn utc_start() -> Option<UtcDateTime>;
     /// if ref is `link`, its uri
     fn uri() -> Option<string>;
+
+    /// the via-server names for this room
+    fn via_servers() -> Vec<string>;
+
+    /// generating an internal acter:-link
+    fn generate_internal_link(include_preview: bool) -> Result<string>;
+
+    /// generating the external link
+    fn generate_external_link() -> Future<Result<string>>;
 }
 
 /// An acter internal link to a different object
@@ -135,9 +128,6 @@ object ObjRefBuilder {
     fn position(position: string);
     /// empty position of element
     fn unset_position();
-
-    /// change ref details
-    fn reference(reference: RefDetails);
 
     fn build() -> ObjRef;
 }
@@ -161,36 +151,6 @@ object ColorizeBuilder {
     fn background(color: u32);
     /// unset the background color
     fn unset_background();
-}
-
-/// A builder for RefDetails
-object RefDetailsBuilder {
-    /// it is valid for Task/TaskList/CalendarEvent ref
-    /// target_id: event id of target
-    fn target_id(target_id: string);
-
-    /// it is valid for Task/TaskList/CalendarEvent ref
-    fn room_id(room_id: string);
-    /// unset the room id, it is optional field
-    fn unset_room_id();
-
-    /// it is valid for Task/TaskList/CalendarEvent ref
-    /// task_list: event id of task list
-    fn task_list(task_list: string);
-
-    /// it is valid for Task/TaskList/CalendarEvent ref
-    /// action is one of TaskAction/TaskListAction/CalendarEventAction
-    fn action(action: string);
-    /// unset the action, it is optional field
-    fn unset_action();
-
-    /// it is valid for Link ref
-    fn title(title: string);
-
-    /// it is valid for Link ref
-    fn uri(uri: string);
-
-    fn build() -> RefDetails;
 }
 
 // enum LocationType {
@@ -218,6 +178,11 @@ object RefDetailsBuilder {
 //  ########  ##     ##  ######  ####  ######        ##       ##    ##        ########  ######  
 
 
+object VecStringBuilder {
+    fn add(value: string);
+}
+
+fn new_vec_string_builder() -> VecStringBuilder;
 
 object OptionString {
     /// get text
@@ -255,54 +220,18 @@ object UserProfile {
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
 
     /// get the display name
-    fn get_display_name() -> Option<string>;
+    fn display_name() -> Option<string>;
+
+    /// which rooms you are sharing with that profile
+    fn shared_rooms() -> Vec<string>;
 }
 
-
-/// Deliver receipt event from rust to flutter
-object ReceiptEvent {
-    /// Get transaction id or flow id
-    fn room_id() -> RoomId;
-
-    /// Get records
-    fn receipt_records() -> Vec<ReceiptRecord>;
-}
-
-/// ReceiptThread wrapper
-object ReceiptThread {
-    /// whether receipt thread is Main
-    fn is_main() -> bool;
-
-    /// whether receipt thread is Unthreaded
-    fn is_unthreaded() -> bool;
-
-    /// Get event id for receipt thread that is neither Main nor Unthreaded
-    fn thread_id() -> Option<EventId>;
-}
-
-/// Deliver receipt record from rust to flutter
-object ReceiptRecord {
-    /// Get id of event that this user read message from peer
-    fn event_id() -> string;
-
-    /// Get id of user that read this message
-    fn seen_by() -> string;
-
-    /// Get time that this user read message from peer in milliseconds
-    fn timestamp() -> Option<u64>;
-
-    /// Get the receipt type, one of m.read or m.read.private
-    fn receipt_type() -> string;
-
-    /// Get the receipt thread wrapper
-    fn receipt_thread() -> ReceiptThread;
-}
 
 /// Deliver typing event from rust
 object TypingEvent {
     /// Get list of user id
     fn user_ids() -> Vec<UserId>;
-} 
+}
 
 object TextMessageContent {
     fn body() -> string;
@@ -408,7 +337,7 @@ object NewsSlide {
 
 object NewsSlideDraft {
     /// add reference for this slide draft
-    fn add_reference(reference: ObjRef);
+    fn add_reference(reference: ObjRefBuilder);
 
     /// set the color according to the colorize builder
     fn color(color: ColorizeBuilder);
@@ -434,15 +363,24 @@ object NewsEntry {
 
     /// get event id
     fn event_id() -> EventId;
-    
+
+    /// get timestamp of this event
+    fn origin_server_ts() -> u64;
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
     /// get the reaction manager
     fn reactions() -> Future<Result<ReactionManager>>;
 
+    /// get the read receipt manager
+    fn read_receipts() -> Future<Result<ReadReceiptsManager>>;
+
     /// get the comment manager
     fn comments() -> Future<Result<CommentsManager>>;
+
+    /// get the internal reference object
+    fn ref_details() -> Future<Result<RefDetails>>;
 }
 
 object NewsEntryDraft {
@@ -476,6 +414,118 @@ object NewsEntryUpdateBuilder {
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
 }
+
+
+
+//   ######  ########  #######  ########  #### ########  ######  
+//  ##    ##    ##    ##     ## ##     ##  ##  ##       ##    ## 
+//  ##          ##    ##     ## ##     ##  ##  ##       ##       
+//   ######     ##    ##     ## ########   ##  ######    ######  
+//        ##    ##    ##     ## ##   ##    ##  ##             ## 
+//  ##    ##    ##    ##     ## ##    ##   ##  ##       ##    ## 
+//   ######     ##     #######  ##     ## #### ########  ######  
+
+
+
+/// A single Slide of a Story
+object StorySlide {
+    /// the content of this slide
+    fn type_str() -> string;
+
+    /// the unique, predictable ID for this slide
+    fn unique_id() -> string;
+
+    /// the references linked in this slide
+    fn references() -> Vec<ObjRef>;
+
+    /// The color setting
+    fn colors() -> Option<Colorize>;
+
+    /// if this is a media, hand over the description
+    fn msg_content() -> MsgContent;
+    /// if this is a media, hand over the data
+    /// if thumb size is given, media thumbnail is returned
+    /// if thumb size is not given, media file is returned
+    fn source_binary(thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
+}
+
+object StorySlideDraft {
+    /// add reference for this slide draft
+    fn add_reference(reference: ObjRefBuilder);
+
+    /// set the color according to the colorize builder
+    fn color(color: ColorizeBuilder);
+
+    /// unset references for this slide draft
+    fn unset_references();
+}
+
+/// A news entry
+object Story {
+    /// the slides count in this news item
+    fn slides_count() -> u8;
+    /// The slides belonging to this news item
+    fn get_slide(pos: u8) -> Option<StorySlide>;
+    /// get all slides of this news item
+    fn slides() -> Vec<StorySlide>;
+
+    /// get room id
+    fn room_id() -> RoomId;
+
+    /// get sender id
+    fn sender() -> UserId;
+
+    /// get event id
+    fn event_id() -> EventId;
+
+    /// get timestamp of this event
+    fn origin_server_ts() -> u64;
+
+    /// whether or not this user can redact this item
+    fn can_redact() -> Future<Result<bool>>;
+
+    /// get the reaction manager
+    fn reactions() -> Future<Result<ReactionManager>>;
+
+    /// get the read receipt manager
+    fn read_receipts() -> Future<Result<ReadReceiptsManager>>;
+
+    /// get the comment manager
+    fn comments() -> Future<Result<CommentsManager>>;
+}
+
+object StoryDraft {
+    /// create news slide draft
+    fn add_slide(base_draft: StorySlideDraft) -> Future<Result<bool>>;
+
+    /// change position of slides draft of this news entry
+    fn swap_slides(from: u8, to:u8);
+
+    /// get a copy of the news slide set for this news entry draft
+    fn slides() -> Vec<StorySlideDraft>;
+
+    /// clear slides
+    fn unset_slides();
+
+    /// create this news entry
+    fn send() -> Future<Result<EventId>>;
+}
+
+object StoryUpdateBuilder {
+    /// set the slides for this news entry
+    fn add_slide(draft: StorySlideDraft) -> Future<Result<bool>>;
+
+    /// reset slides for this news entry
+    fn unset_slides();
+    fn unset_slides_update();
+
+    /// set position of slides for this news entry
+    fn swap_slides(from: u8, to: u8);
+
+    /// update this news entry
+    fn send() -> Future<Result<EventId>>;
+}
+
 
 
 //  ########  #### ##    ##  ######  
@@ -537,6 +587,9 @@ object ActerPin {
     fn event_id_str() -> string;
     /// the room/space this item belongs to
     fn room_id_str() -> string;
+
+    /// get the internal reference object
+    fn ref_details() -> Future<Result<RefDetails>>;
 
     /// sender id
     fn sender() -> UserId;
@@ -607,7 +660,7 @@ object CalendarEvent {
     fn utc_end() -> UtcDateTime;
     /// whether to show the time or just the dates
     fn show_without_time() -> bool;
-    /// locations
+    // /// locations
     // fn locations() -> Vec<Location>;
     /// event id
     fn event_id() -> EventId;
@@ -638,7 +691,7 @@ object CalendarEvent {
     /// Generate a iCal as a String for sharing with others
     fn ical_for_sharing(file_name: string) -> Result<bool>;
 
-    /// get the physical location(s) details 
+    /// get the physical location(s) details
     fn physical_locations() -> Vec<EventLocationInfo>;
 
     /// get the virtual location(s) details
@@ -646,6 +699,11 @@ object CalendarEvent {
 
     /// get all location details
     fn locations() -> Vec<EventLocationInfo>;
+
+
+    /// get the internal reference object
+    fn ref_details() -> Future<Result<RefDetails>>;
+
 }
 
 object CalendarEventUpdateBuilder {
@@ -686,7 +744,7 @@ object CalendarEventDraft {
 
     /// set the description html for this calendar event
     fn description_html(text: string, html: string);
-    
+
     fn unset_description();
 
     /// set the utc_start for this calendar event in rfc3339 format
@@ -752,7 +810,7 @@ object RsvpManager {
     /// get rsvp entries
     fn rsvp_entries() -> Future<Result<Vec<Rsvp>>>;
 
-    /// get Yes/Maybe/No or None for the user's own status
+    /// get Yes/Maybe/No or None for the user’s own status
     fn responded_by_me() -> Future<Result<OptionRsvpStatus>>;
 
     /// get the count of Yes/Maybe/No
@@ -787,13 +845,14 @@ object Rsvp {
     fn status() -> string;
 }
 
-//  ### ##   ### ###    ##      ## ##   #### ##    ####    ## ##   ###  ##   ## ##   
-//  ##  ##   ##  ##     ##    ##   ##  # ## ##     ##    ##   ##    ## ##  ##   ##  
-//  ##  ##   ##       ## ##   ##         ##        ##    ##   ##   # ## #  ####     
-//  ## ##    ## ##    ##  ##  ##         ##        ##    ##   ##   ## ##    #####   
-//  ## ##    ##       ## ###  ##         ##        ##    ##   ##   ##  ##      ###  
-//  ##  ##   ##  ##   ##  ##  ##   ##    ##        ##    ##   ##   ##  ##  ##   ##  
-// #### ##  ### ###  ###  ##   ## ##    ####      ####    ## ##   ###  ##   ## ## 
+
+//  ########  ########    ###     ######  ######## ####  #######  ##    ## 
+//  ##     ## ##         ## ##   ##    ##    ##     ##  ##     ## ###   ## 
+//  ##     ## ##        ##   ##  ##          ##     ##  ##     ## ####  ## 
+//  ########  ######   ##     ## ##          ##     ##  ##     ## ## ## ## 
+//  ##   ##   ##       ######### ##          ##     ##  ##     ## ##  #### 
+//  ##    ##  ##       ##     ## ##    ##    ##     ##  ##     ## ##   ### 
+//  ##     ## ######## ##     ##  ######     ##    ####  #######  ##    ## 
 
 
 object ReactionManager {
@@ -851,6 +910,35 @@ object Reaction {
 }
 
 
+//  ########  ########    ###    ########     ########  ########  ######  ######## #### ########  ########  ######  
+//  ##     ## ##         ## ##   ##     ##    ##     ## ##       ##    ## ##        ##  ##     ##    ##    ##    ## 
+//  ##     ## ##        ##   ##  ##     ##    ##     ## ##       ##       ##        ##  ##     ##    ##    ##       
+//  ########  ######   ##     ## ##     ##    ########  ######   ##       ######    ##  ########     ##     ######  
+//  ##   ##   ##       ######### ##     ##    ##   ##   ##       ##       ##        ##  ##           ##          ## 
+//  ##    ##  ##       ##     ## ##     ##    ##    ##  ##       ##    ## ##        ##  ##           ##    ##    ## 
+//  ##     ## ######## ##     ## ########     ##     ## ########  ######  ######## #### ##           ##     ######  
+
+
+
+object ReadReceiptsManager {
+    /// mark this as read for the others in the room to know
+    fn announce_read() -> Future<Result<bool>>;
+
+    /// total of users that announced they had seen this
+    fn read_count() -> u32;
+
+    /// whether I have already marked this as read, publicly or privately
+    fn read_by_me() -> bool;
+
+    /// get informed about changes to this manager
+    fn subscribe_stream() -> Stream<bool>;
+
+    /// reload this manager
+    fn reload() -> Future<Result<ReadReceiptsManager>>;
+
+}
+
+
 //  ########   #######   #######  ##     ##    ######## ##     ## ######## ##    ## ########  ######  
 //  ##     ## ##     ## ##     ## ###   ###    ##       ##     ## ##       ###   ##    ##    ##    ## 
 //  ##     ## ##     ## ##     ## #### ####    ##       ##     ## ##       ####  ##    ##    ##       
@@ -861,21 +949,21 @@ object Reaction {
 
 /// Sending state of outgoing message.
 object EventSendState {
-    // one of NotSentYet/SendingFailed/Cancelled/Sent
+    /// one of NotSentYet/SendingFailed/Cancelled/Sent
     fn state() -> string;
-    
-    // gives error value for SendingFailed only
+
+    /// gives error value for SendingFailed only
     fn error() -> Option<string>;
 
-    // gives event id for Sent only
+    /// gives event id for Sent only
     fn event_id() -> Option<EventId>;
+
+    // allows you to cancel a local echo
+    fn abort() -> Future<Result<bool>>;
 }
 
 /// A room Message metadata and content
 object RoomEventItem {
-    /// Unique ID of this event
-    fn unique_id() -> string;
-
     /// The User, who sent that event
     fn sender() -> string;
 
@@ -888,6 +976,9 @@ object RoomEventItem {
 
     /// one of Message/Redaction/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
     fn event_type() -> string;
+
+    /// ID of this event
+    fn event_id() -> Option<string>;
 
     /// the type of massage, like text, image, audio, video, file etc
     fn msg_type() -> Option<string>;
@@ -929,6 +1020,9 @@ object RoomVirtualItem {
 object RoomMessage {
     /// one of event/virtual
     fn item_type() -> string;
+
+    /// Unique ID of this event
+    fn unique_id() -> string;
 
     /// valid only if item_type is "event"
     fn event_item() -> Option<RoomEventItem>;
@@ -1099,9 +1193,9 @@ object Room {
 
     /// Unset the `mute` for this room.
     fn unmute() -> Future<Result<bool>>;
-    
+
     /// set the RoomNotificationMode
-    fn set_notification_mode(new_mode: Option<string>) -> Future<Result<bool>>; 
+    fn set_notification_mode(new_mode: Option<string>) -> Future<Result<bool>>;
 
     /// update the power levels of specified member
     fn update_power_level(user_id: string, level: i32) -> Future<Result<EventId>>;
@@ -1121,15 +1215,31 @@ object Room {
     /// set name of the room
     fn set_name(name: string) -> Future<Result<EventId>>;
 
-    /// whether or not the user has already seen the suggested
-    /// children
-    fn user_has_seen_suggested() -> Future<Result<bool>>;
-
-    /// Set the value of `user_has_seen_suggested` for this room
-    fn set_user_has_seen_suggested(newValue: bool) -> Future<Result<bool>>;
-
     /// leave this room
     fn leave() -> Future<Result<bool>>;
+
+    /// user settings for this room
+    fn user_settings() -> Future<Result<UserRoomSettings>>;
+}
+
+object UserRoomSettings {
+
+    /// whether or not the user has already seen the suggested
+    /// children
+    fn has_seen_suggested() -> bool;
+
+    /// Set the value of `has_seen_suggested` for this room
+    fn set_has_seen_suggested(newValue: bool) -> Future<Result<bool>>;
+
+    /// whether or not the user wants to include this in the 
+    /// calendar sync
+    fn include_cal_sync() -> bool;
+
+    /// Set the value of `include_cal_sync` for this room
+    fn set_include_cal_sync(newValue: bool) -> Future<Result<bool>>;
+
+    /// Trigger when this object needs to be refreshed
+    fn subscribe_stream() -> Stream<bool>;
 }
 
 
@@ -1168,7 +1278,10 @@ object MsgDraft {
 
     /// whether to mention the entire room
     fn add_room_mention(mention: bool) -> Result<MsgDraft>;
-    
+
+    /// available for only image/audio/video/file
+    fn mimetype(value: string) -> MsgDraft;
+
     /// available for only image/audio/video/file
     fn size(value: u64) -> MsgDraft;
 
@@ -1184,14 +1297,26 @@ object MsgDraft {
     /// available for only image/video
     fn blurhash(value: string) -> MsgDraft;
 
+    /// Provide the file system path to a static thumbnail
+    /// for this media to be read and shared upon sending
+    ///
+    /// available for only image/video/file/location
+    fn thumbnail_file_path(value: string) -> MsgDraft;
+
+    /// available for only image/video/file/location
+    fn thumbnail_info(width: Option<u64>, height: Option<u64>, mimetype: Option<string>, size: Option<u64>) -> MsgDraft;
+
     /// available for only file
     fn filename(value: string) -> MsgDraft;
 
     /// available for only location
     fn geo_uri(value: string) -> MsgDraft;
 
-    // convert this into a NewsSlideDraft;
+    /// convert this into a NewsSlideDraft;
     fn into_news_slide_draft() -> NewsSlideDraft;
+
+    /// convert this into a StorySlideDraft;
+    fn into_story_slide_draft() -> StorySlideDraft;
 }
 
 /// Timeline with Room Events
@@ -1234,7 +1359,6 @@ object TimelineStream {
     /// send reaction to event
     /// if sent twice, reaction is redacted
     fn toggle_reaction(event_id: string, key: string) -> Future<Result<bool>>;
-
 }
 
 
@@ -1362,9 +1486,6 @@ object Convo {
     /// return None when never downloaded
     fn media_path(event_id: string, is_thumb: bool) -> Future<Result<OptionString>>;
 
-    /// initially called to get receipt status of room members
-    fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
-
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
 
@@ -1382,7 +1503,7 @@ object Convo {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
-    /// it's the callers job to ensure the person has the privileges to
+    /// it’s the callers job to ensure the person has the privileges to
     /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
@@ -1396,6 +1517,9 @@ object Convo {
 
     /// clear composed message state of the room
     fn clear_msg_draft() -> Future<Result<bool>>;
+
+    /// get the internal reference object, defined in Room
+    fn ref_details() -> Future<Result<RefDetails>>;
 }
 
 
@@ -1424,7 +1548,7 @@ object Comment {
     fn sender() -> UserId;
     /// When was this comment acknowledged by the server
     fn origin_server_ts() -> u64;
-    /// what is the comment's content
+    /// what is the comment’s content
     fn msg_content() -> MsgContent;
     /// create a draft builder to reply to this comment
     fn reply_builder() -> CommentDraft;
@@ -1440,6 +1564,9 @@ object CommentsManager {
 
     /// String representation of the room id this comments manager is in
     fn room_id_str() -> string;
+
+    /// String of the id of the object the comments are managed for
+    fn object_id_str() -> string;
 
     /// Does this item have any comments?
     fn has_comments() -> bool;
@@ -1486,8 +1613,10 @@ object Attachment {
     fn room_id_str() -> string;
     /// the type of attachment
     fn type_str() -> string;
-    /// if this is a media, hand over the description
-    fn msg_content() -> MsgContent;
+    /// if this is a media, hand over its details
+    fn msg_content() -> Option<MsgContent>;
+    /// if this is a reference, here are the details
+    fn ref_details() -> Option<RefDetails>;
 
     /// if this is a link, this contains the URI/Link/URL
     fn link() -> Option<string>;
@@ -1512,6 +1641,9 @@ object AttachmentsManager {
     /// the room this attachments manager lives in
     fn room_id_str() -> string;
 
+    /// the id of the object whose attachments are managed
+    fn object_id_str() -> string;
+
     /// Whether or not the current user can post, edit and delete
     /// attachments in this manager
     fn can_edit_attachments() -> bool;
@@ -1531,10 +1663,13 @@ object AttachmentsManager {
     /// create attachment for given link draft
     fn link_draft(url: string, name: Option<string>) -> Future<Result<AttachmentDraft>>;
 
-    // inform about the changes to this manager
+    /// create attachment for given ref_details
+    fn reference_draft(details: RefDetails) -> Future<Result<AttachmentDraft>>;
+
+    /// inform about the changes to this manager
     fn reload() -> Future<Result<AttachmentsManager>>;
-    
-    // redact attachment 
+
+    /// redact attachment
     fn redact(attachment_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<EventId>>;
 
     /// subscribe to the changes of this model key
@@ -1631,7 +1766,7 @@ object Task {
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<Task>>;
-    
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
@@ -1813,6 +1948,9 @@ object TaskList {
     /// the id of the space this TaskList belongs to
     fn space_id_str() -> string;
 
+    /// get the internal reference object
+    fn ref_details() -> Future<Result<RefDetails>>;
+
     /// get the comments manager
     fn comments() -> Future<Result<CommentsManager>>;
 
@@ -1918,7 +2056,7 @@ object SpaceHierarchyRoomInfo {
     fn join_rule_str() -> string;
     /// whether to have avatar
     fn has_avatar() -> bool;
-    
+
     /// is this a suggested room?
     fn suggested() -> bool;
 
@@ -1926,8 +2064,8 @@ object SpaceHierarchyRoomInfo {
     /// if thumb size is given, avatar thumbnail is returned
     /// if thumb size is not given, avatar file is returned
     fn get_avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
-    // recommended server to try to join via
-    fn via_server_name() -> Option<string>;
+    /// recommended server to try to join via
+    fn via_server_names() -> Vec<string>;
 }
 
 object SpaceRelation {
@@ -1961,19 +2099,46 @@ object RoomPowerLevels {
     fn events_key() -> string;
     fn pins() -> Option<i64>;
     fn pins_key() -> string;
-    fn events_default() -> i64;
-    fn users_default() -> i64;
-    fn max_power_level() -> i64;
 
     fn tasks() -> Option<i64>;
     fn tasks_key() -> string;
 
     fn task_lists() -> Option<i64>;
     fn task_lists_key() -> string;
+
+    fn rsvp() -> Option<i64>;
+    fn rsvp_key() -> string;
+
+    fn comments() -> Option<i64>;
+    fn comments_key() -> string;
+
+    fn attachments() -> Option<i64>;
+    fn attachments_key() -> string;
+
+    // -- defaults
+
+    fn events_default() -> i64;
+    fn users_default() -> i64;
+    fn max_power_level() -> i64;
+
+    fn kick() -> i64;
+    fn ban() -> i64;
+    fn redact() -> i64;
+    fn invite() -> i64;
 }
 
-object SimpleSettingWithTurnOff {
+object SimpleOnOffSetting {
+    fn active() -> bool;
+}
 
+object SimpleOnOffSettingBuilder {
+    fn active(active: bool);
+    fn build() -> Result<SimpleOnOffSetting>;
+}
+
+
+object SimpleSettingWithTurnOff {
+    fn active() -> bool;
 }
 
 object SimpleSettingWithTurnOffBuilder {
@@ -1982,10 +2147,6 @@ object SimpleSettingWithTurnOffBuilder {
 }
 
 
-object TasksSettingsBuilder {
-    fn active(active: bool);
-    fn build() -> Result<TasksSettings>;
-}
 object NewsSettings {
     fn active() -> bool;
     fn updater() -> SimpleSettingWithTurnOffBuilder;
@@ -1993,7 +2154,7 @@ object NewsSettings {
 
 object TasksSettings {
     fn active() -> bool;
-    fn updater() -> TasksSettingsBuilder;
+    fn updater() -> SimpleOnOffSettingBuilder;
 }
 
 object EventsSettings {
@@ -2018,8 +2179,115 @@ object ActerAppSettingsBuilder {
     fn news(news: Option<SimpleSettingWithTurnOff>);
     fn pins(pins: Option<SimpleSettingWithTurnOff>);
     fn events(events: Option<SimpleSettingWithTurnOff>);
-    fn tasks(tasks: Option<TasksSettings>);
+    fn tasks(tasks: Option<SimpleOnOffSetting>);
 }
+
+
+
+//     ###     ######  ######## #### ##     ## #### ######## #### ########  ######  
+//    ## ##   ##    ##    ##     ##  ##     ##  ##     ##     ##  ##       ##    ## 
+//   ##   ##  ##          ##     ##  ##     ##  ##     ##     ##  ##       ##       
+//  ##     ## ##          ##     ##  ##     ##  ##     ##     ##  ######    ######  
+//  ######### ##          ##     ##   ##   ##   ##     ##     ##  ##             ## 
+//  ##     ## ##    ##    ##     ##    ## ##    ##     ##     ##  ##       ##    ## 
+//  ##     ##  ######     ##    ####    ###    ####    ##    #### ########  ######  
+
+object MembershipChange {
+    /// user_id of the member that has changed
+    fn user_id_str() -> string;
+
+    /// avatar_url of the member that has changed
+    fn avatar_url() -> Option<string>;
+
+    /// display_name of the member that has changed
+    fn display_name() -> Option<string>;
+
+    /// reason if any was provided
+    fn reason() -> Option<string>;
+}
+
+object ActivityObject {
+    fn type_str() -> string;
+    fn object_id_str() -> string;
+    fn title() -> Option<string>;
+    fn emoji() -> string;
+}
+
+object Activity {
+    // generic
+
+    /// the event_id as a string
+    fn event_id_str() -> string;
+    /// the sender of this event as a string
+    fn sender_id_str() -> string;
+
+    /// the server receiving timestamp in milliseconds
+    fn origin_server_ts() -> u64;
+
+    /// the room_id of this event
+    fn room_id_str() -> string;
+
+    /// the type of this activity as a string
+    /// e.g. invited, invitationAccepted
+    fn type_str() -> string;
+
+    /// the details of this membership change activity
+    fn membership_change() -> Option<MembershipChange>;
+
+    /// if the added information is a reference
+    fn ref_details() -> Option<RefDetails>;
+
+    /// where to route to for the details of this activity
+    fn target_url() -> string;
+
+    /// the object this activity happened on, if any
+    fn object() -> Option<ActivityObject>;
+
+    /// content of this activity, if any
+    fn msg_content() -> Option<MsgContent>;
+
+    /// reaction specific: the reaction key used
+    fn reaction_key() -> Option<string>;
+
+    /// the date on eventDateChange (started or ended) or taskDueDateChane
+    fn new_date() -> Option<UtcDateTime>;
+
+}
+
+object Activities {
+    /// get the activity ids from offset to limit for this activities listing
+    fn get_ids(offset: u32, limit: u32) -> Future<Result<Vec<string>>>;
+
+    /// Receive an update when a the activities stream has changed
+    fn subscribe_stream() -> Stream<bool>;
+}
+
+
+
+//  ########   #######   #######  ##     ##    ########  ########  ######## ##     ## #### ######## ##      ## 
+//  ##     ## ##     ## ##     ## ###   ###    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ## 
+//  ##     ## ##     ## ##     ## #### ####    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ## 
+//  ########  ##     ## ##     ## ## ### ##    ########  ########  ######   ##     ##  ##  ######   ##  ##  ## 
+//  ##   ##   ##     ## ##     ## ##     ##    ##        ##   ##   ##        ##   ##   ##  ##       ##  ##  ## 
+//  ##    ##  ##     ## ##     ## ##     ##    ##        ##    ##  ##         ## ##    ##  ##       ##  ##  ## 
+//  ##     ##  #######   #######  ##     ##    ##        ##     ## ########    ###    #### ########  ###  ###  
+
+
+object RoomPreview {
+    fn room_id_str() -> string;
+    fn name() -> Option<string>;
+    fn topic() -> Option<string>;
+    fn avatar_url_str() -> Option<string>;
+    fn canonical_alias_str() -> Option<string>;
+    fn room_type_str() -> string;
+    fn join_rule_str() -> string;
+    fn state_str() -> string;
+    fn is_direct() -> Option<bool>;
+    fn is_world_readable() -> Option<bool>;
+    fn has_avatar() -> bool;
+    fn avatar(thumb_size: Option<ThumbnailSize>) -> Future<Result<OptionBuffer>>;
+}
+
 
 
 //   ######     ###    ######## ########  ######    #######  ########  ##    ## 
@@ -2032,9 +2300,8 @@ object ActerAppSettingsBuilder {
 
 
 object Category {
-    fn id() -> string;
     fn title() -> string;
-    fn entries() -> string;
+    fn entries() -> Vec<string>;
     fn display() -> Option<Display>;
     fn update_builder() -> CategoryBuilder;
 }
@@ -2177,29 +2444,29 @@ object Space {
     /// the Tasks lists of this Space
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
 
-    /// the Tasks list of this Space
-    fn task_list(key: string) -> Future<Result<TaskList>>;
-
     /// task list draft builder
     fn task_list_draft() -> Result<TaskListDraft>;
 
     /// get latest news
     fn latest_news_entries(count: u32) -> Future<Result<Vec<NewsEntry>>>;
 
+    /// get latest stories
+    fn latest_stories(count: u32) -> Future<Result<Vec<Story>>>;
+
     /// get all calendar events
     fn calendar_events() -> Future<Result<Vec<CalendarEvent>>>;
 
-    /// create calendart event draft
+    /// create calendar event draft
     fn calendar_event_draft() -> Result<CalendarEventDraft>;
 
     /// create news draft
     fn news_draft() -> Result<NewsEntryDraft>;
 
+    /// create story draft
+    fn story_draft() -> Result<StoryDraft>;
+
     /// the pins of this Space
     fn pins() -> Future<Result<Vec<ActerPin>>>;
-
-    /// the links pinned to this Space
-    fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
 
     /// pin draft builder
     fn pin_draft() -> Result<PinDraft>;
@@ -2222,6 +2489,9 @@ object Space {
     /// update the power level for a feature
     fn update_feature_power_levels(feature: string, level: Option<i32>) -> Future<Result<bool>>;
 
+    /// update the power level for a regular room feature
+    fn update_regular_power_levels(feature: string, level: i32) -> Future<Result<bool>>;
+
     /// report an event from this room
     /// score - The score to rate this content as where -100 is most offensive and 0 is inoffensive (optional).
     /// reason - The reason for the event being reported (optional).
@@ -2229,7 +2499,7 @@ object Space {
 
     /// redact an event from this room
     /// reason - The reason for the event being reported (optional).
-    /// it's the callers job to ensure the person has the privileges to
+    /// it’s the callers job to ensure the person has the privileges to
     /// redact that content.
     fn redact_content(event_id: string, reason: Option<string>) -> Future<Result<EventId>>;
 
@@ -2240,6 +2510,9 @@ object Space {
 
     /// Set the categories for a specific key
     fn set_categories(key: string, categories: CategoriesBuilder) -> Future<Result<bool>>;
+
+    /// get the internal reference object, defined in Room
+    fn ref_details() -> Future<Result<RefDetails>>;
 }
 
 enum MembershipStatus {
@@ -2254,6 +2527,7 @@ enum MemberPermission {
     CanToggleReaction,
     CanSendSticker,
     CanPostNews,
+    CanPostStories,
     CanPostPin,
     CanPostEvent,
     CanPostTaskList,
@@ -2329,9 +2603,13 @@ object Member {
 object ActerUserAppSettings {
     /// either of 'always', 'never' or 'wifiOnly'
     fn auto_download_chat() -> Option<string>;
-    
+
     /// whether to allow sending typing notice of users
     fn typing_notice() -> Option<bool>;
+
+    /// whether to automatically subscribe to push notifications
+    /// once interacted
+    fn auto_subscribe_on_activity() -> bool;
 
     /// update the builder with the current settings
 
@@ -2345,6 +2623,10 @@ object ActerUserAppSettingsBuilder {
 
     /// whether to allow sending typing notice of users
     fn typing_notice(value: bool);
+
+    /// set whether to automatically subscribe to push notifications
+    /// once interacted
+    fn auto_subscribe_on_activity(value: bool);
 
     /// submit this updated version
     fn send() -> Future<Result<bool>>;
@@ -2396,8 +2678,8 @@ object Account {
     /// listen to updates to the app settings
     fn subscribe_app_settings_stream() -> Stream<bool>;
 
-    // deactivate the account. This can not be reversed. The username will
-    // be blocked from any future usage, all personal data will be removed.
+    /// deactivate the account. This can not be reversed. The username will
+    /// be blocked from any future usage, all personal data will be removed.
     fn deactivate(password: string) -> Future<Result<bool>>;
 
     /// change password
@@ -2560,13 +2842,14 @@ object NotificationRoom {
     fn image() -> Future<Result<buffer<u8>>>;
 }
 
-
 // converting a room_id+event_id into the notification item to show
 // from push context.
 object NotificationItem {
     fn push_style() -> string;
     fn title() -> string;
     fn sender() -> NotificationSender;
+    fn parent() -> Option<ActivityObject>;
+    fn parent_id_str() -> Option<string>;
     fn room() -> NotificationRoom;
     fn target_url() -> string;
     fn body() -> Option<MsgContent>;
@@ -2577,8 +2860,14 @@ object NotificationItem {
     fn image() -> Future<Result<buffer<u8>>>;
     fn image_path(tmp_dir: string) -> Future<Result<string>>;
 
-    // if this is an invite, this the room it invites to
-    fn room_invite() -> Option<string>;
+    /// if this is an invite, this the room it invites to
+    fn room_invite_str() -> Option<string>;
+
+    /// reaction specific: the reaction key used
+    fn reaction_key() -> Option<string>;
+
+    /// the date on eventDateChange (started or ended) or taskDueDateChane
+    fn new_date() -> Option<UtcDateTime>;
 }
 
 /// The pusher we sent notifications via to the user
@@ -2640,7 +2929,7 @@ object CreateSpaceSettingsBuilder {
     /// set the name of convo
     fn set_name(value: string);
 
-    /// set the space's visibility to either Public or Private
+    /// set the space’s visibility to either Public or Private
     fn set_visibility(value: string);
 
     /// append user id that will be invited to this space
@@ -2672,7 +2961,6 @@ object CreateSpaceSettings {}
 //  ##       ##        ##  ##       ##  ####    ##    
 //  ##    ## ##        ##  ##       ##   ###    ##    
 //   ######  ######## #### ######## ##    ##    ##    
-
 
 
 /// Main entry point for `acter`.
@@ -2735,19 +3023,16 @@ object Client {
     fn spaces_stream() -> Stream<SpaceDiff>;
 
     /// attempt to join a room
-    fn join_room(room_id_or_alias: string, server_name: Option<string>) -> Future<Result<Room>>;
+    fn join_room(room_id_or_alias: string, server_names: VecStringBuilder) -> Future<Result<Room>>;
 
     /// Get the space that user belongs to
     fn space(room_id_or_alias: string) -> Future<Result<Space>>;
-
-    /// Get the Pinned Links for the client
-    fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
 
     /// Get the invitation event stream
     fn invitations_rx() -> Stream<Vec<Invitation>>;
 
     /// the users out of room
-    fn suggested_users_to_invite(room_name: string) -> Future<Result<Vec<UserProfile>>>;
+    fn suggested_users(room_name: Option<string>) -> Future<Result<Vec<UserProfile>>>;
 
     /// search the user directory
     fn search_users(search_term: string) -> Future<Result<Vec<UserProfile>>>;
@@ -2762,7 +3047,7 @@ object Client {
     fn logout() -> Future<Result<bool>>;
 
     /// Get the verification event receiver
-    fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
+    fn verification_event_rx() -> Stream<VerificationEvent>;
 
     /// Get session manager that returns all/verified/unverified/inactive session list
     fn session_manager() -> SessionManager;
@@ -2778,13 +3063,10 @@ object Client {
     fn install_sas_event_handler(flow_id: string) -> Future<Result<bool>>;
 
     /// Return the event handler that new device was found or existing device was changed
-    fn device_event_rx() -> Option<Stream<DeviceEvent>>;
+    fn device_event_rx() -> Stream<DeviceEvent>;
 
     /// Return the typing event receiver
     fn subscribe_to_typing_event_stream(room_id: string) -> Stream<TypingEvent>;
-
-    /// Return the receipt event receiver
-    fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 
     /// create convo
     fn create_convo(settings: CreateConvoSettings) -> Future<Result<RoomId>>;
@@ -2792,8 +3074,35 @@ object Client {
     /// create default space
     fn create_acter_space(settings: CreateSpaceSettings) -> Future<Result<RoomId>>;
 
-    /// listen to updates to any model key
-    fn subscribe_stream(key: string) -> Stream<bool>;
+    /// listen to updates to any section
+    fn subscribe_section_stream(section: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any model
+    fn subscribe_model_stream(model_id: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to objects of a model, e.g. rsvp or comments
+    fn subscribe_model_objects_stream(model_id: string, sublist: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any room parameter
+    fn subscribe_model_param_stream(key: string, param: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any room
+    fn subscribe_room_stream(key: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any room parameter
+    fn subscribe_room_param_stream(key: string, param: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to a room section
+    fn subscribe_room_section_stream(key: string, section: string) -> Result<Stream<bool>>;
+
+    /// listen to updates to any event type
+    fn subscribe_event_type_stream(key: string) -> Result<Stream<bool>>;
+
+    /// listen to account data updates
+    fn subscribe_account_data_stream(key: string) -> Result<Stream<bool>>;
+
+    /// listen to account data updates of specific room
+    fn subscribe_room_account_data_stream(room: string, key: string) -> Result<Stream<bool>>;
 
     /// Find the room or wait until it becomes available
     fn wait_for_room(key: string, timeout: Option<u8>) -> Future<Result<bool>>;
@@ -2806,6 +3115,12 @@ object Client {
 
     /// Get the latest News for the client
     fn latest_news_entries(count: u32) -> Future<Result<Vec<NewsEntry>>>;
+
+    /// Fetch the Story or use its event_id to wait for it to come down the wire
+    fn wait_for_story(key: string, timeout: Option<u8>) -> Future<Result<Story>>;
+
+    /// Get the Stories for the client
+    fn latest_stories(count: u32) -> Future<Result<Vec<Story>>>;
 
     /// Fetch the ActerPin or use its event_id to wait for it to come down the wire
     fn wait_for_pin(key: string, timeout: Option<u8>) -> Future<Result<ActerPin>>;
@@ -2860,7 +3175,7 @@ object Client {
 
     /// getting a notification item from the notification data;
     fn get_notification_item(room_id: string, event_id: string) -> Future<Result<NotificationItem>>;
-    
+
     /// get all upcoming events, whether I responded or not
     fn all_upcoming_events(secs_from_now: Option<u32>) -> Future<Result<Vec<CalendarEvent>>>;
 
@@ -2905,6 +3220,22 @@ object Client {
 
     /// get access to the backup manager
     fn backup_manager() -> BackupManager;
+
+    /// Room preview
+    fn room_preview(room_id_or_alias: string, server_names: VecStringBuilder) -> Future<Result<RoomPreview>>;
+
+
+    /// create a link ref details
+    fn new_link_ref_details(title: string, uri: string) -> Result<RefDetails>;
+
+    /// get a specific activity
+    fn activity(key: string) -> Future<Result<Activity>>;
+
+    /// get the activities listener for a room
+    fn activities_for_room(key: string) -> Result<Activities>;
+
+    /// get the activities listener for a specific object
+    fn activities_for_obj(key: string) -> Result<Activities>;
 }
 
 object NotificationSettings {
@@ -2916,10 +3247,16 @@ object NotificationSettings {
 
     /// set default RoomNotificationMode for this combination
     fn set_default_notification_mode(is_encrypted: bool, is_one_on_one: bool, mode: string) -> Future<Result<bool>>;
-    
+
     /// app settings
     fn global_content_setting(app_key: string) -> Future<Result<bool>>;
     fn set_global_content_setting(app_key: string, enabled: bool) -> Future<Result<bool>>;
+
+    /// specific object based subscriptions
+    /// one of 'subscribed', 'parent' or 'none'
+    fn object_push_subscription_status_str(object_id: string, sub_type: Option<string>) -> Future<Result<string>>;
+    fn subscribe_object_push(object_id: string, sub_type: Option<string>) -> Future<Result<bool>>;
+    fn unsubscribe_object_push(object_id: string, sub_type: Option<string>) -> Future<Result<bool>>;
 }
 
 
@@ -3025,6 +3362,9 @@ object SuperInviteToken {
 
     /// Updater for this SuperInviteToken
     fn update_builder() -> SuperInvitesTokenUpdateBuilder;
+
+    /// get the internal reference object
+    fn ref_details() -> RefDetails;
 }
 
 /// Updater/Creator for an invite token
@@ -3094,7 +3434,7 @@ object VerificationEvent {
     /// Alice says to Bob that SAS verification matches and vice versa
     fn confirm_sas_verification() -> Future<Result<bool>>;
 
-    /// Alice says to Bob that SAS verification doesn't match and vice versa
+    /// Alice says to Bob that SAS verification doesn’t match and vice versa
     fn mismatch_sas_verification() -> Future<Result<bool>>;
 }
 
@@ -3205,7 +3545,7 @@ object BackupManager {
     /// state as a string via a stream. Issues the current state immediately
     fn state_stream() -> Stream<string>;
 
-    /// Open the existing secret store using the given key and import the keys 
+    /// Open the existing secret store using the given key and import the keys
     fn recover(secret: string) -> Future<Result<bool>>;
 
 }

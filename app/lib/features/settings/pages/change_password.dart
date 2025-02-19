@@ -1,5 +1,5 @@
+import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -76,85 +76,78 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
   }
 
   Widget _buildOldPasswordInputField() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(L10n.of(context).oldPassword),
+        Text(lang.oldPassword),
         const SizedBox(height: 10),
         TextFormField(
           controller: oldPassword,
           obscureText: !_oldPasswordVisible,
           decoration: InputDecoration(
-            hintText: L10n.of(context).hintMessagePassword,
+            hintText: lang.hintMessagePassword,
             suffixIcon: IconButton(
               icon: Icon(
                 _oldPasswordVisible ? Icons.visibility : Icons.visibility_off,
               ),
               onPressed: () {
-                setState(() {
-                  _oldPasswordVisible = !_oldPasswordVisible;
-                });
+                setState(() => _oldPasswordVisible = !_oldPasswordVisible);
               },
             ),
           ),
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyOldPassword;
-            }
-            return null;
-          },
+          // required field, space allowed
+          validator: (val) =>
+              val == null || val.isEmpty ? lang.emptyOldPassword : null,
         ),
       ],
     );
   }
 
   Widget _buildNewPasswordInputField() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(L10n.of(context).newPassword),
+        Text(lang.newPassword),
         const SizedBox(height: 10),
         TextFormField(
           controller: newPassword,
           obscureText: !_newPasswordVisible,
           decoration: InputDecoration(
-            hintText: L10n.of(context).hintMessagePassword,
+            hintText: lang.hintMessagePassword,
             suffixIcon: IconButton(
               icon: Icon(
                 _newPasswordVisible ? Icons.visibility : Icons.visibility_off,
               ),
               onPressed: () {
-                setState(() {
-                  _newPasswordVisible = !_newPasswordVisible;
-                });
+                setState(() => _newPasswordVisible = !_newPasswordVisible);
               },
             ),
           ),
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyNewPassword;
-            }
-            return null;
-          },
+          // required field, space allowed
+          validator: (val) =>
+              val == null || val.isEmpty ? lang.emptyNewPassword : null,
         ),
       ],
     );
   }
 
   Widget _buildConfirmPasswordInputField() {
+    final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(L10n.of(context).confirmPassword),
+        Text(lang.confirmPassword),
         const SizedBox(height: 10),
         TextFormField(
           controller: confirmPassword,
           obscureText: !_confirmPasswordVisible,
           decoration: InputDecoration(
-            hintText: L10n.of(context).hintMessagePassword,
+            hintText: lang.hintMessagePassword,
             suffixIcon: IconButton(
               icon: Icon(
                 _confirmPasswordVisible
@@ -171,11 +164,12 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
           inputFormatters: [
             FilteringTextInputFormatter.deny(RegExp(r'\s')),
           ],
+          // required field, space allowed
           validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return L10n.of(context).emptyConfirmPassword;
-            } else if (val.trim() != newPassword.text.trim()) {
-              return L10n.of(context).validateSamePassword;
+            if (val == null || val.isEmpty) {
+              return lang.emptyConfirmPassword;
+            } else if (val != newPassword.text) {
+              return lang.validateSamePassword;
             }
             return null;
           },
@@ -186,9 +180,10 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
 
   void _changePassword(BuildContext context) async {
     if (!formKey.currentState!.validate()) return;
-    EasyLoading.show(status: L10n.of(context).changingYourPassword);
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.changingYourPassword);
     try {
-      final client = ref.read(alwaysClientProvider);
+      final client = await ref.read(alwaysClientProvider.future);
       final account = client.account();
       await account.changePassword(
         oldPassword.text.trim(),
@@ -198,7 +193,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
       newPassword.clear();
       confirmPassword.clear();
       if (!context.mounted) return;
-      EasyLoading.showSuccess(L10n.of(context).passwordChangedSuccessfully);
+      EasyLoading.showSuccess(lang.passwordChangedSuccessfully);
     } catch (e, s) {
       _log.severe('Failed to change password', e, s);
       if (!context.mounted) {
@@ -206,7 +201,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).changePasswordFailed(e),
+        lang.changePasswordFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

@@ -1,24 +1,31 @@
-use acter_core::{statics::default_acter_convo_states, Error};
+use acter_core::{
+    referencing::{ExecuteReference, RoomParam},
+    statics::default_acter_convo_states,
+    Error,
+};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::{executor::JoinHandle, ComposerDraft, ComposerDraftType, RoomMemberships};
-use matrix_sdk_ui::{timeline::RoomExt, Timeline};
-use ruma::assign;
-use ruma_client_api::room::{create_room, Visibility};
-use ruma_common::{
-    serde::Raw, MxcUri, OwnedEventId, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomAliasId,
-    RoomId, RoomOrAliasId, ServerName, UserId,
-};
-use ruma_events::{
-    receipt::{ReceiptThread, ReceiptType},
-    room::{
-        avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
-        join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+use matrix_sdk_base::{
+    executor::JoinHandle,
+    ruma::{
+        api::client::room::{create_room, Visibility},
+        assign,
+        events::{
+            room::{
+                avatar::{ImageInfo, InitialRoomAvatarEvent, RoomAvatarEventContent},
+                join_rules::{AllowRule, InitialRoomJoinRulesEvent, RoomJoinRulesEventContent},
+            },
+            space::parent::SpaceParentEventContent,
+            InitialStateEvent,
+        },
+        serde::Raw,
+        MxcUri, OwnedEventId, OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomAliasId, RoomId,
+        RoomOrAliasId, ServerName, UserId,
     },
-    space::parent::SpaceParentEventContent,
-    InitialStateEvent,
+    ComposerDraft, ComposerDraftType,
 };
+use matrix_sdk_ui::{timeline::RoomExt, Timeline};
 use std::{
     ops::Deref,
     path::PathBuf,
@@ -32,7 +39,6 @@ use crate::TimelineStream;
 use super::{
     client::Client,
     message::RoomMessage,
-    receipt::ReceiptRecord,
     room::Room,
     utils::{remap_for_diff, ApiVectorDiff},
     ComposeDraft, OptionComposeDraft, RUNTIME,
@@ -71,8 +77,8 @@ impl Ord for Convo {
     }
 }
 
-fn latest_message_storage_key(room_id: &RoomId) -> String {
-    format!("{room_id}::latest_message")
+fn latest_message_storage_key(room_id: &RoomId) -> ExecuteReference {
+    ExecuteReference::RoomParam(room_id.to_owned(), RoomParam::LatestMessage)
 }
 
 async fn set_latest_msg(
@@ -101,7 +107,10 @@ async fn set_latest_msg(
         *msg_lock = Some(new_msg.clone());
     }
 
-    client.store().set_raw(&key, &new_msg).await;
+    client
+        .store()
+        .set_raw(&key.as_storage_key(), &new_msg)
+        .await;
     info!("******************** changed latest msg: {:?}", key.clone());
     client.executor().notify(vec![key]);
 }
@@ -113,11 +122,11 @@ impl Convo {
                 .room
                 .timeline()
                 .await
-                .expect("Creating a timeline builder doesn't fail"),
+                .expect("Creating a timeline builder doesn’t fail"),
         );
         let latest_message_content: Option<RoomMessage> = client
             .store()
-            .get_raw(&latest_message_storage_key(inner.room_id()))
+            .get_raw(&latest_message_storage_key(inner.room_id()).as_storage_key())
             .await
             .ok();
 
@@ -152,7 +161,7 @@ impl Convo {
                 }
             }
             if !event_found && !has_latest_msg {
-                // let's trigger a back pagination in hope that helps us...
+                // let’s trigger a back pagination in hope that helps us...
                 if let Err(error) = last_msg_tl.paginate_backwards(10).await {
                     error!(?error, room_id=?latest_msg_room.room_id(), "backpagination failed");
                 }
@@ -161,14 +170,10 @@ impl Convo {
                 let Some(msg) = last_msg_tl.latest_event().await else {
                     continue;
                 };
-                let full_event = RoomMessage::from((msg, user_id.clone()));
-                set_latest_msg(
-                    &latest_msg_client,
-                    latest_msg_room.room_id(),
-                    &last_msg_lock_tl,
-                    full_event,
-                )
-                .await;
+                let room_id = latest_msg_room.room_id();
+
+                let full_event = RoomMessage::new_event_item(user_id.clone(), &msg);
+                set_latest_msg(&latest_msg_client, room_id, &last_msg_lock_tl, full_event).await;
             }
             warn!(room_id=?latest_msg_room.room_id(), "Timeline stopped")
         });
@@ -201,6 +206,17 @@ impl Convo {
 
     pub fn timeline_stream(&self) -> TimelineStream {
         TimelineStream::new(self.inner.clone(), self.timeline.clone())
+    }
+
+    pub async fn items(&self) -> Vec<RoomMessage> {
+        let user_id = self.client.user_id().expect("User must be logged in");
+        self.timeline
+            .items()
+            .await
+            .clone()
+            .into_iter()
+            .map(|x| RoomMessage::from((x, user_id.clone())))
+            .collect()
     }
 
     pub fn num_unread_notification_count(&self) -> u64 {
@@ -273,45 +289,6 @@ impl Convo {
             .iter()
             .map(|f| f.to_string())
             .collect()
-    }
-
-    pub async fn user_receipts(&self) -> Result<Vec<ReceiptRecord>> {
-        let room = self.room.clone();
-        RUNTIME
-            .spawn(async move {
-                let mut records = vec![];
-                for member in room.members(RoomMemberships::ACTIVE).await? {
-                    let user_id = member.user_id();
-                    if let Some((event_id, receipt)) = room
-                        .load_user_receipt(ReceiptType::Read, ReceiptThread::Main, user_id)
-                        .await?
-                    {
-                        let record = ReceiptRecord::new(
-                            event_id,
-                            user_id.to_owned(),
-                            receipt.ts,
-                            receipt.thread,
-                            ReceiptType::Read,
-                        );
-                        records.push(record);
-                    }
-                    if let Some((event_id, receipt)) = room
-                        .load_user_receipt(ReceiptType::ReadPrivate, ReceiptThread::Main, user_id)
-                        .await?
-                    {
-                        let record = ReceiptRecord::new(
-                            event_id,
-                            user_id.to_owned(),
-                            receipt.ts,
-                            receipt.thread,
-                            ReceiptType::ReadPrivate,
-                        );
-                        records.push(record);
-                    }
-                }
-                Ok(records)
-            })
-            .await?
     }
 
     pub async fn msg_draft(&self) -> Result<OptionComposeDraft> {
@@ -490,9 +467,9 @@ impl Client {
                         // local uri
                         let path = PathBuf::from(avatar_uri);
                         let guess = mime_guess::from_path(path.clone());
-                        let content_type = guess.first().context("don't know mime type")?;
+                        let content_type = guess.first().context("don’t know mime type")?;
                         let buf = std::fs::read(path)?;
-                        let response = client.media().upload(&content_type, buf).await?;
+                        let response = client.media().upload(&content_type, buf, None).await?;
 
                         let info = assign!(ImageInfo::new(), {
                             blurhash: response.blurhash,
@@ -590,7 +567,7 @@ impl Client {
             let room_alias = RoomAliasId::parse(either.as_str())?;
             self.convo_by_alias_typed(room_alias).await
         } else {
-            bail!("{room_id_or_alias} isn't a valid room id or alias...");
+            bail!("{room_id_or_alias} isn’t a valid room id or alias...");
         }
     }
 

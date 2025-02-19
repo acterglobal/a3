@@ -1,0 +1,27 @@
+name: Update Translations
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  workflow_dispatch:
+  schedule:
+   - cron: 0 15 * * 3
+
+jobs:
+  create_pr:
+    name: 'Create Weblate PR'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: create pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create -B main -H weblate-latest --title 'Update translations' --body 'Update latest weblate into main' -a gnunicorn -l minor -l translations 
+          gh pr merge --auto --merge weblate-latest

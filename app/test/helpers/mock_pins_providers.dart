@@ -2,8 +2,39 @@ import 'dart:async';
 import 'package:acter/features/pins/providers/notifiers/pins_notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
+
+class MockAsyncPinNotifier
+    extends AutoDisposeFamilyAsyncNotifier<ActerPin, String>
+    with Mock
+    implements AsyncPinNotifier {
+  bool shouldFail;
+
+  MockAsyncPinNotifier({this.shouldFail = true});
+
+  @override
+  Future<ActerPin> build(String arg) async {
+    if (shouldFail) {
+      // toggle failure so the retry works
+      shouldFail = !shouldFail;
+      throw 'Expected fail: Space not loaded';
+    }
+    return FakeActerPin();
+  }
+}
+
+class SimplyRetuningAsyncPinListNotifier
+    extends FamilyAsyncNotifier<List<ActerPin>, String?>
+    with Mock
+    implements AsyncPinListNotifier {
+  final List<ActerPin> response;
+
+  SimplyRetuningAsyncPinListNotifier(this.response);
+
+  @override
+  Future<List<ActerPin>> build(String? arg) async => response;
+}
 
 class RetryMockAsyncPinListNotifier
     extends FamilyAsyncNotifier<List<ActerPin>, String?>
@@ -36,19 +67,31 @@ class RetryMockAsyncPinNotifier
       shouldFail = !shouldFail;
       throw 'Expected fail';
     }
-    return MockActerPin();
+    return FakeActerPin();
   }
 }
 
-class MockActerPin extends Fake implements ActerPin {
-  @override
-  String roomIdStr() => '!roomId';
+class MockActerPin extends Mock implements ActerPin {}
+
+class FakeActerPin extends Fake implements ActerPin {
+  final String roomId;
+  final String eventId;
+  final String pinTitle;
+
+  FakeActerPin({
+    this.roomId = '!roomId',
+    this.eventId = 'evtId',
+    this.pinTitle = 'Pin Title',
+  });
 
   @override
-  String eventIdStr() => '\$evtId';
+  String roomIdStr() => roomId;
 
   @override
-  String title() => 'Pin Title';
+  String eventIdStr() => eventId;
+
+  @override
+  String title() => pinTitle;
 
   @override
   Future<AttachmentsManager> attachments() =>
@@ -59,4 +102,10 @@ class MockActerPin extends Fake implements ActerPin {
 
   @override
   MsgContent? content() => null;
+
+  @override
+  Display? display() => null;
+
+  @override
+  String url() => 'https://acter.global';
 }

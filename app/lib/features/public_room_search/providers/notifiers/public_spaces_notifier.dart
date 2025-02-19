@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/extensions/ref_debounce.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/public_room_search/models/publiic_search_result_state.dart';
 import 'package:acter/features/public_room_search/providers/public_search_providers.dart';
@@ -56,7 +56,7 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
     }
 
     final pageReq = page.next ?? '';
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     final searchValue = state.filter.searchTerm;
     final server = state.filter.server;
     final roomFilter = state.filter.filterBy.name;

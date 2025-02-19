@@ -1,48 +1,92 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final searchValueProvider = StateProvider.autoDispose<String>((ref) => '');
+class ActerSearchWidget extends StatefulWidget {
+  static const searchBarKey = Key('acter-search-bar');
+  static const clearSearchActionButtonKey =
+      Key('acter-search-bar-clear-action-btn');
 
-class ActerSearchWidget extends ConsumerWidget {
-  final TextEditingController searchTextController;
+  final String? hintText;
+  final String? initialText;
+  final Widget? leading;
+  final Iterable<Widget>? trailing;
+  final EdgeInsetsGeometry padding;
+  final ValueChanged<String> onChanged;
+  final VoidCallback onClear;
 
   const ActerSearchWidget({
     super.key,
-    required this.searchTextController,
+    this.hintText,
+    this.initialText,
+    this.leading,
+    this.trailing,
+    this.padding = const EdgeInsets.symmetric(
+      horizontal: 10,
+      vertical: 15,
+    ),
+    required this.onChanged,
+    required this.onClear,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return _buildSearchBar(context, ref);
+  State<ActerSearchWidget> createState() => _ActerSearchWidgetState();
+}
+
+class _ActerSearchWidgetState extends State<ActerSearchWidget> {
+  final TextEditingController searchTextController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    widget.initialText.map((text) => searchTextController.text = text);
   }
 
-  Widget _buildSearchBar(BuildContext context, WidgetRef ref) {
+  @override
+  void dispose() {
+    searchTextController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+      padding: widget.padding,
       child: SearchBar(
+        key: ActerSearchWidget.searchBarKey,
         controller: searchTextController,
-        leading: const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Icon(Atlas.magnifying_glass),
-        ),
-        hintText: L10n.of(context).search,
-        trailing: searchTextController.text.isNotEmpty
-            ? [
-                IconButton(
-                  onPressed: () {
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    ref.read(searchValueProvider.notifier).state = '';
-                    searchTextController.clear();
-                  },
-                  icon: const Icon(Icons.clear),
-                ),
-              ]
-            : null,
-        onChanged: (value) =>
-            ref.read(searchValueProvider.notifier).state = value,
+        leading: widget.leading ?? searchLeadingUIWidget(),
+        hintText: widget.hintText ?? L10n.of(context).search,
+        hintStyle:
+            WidgetStateProperty.all(Theme.of(context).textTheme.bodyMedium),
+        trailing: widget.trailing ?? searchTrailingUIWidget(),
+        onChanged: (value) => widget.onChanged(value),
       ),
     );
+  }
+
+  Widget searchLeadingUIWidget() {
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Icon(Atlas.magnifying_glass),
+    );
+  }
+
+  Iterable<Widget>? searchTrailingUIWidget() {
+    return searchTextController.text.isNotEmpty
+        ? [
+            IconButton(
+              key: ActerSearchWidget.clearSearchActionButtonKey,
+              onPressed: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                widget.onClear();
+                searchTextController.clear();
+                setState(() {});
+              },
+              icon: const Icon(Icons.clear),
+            ),
+          ]
+        : null;
   }
 }

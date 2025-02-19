@@ -1,14 +1,10 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/utils.dart';
-import 'package:atlas_icons/atlas_icons.dart';
+import 'package:acter/features/share/widgets/external_share_options.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
 
 class ShareInviteCode extends ConsumerWidget {
   final String inviteCode;
@@ -36,9 +32,10 @@ class ShareInviteCode extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
-    final accountAvatarInfo = ref.watch(accountAvatarInfoProvider);
-    final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-    final displayName = accountAvatarInfo.displayName ?? '';
+    final roomName =
+        ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? '';
+    final String userName = ref.watch(accountDisplayNameProvider).valueOrNull ??
+        ref.watch(myUserIdStrProvider);
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -49,14 +46,15 @@ class ShareInviteCode extends ConsumerWidget {
             _buildMessageContent(
               context,
               ref,
-              displayName,
-              roomAvatarInfo.displayName ?? '',
+              roomName,
+              userName,
             ),
             const SizedBox(height: 30),
             _buildShareIntents(
               context,
-              displayName,
-              roomAvatarInfo.displayName ?? '',
+              ref,
+              roomName,
+              userName,
             ),
             const SizedBox(height: 10),
             _buildDoneButton(context),
@@ -70,14 +68,16 @@ class ShareInviteCode extends ConsumerWidget {
   Widget _buildMessageContent(
     BuildContext context,
     WidgetRef ref,
-    String displayName,
     String roomName,
+    String userName,
   ) {
+    final lang = L10n.of(context);
+    final content = lang.shareInviteContent(inviteCode, roomName, userName);
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(L10n.of(context).message),
+          Text(lang.message),
           const SizedBox(height: 10),
           Expanded(
             child: Container(
@@ -90,10 +90,7 @@ class ShareInviteCode extends ConsumerWidget {
               ),
               padding: const EdgeInsets.all(10),
               child: SingleChildScrollView(
-                child: Text(
-                  L10n.of(context)
-                      .shareInviteContent(inviteCode, roomName, displayName),
-                ),
+                child: Text(content),
               ),
             ),
           ),
@@ -104,94 +101,28 @@ class ShareInviteCode extends ConsumerWidget {
 
   Widget _buildShareIntents(
     BuildContext context,
-    String displayName,
+    WidgetRef ref,
     String roomName,
+    String userName,
   ) {
-    return Wrap(
-      direction: Axis.horizontal,
-      alignment: WrapAlignment.center,
-      spacing: 10,
-      children: [
-        _shareIntentsItem(
-          context: context,
-          iconData: Atlas.envelope,
-          onTap: () => mailTo(
-            toAddress: '',
-            subject: 'body=${L10n.of(context).shareInviteContent(
-              inviteCode,
-              roomName,
-              displayName,
-            )}',
-          ),
-        ),
-        _shareIntentsItem(
-          context: context,
-          iconData: Atlas.whatsapp,
-          onTap: () => shareTextToWhatsApp(
-            context,
-            text: L10n.of(context).shareInviteContent(
-              inviteCode,
-              roomName,
-              displayName,
-            ),
-          ),
-        ),
-        _shareIntentsItem(
-          context: context,
-          iconData: Icons.ios_share_sharp,
-          onTap: () {
-            Share.share(
-              L10n.of(context).shareInviteContent(
-                inviteCode,
-                roomName,
-                displayName,
-              ),
-            );
-          },
-        ),
-        _shareIntentsItem(
-          context: context,
-          iconData: Atlas.clipboard,
-          onTap: () {
-            Clipboard.setData(
-              ClipboardData(
-                text: L10n.of(context).shareInviteContent(
-                  inviteCode,
-                  roomName,
-                  displayName,
-                ),
-              ),
-            );
-            EasyLoading.showToast(L10n.of(context).messageCopiedToClipboard);
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _shareIntentsItem({
-    required BuildContext context,
-    required IconData iconData,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Theme.of(context).colorScheme.onSurface,
-          width: 1,
-        ),
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: IconButton(
-        onPressed: onTap,
-        icon: Icon(iconData),
-      ),
+    final lang = L10n.of(context);
+    final userId = ref.read(myUserIdStrProvider);
+    final qrContent =
+        'acter:i/acter.global/$inviteCode?roomDisplayName=$roomName&userId=$userId&userDisplayName=$userName';
+    final shareContent =
+        lang.shareInviteContent(inviteCode, roomName, userName);
+    return ExternalShareOptions(
+      qrContent: qrContent,
+      shareContentBuilder: () async => shareContent,
     );
   }
 
   Widget _buildDoneButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 10,
+      ),
       child: ActerPrimaryActionButton(
         onPressed: () => Navigator.pop(context),
         child: Text(L10n.of(context).done),

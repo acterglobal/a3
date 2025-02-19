@@ -1,6 +1,6 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/events/pages/event_list_page.dart';
@@ -9,96 +9,77 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/error_helpers.dart';
 import '../../helpers/mock_event_providers.dart';
-import '../../helpers/mock_space_providers.dart';
 import '../../helpers/test_util.dart';
 
 void main() {
+  Future<void> createWidgetUnderTest({
+    required WidgetTester tester,
+    String? spaceId,
+    String? searchText,
+  }) async {
+    bool shouldFail = true;
+    await tester.pumpProviderWidget(
+      overrides: [
+        allUpcomingEventListWithSearchProvider.overrideWith((a, b) {
+          if (shouldFail) {
+            // toggle failure so the retry works
+            shouldFail = !shouldFail;
+            throw 'Expected fail: Space not loaded';
+          }
+          return [];
+        }),
+        allOngoingEventListWithSearchProvider.overrideWith((a, b) {
+          if (shouldFail) {
+            // toggle failure so the retry works
+            shouldFail = !shouldFail;
+            throw 'Expected fail: Space not loaded';
+          }
+          return [];
+        }),
+        allPastEventListWithSearchProvider.overrideWith((a, b) {
+          if (shouldFail) {
+            // toggle failure so the retry works
+            shouldFail = !shouldFail;
+            throw 'Expected fail: Space not loaded';
+          }
+          return [];
+        }),
+        bookmarkedEventListProvider.overrideWith((a, b) {
+          if (shouldFail) {
+            // toggle failure so the retry works
+            shouldFail = !shouldFail;
+            throw 'Expected fail: Space not loaded';
+          }
+          return [];
+        }),
+        searchValueProvider.overrideWith((_) => searchText ?? ''), // set a search string
+        roomDisplayNameProvider.overrideWith((a, b) => 'test'),
+        roomMembershipProvider.overrideWith((a, b) => null),
+        hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
+      ],
+      child: EventListPage(
+        spaceId: spaceId,
+      ),
+    );
+    await tester.ensureErrorPageWithRetryWorks();
+  }
+
   group('Event List Error Pages', () {
-    testWidgets('full list', (tester) async {
-      bool shouldFail = true;
-      await tester.pumpProviderWidget(
-        overrides: [
-          eventListSearchFilterProvider.overrideWith((a, b) {
-            if (shouldFail) {
-              // toggle failure so the retry works
-              shouldFail = !shouldFail;
-              throw 'Expected fail: Space not loaded';
-            }
-            return [];
-          }),
-          hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
-        ],
-        child: const EventListPage(),
-      );
-      await tester.ensureErrorPageWithRetryWorks();
+    testWidgets('All event list', (tester) async {
+      createWidgetUnderTest(tester: tester);
     });
-    testWidgets('full list with search', (tester) async {
-      bool shouldFail = true;
-
-      await tester.pumpProviderWidget(
-        overrides: [
-          searchValueProvider
-              .overrideWith((_) => 'some string'), // set a search string
-
-          eventListSearchFilterProvider.overrideWith((a, b) {
-            if (shouldFail) {
-              // toggle failure so the retry works
-              shouldFail = !shouldFail;
-              throw 'Expected fail: Space not loaded';
-            }
-            return [];
-          }),
-          hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
-        ],
-        child: const EventListPage(),
-      );
-      await tester.ensureErrorPageWithRetryWorks();
+    testWidgets('All event list : with search', (tester) async {
+      createWidgetUnderTest(tester: tester, searchText: 'some string');
     });
-
-    testWidgets('space list', (tester) async {
-      bool shouldFail = true;
-      await tester.pumpProviderWidget(
-        overrides: [
-          roomDisplayNameProvider.overrideWith((a, b) => 'test'),
-          eventListSearchFilterProvider.overrideWith((a, b) {
-            if (shouldFail) {
-              // toggle failure so the retry works
-              shouldFail = !shouldFail;
-              throw 'Expected fail: Space not loaded';
-            }
-            return [];
-          }),
-          hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
-        ],
-        child: const EventListPage(
-          spaceId: '!test',
-        ),
-      );
-      await tester.ensureErrorPageWithRetryWorks();
+    testWidgets('Space event list', (tester) async {
+      createWidgetUnderTest(tester: tester, spaceId: '!test');
     });
-
-    testWidgets('space list with search', (tester) async {
-      bool shouldFail = true;
-      await tester.pumpProviderWidget(
-        overrides: [
-          roomDisplayNameProvider.overrideWith((a, b) => 'test'),
-          searchValueProvider
-              .overrideWith((_) => 'some search'), // set a search string
-          eventListSearchFilterProvider.overrideWith((a, b) {
-            if (shouldFail) {
-              // toggle failure so the retry works
-              shouldFail = !shouldFail;
-              throw 'Expected fail: Space not loaded';
-            }
-            return [];
-          }),
-          hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
-        ],
-        child: const EventListPage(
-          spaceId: '!test',
-        ),
+    testWidgets('Space event list : with search', (tester) async {
+      createWidgetUnderTest(
+        tester: tester,
+        spaceId: 'spaceId',
+        searchText: 'some string',
       );
-      await tester.ensureErrorPageWithRetryWorks();
     });
   });
   group('Event Details Error Pages', () {
@@ -107,12 +88,13 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           isBookmarkedProvider.overrideWith((a, b) => false),
-          roomAvatarInfoProvider
-              .overrideWith(() => MockRoomAvatarInfoNotifier()),
           calendarEventProvider.overrideWith(() => mockedNofitier),
+          participantsProvider
+              .overrideWith(() => MockAsyncParticipantsNotifier()),
           myRsvpStatusProvider
               .overrideWith(() => MockAsyncRsvpStatusNotifier()),
           roomMembershipProvider.overrideWith((a, b) => null),
+          roomDisplayNameProvider.overrideWith((a, b) => 'RoomName'),
         ],
         child: const EventDetailPage(
           calendarId: '!asdf',

@@ -19,7 +19,9 @@ mixin _$RoomListFilterState {
   String? get searchTerm => throw _privateConstructorUsedError;
   FilterSelection get selection => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of RoomListFilterState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $RoomListFilterStateCopyWith<RoomListFilterState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -43,6 +45,8 @@ class _$RoomListFilterStateCopyWithImpl<$Res, $Val extends RoomListFilterState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of RoomListFilterState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -81,6 +85,8 @@ class __$$RoomListFilterStateImplCopyWithImpl<$Res>
       $Res Function(_$RoomListFilterStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of RoomListFilterState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -131,7 +137,9 @@ class _$RoomListFilterStateImpl implements _RoomListFilterState {
   @override
   int get hashCode => Object.hash(runtimeType, searchTerm, selection);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of RoomListFilterState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$RoomListFilterStateImplCopyWith<_$RoomListFilterStateImpl> get copyWith =>
@@ -148,8 +156,11 @@ abstract class _RoomListFilterState implements RoomListFilterState {
   String? get searchTerm;
   @override
   FilterSelection get selection;
+
+  /// Create a copy of RoomListFilterState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$RoomListFilterStateImplCopyWith<_$RoomListFilterStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

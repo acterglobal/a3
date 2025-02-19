@@ -1,7 +1,7 @@
 use derive_getters::Getters;
-use ruma::RoomId;
-use ruma_common::{EventId, OwnedEventId, OwnedUserId, UserId};
-use ruma_events::OriginalMessageLikeEvent;
+use matrix_sdk_base::ruma::{
+    events::OriginalMessageLikeEvent, EventId, OwnedEventId, OwnedUserId, UserId,
+};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Deref};
 use tracing::{error, trace};
@@ -9,12 +9,10 @@ use tracing::{error, trace};
 use super::{ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{
     events::rsvp::{RsvpBuilder, RsvpEventContent},
+    referencing::{ExecuteReference, IndexKey, ModelParam, ObjectListIndex},
     store::Store,
     Result,
 };
-
-static RSVP_FIELD: &str = "rsvp";
-static RSVP_STATS_FIELD: &str = "rsvp_stats";
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
 pub struct RsvpStats {
@@ -30,15 +28,14 @@ pub struct RsvpManager {
 }
 
 impl RsvpManager {
-    fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
-        let r = parent.as_ref();
-        format!("{r}::{RSVP_STATS_FIELD}")
+    fn stats_field_for(parent: OwnedEventId) -> ExecuteReference {
+        ExecuteReference::ModelParam(parent, ModelParam::RsvpStats)
     }
 
     pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> RsvpManager {
         let store = store.clone();
         let stats = store
-            .get_raw(&Self::stats_field_for(&event_id))
+            .get_raw(&Self::stats_field_for(event_id.to_owned()).as_storage_key())
             .await
             .unwrap_or_default();
         RsvpManager {
@@ -56,12 +53,12 @@ impl RsvpManager {
         let mut entries = HashMap::new();
         for mdl in self
             .store
-            .get_list(&Rsvp::index_for(&self.event_id))
+            .get_list(&Rsvp::index_for(self.event_id.clone()))
             .await?
         {
             if let AnyActerModel::Rsvp(c) = mdl {
                 let key = c.clone().meta.sender;
-                entries.insert(key, c);
+                entries.entry(key).or_insert(c); // we ignore older entries
             }
         }
         Ok(entries)
@@ -83,13 +80,15 @@ impl RsvpManager {
             .to_owned()
     }
 
-    fn update_key(&self) -> String {
-        Self::stats_field_for(&self.event_id)
+    pub fn update_key(&self) -> ExecuteReference {
+        Self::stats_field_for(self.event_id.to_owned())
     }
 
-    pub async fn save(&self) -> Result<String> {
+    pub async fn save(&self) -> Result<ExecuteReference> {
         let update_key = self.update_key();
-        self.store.set_raw(&update_key, &self.stats).await?;
+        self.store
+            .set_raw(&update_key.as_storage_key(), &self.stats)
+            .await?;
         Ok(update_key)
     }
 }
@@ -115,36 +114,36 @@ impl Deref for Rsvp {
 }
 
 impl Rsvp {
-    pub fn index_for<T: AsRef<str>>(parent: &T) -> String {
-        let r = parent.as_ref();
-        format!("{r}::{RSVP_FIELD}")
+    pub fn index_for(parent: OwnedEventId) -> IndexKey {
+        IndexKey::ObjectList(parent, ObjectListIndex::Rsvp)
     }
 }
 
 impl ActerModel for Rsvp {
-    fn indizes(&self, _user_id: &UserId) -> Vec<String> {
-        vec![Rsvp::index_for(&self.inner.to.event_id.to_string())]
+    fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
+        vec![
+            Rsvp::index_for(self.inner.to.event_id.clone()),
+            IndexKey::ObjectHistory(self.inner.to.event_id.to_owned()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+        ]
     }
 
-    fn event_id(&self) -> &EventId {
-        &self.meta.event_id
-    }
-    fn room_id(&self) -> &RoomId {
-        &self.meta.room_id
+    fn event_meta(&self) -> &EventMeta {
+        &self.meta
     }
 
     fn capabilities(&self) -> &[Capability] {
         &[]
     }
 
-    async fn execute(self, store: &Store) -> Result<Vec<String>> {
-        let belongs_to = self.inner.to.event_id.to_string();
+    async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
+        let belongs_to = self.inner.to.event_id.to_owned();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying rsvp");
 
         let manager = {
             let model = store.get(&belongs_to).await?;
-            if !model.capabilities().contains(&Capability::Commentable) {
-                error!(?model, rsvp = ?self, "doesn't support entries. can't apply");
+            if !model.capabilities().contains(&Capability::RSVPable) {
+                error!(?model, rsvp = ?self, "doesn’t support entries. can’t apply");
                 None
             } else {
                 let mut manager =
@@ -167,8 +166,8 @@ impl ActerModel for Rsvp {
         Ok(updates)
     }
 
-    fn belongs_to(&self) -> Option<Vec<String>> {
-        // the higher ups don't need to be bothered by this
+    fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
+        // the higher ups don’t need to be bothered by this
         None
     }
 }

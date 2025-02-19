@@ -1,4 +1,4 @@
-use minijinja::value::{StructObject, Value};
+use minijinja::value::{Enumerator, Object, Value};
 use std::sync::Arc;
 
 use super::Error;
@@ -35,17 +35,17 @@ impl UserValue {
     }
 }
 
-impl StructObject for UserValue {
-    fn get_field(&self, name: &str) -> Option<Value> {
-        match name {
-            "user_id" => Some(Value::from(self.user_id.clone())),
-            "display_name" => Some(Value::from(self.display_name.clone())),
+impl Object for UserValue {
+    fn get_value(self: &Arc<Self>, field: &Value) -> Option<Value> {
+        match field.as_str() {
+            Some("user_id") => Some(Value::from(self.user_id.clone())),
+            Some("display_name") => Some(Value::from(self.display_name.clone())),
             _ => None,
         }
     }
 
-    fn static_fields(&self) -> Option<&'static [&'static str]> {
-        Some(&["user_id", "display_name"][..])
+    fn enumerate(self: &Arc<Self>) -> Enumerator {
+        Enumerator::Str(&["user_id", "display_name"])
     }
 }
 
@@ -62,17 +62,17 @@ impl ObjRef {
     }
 }
 
-impl StructObject for ObjRef {
-    fn get_field(&self, name: &str) -> Option<Value> {
-        match name {
-            "id" => Some(Value::from(self.id.clone())),
-            "type" => Some(Value::from(self.obj_type.clone())),
+impl Object for ObjRef {
+    fn get_value(self: &Arc<Self>, field: &Value) -> Option<Value> {
+        match field.as_str() {
+            Some("id") => Some(Value::from(self.id.clone())),
+            Some("type") => Some(Value::from(self.obj_type.clone())),
             _ => None,
         }
     }
 
-    fn static_fields(&self) -> Option<&'static [&'static str]> {
-        Some(&["id", "type"][..])
+    fn enumerate(self: &Arc<Self>) -> Enumerator {
+        Enumerator::Str(&["id", "type"])
     }
 }
 
@@ -88,16 +88,16 @@ impl UtcDateTimeValue {
     }
 }
 
-impl StructObject for UtcDateTimeValue {
-    fn get_field(&self, name: &str) -> Option<Value> {
-        match name {
-            "as_timestamp" => Some(Value::from(self.date.timestamp())),
-            "as_rfc3339" => Some(Value::from(self.date.to_rfc3339())),
+impl Object for UtcDateTimeValue {
+    fn get_value(self: &Arc<Self>, field: &Value) -> Option<Value> {
+        match field.as_str() {
+            Some("as_timestamp") => Some(Value::from(self.date.timestamp())),
+            Some("as_rfc3339") => Some(Value::from(self.date.to_rfc3339())),
             _ => None,
         }
     }
 
-    fn static_fields(&self) -> Option<&'static [&'static str]> {
-        Some(&["as_timestamp"][..])
+    fn enumerate(self: &Arc<Self>) -> Enumerator {
+        Enumerator::Str(&["as_timestamp"])
     }
 }

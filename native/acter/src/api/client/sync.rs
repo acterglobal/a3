@@ -1,24 +1,31 @@
-use acter_core::spaces::is_acter_space;
+use acter_core::{
+    events::SyncAnyActerEvent, executor::Executor, models::AnyActerModel,
+    referencing::ExecuteReference, spaces::is_acter_space,
+};
 use anyhow::Result;
 use core::time::Duration;
-use eyeball_im::ObservableVector;
 use futures::{
     future::join_all,
     pin_mut,
     stream::{Stream, StreamExt},
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
-use matrix_sdk::{
-    config::SyncSettings, event_handler::EventHandlerHandle, room::Room as SdkRoom, RoomState,
-    RumaApiError,
+use matrix_sdk::{config::SyncSettings, event_handler::Ctx, room::Room as SdkRoom, RumaApiError};
+use matrix_sdk_base::{
+    ruma::{
+        api::client::{
+            error::{ErrorBody, ErrorKind},
+            Error,
+        },
+        events::room::redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
+        OwnedRoomId,
+    },
+    RoomState,
 };
-use ruma_client_api::{
-    error::{ErrorBody, ErrorKind},
-    Error,
-};
-use ruma_common::OwnedRoomId;
+use matrix_sdk_ui::eyeball_im::ObservableVector;
 use std::{
-    collections::{BTreeMap, HashMap},
+    borrow::Cow,
+    collections::BTreeMap,
     io::Write,
     ops::Deref,
     sync::{
@@ -29,7 +36,7 @@ use std::{
 use tokio::{
     sync::{
         broadcast::{channel, Receiver},
-        Mutex, RwLockWriteGuard,
+        RwLockWriteGuard,
     },
     task::JoinHandle,
 };
@@ -43,46 +50,57 @@ use super::Client;
 #[derive(Clone, Debug, Default)]
 pub struct HistoryLoadState {
     pub has_started: bool,
-    pub known_spaces: BTreeMap<OwnedRoomId, bool>,
+    loading_spaces: BTreeMap<OwnedRoomId, bool>,
+    done_spaces: Vec<OwnedRoomId>,
 }
 
+// internal API
 impl HistoryLoadState {
-    pub fn is_done_loading(&self) -> bool {
-        self.has_started && !self.known_spaces.values().any(|x| *x)
-    }
-
-    pub fn start(&mut self, known_spaces: Vec<OwnedRoomId>) {
-        trace!(?known_spaces, "Starting History loading");
+    fn initialize(&mut self, loading_spaces: Vec<OwnedRoomId>) {
+        trace!(?loading_spaces, "Starting History loading");
         self.has_started = true;
-        self.known_spaces.clear();
-        for space in known_spaces.into_iter() {
-            self.known_spaces.insert(space, true);
+        self.loading_spaces.clear();
+        for space_id in loading_spaces.into_iter() {
+            self.loading_spaces.insert(space_id, false);
         }
     }
 
-    pub fn unknow_room(&mut self, room_id: &OwnedRoomId) -> bool {
-        self.known_spaces.remove(room_id).unwrap_or_default()
+    fn forget_room(&mut self, room_id: &OwnedRoomId) {
+        self.loading_spaces.remove(room_id);
+        self.done_spaces.retain(|v| v != room_id);
     }
 
-    pub fn knows_room(&self, room_id: &OwnedRoomId) -> bool {
-        self.known_spaces.contains_key(room_id)
+    fn knows_room(&self, room_id: &OwnedRoomId) -> bool {
+        self.done_spaces.contains(room_id) || self.loading_spaces.contains_key(room_id)
     }
 
-    pub fn is_loading(&mut self, room_id: &OwnedRoomId) -> bool {
-        self.known_spaces.get(room_id).cloned().unwrap_or(false)
+    // start the loading process. If we are already loading return false
+    fn start_loading(&mut self, room_id: OwnedRoomId) -> bool {
+        !matches!(self.loading_spaces.insert(room_id, true), Some(true))
     }
 
-    pub fn set_loading(&mut self, room_id: OwnedRoomId, value: bool) -> bool {
-        trace!(?room_id, loading = value, "Setting room for loading");
-        self.known_spaces.insert(room_id, value).unwrap_or_default()
-    }
-
-    pub fn total_spaces(&self) -> usize {
-        self.known_spaces.len()
+    fn done_loading(&mut self, room_id: OwnedRoomId) {
+        trace!(?room_id, "Setting room as done loading");
+        if self.loading_spaces.remove(&room_id).is_some() {
+            self.done_spaces.push(room_id);
+        }
     }
 }
 
-type RoomHandlers = Arc<Mutex<HashMap<OwnedRoomId, Vec<EventHandlerHandle>>>>;
+// Public API
+impl HistoryLoadState {
+    pub fn is_done_loading(&self) -> bool {
+        self.has_started && self.loading_spaces.is_empty()
+    }
+
+    pub fn loaded_spaces(&self) -> usize {
+        self.done_spaces.len()
+    }
+
+    pub fn total_spaces(&self) -> usize {
+        self.loading_spaces.len() + self.done_spaces.len()
+    }
+}
 
 #[derive(Clone)]
 pub enum SyncError {
@@ -132,7 +150,6 @@ pub struct SyncState {
     first_synced_rx: Arc<Receiver<bool>>,
     sync_error: Arc<Receiver<SyncError>>,
     history_loading: Mutable<HistoryLoadState>,
-    room_handles: RoomHandlers,
 }
 
 impl SyncState {
@@ -143,7 +160,6 @@ impl SyncState {
             history_loading: Default::default(),
             first_sync_task: Default::default(),
             handle: Default::default(),
-            room_handles: Default::default(),
         }
     }
 
@@ -173,6 +189,12 @@ impl SyncState {
         trace!("Waiting for history to sync");
         let signal = self.history_loading.signal_cloned().to_stream();
         pin_mut!(signal);
+        {
+            let current = self.history_loading.lock_ref();
+            if (current.is_done_loading()) {
+                return Ok(current.total_spaces() as u32);
+            }
+        }
         while let Some(next_state) = signal.next().await {
             trace!(?next_state, "History updated");
             if next_state.is_done_loading() {
@@ -198,11 +220,41 @@ impl Drop for SyncState {
 
 // internal API
 impl Client {
+    pub(crate) fn setup_handlers(&self) {
+        // setup the space handlers
+        let executor = self.executor().clone();
+
+        self.add_event_handler_context(executor);
+        // generic redaction management
+        self.add_event_handler(
+            |ev: SyncRoomRedactionEvent, room: SdkRoom, Ctx(executor): Ctx<Executor>| async move {
+                let room_id = room.room_id();
+
+                if let RoomRedactionEvent::Original(t) = ev.into_full_event(room_id.to_owned()) {
+                    trace!(?room_id, "received redaction");
+                    if let Err(error) = executor.live_redact(t).await {
+                        error!(?room_id, ?error, "redaction failed");
+                    }
+                } else {
+                    warn!(?room_id, "redaction redaction isn’t supported yet");
+                }
+            },
+        );
+
+        // Any
+        self.add_event_handler(
+            |ev: SyncAnyActerEvent, room: SdkRoom, Ctx(executor): Ctx<Executor>| async move {
+                let room_id = room.room_id().to_owned();
+                let acter_event = ev.into_full_any_acter_event(room_id);
+                AnyActerModel::execute(&executor, acter_event).await;
+            },
+        );
+    }
     fn refresh_history_on_start(
         &self,
+        sync_keys: Vec<OwnedRoomId>,
         first_sync_task: Mutable<Option<JoinHandle<Result<()>>>>,
         history: Mutable<HistoryLoadState>,
-        room_handles: RoomHandlers,
     ) {
         let me = self.clone();
         let first_sync_task_inner = first_sync_task.clone();
@@ -215,40 +267,40 @@ impl Client {
         *first_sync_inner = Some(tokio::spawn(async move {
             trace!(user_id=?me.user_id_ref(), "refreshing history");
             let mut spaces = me.spaces().await?;
-            let space_ids = spaces.iter().map(|r| r.room_id().to_owned()).collect();
-            history.lock_mut().start(space_ids);
+            let initial_space_setup = spaces
+                .iter()
+                .map(|r| r.room_id().to_owned())
+                .filter(|id| sync_keys.contains(id))
+                .collect();
+            history.lock_mut().initialize(initial_space_setup);
 
             futures::future::join_all(spaces.iter_mut().map(|space| async {
+                let room_id = space.room_id();
                 let is_acter_space = match space.is_acter_space().await {
                     Ok(b) => b,
                     Err(error) => {
-                        error!(room_id=?space.room_id(), ?error, "checking for is-acter-space status failed");
+                        error!(
+                            ?room_id,
+                            ?error,
+                            "checking for is-acter-space status failed"
+                        );
                         false
                     }
                 };
                 if !is_acter_space {
-                    trace!(room_id=?space.room_id(), "not an acter space");
-                    history.lock_mut().unknow_room(&space.room_id().to_owned());
+                    trace!(?room_id, "not an acter space");
+                    history.lock_mut().forget_room(&room_id.to_owned());
                     return;
                 }
 
-                let space_handles = space.setup_handles().await;
-                {
-                    let mut handles = room_handles.lock().await;
-                    if let Some(h) = handles.insert(space.room_id().to_owned(), space_handles) {
-                        warn!(room_id=?space.room_id(), "handles overwritten. Might cause issues?!?");
-                    }
-                }
-
                 if let Err(err) = space.refresh_history().await {
-                    error!(?err, room_id=?space.room_id(), "Loading space history failed");
+                    error!(?err, ?room_id, "Loading space history failed");
                 };
-                history
-                    .lock_mut()
-                    .set_loading(space.room_id().to_owned(), false);
+
+                history.lock_mut().done_loading(room_id.to_owned());
             }))
             .await;
-            // once done, let's reset the first_sync_task to clear it from memory
+            // once done, let’s reset the first_sync_task to clear it from memory
             first_sync_task_inner.set(None);
             Ok(())
         }));
@@ -257,7 +309,6 @@ impl Client {
     async fn refresh_history_on_way(
         &self,
         history: Mutable<HistoryLoadState>,
-        room_handles: RoomHandlers,
         new_spaces: Vec<SdkRoom>,
     ) -> Result<()> {
         trace!(user_id=?self.user_id_ref(), count=?new_spaces.len(), "found new spaces");
@@ -265,35 +316,23 @@ impl Client {
         futures::future::join_all(
             new_spaces
                 .into_iter()
-                .map(|room| Space::new(self.clone(), Room::new( self.core.clone(), room )))
+                .map(|room| Space::new(self.clone(), Room::new(self.core.clone(), room)))
                 .map(|mut space| {
                     let history = history.clone();
-                    let room_handles = room_handles.clone();
                     async move {
+                        let room_id = space.room_id().to_owned();
                         {
-                            let room_id = space.room_id().to_owned();
                             let mut history = history.lock_mut();
-                            if history.is_loading(&room_id) {
-                                trace!(room_id=?room_id, "Already loading room.");
+                            if !history.start_loading(room_id.clone()) {
+                                trace!(?room_id, "Already loading room.");
                                 return;
-                            }
-                            history.set_loading(room_id, true);
-                        }
-
-                        let space_handles = space.setup_handles().await;
-                        {
-                            let mut handles = room_handles.lock().await;
-                            if let Some(h) = handles.insert(space.room_id().to_owned(), space_handles) {
-                                warn!(room_id=?space.room_id(), "handles overwritten. Might cause issues?!?");
                             }
                         }
 
                         if let Err(err) = space.refresh_history().await {
-                            error!(?err, room_id=?space.room_id(), "refreshing history failed");
+                            error!(?err, ?room_id, "refreshing history failed");
                         }
-                        history
-                            .lock_mut()
-                            .set_loading(space.room_id().to_owned(), false);
+                        history.lock_mut().done_loading(room_id.clone());
                     }
                 }),
         )
@@ -304,7 +343,7 @@ impl Client {
     async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) {
         let update_keys = {
             let client = self.core.client();
-            let mut updated: Vec<String> = vec![];
+            let mut updated: Vec<OwnedRoomId> = vec![];
 
             let mut chats = self.convos.write().await;
             let mut spaces = self.spaces.write().await;
@@ -322,13 +361,13 @@ impl Client {
 
                 if !matches!(room.state(), RoomState::Joined) {
                     trace!(?r_id, "room gone");
-                    // remove rooms we aren't in (anymore)
+                    // remove rooms we aren’t in (anymore)
                     remove_from(&mut spaces, r_id);
                     remove_from_chat(&mut chats, r_id);
                     if let Err(error) = self.executor().clear_room(r_id).await {
                         error!(?error, "Error removing space {r_id}");
                     }
-                    updated.push(r_id.to_string());
+                    updated.push(r_id.clone());
                     continue;
                 }
 
@@ -343,7 +382,7 @@ impl Client {
                     }
                     // also clear from convos if it was in there...
                     remove_from_chat(&mut chats, r_id);
-                    updated.push(r_id.to_string());
+                    updated.push(r_id.clone());
                 } else {
                     if let Some(chat_idx) = chats.iter().position(|s| s.room_id() == r_id) {
                         let chat = chats.remove(chat_idx).update_room(inner);
@@ -354,17 +393,19 @@ impl Client {
                     }
                     // also clear from convos if it was in there...
                     remove_from(&mut spaces, r_id);
-                    updated.push(r_id.to_string());
+                    updated.push(r_id.clone());
                 }
             }
 
             updated
         };
-        info!(
-            "******************** refreshed room: {:?}",
-            update_keys.clone()
+        info!("refreshed room: {:?}", update_keys);
+        self.executor().notify(
+            update_keys
+                .into_iter()
+                .map(ExecuteReference::Room)
+                .collect(),
         );
-        self.executor().notify(update_keys);
     }
 }
 
@@ -395,6 +436,8 @@ fn insert_to_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, convo:
     target.push_back(convo);
 }
 
+static SYNC_TOKEN_KEY: &str = "sync_token";
+
 // external API
 impl Client {
     pub fn start_sync(&mut self) -> SyncState {
@@ -406,7 +449,6 @@ impl Client {
 
         self.invitation_controller.add_event_handler();
         self.typing_controller.add_event_handler(&client);
-        self.receipt_controller.add_event_handler(&client);
 
         self.verification_controller
             .add_to_device_event_handler(&client);
@@ -428,19 +470,30 @@ impl Client {
         let sync_state = SyncState::new(first_synced_rx, sync_error_rx);
         let history_loading = sync_state.history_loading.clone();
         let first_sync_task = sync_state.first_sync_task.clone();
-        let room_handles = sync_state.room_handles.clone();
 
         let handle = RUNTIME.spawn(async move {
             info!("spawning sync callback");
 
+            let mut sync_settings = SyncSettings::new().timeout(Duration::from_secs(25));
+
+            match me.store().get_raw::<Option<String>>(SYNC_TOKEN_KEY).await {
+                Ok(Some(token)) => {
+                    trace!(?token, "sync found token!");
+                    sync_settings = sync_settings.token(token);
+                }
+                Err(acter_core::Error::ModelNotFound(_)) => {
+                    trace!("First start, no sync token");
+                }
+                Err(error) => {
+                    error!(?error, "Problem loading sync token");
+                }
+                _ => {}
+            }
+
             // keep the sync timeout below the actual connection timeout to ensure we receive it
             // back before the server timeout occurred
 
-            let mut sync_stream = Box::pin(
-                client
-                    .sync_stream(SyncSettings::new().timeout(Duration::from_secs(25)))
-                    .await,
-            );
+            let mut sync_stream = Box::pin(client.sync_stream(sync_settings).await);
 
             // fetch the events that received when offline
             while let Some(result) = sync_stream.next().await {
@@ -475,18 +528,18 @@ impl Client {
                     if let Ok(mut w) = state.try_write() {
                         w.has_first_synced = true;
                     };
+                    let sync_keys = response.rooms.join.keys().cloned().collect();
                     // background and keep the handle around.
                     me.refresh_history_on_start(
+                        sync_keys,
                         first_sync_task.clone(),
                         history_loading.clone(),
-                        room_handles.clone(),
                     );
                 } else {
                     // see if we have new spaces to catch up upon
                     let mut new_spaces = Vec::new();
-                    for room_id in response.rooms.join.keys() {
+                    for (room_id, joined_state) in response.rooms.join.iter() {
                         if history_loading.lock_mut().knows_room(room_id) {
-                            // we are already loading this room
                             continue;
                         }
                         let Some(full_room) = me.get_room(room_id) else {
@@ -499,12 +552,8 @@ impl Client {
                     }
 
                     if !new_spaces.is_empty() {
-                        me.refresh_history_on_way(
-                            history_loading.clone(),
-                            room_handles.clone(),
-                            new_spaces,
-                        )
-                        .await;
+                        me.refresh_history_on_way(history_loading.clone(), new_spaces)
+                            .await;
                     }
                 }
 
@@ -519,16 +568,43 @@ impl Client {
                 if !changed_rooms.is_empty() {
                     trace!(?changed_rooms, "changed rooms");
                     me.refresh_rooms(changed_rooms).await;
+
+                    // we have seen changes, see if we have
+                    // account data to inform about
+                    let keys = response
+                        .rooms
+                        .join
+                        .iter()
+                        .flat_map(|(room_id, updates)| {
+                            updates.account_data.iter().filter_map(|raw| {
+                                raw.get_field::<String>("type").ok().flatten().map(|s| {
+                                    ExecuteReference::RoomAccountData(
+                                        room_id.clone(),
+                                        Cow::Owned(s),
+                                    )
+                                })
+                            })
+                        })
+                        .collect::<Vec<ExecuteReference>>();
+                    if !keys.is_empty() {
+                        info!("room account data keys: {keys:?}");
+                        me.executor().notify(keys);
+                    }
                 }
 
                 if !response.account_data.is_empty() {
                     info!("account data found!");
                     // account data has been updated, inform the listeners
-                    let keys = response
+                    let keys: Vec<ExecuteReference> = response
                         .account_data
                         .iter()
-                        .filter_map(|raw| raw.get_field::<String>("type").ok().flatten())
-                        .collect::<Vec<String>>();
+                        .filter_map(|raw| {
+                            raw.get_field::<String>("type")
+                                .ok()
+                                .flatten()
+                                .map(|s| ExecuteReference::AccountData(Cow::Owned(s)))
+                        })
+                        .collect();
                     if !keys.is_empty() {
                         info!("account data keys: {keys:?}");
                         me.executor().notify(keys);
@@ -548,6 +624,15 @@ impl Client {
                     }
                 }
 
+                trace!(token = response.next_batch, "storing sync token");
+                if let Err(error) = me
+                    .store()
+                    .set_raw(SYNC_TOKEN_KEY, &response.next_batch)
+                    .await
+                {
+                    error!(?error, "Error writing sync_token");
+                }
+
                 trace!("ready for the next round");
             }
             trace!("sync stopped");
@@ -560,7 +645,7 @@ impl Client {
         sync_state
     }
 
-    /// Indication whether we've received a first sync response since
+    /// Indication whether we’ve received a first sync response since
     /// establishing the client (in memory)
     pub fn has_first_synced(&self) -> bool {
         match self.state.try_read() {

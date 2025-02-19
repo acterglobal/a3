@@ -1,1 +1,0 @@
-- Chat: fix bug where text disappears when try to tap on field in edit/reply state.

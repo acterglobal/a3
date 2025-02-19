@@ -1,12 +1,13 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:quickalert/widgets/quickalert_buttons.dart';
-import 'package:quickalert/widgets/quickalert_container.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:quickalert/models/quickalert_options.dart';
 import 'package:quickalert/quickalert.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:quickalert/widgets/quickalert_buttons.dart';
+import 'package:quickalert/widgets/quickalert_container.dart';
 
 class ActerErrorDialog extends StatelessWidget {
   static const retryBtn = Key('error-dialog-retry-btn');
@@ -17,7 +18,7 @@ class ActerErrorDialog extends StatelessWidget {
 
   final String? title;
   final String? text;
-  final String Function(Object error)? textBuilder;
+  final ErrorTextBuilder? textBuilder;
   final bool includeBugReportButton;
 
   /// Dialog Border Radius
@@ -47,7 +48,7 @@ class ActerErrorDialog extends StatelessWidget {
     /// Text of the dialog
     String? text,
     VoidCallback? onRetryTap,
-    String Function(Object error)? textBuilder,
+    ErrorTextBuilder? textBuilder,
     bool includeBugReportButton = true,
 
     /// Dialog Border Radius
@@ -87,11 +88,15 @@ class ActerErrorDialog extends StatelessWidget {
       title: title ??
           switch (err) {
             ErrorCode.notFound => lang.notFound,
+            ErrorCode.forbidden => lang.forbidden,
             _ => lang.fatalError,
           },
-      text: text ?? (textBuilder != null ? textBuilder!(error) : null),
+      text: text ?? textBuilder.map((cb) => cb(error, err)),
       type: switch (err) {
-        ErrorCode.notFound => QuickAlertType.warning,
+        ErrorCode.notFound ||
+        ErrorCode.forbidden ||
+        ErrorCode.unknown =>
+          QuickAlertType.warning,
         _ => QuickAlertType.error,
       },
       showCancelBtn: true,
@@ -99,14 +104,13 @@ class ActerErrorDialog extends StatelessWidget {
       cancelBtnText: lang.back,
       borderRadius: borderRadius,
     );
-    if (onRetryTap != null) {
+
+    onRetryTap.map((cb) {
       options.showConfirmBtn = true;
       options.confirmBtnColor = theme.primaryColor;
       options.confirmBtnText = lang.retry;
-      options.onConfirmBtnTap = () {
-        onRetryTap!();
-      };
-    }
+      options.onConfirmBtnTap = cb;
+    });
 
     return _ActerErrorAlert(
       error: error,
@@ -152,9 +156,7 @@ class _ActerErrorAlert extends QuickAlertContainer {
               final queryParams = {
                 'error': error.toString(),
               };
-              if (stack != null) {
-                queryParams['stack'] = stack.toString();
-              }
+              stack.map((s) => queryParams['stack'] = s.toString());
               return openBugReport(
                 context,
                 queryParams: queryParams,
@@ -197,7 +199,8 @@ class _ActerErrorActionButtons extends QuickAlertButtons {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
-      color: options.confirmBtnColor ?? Theme.of(context!).primaryColor,
+      color: options.confirmBtnColor ??
+          context.map((ctx) => Theme.of(ctx).primaryColor),
       onPressed: onTap,
       child: Center(
         child: Padding(

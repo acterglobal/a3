@@ -2,10 +2,9 @@ use anyhow::{bail, Result};
 use chrono::Local;
 use lazy_static::lazy_static;
 use log::{log_enabled, Level, LevelFilter, Log, Metadata, Record};
-use matrix_sdk::{Client, ClientBuilder};
-use matrix_sdk_base::store::StoreConfig;
+use matrix_sdk::{Client, ClientBuilder, SqliteEventCacheStore};
+use matrix_sdk_base::{event_cache::store::EventCacheStoreError, store::StoreConfig};
 use matrix_sdk_sqlite::{OpenStoreError, SqliteCryptoStore, SqliteStateStore};
-use matrix_sdk_store_media_cache_wrapper::StoreCacheWrapperError;
 use parse_env_filter::eager::{filters, Filter};
 use std::{
     fmt::{Display, Error},
@@ -199,16 +198,14 @@ pub fn rotate_log_file() -> Result<String> {
     match &*FILE_LOGGER.lock().unwrap() {
         Some(dispatch) => {
             for output in dispatch.rotate().iter() {
-                match output {
-                    Some((old_path, new_path)) => {
-                        return Ok(old_path.to_string_lossy().to_string());
-                    }
-                    None => {}
-                }
+                let Some((old_path, new_path)) = output else {
+                    continue;
+                };
+                return Ok(old_path.to_string_lossy().to_string());
             }
         }
         None => {
-            bail!("You didn't set up file logger.");
+            bail!("You didn’t set up file logger.");
         }
     }
     Ok("".to_string())
@@ -278,7 +275,7 @@ fn get_log_filter(level: &str) -> Option<LevelFilter> {
 #[derive(Debug)]
 enum MakeStoreConfigError {
     OpenStoreError(OpenStoreError),
-    StoreCacheWrapperError(StoreCacheWrapperError),
+    EventCacheStoreError(EventCacheStoreError),
 }
 
 impl Display for MakeStoreConfigError {
@@ -287,8 +284,8 @@ impl Display for MakeStoreConfigError {
             MakeStoreConfigError::OpenStoreError(i) => {
                 write!(f, "MakeStoreConfigError::OpenStoreError {}", i)
             }
-            MakeStoreConfigError::StoreCacheWrapperError(i) => {
-                write!(f, "MakeStoreConfigError::StoreCacheWrapperError {}", i)
+            MakeStoreConfigError::EventCacheStoreError(i) => {
+                write!(f, "MakeStoreConfigError::EventCacheStoreError {}", i)
             }
         }
     }
@@ -302,9 +299,9 @@ impl From<OpenStoreError> for MakeStoreConfigError {
     }
 }
 
-impl From<StoreCacheWrapperError> for MakeStoreConfigError {
-    fn from(value: StoreCacheWrapperError) -> Self {
-        MakeStoreConfigError::StoreCacheWrapperError(value)
+impl From<EventCacheStoreError> for MakeStoreConfigError {
+    fn from(value: EventCacheStoreError) -> Self {
+        MakeStoreConfigError::EventCacheStoreError(value)
     }
 }
 
@@ -313,23 +310,32 @@ async fn make_store_config(
     media_cache_path: PathBuf,
     passphrase: Option<&str>,
 ) -> Result<StoreConfig, MakeStoreConfigError> {
-    let config = StoreConfig::new().crypto_store(SqliteCryptoStore::open(path, passphrase).await?);
+    // FIXME: this stock holder name probably needs to be decided upon
+    //        by the outer part to inform us whether this is the main
+    //        process or the background job
+    let config = StoreConfig::new("acter".to_owned())
+        .crypto_store(SqliteCryptoStore::open(path, passphrase).await?);
 
     let sql_state_store = SqliteStateStore::open(path, passphrase).await?;
+    let event_cache_store = SqliteEventCacheStore::open(path, passphrase).await?;
     let Some(passphrase) = passphrase else {
-        return Ok(config.state_store(sql_state_store));
+        return Ok(config
+            .state_store(sql_state_store)
+            .event_cache_store(event_cache_store));
     };
 
-    let wrapped_state_store =
-        matrix_sdk_store_media_cache_wrapper::wrap_with_file_cache_and_limits(
-            sql_state_store,
-            media_cache_path,
-            passphrase,
-            #[cfg(target_os = "ios")]
-            50,
-            #[cfg(not(target_os = "ios"))]
-            200,
-        )
-        .await?;
-    Ok(config.state_store(wrapped_state_store))
+    let event_cache_store = matrix_sdk_store_file_event_cache::wrap_with_file_cache_and_limits(
+        &sql_state_store,
+        event_cache_store,
+        media_cache_path,
+        passphrase,
+        #[cfg(target_os = "ios")]
+        50,
+        #[cfg(not(target_os = "ios"))]
+        200,
+    )
+    .await?;
+    Ok(config
+        .state_store(sql_state_store)
+        .event_cache_store(event_cache_store))
 }

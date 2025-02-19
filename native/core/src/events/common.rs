@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use ruma_common::OwnedEventId;
+use matrix_sdk_base::ruma::OwnedEventId;
 use serde::{Deserialize, Serialize};
 
 mod categories;
@@ -15,8 +15,8 @@ pub use categories::{
 pub use color::Color;
 pub use labels::Labels;
 pub use object_reference::{
-    CalendarEventAction, ObjRef, ObjRefBuilder, RefDetails, RefDetailsBuilder, TaskAction,
-    TaskListAction,
+    CalendarEventAction, CalendarEventRefPreview, ObjRef, ObjRefBuilder, RefDetails, RefPreview,
+    TaskAction, TaskListAction,
 };
 pub use rendering::{ActerIcon, BrandLogo, Colorize, ColorizeBuilder, Icon, Position};
 
@@ -26,19 +26,6 @@ pub use display::{Display, DisplayBuilder};
 pub type UtcDateTime = DateTime<Utc>;
 
 pub type Date = chrono::NaiveDate;
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "rel_type", rename = "m.thread")]
-pub struct InThread {
-    /// The event this event archives.
-    pub event_id: OwnedEventId,
-}
-
-impl From<OwnedEventId> for InThread {
-    fn from(event_id: OwnedEventId) -> InThread {
-        InThread { event_id }
-    }
-}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "rel_type", rename = "m.reference")]

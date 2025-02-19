@@ -35,7 +35,7 @@ extension ActerAttachments on ConvenientTest {
     );
     final context = tester.element(addAttachmentFinder);
     final ref = ProviderScope.containerOf(context);
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
 
     Uint8List bytes = await imageFile.readAsBytes();
     final decodedImage = await decodeImageFromList(bytes);
@@ -65,7 +65,7 @@ extension ActerAttachments on ConvenientTest {
     );
     final context = tester.element(addAttachmentFinder);
     final ref = ProviderScope.containerOf(context);
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
 
     Uint8List bytes = await videoFile.readAsBytes();
     final videoDraft =
@@ -92,7 +92,7 @@ extension ActerAttachments on ConvenientTest {
     );
     final context = tester.element(addAttachmentFinder);
     final ref = ProviderScope.containerOf(context);
-    final client = ref.read(alwaysClientProvider);
+    final client = await ref.read(alwaysClientProvider.future);
     String? mimeType = lookupMimeType(file.path);
     String fileName = file.path.split('/').last;
     int fileSize = await file.length();

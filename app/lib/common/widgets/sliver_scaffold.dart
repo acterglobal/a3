@@ -1,3 +1,4 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter/material.dart';
 
@@ -42,9 +43,7 @@ class SliverScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
+    final colorScheme = Theme.of(context).colorScheme;
     return Material(
       elevation: 1,
       surfaceTintColor: colorScheme.surfaceTint,
@@ -112,8 +111,7 @@ class _SliverHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: EdgeInsets.fromLTRB(addBackIconButton ? 16 : 24, 16, 16, 16),
       child: Row(
@@ -148,7 +146,10 @@ class _SliverHeader extends StatelessWidget {
                 Navigator.pop(context);
               },
               tooltip: closeButtonTooltip,
-              icon: const Icon(Icons.close, key: SliverScaffold.closeKey),
+              icon: const Icon(
+                Icons.close,
+                key: SliverScaffold.closeKey,
+              ),
             ),
           ),
         ],
@@ -179,6 +180,8 @@ class _SliverFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cancelTitle = cancelActionTitle;
+    final confirmTitle = confirmActionTitle;
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -187,33 +190,34 @@ class _SliverFooter extends StatelessWidget {
           child: const Divider(indent: 24, endIndent: 24),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(24.0, 16, 24, 24),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: actions ??
                 [
-                  if (cancelActionTitle != null)
+                  if (cancelTitle != null)
                     OutlinedButton(
-                      onPressed: () {
-                        if (cancelActionOnPressed == null) {
-                          Navigator.pop(context);
-                        } else {
-                          cancelActionOnPressed!();
-                        }
-                      },
-                      child: Text(cancelActionTitle!),
+                      onPressed: () => onCancel(context),
+                      child: Text(cancelTitle),
                     ),
                   const SizedBox(width: 12),
-                  if (confirmActionTitle != null)
+                  if (confirmTitle != null)
                     ActerPrimaryActionButton(
                       key: confirmActionKey,
                       onPressed: confirmActionOnPressed,
-                      child: Text(confirmActionTitle!),
+                      child: Text(confirmTitle),
                     ),
                 ],
           ),
         ),
       ],
+    );
+  }
+
+  void onCancel(BuildContext context) {
+    cancelActionOnPressed.map(
+      (cb) => cb(),
+      orElse: () => Navigator.pop(context),
     );
   }
 }

@@ -14,6 +14,7 @@ class SpaceToolbar extends ConsumerWidget {
   static const optionsMenu = Key('space-options-menu');
   static const settingsMenu = Key('space-options-settings');
   static const leaveMenu = Key('space-options-leave');
+
   final String spaceId;
   final Widget? spaceTitle;
 
@@ -25,6 +26,8 @@ class SpaceToolbar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final membership = ref.watch(roomMembershipProvider(spaceId)).valueOrNull;
     final isBookmarked =
         ref.watch(spaceIsBookmarkedProvider(spaceId)).valueOrNull ?? false;
@@ -42,7 +45,7 @@ class SpaceToolbar extends ConsumerWidget {
               spaceId: spaceId,
             );
           },
-          child: Text(L10n.of(context).editTitle),
+          child: Text(lang.editTitle),
         ),
       );
     }
@@ -56,7 +59,7 @@ class SpaceToolbar extends ConsumerWidget {
               spaceId: spaceId,
             );
           },
-          child: Text(L10n.of(context).editDescription),
+          child: Text(lang.editDescription),
         ),
       );
     }
@@ -68,28 +71,27 @@ class SpaceToolbar extends ConsumerWidget {
           Routes.spaceSettings.name,
           pathParameters: {'spaceId': spaceId},
         ),
-        child: Text(L10n.of(context).settings),
+        child: Text(lang.settings),
       ),
       const PopupMenuDivider(),
       PopupMenuItem(
         key: leaveMenu,
         onTap: () => showLeaveSpaceDialog(context, ref, spaceId),
         child: Text(
-          L10n.of(context).leaveSpace,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.error,
-          ),
+          lang.leaveSpace,
+          style: TextStyle(color: colorScheme.error),
         ),
       ),
       if (membership?.canString('CanKick') == true &&
           membership?.canString('CanUpdateJoinRule') == true)
         PopupMenuItem(
-          onTap: () => openCloseRoomDialog(context: context, roomId: spaceId),
+          onTap: () => openCloseRoomDialog(
+            context: context,
+            roomId: spaceId,
+          ),
           child: Text(
-            L10n.of(context).closeSpace,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.error,
-            ),
+            lang.closeSpace,
+            style: TextStyle(color: colorScheme.error),
           ),
         ),
     ]);
@@ -98,29 +100,36 @@ class SpaceToolbar extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       title: spaceTitle,
       actions: [
-        showInviteBtn && invited.length <= 100
-            ? OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                ),
-                onPressed: () => context.pushNamed(
-                  Routes.spaceInvite.name,
-                  pathParameters: {'spaceId': spaceId},
-                ),
-                child: Text(L10n.of(context).invite),
-              )
-            : const SizedBox.shrink(),
+        if (showInviteBtn && invited.length <= 100)
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
+            ),
+            onPressed: () => context.pushNamed(
+              Routes.spaceInvite.name,
+              pathParameters: {'spaceId': spaceId},
+            ),
+            child: Text(lang.invite),
+          ),
         IconButton(
           icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
-          onPressed: () async =>
-              await (await ref.read(spaceProvider(spaceId).future))
-                  .setBookmarked(!isBookmarked),
+          onPressed: () async {
+            final bookmarked =
+                await ref.read(spaceIsBookmarkedProvider(spaceId).future);
+            final space = await ref.read(spaceProvider(spaceId).future);
+            await space.setBookmarked(!bookmarked);
+          },
         ),
         PopupMenuButton(
-          icon: const Icon(key: optionsMenu, Icons.more_vert),
+          icon: const Icon(
+            Icons.more_vert,
+            key: optionsMenu,
+          ),
           iconSize: 28,
-          color: Theme.of(context).colorScheme.surface,
+          color: colorScheme.surface,
           itemBuilder: (BuildContext context) => submenu,
         ),
       ],

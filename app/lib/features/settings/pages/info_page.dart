@@ -1,16 +1,15 @@
 import 'dart:convert';
 
+import 'package:acter/common/extensions/acter_build_context.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/main.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/setup.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
@@ -42,8 +41,14 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final deviceId =
-        ref.watch(alwaysClientProvider.select((a) => a.deviceId().toString()));
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final appNameDigest = sha1.convert(utf8.encode(Env.rageshakeAppName));
+    final urlDigest = sha1.convert(utf8.encode(Env.rageshakeUrl));
+    final deviceId = ref.watch(deviceIdProvider).valueOrNull;
+    final devIdDigest =
+        deviceId != null ? sha1.convert(utf8.encode(deviceId)) : 'none';
     final allowReportSending =
         ref.watch(allowSentryReportingProvider).valueOrNull ?? isNightly;
     return WithSidebar(
@@ -52,39 +57,37 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
         appBar: AppBar(
           automaticallyImplyLeading: !context.isLargeScreen,
           title: Text(
-            '${L10n.of(context).acterApp} ${L10n.of(context).info}',
-            style: Theme.of(context).textTheme.titleLarge,
+            '${lang.acterApp} ${lang.info}',
+            style: textTheme.titleLarge,
           ),
         ),
         body: SettingsList(
           sections: [
             SettingsSection(
               title: Text(
-                L10n.of(context).appDefaults,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.primary),
+                lang.appDefaults,
+                style:
+                    textTheme.bodyLarge?.copyWith(color: colorScheme.primary),
               ),
               tiles: <SettingsTile>[
                 SettingsTile(
                   title: Text(
-                    L10n.of(context).homeServerName,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    lang.homeServerName,
+                    style: textTheme.bodyMedium,
                   ),
                   value: const Text(Env.defaultHomeserverName),
                 ),
                 SettingsTile(
                   title: Text(
-                    L10n.of(context).homeServerURL,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    lang.homeServerURL,
+                    style: textTheme.bodyMedium,
                   ),
                   value: const Text(Env.defaultHomeserverUrl),
                 ),
                 SettingsTile(
                   title: Text(
-                    L10n.of(context).sessionTokenName,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    lang.sessionTokenName,
+                    style: textTheme.bodyMedium,
                   ),
                   value: const Text(Env.defaultActerSession),
                 ),
@@ -92,11 +95,9 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             ),
             SettingsSection(
               title: Text(
-                L10n.of(context).debugInfo,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.primary),
+                lang.debugInfo,
+                style:
+                    textTheme.bodyLarge?.copyWith(color: colorScheme.primary),
               ),
               tiles: <SettingsTile>[
                 SettingsTile.switchTile(
@@ -105,76 +106,73 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                     setCanReportToSentry(newVal);
                     ref.invalidate(allowSentryReportingProvider);
                   },
-                  title: Text(L10n.of(context).sendCrashReportsTitle),
-                  description: Text(L10n.of(context).sendCrashReportsInfo),
+                  title: Text(lang.sendCrashReportsTitle),
+                  description: Text(lang.sendCrashReportsInfo),
                 ),
                 SettingsTile(
                   title: Text(
-                    L10n.of(context).version,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    lang.version,
+                    style: textTheme.bodyMedium,
                   ),
                   value: const Text(Env.rageshakeAppVersion),
                 ),
                 isDevBuild
                     ? SettingsTile(
                         title: Text(
-                          L10n.of(context).rageShakeAppName,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          lang.rageShakeAppName,
+                          style: textTheme.bodyMedium,
                         ),
                         value: const Text(Env.rageshakeAppName),
                       )
                     : SettingsTile(
                         title: Text(
-                          L10n.of(context).rageShakeAppNameDigest,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          lang.rageShakeAppNameDigest,
+                          style: textTheme.bodyMedium,
                         ),
-                        value: Text(
-                            '${sha1.convert(utf8.encode(Env.rageshakeAppName))}',),
+                        value: Text(appNameDigest.toString()),
                       ),
                 isDevBuild
                     ? SettingsTile(
                         title: Text(
-                          L10n.of(context).rageShakeTargetUrl,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          lang.rageShakeTargetUrl,
+                          style: textTheme.bodyMedium,
                         ),
                         value: const Text(Env.rageshakeUrl),
                       )
                     : SettingsTile(
                         title: Text(
-                          L10n.of(context).rageShakeTargetUrlDigest,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          lang.rageShakeTargetUrlDigest,
+                          style: textTheme.bodyMedium,
                         ),
-                        value: Text(
-                          '${sha1.convert(utf8.encode(Env.rageshakeUrl))}',
-                        ),
+                        value: Text(urlDigest.toString()),
                       ),
                 isDevBuild
                     ? SettingsTile(
                         title: Text(
-                          L10n.of(context).deviceId,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          lang.deviceId,
+                          style: textTheme.bodyMedium,
                         ),
-                        value: Text(deviceId),
+                        value: Text(deviceId ?? 'none'),
                       )
                     : SettingsTile(
                         title: Text(
-                          L10n.of(context).deviceIdDigest,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          lang.deviceIdDigest,
+                          style: textTheme.bodyMedium,
                         ),
-                        value: Text('${sha1.convert(utf8.encode(deviceId))}'),
+                        value: Text(devIdDigest.toString()),
                       ),
                 SettingsTile(
                   title: Text(
-                    L10n.of(context).httpProxy,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    lang.httpProxy,
+                    style: textTheme.bodyMedium,
                   ),
                   onPressed: _displayHttpProxyEditor,
                   value: Text(httpProxySetting),
                 ),
                 SettingsTile(
                   title: Text(
-                    L10n.of(context).logSettings,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    lang.logSettings,
+                    style: textTheme.bodyMedium,
                   ),
                   onPressed: _displayDebugLevelEditor,
                   value: Text(rustLogSetting),
@@ -183,20 +181,18 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             ),
             SettingsSection(
               title: Text(
-                L10n.of(context).thirdParty,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.primary),
+                lang.thirdParty,
+                style:
+                    textTheme.bodyLarge?.copyWith(color: colorScheme.primary),
               ),
               tiles: [
                 SettingsTile.navigation(
-                  title: Text(L10n.of(context).licenses),
-                  value: Text(L10n.of(context).builtOnShouldersOfGiants),
+                  title: Text(lang.licenses),
+                  value: Text(lang.builtOnShouldersOfGiants),
                   leading: const Icon(Atlas.list_file_thin),
-                  onPressed: (context) => context.pushNamed(
-                    Routes.licenses.name,
-                  ),
+                  onPressed: (context) {
+                    context.pushNamed(Routes.licenses.name);
+                  },
                 ),
               ],
             ),
@@ -229,22 +225,24 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
   }
 
   Future<void> _displayDebugLevelEditor(BuildContext context) async {
+    final lang = L10n.of(context);
     await _displaySettingsEditor(
       context,
       rustLogKey,
       rustLogSetting,
-      L10n.of(context).setDebugLevel,
-      L10n.of(context).debugLevel,
+      lang.setDebugLevel,
+      lang.debugLevel,
     );
   }
 
   Future<void> _displayHttpProxyEditor(BuildContext context) async {
+    final lang = L10n.of(context);
     await _displaySettingsEditor(
       context,
       proxyKey,
       httpProxySetting,
-      L10n.of(context).setHttpProxy,
-      L10n.of(context).httpProxy,
+      lang.setHttpProxy,
+      lang.httpProxy,
     );
   }
 
@@ -260,11 +258,12 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
     return showDialog(
       context: context,
       builder: (context) {
+        final lang = L10n.of(context);
         return AlertDialog(
           title: Text(title),
           content: Wrap(
             children: [
-              Text(L10n.of(context).needsAppRestartToTakeEffect),
+              Text(lang.needsAppRestartToTakeEffect),
               TextField(
                 controller: textFieldController,
                 decoration: InputDecoration(hintText: fieldName),
@@ -278,16 +277,16 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 await setSetting(logKey, null);
                 if (context.mounted) Navigator.pop(context);
               },
-              child: Text(L10n.of(context).reset),
+              child: Text(lang.reset),
             ),
             OutlinedButton(
-              child: Text(L10n.of(context).cancel),
+              child: Text(lang.cancel),
               onPressed: () {
                 Navigator.pop(context);
               },
             ),
             ActerPrimaryActionButton(
-              child: Text(L10n.of(context).save),
+              child: Text(lang.save),
               onPressed: () async {
                 await setSetting(logKey, textFieldController.text);
                 if (context.mounted) Navigator.pop(context);

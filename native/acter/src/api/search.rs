@@ -1,13 +1,15 @@
 use anyhow::Result;
-use matrix_sdk::media::MediaRequest;
-use ruma::assign;
-use ruma_client_api::directory::get_public_rooms_filtered;
-use ruma_common::{
-    directory::{Filter, PublicRoomJoinRule, PublicRoomsChunk, RoomNetwork, RoomTypeFilter},
-    room::RoomType,
-    OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, ServerName,
+use matrix_sdk_base::{
+    media::MediaRequestParameters,
+    ruma::{
+        api::client::directory::get_public_rooms_filtered,
+        assign,
+        directory::{Filter, PublicRoomJoinRule, PublicRoomsChunk, RoomNetwork, RoomTypeFilter},
+        events::room::MediaSource,
+        room::RoomType,
+        OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId, ServerName,
+    },
 };
-use ruma_events::room::MediaSource;
 
 use super::{client::Client, RUNTIME};
 
@@ -76,7 +78,7 @@ impl PublicSearchResultItem {
         let format = ThumbnailSize::parse_into_media_format(thumb_size);
         RUNTIME
             .spawn(async move {
-                let request = MediaRequest {
+                let request = MediaRequestParameters {
                     source: MediaSource::Plain(url),
                     format,
                 };

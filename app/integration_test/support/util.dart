@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
+import 'package:acter/config/setup.dart';
 import 'package:acter/features/home/data/keys.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/search/model/keys.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
-import 'package:acter/router/router.dart';
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +61,7 @@ extension ActerUtil on ConvenientTest {
   }
 
   Future<void> ensureLabEnabled(LabsFeature feat) async {
-    if (!rootNavKey.currentContext!.read(isActiveProvider(feat))) {
+    if (!mainProviderContainer.read(isActiveProvider(feat))) {
       // ensure we do actually have access to the main nav.
       await find.byKey(Keys.mainNav).should(findsOneWidget);
       final quickJumpKey = find.byKey(MainNavKeys.quickJump);
@@ -79,7 +79,7 @@ extension ActerUtil on ConvenientTest {
       final confirmKey = find.byKey(Key('labs-${feat.name}'));
       await confirmKey.should(findsOneWidget);
       // let's read again
-      if (!rootNavKey.currentContext!.read(isActiveProvider(feat))) {
+      if (!mainProviderContainer.read(isActiveProvider(feat))) {
         await confirmKey.tap();
       }
 
@@ -87,7 +87,7 @@ extension ActerUtil on ConvenientTest {
 
       // ensure we are active
       assert(
-        rootNavKey.currentContext!.read(isActiveProvider(feat)),
+        mainProviderContainer.read(isActiveProvider(feat)),
         'Could not activate $feat',
       );
     }

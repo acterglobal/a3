@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -53,20 +55,17 @@ class UploadAvatarPage extends ConsumerWidget {
   }
 
   Widget _buildHeadlineText(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Text(
       L10n.of(context).avatarAddTitle,
-      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: Theme.of(context).colorScheme.secondary,
-          ),
+      style: textTheme.headlineMedium?.copyWith(color: colorScheme.secondary),
       textAlign: TextAlign.center,
     );
   }
 
-  Future<void> pickAvtar(BuildContext context, WidgetRef ref) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      dialogTitle: L10n.of(context).uploadAvatar,
-      type: FileType.image,
-    );
+  Future<void> onSelectAvatar(BuildContext context, WidgetRef ref) async {
+    FilePickerResult? result = await pickAvatar(context: context);
     if (result != null && result.files.isNotEmpty) {
       setUserAvatar(result.files.first);
     }
@@ -77,9 +76,10 @@ class UploadAvatarPage extends ConsumerWidget {
   }
 
   Widget _buildAvatarUI(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       key: UploadAvatarPage.selectUserAvatar,
-      onTap: () => pickAvtar(context, ref),
+      onTap: () => onSelectAvatar(context, ref),
       child: Center(
         child: Container(
           height: 150,
@@ -88,7 +88,7 @@ class UploadAvatarPage extends ConsumerWidget {
             borderRadius: BorderRadius.circular(100),
             border: Border.all(
               width: 2,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: colorScheme.onSurface,
             ),
           ),
           child: Stack(
@@ -97,13 +97,16 @@ class UploadAvatarPage extends ConsumerWidget {
               ValueListenableBuilder(
                 valueListenable: selectedUserAvatar,
                 builder: (context, userAvatar, child) {
-                  if (userAvatar == null && userAvatar?.path == null) {
-                    return const Icon(Atlas.account, size: 50);
-                  }
-                  return CircleAvatar(
-                    radius: 100,
-                    backgroundImage: FileImage(File(userAvatar!.path!)),
-                  );
+                  return userAvatar?.path.map(
+                        (filePath) => CircleAvatar(
+                          radius: 100,
+                          backgroundImage: FileImage(File(filePath)),
+                        ),
+                      ) ??
+                      const Icon(
+                        Atlas.account,
+                        size: 50,
+                      );
                 },
               ),
               Positioned.fill(
@@ -117,11 +120,14 @@ class UploadAvatarPage extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(100),
                       border: Border.all(
                         width: 1,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: colorScheme.onSurface,
                       ),
-                      color: Theme.of(context).colorScheme.surface,
+                      color: colorScheme.surface,
                     ),
-                    child: const Icon(Icons.add, size: 16),
+                    child: const Icon(
+                      Icons.add,
+                      size: 16,
+                    ),
                   ),
                 ),
               ),
@@ -133,19 +139,16 @@ class UploadAvatarPage extends ConsumerWidget {
   }
 
   Future<void> uploadAvatar(BuildContext context, WidgetRef ref) async {
+    final lang = L10n.of(context);
     try {
-      final account = ref.watch(accountProvider);
-      if (selectedUserAvatar.value == null ||
-          selectedUserAvatar.value?.path == null) {
-        if (context.mounted) {
-          EasyLoading.showToast(L10n.of(context).avatarEmpty);
-        }
+      final account = await ref.watch(accountProvider.future);
+      final filePath = selectedUserAvatar.value?.path;
+      if (filePath == null) {
+        if (context.mounted) EasyLoading.showToast(lang.avatarEmpty);
         return;
       }
-      if (context.mounted) {
-        EasyLoading.show(status: L10n.of(context).avatarUploading);
-      }
-      await account.uploadAvatar(selectedUserAvatar.value!.path!);
+      if (context.mounted) EasyLoading.show(status: lang.avatarUploading);
+      await account.uploadAvatar(filePath);
       ref.invalidate(accountProvider);
       EasyLoading.dismiss(); // close loading
       if (context.mounted) context.goNamed(Routes.main.name);
@@ -156,7 +159,7 @@ class UploadAvatarPage extends ConsumerWidget {
         return;
       }
       EasyLoading.showError(
-        L10n.of(context).avatarUploadFailed(e),
+        lang.avatarUploadFailed(e),
         duration: const Duration(seconds: 3),
       );
     }

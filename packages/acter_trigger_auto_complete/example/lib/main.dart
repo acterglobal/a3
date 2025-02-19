@@ -103,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       final autocomplete = MultiTriggerAutocomplete.of(context);
                       return autocomplete.acceptAutocompleteOption(
                         emoji.char,
-                        // Passing false as we don't want the trigger [:] to
+                        // Passing false as we don’t want the trigger [:] to
                         // get prefixed to the option in case of emoji.
                         keepTrigger: false,
                       );

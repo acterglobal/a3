@@ -1,12 +1,10 @@
-use acter::{
-    new_join_rule_builder, new_space_settings_builder,
-    ruma_events::{
-        room::join_rules::{AllowRule, JoinRule, Restricted},
-        StateEventType,
-    },
-};
-use acter_core::statics::KEYS;
+use acter::api::{new_join_rule_builder, new_space_settings_builder};
+use acter_core::referencing::{IndexKey, SectionIndex};
 use anyhow::{bail, Result};
+use matrix_sdk_base::ruma::events::{
+    room::join_rules::{AllowRule, JoinRule, Restricted},
+    StateEventType,
+};
 use tokio::sync::broadcast::error::TryRecvError;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -24,15 +22,15 @@ main = { type = "user", is-default = true, required = true, description = "The s
 
 [objects.main_space]
 type = "space"
-name = "{{ main.display_name }}'s main test space"
+name = "{{ main.display_name }}’s main test space"
 
 [objects.second_space]
 type = "space"
-name = "{{ main.display_name }}'s first test space"
+name = "{{ main.display_name }}’s first test space"
 
 [objects.third_space]
 type = "space"
-name = "{{ main.display_name }}'s second test space"
+name = "{{ main.display_name }}’s second test space"
 
 [objects.main_space_pin]
 type = "pin"
@@ -73,8 +71,9 @@ slides = []
 #[tokio::test]
 async fn leaving_spaces() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) =
+    let (user, sync_state, _engine) =
         random_user_with_template("leaving_spaces", THREE_SPACES_TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -115,10 +114,10 @@ async fn leaving_spaces() -> Result<()> {
     let second = spaces.pop().unwrap();
     let last = spaces.pop().unwrap();
 
-    let mut first_listener = user.subscribe(first.room_id().to_string());
-    let mut news_listener = user.subscribe(KEYS::NEWS.to_string());
-    let mut second_listener = user.subscribe(second.room_id().to_string());
-    let mut last_listener = user.subscribe(last.room_id().to_string());
+    let mut first_listener = user.subscribe(first.room_id());
+    let mut news_listener = user.subscribe(IndexKey::Section(SectionIndex::Boosts));
+    let mut second_listener = user.subscribe(second.room_id());
+    let mut last_listener = user.subscribe(last.room_id());
 
     assert!(news_listener.is_empty(), "News already has items");
 
@@ -146,7 +145,7 @@ async fn leaving_spaces() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if news_listener.is_empty() {
             // not yet.
-            bail!("News listener didn't react");
+            bail!("News listener didn’t react");
         }
         Ok(())
     })
@@ -185,7 +184,7 @@ async fn leaving_spaces() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), || async {
         if news_listener.is_empty() {
             // not yet.
-            bail!("News listener didn't react");
+            bail!("News listener didn’t react");
         }
         Ok(())
     })
@@ -212,13 +211,14 @@ main = { type = "user", is-default = true, required = true, description = "The s
 
 [objects.main_space]
 type = "space"
-name = "{{ main.display_name }}'s main test space"
+name = "{{ main.display_name }}’s main test space"
 "#;
 
 #[tokio::test]
 async fn create_subspace() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -260,10 +260,18 @@ async fn create_subspace() -> Result<()> {
     .await?;
 
     let space = user.space(subspace_id.to_string()).await?;
-    let space_relations = space.space_relations().await?;
-    let space_parent = space_relations
-        .main_parent()
-        .expect("Subspace doesn't have the parent");
+    let space_parent = Retry::spawn(retry_strategy.clone(), move || {
+        let space = space.clone();
+        async move {
+            let space_relations = space.space_relations().await?;
+            let Some(space_parent) = space_relations.main_parent() else {
+                bail!("space misses main parent");
+            };
+            Ok(space_parent)
+        }
+    })
+    .await?;
+
     assert_eq!(space_parent.room_id(), first.room_id());
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
@@ -282,7 +290,8 @@ async fn create_subspace() -> Result<()> {
 #[tokio::test]
 async fn change_subspace_join_rule() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -324,10 +333,17 @@ async fn change_subspace_join_rule() -> Result<()> {
     .await?;
 
     let space = user.space(subspace_id.to_string()).await?;
-    let space_relations = space.space_relations().await?;
-    let space_parent = space_relations
-        .main_parent()
-        .expect("Subspace doesn't have the parent");
+    let space_parent = Retry::spawn(retry_strategy.clone(), || {
+        let space = space.clone();
+        async move {
+            let space_relations = space.space_relations().await?;
+            let Some(space_parent) = space_relations.main_parent() else {
+                bail!("space misses main parent");
+            };
+            Ok(space_parent)
+        }
+    })
+    .await?;
     assert_eq!(space_parent.room_id(), first.room_id());
     assert_eq!(space.join_rule_str(), "restricted");
 
@@ -347,7 +363,7 @@ async fn change_subspace_join_rule() -> Result<()> {
     })
     .await?;
 
-    // let's move it back to restricted
+    // let’s move it back to restricted
     assert_eq!(space.join_rule_str(), "private");
     let join_rule = space.join_rule();
 
@@ -390,7 +406,8 @@ async fn change_subspace_join_rule() -> Result<()> {
 #[tokio::test]
 async fn update_name() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) = random_user_with_template("space_update_name", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("space_update_name", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -453,7 +470,7 @@ async fn update_name() -> Result<()> {
     })
     .await?;
 
-    // and we've seen the update
+    // and we’ve seen the update
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
@@ -488,7 +505,7 @@ async fn update_name() -> Result<()> {
     // })
     // .await?;
 
-    // // and we've seen the update
+    // // and we’ve seen the update
 
     // Retry::spawn(retry_strategy.clone(), move || {
     //     let mut listener = listener.resubscribe();
@@ -512,8 +529,8 @@ async fn update_name() -> Result<()> {
 #[ignore = "topic updating seems broken"]
 async fn update_topic() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, _sync_state, _engine) =
-        random_user_with_template("space_update_topic", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("space_update_topic", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -557,7 +574,7 @@ async fn update_topic() -> Result<()> {
     })
     .await?;
 
-    // and we've seen the update
+    // and we’ve seen the update
 
     Retry::spawn(retry_strategy.clone(), || async {
         if listener.is_empty() {

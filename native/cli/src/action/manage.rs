@@ -2,7 +2,7 @@ use acter_core::spaces::CreateSpaceSettingsBuilder;
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use futures::stream::StreamExt;
-use ruma_common::{OwnedRoomId, RoomId};
+use matrix_sdk_base::ruma::{OwnedRoomId, RoomId};
 use tracing::{info, warn};
 
 use crate::config::LoginConfig;
@@ -39,7 +39,7 @@ impl Manage {
         let sync_state = client.start_sync();
 
         let mut is_synced = sync_state.first_synced_rx();
-        while is_synced.next().await != Some(true) {} // let's wait for it to have synced
+        while is_synced.next().await != Some(true) {} // let’s wait for it to have synced
         info!(" - First Sync finished - ");
 
         let space = client.space(room_id.to_string()).await?;
@@ -63,7 +63,7 @@ impl Manage {
     async fn run_create_onboarding_space(&self) -> Result<()> {
         let mut client = self.login.client().await?;
         let settings = CreateSpaceSettingsBuilder::default()
-            .name(format!("{}'s onboarding space", client.user_id()?))
+            .name(format!("{}’s onboarding space", client.user_id()?))
             .build()?;
 
         let room_id = client.create_acter_space(Box::new(settings)).await?;
@@ -72,7 +72,7 @@ impl Manage {
         let sync_state = client.start_sync();
 
         let mut is_synced = sync_state.first_synced_rx();
-        while is_synced.next().await != Some(true) {} // let's wait for it to have synced
+        while is_synced.next().await != Some(true) {} // let’s wait for it to have synced
         info!(" - First Sync finished - ");
 
         let space = client.space(room_id.to_string()).await?;

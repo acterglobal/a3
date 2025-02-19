@@ -15,10 +15,11 @@ pub extern "C" fn __hello_world() {
 }
 
 lazy_static! {
-    pub static ref RUNTIME: Runtime = Runtime::new().expect("Can't start Tokio runtime");
+    pub static ref RUNTIME: Runtime = Runtime::new().expect("Can’t start Tokio runtime");
 }
 
 mod account;
+mod activities;
 mod attachments;
 mod auth;
 mod backup;
@@ -29,6 +30,7 @@ mod client;
 mod comments;
 mod common;
 mod convo;
+mod deep_linking;
 mod device;
 mod invitation;
 mod message;
@@ -37,12 +39,12 @@ mod pins;
 mod profile;
 mod push;
 mod reactions;
-mod receipt;
 mod room;
 mod rsvp;
 mod search;
 mod settings;
 mod spaces;
+mod stories;
 mod stream;
 mod super_invites;
 mod tasks;
@@ -50,6 +52,7 @@ mod typing;
 mod utils;
 mod verification;
 
+pub mod read_receipts;
 #[cfg(feature = "uniffi")]
 mod uniffi_api;
 
@@ -59,12 +62,13 @@ pub use uniffi_api::*;
 pub use account::{Account, ExternalId, ThreePidEmailTokenResponse};
 pub use acter_core::{
     events::{
-        calendar::EventLocationInfo, news::NewsContent, Category, CategoryBuilder, Colorize,
-        ColorizeBuilder, Display, DisplayBuilder, ObjRef, ObjRefBuilder, RefDetails,
-        RefDetailsBuilder, UtcDateTime,
+        calendar::EventLocationInfo, news::NewsContent, stories::StoryContent, Category,
+        CategoryBuilder, Colorize, ColorizeBuilder, Display, DisplayBuilder, ObjRefBuilder,
+        UtcDateTime,
     },
     models::{ActerModel, Tag, TextMessageContent},
 };
+pub use activities::{Activities, Activity, ActivityObject, MembershipChange};
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     destroy_local_data, guest_client, login_new_client, login_with_token, register_with_token,
@@ -83,8 +87,7 @@ pub use categories::{Categories, CategoriesBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
-    duration_from_secs, new_calendar_event_ref_builder, new_colorize_builder, new_display_builder,
-    new_link_ref_builder, new_obj_ref_builder, new_task_list_ref_builder, new_task_ref_builder,
+    duration_from_secs, new_colorize_builder, new_display_builder, new_obj_ref_builder,
     new_thumb_size, ComposeDraft, DeviceRecord, MediaSource, MsgContent, OptionBuffer,
     OptionComposeDraft, OptionRsvpStatus, OptionString, ReactionRecord, ThumbnailInfo,
     ThumbnailSize,
@@ -93,6 +96,7 @@ pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,
 };
 pub use core::time::Duration as EfkDuration;
+pub use deep_linking::{new_link_ref_details, ObjRef, RefDetails};
 pub use device::DeviceEvent;
 pub use invitation::Invitation;
 pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
@@ -101,24 +105,27 @@ pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::UserProfile;
 pub use push::{
     NotificationItem, NotificationRoom, NotificationSender, NotificationSettings, Pusher,
+    SubscriptionStatus,
 };
 pub use reactions::{Reaction, ReactionManager};
-pub use receipt::{ReceiptEvent, ReceiptRecord, ReceiptThread};
+pub use read_receipts::ReadReceiptsManager;
 pub use room::{
     new_join_rule_builder, JoinRuleBuilder, Member, MemberPermission, MembershipStatus, Room,
-    SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations,
+    RoomPreview, SpaceHierarchyRoomInfo, SpaceRelation, SpaceRelations, UserRoomSettings,
 };
 pub use rsvp::{Rsvp, RsvpDraft, RsvpManager, RsvpStatus};
 pub use search::{PublicSearchResult, PublicSearchResultItem};
 pub use settings::{
     ActerAppSettings, ActerAppSettingsBuilder, ActerUserAppSettings, ActerUserAppSettingsBuilder,
-    EventsSettings, NewsSettings, PinsSettings, RoomPowerLevels, SimpleSettingWithTurnOff,
-    SimpleSettingWithTurnOffBuilder, TasksSettings, TasksSettingsBuilder,
+    EventsSettings, NewsSettings, PinsSettings, RoomPowerLevels, SimpleOnOffSetting,
+    SimpleOnOffSettingBuilder, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
+    TasksSettings,
 };
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
     RelationTargetType, Space, SpaceDiff,
 };
+pub use stories::{Story, StoryDraft, StorySlide, StorySlideDraft, StoryUpdateBuilder};
 pub use stream::{MsgDraft, RoomMessageDiff, TimelineStream};
 pub use super_invites::{
     SuperInviteInfo, SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder,
@@ -127,14 +134,14 @@ pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
 pub use typing::TypingEvent;
-pub use utils::parse_markdown;
+pub use utils::{new_vec_string_builder, VecStringBuilder};
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
-pub type DeviceId = ruma_common::OwnedDeviceId;
-pub type EventId = ruma_common::OwnedEventId;
-pub type MxcUri = ruma_common::OwnedMxcUri;
-pub type RoomId = ruma_common::OwnedRoomId;
-pub type UserId = ruma_common::OwnedUserId;
+pub type DeviceId = matrix_sdk_base::ruma::OwnedDeviceId;
+pub type EventId = matrix_sdk_base::ruma::OwnedEventId;
+pub type MxcUri = matrix_sdk_base::ruma::OwnedMxcUri;
+pub type RoomId = matrix_sdk_base::ruma::OwnedRoomId;
+pub type UserId = matrix_sdk_base::ruma::OwnedUserId;
 
 #[cfg(all(not(doctest), feature = "dart"))]
 ffi_gen_macro::ffi_gen!("native/acter/api.rsh");
@@ -142,7 +149,7 @@ ffi_gen_macro::ffi_gen!("native/acter/api.rsh");
 #[cfg(not(all(not(doctest), feature = "dart")))]
 #[allow(clippy::module_inception)]
 mod api {
-    /// helpers for doctests, as ffigen for some reason can't find the path
+    /// helpers for doctests, as ffigen for some reason can’t find the path
     pub struct FfiBuffer<T>(Vec<T>);
     impl<T> FfiBuffer<T> {
         pub fn new(inner: Vec<T>) -> FfiBuffer<T> {

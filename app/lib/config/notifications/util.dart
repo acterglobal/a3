@@ -1,6 +1,5 @@
-import 'package:acter/common/utils/utils.dart';
+import 'package:acter/config/setup.dart';
 import 'package:acter/router/providers/router_providers.dart';
-import 'package:acter/router/router.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,7 +17,7 @@ Future<void> setRejected(String deviceId, bool value) async {
 }
 
 bool isCurrentRoute(String uri) {
-  final currentUri = rootNavKey.currentContext!.read(currentRoutingLocation);
+  final currentUri = mainProviderContainer.read(currentRoutingLocation);
   return currentUri == uri;
 }
 
@@ -27,7 +26,7 @@ bool shouldReplaceCurrentRoute(String uri) {
     return false;
   }
 
-  final currentUri = rootNavKey.currentContext!.read(currentRoutingLocation);
+  final currentUri = mainProviderContainer.read(currentRoutingLocation);
   return currentUri.startsWith(chatRoomUriMatcher);
 }
 

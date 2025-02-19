@@ -1,4 +1,4 @@
-use ruma_common::{OwnedDeviceId, OwnedUserId};
+use matrix_sdk_base::ruma::{OwnedDeviceId, OwnedUserId};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -14,7 +14,7 @@ pub struct RestoreToken {
     /// a passphrase for the underlying database
     pub db_passphrase: Option<String>,
 
-    // legacy that isn't used anymore
+    // legacy that isn’t used anymore
     #[serde(default, skip_serializing)]
     #[allow(dead_code)]
     /// a separate local cache path

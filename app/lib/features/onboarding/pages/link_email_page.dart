@@ -13,11 +13,11 @@ class LinkEmailPage extends ConsumerWidget {
   static const emailField = Key('reg-email-txt');
   static const linkEmailBtn = Key('reg-link-email-btn');
 
-  LinkEmailPage({super.key});
-
   final formKey = GlobalKey<FormState>(debugLabel: 'link email page form');
   final ValueNotifier<bool> isLinked = ValueNotifier(false);
   final TextEditingController emailController = TextEditingController();
+
+  LinkEmailPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,44 +51,45 @@ class LinkEmailPage extends ConsumerWidget {
   }
 
   Widget _buildHeadlineText(BuildContext context) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          L10n.of(context).protectPrivacyTitle,
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: Theme.of(context).colorScheme.secondary,
-              ),
+          lang.protectPrivacyTitle,
+          style: textTheme.headlineMedium?.copyWith(
+            color: Theme.of(context).colorScheme.secondary,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 10),
         Text(
-          L10n.of(context).protectPrivacyDescription1,
-          style: Theme.of(context).textTheme.bodyMedium,
+          lang.protectPrivacyDescription1,
+          style: textTheme.bodyMedium,
         ),
         const SizedBox(height: 10),
         Text(
-          L10n.of(context).protectPrivacyDescription2,
-          style: Theme.of(context).textTheme.bodyMedium,
+          lang.protectPrivacyDescription2,
+          style: textTheme.bodyMedium,
         ),
       ],
     );
   }
 
   Widget _buildEmailInputField(BuildContext context) {
+    final lang = L10n.of(context);
     return Form(
       key: formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(L10n.of(context).emailOptional),
+          Text(lang.emailOptional),
           const SizedBox(height: 10),
           TextFormField(
             key: LinkEmailPage.emailField,
             controller: emailController,
-            decoration: InputDecoration(
-              hintText: L10n.of(context).hintEmail,
-            ),
+            decoration: InputDecoration(hintText: lang.hintEmail),
             style: Theme.of(context).textTheme.labelLarge,
             validator: (val) => validateEmail(context, val),
           ),
@@ -99,27 +100,32 @@ class LinkEmailPage extends ConsumerWidget {
 
   Future<void> linkEmail(BuildContext context, WidgetRef ref) async {
     if (!formKey.currentState!.validate()) return;
-    final account = ref.read(accountProvider);
-    EasyLoading.show(status: L10n.of(context).linkingEmailAddress);
+    final lang = L10n.of(context);
+    final account = await ref.read(accountProvider.future);
+    EasyLoading.show(status: lang.linkingEmailAddress);
     try {
       final emailAddr = emailController.text.trim();
       await account.request3pidManagementTokenViaEmail(emailAddr);
       ref.invalidate(emailAddressesProvider);
       if (!context.mounted) return;
-      EasyLoading.showSuccess(L10n.of(context).pleaseCheckYourInbox);
+      EasyLoading.showSuccess(lang.pleaseCheckYourInbox);
       isLinked.value = true;
     } catch (e) {
       EasyLoading.showToast(
-        L10n.of(context).failedToSubmitEmail(e),
+        lang.failedToSubmitEmail(e),
         toastPosition: EasyLoadingToastPosition.bottom,
       );
     } finally {
       EasyLoading.dismiss();
-      context.goNamed(Routes.uploadAvatar.name);
+      if (context.mounted) {
+        context.goNamed(Routes.uploadAvatar.name);
+      }
     }
   }
 
   Widget _buildLinkEmailActionButton(BuildContext context, WidgetRef ref) {
+    final disabledColor = Theme.of(context).disabledColor;
+    final textTheme = Theme.of(context).textTheme;
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: emailController,
       builder: (context, emailValue, child) {
@@ -129,8 +135,7 @@ class LinkEmailPage extends ConsumerWidget {
           onPressed: isValidEmail ? () => linkEmail(context, ref) : null,
           style: OutlinedButton.styleFrom(
             side: BorderSide(
-              color:
-                  isValidEmail ? whiteColor : Theme.of(context).disabledColor,
+              color: isValidEmail ? whiteColor : disabledColor,
             ),
           ),
           child: Row(
@@ -138,19 +143,20 @@ class LinkEmailPage extends ConsumerWidget {
             children: [
               Text(
                 L10n.of(context).linkEmailToProfile,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: isValidEmail
-                          ? whiteColor
-                          : Theme.of(context).disabledColor,
-                    ),
+                style: textTheme.bodyMedium?.copyWith(
+                  color: isValidEmail ? whiteColor : disabledColor,
+                ),
               ),
               ValueListenableBuilder(
                 valueListenable: isLinked,
                 builder: (context, isLinkedValue, child) {
                   if (!isLinkedValue) return const SizedBox.shrink();
                   return const Padding(
-                    padding: EdgeInsets.only(left: 10.0),
-                    child: Icon(Atlas.check_circle, size: 18),
+                    padding: EdgeInsets.only(left: 10),
+                    child: Icon(
+                      Atlas.check_circle,
+                      size: 18,
+                    ),
                   );
                 },
               ),

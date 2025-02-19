@@ -1,4 +1,4 @@
-library acter_notifify;
+library;
 
 import 'dart:async';
 import 'dart:io';
@@ -11,8 +11,9 @@ import 'package:acter_notifify/util.dart';
 import 'package:acter_notifify/platform/windows.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:logging/logging.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
-final _log = Logger('a3::notifify');
+final _log = Logger('a3::notifify::acter');
 
 /// Function to call when a notification has been tapped by the user
 typedef HandleMessageTap = FutureOr<bool> Function(Map<String?, Object?> data);
@@ -21,7 +22,7 @@ typedef HandleMessageTap = FutureOr<bool> Function(Map<String?, Object?> data);
 /// we should continue or not bother the user. Just a user based switch
 typedef IsEnabledCheck = FutureOr<bool> Function();
 
-/// Given the target url of the notifiction, should this notification be shown
+/// Given the target url of the notification, should this notification be shown
 /// or just be ignored. Useful to avoid showing push notification if the user
 /// is on that same screen
 typedef ShouldShowCheck = FutureOr<bool> Function(String url);
@@ -67,7 +68,18 @@ Future<String?> initializeNotifify({
   if (usePush && pushServer.isNotEmpty) {
     await initializePush(
       handleMessageTap: handleMessageTap,
-      shouldShowCheck: shouldShowCheck,
+      shouldShowCheck: (a) async {
+        /// FIXME: to ensure we see failures after, this is being ignored for now
+        try {
+          if (shouldShowCheck != null) {
+            final res = await shouldShowCheck(a);
+            _log.info('Should show $a: $res');
+          }
+        } catch (e, s) {
+          _log.severe('Checking whether $a should be shown failed', e, s);
+        }
+        return true;
+      },
       isEnabledCheck: isEnabledCheck,
       currentClientsGen: currentClientsGen,
       appIdPrefix: appIdPrefix,
@@ -87,6 +99,7 @@ Future<String?> initializeNotifify({
         );
       } catch (error, stack) {
         final deviceId = client.deviceId().toString();
+        Sentry.captureException(error, stackTrace: stack);
         _log.severe('Failed to setup ntfy for $deviceId', error, stack);
       }
     }

@@ -1,34 +1,36 @@
 use acter_core::events::{
     attachments::{AttachmentContent, FallbackAttachmentContent},
+    news::{FallbackNewsContent, NewsContent},
     rsvp::RsvpStatus,
-    ColorizeBuilder, Display, DisplayBuilder, ObjRefBuilder, Position, RefDetails,
-    RefDetailsBuilder,
+    ColorizeBuilder, DisplayBuilder, ObjRefBuilder, Position, RefDetails as CoreRefDetails,
 };
 use anyhow::{Context, Result};
 use core::time::Duration;
-use matrix_sdk::{
-    media::{MediaFormat, MediaThumbnailSettings, MediaThumbnailSize},
+use matrix_sdk::{HttpError, RumaApiError};
+use matrix_sdk_base::{
+    media::{MediaFormat, MediaThumbnailSettings},
+    ruma::{
+        api::{client::error::ErrorBody, error::FromHttpResponseError},
+        events::room::{
+            message::{
+                AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
+                FileMessageEventContent, ImageMessageEventContent, LocationInfo,
+                LocationMessageEventContent, TextMessageEventContent,
+                UnstableAudioDetailsContentBlock, VideoInfo, VideoMessageEventContent,
+            },
+            ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
+        },
+        EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedEventId, OwnedMxcUri, OwnedUserId,
+        UInt,
+    },
     ComposerDraft, ComposerDraftType,
 };
-use ruma::UInt;
-use ruma_client_api::media::get_content_thumbnail;
-use ruma_common::{
-    EventId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedEventId, OwnedMxcUri, OwnedUserId,
-};
-use ruma_events::room::{
-    message::{
-        AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
-        FileMessageEventContent, ImageMessageEventContent, LocationInfo,
-        LocationMessageEventContent, TextMessageEventContent, UnstableAudioDetailsContentBlock,
-        VideoInfo, VideoMessageEventContent,
-    },
-    ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
-};
 use serde::{Deserialize, Serialize};
-use std::str::FromStr;
+use std::{ops::Deref, str::FromStr};
 use tracing::error;
 
 use super::api::FfiBuffer;
+use super::RefDetails;
 
 pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
@@ -95,7 +97,7 @@ impl OptionComposeDraft {
 }
 
 pub struct MediaSource {
-    inner: SdkMediaSource,
+    pub(crate) inner: SdkMediaSource,
 }
 
 impl MediaSource {
@@ -167,6 +169,27 @@ pub enum MsgContent {
         name: Option<String>,
         link: String,
     },
+}
+
+impl TryFrom<&NewsContent> for MsgContent {
+    type Error = ();
+
+    fn try_from(value: &NewsContent) -> Result<Self, Self::Error> {
+        match value {
+            // everything else we have to fallback to the body-text thing ...
+            NewsContent::Fallback(FallbackNewsContent::Text(msg_content))
+            | NewsContent::Text(msg_content) => Ok(MsgContent::from(msg_content)),
+            NewsContent::Fallback(FallbackNewsContent::Video(msg_content))
+            | NewsContent::Video(msg_content) => Ok(MsgContent::from(msg_content)),
+            NewsContent::Fallback(FallbackNewsContent::Audio(msg_content))
+            | NewsContent::Audio(msg_content) => Ok(MsgContent::from(msg_content)),
+            NewsContent::Fallback(FallbackNewsContent::File(msg_content))
+            | NewsContent::File(msg_content) => Ok(MsgContent::from(msg_content)),
+            NewsContent::Fallback(FallbackNewsContent::Location(msg_content))
+            | NewsContent::Location(msg_content) => Ok(MsgContent::from(msg_content)),
+            _ => Err(()),
+        }
+    }
 }
 
 impl From<&TextMessageEventContent> for MsgContent {
@@ -248,9 +271,10 @@ impl From<&EmoteMessageEventContent> for MsgContent {
     }
 }
 
-impl From<&AttachmentContent> for MsgContent {
-    fn from(value: &AttachmentContent) -> Self {
-        match value {
+impl TryFrom<&AttachmentContent> for MsgContent {
+    type Error = ();
+    fn try_from(value: &AttachmentContent) -> Result<Self, Self::Error> {
+        Ok(match value {
             AttachmentContent::Image(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
                 MsgContent::Image {
@@ -297,7 +321,8 @@ impl From<&AttachmentContent> for MsgContent {
                 name: content.name.clone(),
                 link: content.link.clone(),
             },
-        }
+            AttachmentContent::Reference(_) => return Err(()),
+        })
     }
 }
 
@@ -672,11 +697,7 @@ impl ThumbnailSize {
 
 impl From<Box<ThumbnailSize>> for MediaFormat {
     fn from(val: Box<ThumbnailSize>) -> Self {
-        MediaFormat::Thumbnail(MediaThumbnailSettings::new(
-            get_content_thumbnail::v3::Method::Scale,
-            val.width,
-            val.height,
-        ))
+        MediaFormat::Thumbnail(MediaThumbnailSettings::new(val.width, val.height))
     }
 }
 
@@ -698,100 +719,40 @@ pub fn new_colorize_builder(
     Ok(builder)
 }
 
-pub fn new_task_ref_builder(
-    target_id: String,
-    room_id: Option<String>,
-    task_list: String,
-    action: Option<String>,
-) -> Result<RefDetailsBuilder> {
-    let target_id = EventId::parse(target_id)?;
-    let task_list = EventId::parse(task_list)?;
-    let mut builder = RefDetailsBuilder::new_task_ref_builder(target_id, task_list);
-    if let Some(room_id) = room_id {
-        builder.room_id(room_id);
-    }
-    if let Some(action) = action {
-        builder.action(action);
-    }
-    Ok(builder)
-}
-
-pub fn new_task_list_ref_builder(
-    target_id: String,
-    room_id: Option<String>,
-    action: Option<String>,
-) -> Result<RefDetailsBuilder> {
-    let target_id = EventId::parse(target_id)?;
-    let mut builder = RefDetailsBuilder::new_task_list_ref_builder(target_id);
-    if let Some(room_id) = room_id {
-        builder.room_id(room_id);
-    }
-    if let Some(action) = action {
-        builder.action(action);
-    }
-    Ok(builder)
-}
-
-pub fn new_calendar_event_ref_builder(
-    target_id: String,
-    room_id: Option<String>,
-    action: Option<String>,
-) -> Result<RefDetailsBuilder> {
-    let target_id = EventId::parse(target_id)?;
-    let mut builder = RefDetailsBuilder::new_calendar_event_ref_builder(target_id);
-    if let Some(room_id) = room_id {
-        builder.room_id(room_id);
-    }
-    if let Some(action) = action {
-        builder.action(action);
-    }
-    Ok(builder)
-}
-
-pub fn new_link_ref_builder(title: String, uri: String) -> Result<RefDetailsBuilder> {
-    let builder = RefDetailsBuilder::new_link_ref_builder(title, uri);
-    Ok(builder)
-}
-
-#[allow(clippy::boxed_local)]
 pub fn new_obj_ref_builder(
     position: Option<String>,
     reference: Box<RefDetails>,
 ) -> Result<ObjRefBuilder> {
     if let Some(p) = position {
         let p = Position::from_str(&p)?;
-        Ok(ObjRefBuilder::new(Some(p), *reference))
+        Ok(ObjRefBuilder::new(Some(p), (*reference).deref().clone()))
     } else {
-        Ok(ObjRefBuilder::new(None, *reference))
+        Ok(ObjRefBuilder::new(None, (*reference).deref().clone()))
     }
 }
 
 pub fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
-    if let matrix_sdk::Error::Http(matrix_sdk::HttpError::Api(api_error)) = &err {
+    if let matrix_sdk::Error::Http(HttpError::Api(api_error)) = &err {
         match api_error {
-            matrix_sdk::ruma::api::error::FromHttpResponseError::Deserialization(des) => {
+            FromHttpResponseError::Deserialization(des) => {
                 return anyhow::anyhow!("Deserialization failed: {des}");
             }
-            matrix_sdk::ruma::api::error::FromHttpResponseError::Server(inner) => match inner {
-                matrix_sdk::RumaApiError::ClientApi(error) => {
-                    if let matrix_sdk::ruma::api::client::error::ErrorBody::Standard {
-                        kind,
-                        message,
-                    } = &error.body
-                    {
-                        return anyhow::anyhow!("{message} [{kind}]");
+            FromHttpResponseError::Server(inner) => match inner {
+                RumaApiError::ClientApi(error) => {
+                    if let ErrorBody::Standard { kind, message } = &error.body {
+                        return anyhow::anyhow!("{message:?} [{kind:?}]");
                     }
                     return anyhow::anyhow!("{0:?} [{1}]", error.body, error.status_code);
                 }
-                matrix_sdk::RumaApiError::Uiaa(uiaa_error) => {
+                RumaApiError::Uiaa(uiaa_error) => {
                     if let Some(err) = &uiaa_error.auth_error {
-                        return anyhow::anyhow!("{0} [{1}]", err.message, err.kind);
+                        return anyhow::anyhow!("{:?} [{:?}]", err.message, err.kind);
                     }
                     error!(?uiaa_error, "Other UIAA response");
                     return anyhow::anyhow!("Unsupported User Interaction needed.");
                 }
-                matrix_sdk::RumaApiError::Other(err) => {
-                    return anyhow::anyhow!("{0:?} [{1}]", err.body, err.status_code);
+                RumaApiError::Other(err) => {
+                    return anyhow::anyhow!("{:?} [{:?}]", err.body, err.status_code);
                 }
             },
             _ => {}

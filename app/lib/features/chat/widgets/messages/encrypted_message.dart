@@ -8,6 +8,7 @@ class EncryptedMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: () => showEncryptionInfoBottomSheet(context: context),
       child: Container(
@@ -20,16 +21,15 @@ class EncryptedMessageWidget extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 5),
                   child: Icon(
                     Atlas.block_shield_thin,
-                    size: Theme.of(context).textTheme.labelSmall?.fontSize,
-                    color: Theme.of(context).textTheme.labelSmall?.color,
+                    size: textTheme.labelSmall?.fontSize,
+                    color: textTheme.labelSmall?.color,
                   ),
                 ),
               ),
               TextSpan(
                 text: L10n.of(context).encryptedChatMessage,
-                style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                      fontStyle: FontStyle.italic,
-                    ),
+                style:
+                    textTheme.labelSmall?.copyWith(fontStyle: FontStyle.italic),
               ),
             ],
           ),

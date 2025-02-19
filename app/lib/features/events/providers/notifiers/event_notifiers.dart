@@ -1,60 +1,70 @@
 import 'dart:async';
+
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show CalendarEvent, Client;
 import 'package:riverpod/riverpod.dart';
 
 class EventListNotifier
-    extends FamilyAsyncNotifier<List<ffi.CalendarEvent>, String?> {
+    extends FamilyAsyncNotifier<List<CalendarEvent>, String?> {
   late Stream<bool> _listener;
 
-  Future<List<ffi.CalendarEvent>> _getEventList() async {
-    final client = ref.watch(alwaysClientProvider);
+  Future<List<CalendarEvent>> _getEventList(
+    Client client,
+    String? spaceId,
+  ) async {
     //GET ALL EVENTS
-    if (arg == null) {
+    if (spaceId == null) {
       return (await client.calendarEvents()).toList();
     } else {
       //GET SPACE EVENTS
-      final space = await client.space(arg!);
+      final space = await client.space(spaceId);
       return (await space.calendarEvents()).toList();
     }
   }
 
   @override
-  Future<List<ffi.CalendarEvent>> build(String? arg) async {
-    final client = ref.watch(alwaysClientProvider);
+  Future<List<CalendarEvent>> build(String? arg) async {
+    final spaceId = arg;
+    final client = await ref.watch(alwaysClientProvider.future);
 
     //GET ALL EVENTS
-    if (arg == null) {
-      _listener =
-          client.subscribeStream('calendar'); // keep it resident in memory
+    if (spaceId == null) {
+      _listener = client
+          .subscribeSectionStream('calendar'); // keep it resident in memory
     } else {
       //GET SPACE EVENTS
-      _listener = client.subscribeStream('$arg::calendar');
+      _listener = client.subscribeRoomSectionStream(spaceId, 'calendar');
     }
 
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(_getEventList);
+      state = await AsyncValue.guard(
+        () async => await _getEventList(client, spaceId),
+      );
     });
-    return await _getEventList();
+    return await _getEventList(client, spaceId);
   }
 }
 
 class AsyncCalendarEventNotifier
-    extends AutoDisposeFamilyAsyncNotifier<ffi.CalendarEvent, String> {
+    extends AutoDisposeFamilyAsyncNotifier<CalendarEvent, String> {
   late Stream<bool> _listener;
 
-  Future<ffi.CalendarEvent> _getCalendarEvent() async {
-    final client = ref.read(alwaysClientProvider);
-    return await client.waitForCalendarEvent(arg, null);
+  Future<CalendarEvent> _getCalEvent(Client client, String calEvtId) async {
+    return await client.waitForCalendarEvent(calEvtId, null);
   }
 
   @override
-  Future<ffi.CalendarEvent> build(String arg) async {
-    final client = ref.watch(alwaysClientProvider);
-    _listener = client.subscribeStream(arg); // keep it resident in memory
+  Future<CalendarEvent> build(String arg) async {
+    final calEvtId = arg;
+    final client = await ref.watch(alwaysClientProvider.future);
+    _listener =
+        client.subscribeModelStream(calEvtId); // keep it resident in memory
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(_getCalendarEvent);
+      state = await AsyncValue.guard(
+        () async => await _getCalEvent(client, calEvtId),
+      );
     });
-    return await _getCalendarEvent();
+    return await _getCalEvent(client, calEvtId);
   }
 }

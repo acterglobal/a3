@@ -10,9 +10,6 @@ Your social organizing app build on [matrix](https://matrix.org): think WhatsApp
 <a href="ms-windows-store://pdp/?ProductId=9NZLTDVTN203">
 <img height="83" src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Download Acter" />
 </a>
-<a href="https://dev.acter.global/user/getting-started/setting-up/#linux-flatpak">
-<img height="83" src="https://dev.acter.global/images/flatpak-badge-en.svg" alt="Install Acter on Linux via Flatpak" />
-</a>
 
 ## More info
 

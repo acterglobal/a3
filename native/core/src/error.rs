@@ -1,4 +1,4 @@
-use ruma_events::UnsignedRoomRedactionEvent;
+use matrix_sdk_base::ruma::events::UnsignedRoomRedactionEvent;
 use std::sync::PoisonError;
 
 use crate::models::EventMeta;
@@ -32,7 +32,7 @@ pub enum Error {
     #[error("Index not found.")]
     IndexNotFound,
 
-    #[error("Your Homeserver doesn't have a hostname, that is required for this action.")]
+    #[error("Your Homeserver doesn’t have a hostname, that is required for this action.")]
     HomeserverMissesHostname,
 
     #[error("The client must be logged in for this interaction.")]
@@ -45,7 +45,7 @@ pub enum Error {
     FailedToParse { model_type: String, msg: String },
 
     #[error("Id Parse Error: {0}")]
-    IdParseError(#[from] ruma_common::IdParseError),
+    IdParseError(#[from] matrix_sdk_base::ruma::IdParseError),
 
     #[error("Model {meta:?} ({model_type}): {reason:?}")]
     ModelRedacted {

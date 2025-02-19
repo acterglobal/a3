@@ -19,6 +19,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install supported toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: llvm-tools-preview
 
       - uses: jlumbroso/free-disk-space@main
         name: Free Disk Space (Ubuntu)
@@ -42,7 +44,7 @@ jobs:
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
-          customModules: synapse_super_invites
+          customModules: git+https://github.com/acterglobal/synapse-super-invites/@ben-share-link-generator
           customConfig: |
             email:
               smtp_host: localhost
@@ -58,23 +60,30 @@ jobs:
                 config:
                   sql_url: "sqlite://"
                   generate_registration_token: true
+                  share_link_generator:
+                    url_prefix: "http://localhost:8099/"
+                    target_path: "."
 
       - uses: rui314/setup-mold@v1
         name: "Setup mold linker"
 
+      - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
-
-      - name: Initialize e2ee mock data
-        run: cargo run -p acter-cli -- mock
-        env:
-          DEFAULT_HOMESERVER_NAME: "localhost"
-          DEFAULT_HOMESERVER_URL: "http://localhost:8118"
 
       - name: run cargo integration tests
         env:
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
           DEFAULT_HOMESERVER_NAME: "localhost"
-        run: cargo nextest run --config-file .github/nextest-config.toml -p acter-test
+        run: cargo llvm-cov --lcov --output-path lcov.info nextest --config-file .github/nextest-config.toml -p acter-test
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@v4
+        with:
+          files: lcov.info
+          flags: integration-test
+          name: rust-integration-tests
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       # file an error if this failed on `main` post-merge
       - name: Report issue
@@ -82,9 +91,10 @@ jobs:
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          TITLE: "Rust integration tests failed on main"
-          FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
-          ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          NAME: Rust Integration Tests
+          TAG: main
+          FAILED_RUN_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+          ARTIFACT_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{env.GITHUB_RUN_ID}}
         with:
           assignees: gnunicorn
           filename: .github/templates/failure-report-template.md.tmpl
