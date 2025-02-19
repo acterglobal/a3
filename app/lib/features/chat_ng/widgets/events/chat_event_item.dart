@@ -62,8 +62,9 @@ class ChatEventItem extends StatelessWidget {
               isNextMessageInGroup: isNextMessageInGroup,
               child: EncryptedMessageWidget(),
             ),
-      'm.room.member' => MemberUpdateEvent(
+      'm.room.member' || 'ProfileChange' => MemberUpdateEvent(
           isMe: isMe,
+          roomId: roomId,
           item: item,
         ),
       'm.policy.rule.room' ||
@@ -93,7 +94,7 @@ class ChatEventItem extends StatelessWidget {
 
   Widget _buildUnsupportedMessage(String? msgtype) {
     return Text(
-      'Unsupported event type: $msgtype',
+      'Unsupported chat event type: $msgtype',
     );
   }
 }

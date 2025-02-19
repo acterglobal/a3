@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event_item.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -74,13 +75,16 @@ class ChatEvent extends ConsumerWidget {
     final canRedact = item.sender() == myId;
 
     final isMe = myId == item.sender();
+
+    final bool shouldShowAvatar =
+        _shouldShowAvatar(item.eventType(), isNextMessageInGroup, isMe);
     // TODO: render a regular timeline event
     return Row(
       mainAxisAlignment:
           !isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        (!isNextMessageInGroup && !isMe)
+        shouldShowAvatar
             ? Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: ActerAvatar(options: options),
@@ -98,5 +102,17 @@ class ChatEvent extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  bool _shouldShowAvatar(
+    String eventType,
+    bool isNextMessageInGroup,
+    bool isMe,
+  ) {
+    if (isStateEvent(eventType) || isMemberEvent(eventType)) {
+      return !isMe; // Show avatar only for state messages
+    }
+    // For regular messages, follow the grouping
+    return !isNextMessageInGroup && !isMe;
   }
 }
