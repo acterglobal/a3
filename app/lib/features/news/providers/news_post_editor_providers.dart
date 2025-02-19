@@ -14,7 +14,6 @@ import 'package:acter/features/news/model/news_post_color_data.dart';
 import 'package:acter/features/news/model/news_post_state.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
