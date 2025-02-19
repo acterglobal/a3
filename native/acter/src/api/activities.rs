@@ -7,7 +7,7 @@ use acter_core::{
     referencing::IndexKey,
 };
 use futures::{FutureExt, Stream, StreamExt};
-use ruma::{EventId, OwnedEventId, OwnedRoomId, RoomId};
+use matrix_sdk::ruma::{EventId, OwnedEventId, OwnedRoomId, RoomId};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::wrappers::BroadcastStream;
 

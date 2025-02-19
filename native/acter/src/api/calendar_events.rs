@@ -14,6 +14,7 @@ use chrono::DateTime;
 use futures::{stream::StreamExt, FutureExt};
 use icalendar::Calendar as iCalendar;
 use matrix_sdk::room::Room;
+use matrix_sdk::ruma::EventId;
 use matrix_sdk_base::{
     ruma::{
         events::{room::message::TextMessageEventContent, MessageLikeEventType},
@@ -21,7 +22,6 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
-use ruma::EventId;
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,

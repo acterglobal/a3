@@ -134,7 +134,7 @@ pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
 pub use typing::TypingEvent;
-pub use utils::{new_vec_string_builder, parse_markdown, VecStringBuilder};
+pub use utils::{new_vec_string_builder, VecStringBuilder};
 pub use verification::{SessionManager, VerificationEmoji, VerificationEvent};
 
 pub type DeviceId = matrix_sdk_base::ruma::OwnedDeviceId;
