@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -25,7 +26,7 @@ class _ImageSlideState extends State<ImageSlide> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      key: NewsUpdateKeys.imageUpdateContent,
+      key: UpdateKeys.imageUpdateContent,
       child: renderImageContent(),
     );
   }

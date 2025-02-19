@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/features/news/types.dart';
+import 'package:acter/features/news/model/type/update_entry.dart';
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/features/news/widgets/news_item/news_post_time_widget.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';

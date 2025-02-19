@@ -44,7 +44,7 @@ void main() {
           myUserIdStrProvider.overrideWith((a) => 'my user id'),
           likedByMeProvider.overrideWith((a, b) => false),
           totalLikesForNewsProvider.overrideWith((a, b) => 0),
-          newsCommentsCountProvider.overrideWith((a, b) => 0),
+          updateCommentsCountProvider.overrideWith((a, b) => 0),
           roomDisplayNameProvider.overrideWith((a, b) => 'SpaceName'),
           briefSpaceItemProvider.overrideWith(
             (a, b) => SpaceItem(
@@ -98,7 +98,7 @@ void main() {
           myUserIdStrProvider.overrideWith((a) => 'my user id'),
           likedByMeProvider.overrideWith((a, b) => false),
           totalLikesForNewsProvider.overrideWith((a, b) => 0),
-          newsCommentsCountProvider.overrideWith((a, b) => 0),
+          updateCommentsCountProvider.overrideWith((a, b) => 0),
           roomDisplayNameProvider.overrideWith((a, b) => 'SpaceName'),
           briefSpaceItemProvider.overrideWith(
             (a, b) => SpaceItem(
@@ -161,7 +161,7 @@ void main() {
           myUserIdStrProvider.overrideWith((a) => 'my user id'),
           likedByMeProvider.overrideWith((a, b) => false),
           totalLikesForNewsProvider.overrideWith((a, b) => 0),
-          newsCommentsCountProvider.overrideWith((a, b) => 0),
+          updateCommentsCountProvider.overrideWith((a, b) => 0),
           roomDisplayNameProvider.overrideWith((a, b) => 'SpaceName'),
           briefSpaceItemProvider.overrideWith(
             (a, b) => SpaceItem(

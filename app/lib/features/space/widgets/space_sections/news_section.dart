@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
@@ -27,9 +28,9 @@ class NewsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final newsLoader = ref.watch(newsListProvider(spaceId));
-    return newsLoader.when(
-      data: (news) => buildNewsSectionUI(context, news),
+    final updateLoader = ref.watch(updatesProvider(spaceId));
+    return updateLoader.when(
+      data: (updateList) => buildNewsSectionUI(context, updateList),
       error: (e, s) {
         _log.severe('Failed to load boosts in space', e, s);
         return Center(
@@ -42,9 +43,10 @@ class NewsSection extends ConsumerWidget {
     );
   }
 
-  Widget buildNewsSectionUI(BuildContext context, List<NewsEntry> news) {
-    final hasMore = news.length > limit;
-    final count = hasMore ? limit : news.length;
+  Widget buildNewsSectionUI(
+      BuildContext context, List<UpdateEntry> updateList) {
+    final hasMore = updateList.length > limit;
+    final count = hasMore ? limit : updateList.length;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,14 +59,14 @@ class NewsSection extends ConsumerWidget {
             pathParameters: {'spaceId': spaceId},
           ),
         ),
-        _buildNewsListGridUI(context, news, count),
+        _buildNewsListGridUI(context, updateList, count),
       ],
     );
   }
 
   Widget _buildNewsListGridUI(
     BuildContext context,
-    List<NewsEntry> updateList,
+    List<UpdateEntry> updateList,
     int count,
   ) {
     final size = MediaQuery.of(context).size;
@@ -85,9 +87,9 @@ class NewsSection extends ConsumerWidget {
     );
   }
 
-  Widget newsItemUI(BuildContext context, NewsEntry newsEntry) {
-    if (newsEntry.slidesCount() == 0) return const SizedBox.shrink();
-    final newsSlides = newsEntry.slides().toList();
+  Widget newsItemUI(BuildContext context, UpdateEntry updateEntry) {
+    if (updateEntry.slidesCount() == 0) return const SizedBox.shrink();
+    final newsSlides = updateEntry.slides().toList();
     final slide = newsSlides[0];
 
     return InkWell(
@@ -98,7 +100,7 @@ class NewsSection extends ConsumerWidget {
       child: Container(
         height: 100,
         margin: const EdgeInsets.all(6),
-        child: NewsSlideItem(
+        child: UpdateSlideItem(
           slide: slide,
           showRichContent: false,
         ),

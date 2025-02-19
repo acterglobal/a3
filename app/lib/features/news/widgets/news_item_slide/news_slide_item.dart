@@ -1,10 +1,9 @@
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
-import 'package:acter/features/news/types.dart';
 import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_actions.dart';
 import 'package:acter/features/news/widgets/news_item_slide/text_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 

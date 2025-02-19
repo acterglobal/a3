@@ -124,14 +124,14 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
             OutlinedButton(
-              key: NewsUpdateKeys.cancelClose,
+              key: UpdateKeys.cancelClose,
               onPressed: () => Navigator.pop(context, false),
               child: Text(
                 L10n.of(context).no,
               ),
             ),
             ActerDangerActionButton(
-              key: NewsUpdateKeys.confirmDeleteDraft,
+              key: UpdateKeys.confirmDeleteDraft,
               onPressed: () async {
                 Navigator.pop(context, true);
               },
@@ -153,7 +153,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   AppBar appBarUI(BuildContext context) {
     return AppBar(
       leading: IconButton(
-        key: NewsUpdateKeys.closeEditor,
+        key: UpdateKeys.closeEditor,
         onPressed: () async {
           // Hide Keyboard
           SystemChannels.textInput.invokeMethod('TextInput.hide');
@@ -180,7 +180,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                 label: Text(L10n.of(context).action),
               ),
               IconButton(
-                key: NewsUpdateKeys.slideBackgroundColor,
+                key: UpdateKeys.slideBackgroundColor,
                 onPressed: () {
                   final notifier = ref.read(newsStateProvider.notifier);
                   notifier.changeTextSlideBackgroundColor();
@@ -196,7 +196,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 90),
       child: FloatingActionButton(
-        key: NewsUpdateKeys.newsSubmitBtn,
+        key: UpdateKeys.newsSubmitBtn,
         onPressed: () => context.pushNamed(
           Routes.actionAddUpdatePostTo.name,
           queryParameters: {
@@ -318,7 +318,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           ),
           const SizedBox(height: 40),
           OutlinedButton(
-            key: NewsUpdateKeys.addTextSlide,
+            key: UpdateKeys.addTextSlide,
             onPressed: () {
               NewsUtils.addTextSlide(
                 ref: ref,
@@ -329,7 +329,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           ),
           const SizedBox(height: 20),
           OutlinedButton(
-            key: NewsUpdateKeys.addImageSlide,
+            key: UpdateKeys.addImageSlide,
             onPressed: () async => await NewsUtils.addImageSlide(
               ref: ref,
               refDetails: widget.refDetails,
@@ -338,7 +338,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           ),
           const SizedBox(height: 20),
           OutlinedButton(
-            key: NewsUpdateKeys.addVideoSlide,
+            key: UpdateKeys.addVideoSlide,
             onPressed: () async => await NewsUtils.addVideoSlide(
               ref: ref,
               refDetails: widget.refDetails,
@@ -360,7 +360,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         child: SingleChildScrollView(
           child: IntrinsicHeight(
             child: HtmlEditor(
-              key: NewsUpdateKeys.textSlideInputField,
+              key: UpdateKeys.textSlideInputField,
               editorState: textEditorState,
               editable: true,
               autoFocus: false,

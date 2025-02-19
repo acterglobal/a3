@@ -93,7 +93,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
 
     final spaceSelectorWidget = (newsPostSpaceId != null)
         ? InkWell(
-            key: NewsUpdateKeys.selectSpace,
+            key: UpdateKeys.selectSpace,
             onTap: () async {
               final notifier = ref.read(newsStateProvider.notifier);
               await notifier.changeNewsPostSpaceId(context);
@@ -110,7 +110,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
             ),
           )
         : OutlinedButton(
-            key: NewsUpdateKeys.selectSpace,
+            key: UpdateKeys.selectSpace,
             onPressed: () async {
               final notifier = ref.read(newsStateProvider.notifier);
               await notifier.changeNewsPostSpaceId(context);

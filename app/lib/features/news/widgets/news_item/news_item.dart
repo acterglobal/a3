@@ -1,20 +1,21 @@
 import 'dart:core';
 
 import 'package:acter/common/widgets/space_name_widget.dart';
+import 'package:acter/features/news/model/type/update_entry.dart';
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/features/news/widgets/news_item/news_post_time_widget.dart';
 import 'package:acter/features/news/widgets/news_item/news_side_bar.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
 import 'package:acter/router/utils.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:carousel_indicator/carousel_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 
 class NewsItem extends ConsumerStatefulWidget {
-  final UpdateEntry news;
+  final UpdateEntry updateEntry;
 
-  const NewsItem({super.key, required this.news});
+  const NewsItem({super.key, required this.updateEntry});
 
   @override
   ConsumerState<NewsItem> createState() => _NewsItemState();
@@ -46,13 +47,13 @@ class _NewsItemState extends ConsumerState<NewsItem> {
 
   @override
   Widget build(BuildContext context) {
-    final slides = widget.news.slides().toList();
+    final slides = widget.updateEntry.slides().toList();
 
     return Stack(
       children: [
         buildSlidesUI(slides),
         buildSpaceNameAndPostTime(),
-        NewsSideBar(news: widget.news),
+        NewsSideBar(updateEntry: widget.updateEntry),
         buildSelectedSlideIndicators(slides.length),
       ],
     );
@@ -70,7 +71,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
   }
 
   Widget buildSpaceNameAndPostTime() {
-    final roomId = widget.news.roomId().toString();
+    final roomId = widget.updateEntry.roomId().toString();
 
     return Align(
       alignment: Alignment.bottomLeft,
@@ -84,7 +85,9 @@ class _NewsItemState extends ConsumerState<NewsItem> {
               onTap: () => goToSpace(context, roomId),
               child: SpaceNameWidget(spaceId: roomId, isShowBrackets: false),
             ),
-            NewsPostTimeWidget(originServerTs: widget.news.originServerTs()),
+            NewsPostTimeWidget(
+              originServerTs: widget.updateEntry.originServerTs(),
+            ),
           ],
         ),
       ),

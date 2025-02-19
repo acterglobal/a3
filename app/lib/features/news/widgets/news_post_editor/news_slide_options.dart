@@ -107,7 +107,7 @@ class _UpdateSlideOptionsState extends ConsumerState<UpdateSlideOptions> {
           ),
         ),
         IconButton(
-          key: NewsUpdateKeys.addUpdateSlide,
+          key: UpdateKeys.addUpdateSlide,
           onPressed: () => showPostAttachmentOptions(context),
           icon: Icon(PhosphorIcons.stackPlus()),
         ),

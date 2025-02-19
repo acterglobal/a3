@@ -141,9 +141,9 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
   }
 
   Widget _buildBody(bool useGridMode) {
-    final newsListLoader = ref.watch(newsListProvider(widget.spaceId));
+    final updateListLoader = ref.watch(updatesProvider(widget.spaceId));
 
-    return newsListLoader.when(
+    return updateListLoader.when(
       data: (newsList) {
         if (newsList.isEmpty) return newsEmptyStateUI(context);
         return useGridMode

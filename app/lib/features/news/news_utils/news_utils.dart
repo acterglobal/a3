@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/news/model/news_post_color_data.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
-import 'package:acter/features/news/types.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
@@ -106,16 +106,18 @@ class NewsUtils {
     }
   }
 
-  static Color getBackgroundColor(BuildContext context, UpdateSlide newsSlide) {
-    final color = newsSlide.colors();
+  static Color getBackgroundColor(
+      BuildContext context, UpdateSlide updateSlide) {
+    final color = updateSlide.colors();
     return convertColor(
       color?.background(),
       Theme.of(context).colorScheme.surface,
     );
   }
 
-  static Color getForegroundColor(BuildContext context, UpdateSlide newsSlide) {
-    final color = newsSlide.colors();
+  static Color getForegroundColor(
+      BuildContext context, UpdateSlide updateSlide) {
+    final color = updateSlide.colors();
     return convertColor(
       color?.color(),
       Theme.of(context).colorScheme.onPrimary,

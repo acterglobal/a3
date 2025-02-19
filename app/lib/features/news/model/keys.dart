@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class NewsUpdateKeys {
+class UpdateKeys {
   // News Slide Post Button
   static const addNewsUpdate = Key('add-news-updates');
   static const addUpdateSlide = Key('add-news-slide');

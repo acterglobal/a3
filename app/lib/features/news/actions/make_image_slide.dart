@@ -9,13 +9,13 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mime/mime.dart';
 
-Future<UpdateSlideDraft> makeImageSlideForNews(
+Future<NewsSlideDraft> makeImageSlideForNews(
   WidgetRef ref,
   UpdateSlideItem slidePost,
   L10n lang,
 ) async {
   final imageDraft = await createImageMsgDraftDraft(ref, slidePost, lang);
-  final imageSlideDraft = imageDraft.intoUpdateSlideDraft();
+  final imageSlideDraft = imageDraft.intoNewsSlideDraft();
 
   final sdk = await ref.read(sdkProvider.future);
   imageSlideDraft.color(

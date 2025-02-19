@@ -10,6 +10,7 @@ import 'package:acter/features/comments/providers/comments_providers.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/notifications/types.dart';
@@ -18,8 +19,8 @@ import 'package:acter/features/read_receipts/widgets/read_counter.dart';
 import 'package:acter/features/share/action/share_space_object_action.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show UpdateEntry;
 import 'package:atlas_icons/atlas_icons.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,26 +30,26 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 final _log = Logger('a3::news::sidebar');
 
 class NewsSideBar extends ConsumerWidget {
-  final UpdateEntry news;
+  final UpdateEntry updateEntry;
 
   const NewsSideBar({
     super.key,
-    required this.news,
+    required this.updateEntry,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final objectId = news.eventId().toString();
-    final roomId = news.roomId().toString();
+    final objectId = updateEntry.eventId().toString();
+    final roomId = updateEntry.roomId().toString();
     final userId = ref.watch(myUserIdStrProvider);
-    final isLikedByMe = ref.watch(likedByMeProvider(news));
-    final likesCount = ref.watch(totalLikesForNewsProvider(news));
+    final isLikedByMe = ref.watch(likedByMeProvider(updateEntry));
+    final likesCount = ref.watch(totalLikesForNewsProvider(updateEntry));
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
     final commentCount = ref
             .watch(
-              newsCommentsCountProvider(
-                news.asCommentsManagerProvider(),
+              updateCommentsCountProvider(
+                updateEntry.asCommentsManagerProvider(),
               ),
             )
             .valueOrNull ??
@@ -62,7 +63,7 @@ class NewsSideBar extends ConsumerWidget {
         children: <Widget>[
           const Spacer(),
           ReadCounterWidget(
-            manager: news.readReceipts(),
+            manager: updateEntry.readReceipts(),
             triggerAfterSecs: 3,
           ),
           const SizedBox(height: 5),
@@ -73,7 +74,7 @@ class NewsSideBar extends ConsumerWidget {
             color: Theme.of(context).colorScheme.textColor,
             onTap: () async {
               final manager =
-                  await ref.read(newsReactionsProvider(news).future);
+                  await ref.read(updateReactionsProvider(updateEntry).future);
               final status = manager.likedByMe();
               _log.info('my like status: $status');
               if (!status) {
@@ -91,7 +92,7 @@ class NewsSideBar extends ConsumerWidget {
                 showDragHandle: true,
                 useSafeArea: true,
                 builder: (context) => CommentsSectionWidget(
-                  managerProvider: news.asCommentsManagerProvider(),
+                  managerProvider: updateEntry.asCommentsManagerProvider(),
                   shrinkWrap: false,
                   centerTitle: true,
                   useCompactEmptyState: false,
@@ -127,7 +128,7 @@ class NewsSideBar extends ConsumerWidget {
           ),
           const SizedBox(height: 10),
           InkWell(
-            key: NewsUpdateKeys.newsSidebarActionBottomSheet,
+            key: UpdateKeys.newsSidebarActionBottomSheet,
             onTap: () => showModalBottomSheet(
               showDragHandle: true,
               useSafeArea: true,
@@ -136,7 +137,7 @@ class NewsSideBar extends ConsumerWidget {
               isDismissible: true,
               constraints: BoxConstraints(maxHeight: 300),
               builder: (context) => ActionBox(
-                news: news,
+                news: updateEntry,
                 userId: userId,
                 roomId: roomId,
               ),
@@ -256,7 +257,7 @@ class ActionBox extends ConsumerWidget {
                     horizontal: 5,
                   ),
                   child: TextButton.icon(
-                    key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
+                    key: UpdateKeys.newsSidebarActionRemoveBtn,
                     onPressed: () => openRedactContentDialog(
                       context,
                       title: lang.removeThisPost,
@@ -274,7 +275,7 @@ class ActionBox extends ConsumerWidget {
                       },
                       roomId: roomId,
                       isSpace: true,
-                      removeBtnKey: NewsUpdateKeys.removeButton,
+                      removeBtnKey: UpdateKeys.removeButton,
                     ),
                     icon: const Icon(Atlas.trash_thin),
                     label: Text(lang.remove),
@@ -287,7 +288,7 @@ class ActionBox extends ConsumerWidget {
                     horizontal: 5,
                   ),
                   child: TextButton.icon(
-                    key: NewsUpdateKeys.newsSidebarActionReportBtn,
+                    key: UpdateKeys.newsSidebarActionReportBtn,
                     onPressed: () => openReportContentDialog(
                       context,
                       title: lang.reportThisPost,

@@ -1,3 +1,4 @@
+import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show ActerPin, CalendarEvent, CommentsManager, NewsEntry, Task, TaskList;
 
@@ -59,11 +60,11 @@ extension TaskCommentsManagerProviderExtension on Task {
       TaskCommentsManagerProvider(this);
 }
 
-class NewsEntryCommentsManagerProvider implements CommentsManagerProvider {
-  final NewsEntry inner;
+class UpdateEntryCommentsManagerProvider implements CommentsManagerProvider {
+  final UpdateEntry inner;
   late String innerId;
 
-  NewsEntryCommentsManagerProvider(this.inner) {
+  UpdateEntryCommentsManagerProvider(this.inner) {
     innerId = inner.eventId().toString();
   }
 
@@ -74,12 +75,12 @@ class NewsEntryCommentsManagerProvider implements CommentsManagerProvider {
   int get hashCode => innerId.hashCode;
   @override
   bool operator ==(other) =>
-      other is NewsEntryCommentsManagerProvider && innerId == other.innerId;
+      other is UpdateEntryCommentsManagerProvider && innerId == other.innerId;
 }
 
-extension NewsEntryCommentsManagerProviderExtension on NewsEntry {
-  NewsEntryCommentsManagerProvider asCommentsManagerProvider() =>
-      NewsEntryCommentsManagerProvider(this);
+extension UpdateEntryCommentsManagerProviderExtension on UpdateEntry {
+  UpdateEntryCommentsManagerProvider asCommentsManagerProvider() =>
+      UpdateEntryCommentsManagerProvider(this);
 }
 
 class ActerPinCommentsManagerProvider implements CommentsManagerProvider {
