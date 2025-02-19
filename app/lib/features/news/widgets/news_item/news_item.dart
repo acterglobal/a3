@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/news/model/type/update_entry.dart';
@@ -12,6 +13,7 @@ import 'package:carousel_indicator/carousel_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:preload_page_view/preload_page_view.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 
 class NewsItem extends ConsumerStatefulWidget {
   final UpdateEntry updateEntry;
@@ -53,7 +55,9 @@ class _NewsItemState extends ConsumerState<NewsItem> {
     return Stack(
       children: [
         buildSlidesUI(slides),
-        buildSpaceNameAndPostTime(),
+        isStory(widget.updateEntry)
+            ? buildUserNameAndSpaceName()
+            : buildSpaceNameAndPostTime(),
         NewsSideBar(updateEntry: widget.updateEntry),
         buildSelectedSlideIndicators(slides.length),
       ],
@@ -66,8 +70,46 @@ class _NewsItemState extends ConsumerState<NewsItem> {
       scrollDirection: Axis.horizontal,
       itemCount: slides.length,
       preloadPagesCount: slides.length,
-      onPageChanged: (page) =>  currentSlideIndex.value = page,
-      itemBuilder: (context, index) => UpdateSlideItem(slide: slides[index],errorState: NewsMediaErrorState.showErrorWithTryAgain,),
+      onPageChanged: (page) => currentSlideIndex.value = page,
+      itemBuilder: (context, index) => UpdateSlideItem(
+        slide: slides[index],
+        errorState: NewsMediaErrorState.showErrorWithTryAgain,
+      ),
+    );
+  }
+
+  Widget buildUserNameAndSpaceName() {
+    final roomId = widget.updateEntry.roomId().toString();
+    final userId = widget.updateEntry.sender().toString();
+    final memberInfo =
+        ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
+
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(memberInfo.displayName ?? userId),
+            InkWell(
+              onTap: () => goToSpace(context, roomId),
+              child: Row(
+                children: [
+                  Text(L10n.of(context).inSpaceLabelInline),
+                  SizedBox(width: 8),
+                  SpaceNameWidget(
+                    spaceId: roomId,
+                    isShowBrackets: false,
+                    isShowUnderline: true,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

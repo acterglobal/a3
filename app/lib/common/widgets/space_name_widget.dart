@@ -5,11 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SpaceNameWidget extends ConsumerWidget {
   final String spaceId;
   final bool isShowBrackets;
+  final bool isShowUnderline;
 
   const SpaceNameWidget({
     super.key,
     required this.spaceId,
     this.isShowBrackets = true,
+    this.isShowUnderline = false,
   });
 
   @override
@@ -25,7 +27,9 @@ class SpaceNameWidget extends ConsumerWidget {
       spaceName,
       overflow: TextOverflow.ellipsis,
       maxLines: 3,
-      style: Theme.of(context).textTheme.labelLarge,
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            decoration: isShowUnderline ? TextDecoration.underline : null,
+          ),
     );
   }
 }
