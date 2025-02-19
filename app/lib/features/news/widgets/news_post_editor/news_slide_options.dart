@@ -133,7 +133,9 @@ class _UpdateSlideOptionsState extends ConsumerState<UpdateSlideOptions> {
   }
 
   Widget getIconAsPerSlideType(
-      UpdateSlideType slidePostType, XFile? mediaFile) {
+    UpdateSlideType slidePostType,
+    XFile? mediaFile,
+  ) {
     return switch (slidePostType) {
       UpdateSlideType.text => const Icon(Atlas.size_text),
       UpdateSlideType.image => ClipRRect(

@@ -107,7 +107,9 @@ class NewsUtils {
   }
 
   static Color getBackgroundColor(
-      BuildContext context, UpdateSlide updateSlide) {
+    BuildContext context,
+    UpdateSlide updateSlide,
+  ) {
     final color = updateSlide.colors();
     return convertColor(
       color?.background(),
@@ -116,7 +118,9 @@ class NewsUtils {
   }
 
   static Color getForegroundColor(
-      BuildContext context, UpdateSlide updateSlide) {
+    BuildContext context,
+    UpdateSlide updateSlide,
+  ) {
     final color = updateSlide.colors();
     return convertColor(
       color?.color(),
