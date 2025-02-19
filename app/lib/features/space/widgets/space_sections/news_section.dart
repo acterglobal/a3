@@ -5,7 +5,6 @@ import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,7 +43,9 @@ class NewsSection extends ConsumerWidget {
   }
 
   Widget buildNewsSectionUI(
-      BuildContext context, List<UpdateEntry> updateList) {
+    BuildContext context,
+    List<UpdateEntry> updateList,
+  ) {
     final hasMore = updateList.length > limit;
     final count = hasMore ? limit : updateList.length;
     return Column(

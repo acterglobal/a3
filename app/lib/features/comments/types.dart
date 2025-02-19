@@ -1,6 +1,6 @@
 import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show ActerPin, CalendarEvent, CommentsManager, NewsEntry, Task, TaskList;
+    show ActerPin, CalendarEvent, CommentsManager, Task, TaskList;
 
 typedef PostCreateComment = Function();
 
