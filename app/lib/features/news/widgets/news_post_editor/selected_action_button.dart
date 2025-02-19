@@ -37,6 +37,7 @@ class SelectedActionButton extends ConsumerWidget {
       'link' => linkActionButton(context, refDetails!),
       'space' => spaceActionButton(context, ref, refDetails!),
       'chat' => chatActionButton(context, ref, refDetails!),
+      'super-invite' => superInviteCodeActionButton(context, ref, refDetails!),
       _ => const SizedBox(),
     };
   }
@@ -207,4 +208,33 @@ class SelectedActionButton extends ConsumerWidget {
       ),
     );
   }
+
+  Widget superInviteCodeActionButton(BuildContext context, WidgetRef ref, RefDetails refDetail) {
+    final superInvite = refDetail.title();
+    if (superInvite == null) return SizedBox.shrink();
+    return SizedBox(
+      width: 300,
+      child: Card(
+        child: ListTile(
+          leading: const Icon(Atlas.ticket_coupon),
+          onTap: () async {
+            final notifier = ref.read(newsStateProvider.notifier);
+            await notifier.selectInvitationCodeToShare(context);
+          },
+          title: Text(
+            refDetail.title() ?? L10n.of(context).unknown,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            L10n.of(context).inviteCode,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+        ),
+      ),
+    );
+  }
+
 }

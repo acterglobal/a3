@@ -6,7 +6,7 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::submit::comment');
 
-Future<bool> submitComment(
+Future<String?> submitComment(
   L10n lang,
   String plainDescription,
   String htmlBodyDescription,
@@ -15,22 +15,22 @@ Future<bool> submitComment(
   final trimmedPlainText = plainDescription.trim();
   if (trimmedPlainText.isEmpty) {
     EasyLoading.showToast(lang.youNeedToEnterAComment);
-    return false;
+    return null;
   }
   EasyLoading.show(status: lang.submittingComment);
   try {
     final draft = manager.commentDraft();
     draft.contentFormatted(trimmedPlainText, htmlBodyDescription);
-    await draft.send();
+    final id = await draft.send();
     FocusManager.instance.primaryFocus?.unfocus();
     EasyLoading.showToast(lang.commentSubmitted);
-    return true;
+    return id.toString();
   } catch (e, s) {
     _log.severe('Failed to submit comment', e, s);
     EasyLoading.showError(
       lang.errorSubmittingComment(e),
       duration: const Duration(seconds: 3),
     );
-    return false;
+    return null;
   }
 }

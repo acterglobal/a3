@@ -9,6 +9,7 @@ class SelectActionItem extends StatelessWidget {
   final VoidCallback onShareLinkSelected;
   final VoidCallback onShareSpaceSelected;
   final VoidCallback onShareChatSelected;
+  final VoidCallback onShareSuperInviteSelected;
 
   const SelectActionItem({
     super.key,
@@ -18,6 +19,7 @@ class SelectActionItem extends StatelessWidget {
     required this.onShareLinkSelected,
     required this.onShareSpaceSelected,
     required this.onShareChatSelected,
+    required this.onShareSuperInviteSelected,
   });
 
   @override
@@ -66,6 +68,13 @@ class SelectActionItem extends StatelessWidget {
           actionIcon: Atlas.chats,
           actionName: L10n.of(context).shareChat,
           onTap: onShareChatSelected,
+        ),
+        const SizedBox(height: 20),
+        actionItemUI(
+          context: context,
+          actionIcon: Atlas.ticket_coupon,
+          actionName: L10n.of(context).shareSuperInvite,
+          onTap: onShareSuperInviteSelected,
         ),
         const SizedBox(height: 20),
       ],

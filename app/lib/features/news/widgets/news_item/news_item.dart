@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter/features/news/model/type/update_slide.dart';
@@ -65,8 +66,8 @@ class _NewsItemState extends ConsumerState<NewsItem> {
       scrollDirection: Axis.horizontal,
       itemCount: slides.length,
       preloadPagesCount: slides.length,
-      onPageChanged: (page) => currentSlideIndex.value = page,
-      itemBuilder: (context, index) => UpdateSlideItem(slide: slides[index]),
+      onPageChanged: (page) =>  currentSlideIndex.value = page,
+      itemBuilder: (context, index) => UpdateSlideItem(slide: slides[index],errorState: NewsMediaErrorState.showErrorWithTryAgain,),
     );
   }
 

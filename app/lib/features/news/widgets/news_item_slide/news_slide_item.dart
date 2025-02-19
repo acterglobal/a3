@@ -1,4 +1,5 @@
 import 'package:acter/features/news/model/type/update_slide.dart';
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_actions.dart';
@@ -10,11 +11,13 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 class UpdateSlideItem extends StatelessWidget {
   final UpdateSlide slide;
   final bool showRichContent;
+  final NewsMediaErrorState errorState;
 
   const UpdateSlideItem({
     super.key,
     required this.slide,
     this.showRichContent = true,
+    required this.errorState,
   });
 
   @override
@@ -32,8 +35,8 @@ class UpdateSlideItem extends StatelessWidget {
           child: Container(
             color: slideBackgroundColor,
             child: switch (slideType) {
-              'image' => ImageSlide(slide: slide),
-              'video' => VideoSlide(slide: slide),
+              'image' => ImageSlide(slide: slide,errorState: errorState,),
+              'video' => VideoSlide(slide: slide,errorState: errorState,),
               'text' =>
                 showRichContent ? TextSlide(slide: slide) : normalTextSlide(),
               _ => notSupportedSlide(context, slideType),

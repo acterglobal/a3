@@ -5,6 +5,7 @@ import 'package:acter/common/widgets/chat/chat_selector_drawer.dart';
 import 'package:acter/common/widgets/event/event_selector_drawer.dart';
 import 'package:acter/common/widgets/pin/pin_selector_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
+import 'package:acter/common/widgets/super_invite/superInvite_selector_drawer.dart';
 import 'package:acter/common/widgets/task/taskList_selector_drawer.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -132,6 +133,17 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
         state = state.copyWith(currentUpdateSlide: selectedUpdateSlide);
       },
     );
+  }
+
+  Future<void> selectInvitationCodeToShare(BuildContext context) async {
+    final selectedInviteCode = await selectSuperInviteDrawer(context: context);
+    RefDetails? refDetails;
+    if (selectedInviteCode != null) {
+      refDetails = selectedInviteCode.refDetails();
+    }
+    UpdateSlideItem? selectedUpdateSlide = state.currentUpdateSlide;
+    selectedUpdateSlide?.refDetails = refDetails;
+    state = state.copyWith(currentUpdateSlide: selectedUpdateSlide);
   }
 
   void changeTextSlideValue(String body, String? html) {

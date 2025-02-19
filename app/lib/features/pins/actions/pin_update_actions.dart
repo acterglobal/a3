@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ final _log = Logger('a3::pins::update_actions');
 
 Future<void> updatePinTitle(
   BuildContext context,
+  WidgetRef ref,
   ActerPin pin,
   String newTitle,
 ) async {
@@ -24,6 +26,12 @@ Future<void> updatePinTitle(
     final updateBuilder = pin.updateBuilder();
     updateBuilder.title(newTitle);
     await updateBuilder.send();
+
+    await autosubscribe(
+      ref: ref,
+      objectId: pin.eventIdStr(),
+      lang: lang,
+    );
     EasyLoading.dismiss();
     if (!context.mounted) return;
     Navigator.pop(context);
@@ -67,6 +75,7 @@ Future<void> updatePinLink(
 
 Future<void> updatePinDescription(
   BuildContext context,
+  WidgetRef ref,
   String htmlBodyDescription,
   String plainDescription,
   ActerPin pin,
@@ -78,6 +87,12 @@ Future<void> updatePinDescription(
     updateBuilder.contentText(plainDescription);
     updateBuilder.contentHtml(plainDescription, htmlBodyDescription);
     await updateBuilder.send();
+
+    await autosubscribe(
+      ref: ref,
+      objectId: pin.eventIdStr(),
+      lang: lang,
+    );
     EasyLoading.dismiss();
     if (!context.mounted) return;
     Navigator.pop(context);

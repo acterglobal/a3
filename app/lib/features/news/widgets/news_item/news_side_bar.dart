@@ -12,7 +12,6 @@ import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
-import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/notifications/types.dart';
 import 'package:acter/features/notifications/widgets/object_notification_status.dart';
 import 'package:acter/features/read_receipts/widgets/read_counter.dart';
@@ -96,15 +95,8 @@ class NewsSideBar extends ConsumerWidget {
                   shrinkWrap: false,
                   centerTitle: true,
                   useCompactEmptyState: false,
-                  postCreateComment: () async {
-                    // when user create a comment, let's autosubscribe to comments
-                    await autosubscribe(
-                      ref: ref,
-                      objectId: objectId,
-                      subType: SubscriptionSubType.comments,
-                      lang: L10n.of(context),
-                    );
-                  },
+                  autoSubscribeSection: SubscriptionSubType
+                      .comments, // we want to be using the comments only on boosts
                   actions: [
                     ObjectNotificationStatus(
                       objectId: objectId,

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
@@ -104,6 +105,7 @@ class NewsSection extends ConsumerWidget {
         child: UpdateSlideItem(
           slide: slide,
           showRichContent: false,
+          errorState: NewsMediaErrorState.showErrorImageOnly,
         ),
       ),
     );

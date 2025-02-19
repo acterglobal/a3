@@ -2,8 +2,6 @@ import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show ActerPin, CalendarEvent, CommentsManager, Task, TaskList;
 
-typedef PostCreateComment = Function();
-
 /// This is the actual input type for the providers and widget of this feature
 /// the way to get this is through implementing a "wrapper" type for the getter
 /// and make sure that the manager hash-id and equal is bound to the inner

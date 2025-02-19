@@ -5,6 +5,7 @@ import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/add_comment_widget.dart';
 import 'package:acter/features/comments/widgets/skeletons/comment_list_skeleton_widget.dart';
 import 'package:acter/features/comments/widgets/comment_list_widget.dart';
+import 'package:acter/features/notifications/types.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -19,7 +20,7 @@ class CommentsSectionWidget extends ConsumerWidget {
   final bool centerTitle;
   final bool useCompactEmptyState;
   final List<Widget>? actions;
-  final PostCreateComment? postCreateComment;
+  final SubscriptionSubType? autoSubscribeSection;
 
   const CommentsSectionWidget({
     super.key,
@@ -27,7 +28,7 @@ class CommentsSectionWidget extends ConsumerWidget {
     this.centerTitle = false,
     this.useCompactEmptyState = true,
     required this.managerProvider,
-    this.postCreateComment,
+    this.autoSubscribeSection, // null means all
     this.actions,
   });
 
@@ -71,7 +72,7 @@ class CommentsSectionWidget extends ConsumerWidget {
         commentListUI(commentManager),
         AddCommentWidget(
           manager: commentManager,
-          postCreateComment: postCreateComment,
+          autoSubscribeSection: autoSubscribeSection,
         ),
       ],
     );
