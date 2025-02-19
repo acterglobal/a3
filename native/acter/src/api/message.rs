@@ -267,7 +267,7 @@ impl RoomEventItem {
                         }
                         (None, Some(new)) => {
                             me.msg_type(Some(("SetDisplayName").to_string()));
-                            MsgContent::from_text(format!("{new}"))
+                            MsgContent::from_text(new.to_string())
                         }
                         (Some(_), None) => {
                             me.msg_type(Some(("RemoveDisplayName").to_string()));
