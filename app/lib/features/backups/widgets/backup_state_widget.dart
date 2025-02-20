@@ -27,7 +27,8 @@ class BackupStateWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return switch (ref.watch(backupStateProvider)) {
-      RecoveryState.enabled => allowDisabling
+      RecoveryState.enabled =>
+      allowDisabling
           ? renderCanResetAction(context, ref)
           : const SizedBox.shrink(), // nothing to see here. all good.
       RecoveryState.incomplete => renderRecoverAction(context, ref),
@@ -41,15 +42,16 @@ class BackupStateWidget extends ConsumerWidget {
     return Skeletonizer(
       child: SecurityPrivacyWidget(
         icon: Icons.warning_amber_rounded,
+        iconColor: warningColor,
         title: lang.encryptionBackupMissing,
         subtitle: lang.encryptionBackupMissingExplainer,
         actions: [
-          ActionItem(
-            label: lang.loading,
+          OutlinedButton(
             onPressed: null,
+            child: Text(lang.loading),
           ),
         ],
-        color: warningFeatureColor,
+
       ),
     );
   }
@@ -58,15 +60,19 @@ class BackupStateWidget extends ConsumerWidget {
     final lang = L10n.of(context);
     return SecurityPrivacyWidget(
       icon: Atlas.check_website_thin,
+      iconColor: Theme
+          .of(context)
+          .colorScheme
+          .primary,
       title: lang.encryptionBackupEnabled,
       subtitle: lang.encryptionBackupEnabledExplainer,
       actions: [
-        ActionItem(
-          label: lang.reset,
+        OutlinedButton(
           onPressed: () => showConfirmResetDialog(context, ref),
+          child: Text(lang.reset),
         ),
       ],
-      color: Theme.of(context).colorScheme.primary,
+
     );
   }
 
@@ -76,19 +82,22 @@ class BackupStateWidget extends ConsumerWidget {
     // we'll use the primary action (provide key) and handle reset differently if needed
     return SecurityPrivacyWidget(
       icon: Icons.warning_amber_rounded,
+      iconColor: warningColor,
       title: lang.encryptionBackupProvideKey,
       subtitle: lang.encryptionBackupProvideKeyExplainer,
-      color: warningFeatureColor,
+
       actions: [
-        ActionItem(
-          label: lang.encryptionBackupProvideKeyAction,
+        OutlinedButton(
           onPressed: () => showProviderRecoveryKeyDialog(context, ref),
+          child: Text(lang.encryptionBackupProvideKeyAction),
         ),
-        if (allowDisabling)
-          ActionItem(
-            label: lang.reset,
+        if (allowDisabling) ...[
+          const SizedBox(width: 8),
+          OutlinedButton(
             onPressed: () => showConfirmResetDialog(context, ref),
+            child: Text(lang.reset),
           ),
+        ],
       ],
     );
   }
@@ -97,15 +106,16 @@ class BackupStateWidget extends ConsumerWidget {
     final lang = L10n.of(context);
     return SecurityPrivacyWidget(
       icon: Icons.warning_amber_rounded,
+      iconColor: warningColor,
       title: lang.encryptionBackupNoBackup,
       subtitle: lang.encryptionBackupNoBackupExplainer,
       actions: [
-        ActionItem(
-          label: lang.encryptionBackupNoBackupAction,
+        OutlinedButton(
           onPressed: () => startAction(context, ref),
+          child: Text(lang.encryptionBackupNoBackupAction),
         ),
       ],
-      color: warningFeatureColor,
+
     );
   }
 
@@ -134,11 +144,9 @@ class BackupStateWidget extends ConsumerWidget {
     }
   }
 
-  Widget renderInProgress(
-    BuildContext context,
-    WidgetRef ref,
-    RecoveryState currentState,
-  ) {
+  Widget renderInProgress(BuildContext context,
+      WidgetRef ref,
+      RecoveryState currentState,) {
     return Card(
       child: Column(
         children: [

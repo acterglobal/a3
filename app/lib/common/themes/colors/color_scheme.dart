@@ -11,13 +11,13 @@ Color backgroundColor = const Color(0xff0d0f11);
 
 //On colors
 Color whiteColor = Colors.white;
+Color warningColor = Colors.amber;
 
 Color pinFeatureColor = const Color(0xff7c4a4a);
 Color eventFeatureColor = const Color(0xff206a9a);
 Color taskFeatureColor = const Color(0xff406c6e);
 Color boastFeatureColor = Colors.blueGrey;
 
-Color warningFeatureColor = Colors.amber;
 
 var colorScheme = ColorScheme.dark(
   brightness: Brightness.dark,
