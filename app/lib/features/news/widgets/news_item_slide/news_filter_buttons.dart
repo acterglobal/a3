@@ -9,34 +9,41 @@ class NewsFilterButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    return filterChips(ref, lang);
-  }
-
-  Widget filterChips(WidgetRef ref, L10n lang) {
     final updateFilter = ref.watch(updateFilterProvider);
+
     return Row(
-      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        FilterChip(
-          selected: updateFilter == UpdateFilters.all,
-          label: Text(lang.all),
-          onSelected: (value) =>
-              ref.read(updateFilterProvider.notifier).state = UpdateFilters.all,
-        ),
-        const SizedBox(width: 10),
-        FilterChip(
-          selected: updateFilter == UpdateFilters.news,
-          label: Text(lang.boost),
-          onSelected: (value) => ref.read(updateFilterProvider.notifier).state =
-              UpdateFilters.news,
-        ),
-        const SizedBox(width: 10),
-        FilterChip(
-          selected: updateFilter == UpdateFilters.story,
-          label: Text(lang.story),
-          onSelected: (value) => ref.read(updateFilterProvider.notifier).state =
-              UpdateFilters.story,
+        ToggleButtons(
+          borderRadius: BorderRadius.circular(25),
+          selectedColor: Theme.of(context).primaryColor,
+          fillColor: Colors.white.withValues(alpha: 0.7),
+          isSelected: UpdateFilters.values
+              .map((filter) => filter == updateFilter)
+              .toList(),
+          onPressed: (index) {
+            ref.read(updateFilterProvider.notifier).state =
+                UpdateFilters.values[index];
+          },
+          children: UpdateFilters.values.map((filter) {
+            switch (filter) {
+              case UpdateFilters.all:
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(lang.all),
+                );
+              case UpdateFilters.news:
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(lang.boost),
+                );
+              case UpdateFilters.story:
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(lang.story),
+                );
+            }
+          }).toList(),
         ),
       ],
     );
