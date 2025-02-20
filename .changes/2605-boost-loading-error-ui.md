@@ -1,0 +1,1 @@
+- [Fix] - Resolve Boost List UI rendering issue on Space Detail when Image/video failed to load content.

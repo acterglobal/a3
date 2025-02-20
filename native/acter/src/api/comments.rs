@@ -164,6 +164,10 @@ impl CommentsManager {
             .await?
     }
 
+    pub fn object_id_str(&self) -> String {
+        self.inner.event_id().to_string()
+    }
+
     pub fn room_id_str(&self) -> String {
         self.room.room_id().to_string()
     }

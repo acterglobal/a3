@@ -19,6 +19,8 @@ import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
+import 'package:acter/features/notifications/widgets/object_notification_status.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
@@ -61,12 +63,15 @@ class TaskItemDetailPage extends ConsumerWidget {
     final task = ref
         .watch(taskItemProvider((taskListId: taskListId, taskId: taskId)))
         .valueOrNull;
+    if (task == null) {
+      return AppBar();
+    }
 
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
-    final actions = List<Widget>.empty(growable: true);
-    if (task != null) {
-      actions.addAll([
+    return AppBar(
+      actions: [
+        ObjectNotificationStatus(objectId: taskId),
         PopupMenuButton(
           icon: const Icon(Icons.more_vert),
           itemBuilder: (context) {
@@ -77,7 +82,8 @@ class TaskItemDetailPage extends ConsumerWidget {
                     context: context,
                     bottomSheetTitle: lang.editName,
                     titleValue: task.title(),
-                    onSave: (newName) => saveTitle(context, ref, task, newName),
+                    onSave: (ref, newName) =>
+                        saveTitle(context, ref, task, newName),
                   );
                 },
                 child: Text(
@@ -86,7 +92,7 @@ class TaskItemDetailPage extends ConsumerWidget {
                 ),
               ),
               PopupMenuItem(
-                onTap: () => showEditDescriptionSheet(context, ref, task),
+                onTap: () => showEditDescriptionSheet(context, task),
                 child: Text(
                   lang.editDescription,
                   style: textTheme.bodyMedium,
@@ -116,10 +122,8 @@ class TaskItemDetailPage extends ConsumerWidget {
             ];
           },
         ),
-      ]);
-    }
-
-    return AppBar(actions: actions);
+      ],
+    );
   }
 
   // Redact Task Item Dialog
@@ -190,9 +194,9 @@ class TaskItemDetailPage extends ConsumerWidget {
               const SizedBox(height: 10),
               _taskHeader(context, task, ref),
               const SizedBox(height: 10),
-              _widgetTaskDate(context, task),
+              _widgetTaskDate(context, ref, task),
               _widgetTaskAssignment(context, task, ref),
-              ..._widgetDescription(context, task, ref),
+              ..._widgetDescription(context, task),
               const SizedBox(height: 40),
             ] else
               const TaskItemDetailPageSkeleton(),
@@ -223,7 +227,6 @@ class TaskItemDetailPage extends ConsumerWidget {
           InkWell(
             onTap: () => showEditTaskItemNameBottomSheet(
               context: context,
-              ref: ref,
               task: task,
               titleValue: task.title(),
             ),
@@ -273,7 +276,6 @@ class TaskItemDetailPage extends ConsumerWidget {
   List<Widget> _widgetDescription(
     BuildContext context,
     Task task,
-    WidgetRef ref,
   ) {
     final description = task.description();
     if (description == null) return [];
@@ -285,7 +287,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       SelectionArea(
         child: GestureDetector(
           onTap: () {
-            showEditDescriptionSheet(context, ref, task);
+            showEditDescriptionSheet(context, task);
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -306,14 +308,13 @@ class TaskItemDetailPage extends ConsumerWidget {
 
   void showEditDescriptionSheet(
     BuildContext context,
-    WidgetRef ref,
     Task task,
   ) {
     showEditHtmlDescriptionBottomSheet(
       context: context,
       descriptionHtmlValue: task.description()?.formattedBody(),
       descriptionMarkdownValue: task.description()?.body(),
-      onSave: (htmlBodyDescription, plainDescription) {
+      onSave: (ref, htmlBodyDescription, plainDescription) {
         _saveDescription(
           context,
           ref,
@@ -338,6 +339,11 @@ class TaskItemDetailPage extends ConsumerWidget {
       final updater = task.updateBuilder();
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
       await updater.send();
+      await autosubscribe(
+        ref: ref,
+        objectId: task.eventIdStr(),
+        lang: lang,
+      );
       EasyLoading.dismiss();
       if (context.mounted) Navigator.pop(context);
     } catch (e, s) {
@@ -353,7 +359,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     }
   }
 
-  Widget _widgetTaskDate(BuildContext context, Task task) {
+  Widget _widgetTaskDate(BuildContext context, WidgetRef ref, Task task) {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     final dateText =
@@ -376,11 +382,15 @@ class TaskItemDetailPage extends ConsumerWidget {
           style: textTheme.bodyMedium,
         ),
       ),
-      onTap: () => duePickerAction(context, task),
+      onTap: () => duePickerAction(context, ref, task),
     );
   }
 
-  Future<void> duePickerAction(BuildContext context, Task task) async {
+  Future<void> duePickerAction(
+    BuildContext context,
+    WidgetRef ref,
+    Task task,
+  ) async {
     final lang = L10n.of(context);
     final newDue = await showDuePicker(
       context: context,
@@ -404,6 +414,12 @@ class TaskItemDetailPage extends ConsumerWidget {
         updater.unsetUtcDueTimeOfDay();
       }
       await updater.send();
+
+      await autosubscribe(
+        ref: ref,
+        objectId: task.eventIdStr(),
+        lang: lang,
+      );
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -440,8 +456,8 @@ class TaskItemDetailPage extends ConsumerWidget {
           const Spacer(),
           ActerInlineTextButton(
             onPressed: () => task.isAssignedToMe()
-                ? onUnAssign(context, task)
-                : onAssign(context, task),
+                ? onUnAssign(context, ref, task)
+                : onAssign(context, ref, task),
             child: Text(
               task.isAssignedToMe() ? lang.removeMyself : lang.assignMyself,
             ),
@@ -481,11 +497,17 @@ class TaskItemDetailPage extends ConsumerWidget {
     );
   }
 
-  Future<void> onAssign(BuildContext context, Task task) async {
+  Future<void> onAssign(BuildContext context, WidgetRef ref, Task task) async {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.assigningSelf);
     try {
       await task.assignSelf();
+
+      await autosubscribe(
+        ref: ref,
+        objectId: task.eventIdStr(),
+        lang: lang,
+      );
       if (!context.mounted) return;
       EasyLoading.showToast(lang.assignedYourself);
     } catch (e, s) {
@@ -501,11 +523,21 @@ class TaskItemDetailPage extends ConsumerWidget {
     }
   }
 
-  Future<void> onUnAssign(BuildContext context, Task task) async {
+  Future<void> onUnAssign(
+    BuildContext context,
+    WidgetRef ref,
+    Task task,
+  ) async {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.unassigningSelf);
     try {
       await task.unassignSelf();
+
+      await autosubscribe(
+        ref: ref,
+        objectId: task.eventIdStr(),
+        lang: lang,
+      );
       if (!context.mounted) return;
       EasyLoading.showToast(lang.assignmentWithdrawn);
     } catch (e, s) {
@@ -525,13 +557,12 @@ class TaskItemDetailPage extends ConsumerWidget {
     required BuildContext context,
     required String titleValue,
     required Task task,
-    required WidgetRef ref,
   }) {
     showEditTitleBottomSheet(
       context: context,
       bottomSheetTitle: L10n.of(context).editName,
       titleValue: titleValue,
-      onSave: (newName) => saveTitle(context, ref, task, newName),
+      onSave: (ref, newName) => saveTitle(context, ref, task, newName),
     );
   }
 
@@ -547,6 +578,12 @@ class TaskItemDetailPage extends ConsumerWidget {
     updater.title(newName);
     try {
       await updater.send();
+
+      await autosubscribe(
+        ref: ref,
+        objectId: task.eventIdStr(),
+        lang: lang,
+      );
       EasyLoading.dismiss();
       if (!context.mounted) return;
       Navigator.pop(context);

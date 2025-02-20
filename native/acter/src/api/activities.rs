@@ -3,6 +3,7 @@ use std::ops::Deref;
 pub use acter_core::activities::object::ActivityObject;
 use acter_core::{
     activities::Activity as CoreActivity,
+    events::news::{FallbackNewsContent, NewsContent},
     models::{status::membership::MembershipChange as CoreMembershipChange, ActerModel},
     referencing::IndexKey,
 };
@@ -11,7 +12,7 @@ use matrix_sdk::ruma::{EventId, OwnedEventId, OwnedRoomId, RoomId};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::wrappers::BroadcastStream;
 
-use super::{Client, RUNTIME};
+use super::{Client, MsgContent, RUNTIME};
 
 use acter_core::activities::ActivityContent;
 #[derive(Clone, Debug)]
@@ -61,6 +62,20 @@ impl Activity {
 
     pub fn event_id_str(&self) -> String {
         self.inner.event_meta().event_id.to_string()
+    }
+
+    pub fn msg_content(&self) -> Option<MsgContent> {
+        match self.inner.content() {
+            ActivityContent::DescriptionChange { content, .. } => {
+                content.as_ref().map(|e| MsgContent::from(e.clone()))
+            }
+            ActivityContent::Comment { content, .. } => Some(MsgContent::from(content)),
+            ActivityContent::Boost {
+                first_slide: Some(first_slide),
+                ..
+            } => MsgContent::try_from(first_slide).ok(),
+            _ => None,
+        }
     }
 }
 

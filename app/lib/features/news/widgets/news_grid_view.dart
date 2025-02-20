@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/news/widgets/news_item/news_post_time_widget.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -56,7 +57,7 @@ class NewsGridView extends StatelessWidget {
       margin: const EdgeInsets.all(6),
       child: Stack(
         children: [
-          NewsSlideItem(slide: slide, showRichContent: false),
+          NewsSlideItem(slide: slide, showRichContent: false, errorState: NewsMediaErrorState.showErrorImageWithText,),
           if (slideCount > 1) slideStackCountView(slideCount),
           newsPostTime(newsEntry.originServerTs()),
         ],

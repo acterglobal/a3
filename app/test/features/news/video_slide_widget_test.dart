@@ -1,4 +1,5 @@
 
+import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ void main() {
       // Build the widget
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: VideoSlide(slide: mockSlide)),
+          home: Scaffold(body: VideoSlide(slide: mockSlide, errorState: NewsMediaErrorState.showErrorImageOnly,)),
         ),
       );
 
@@ -43,11 +44,39 @@ void main() {
         (tester) async {
       when(() => mockSlide.sourceBinary(null))
           .thenAnswer((_) async => Future.error('Failed to load video'));
+      // Mock the typeStr method to return a valid string
+      when(() => mockSlide.typeStr()).thenReturn('video');
       // Build the widget
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
-          home: Scaffold(body: VideoSlide(slide: mockSlide)),
+          home: Scaffold(body: VideoSlide(slide: mockSlide,errorState: NewsMediaErrorState.showErrorImageOnly,)),
+        ),
+      );
+
+      // Wait for Future to complete
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.videocam_off_outlined), findsOneWidget);
+
+      // Build the widget
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: L10n.localizationsDelegates,
+          home: Scaffold(body: VideoSlide(slide: mockSlide,errorState: NewsMediaErrorState.showErrorImageWithText,)),
+        ),
+      );
+
+      // Wait for Future to complete
+      await tester.pumpAndSettle();
+
+      expect(find.text('Unable to load video'), findsOneWidget);
+
+      // Build the widget
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: L10n.localizationsDelegates,
+          home: Scaffold(body: VideoSlide(slide: mockSlide,errorState: NewsMediaErrorState.showErrorWithTryAgain,)),
         ),
       );
 
@@ -61,7 +90,7 @@ void main() {
       await tester.tap(find.byType(TextButton));
       await tester.pumpAndSettle(); // Wait for the widget to rebuild
 
-      verify(() => mockSlide.sourceBinary(null)).called(2); // Called twice (1 for the initial error, 1 for retry)
+      verify(() => mockSlide.sourceBinary(null)).called(4); // Called twice (1 for the initial error, 1 for retry)
     });
   });
 }

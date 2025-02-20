@@ -1,5 +1,3 @@
-import 'package:acter/features/labs/model/labs_features.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/notifications/actions/subscribe_object_push.dart';
 import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:acter/features/notifications/providers/object_notifications_settings_provider.dart';
@@ -21,11 +19,6 @@ Future<bool> autosubscribe({
   required L10n lang,
   SubscriptionSubType? subType,
 }) async {
-  if (!ref.read(isActiveProvider(LabsFeature.autoSubscribe))) {
-    _log.info('AutoSubscribe Labs not activated');
-    return false;
-  }
-
   if (!await ref.read(autoSubscribeProvider.future)) {
     _log.info('AutoSubscribe deactivated');
     return false;

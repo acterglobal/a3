@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:acter/common/models/types.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show AttachmentDraft, AttachmentsManager, RefDetails;
 import 'package:flutter/material.dart';
@@ -112,6 +113,12 @@ Future<void> addRefDetailAttachment({
       final res = await draft.send();
       _log.info('attachment sent: $res');
     }
+
+    await autosubscribe(
+      ref: ref,
+      objectId: manager.objectIdStr(),
+      lang: lang,
+    );
     EasyLoading.dismiss();
   } catch (e, s) {
     _log.severe('Failed to create attachments', e, s);

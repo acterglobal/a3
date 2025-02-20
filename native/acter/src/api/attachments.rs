@@ -78,7 +78,6 @@ impl Attachment {
     pub fn room_id_str(&self) -> String {
         self.room.room_id().to_string()
     }
-
     pub fn type_str(&self) -> String {
         self.inner.content().type_str()
     }
@@ -386,6 +385,10 @@ pub struct AttachmentsManager {
 impl AttachmentsManager {
     pub fn room_id_str(&self) -> String {
         self.room.room_id().to_string()
+    }
+
+    pub fn object_id_str(&self) -> String {
+        self.inner.event_id().to_string()
     }
 
     pub fn can_edit_attachments(&self) -> bool {

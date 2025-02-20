@@ -14,6 +14,7 @@ use acter_core::{
         news::NewsEntryEventContent,
         pins::PinEventContent,
         settings::ActerAppSettingsContent,
+        stories::StoryEventContent,
         tasks::{TaskEventContent, TaskListEventContent},
         RefDetails as CoreRefDetails, RefPreview,
     },
@@ -87,6 +88,7 @@ pub enum MemberPermission {
     CanSendSticker,
     // Acter Specific actions
     CanPostNews,
+    CanPostStories,
     CanPostPin,
     CanPostEvent,
     CanPostTaskList,
@@ -208,6 +210,23 @@ impl Member {
                     ))
                 } else {
                     // Not an acter space or news Posts are not activated..
+                    return false;
+                }
+            }
+
+            // Acter specific
+            MemberPermission::CanPostStories => {
+                if self
+                    .acter_app_settings
+                    .as_ref()
+                    .map(|s| s.stories().active())
+                    .unwrap_or_default()
+                {
+                    PermissionTest::Message(MessageLikeEventType::from(
+                        <StoryEventContent as StaticEventContent>::TYPE,
+                    ))
+                } else {
+                    // Not an acter space or story Posts are not activated..
                     return false;
                 }
             }
