@@ -1,1 +1,0 @@
-- Automatically subscribe to all objects you created or interact with to receive push notifications on updates about it. You can disable that in the notification settings if you want to.

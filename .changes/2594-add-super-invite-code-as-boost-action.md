@@ -1,1 +1,0 @@
-- [New] - Implemented "Super Invite Code" as a boost action, providing functionality of share invite code.
