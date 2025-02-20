@@ -146,20 +146,6 @@ where
             .map_err(|e| e.into())
     }
 
-    async fn clear_all_rooms_chunks(&self) -> Result<(), Self::Error> {
-        self.inner
-            .clear_all_rooms_chunks()
-            .await
-            .map_err(|e| e.into())
-    }
-
-    async fn clean_up_media_cache(&self) -> Result<(), Self::Error> {
-        self.inner
-            .clean_up_media_cache()
-            .await
-            .map_err(|e| e.into())
-    }
-
     #[instrument(skip_all)]
     async fn add_media_content(
         &self,
@@ -254,6 +240,20 @@ where
     ) -> Result<(), Self::Error> {
         self.inner
             .set_ignore_media_retention_policy(request, ignore_policy)
+            .await
+            .map_err(|e| e.into())
+    }
+
+    async fn clear_all_rooms_chunks(&self) -> Result<(), Self::Error> {
+        self.inner
+            .clear_all_rooms_chunks()
+            .await
+            .map_err(|e| e.into())
+    }
+
+    async fn clean_up_media_cache(&self) -> Result<(), Self::Error> {
+        self.inner
+            .clean_up_media_cache()
             .await
             .map_err(|e| e.into())
     }
