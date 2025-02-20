@@ -1,35 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class SecurityPrivacyWidget extends ConsumerWidget {
-  const SecurityPrivacyWidget({super.key});
+  final IconData? icon;
+  final String? title;
+  final String? subtitle;
+  final List<ActionItem>? actions;
+  final Color? color;
+
+  const SecurityPrivacyWidget({
+    super.key,
+    this.icon,
+    this.title,
+    this.subtitle,
+    this.actions,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final lang = L10n.of(context);
-    return Column(
-      children: [
-        securityPrivacyCard(
-          context,
-          ref,
-          icon: PhosphorIconsRegular.warningOctagon,
-          title: lang.sessions,
-          subtitle: lang.unverifiedSessionsTitle(6),
-          action: lang.review,
-          color: Theme.of(context).colorScheme.error,
-        ),
-        securityPrivacyCard(
-          context,
-          ref,
-          icon: PhosphorIconsRegular.warning,
-          title: lang.encryptionBackupProvideKey,
-          subtitle: lang.encryptionBackupProvideKeyExplainer,
-          action: lang.encryptionBackupProvideKeyAction,
-          color: Theme.of(context).colorScheme.error,
-        ),
-      ],
+    return securityPrivacyCard(
+      context,
+      ref,
+      icon: icon,
+      title: title,
+      subtitle: subtitle,
+      actions: actions,
+      color: color ?? Theme.of(context).colorScheme.error,
     );
   }
 
@@ -39,7 +36,7 @@ class SecurityPrivacyWidget extends ConsumerWidget {
     IconData? icon,
     String? title,
     String? subtitle,
-    String? action,
+    List<ActionItem>? actions,
     Color? color,
   }) {
     final titleTextStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -78,33 +75,38 @@ class SecurityPrivacyWidget extends ConsumerWidget {
                     ),
                     child: Text(
                       subtitle ?? '',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                   SizedBox(height: 12),
-                  OutlinedButton(
-                    onPressed: () {
-                      // Handle review action
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Theme.of(context).primaryColor,
-                      side: BorderSide(color: Theme.of(context).primaryColor),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      action ?? '',
-                      style: titleTextStyle,
-                    ),
+                  Row(
+                    children: [
+                      if (actions != null)
+                        ...actions.map((action) => Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: OutlinedButton(
+                                onPressed: action.onPressed,
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Theme.of(context).primaryColor,
+                                  side: BorderSide(color: Theme.of(context).primaryColor),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Text(
+                                  action.label,
+                                  style: titleTextStyle,
+                                ),
+                              ),
+                            ),),
+                    ],
                   ),
                 ],
               ),
@@ -114,4 +116,11 @@ class SecurityPrivacyWidget extends ConsumerWidget {
       ),
     );
   }
+}
+
+class ActionItem {
+  final String label;
+  final VoidCallback? onPressed;
+
+  const ActionItem({required this.label, this.onPressed});
 }

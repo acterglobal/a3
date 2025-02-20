@@ -1,3 +1,5 @@
+import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/features/activities/widgets/security_privacy_widget.dart';
 import 'package:acter/features/backups/dialogs/provide_recovery_key_dialog.dart';
 import 'package:acter/features/backups/dialogs/show_confirm_disabling.dart';
 import 'package:acter/features/backups/dialogs/show_recovery_key.dart';
@@ -37,72 +39,73 @@ class BackupStateWidget extends ConsumerWidget {
   Widget renderUnknown(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     return Skeletonizer(
-      child: Card(
-        child: ListTile(
-          leading: const Icon(Icons.warning),
-          title: Text(lang.encryptionBackupMissing),
-          subtitle: Text(lang.encryptionBackupMissingExplainer),
-          trailing: OutlinedButton(
-            onPressed: () {},
-            child: Text(lang.loading),
+      child: SecurityPrivacyWidget(
+        icon: Icons.warning_amber_rounded,
+        title: lang.encryptionBackupMissing,
+        subtitle: lang.encryptionBackupMissingExplainer,
+        actions: [
+          ActionItem(
+            label: lang.loading,
+            onPressed: null,
           ),
-        ),
+        ],
+        color: warningFeatureColor,
       ),
     );
   }
 
   Widget renderCanResetAction(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    return Card(
-      child: ListTile(
-        leading: const Icon(Atlas.check_website_thin),
-        title: Text(lang.encryptionBackupEnabled),
-        subtitle: Text(lang.encryptionBackupEnabledExplainer),
-        trailing: OutlinedButton.icon(
-          icon: const Icon(Icons.toggle_on_outlined),
+    return SecurityPrivacyWidget(
+      icon: Atlas.check_website_thin,
+      title: lang.encryptionBackupEnabled,
+      subtitle: lang.encryptionBackupEnabledExplainer,
+      actions: [
+        ActionItem(
+          label: lang.reset,
           onPressed: () => showConfirmResetDialog(context, ref),
-          label: Text(lang.reset),
         ),
-      ),
+      ],
+      color: Theme.of(context).colorScheme.primary,
     );
   }
 
   Widget renderRecoverAction(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    return Card(
-      child: ListTile(
-        leading: const Icon(Icons.warning),
-        title: Text(lang.encryptionBackupProvideKey),
-        subtitle: Text(lang.encryptionBackupProvideKeyExplainer),
-        trailing: Wrap(
-          children: [
-            OutlinedButton(
-              onPressed: () => showProviderRecoveryKeyDialog(context, ref),
-              child: Text(lang.encryptionBackupProvideKeyAction),
-            ),
-            if (allowDisabling)
-              OutlinedButton(
-                onPressed: () => showConfirmResetDialog(context, ref),
-                child: Text(lang.reset),
-              ),
-          ],
+    // Since SecurityPrivacyWidget only supports one action button,
+    // we'll use the primary action (provide key) and handle reset differently if needed
+    return SecurityPrivacyWidget(
+      icon: Icons.warning_amber_rounded,
+      title: lang.encryptionBackupProvideKey,
+      subtitle: lang.encryptionBackupProvideKeyExplainer,
+      color: warningFeatureColor,
+      actions: [
+        ActionItem(
+          label: lang.encryptionBackupProvideKeyAction,
+          onPressed: () => showProviderRecoveryKeyDialog(context, ref),
         ),
-      ),
+        if (allowDisabling)
+          ActionItem(
+            label: lang.reset,
+            onPressed: () => showConfirmResetDialog(context, ref),
+          ),
+      ],
     );
   }
 
   Widget renderStartAction(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    return Card(
-      child: ListTile(
-        leading: const Icon(Icons.warning),
-        title: Text(lang.encryptionBackupNoBackup),
-        subtitle: Text(lang.encryptionBackupNoBackupExplainer),
-        trailing: OutlinedButton(
+    return SecurityPrivacyWidget(
+      icon: Icons.warning_amber_rounded,
+      title: lang.encryptionBackupNoBackup,
+      subtitle: lang.encryptionBackupNoBackupExplainer,
+      actions: [
+        ActionItem(
+          label: lang.encryptionBackupNoBackupAction,
           onPressed: () => startAction(context, ref),
-          child: Text(lang.encryptionBackupNoBackupAction),
         ),
-      ),
+      ],
+      color: warningFeatureColor,
     );
   }
 
