@@ -80,8 +80,7 @@ class AppShellState extends ConsumerState<AppShell> {
     // the content is being fetched and cached
     ref.read(spacesProvider);
     ref.read(chatsProvider);
-    ref.read(newsListProvider(null));
-    ref.read(storiesListProvider(null));
+    ref.read(updateListProvider(null));
     ref.read(hasActivitiesProvider);
   }
 

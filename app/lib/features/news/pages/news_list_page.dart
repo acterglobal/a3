@@ -4,12 +4,12 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
+import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_full_view.dart';
 import 'package:acter/features/news/widgets/news_grid_view.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_filter_buttons.dart';
 import 'package:acter/features/news/widgets/news_skeleton_widget.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:collection/collection.dart';
@@ -41,7 +41,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
   final ValueNotifier<bool> useGridMode = ValueNotifier(true);
   final ValueNotifier<bool> stillLoadingForSelectedItem = ValueNotifier(false);
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
-  late ProviderSubscription<AsyncValue<List<NewsEntry>>>? listener;
+  late ProviderSubscription<AsyncValue<List<UpdateEntry>>>? listener;
 
   @override
   void initState() {
@@ -51,7 +51,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
     if (targetEventId != null) {
       stillLoadingForSelectedItem.value = true;
       listener = ref.listenManual(
-        newsListProvider(widget.spaceId),
+        filteredUpdateListProvider(widget.spaceId),
         (prev, next) {
           final items = next.valueOrNull;
           if (items == null) {
@@ -59,7 +59,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
           }
           int? itemIdx;
 
-          items.firstWhereIndexedOrNull((int idx, NewsEntry e) {
+          items.firstWhereIndexedOrNull((int idx, UpdateEntry e) {
             if (e.eventId().toString() == targetEventId) {
               itemIdx = idx;
               return true;
@@ -183,7 +183,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
       stack: stack,
       textBuilder: (error, code) => L10n.of(context).loadingFailed(error),
       onRetryTap: () {
-        ref.invalidate(newsListProvider(widget.spaceId));
+        ref.invalidate(filteredUpdateListProvider(widget.spaceId));
       },
     );
   }
