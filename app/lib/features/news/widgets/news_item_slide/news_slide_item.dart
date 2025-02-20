@@ -35,8 +35,14 @@ class UpdateSlideItem extends StatelessWidget {
           child: Container(
             color: slideBackgroundColor,
             child: switch (slideType) {
-              'image' => ImageSlide(slide: slide,errorState: errorState,),
-              'video' => VideoSlide(slide: slide,errorState: errorState,),
+              'image' => ImageSlide(
+                  slide: slide,
+                  errorState: errorState,
+                ),
+              'video' => VideoSlide(
+                  slide: slide,
+                  errorState: errorState,
+                ),
               'text' =>
                 showRichContent ? TextSlide(slide: slide) : normalTextSlide(),
               _ => notSupportedSlide(context, slideType),

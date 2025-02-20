@@ -6,6 +6,16 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show NewsEntry, ReactionManager, Story;
 import 'package:riverpod/riverpod.dart';
 
+//EVENT FILTERS
+enum UpdateFilters {
+  all,
+  news,
+  story,
+}
+
+final updateFilterProvider =
+    StateProvider.autoDispose<UpdateFilters>((ref) => UpdateFilters.all);
+
 final newsListProvider = AsyncNotifierProvider.family<AsyncNewsListNotifier,
     List<NewsEntry>, String?>(
   () => AsyncNewsListNotifier(),
@@ -44,6 +54,17 @@ final updateListProvider =
   entries.sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
 
   return entries;
+});
+
+final filteredUpdateListProvider =
+    FutureProvider.family<List<UpdateEntry>, String?>((ref, arg) async {
+  final updateFilter = ref.watch(updateFilterProvider);
+
+  return switch (updateFilter) {
+    UpdateFilters.all => await ref.watch(updateListProvider(arg).future),
+    UpdateFilters.news => await ref.watch(newsUpdateListProvider(arg).future),
+    UpdateFilters.story => await ref.watch(storyUpdateListProvider(arg).future),
+  };
 });
 
 final updateReactionsProvider =
