@@ -93,6 +93,12 @@ impl fmt::Debug for SyncController {
     }
 }
 
+impl Default for SyncController {
+    fn default() -> Self {
+        SyncController::new()
+    }
+}
+
 pub type SimpleConvoDiff = ApiVectorDiff<SimpleConvo>;
 
 impl SyncController {
