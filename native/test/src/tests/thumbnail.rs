@@ -19,7 +19,7 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_msg_image_thumbnail").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -131,7 +131,7 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_msg_video_thumbnail").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -266,7 +266,7 @@ fn match_media_msg(
 async fn news_can_support_image_thumbnail() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("news_image_thumbnail").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -345,7 +345,7 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
 async fn news_can_support_video_thumbnail() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("news_video_thumbnail").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up

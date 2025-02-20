@@ -38,7 +38,7 @@ class SyncNotifier extends Notifier<SyncState> {
         client = newClient;
         Future.delayed(
           const Duration(milliseconds: 1500),
-          () => _restartSync(),
+          () async => await _restartSync(),
         );
       },
       fireImmediately: true,
@@ -47,21 +47,21 @@ class SyncNotifier extends Notifier<SyncState> {
     return const SyncState(initialSync: true);
   }
 
-  void _tickSyncState() {
-    state.countDown.map(
-      (countDown) {
+  Future<void> _tickSyncState() async {
+    await state.countDown.mapAsync(
+      (countDown) async {
         if (countDown == 0) {
-          _restartSync();
+          await _restartSync();
         } else {
           // just count down.
           state = state.copyWith(countDown: countDown - 1);
         }
       },
-      orElse: () => _restartSync(),
+      orElse: () async => await _restartSync(),
     );
   }
 
-  void _restartSync() {
+  Future<void> _restartSync() async {
     // reset states
     syncState?.cancel();
     _retryTimer?.cancel();
@@ -69,7 +69,7 @@ class SyncNotifier extends Notifier<SyncState> {
     _syncPoller?.cancel();
     _errorPoller?.cancel();
 
-    final sync = syncState = client.startSync();
+    final sync = syncState = await client.startSync();
 
     _syncListener = sync.firstSyncedRx(); // keep it resident in memory
     _syncPoller = _syncListener?.listen((synced) {
@@ -96,8 +96,8 @@ class SyncNotifier extends Notifier<SyncState> {
           countDown: retry,
           nextRetry: retry,
         );
-        _retryTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-          _tickSyncState();
+        _retryTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+          await _tickSyncState();
         });
         // custom errors, means we will start the retry loop
       }

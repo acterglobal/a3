@@ -37,10 +37,10 @@ async fn tasklist_creation_notification() -> Result<()> {
 
     second.install_default_acter_push_rules().await?;
 
-    let sync_state1 = user.start_sync();
+    let sync_state1 = user.start_sync().await?;
     sync_state1.await_has_synced_history().await?;
 
-    let sync_state2 = second.start_sync();
+    let sync_state2 = second.start_sync().await?;
     sync_state2.await_has_synced_history().await?;
 
     // wait for sync to catch up

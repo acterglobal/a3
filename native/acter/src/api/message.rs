@@ -411,7 +411,7 @@ impl RoomVirtualItem {
                     None
                 };
                 RoomVirtualItem {
-                    event_type: "DayDivider".to_string(),
+                    event_type: "DateDivider".to_string(),
                     desc,
                 }
             }

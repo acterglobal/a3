@@ -55,7 +55,7 @@ async fn main() -> Result<()> {
     }
 
     let mut client = cli.login.client(app_dir, cache_dir).await?;
-    let sync_state = client.start_sync();
+    let sync_state = client.start_sync().await?;
 
     tokio::spawn(async move {
         let username = client.user_id().expect("we just logged in");
